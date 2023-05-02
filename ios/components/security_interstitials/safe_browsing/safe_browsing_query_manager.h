@@ -131,8 +131,9 @@ class SafeBrowsingQueryManager
         const std::string& method,
         base::OnceCallback<void(bool proceed,
                                 bool show_error_page,
-                                bool did_perform_real_time_check,
-                                bool did_check_allowlist)> callback);
+                                bool did_perform_url_real_time_check,
+                                bool did_check_url_real_time_allowlist)>
+            callback);
 
    private:
     // Called by `url_checker` with the initial result of performing a url
@@ -146,8 +147,8 @@ class SafeBrowsingQueryManager
             slow_check_notifier,
         bool proceed,
         bool showed_interstitial,
-        bool did_perform_real_time_check,
-        bool did_check_allowlist);
+        bool did_perform_url_real_time_check,
+        bool did_check_url_real_time_allowlist);
 
     // Called by `url_checker` with the final result of performing a url check.
     // `url_checker` must be non-null. This is an implementation of
@@ -155,18 +156,19 @@ class SafeBrowsingQueryManager
     void OnCheckComplete(safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
                          bool proceed,
                          bool showed_interstitial,
-                         bool did_perform_real_time_check,
-                         bool did_check_allowlist);
+                         bool did_perform_url_real_time_check,
+                         bool did_check_url_real_time_allowlist);
 
     // This maps SafeBrowsingUrlCheckerImpls that have started but not completed
     // a url check to the callback that should be invoked once the url check is
     // complete.
-    base::flat_map<std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>,
-                   base::OnceCallback<void(bool proceed,
-                                           bool show_error_page,
-                                           bool did_perform_real_time_check,
-                                           bool did_check_allowlist)>,
-                   base::UniquePtrComparator>
+    base::flat_map<
+        std::unique_ptr<safe_browsing::SafeBrowsingUrlCheckerImpl>,
+        base::OnceCallback<void(bool proceed,
+                                bool show_error_page,
+                                bool did_perform_url_real_time_check,
+                                bool did_check_url_real_time_allowlist)>,
+        base::UniquePtrComparator>
         active_url_checkers_;
   };
 
@@ -175,8 +177,8 @@ class SafeBrowsingQueryManager
   void UrlCheckFinished(const Query query,
                         bool proceed,
                         bool show_error_page,
-                        bool did_perform_real_time_check,
-                        bool did_check_allowlist);
+                        bool did_perform_url_real_time_check,
+                        bool did_check_url_real_time_allowlist);
 
   // The WebState whose URL queries are being managed.
   web::WebState* web_state_ = nullptr;

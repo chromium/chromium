@@ -339,7 +339,7 @@ TEST_F(PingManagerTest, TestSafeBrowsingHitUrl) {
   {
     HitReport hp(base_hp);
     hp.threat_type = SB_THREAT_TYPE_URL_PHISHING;
-    hp.threat_source = ThreatSource::REAL_TIME_CHECK;
+    hp.threat_source = ThreatSource::URL_REAL_TIME_CHECK;
     hp.is_subresource = false;
     hp.extended_reporting_level = SBER_LEVEL_SCOUT;
     hp.is_metrics_reporting_active = true;

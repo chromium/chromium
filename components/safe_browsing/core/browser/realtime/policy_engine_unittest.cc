@@ -201,7 +201,7 @@ TEST_F(
         static_cast<network::mojom::RequestDestination>(i);
     bool enabled =
         RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-            request_destination, /*can_rt_check_subresource_url=*/false);
+            request_destination, /*can_urt_check_subresource_url=*/false);
     switch (request_destination) {
       case network::mojom::RequestDestination::kDocument:
         EXPECT_TRUE(enabled);
@@ -223,7 +223,7 @@ TEST_F(
         static_cast<network::mojom::RequestDestination>(i);
     bool enabled =
         RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
-            request_destination, /*can_rt_check_subresource_url=*/true);
+            request_destination, /*can_urt_check_subresource_url=*/true);
     switch (request_destination) {
       case network::mojom::RequestDestination::kDocument:
       case network::mojom::RequestDestination::kIframe:

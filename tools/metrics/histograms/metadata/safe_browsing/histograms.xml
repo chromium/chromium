@@ -1773,8 +1773,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs whether the URL cannot be checked because it is not valid. Logged each
-    time a URL is checked by Safe Browsing URL checker if real-time lookups are
-    enabled and eligible for the request destination.
+    time a URL is checked by Safe Browsing URL checker if real-time URL lookups
+    are enabled and eligible for the request destination.
   </summary>
 </histogram>
 
@@ -1799,7 +1799,7 @@ chromium-metrics-reviews@google.com.
     Logs the threat type of cached verdicts. If the threat type is not safe, it
     means the cache is a false positive. False positive verdicts are safe
     verdicts in cache manager but turns out to be dangerous in the Safe Browsing
-    database. Logged each time a URL is checked by real time lookup and the
+    database. Logged each time a URL is checked by real time URL lookup and the
     response is safe from the cache manager.
   </summary>
 </histogram>
@@ -1844,7 +1844,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the latency between the start of a token request and when the token is
     actually obtained. Logged each time a user performs a real-time Safe
-    Browsing check with token.
+    Browsing URL check with token.
   </summary>
 </histogram>
 
@@ -1875,10 +1875,10 @@ chromium-metrics-reviews@google.com.
   <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Logs whether the real time lookup service is available when a real time URL
-    check is needed. The real time lookup service is available if it is not
-    nullptr and it is not in backoff mode. Logged when real time URL check is
-    enabled and the URL doesn't match the allowlist.
+    Logs whether the real time URL lookup service is available when a real time
+    URL check is needed. The real time URL lookup service is available if it is
+    not nullptr and it is not in backoff mode. Logged when real time URL check
+    is enabled and the URL doesn't match the allowlist.
   </summary>
 </histogram>
 
@@ -2029,7 +2029,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the request destination that was checked by Safe Browsing real time URL
-    lookup. Logged on each resource check that is eligible for real time checks.
+    lookup. Logged on each resource check that is eligible for real time URL
+    checks.
   </summary>
 </histogram>
 

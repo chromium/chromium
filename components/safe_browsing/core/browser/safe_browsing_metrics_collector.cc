@@ -187,8 +187,8 @@ void SafeBrowsingMetricsCollector::AddBypassEventToPref(
     case ThreatSource::CLIENT_SIDE_DETECTION:
       event = EventType::CSD_INTERSTITIAL_BYPASS;
       break;
-    case ThreatSource::REAL_TIME_CHECK:
-      event = EventType::REAL_TIME_INTERSTITIAL_BYPASS;
+    case ThreatSource::URL_REAL_TIME_CHECK:
+      event = EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS;
       break;
     default:
       NOTREACHED() << "Unexpected threat source.";
@@ -424,7 +424,7 @@ bool SafeBrowsingMetricsCollector::IsBypassEventType(const EventType& type) {
       return false;
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSTITIAL_BYPASS:
-    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS:
     case EventType::DANGEROUS_DOWNLOAD_BYPASS:
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:
@@ -440,7 +440,7 @@ bool SafeBrowsingMetricsCollector::IsSecuritySensitiveEventType(
     case EventType::USER_STATE_ENABLED:
     case EventType::DATABASE_INTERSTITIAL_BYPASS:
     case EventType::CSD_INTERSTITIAL_BYPASS:
-    case EventType::REAL_TIME_INTERSTITIAL_BYPASS:
+    case EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS:
     case EventType::DANGEROUS_DOWNLOAD_BYPASS:
     case EventType::PASSWORD_REUSE_MODAL_BYPASS:
     case EventType::EXTENSION_ALLOWLIST_INSTALL_BYPASS:

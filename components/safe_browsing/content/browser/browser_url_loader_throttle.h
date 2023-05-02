@@ -51,8 +51,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
-                              bool /* did_perform_real_time_check */,
-                              bool /* did_check_allowlist */)>;
+                              bool /* did_perform_url_real_time_check */,
+                              bool /* did_check_url_real_time_allowlist */)>;
 
   // CheckerOnSB handles calling methods on SafeBrowsingUrlCheckerImpl, which
   // must be called on the IO thread. The results are synced back to the
@@ -67,8 +67,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         int frame_tree_node_id,
         base::RepeatingCallback<content::WebContents*()> web_contents_getter,
         base::WeakPtr<BrowserURLLoaderThrottle> throttle,
-        bool real_time_lookup_enabled,
-        bool can_rt_check_subresource_url,
+        bool url_real_time_lookup_enabled,
+        bool can_urt_check_subresource_url,
         bool can_check_db,
         bool can_check_high_confidence_allowlist,
         std::string url_lookup_service_metric_suffix,
@@ -106,16 +106,16 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     void OnCheckUrlResult(NativeUrlCheckNotifier* slow_check_notifier,
                           bool proceed,
                           bool showed_interstitial,
-                          bool did_perform_real_time_check,
-                          bool did_check_allowlist);
+                          bool did_perform_url_real_time_check,
+                          bool did_check_url_real_time_allowlist);
 
     // |slow_check| indicates whether it reports the result of a slow check.
     // (Please see comments of OnCheckUrlResult() for what slow check means).
     void OnCompleteCheck(bool slow_check,
                          bool proceed,
                          bool showed_interstitial,
-                         bool did_perform_real_time_check,
-                         bool did_check_allowlist);
+                         bool did_perform_url_real_time_check,
+                         bool did_check_url_real_time_allowlist);
 
     // The following member stays valid until |url_checker_| is created.
     GetDelegateCallback delegate_getter_;
@@ -128,8 +128,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     base::RepeatingCallback<content::WebContents*()> web_contents_getter_;
     bool skip_checks_ = false;
     base::WeakPtr<BrowserURLLoaderThrottle> throttle_;
-    bool real_time_lookup_enabled_ = false;
-    bool can_rt_check_subresource_url_ = false;
+    bool url_real_time_lookup_enabled_ = false;
+    bool can_urt_check_subresource_url_ = false;
     bool can_check_db_ = true;
     bool can_check_high_confidence_allowlist_ = true;
     std::string url_lookup_service_metric_suffix_;
@@ -190,8 +190,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   void OnCompleteCheck(bool slow_check,
                        bool proceed,
                        bool showed_interstitial,
-                       bool did_perform_real_time_check,
-                       bool did_check_allowlist);
+                       bool did_perform_url_real_time_check,
+                       bool did_check_url_real_time_allowlist);
 
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
@@ -233,8 +233,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Metric suffix for the URL lookup service.
   std::string url_lookup_service_metric_suffix_;
 
-  // Whether real time lookup is enabled for the user.
-  bool real_time_lookup_enabled_;
+  // Whether real time URL lookup is enabled for the user.
+  bool url_real_time_lookup_enabled_;
 
   // Tracks how many times |WillProcessResponse| is called.
   int will_process_response_count_ = 0;

@@ -274,7 +274,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
 
   // Changing enhanced protection to no protection should log the metric.
   FastForwardAndAddEvent(base::Hours(1),
-                         EventType::REAL_TIME_INTERSTITIAL_BYPASS);
+                         EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS);
   task_environment_.FastForwardBy(base::Days(1));
   SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
   histograms.ExpectTotalCount("SafeBrowsing.EsbDisabled.LastBypassEventType",
@@ -555,7 +555,7 @@ TEST_F(SafeBrowsingMetricsCollectorTest, LogDailyEventMetrics_LoggedDaily) {
                          EventType::DATABASE_INTERSTITIAL_BYPASS);
   FastForwardAndAddEvent(base::Hours(1), EventType::CSD_INTERSTITIAL_BYPASS);
   FastForwardAndAddEvent(base::Hours(1),
-                         EventType::REAL_TIME_INTERSTITIAL_BYPASS);
+                         EventType::URL_REAL_TIME_INTERSTITIAL_BYPASS);
   FastForwardAndAddEvent(
       base::Hours(1), EventType::SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
   FastForwardAndAddEvent(

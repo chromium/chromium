@@ -1627,8 +1627,8 @@ std::string SerializeHitReport(const HitReport& hit_report) {
     case ThreatSource::CLIENT_SIDE_DETECTION:
       threat_source = "CLIENT_SIDE_DETECTION";
       break;
-    case ThreatSource::REAL_TIME_CHECK:
-      threat_source = "REAL_TIME_CHECK";
+    case ThreatSource::URL_REAL_TIME_CHECK:
+      threat_source = "URL_REAL_TIME_CHECK";
       break;
     case ThreatSource::UNKNOWN:
       threat_source = "UNKNOWN";

@@ -196,8 +196,8 @@ const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
 void RendererURLLoaderThrottle::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_real_time_check,
-    bool did_check_allowlist) {
+    bool did_perform_url_real_time_check,
+    bool did_check_url_real_time_allowlist) {
   OnCompleteCheckInternal(true /* slow_check */, proceed, showed_interstitial);
 }
 
@@ -205,8 +205,8 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
     mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_real_time_check,
-    bool did_check_allowlist) {
+    bool did_perform_url_real_time_check,
+    bool did_check_url_real_time_allowlist) {
   // When this is the callback of safe_browsing_->CreateCheckerAndCheck(), it is
   // possible that we get here after a check with |url_checker_| has completed
   // and blocked the request.

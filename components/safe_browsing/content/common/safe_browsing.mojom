@@ -41,10 +41,10 @@ interface SafeBrowsing {
   //
   // |proceed| indicates whether it is okay to proceed with loading the URL.
   // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
-  // has been shown to the user. |did_perform_real_time_check| indicates if
-  // real time check (including allowlist and cache checks) was performed.
-  // |did_check_allowlist| indicates whether allowlist check was bypassed or
-  // not.
+  // has been shown to the user. |did_perform_url_real_time_check| indicates if
+  // URL real time check (including allowlist and cache checks) was performed.
+  // |did_check_url_real_time_allowlist| indicates whether the URL real-time
+  // allowlist check was bypassed or not.
   CreateCheckerAndCheck(
       int32 render_frame_id,
       pending_receiver<SafeBrowsingUrlChecker> receiver,
@@ -58,8 +58,8 @@ interface SafeBrowsing {
           => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,
               bool proceed,
               bool showed_interstitial,
-              bool did_perform_real_time_check,
-              bool did_check_allowlist);
+              bool did_perform_url_real_time_check,
+              bool did_check_url_real_time_allowlist);
 
   // Bind an additional pipe to this instance of the SafeBrowsing interface.
   Clone(pending_receiver<SafeBrowsing> receiver);

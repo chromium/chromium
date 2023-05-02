@@ -174,7 +174,7 @@ std::string BaseBlockingPage::GetExtraMetricsSuffix(
       return "from_device_v4";
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
       return "from_client_side_detection";
-    case safe_browsing::ThreatSource::REAL_TIME_CHECK:
+    case safe_browsing::ThreatSource::URL_REAL_TIME_CHECK:
       return "from_real_time_check";
     case safe_browsing::ThreatSource::UNKNOWN:
       break;

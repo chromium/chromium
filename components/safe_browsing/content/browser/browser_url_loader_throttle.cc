@@ -41,7 +41,7 @@ constexpr char kFromCacheUmaSuffix[] = ".FromCache";
 constexpr char kFromNetworkUmaSuffix[] = ".FromNetwork";
 
 void LogTotalDelay2Metrics(const std::string& url_check_type,
-                           bool did_check_allowlist,
+                           bool did_check_url_real_time_allowlist,
                            base::TimeDelta total_delay) {
   base::UmaHistogramTimes(
       base::StrCat(
@@ -51,7 +51,8 @@ void LogTotalDelay2Metrics(const std::string& url_check_type,
     base::UmaHistogramTimes(
         base::StrCat(
             {"SafeBrowsing.BrowserThrottle.TotalDelay2.EnterpriseFullUrlLookup",
-             did_check_allowlist ? ".AllowlistChecked" : ".AllowlistBypassed"}),
+             did_check_url_real_time_allowlist ? ".AllowlistChecked"
+                                               : ".AllowlistBypassed"}),
         total_delay);
   }
 }
@@ -82,8 +83,8 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
     int frame_tree_node_id,
     base::RepeatingCallback<content::WebContents*()> web_contents_getter,
     base::WeakPtr<BrowserURLLoaderThrottle> throttle,
-    bool real_time_lookup_enabled,
-    bool can_rt_check_subresource_url,
+    bool url_real_time_lookup_enabled,
+    bool can_urt_check_subresource_url,
     bool can_check_db,
     bool can_check_high_confidence_allowlist,
     std::string url_lookup_service_metric_suffix,
@@ -95,8 +96,8 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
       frame_tree_node_id_(frame_tree_node_id),
       web_contents_getter_(web_contents_getter),
       throttle_(std::move(throttle)),
-      real_time_lookup_enabled_(real_time_lookup_enabled),
-      can_rt_check_subresource_url_(can_rt_check_subresource_url),
+      url_real_time_lookup_enabled_(url_real_time_lookup_enabled),
+      can_urt_check_subresource_url_(can_urt_check_subresource_url),
       can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
@@ -167,8 +168,8 @@ void BrowserURLLoaderThrottle::CheckerOnSB::Start(
         headers, load_flags, request_destination, has_user_gesture,
         url_checker_delegate, web_contents_getter_,
         content::ChildProcessHost::kInvalidUniqueID, MSG_ROUTING_NONE,
-        frame_tree_node_id_, real_time_lookup_enabled_,
-        can_rt_check_subresource_url_, can_check_db_,
+        frame_tree_node_id_, url_real_time_lookup_enabled_,
+        can_urt_check_subresource_url_, can_check_db_,
         can_check_high_confidence_allowlist_, url_lookup_service_metric_suffix_,
         last_committed_url_, content::GetUIThreadTaskRunner({}),
         url_lookup_service_, WebUIInfoSingleton::GetInstance(),
@@ -220,11 +221,12 @@ void BrowserURLLoaderThrottle::CheckerOnSB::OnCheckUrlResult(
     NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_real_time_check,
-    bool did_check_allowlist) {
+    bool did_perform_url_real_time_check,
+    bool did_check_url_real_time_allowlist) {
   if (!slow_check_notifier) {
     OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial,
-                    did_perform_real_time_check, did_check_allowlist);
+                    did_perform_url_real_time_check,
+                    did_check_url_real_time_allowlist);
     return;
   }
 
@@ -247,18 +249,19 @@ void BrowserURLLoaderThrottle::CheckerOnSB::OnCompleteCheck(
     bool slow_check,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_real_time_check,
-    bool did_check_allowlist) {
+    bool did_perform_url_real_time_check,
+    bool did_check_url_real_time_allowlist) {
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     throttle_->OnCompleteCheck(slow_check, proceed, showed_interstitial,
-                               did_perform_real_time_check,
-                               did_check_allowlist);
+                               did_perform_url_real_time_check,
+                               did_check_url_real_time_allowlist);
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck, throttle_,
                        slow_check, proceed, showed_interstitial,
-                       did_perform_real_time_check, did_check_allowlist));
+                       did_perform_url_real_time_check,
+                       did_check_url_real_time_allowlist));
   }
 }
 
@@ -286,11 +289,11 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Decide whether to do real time URL lookups or not.
-  real_time_lookup_enabled_ =
+  url_real_time_lookup_enabled_ =
       url_lookup_service ? url_lookup_service->CanPerformFullURLLookup()
                          : false;
 
-  bool can_rt_check_subresource_url =
+  bool can_urt_check_subresource_url =
       url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
 
 // This BUILDFLAG check is not strictly necessary because the feature should
@@ -316,13 +319,13 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
           : true;
 
   url_lookup_service_metric_suffix_ =
-      real_time_lookup_enabled_ ? url_lookup_service->GetMetricSuffix()
-                                : kNoRealTimeURLLookupService;
+      url_real_time_lookup_enabled_ ? url_lookup_service->GetMetricSuffix()
+                                    : kNoRealTimeURLLookupService;
 
   sb_checker_ = std::make_unique<CheckerOnSB>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
-      weak_factory_.GetWeakPtr(), real_time_lookup_enabled_,
-      can_rt_check_subresource_url, can_check_db,
+      weak_factory_.GetWeakPtr(), url_real_time_lookup_enabled_,
+      can_urt_check_subresource_url, can_check_db,
       can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
       url_lookup_service, hash_realtime_service, ping_manager,
       is_mechanism_experiment_allowed);
@@ -512,14 +515,15 @@ BrowserURLLoaderThrottle::GetSBCheckerForTesting() {
   return sb_checker_.get();
 }
 
-void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
-                                               bool proceed,
-                                               bool showed_interstitial,
-                                               bool did_perform_real_time_check,
-                                               bool did_check_allowlist) {
+void BrowserURLLoaderThrottle::OnCompleteCheck(
+    bool slow_check,
+    bool proceed,
+    bool showed_interstitial,
+    bool did_perform_url_real_time_check,
+    bool did_check_url_real_time_allowlist) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!blocked_);
-  DCHECK(real_time_lookup_enabled_ || !did_perform_real_time_check);
+  DCHECK(url_real_time_lookup_enabled_ || !did_perform_url_real_time_check);
 
   DCHECK_LT(0u, pending_checks_);
   pending_checks_--;
@@ -539,10 +543,11 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(bool slow_check,
                                             total_delay_);
     }
     std::string url_check_type =
-        (did_perform_real_time_check)
+        did_perform_url_real_time_check
             ? base::StrCat({url_lookup_service_metric_suffix_, kFullURLLookup})
             : ".HashBasedCheck";
-    LogTotalDelay2Metrics(url_check_type, did_check_allowlist, total_delay_);
+    LogTotalDelay2Metrics(url_check_type, did_check_url_real_time_allowlist,
+                          total_delay_);
   }
 
   if (proceed) {

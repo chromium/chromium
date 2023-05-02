@@ -55,8 +55,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
-                              bool /* did_perform_real_time_check */,
-                              bool /* did_check_allowlist */)>;
+                              bool /* did_perform_url_real_time_check */,
+                              bool /* did_check_url_real_time_allowlist */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
   // this output parameter with a callback to receive complete notification. In
@@ -65,20 +65,19 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
                               bool /* showed_interstitial */,
-                              bool /* did_perform_real_time_check */,
-                              bool /* did_check_allowlist */)>;
+                              bool /* did_perform_url_real_time_check */,
+                              bool /* did_check_url_real_time_allowlist */)>;
 
-  // Constructor for SafeBrowsingUrlCheckerImpl. |real_time_lookup_enabled|
+  // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
   // indicates whether or not the profile has enabled real time URL lookups, as
   // computed by the RealTimePolicyEngine. This must be computed in advance,
   // since this class only exists on the IO thread.
-  // |can_rt_check_subresource_url| indicates whether or not the profile has
-  // enabled real time URL lookups for subresource URLs.
-  // |real_time_lookup_enabled| must be true if |can_rt_check_subresource_url|
-  // is true.
-  // |last_committed_url| is used for obtaining the page load token when the URL
-  // being checked is not a mainframe URL. Only used when real time lookup is
-  // performed.
+  // |can_urt_check_subresource_url| indicates whether or not the profile has
+  // enabled real time URL lookups for subresource URLs. If this value is true,
+  // then |url_real_time_lookup_enabled| must also be true.
+  // |last_committed_url| is used for obtaining the page load token when the
+  // URL being checked is not a mainframe URL. Only used when URL real time
+  // lookup is performed.
   // |webui_delegate_| is allowed to be null. If non-null, it must outlive this
   // object.
   SafeBrowsingUrlCheckerImpl(
@@ -93,8 +92,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       security_interstitials::UnsafeResource::RenderFrameId render_frame_id,
       security_interstitials::UnsafeResource::FrameTreeNodeId
           frame_tree_node_id,
-      bool real_time_lookup_enabled,
-      bool can_rt_check_subresource_url,
+      bool url_real_time_lookup_enabled,
+      bool can_urt_check_subresource_url,
       bool can_check_db,
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
@@ -111,15 +110,15 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // real-time lookup-related arguments, omitting other arguments that never
   // have non-default values on iOS.
   // TODO(crbug.com/1103222): Add an iOS-specific WebUIDelegate implementation
-  // and pass it here to log RT requests/responses on open
+  // and pass it here to log URT requests/responses on open
   // chrome://safe-browsing pages once chrome://safe-browsing works on iOS, or
   // else to log those requests/responses to stderr.
   SafeBrowsingUrlCheckerImpl(
       network::mojom::RequestDestination request_destination,
       scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
       base::WeakPtr<web::WebState> weak_web_state,
-      bool real_time_lookup_enabled,
-      bool can_rt_check_subresource_url,
+      bool url_real_time_lookup_enabled,
+      bool can_urt_check_subresource_url,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui);
 
@@ -158,8 +157,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     void OnStartSlowCheck();
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
-                         bool did_perform_real_time_check,
-                         bool did_check_allowlist);
+                         bool did_perform_url_real_time_check,
+                         bool did_check_url_real_time_allowlist);
 
    private:
     // Used in the mojo interface case.
@@ -182,7 +181,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   void OnUrlResultInternal(const GURL& url,
                            SBThreatType threat_type,
                            const ThreatMetadata& metadata,
-                           bool is_from_real_time_check,
+                           bool is_from_url_real_time_check,
                            std::unique_ptr<RTLookupResponse> rt_lookup_response,
                            bool timed_out);
 
@@ -219,7 +218,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       const GURL& url,
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
-      bool is_from_real_time_check,
+      bool is_from_url_real_time_check,
       std::unique_ptr<RTLookupResponse> rt_lookup_response);
 
   enum State {
@@ -240,8 +239,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     UrlInfo(const GURL& url,
             const std::string& method,
             Notifier notifier,
-            bool did_perform_real_time_check,
-            bool did_check_allowlist);
+            bool did_perform_url_real_time_check,
+            bool did_check_url_real_time_allowlist);
     UrlInfo(UrlInfo&& other);
 
     ~UrlInfo();
@@ -250,11 +249,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     std::string method;
     Notifier notifier;
 
-    // Whether real time check (including allowlist and cache checks) was
+    // Whether real time URL check (including allowlist and cache checks) was
     // performed.
-    bool did_perform_real_time_check;
+    bool did_perform_url_real_time_check;
     // If the allowlist was checked for this URL.
-    bool did_check_allowlist;
+    bool did_check_url_real_time_allowlist;
   };
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -289,11 +288,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   State state_ = STATE_NONE;
 
-  // Whether real time lookup is enabled for this request.
-  bool real_time_lookup_enabled_;
+  // Whether real time URL lookup is enabled for this request.
+  bool url_real_time_lookup_enabled_;
 
   // Whether non mainframe url can be checked for this profile.
-  bool can_rt_check_subresource_url_;
+  bool can_urt_check_subresource_url_;
 
   // Whether safe browsing database can be checked. It is set to false when
   // enterprise real time URL lookup is enabled and safe browsing is disabled
