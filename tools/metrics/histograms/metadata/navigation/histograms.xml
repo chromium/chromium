@@ -782,18 +782,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Navigation.IsNavigationSameSite.Duration" units="ms"
-    expires_after="2023-10-15">
-  <owner>peilinwang@google.com</owner>
-  <owner>woa-performance-bugs+jank@google.com</owner>
-  <summary>
-    Measures the amount of time it takes to call
-    RenderFrameHostImpl::IsNavigationSameSite(). Logged once per call to
-    RenderFrameHostImpl::IsNavigationSameSite(), potentially numerous times per
-    navigation.
-  </summary>
-</histogram>
-
 <histogram name="Navigation.IsSameBrowsingInstance"
     enum="NavigationIsSameBrowsingInstance" expires_after="2025-01-01">
   <owner>arthursonzogni@chromium.org</owner>
