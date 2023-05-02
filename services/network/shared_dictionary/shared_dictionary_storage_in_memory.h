@@ -16,7 +16,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_in_memory.h"
 #include "url/gurl.h"
-#include "url/origin.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 class IOBuffer;
@@ -51,8 +51,8 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
    public:
     DictionaryInfo(const GURL& url,
                    base::Time response_time,
-                   int64_t expiration,
-                   const std::string& path_pattern,
+                   base::TimeDelta expiration,
+                   const std::string& match,
                    scoped_refptr<net::IOBuffer> data,
                    size_t size,
                    const net::SHA256HashValue& hash);
@@ -67,8 +67,8 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
 
     const GURL& url() const { return url_; }
     const base::Time& response_time() const { return response_time_; }
-    int64_t expiration() const { return expiration_; }
-    const std::string& path_pattern() const { return path_pattern_; }
+    base::TimeDelta expiration() const { return expiration_; }
+    const std::string& match() const { return match_; }
     const scoped_refptr<net::IOBuffer>& data() const { return data_; }
     size_t size() const { return size_; }
     const net::SHA256HashValue& hash() const { return hash_; }
@@ -76,8 +76,8 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
    private:
     GURL url_;
     base::Time response_time_;
-    int64_t expiration_;
-    std::string path_pattern_;
+    base::TimeDelta expiration_;
+    std::string match_;
     scoped_refptr<net::IOBuffer> data_;
     size_t size_;
     net::SHA256HashValue hash_;
@@ -89,28 +89,28 @@ class SharedDictionaryStorageInMemory : public SharedDictionaryStorage {
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
       const GURL& url,
       base::Time response_time,
-      int64_t expiration,
-      const std::string& path_pattern) override;
+      base::TimeDelta expiration,
+      const std::string& match) override;
 
   // Called when SharedDictionaryWriterInMemory::Finish() is called.
   void OnDictionaryWritten(const GURL& url,
                            base::Time response_time,
-                           int64_t expiration,
-                           const std::string& path_pattern,
+                           base::TimeDelta expiration,
+                           const std::string& match,
                            SharedDictionaryWriterInMemory::Result result,
                            scoped_refptr<net::IOBuffer> data,
                            size_t size,
                            const net::SHA256HashValue& hash);
 
-  const std::map<url::Origin, std::map<std::string, DictionaryInfo>>&
+  const std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>&
   GetDictionaryMapForTesting() {
-    return origin_to_dictionary_info_map_;
+    return dictionary_info_map_;
   }
 
   base::ScopedClosureRunner on_deleted_closure_runner_;
 
-  std::map<url::Origin, std::map<std::string, DictionaryInfo>>
-      origin_to_dictionary_info_map_;
+  std::map<url::SchemeHostPort, std::map<std::string, DictionaryInfo>>
+      dictionary_info_map_;
   base::WeakPtrFactory<SharedDictionaryStorageInMemory> weak_factory_{this};
 };
 

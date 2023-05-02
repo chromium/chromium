@@ -50,8 +50,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
   virtual scoped_refptr<SharedDictionaryWriter> CreateWriter(
       const GURL& url,
       base::Time response_time,
-      int64_t expiration,
-      const std::string& path_pattern) = 0;
+      base::TimeDelta expiration,
+      const std::string& match) = 0;
 };
 
 }  // namespace network

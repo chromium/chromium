@@ -22,8 +22,8 @@ SharedDictionaryStorageInMemory::~SharedDictionaryStorageInMemory() = default;
 
 std::unique_ptr<SharedDictionary>
 SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
-  auto it = origin_to_dictionary_info_map_.find(url::Origin::Create(url));
-  if (it == origin_to_dictionary_info_map_.end()) {
+  auto it = dictionary_info_map_.find(url::SchemeHostPort(url));
+  if (it == dictionary_info_map_.end()) {
     return nullptr;
   }
   const DictionaryInfo* info = nullptr;
@@ -54,19 +54,18 @@ SharedDictionaryStorageInMemory::GetDictionary(const GURL& url) {
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryStorageInMemory::CreateWriter(const GURL& url,
                                               base::Time response_time,
-                                              int64_t expiration,
-                                              const std::string& path_pattern) {
-  return base::MakeRefCounted<SharedDictionaryWriterInMemory>(
-      base::BindOnce(&SharedDictionaryStorageInMemory::OnDictionaryWritten,
-                     weak_factory_.GetWeakPtr(), url, response_time, expiration,
-                     path_pattern));
+                                              base::TimeDelta expiration,
+                                              const std::string& match) {
+  return base::MakeRefCounted<SharedDictionaryWriterInMemory>(base::BindOnce(
+      &SharedDictionaryStorageInMemory::OnDictionaryWritten,
+      weak_factory_.GetWeakPtr(), url, response_time, expiration, match));
 }
 
 void SharedDictionaryStorageInMemory::OnDictionaryWritten(
     const GURL& url,
     base::Time response_time,
-    int64_t expiration,
-    const std::string& path_pattern,
+    base::TimeDelta expiration,
+    const std::string& match,
     SharedDictionaryWriterInMemory::Result result,
     scoped_refptr<net::IOBuffer> data,
     size_t size,
@@ -74,24 +73,23 @@ void SharedDictionaryStorageInMemory::OnDictionaryWritten(
   if (result != SharedDictionaryWriterInMemory::Result::kSuccess) {
     return;
   }
-  origin_to_dictionary_info_map_[url::Origin::Create(url)].insert(
-      std::make_pair(path_pattern,
-                     DictionaryInfo(url, response_time, expiration,
-                                    path_pattern, data, size, hash)));
+  dictionary_info_map_[url::SchemeHostPort(url)].insert(std::make_pair(
+      match,
+      DictionaryInfo(url, response_time, expiration, match, data, size, hash)));
 }
 
 SharedDictionaryStorageInMemory::DictionaryInfo::DictionaryInfo(
     const GURL& url,
     base::Time response_time,
-    int64_t expiration,
-    const std::string& path_pattern,
+    base::TimeDelta expiration,
+    const std::string& match,
     scoped_refptr<net::IOBuffer> data,
     size_t size,
     const net::SHA256HashValue& hash)
     : url_(url),
       response_time_(response_time),
       expiration_(expiration),
-      path_pattern_(path_pattern),
+      match_(match),
       data_(std::move(data)),
       size_(size),
       hash_(hash) {}

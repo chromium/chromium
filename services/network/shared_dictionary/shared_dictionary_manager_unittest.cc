@@ -44,7 +44,7 @@ class SharedDictionaryManagerTest : public ::testing::Test {
 
  protected:
   const std::map<
-      url::Origin,
+      url::SchemeHostPort,
       std::map<std::string, SharedDictionaryStorageInMemory::DictionaryInfo>>&
   GetInMemoryDictionaryMap(SharedDictionaryStorage* storage) {
     return static_cast<SharedDictionaryStorageInMemory*>(storage)
@@ -260,7 +260,7 @@ TEST_F(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   // Check the internal state of SharedDictionaryStorageInMemory.
   const auto& dictionary_map = GetInMemoryDictionaryMap(storage.get());
   EXPECT_EQ(1u, dictionary_map.size());
-  EXPECT_EQ(url::Origin::Create(GURL("https://origin1.test/")),
+  EXPECT_EQ(url::SchemeHostPort(GURL("https://origin1.test/")),
             dictionary_map.begin()->first);
 
   EXPECT_EQ(1u, dictionary_map.begin()->second.size());
@@ -270,7 +270,7 @@ TEST_F(SharedDictionaryManagerTest, WriteAndReadDictionary) {
   EXPECT_EQ(now_time, dictionary_info.response_time());
   EXPECT_EQ(shared_dictionary::kDefaultExpiration,
             dictionary_info.expiration());
-  EXPECT_EQ("/testfile*", dictionary_info.path_pattern());
+  EXPECT_EQ("/testfile*", dictionary_info.match());
   EXPECT_EQ(data1.size() + data2.size(), dictionary_info.size());
   EXPECT_EQ(data1 + data2, std::string(dictionary_info.data()->data(),
                                        dictionary_info.size()));
