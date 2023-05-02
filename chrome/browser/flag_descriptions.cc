@@ -4432,6 +4432,20 @@ const char kMediaRouterOtrInstanceDescription[] =
     "When enabled, a separate Media Router instance will be created for "
     "off-the-record (\"incognito\") profiles.";
 
+const char kCastMirroringTargetPlayoutDelayName[] =
+    "Changes the target playout delay for cast mirroring.";
+const char kCastMirroringTargetPlayoutDelayDescription[] =
+    "Choose a target playout delay for cast mirroring. A lower delay will "
+    "decrease latency, but may come at the cost of other quality standards "
+    "such as dropped frames or FPS.";
+const char kCastMirroringTargetPlayoutDelayDefault[] = "400ms (default)";
+const char kCastMirroringTargetPlayoutDelay100ms[] = "100ms.";
+const char kCastMirroringTargetPlayoutDelay150ms[] = "150ms.";
+const char kCastMirroringTargetPlayoutDelay200ms[] = "200ms.";
+const char kCastMirroringTargetPlayoutDelay250ms[] = "250ms.";
+const char kCastMirroringTargetPlayoutDelay300ms[] = "300ms.";
+const char kCastMirroringTargetPlayoutDelay350ms[] = "3500ms.";
+
 const char kCopyLinkToTextName[] = "Copy Link To Text";
 const char kCopyLinkToTextDescription[] =
     "Adds an item to the context menu to allow a user to copy a link to the "

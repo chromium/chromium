@@ -3536,6 +3536,23 @@ const FeatureEntry::FeatureVariation kVcSegmentationModelVariations[] = {
 };
 #endif  // BUILDFLAG(IS_CHROME_ASH)
 
+#if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
+    {flag_descriptions::kCastMirroringTargetPlayoutDelayDefault, "", ""},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay100ms,
+     switches::kCastMirroringTargetPlayoutDelay, "100"},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay150ms,
+     switches::kCastMirroringTargetPlayoutDelay, "150"},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay200ms,
+     switches::kCastMirroringTargetPlayoutDelay, "200"},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay250ms,
+     switches::kCastMirroringTargetPlayoutDelay, "250"},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay300ms,
+     switches::kCastMirroringTargetPlayoutDelay, "300"},
+    {flag_descriptions::kCastMirroringTargetPlayoutDelay350ms,
+     switches::kCastMirroringTargetPlayoutDelay, "350"}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -10137,6 +10154,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kCCTTextFragmentLookupApiEnabled)},
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+    {"cast-mirroring-target-playout-delay",
+     flag_descriptions::kCastMirroringTargetPlayoutDelayName,
+     flag_descriptions::kCastMirroringTargetPlayoutDelayDescription, kOsDesktop,
+     MULTI_VALUE_TYPE(kCastMirroringTargetPlayoutDelayChoices)},
+#endif  // !BUILDFLAG(IS_ANDROID)
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

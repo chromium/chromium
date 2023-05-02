@@ -2536,6 +2536,16 @@ extern const char kAllowAllSitesToInitiateMirroringDescription[];
 extern const char kMediaRouterOtrInstanceName[];
 extern const char kMediaRouterOtrInstanceDescription[];
 
+extern const char kCastMirroringTargetPlayoutDelayName[];
+extern const char kCastMirroringTargetPlayoutDelayDescription[];
+extern const char kCastMirroringTargetPlayoutDelayDefault[];
+extern const char kCastMirroringTargetPlayoutDelay100ms[];
+extern const char kCastMirroringTargetPlayoutDelay150ms[];
+extern const char kCastMirroringTargetPlayoutDelay200ms[];
+extern const char kCastMirroringTargetPlayoutDelay250ms[];
+extern const char kCastMirroringTargetPlayoutDelay300ms[];
+extern const char kCastMirroringTargetPlayoutDelay350ms[];
+
 extern const char kCopyLinkToTextName[];
 extern const char kCopyLinkToTextDescription[];
 
