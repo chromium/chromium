@@ -33,7 +33,7 @@ sys.path.append(
 # These fields are written by //tools/clang/scripts/upload_revision.py, and
 # should not be changed manually.
 RUST_REVISION = '17c11672167827b0dd92c88ef69f24346d1286dd'
-RUST_SUB_REVISION = 1
+RUST_SUB_REVISION = 2
 
 # Trunk on 2022-10-15.
 #
@@ -65,7 +65,7 @@ CRUBIT_SUB_REVISION = 1
 # TODO(lukasza): Include CRUBIT_REVISION and CRUBIT_SUB_REVISION once we
 # include Crubit binaries in the generated package.  See also a TODO comment
 # in BuildCrubit in package_rust.py.
-FALLBACK_REVISION = '17c11672167827b0dd92c88ef69f24346d1286dd-1-llvmorg-17-init-8029-g27f27d15-1'
+FALLBACK_REVISION = '17c11672167827b0dd92c88ef69f24346d1286dd-2-llvmorg-17-init-8029-g27f27d15-4'
 
 # Hash of src/stage0.json, which itself contains the stage0 toolchain hashes.
 # We trust the Rust build system checks, but to ensure it is not tampered with
@@ -170,11 +170,11 @@ def main():
     platform_prefix = GetPlatformUrlPrefix(GetDefaultHostOs())
 
     version = GetLatestRevision()
-    url = f'{platform_prefix}rust-toolchain-{version}.tgz'
+    url = f'{platform_prefix}rust-toolchain-{version}.tar.xz'
     if not CheckUrl(url):
         print("Latest Rust toolchain not found. Using fallback revision.")
         version = FALLBACK_REVISION
-        url = f'{platform_prefix}rust-toolchain-{version}.tgz'
+        url = f'{platform_prefix}rust-toolchain-{version}.tar.xz'
         if not CheckUrl(url):
             print('error: Could not find Rust toolchain package')
             return 1
