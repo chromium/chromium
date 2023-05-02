@@ -242,6 +242,11 @@ public class PasswordGenerationIntegrationTest {
     }
 
     private void focusField(String node) throws TimeoutException, InterruptedException {
+        DOMUtils.clickNode(mHelper.getWebContents(), node);
+        // TODO(crbug.com/1440955): Remove the code below. Manually calling focus and scroll is
+        // needed because this test uses a screen keyboard stub instead of the real screen keyboard.
+        // Integration tests in general should use the real keyboard to reflect the production
+        // behavior better.
         DOMUtils.focusNode(mHelper.getWebContents(), node);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mHelper.getWebContents().scrollFocusedEditableNodeIntoView(); });

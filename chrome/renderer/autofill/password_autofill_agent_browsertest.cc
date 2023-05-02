@@ -432,6 +432,8 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     std::string script =
         "document.getElementById('" + element_id + "').focus()";
     ExecuteJavaScriptForTests(script.c_str());
+    GetMainFrame()->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kTest);
     GetMainFrame()->Client()->FocusedElementChanged(GetElementByID(element_id));
     GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
   }
@@ -1849,8 +1851,6 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
   // Touch to fill will be shown multiple times until TouchToFillClosed()
   // gets called.
   FocusElement(kPasswordName);
-  EXPECT_TRUE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 
@@ -1869,10 +1869,9 @@ TEST_F(PasswordAutofillAgentTest, TouchToFillClosed) {
   UpdateUrlForHTML(kFormHTML);
   UpdateUsernameAndPasswordElements();
   SimulateOnFillPasswordForm(fill_data_);
+  FocusElement(kPasswordName);
 
   // After the reload touch to fill is shown again.
-  EXPECT_TRUE(
-      password_autofill_agent_->TryToShowTouchToFill(password_element_));
   EXPECT_TRUE(password_autofill_agent_->ShouldSuppressKeyboard());
   EXPECT_EQ(WebAutofillState::kPreviewed, password_element_.GetAutofillState());
 

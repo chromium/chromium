@@ -69,7 +69,7 @@ class PasswordGenerationAgent : public content::RenderFrameObserver,
   bool TextDidChangeInTextField(const blink::WebInputElement& element);
 
   // Returns true if the newly focused node caused the generation UI to show.
-  bool FocusedNodeHasChanged(const blink::WebNode& node);
+  bool HandleFocusChangeComplete(const blink::WebNode& node);
 
   // Event forwarded by AutofillAgent from WebAutofillClient, informing that
   // the text field editing has ended, which means that the field is not
