@@ -6,7 +6,7 @@ import 'chrome://webui-test/mojo_webui_test_support.js';
 import 'chrome://parent-access/parent_access_app.js';
 import 'chrome://parent-access/strings.m.js';
 
-import {Screens} from 'chrome://parent-access/parent_access_app.js';
+import {ParentAccessEvent, Screens} from 'chrome://parent-access/parent_access_app.js';
 import {GetOAuthTokenStatus} from 'chrome://parent-access/parent_access_ui.mojom-webui.js';
 import {setParentAccessUIHandlerForTest} from 'chrome://parent-access/parent_access_ui_handler.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
@@ -55,7 +55,8 @@ suite(parent_access_app_tests.suiteName, function() {
         // Verify online flow is showing and switch to the after screen.
         assertEquals(
             parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
-        parentAccessApp.dispatchEvent(new CustomEvent('show-after'));
+        parentAccessApp.dispatchEvent(
+            new CustomEvent(ParentAccessEvent.SHOW_AFTER));
         await flushTasks();
 
         // Verify after flow is showing.
@@ -103,7 +104,8 @@ suite(parent_access_app_tests.suiteName, function() {
         // Verify online flow is showing and switch to the after screen.
         assertEquals(
             parentAccessApp.currentScreen_, Screens.AUTHENTICATION_FLOW);
-        parentAccessApp.dispatchEvent(new CustomEvent('show-after'));
+        parentAccessApp.dispatchEvent(
+            new CustomEvent(ParentAccessEvent.SHOW_AFTER));
         await flushTasks();
 
         // Verify after flow is showing.

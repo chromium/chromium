@@ -6,6 +6,7 @@ import './extension_permission.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ParentAccessEvent} from '../parent_access_app.js';
 import {getParentAccessParams} from '../parent_access_ui_handler.js';
 import {decodeMojoString16, getBase64EncodedSrcForPng} from '../utils.js';
 
@@ -68,7 +69,7 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     if (params) {
       this.renderDetails_(params);
     } else {
-      this.dispatchEvent(new CustomEvent('show-error', {
+      this.dispatchEvent(new CustomEvent(ParentAccessEvent.SHOW_ERROR, {
         bubbles: true,
         composed: true,
       }));

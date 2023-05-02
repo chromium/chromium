@@ -7,6 +7,7 @@ import './extension_approvals_template.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ParentAccessEvent} from '../parent_access_app.js';
 import {getParentAccessParams} from '../parent_access_ui_handler.js';
 import {decodeMojoString16} from '../utils.js';
 
@@ -55,7 +56,7 @@ export class ExtensionApprovalsAfter extends ExtensionApprovalsAfterBase {
     if (params) {
       this.childDisplayName = decodeMojoString16(params.childDisplayName);
     } else {
-      this.dispatchEvent(new CustomEvent('show-error', {
+      this.dispatchEvent(new CustomEvent(ParentAccessEvent.SHOW_ERROR, {
         bubbles: true,
         composed: true,
       }));

@@ -6,6 +6,7 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {ParentAccessEvent} from './parent_access_app.js';
 import {ParentAccessController} from './parent_access_controller.js';
 import {GetOAuthTokenStatus, ParentAccessServerMessageType} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessUIHandler} from './parent_access_ui_handler.js';
@@ -188,7 +189,7 @@ class ParentAccessUi extends PolymerElement {
 
       switch (lastServerMessageType) {
         case ParentAccessServerMessageType.kParentVerified:
-          this.dispatchEvent(new CustomEvent('show-after', {
+          this.dispatchEvent(new CustomEvent(ParentAccessEvent.SHOW_AFTER, {
             bubbles: true,
             composed: true,
           }));
@@ -206,7 +207,7 @@ class ParentAccessUi extends PolymerElement {
   }
 
   showErrorPage_() {
-    this.dispatchEvent(new CustomEvent('show-error', {
+    this.dispatchEvent(new CustomEvent(ParentAccessEvent.SHOW_ERROR, {
       bubbles: true,
       composed: true,
     }));

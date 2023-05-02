@@ -29,6 +29,16 @@ export const Screens = {
   OFFLINE: 'supervised-user-offline',
 };
 
+/** @enum {string} */
+export const ParentAccessEvent = {
+  SHOW_AFTER: 'show-after',
+  SHOW_AUTHENTICATION_FLOW: 'show-authentication-flow',
+  SHOW_ERROR: 'show-error',
+  // Individual screens can listen for this event to be notified when the screen
+  // becomes active.
+  ON_SCREEN_SWITCHED: 'on-screen-switched',
+};
+
 class ParentAccessApp extends PolymerElement {
   static get is() {
     return 'parent-access-app';
@@ -61,17 +71,16 @@ class ParentAccessApp extends PolymerElement {
 
   /** @private */
   addEventListeners_() {
-    this.addEventListener('show-after', () => {
+    this.addEventListener(ParentAccessEvent.SHOW_AFTER, () => {
       this.switchScreen_(Screens.AFTER_FLOW);
-      this.shadowRoot.querySelector('parent-access-after').onShowAfterScreen();
     });
 
-    this.addEventListener('show-authentication-flow', () => {
+    this.addEventListener(ParentAccessEvent.SHOW_AUTHENTICATION_FLOW, () => {
       this.switchScreen_(Screens.AUTHENTICATION_FLOW);
       getParentAccessUIHandler().onBeforeScreenDone();
     });
 
-    this.addEventListener('show-error', () => {
+    this.addEventListener(ParentAccessEvent.SHOW_ERROR, () => {
       this.onError_();
     });
 
@@ -122,6 +131,8 @@ class ParentAccessApp extends PolymerElement {
     this.currentScreen_ = screen;
     /** @type {CrViewManagerElement} */ (this.$.viewManager)
         .switchView(this.currentScreen_);
+    this.shadowRoot.querySelector(screen).dispatchEvent(
+        new CustomEvent(ParentAccessEvent.ON_SCREEN_SWITCHED));
   }
 
   /**
