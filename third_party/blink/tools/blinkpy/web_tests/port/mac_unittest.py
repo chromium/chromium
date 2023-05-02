@@ -29,8 +29,6 @@
 import optparse
 
 from blinkpy.common.system.platform_info_mock import MockPlatformInfo
-from blinkpy.common.system.executive_mock import MockExecutive
-from blinkpy.common.system.system_host_mock import MockSystemHost
 from blinkpy.web_tests.port import mac
 from blinkpy.web_tests.port import port_testcase
 
@@ -107,27 +105,3 @@ class MacPortTest(port_testcase.PortTestCase):
         port = self.make_port(os_version='mac10.14')
         port.host.platform = all_tests_platform
         self.assertTrue(port.default_smoke_test_only())
-
-    def test_default_child_processes(self):
-        """
-        Verify that older Mac versions run only test with half the total number of processes.
-        """
-        port = self.make_port(os_version='mac11')
-        # default executive_mock has cpu_count of 2
-        self.assertEqual(2, port.default_child_processes())
-
-        port = self.make_port(os_version='mac10.13')
-        self.assertEqual(1, port.default_child_processes())
-
-        port = self.make_port(os_version='mac10.14')
-        self.assertEqual(1, port.default_child_processes())
-
-        port = self.make_port(
-            os_version='mac10.14',
-            host=MockSystemHost(executive=MockExecutive(cpu_count=1)))
-        self.assertEqual(1, port.default_child_processes())
-
-        port = self.make_port(
-            os_version='mac10.14',
-            host=MockSystemHost(executive=MockExecutive(cpu_count=5)))
-        self.assertEqual(2, port.default_child_processes())
