@@ -118,6 +118,7 @@ constexpr HistogramValue kHistogramValue[] = {
      95},
     {ContentSettingsType::ANTI_ABUSE, 96},
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, 97},
+    {ContentSettingsType::HTTPS_ENFORCED, 98},
 };
 
 void FilterRulesForType(ContentSettingsForOneType& settings,

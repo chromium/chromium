@@ -82,6 +82,12 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   bool IsHttpAllowedForHost(
       const std::string& host,
       content::StoragePartition* storage_partition) override;
+  void EnforceHttpsForHost(
+      const std::string& host,
+      content::StoragePartition* storage_partition) override;
+  bool IsHttpsEnforcedForHost(
+      const std::string& host,
+      content::StoragePartition* storage_partition) override;
 
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.

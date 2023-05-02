@@ -15,11 +15,17 @@
 
 class Profile;
 
+namespace content {
+class WebContents;
+}
+
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:
 // - Recording pref state in metrics and registering the client for a synthetic
 //   field trial based on that state.
 // - Changing the pref based on user's Advanced Protection status.
+// - Checking the Site Engagement scores of a site and enable/disable HFM based
+//   on that.
 class HttpsFirstModeService
     : public KeyedService,
       public safe_browsing::AdvancedProtectionStatusManager::
@@ -33,6 +39,11 @@ class HttpsFirstModeService
 
   // safe_browsing::AdvancedProtectionStatusManager::StatusChangedObserver:
   void OnAdvancedProtectionStatusChanged(bool enabled) override;
+
+  // Check the Site Engagement scores of the hostname of `url` and enable
+  // HFM on the hostname if the HTTPS score is high enough.
+  void MaybeEnableHttpsFirstModeForUrl(content::WebContents* web_contents,
+                                       const GURL& url);
 
  private:
   void OnHttpsFirstModePrefChanged();

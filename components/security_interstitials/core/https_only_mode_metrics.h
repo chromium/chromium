@@ -7,7 +7,12 @@
 
 namespace security_interstitials::https_only_mode {
 
+// The main histogram that records events about HTTPS-First Mode and HTTPS
+// Upgrades.
 extern const char kEventHistogram[];
+// Same as kEventHistogram, but only recorded if the event happened on a
+// navigation where HFM was enabled due to the site engagement heuristic.
+extern const char kEventHistogramWithEngagementHeuristic[];
 
 extern const char kNavigationRequestSecurityLevelHistogram[];
 
@@ -93,8 +98,21 @@ enum class NavigationRequestSecurityLevel {
   kMaxValue = kNonUniqueHostname,
 };
 
+// Stores the parameters to decide whether to show an interstitial for the
+// current site.
+struct HttpInterstitialState {
+  // Whether HTTPS-First Mode is enabled using the global UI toggle.
+  bool enabled_by_pref = false;
+
+  // Whether HTTPS-First Mode is enabled for the current site due to the
+  // site engagement heuristic.
+  bool enabled_by_engagement_heuristic = false;
+};
+
 // Helper to record an HTTPS-First Mode navigation event.
-void RecordHttpsFirstModeNavigation(Event event);
+void RecordHttpsFirstModeNavigation(
+    Event event,
+    const HttpInterstitialState& interstitial_state);
 
 // Helper to record a navigation request security level.
 void RecordNavigationRequestSecurityLevel(NavigationRequestSecurityLevel level);

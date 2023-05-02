@@ -164,6 +164,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::FEDERATED_IDENTITY_SHARING, nullptr},
     {ContentSettingsType::JAVASCRIPT_JIT, nullptr},
     {ContentSettingsType::HTTP_ALLOWED, nullptr},
+    {ContentSettingsType::HTTPS_ENFORCED, nullptr},
     {ContentSettingsType::FORMFILL_METADATA, nullptr},
     {ContentSettingsType::FEDERATED_IDENTITY_ACTIVE_SESSION, nullptr},
     {ContentSettingsType::AUTO_DARK_WEB_CONTENT, nullptr},

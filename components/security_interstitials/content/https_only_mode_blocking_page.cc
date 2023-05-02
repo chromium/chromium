@@ -20,14 +20,14 @@
 
 namespace security_interstitials {
 
-namespace {
-const char kLearnMoreLink[] = "https://support.google.com/chrome?p=first_mode";
-}  // namespace
-
 // static
 const SecurityInterstitialPage::TypeID
     HttpsOnlyModeBlockingPage::kTypeForTesting =
         &HttpsOnlyModeBlockingPage::kTypeForTesting;
+
+// static
+const char HttpsOnlyModeBlockingPage::kLearnMoreLink[] =
+    "https://support.google.com/chrome?p=first_mode";
 
 HttpsOnlyModeBlockingPage::HttpsOnlyModeBlockingPage(
     content::WebContents* web_contents,
