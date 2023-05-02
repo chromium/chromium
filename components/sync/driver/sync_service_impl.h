@@ -335,6 +335,10 @@ class SyncServiceImpl : public SyncService,
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
 
+  // Records (or may record) histograms related to trusted vault passphrase
+  // type.
+  void MaybeRecordTrustedVaultHistograms();
+
   // This profile's SyncClient, which abstracts away non-Sync dependencies and
   // the Sync API component factory.
   const std::unique_ptr<SyncClient> sync_client_;

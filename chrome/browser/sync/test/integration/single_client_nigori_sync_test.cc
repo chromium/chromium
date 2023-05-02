@@ -1274,7 +1274,18 @@ IN_PROC_BROWSER_TEST_F(
       GetFakeServer());
 
   base::HistogramTester histogram_tester;
+
+  // The manual sequence below, instead of invoking SetupSync() manually,
+  // reproduces a more realistic case of the first-time turn-sync-on experience,
+  // with a temporary stage where the user is signed in without sync-the-feature
+  // being enabled. Except on Ash where the two steps happen at once.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(SetupSync());
+
   ASSERT_TRUE(GetSyncService(0)
                   ->GetUserSettings()
                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
@@ -1300,7 +1311,7 @@ IN_PROC_BROWSER_TEST_F(
       "Sync.TrustedVaultErrorShownOnStartup.MigratedLastDay",
       /*count=*/0);
   histogram_tester.ExpectUniqueSample(
-      "Sync.TrustedVaultErrorShownOnFirstTimeSync",
+      "Sync.TrustedVaultErrorShownOnFirstTimeSync2",
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 }
