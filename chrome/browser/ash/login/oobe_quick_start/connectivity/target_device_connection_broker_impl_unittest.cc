@@ -329,29 +329,6 @@ class FakeConnection : public Connection {
   base::WeakPtrFactory<FakeConnection> weak_ptr_factory_{this};
 };
 
-class FakeTargetDeviceConnectionBrokerFactory
-    : public TargetDeviceConnectionBrokerFactory {
- public:
-  // TargetDeviceConnectionBrokerFactory:
-  std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
-      base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
-      bool is_resume_after_update = false) override {
-    auto connection_factory = std::make_unique<FakeConnection::Factory>();
-    connection_factory_ = connection_factory.get();
-    return std::make_unique<TargetDeviceConnectionBrokerImpl>(
-        nearby_connections_manager, std::move(connection_factory),
-        mojo::SharedRemote<mojom::QuickStartDecoder>(
-            fake_quick_start_decoder_->GetRemote()),
-        is_resume_after_update);
-  }
-
-  raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
-      nullptr;
-
-  std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
-      std::make_unique<FakeQuickStartDecoder>();
-};
-
 }  // namespace
 
 class TargetDeviceConnectionBrokerImplTest : public testing::Test {
@@ -379,8 +356,6 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         set_bluetooth_adapter_factory_wrapper_for_testing(
             &bluetooth_adapter_factory_wrapper_);
 
-    TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(
-        &connection_broker_factory_);
     CreateConnectionBroker();
     SetFakeFastPairAdvertiserFactory(/*should_succeed_on_start=*/true);
     fake_nearby_connections_manager_.SetAuthenticationToken(
@@ -388,9 +363,14 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   }
 
   void CreateConnectionBroker() {
-    connection_broker_ =
-        ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
-            fake_nearby_connections_manager_.GetWeakPtr());
+    auto connection_factory = std::make_unique<FakeConnection::Factory>();
+    connection_factory_ = connection_factory.get();
+    connection_broker_ = std::make_unique<TargetDeviceConnectionBrokerImpl>(
+        fake_nearby_connections_manager_.GetWeakPtr(),
+        std::move(connection_factory),
+        mojo::SharedRemote<mojom::QuickStartDecoder>(
+            fake_quick_start_decoder_->GetRemote()),
+        false);
   }
 
   void FinishFetchingBluetoothAdapter() {
@@ -469,9 +449,7 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
         ->DerivePin(kAuthenticationToken);
   }
 
-  FakeConnection* connection() {
-    return connection_broker_factory_.connection_factory_->instance_.get();
-  }
+  FakeConnection* connection() { return connection_factory_->instance_.get(); }
 
   PrefService* GetLocalState() { return local_state_.Get(); }
 
@@ -484,14 +462,17 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_bluetooth_adapter_;
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   FakeNearbyConnection fake_nearby_connection_;
-  FakeTargetDeviceConnectionBrokerFactory connection_broker_factory_;
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
   std::unique_ptr<FakeFastPairAdvertiserFactory> fast_pair_advertiser_factory_;
   DeferredBluetoothAdapterFactoryWrapper bluetooth_adapter_factory_wrapper_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
-  FakeConnection::Factory connection_factory_;
   ScopedTestingLocalState local_state_;
+  raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
+      nullptr;
+
+  std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
+      std::make_unique<FakeQuickStartDecoder>();
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImplTest> weak_ptr_factory_{
       this};
 };
@@ -892,6 +873,8 @@ TEST_F(TargetDeviceConnectionBrokerImplTest, ConstructWhenResumeAfterUpdate) {
   connection_broker_ =
       ash::quick_start::TargetDeviceConnectionBrokerFactory::Create(
           fake_nearby_connections_manager_.GetWeakPtr(),
+          mojo::SharedRemote<mojom::QuickStartDecoder>(
+              fake_quick_start_decoder_->GetRemote()),
           /*is_resume_after_update=*/true);
   EXPECT_EQ(expected_random_session_id, GetRandomSessionId().ToString());
   EXPECT_EQ(expected_shared_secret, GetSharedSecret());

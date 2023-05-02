@@ -41,6 +41,7 @@ FakeTargetDeviceConnectionBroker::Factory::~Factory() = default;
 std::unique_ptr<TargetDeviceConnectionBroker>
 FakeTargetDeviceConnectionBroker::Factory::CreateInstance(
     base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     bool is_resume_after_update) {
   auto connection_broker = std::make_unique<FakeTargetDeviceConnectionBroker>();
   connection_broker->set_feature_support_status(

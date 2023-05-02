@@ -47,6 +47,7 @@ class FakeTargetDeviceConnectionBroker : public TargetDeviceConnectionBroker {
     // TargetDeviceConnectionBrokerFactory:
     std::unique_ptr<TargetDeviceConnectionBroker> CreateInstance(
         base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
+        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         bool is_resume_after_update = false) override;
 
     std::vector<FakeTargetDeviceConnectionBroker*> instances_;
