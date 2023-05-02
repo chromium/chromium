@@ -126,6 +126,10 @@ public class SigninFirstRunMediator
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER, false);
     }
 
+    private Account getSelectedAccount() {
+        return AccountUtils.createAccountFromName(mSelectedAccountName);
+    }
+
     private void onNativeLoaded() {
         // This happens asynchronously, so this check is necessary to ensure we don't interact with
         // the delegate after the mediator is destroyed. See https://crbug.com/1294998.
@@ -269,7 +273,7 @@ public class SigninFirstRunMediator
         }
 
         if (BuildInfo.getInstance().isAutomotive) {
-            mDelegate.displayDeviceLockPage();
+            mDelegate.displayDeviceLockPage(getSelectedAccount());
             return;
         }
         proceedWithSignIn();
@@ -278,7 +282,7 @@ public class SigninFirstRunMediator
     /**
      * Accepts ToS and completes the account sign-in with the selected account.
      */
-    public void proceedWithSignIn() {
+    void proceedWithSignIn() {
         // This is needed to get metrics/crash reports from the sign-in flow itself.
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         if (mModel.get(SigninFirstRunProperties.IS_SELECTED_ACCOUNT_SUPERVISED)) {
@@ -304,8 +308,8 @@ public class SigninFirstRunMediator
         mModel.set(SigninFirstRunProperties.SHOW_SIGNIN_PROGRESS_SPINNER_WITH_TEXT, true);
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        signinManager.signin(AccountUtils.createAccountFromName(mSelectedAccountName),
-                SigninAccessPoint.START_PAGE, new SignInCallback() {
+        signinManager.signin(
+                getSelectedAccount(), SigninAccessPoint.START_PAGE, new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         if (mDestroyed) {
@@ -343,7 +347,7 @@ public class SigninFirstRunMediator
     /**
      * Dismisses the sign-in page and continues without a signed-in account.
      */
-    public void dismiss() {
+    void dismiss() {
         mDelegate.recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
         mDelegate.acceptTermsOfService(mAllowMetricsAndCrashUploading);
         SigninPreferencesManager.getInstance().temporarilySuppressNewTabPagePromos();

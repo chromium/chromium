@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.signin;
 
+import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
@@ -90,6 +91,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+        // Keep device lock page if it's currently displayed.
+        if (mDeviceLockCoordinator != null) {
+            return;
+        }
         // Inflate the view required for the current configuration and set it as the fragment view.
         mFragmentView.removeAllViews();
         mMainView = inflateFragmentView(
@@ -233,25 +238,30 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         return view;
     }
 
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void displayDeviceLockPage() {
+    public void displayDeviceLockPage(Account selectedAccount) {
         mDeviceLockCoordinator = new DeviceLockCoordinator(
-                true, this, getPageDelegate().getWindowAndroid(), requireContext());
+                true, this, getPageDelegate().getWindowAndroid(), getActivity(), selectedAccount);
     }
 
+    /** Implements {@link DeviceLockCoordinator.Delegate}. */
     @Override
     public void setView(View view) {
         mFragmentView.removeAllViews();
         mFragmentView.addView(view);
     }
 
+    /** Implements {@link DeviceLockCoordinator.Delegate}. */
     @Override
     public void onDeviceLockReady() {
         restoreMainView();
+        mDeviceLockCoordinator.destroy();
         mDeviceLockCoordinator = null;
         mSigninFirstRunCoordinator.continueSignIn();
     }
 
+    /** Implements {@link DeviceLockCoordinator.Delegate}. */
     @Override
     public void onDeviceLockRefused() {
         mSigninFirstRunCoordinator.cancelSignInAndDismiss();

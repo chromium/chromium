@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 public class AccountReauthenticationUtils {
     private static final long RECENT_TIME_WINDOW_IN_MILLIS = TimeUnit.MINUTES.toMillis(10);
 
+    public AccountReauthenticationUtils() {}
+
     @IntDef({RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION,
             RecentAuthenticationResult.NO_RECENT_AUTHENTICATION,
             RecentAuthenticationResult.RECENT_AUTHENTICATION_ERROR})
@@ -51,7 +53,7 @@ public class AccountReauthenticationUtils {
      *         the given account, there was no recent authentication, or if confirmation was
      *         interrupted by an exception.
      */
-    public static void confirmRecentAuthentication(AccountManagerFacade accountManagerFacade,
+    public void confirmRecentAuthentication(AccountManagerFacade accountManagerFacade,
             Account account, @RecentAuthenticationResult Callback<Integer> callback) {
         accountManagerFacade.confirmCredentials(account, null, (response) -> {
             if (response == null) {
@@ -83,10 +85,9 @@ public class AccountReauthenticationUtils {
      * @param callback The callback to indicate whether the device had a recent authentication for
      *         the given account or if the user successfully confirmed their credentials.
      */
-    public static void confirmCredentialsOrRecentAuthentication(
-            AccountManagerFacade accountManagerFacade, Account account, Activity activity,
-            @ConfirmationResult Callback<Integer> callback) {
-        AccountReauthenticationUtils.confirmRecentAuthentication(
+    public void confirmCredentialsOrRecentAuthentication(AccountManagerFacade accountManagerFacade,
+            Account account, Activity activity, @ConfirmationResult Callback<Integer> callback) {
+        confirmRecentAuthentication(
                 accountManagerFacade, account, (recentAuthenticationResult) -> {
                     if (RecentAuthenticationResult.HAS_RECENT_AUTHENTICATION
                             == recentAuthenticationResult) {

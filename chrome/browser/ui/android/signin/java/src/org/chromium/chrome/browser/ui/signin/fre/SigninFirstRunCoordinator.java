@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.signin.fre;
 
+import android.accounts.Account;
 import android.content.Context;
 
 import androidx.annotation.MainThread;
@@ -40,7 +41,7 @@ public class SigninFirstRunCoordinator {
         void advanceToNextPage();
 
         /** Called to display the device lock page  */
-        void displayDeviceLockPage();
+        void displayDeviceLockPage(Account selectedAccount);
 
         /**
          * Records the FRE progress histogram MobileFre.Progress.*.
@@ -139,10 +140,16 @@ public class SigninFirstRunCoordinator {
         mMediator.onAccountSelected(accountName);
     }
 
+    /**
+     * Continue the sign-in process with the currently selected account.
+     */
     public void continueSignIn() {
         mMediator.proceedWithSignIn();
     }
 
+    /**
+     * Abandon the sign-in process and dismiss the sign-in page.
+     */
     public void cancelSignInAndDismiss() {
         mMediator.dismiss();
     }

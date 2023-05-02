@@ -102,7 +102,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmRecentAuthentication(
+        new AccountReauthenticationUtils().confirmRecentAuthentication(
                 mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .HAS_RECENT_AUTHENTICATION,
@@ -115,7 +115,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmRecentAuthentication(
+        new AccountReauthenticationUtils().confirmRecentAuthentication(
                 mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .NO_RECENT_AUTHENTICATION,
@@ -128,7 +128,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmRecentAuthentication(
+        new AccountReauthenticationUtils().confirmRecentAuthentication(
                 mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .NO_RECENT_AUTHENTICATION,
@@ -141,7 +141,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmRecentAuthentication(
+        new AccountReauthenticationUtils().confirmRecentAuthentication(
                 mAccountManagerFacade, mAccount, mRecentAuthenticationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.RecentAuthenticationResult
                              .RECENT_AUTHENTICATION_ERROR,
@@ -156,7 +156,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
+        new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
                 mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.SUCCESS,
                 mRecentConfirmationResult.get());
@@ -169,7 +169,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
+        new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
                 mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.SUCCESS,
                 mRecentConfirmationResult.get());
@@ -183,7 +183,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
+        new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
                 mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.REJECTED,
                 mRecentConfirmationResult.get());
@@ -196,7 +196,7 @@ public class AccountReauthenticationUtilsTest {
                 .when(mAccountManagerFacade)
                 .confirmCredentials(any(Account.class), any(), any());
 
-        AccountReauthenticationUtils.confirmCredentialsOrRecentAuthentication(
+        new AccountReauthenticationUtils().confirmCredentialsOrRecentAuthentication(
                 mAccountManagerFacade, mAccount, null, mRecentConfirmationResult::set);
         assertEquals((Integer) AccountReauthenticationUtils.ConfirmationResult.ERROR,
                 mRecentConfirmationResult.get());
