@@ -384,8 +384,7 @@ class DeviceTrustAshBrowserTest : public DeviceTrustBrowserTestBase {
     ash::attestation::TpmChallengeKeyFactory::SetForTesting(
         std::move(mock_challenge_key));
 
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   }
 
   void SetUpOnMainThread() override {
