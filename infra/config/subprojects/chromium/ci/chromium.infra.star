@@ -328,8 +328,7 @@ ci.builder(
                 "pool": "chromium.tests",
                 "device_type": "walleye",
                 "device_os": "PQ3A.190801.002",
-                "max_uid_threshold": 18000,
-                "dry_run": True,
+                "max_uid_threshold": 19500,
             },
             # Used by ci/android-pie-arm64-rel
             # This is mirrored by the CQ builder android-arm64-rel
@@ -337,8 +336,7 @@ ci.builder(
                 "pool": "chromium.tests",
                 "device_type": "sailfish",
                 "device_os": "PQ3A.190801.002",
-                "max_uid_threshold": 18000,
-                "dry_run": True,
+                "max_uid_threshold": 19500,
             },
             # Used by GPU team
             {
