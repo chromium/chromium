@@ -705,7 +705,7 @@
     <!-- Version 33 additions -->
 
     <event name="insets" since="33">
-      <description summary="advertise the insets for the output">
+      <description summary="advertise the work area insets for the output">
         This event describes the insets for the output in logical screen
         coordinates, from which the work area can be calculated.
 
@@ -1207,7 +1207,7 @@
     </request>
   </interface>
 
-  <interface name="zaura_output_manager" version="2">
+  <interface name="zaura_output_manager" version="3">
     <description summary="aura shell interface to the output manager">
       A global responsible for ensuring clients have a complete view of a given
       output's state immediately following the bind of wl_output, and
@@ -1286,7 +1286,7 @@
     </event>
 
     <event name="insets" since="1">
-      <description summary="advertise the insets for the output">
+      <description summary="advertise the work area insets for the output">
         This event describes the insets for the output in logical screen
         coordinates, from which the work area can be calculated.
 
@@ -1374,6 +1374,22 @@
         a target when a new window is created without specific bounds.
       </description>
       <arg name="output" type="object" interface="wl_output" />
+    </event>
+
+    <!-- Version 3 additions -->
+    <event name="overscan_insets" since="3">
+      <description summary="advertise the overscan insets for the output">
+        This event describes the overscan insets for the output in physical
+        pixels.
+
+        The event is sent when binding to the output object and subsequently as
+        output state changes.
+      </description>
+      <arg name="output" type="object" interface="wl_output" />
+      <arg name="top" type="int" />
+      <arg name="left" type="int" />
+      <arg name="bottom" type="int" />
+      <arg name="right" type="int" />
     </event>
   </interface>
 </protocol>

@@ -100,6 +100,9 @@ struct OutputMetrics {
   // which the work area can be calculated.
   gfx::Insets logical_insets;
 
+  // Describes the overscan insets for the output in physical pixels.
+  gfx::Insets physical_overscan_insets;
+
   // A deprecated description of the device scale factor for the output. This is
   // calculated by taking `ManagedDisplayInfo::device_scale_factor_`,
   // multiplying it by 1000 and casting it to a unit32_t (truncating towards

@@ -310,6 +310,7 @@ source_set("unit_tests") {
     "wayland_display_util_unittest.cc",
     "wayland_keyboard_delegate_unittest.cc",
     "wayland_positioner_unittest.cc",
+    "zaura_output_manager_unittest.cc",
     "zaura_shell_unittest.cc",
     "zcr_remote_shell_impl_unittest.cc",
     "zcr_remote_shell_unittest.cc",
