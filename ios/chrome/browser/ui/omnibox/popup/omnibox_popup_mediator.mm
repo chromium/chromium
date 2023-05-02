@@ -135,14 +135,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   self.currentPedals = nil;
 
   self.hasResults = !self.autocompleteResult.empty();
-  if (base::FeatureList::IsEnabled(omnibox::kAdaptiveSuggestionsCount)) {
-    [self.consumer newResultsAvailable];
-  } else {
-    // Avoid calling consumer visible size and set all suggestions as visible to
-    // get only one grouping.
-    [self requestResultsWithVisibleSuggestionCount:self.autocompleteResult
-                                                       .size()];
-  }
+  [self.consumer newResultsAvailable];
 
   if (self.debugInfoConsumer) {
     DCHECK(experimental_flags::IsOmniboxDebuggingEnabled());
