@@ -244,6 +244,7 @@ public class SharedPreferencesManager {
      * @param defaultValue The default value to return if the preference is not set.
      * @return The value of the preference.
      */
+    @CalledByNative
     public int readInt(String key, int defaultValue) {
         mKeyChecker.checkIsKeyInUse(key);
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {

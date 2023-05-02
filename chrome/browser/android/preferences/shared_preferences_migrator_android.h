@@ -19,6 +19,10 @@ void ClearKey(const std::string& shared_preference_key);
 absl::optional<bool> GetAndClearBoolean(
     const std::string& shared_preference_key);
 
+// Attempts to get the value of a `SharedPreference` and then remove it.
+// Returns `absl::nullopt` if the key cannot be found.
+absl::optional<int> GetAndClearInt(const std::string& shared_preference_key);
+
 // Attempts to read a value of a `SharedPreference` returning
 // `default_value` if the value is empty.
 std::string GetString(const std::string& shared_preference_key,

@@ -917,6 +917,11 @@ public final class ChromePreferenceKeys {
      */
     public static final String UI_THEME_SETTING = "ui_theme_setting";
 
+    // Diagnostic counters for short sessions; see histogram
+    // UMA.PreNative.ChromeTabbedActivityCounter.
+    public static final String UMA_ON_PRECREATE_COUNTER = "Chrome.UMA.OnPreCreateCounter";
+    public static final String UMA_ON_RESUME_COUNTER = "Chrome.UMA.OnResumeCounter";
+
     public static final String VERIFIED_DIGITAL_ASSET_LINKS = "verified_digital_asset_links";
 
     public static final String VIDEO_TUTORIALS_SHARE_URL_SET = "Chrome.VideoTutorials.ShareUrls";
@@ -1112,6 +1117,8 @@ public final class ChromePreferenceKeys {
                 SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP,
                 TABBED_ACTIVITY_LAST_VISIBLE_TIME_MS,
                 TWA_DISCLOSURE_SEEN_PACKAGES,
+                UMA_ON_PRECREATE_COUNTER,
+                UMA_ON_RESUME_COUNTER,
                 USB_NOTIFICATION_IDS,
                 USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY,
                 VIDEO_TUTORIALS_SHARE_URL_SET,

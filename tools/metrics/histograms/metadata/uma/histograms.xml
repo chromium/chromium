@@ -90,6 +90,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.AndroidPreNative.ChromeTabbedActivityCounter"
+    enum="ChromeTabbedActivityCounter" expires_after="2024-04-24">
+  <owner>gabrielgs@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Counts of how many times onPreCreate and onStart were called when a
+    foreground session bigns in the native C++ code. The counters are reset when
+    this histogram is emitted. This histogram is a diagnostic tool for
+    understanding Clank short sessions, by capturing some information about the
+    cases where Java code starts up, but native C++ code is never reached.
+  </summary>
+</histogram>
+
 <histogram name="UMA.AntiVirusMetricsProvider.Result"
     enum="AntiVirusMetricsProviderResult" expires_after="never">
 <!-- expires-never: needed to proactively diagnose changes in the Windows API used here. -->
