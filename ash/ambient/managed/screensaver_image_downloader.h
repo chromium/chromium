@@ -30,8 +30,13 @@ enum class ScreensaverImageDownloadResult {
   kFileSystemWriteError,
 };
 
-// Provides a service to download external image files that will be displayed in
-// the managed screensaver feature.
+// Provides a cache service to download and store external image files that will
+// be displayed in the managed screensaver feature. This cache will operate in a
+// specific file directory, specified on instantiation.
+//
+// Each image will be downloaded and stored with a unique name based on its URL
+// address. This cache assumes that the remote contents of the URL will not
+// change, i.e. once downloaded, it will not attempt to refresh its content.
 class ASH_EXPORT ScreensaverImageDownloader {
  private:
   // Expresses the state of the downloading job queue. It only has two possible
@@ -51,18 +56,19 @@ class ASH_EXPORT ScreensaverImageDownloader {
                               absl::optional<base::FilePath> path)>;
 
   // Represents a single image download request from `image_url` to
-  // `download_directory_` with name `file_name`. Once this job has been
-  // completed, `result_callback` will be invoked with the actual result, and
-  // the path to the downloaded file if the operation suceeded.
+  // `download_directory_`. Once this job has been completed, `result_callback`
+  // will be invoked with the actual result, and the path to the downloaded file
+  // if the operation succeeded.
   struct Job {
     Job() = delete;
-    Job(const std::string& image_url,
-        const std::string& file_name,
-        ResultCallback result_callback);
+    Job(const std::string& image_url, ResultCallback result_callback);
     ~Job();
 
+    // Creates a unique name based on a hash operation on the image URL to
+    // be used for the file stored in disk.
+    std::string file_name() const;
+
     const std::string image_url;
-    std::string file_name;
     ResultCallback result_callback;
   };
 

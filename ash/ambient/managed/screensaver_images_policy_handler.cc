@@ -7,13 +7,11 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/shell.h"
-#include "base/base64url.h"
 #include "base/base_paths.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/hash/sha1.h"
 #include "base/path_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -24,18 +22,10 @@ namespace ash {
 namespace {
 
 constexpr char kCacheDirectoryName[] = "managed_screensaver";
-constexpr char kCacheFileExt[] = ".cache";
 
 // This limit is specified in the policy definition for the policies
 // ScreensaverLockScreenImages and DeviceScreensaverLoginScreenImages.
 constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
-
-std::string GetHashedNameForUrl(const std::string& url) {
-  std::string hashed_url;
-  base::Base64UrlEncode(base::SHA1HashString(url),
-                        base::Base64UrlEncodePolicy::OMIT_PADDING, &hashed_url);
-  return hashed_url + kCacheFileExt;
-}
 
 base::FilePath GetDownloaderRootPath() {
   base::FilePath home_dir;
@@ -78,7 +68,7 @@ void ScreensaverImagesPolicyHandler::
       continue;
     }
     auto job = std::make_unique<ScreensaverImageDownloader::Job>(
-        url.GetString(), GetHashedNameForUrl(url.GetString()),
+        url.GetString(),
         base::BindOnce(&ScreensaverImagesPolicyHandler::OnDownloadJobCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
 

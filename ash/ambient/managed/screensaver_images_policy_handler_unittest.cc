@@ -15,12 +15,12 @@
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
-#include "base/base64url.h"
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_path_override.h"
 #include "components/prefs/testing_pref_service.h"
@@ -110,15 +110,11 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
-    std::string file_name;
-    base::Base64UrlEncode(base::SHA1HashString(url),
-                          base::Base64UrlEncodePolicy::OMIT_PADDING,
-                          &file_name);
-    file_name += kCacheFileExt;
-
+    const std::string hash = base::SHA1HashString(url);
+    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
     return temp_dir_.GetPath()
         .AppendASCII(kCacheDirectoryName)
-        .AppendASCII(file_name);
+        .AppendASCII(encoded_hash + kCacheFileExt);
   }
 
   TestingPrefServiceSimple* user_prefs() {

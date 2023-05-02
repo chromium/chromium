@@ -5,6 +5,8 @@
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 
 #include "base/files/file_util.h"
+#include "base/hash/sha1.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -57,6 +59,7 @@ constexpr net::NetworkTrafficAnnotationTag
             }
           }
         })");
+constexpr char kCacheFileExt[] = ".cache";
 
 constexpr int64_t kMaxFileSizeInBytes = 8 * 1024 * 1024;  // 8 MB
 constexpr int kMaxUrlFetchRetries = 3;
@@ -103,13 +106,16 @@ bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
 }  // namespace
 
 ScreensaverImageDownloader::Job::Job(const std::string& image_url,
-                                     const std::string& file_name,
                                      ResultCallback result_callback)
-    : image_url(image_url),
-      file_name(file_name),
-      result_callback(std::move(result_callback)) {}
+    : image_url(image_url), result_callback(std::move(result_callback)) {}
 
 ScreensaverImageDownloader::Job::~Job() = default;
+
+std::string ScreensaverImageDownloader::Job::file_name() const {
+  const std::string hash = base::SHA1HashString(image_url);
+  const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+  return encoded_hash + kCacheFileExt;
+}
 
 ScreensaverImageDownloader::ScreensaverImageDownloader(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
@@ -159,7 +165,7 @@ void ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted(
   // The download folder exists, check if the file is already in cache before
   // attempting to download it.
   const base::FilePath file_path =
-      download_directory_.AppendASCII(download_job->file_name);
+      download_directory_.AppendASCII(download_job->file_name());
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&base::PathExists, file_path),
       base::BindOnce(&ScreensaverImageDownloader::OnCheckIsFileIsInCache,
@@ -197,7 +203,7 @@ void ScreensaverImageDownloader::OnUrlDownloadedToTempFile(
     std::unique_ptr<Job> download_job,
     base::FilePath temp_path) {
   const base::FilePath desired_path =
-      download_directory_.AppendASCII(download_job->file_name);
+      download_directory_.AppendASCII(download_job->file_name());
   if (simple_loader->NetError() != net::OK || temp_path.empty()) {
     LOG(ERROR) << "Downloading to file failed with error code: "
                << GetResponseCode(simple_loader.get()) << " with network error "

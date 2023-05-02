@@ -9,8 +9,10 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -25,10 +27,9 @@ namespace {
 constexpr char kImageUrl1[] = "http://example.com/image1.jpg";
 constexpr char kImageUrl2[] = "http://example.com/image2.jpg";
 constexpr char kImageUrl3[] = "http://example.com/image3.jpg";
-constexpr char kImageFileName1[] = "file1";
-constexpr char kImageFileName2[] = "file2";
-constexpr char kImageFileName3[] = "file3";
 constexpr char kFileContents[] = "file contents";
+constexpr char kCacheFileExt[] = ".cache";
+
 }  // namespace
 
 using DownloadResultFuture =
@@ -71,15 +72,20 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   }
 
   std::unique_ptr<DownloadResultFuture> QueueNewJobWithFuture(
-      const std::string& url,
-      const std::string& file_name) {
+      const std::string& url) {
     std::unique_ptr<DownloadResultFuture> future_callback =
         std::make_unique<DownloadResultFuture>();
     auto job = std::make_unique<ScreensaverImageDownloader::Job>(
-        url, file_name, future_callback->GetCallback());
+        url, future_callback->GetCallback());
     screensaver_image_downloader_->QueueDownloadJob(std::move(job));
 
     return future_callback;
+  }
+
+  base::FilePath GetExpectedFilePath(const std::string url) {
+    const std::string hash = base::SHA1HashString(url);
+    const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
+    return temp_dir_.GetPath().AppendASCII(encoded_hash + kCacheFileExt);
   }
 
  private:
@@ -98,11 +104,11 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
     url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
 
     std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl1, kImageFileName1);
+        QueueNewJobWithFuture(kImageUrl1);
     EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
               result_future->Get<0>());
     ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName1), result_future->Get<1>());
+    EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future->Get<1>());
   }
 
   // Test download with a fake network error.
@@ -116,7 +122,7 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
         network::URLLoaderCompletionStatus(net::OK));
 
     std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl2, kImageFileName2);
+        QueueNewJobWithFuture(kImageUrl2);
     EXPECT_EQ(ScreensaverImageDownloadResult::kNetworkError,
               result_future->Get<0>());
     EXPECT_FALSE(result_future->Get<1>().has_value());
@@ -126,9 +132,9 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
   // URL request is solved.
   {
     std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl3, kImageFileName3);
+        QueueNewJobWithFuture(kImageUrl3);
 
-    // Wait until the request have been made to delete the tmp folder
+    // Wait until the request has been made to delete the tmp folder
     url_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
           ASSERT_TRUE(request.url.is_valid());
@@ -155,11 +161,11 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
   // Test initial download.
   {
     std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl1, kImageFileName1);
+        QueueNewJobWithFuture(kImageUrl1);
     EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
               result_future->Get<0>());
     ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName1), result_future->Get<1>());
+    EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future->Get<1>());
     EXPECT_EQ(1u, urls_requested);
   }
 
@@ -167,11 +173,11 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
   // request.
   {
     std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl1, kImageFileName1);
+        QueueNewJobWithFuture(kImageUrl1);
     EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
               result_future->Get<0>());
     ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName1), result_future->Get<1>());
+    EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future->Get<1>());
     EXPECT_EQ(1u, urls_requested);
   }
 
@@ -184,11 +190,11 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
   // A different URL should create a new network request.
   {
     std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl2, kImageFileName2);
+        QueueNewJobWithFuture(kImageUrl2);
     EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
               result_future->Get<0>());
     ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName2), result_future->Get<1>());
+    EXPECT_EQ(GetExpectedFilePath(kImageUrl2), result_future->Get<1>());
     EXPECT_EQ(2u, urls_requested);
   }
 }
@@ -196,9 +202,9 @@ TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
 TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   // Push two jobs and check the internal downloading queue
   std::unique_ptr<DownloadResultFuture> result_future1 =
-      QueueNewJobWithFuture(kImageUrl1, kImageFileName1);
+      QueueNewJobWithFuture(kImageUrl1);
   std::unique_ptr<DownloadResultFuture> result_future2 =
-      QueueNewJobWithFuture(kImageUrl2, kImageFileName2);
+      QueueNewJobWithFuture(kImageUrl2);
 
   // First job should be executing and expecting the URL response, verify that
   // the second job is in the queue
@@ -209,7 +215,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
   EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result_future1->Get<0>());
   ASSERT_TRUE(result_future1->Get<1>().has_value());
-  EXPECT_EQ(temp_dir().AppendASCII(kImageFileName1), result_future1->Get<1>());
+  EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future1->Get<1>());
 
   // First job has been resolved, second job should be executing and expecting
   // the URL response.
@@ -218,7 +224,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // Queue a third job while the second job is still waiting
   std::unique_ptr<DownloadResultFuture> result_future3 =
-      QueueNewJobWithFuture(kImageUrl3, kImageFileName3);
+      QueueNewJobWithFuture(kImageUrl3);
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(1u);
@@ -227,7 +233,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
   EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result_future2->Get<0>());
   ASSERT_TRUE(result_future2->Get<1>().has_value());
-  EXPECT_EQ(temp_dir().AppendASCII(kImageFileName2), result_future2->Get<1>());
+  EXPECT_EQ(GetExpectedFilePath(kImageUrl2), result_future2->Get<1>());
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
@@ -236,7 +242,7 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
   EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result_future3->Get<0>());
   ASSERT_TRUE(result_future3->Get<1>().has_value());
-  EXPECT_EQ(temp_dir().AppendASCII(kImageFileName3), result_future3->Get<1>());
+  EXPECT_EQ(GetExpectedFilePath(kImageUrl3), result_future3->Get<1>());
 
   // Ensure that the queue remains empty
   base::RunLoop().RunUntilIdle();
