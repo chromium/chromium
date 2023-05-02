@@ -78,13 +78,10 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
   }
 
   device::mojom::SmartCardCreateContextResultPtr CreateContext() {
-    SmartCardProviderPrivateAPI& scard_provider_api =
-        SmartCardProviderPrivateAPI::Get(*profile());
-
     base::test::TestFuture<device::mojom::SmartCardCreateContextResultPtr>
         result_future;
 
-    scard_provider_api.CreateContext(result_future.GetCallback());
+    ProviderAPI().CreateContext(result_future.GetCallback());
 
     return result_future.Take();
   }
@@ -148,6 +145,10 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
     return connection;
   }
 
+  SmartCardProviderPrivateAPI& ProviderAPI() {
+    return SmartCardProviderPrivateAPI::Get(*profile());
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kAllowlistedExtensionID,
@@ -207,10 +208,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        EstablishContextResponseTimeout) {
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-
-  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
   constexpr char kBackgroundJs[] =
       R"(
@@ -424,9 +422,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ListReadersNoProvider) {
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        ListReadersResponseTimeout) {
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
   std::string background_js(kEstablishContextJs);
   background_js.append(
@@ -530,9 +526,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        GetStatusChangeResponseTimeout) {
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
   std::string background_js(kEstablishContextJs);
   background_js.append(
@@ -625,9 +619,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, ConnectNoProvider) {
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
                        ConnectResponseTimeout) {
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
   std::string background_js(kEstablishContextJs);
   background_js.append(
@@ -721,9 +713,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectNoProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, DisconnectTimeout) {
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
   std::string background_js(kEstablishContextJs);
   background_js.append(kConnectJs);
@@ -848,9 +838,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CancelNoProvider) {
 }
 
 IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, CancelResponseTimeout) {
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-  scard_provider_api.SetResponseTimeLimitForTesting(base::Seconds(1));
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
 
   std::string background_js(kEstablishContextJs);
   background_js.append(
@@ -1050,9 +1038,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
 
   DisconnectObserver disconnect_observer;
 
-  SmartCardProviderPrivateAPI& scard_provider_api =
-      SmartCardProviderPrivateAPI::Get(*profile());
-  scard_provider_api.SetDisconnectObserverForTesting(
+  ProviderAPI().SetDisconnectObserverForTesting(
       disconnect_observer.GetClosure());
 
   EventObserver event_observer;
@@ -1116,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   // mojom::SmartCardContext was reset before that request finished.
   EXPECT_FALSE(list_readers_future.IsReady());
 
-  scard_provider_api.SetDisconnectObserverForTesting(base::RepeatingClosure());
+  ProviderAPI().SetDisconnectObserverForTesting(base::RepeatingClosure());
   event_router->RemoveObserverForTesting(&event_observer);
 }
 
