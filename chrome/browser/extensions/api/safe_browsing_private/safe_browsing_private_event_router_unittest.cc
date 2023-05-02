@@ -133,7 +133,7 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void SetUp() override {
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("fake-token"));
+        policy::DMToken::CreateValidToken("fake-token"));
   }
 
   void TriggerOnPolicySpecifiedPasswordReuseDetectedEvent(bool warning_shown) {
