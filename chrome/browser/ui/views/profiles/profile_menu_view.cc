@@ -549,7 +549,9 @@ void ProfileMenuView::BuildGuestIdentity() {
 
 void ProfileMenuView::BuildAutofillButtons() {
   AddShortcutFeatureButton(
-      kKeyIcon, l10n_util::GetStringUTF16(IDS_PROFILES_PASSWORDS_LINK),
+      kKeyIcon,
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SAVING_ON_DEVICE),
       base::BindRepeating(&ProfileMenuView::OnPasswordsButtonClicked,
                           base::Unretained(this)));
 
