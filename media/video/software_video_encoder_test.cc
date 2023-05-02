@@ -28,6 +28,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+#include "media/filters/h264_to_annex_b_bitstream_converter.h"
+#include "media/formats/mp4/box_definitions.h"
+#include "media/video/h264_parser.h"
+#endif
+
 #if BUILDFLAG(ENABLE_OPENH264)
 #include "media/video/openh264_video_encoder.h"
 #endif
@@ -795,6 +801,21 @@ TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
 }
 #endif  // ENABLE_FFMPEG_VIDEO_DECODERS
 
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+VideoCodecProfile ProfileIDToVideoCodecProfile(int profile) {
+  switch (profile) {
+    case H264SPS::kProfileIDCBaseline:
+      return H264PROFILE_BASELINE;
+    case H264SPS::kProfileIDCMain:
+      return H264PROFILE_MAIN;
+    case H264SPS::kProfileIDCHigh:
+      return H264PROFILE_HIGH;
+    default:
+      return VIDEO_CODEC_PROFILE_UNKNOWN;
+  }
+}
+#endif
+
 TEST_P(H264VideoEncoderTest, AvcExtraData) {
   int outputs_count = 0;
   VideoEncoder::Options options;
@@ -805,10 +826,21 @@ TEST_P(H264VideoEncoderTest, AvcExtraData) {
       [&](VideoEncoderOutput output,
           absl::optional<VideoEncoder::CodecDescription> desc) {
         switch (outputs_count) {
-          case 0:
+          case 0: {
             // First frame should have extra_data
             EXPECT_TRUE(desc.has_value());
+
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+            H264ToAnnexBBitstreamConverter converter;
+            mp4::AVCDecoderConfigurationRecord avc_config;
+            bool parse_ok = converter.ParseConfiguration(
+                desc->data(), desc->size(), &avc_config);
+            EXPECT_TRUE(parse_ok);
+            EXPECT_EQ(profile_, ProfileIDToVideoCodecProfile(
+                                    avc_config.profile_indication));
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
             break;
+          }
           case 1:
             // Regular non-key frame shouldn't have extra_data
             EXPECT_FALSE(desc.has_value());
@@ -982,7 +1014,10 @@ std::string PrintTestParams(
 #if BUILDFLAG(ENABLE_OPENH264)
 SwVideoTestParams kH264Params[] = {
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
-    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_XRGB}};
+    {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_XRGB},
+    {VideoCodec::kH264, H264PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {VideoCodec::kH264, H264PROFILE_HIGH, PIXEL_FORMAT_I420},
+};
 
 INSTANTIATE_TEST_SUITE_P(H264Specific,
                          H264VideoEncoderTest,
@@ -1001,6 +1036,10 @@ SwVideoTestParams kH264SVCParams[] = {
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T2},
     {VideoCodec::kH264, H264PROFILE_BASELINE, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T3},
+    {VideoCodec::kH264, H264PROFILE_MAIN, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T3},
+    {VideoCodec::kH264, H264PROFILE_HIGH, PIXEL_FORMAT_I420,
      SVCScalabilityMode::kL1T3}};
 
 INSTANTIATE_TEST_SUITE_P(H264TemporalSvc,

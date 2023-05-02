@@ -516,9 +516,8 @@ bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format,
 }
 
 bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
-  // The AV1 and VPx software encoders are fully featured while OpenH264 only
-  // supports H264PROFILE_BASELINE. Allow OS software encoding when we don't
-  // have an equivalent software encoder.
+  // Allow OS software encoding when we don't have an equivalent
+  // software encoder.
   //
   // Note: Since we don't enumerate OS software encoders this may still fail and
   // trigger fallback to our bundled software encoder (if any).
@@ -530,13 +529,11 @@ bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
   // selection of a software encoder there.
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   const auto codec = media::VideoCodecProfileToVideoCodec(profile);
-  return codec == media::VideoCodec::kHEVC ||
-#if BUILDFLAG(ENABLE_OPENH264)
-         (codec == media::VideoCodec::kH264 &&
-          profile != media::H264PROFILE_BASELINE);
-#else
-         codec == media::VideoCodec::kH264;
-#endif  // BUILDFLAG(ENABLE_OPENH264)
+  return codec == media::VideoCodec::kHEVC
+#if !BUILDFLAG(ENABLE_OPENH264)
+         || codec == media::VideoCodec::kH264
+#endif  // !BUILDFLAG(ENABLE_OPENH264)
+      ;
 #else
   return false;
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
