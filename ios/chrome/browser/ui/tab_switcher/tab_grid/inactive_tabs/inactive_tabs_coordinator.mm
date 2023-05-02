@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_user_education_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs/inactive_tabs_view_controller.h"
@@ -99,7 +98,6 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 
 @interface InactiveTabsCoordinator () <
     GridViewControllerDelegate,
-    InactiveTabsCommands,
     InactiveTabsUserEducationCoordinatorDelegate,
     InactiveTabsViewControllerDelegate,
     SettingsNavigationControllerDelegate>
@@ -184,7 +182,6 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 
   self.mediator = [[InactiveTabsMediator alloc]
              initWithConsumer:self.viewController.gridViewController
-               commandHandler:self
                  webStateList:self.browser->GetWebStateList()
                   prefService:GetApplicationContext()->GetLocalState()
       sessionRestorationAgent:sessionRestorationBrowserAgent
@@ -423,12 +420,6 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
     (GridViewController*)gridViewController {
   [self presentSettings];
-}
-
-#pragma mark - InactiveTabsCommands
-
-- (void)inactiveTabsExplicitlyDisabledByUser {
-  [_delegate inactiveTabsCoordinatorDidFinish:self];
 }
 
 #pragma mark - InactiveTabsUserEducationCoordinatorDelegate

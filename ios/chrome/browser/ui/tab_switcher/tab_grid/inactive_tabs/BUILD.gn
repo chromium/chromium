@@ -7,7 +7,6 @@ import("//build/config/ios/swift_source_set.gni")
 source_set("inactive_tabs") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "inactive_tabs_commands.h",
     "inactive_tabs_coordinator.h",
     "inactive_tabs_coordinator.mm",
     "inactive_tabs_mediator.h",

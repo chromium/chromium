@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 
-@protocol InactiveTabsCommands;
 @protocol InactiveTabsInfoConsumer;
 class PrefService;
 class SnapshotBrowserAgent;
@@ -35,7 +34,6 @@ class TabRestoreService;
 - (instancetype)initWithConsumer:
                     (id<TabCollectionConsumer, InactiveTabsInfoConsumer>)
                         consumer
-                  commandHandler:(id<InactiveTabsCommands>)commandHandler
                     webStateList:(WebStateList*)webStateList
                      prefService:(PrefService*)prefService
          sessionRestorationAgent:
