@@ -347,6 +347,24 @@ bool CrOSComponentInstaller::Unload(const std::string& name) {
          component_updater_->UnregisterComponent(id);
 }
 
+void CrOSComponentInstaller::GetVersion(
+    const std::string& name,
+    base::OnceCallback<void(const base::Version&)> version_callback) const {
+  if (!IsCompatible(name)) {
+    // `name` does not match to any component.
+    std::move(version_callback).Run(base::Version());
+    return;
+  }
+
+  // Path compatible to `name` must exist.
+  CHECK(!GetCompatiblePath(name).empty());
+
+  ash::ImageLoaderClient::Get()->RequestComponentVersion(
+      name,
+      base::BindOnce(&CrOSComponentInstaller::FinishGetVersion,
+                     weak_factory_.GetWeakPtr(), std::move(version_callback)));
+}
+
 void CrOSComponentInstaller::RegisterInstalled() {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(GetInstalled),
@@ -539,6 +557,12 @@ void CrOSComponentInstaller::FinishLoad(LoadCallback load_callback,
     }
     it->second.callbacks.clear();
   }
+}
+
+void CrOSComponentInstaller::FinishGetVersion(
+    base::OnceCallback<void(const base::Version&)> version_callback,
+    absl::optional<std::string> result) const {
+  std::move(version_callback).Run(base::Version(result.value_or("")));
 }
 
 void CrOSComponentInstaller::RegisterN(

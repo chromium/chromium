@@ -14,7 +14,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/synchronization/lock.h"
+#include "base/version.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace component_updater {
 
@@ -28,6 +30,12 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
     ComponentInfo(Error load_response,
                   const base::FilePath& install_path,
                   const base::FilePath& mount_path);
+    ComponentInfo(Error load_response,
+                  const base::FilePath& install_path,
+                  const base::FilePath& mount_path,
+                  const base::Version& version);
+    ComponentInfo(const ComponentInfo& other);
+    ComponentInfo& operator=(const ComponentInfo& other);
     ~ComponentInfo();
 
     // The status load requests for the component should produce.
@@ -40,6 +48,9 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
     // The path where the fake component manager thinks the component is
     // mounted.
     base::FilePath mount_path;
+
+    // The version of the component. Must be set to use GetVersion().
+    absl::optional<base::Version> version;
   };
 
   FakeCrOSComponentManager();
@@ -83,6 +94,9 @@ class FakeCrOSComponentManager : public CrOSComponentManager {
             UpdatePolicy update_policy,
             LoadCallback load_callback) override;
   bool Unload(const std::string& name) override;
+  void GetVersion(const std::string& name,
+                  base::OnceCallback<void(const base::Version&)>
+                      version_callback) const override;
   void RegisterCompatiblePath(const std::string& name,
                               const base::FilePath& path) override;
   void UnregisterCompatiblePath(const std::string& name) override;

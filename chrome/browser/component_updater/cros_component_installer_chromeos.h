@@ -173,6 +173,9 @@ class CrOSComponentInstaller : public CrOSComponentManager {
             UpdatePolicy update_policy,
             LoadCallback load_callback) override;
   bool Unload(const std::string& name) override;
+  void GetVersion(const std::string& name,
+                  base::OnceCallback<void(const base::Version&)>
+                      version_callback) const override;
   void RegisterCompatiblePath(const std::string& name,
                               const base::FilePath& path) override;
   void RegisterInstalled() override;
@@ -260,6 +263,12 @@ class CrOSComponentInstaller : public CrOSComponentManager {
   void FinishLoad(LoadCallback load_callback,
                   const std::string& name,
                   absl::optional<base::FilePath> result);
+
+  // Calls `version_callback` and pass in the parameter `result` (component
+  // version).
+  void FinishGetVersion(
+      base::OnceCallback<void(const base::Version&)> version_callback,
+      absl::optional<std::string> result) const;
 
   // Registers component |configs| to be updated.
   void RegisterN(const std::vector<ComponentConfig>& configs);
