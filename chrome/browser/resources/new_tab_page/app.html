@@ -67,6 +67,14 @@
     --ntp-protected-icon-background-color-hovered: rgba(0, 0, 0, .7);
   }
 
+  #oneGoogleBarScrim {
+    background: linear-gradient(rgba(0, 0, 0, 0.25), transparent);
+    height: 64px;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+
   #oneGoogleBar {
     height: 100%;
     position: absolute;
@@ -342,6 +350,7 @@
         --ntp-logo-color: [[rgbaOrInherit_(logoColor_)]];">
   <template is="dom-if" if="[[lazyRender_]]">
     <template is="dom-if" if="[[oneGoogleBarEnabled_]]">
+      <div id="oneGoogleBarScrim" hidden$="[[!showOneGoogleBarScrim_]]"></div>
       <ntp-iframe id="oneGoogleBar" src="[[oneGoogleBarIframePath_]]"
           hidden$="[[!oneGoogleBarLoaded_]]"
           allow="camera [[oneGoogleBarIframeOrigin_]]; display-capture [[oneGoogleBarIframeOrigin_]]"> <!-- presubmit: ignore-long-line -->

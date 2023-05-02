@@ -192,11 +192,15 @@ suite('NewTabPageAppTest', () => {
         // Dark mode themes with background images and removeScrim set should
         // apply background protection to the ogb.
         assertEquals(1, windowProxy.getCallCount('postMessage'));
-        const [_, {type, applyLightTheme, applyBackgroundProtection}] =
+        const [_, {type, applyLightTheme}] =
             windowProxy.getArgs('postMessage')[0];
         assertEquals('updateAppearance', type);
         assertEquals(true, applyLightTheme);
-        assertEquals(removeScrim, applyBackgroundProtection);
+        if (removeScrim) {
+          assertNotStyle($$(app, '#oneGoogleBarScrim')!, 'display', 'none');
+        } else {
+          assertStyle($$(app, '#oneGoogleBarScrim')!, 'display', 'none');
+        }
       });
     });
   });

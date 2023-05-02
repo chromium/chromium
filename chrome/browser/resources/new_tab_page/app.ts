@@ -307,6 +307,12 @@ export class AppElement extends AppElementBase {
         reflectToAttribute: true,
       },
 
+      showOneGoogleBarScrim_: {
+        type: Boolean,
+        computed:
+            'computeShowOneGoogleBarScrim_(removeScrim_, showBackgroundImage_)',
+      },
+
       showLensUploadDialog_: Boolean,
 
       /**
@@ -319,7 +325,7 @@ export class AppElement extends AppElementBase {
 
   static get observers() {
     return [
-      'udpateOneGoogleBarAppearance_(oneGoogleBarLoaded_, removeScrim_, showBackgroundImage_, theme_)',
+      'udpateOneGoogleBarAppearance_(oneGoogleBarLoaded_, theme_)',
     ];
   }
 
@@ -487,10 +493,6 @@ export class AppElement extends AppElementBase {
         type: 'updateAppearance',
         // We should be using a light OGB for dark themes and vice versa.
         applyLightTheme: isNtpDarkTheme,
-        // Only apply background protection if using a custom background in
-        // combination with a light OGB theme.
-        applyBackgroundProtection:
-            this.removeScrim_ && this.showBackgroundImage_ && isNtpDarkTheme,
       });
     }
   }
@@ -523,6 +525,10 @@ export class AppElement extends AppElementBase {
     return (!loadTimeData.getBoolean('middleSlotPromoEnabled') ||
             this.middleSlotPromoLoaded_) &&
         (!loadTimeData.getBoolean('modulesEnabled') || this.modulesLoaded_);
+  }
+
+  private computeShowOneGoogleBarScrim_(): boolean {
+    return this.removeScrim_ && this.showBackgroundImage_;
   }
 
   private async onLazyRendered_() {
