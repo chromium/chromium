@@ -303,6 +303,8 @@ class DiceWebSigninInterceptHandlerTest
 };
 
 TEST_P(DiceWebSigninInterceptHandlerTest, CheckStrings) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSigninInterceptBubbleV2);
   base::Value::Dict parameters = GetInterceptionParameters();
 
   EXPECT_FALSE(*parameters.FindBool("useV2Design"));

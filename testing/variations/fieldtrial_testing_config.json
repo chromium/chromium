@@ -12440,26 +12440,6 @@
             ]
         }
     ],
-    "SyncPromoAfterSigninInterceptStudy": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithSyncPromo",
-                    "enable_features": [
-                        "SigninInterceptBubbleV2",
-                        "SyncPromoAfterSigninIntercept"
-                    ]
-                }
-            ]
-        }
-    ],
     "SyncTrustedVaultVerifyDeviceRegistration": [
         {
             "platforms": [
