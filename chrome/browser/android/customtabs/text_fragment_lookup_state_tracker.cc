@@ -42,9 +42,14 @@ TextFragmentLookupStateTracker::TextFragmentLookupStateTracker(
 void TextFragmentLookupStateTracker::LookupTextFragment(
     const std::string& state_key,
     const std::vector<std::string>& text_directives,
-    OnResultCallback on_result_callback) const {
+    OnResultCallback on_result_callback) {
   CHECK(base::FeatureList::IsEnabled(
       chrome::android::kCCTTextFragmentLookupApiEnabled));
+  const std::vector<std::string> allowed_text_directives =
+      ExtractAllowedTextDirectives(text_directives);
+  // Increment lookup counter.
+  lookup_count_ += allowed_text_directives.size();
+  DCHECK_LE(lookup_count_, kMaxNumLookupPerPage);
 
   // Create and attach a `TextFinderManager` to the primary page.
   content::Page& page = web_contents()->GetPrimaryPage();
@@ -56,7 +61,32 @@ void TextFragmentLookupStateTracker::LookupTextFragment(
       base::BindOnce(&NotifyCallback, std::move(on_result_callback), state_key);
 
   text_finder_manager->CreateTextFinders(
-      text_directives, std::move(textfinder_finished_callback));
+      allowed_text_directives, std::move(textfinder_finished_callback));
+}
+
+std::vector<std::string>
+TextFragmentLookupStateTracker::ExtractAllowedTextDirectives(
+    const std::vector<std::string>& text_directives) const {
+  // Check if the lookup counter exceeds the max number.
+  if (lookup_count_ >= kMaxNumLookupPerPage) {
+    return {};
+  }
+
+  // Extract the first allowed number of text directives.
+  size_t cur_num = text_directives.size();
+  if (lookup_count_ + cur_num <= kMaxNumLookupPerPage) {
+    return text_directives;
+  } else {
+    // Throttled.
+    size_t allowed_num = kMaxNumLookupPerPage - lookup_count_;
+    return std::vector<std::string>(text_directives.begin(),
+                                    text_directives.begin() + allowed_num);
+  }
+}
+
+void TextFragmentLookupStateTracker::PrimaryPageChanged(content::Page& page) {
+  // Reset lookup counter.
+  lookup_count_ = 0;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TextFragmentLookupStateTracker);

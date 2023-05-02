@@ -10,6 +10,8 @@
 
 namespace customtabs {
 
+const size_t kMaxNumLookupPerPage = 15;
+
 class TextFragmentLookupStateTracker
     : public content::WebContentsObserver,
       public content::WebContentsUserData<TextFragmentLookupStateTracker> {
@@ -28,14 +30,26 @@ class TextFragmentLookupStateTracker
   // `state_key` is opaque id used by client to keep track of the request.
   void LookupTextFragment(const std::string& state_key,
                           const std::vector<std::string>& text_directives,
-                          OnResultCallback on_result_callback) const;
+                          OnResultCallback on_result_callback);
 
  private:
   friend class content::WebContentsUserData<TextFragmentLookupStateTracker>;
+  FRIEND_TEST_ALL_PREFIXES(TextFragmentLookupStateTrackerTest,
+                           ExtractAllowedTextDirectives);
 
   explicit TextFragmentLookupStateTracker(content::WebContents* web_contents);
 
+  // Extracts the first allowed number of text directives based on the remaining
+  // quota of lookups of the current page.
+  std::vector<std::string> ExtractAllowedTextDirectives(
+      const std::vector<std::string>& text_directives) const;
+
+  // Implements `content::WebContentsObserver`:
+  void PrimaryPageChanged(content::Page& page) override;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  size_t lookup_count_ = 0;
 };
 
 }  // namespace customtabs
