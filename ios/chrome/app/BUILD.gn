@@ -201,6 +201,8 @@ if (ios_enable_credential_provider_extension) {
       "//ios/chrome/browser/credential_provider",
       "//ios/chrome/browser/passwords:store_factory",
       "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+      "//ios/chrome/browser/shared/model/browser_state",
+      "//ios/chrome/browser/sync",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
     ]

@@ -19,6 +19,7 @@
 #import "components/password_manager/core/browser/password_store_change.h"
 #import "components/password_manager/core/browser/password_store_interface.h"
 #import "components/password_manager/core/browser/password_store_util.h"
+#import "components/password_manager/core/browser/password_sync_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -121,7 +122,8 @@ CredentialProviderService::CredentialProviderService(
     syncer::SyncService* sync_service,
     password_manager::AffiliationService* affiliation_service,
     FaviconLoader* favicon_loader)
-    : profile_password_store_(profile_password_store),
+    : prefs_(prefs),
+      profile_password_store_(profile_password_store),
       account_password_store_(account_password_store),
       identity_manager_(identity_manager),
       sync_service_(sync_service),
@@ -239,6 +241,7 @@ void CredentialProviderService::AddCredentials(
   for (const auto& form : forms) {
     NSString* favicon_key = GetFaviconFileKey(form->url);
     // Fetch the favicon and save it to the storage.
+    // TODO(crbug.com/1441024): `sync_enabled` is not the correct check.
     FetchFaviconForURLToPath(favicon_loader_, form->url, favicon_key,
                              should_skip_max_verification, sync_enabled);
 
@@ -276,20 +279,11 @@ void CredentialProviderService::UpdateAccountId() {
 }
 
 void CredentialProviderService::UpdateUserEmail() {
-  const bool sync_enabled = sync_service_->IsSyncFeatureEnabled();
-  const bool passwords_sync_enabled =
-      sync_service_->GetUserSettings()->GetSelectedTypes().Has(
-          syncer::UserSelectableType::kPasswords);
-
-  NSString* user_email = nil;
-  if (sync_enabled && passwords_sync_enabled) {
-    user_email = base::SysUTF8ToNSString(
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .email);
-  }
-
+  absl::optional accountForSaving =
+      password_manager::sync_util::GetAccountForSaving(prefs_, sync_service_);
   [app_group::GetGroupUserDefaults()
-      setObject:user_email
+      setObject:accountForSaving ? base::SysUTF8ToNSString(*accountForSaving)
+                                 : nil
          forKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
 }
 
@@ -311,9 +305,7 @@ void CredentialProviderService::OnGetPasswordStoreResults(
 
 void CredentialProviderService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
-  // The service uses the account consented for Sync, only process
-  // an update if the consent has changed.
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       UpdateAccountId();
