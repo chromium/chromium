@@ -28,7 +28,7 @@ CURRENT_VERSION_LOCAL_PATH = 'shell_apk/current_version/current_version.gni'
 
 REQUEST_UPDATE_FOR_VERSION_VARIABLE = 'request_update_for_shell_apk_version'
 REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH = (
-    'shell_apk/request_update_for_shell_apk_version.gni')
+    'shell_apk/request_update_for_version.gni')
 
 TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS = [
     'libs/common/src/',
@@ -78,8 +78,8 @@ def _CheckVersionVariableChanged(input_api, version_file_local_path,
 
 def _CheckChromeUpdateTriggerRule(input_api, output_api):
   """
-  Check that if |expected_shell_apk_version| is updated it is the only
-  change in the CL.
+  Check that if |request_update_for_shell_apk_version| is updated it is the
+  only change in the CL.
   """
   if _CheckVersionVariableChanged(input_api,
                                   REQUEST_UPDATE_FOR_VERSION_LOCAL_PATH,
