@@ -10,6 +10,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -91,7 +92,7 @@ namespace autofill {
 // If we reformat the number ourselves, the GetRawInfo() contains the inferred
 // country code. If we don't reformat the number, the GetRawInfo()
 // representation remains without one. In all countries but the US and Canada,
-// formatting will put a + infront of the country code.
+// formatting will put a + in front of the country code.
 // TODO(crbug.com/1311937) Clean this up once AutofillInferCountryCallingCode
 // is launched.
 //
@@ -188,7 +189,7 @@ enum ServerFieldType {
 
   // Field types for options generally found in merchant buyflows. Given that
   // these are likely to be filled out differently on a case by case basis,
-  // they are here primarily for use by Autocheckout.
+  // they are here primarily for use by AutoCheckout.
   MERCHANT_EMAIL_SIGNUP = 73,
   // A promo/gift/coupon code, usually entered during checkout on a commerce web
   // site to reduce the cost of a purchase.
@@ -409,6 +410,10 @@ bool IsFillableFieldType(ServerFieldType field_type);
 // Returns a StringPiece describing |type|. As the StringPiece points to a
 // static string, you don't need to worry about memory deallocation.
 base::StringPiece FieldTypeToStringPiece(ServerFieldType type);
+
+// Inverse map of FieldTypeToStringPiece. Checks that only valid ServerFieldType
+// string representations are being passed.
+ServerFieldType TypeNameToFieldType(base::StringPiece type_name);
 
 }  // namespace autofill
 
