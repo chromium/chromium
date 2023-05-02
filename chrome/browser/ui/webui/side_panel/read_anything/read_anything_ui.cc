@@ -55,14 +55,17 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
   for (const auto& str : kLocalizedStrings)
     webui::AddLocalizedString(source, str.name, str.id);
 
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelReadAnythingResources,
-                      kSidePanelReadAnythingResourcesSize),
-      IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
+  // Rather than call `webui::SetupWebUIDataSource`, manually set up source
+  // here. This ensures that if CSPs change in a way that is safe for chrome://
+  // but not chrome-untrusted://, ReadAnythingUI does not inherit them.
+  source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
+  webui::EnableTrustedTypesCSP(source);
+  source->AddResourcePaths(base::make_span(
+      kSidePanelReadAnythingResources, kSidePanelReadAnythingResourcesSize));
+  source->AddResourcePath("", IDR_SIDE_PANEL_READ_ANYTHING_READ_ANYTHING_HTML);
   source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
                                            kSidePanelSharedResourcesSize));
-
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src 'self' chrome-untrusted://resources;");
