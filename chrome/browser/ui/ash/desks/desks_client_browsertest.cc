@@ -21,6 +21,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_presenter.h"
@@ -119,6 +120,7 @@
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Optional;
 
 namespace {
 
@@ -623,17 +625,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserUrlsTest) {
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
-  // Find |browser| window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
+
   // Check the urls are captured correctly in the |desk_template|.
   EXPECT_EQ(data->urls, urls);
 }
@@ -661,24 +657,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserTabGroupsTest) {
   std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
-  const ash::DeskTemplate* desk_template = templates.front();
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, app_id_to_launch_list.size());
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *templates.front(), app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
 
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `desk_template`.
   EXPECT_EQ(urls, data->urls);
 
   // We don't care about the order of the tab groups.
-  EXPECT_THAT(expected_tab_groups,
-              testing::UnorderedElementsAreArray(data->tab_group_infos));
+  EXPECT_THAT(data->tab_group_infos,
+              testing::UnorderedElementsAreArray(expected_tab_groups));
 }
 
 // Tests that a browser's pinned tabs can be captured correctly in a saved desk.
@@ -704,25 +692,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureBrowserWithPinnedTabs) {
   std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
-  const ash::DeskTemplate* desk_template = templates.front();
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, app_id_to_launch_list.size());
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *templates.front(), app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
 
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `desk_template`.
   EXPECT_EQ(urls, data->urls);
 
-  // Assert number of pinned tabs is correct.
-  EXPECT_TRUE(data->first_non_pinned_tab_index.has_value());
-  EXPECT_THAT(expected_number_of_pinned_tabs,
-              data->first_non_pinned_tab_index.value());
+  // Check that the number of pinned tabs is correct.
+  EXPECT_THAT(data->first_non_pinned_tab_index,
+              Optional(expected_number_of_pinned_tabs));
 }
 
 // Tests that incognito browser windows will NOT be captured in the desk
@@ -738,21 +717,21 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureIncognitoBrowserTest) {
 
   const int32_t incognito_browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
+  const int32_t browser_window_id =
+      browser()->window()->GetNativeWindow()->GetProperty(
+          app_restore::kWindowIdKey);
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
   ASSERT_TRUE(desk_template);
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
 
-  // Find |browser| window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(incognito_browser_window_id);
-  // Created incognito window is NOT in restore list
-  ASSERT_TRUE(app_restore_data_iter == iter->second.end());
+  // We expect to find the non-incognito window in the capture.
+  EXPECT_TRUE(ash::QueryRestoreData(*desk_template, app_constants::kChromeAppId,
+                                    browser_window_id));
+  // The incognito window should not be there.
+  EXPECT_FALSE(ash::QueryRestoreData(*desk_template,
+                                     app_constants::kChromeAppId,
+                                     incognito_browser_window_id));
 }
 
 // Tests that browsers and chrome apps can be captured correctly in the desk
@@ -791,19 +770,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
       desk_template->template_name(),
       desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()));
 
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 2u);
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
 
-  // Find |browser| window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
   // Verify window info are correctly captured.
-  EXPECT_EQ(browser_bounds, data->current_bounds.value());
+  EXPECT_THAT(data->current_bounds, Optional(browser_bounds));
   // `visible_on_all_workspaces` should have been reset even though
   // the captured window is visible on all workspaces.
   EXPECT_FALSE(data->desk_id.has_value());
@@ -817,17 +789,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
   EXPECT_FALSE(data->desk_id.has_value());
 
   // Find Setting app's app restore data.
-  auto iter2 = app_id_to_launch_list.find(settings_app_id);
-  ASSERT_TRUE(iter2 != app_id_to_launch_list.end());
-  auto app_restore_data_iter2 = iter2->second.find(settings_window_id);
-  ASSERT_TRUE(app_restore_data_iter2 != iter2->second.end());
-  const auto& data2 = app_restore_data_iter2->second;
+  const app_restore::AppRestoreData* data2 = ash::QueryRestoreData(
+      *desk_template, settings_app_id, settings_window_id);
+  ASSERT_TRUE(data2);
+
   EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
             data2->container.value());
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
             data2->disposition.value());
   // Verify window info are correctly captured.
-  EXPECT_EQ(settings_app_bounds, data2->current_bounds.value());
+  EXPECT_THAT(data2->current_bounds, Optional(settings_app_bounds));
   EXPECT_FALSE(data2->desk_id.has_value());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
@@ -1108,19 +1079,12 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithFloatedWindow) {
       desk_template->template_name(),
       desks_controller->GetDeskName(desks_controller->GetActiveDeskIndex()));
 
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
 
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
   // Verify floated window bounds is correctly captured.
-  EXPECT_EQ(browser_bounds, data->current_bounds.value());
+  EXPECT_THAT(data->current_bounds, Optional(browser_bounds));
   // Verify window float state is correctly captured.
   EXPECT_EQ(chromeos::WindowStateType::kFloated, data->window_state_type);
 
@@ -1342,21 +1306,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWA) {
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
 
   // Find |pwa_browser| window's app restore data.
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
-  ASSERT_TRUE(restore_data->HasAppTypeBrowser());
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(pwa_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, pwa_window_id);
+  ASSERT_TRUE(data);
+
   // Verify window info are correctly captured.
-  EXPECT_EQ(pwa_bounds, data->current_bounds.value());
-  ASSERT_TRUE(data->app_type_browser.has_value() &&
-              data->app_type_browser.value());
-  EXPECT_EQ(*app_name, *data->app_name);
+  EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
+  EXPECT_THAT(data->app_type_browser, Optional(true));
+  EXPECT_THAT(data->app_name, Optional(*app_name));
 
   // Set the template and launch it.
   SetAndLaunchTemplate(std::move(desk_template));
@@ -1427,22 +1384,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithPWAInBrowser) {
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kTemplate);
 
-  // Test that |pwa_browser| restore data can be found.
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
-
   // Test that |pwa_browser|'s restore data is saved under the Chrome browser
   // app id app_constants::kChromeAppId, not Youtube app id
   // extension_misc::kYoutubeAppId.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(pwa_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-
-  iter = app_id_to_launch_list.find(extension_misc::kYoutubeAppId);
-  EXPECT_FALSE(iter != app_id_to_launch_list.end());
+  ASSERT_TRUE(ash::QueryRestoreData(*desk_template, app_constants::kChromeAppId,
+                                    pwa_window_id));
+  ASSERT_FALSE(
+      ash::QueryRestoreData(*desk_template, extension_misc::kYoutubeAppId));
 }
 
 // Tests that captured desk templates can be recalled as a JSON string.
@@ -1591,18 +1539,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureBrowserUrlsTest) {
   std::vector<const ash::DeskTemplate*> templates = GetAllEntries();
   ASSERT_EQ(1u, templates.size());
 
-  const ash::DeskTemplate* desk_template = templates.front();
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
-
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *templates.front(), app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
   // Check the urls are captured correctly in the `desk_template`.
   EXPECT_EQ(data->urls, urls);
 }
@@ -1726,6 +1665,9 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
 
   const int32_t incognito_browser_window_id =
       window->GetProperty(app_restore::kWindowIdKey);
+  const int32_t browser_window_id =
+      browser()->window()->GetNativeWindow()->GetProperty(
+          app_restore::kWindowIdKey);
 
   ash::ToggleOverview();
   ash::WaitForOverviewEnterAnimation();
@@ -1746,17 +1688,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUICaptureIncognitoBrowserTest) {
   ASSERT_EQ(1u, templates.size());
 
   const ash::DeskTemplate* desk_template = templates.front();
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, app_id_to_launch_list.size());
 
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_FALSE(iter == app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(incognito_browser_window_id);
-  // Created incognito window is NOT in restore list.
-  EXPECT_TRUE(iter->second.end() == app_restore_data_iter);
+  // We expect to find the non-incognito window in the capture.
+  EXPECT_TRUE(ash::QueryRestoreData(*desk_template, app_constants::kChromeAppId,
+                                    browser_window_id));
+  // The incognito window should not be there.
+  EXPECT_FALSE(ash::QueryRestoreData(*desk_template,
+                                     app_constants::kChromeAppId,
+                                     incognito_browser_window_id));
 }
 
 // Tests that launching a template that contains a system web app works as
@@ -2015,22 +1954,14 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithPWA) {
   ASSERT_EQ(1u, templates.size());
 
   // Find `pwa_browser` window's app restore data.
-  const ash::DeskTemplate* desk_template = templates.front();
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, app_id_to_launch_list.size());
-  ASSERT_TRUE(restore_data->HasAppTypeBrowser());
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(pwa_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *templates.front(), app_constants::kChromeAppId, pwa_window_id);
+  ASSERT_TRUE(data);
+
   // Verify window info are correctly captured.
-  EXPECT_EQ(pwa_bounds, data->current_bounds.value());
-  ASSERT_TRUE(data->app_type_browser.has_value() &&
-              data->app_type_browser.value());
-  EXPECT_EQ(*app_name, *data->app_name);
+  EXPECT_THAT(data->current_bounds, Optional(pwa_bounds));
+  EXPECT_THAT(data->app_type_browser, Optional(true));
+  EXPECT_THAT(data->app_name, Optional(*app_name));
 
   // Launch the template.
   ClickFirstTemplateItem();
@@ -2069,21 +2000,13 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   // Test that `pwa_browser` restore data can be found.
   const ash::DeskTemplate* desk_template = templates.front();
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(1u, app_id_to_launch_list.size());
-
   // Test that `pwa_browser`'s restore data is saved under the Chrome browser
   // app id app_constants::kChromeAppId, not Youtube app id
   // extension_misc::kYoutubeAppId.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(pwa_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-
-  iter = app_id_to_launch_list.find(extension_misc::kYoutubeAppId);
-  EXPECT_TRUE(iter == app_id_to_launch_list.end());
+  ASSERT_TRUE(ash::QueryRestoreData(*desk_template, app_constants::kChromeAppId,
+                                    pwa_window_id));
+  ASSERT_FALSE(
+      ash::QueryRestoreData(*desk_template, extension_misc::kYoutubeAppId));
 }
 
 // Tests that browsers and SWAs can be captured correctly in the desk template.
@@ -2128,19 +2051,11 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   // Test the default template's name is the desk's name it was created from.
   EXPECT_EQ(desk_name, desk_template->template_name());
 
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(2u, app_id_to_launch_list.size());
-
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_NE(iter, app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_NE(iter->second.end(), app_restore_data_iter);
-  const auto& data = app_restore_data_iter->second;
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
   // Verify window info are correctly captured.
-  EXPECT_EQ(browser_bounds, data->current_bounds.value());
+  EXPECT_THAT(data->current_bounds, Optional(browser_bounds));
   // `visible_on_all_workspaces` should have been reset even though
   // the captured window is visible on all workspaces.
   EXPECT_FALSE(data->desk_id.has_value());
@@ -2157,17 +2072,16 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   EXPECT_FALSE(data->desk_id.has_value());
 
   // Find Setting app's app restore data.
-  auto iter2 = app_id_to_launch_list.find(settings_app_id);
-  ASSERT_NE(app_id_to_launch_list.end(), iter2);
-  auto app_restore_data_iter2 = iter2->second.find(settings_window_id);
-  ASSERT_NE(iter->second.end(), app_restore_data_iter2);
-  const auto& data2 = app_restore_data_iter2->second;
+  const app_restore::AppRestoreData* data2 = ash::QueryRestoreData(
+      *desk_template, settings_app_id, settings_window_id);
+  ASSERT_TRUE(data2);
+
   EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
             data2->container.value());
   EXPECT_EQ(static_cast<int>(WindowOpenDisposition::NEW_WINDOW),
             data2->disposition.value());
   // Verify window info are correctly captured.
-  EXPECT_EQ(settings_app_bounds, data2->current_bounds.value());
+  EXPECT_THAT(data2->current_bounds, Optional(settings_app_bounds));
   EXPECT_FALSE(data2->desk_id.has_value());
   EXPECT_EQ(screen->GetDisplayNearestWindow(window).id(),
             data->display_id.value());
@@ -2702,17 +2616,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveEmptyDesk) {
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kSaveAndRecall);
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
 
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `saved_desk`.
   EXPECT_EQ(data->urls, urls);
 
@@ -2737,17 +2644,10 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SaveActiveDesk) {
 
   std::unique_ptr<ash::DeskTemplate> desk_template =
       CaptureActiveDeskAndSaveTemplate(ash::DeskTemplateType::kSaveAndRecall);
-  const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
-  const auto& app_id_to_launch_list = restore_data->app_id_to_launch_list();
-  EXPECT_EQ(app_id_to_launch_list.size(), 1u);
+  const app_restore::AppRestoreData* data = ash::QueryRestoreData(
+      *desk_template, app_constants::kChromeAppId, browser_window_id);
+  ASSERT_TRUE(data);
 
-  // Find `browser` window's app restore data.
-  auto iter = app_id_to_launch_list.find(app_constants::kChromeAppId);
-  ASSERT_TRUE(iter != app_id_to_launch_list.end());
-  auto app_restore_data_iter = iter->second.find(browser_window_id);
-  ASSERT_TRUE(app_restore_data_iter != iter->second.end());
-  const auto& data = app_restore_data_iter->second;
   // Check the urls are captured correctly in the `saved_desk`.
   EXPECT_EQ(data->urls, urls);
 
@@ -3533,4 +3433,80 @@ IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowOffset) {
   aura::Window* window1 = browsers[0]->window()->GetNativeWindow();
   aura::Window* window2 = browsers[1]->window()->GetNativeWindow();
   EXPECT_NE(window1->bounds(), window2->bounds());
+}
+
+IN_PROC_BROWSER_TEST_F(AdminTemplateTest, AdminTemplateWindowUpdate) {
+  // Launch an admin template with a browser. Move the browser window and verify
+  // that the update callback is invoked.
+
+  // Set up the display with a known size.
+  display::test::DisplayManagerTestApi display_manager_test_api(
+      ash::Shell::Get()->display_manager());
+  display_manager_test_api.UpdateDisplay("1920x1080");
+
+  // Create an admin template without bounds. The admin template will then be
+  // launched with generated window bounds.
+  auto admin_template = CreateAdminTemplate(
+      {.windows = {{.urls = {kExampleUrl1}}, {.urls = {kExampleUrl2}}}});
+  ASSERT_NE(admin_template, nullptr);
+
+  // A template that will receive updates.
+  std::unique_ptr<ash::DeskTemplate> updated_template;
+
+  // Create a launch tracker with a zero update delay. This ensures that the
+  // update callback is called synchronously.
+  ash::AdminTemplateLaunchTracker launch_tracker(
+      std::move(admin_template),
+      base::BindLambdaForTesting([&](const ash::DeskTemplate& update) {
+        updated_template = update.Clone();
+      }),
+      /*update_delay=*/base::TimeDelta());
+
+  launch_tracker.LaunchTemplate(
+      ash::Shell::Get()->saved_desk_delegate(),
+      display::Screen::GetScreen()->GetPrimaryDisplay().id());
+
+  Browser* browser1 = FindLaunchedBrowserByURLs({GURL(kExampleUrl1)});
+  ASSERT_TRUE(browser1);
+  Browser* browser2 = FindLaunchedBrowserByURLs({GURL(kExampleUrl2)});
+  ASSERT_TRUE(browser2);
+
+  // The update callback should have been invoked already and the template
+  // should have bounds for both windows.
+  ASSERT_TRUE(updated_template);
+
+  // Verify that both windows have bounds and display set.
+  const app_restore::AppRestoreData* data1 =
+      ash::QueryRestoreData(*updated_template, {}, /*window_id=*/1);
+  ASSERT_TRUE(data1);
+  EXPECT_TRUE(data1->display_id.has_value());
+  EXPECT_TRUE(data1->current_bounds.has_value());
+
+  const app_restore::AppRestoreData* data2 =
+      ash::QueryRestoreData(*updated_template, {}, /*window_id=*/2);
+  ASSERT_TRUE(data2);
+  EXPECT_TRUE(data2->display_id.has_value());
+  EXPECT_TRUE(data2->current_bounds.has_value());
+
+  // Clear the stored template. It will be populated again when the tracked
+  // windows are updated.
+  updated_template = nullptr;
+
+  // Set the bounds of the two windows. This should result in the template
+  // getting updated.
+  const gfx::Rect window1_set_bounds(50, 50, 640, 480);
+  browser1->window()->GetNativeWindow()->SetBounds(window1_set_bounds);
+  const gfx::Rect window2_set_bounds(100, 100, 800, 600);
+  browser2->window()->GetNativeWindow()->SetBounds(window2_set_bounds);
+
+  ASSERT_TRUE(updated_template);
+
+  // Verify that both windows have had their bounds updated in the template.
+  data1 = ash::QueryRestoreData(*updated_template, {}, /*window_id=*/1);
+  ASSERT_TRUE(data1);
+  EXPECT_THAT(data1->current_bounds, Optional(window1_set_bounds));
+
+  data2 = ash::QueryRestoreData(*updated_template, {}, /*window_id=*/2);
+  ASSERT_TRUE(data2);
+  EXPECT_THAT(data2->current_bounds, Optional(window2_set_bounds));
 }

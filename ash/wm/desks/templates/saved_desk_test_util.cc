@@ -256,4 +256,29 @@ void WaitForSavedDeskUI() {
   run_loop.Run();
 }
 
+const app_restore::AppRestoreData* QueryRestoreData(
+    const DeskTemplate& saved_desk,
+    absl::optional<std::string> app_id,
+    absl::optional<int32_t> window_id) {
+  const auto& app_id_to_launch_list =
+      saved_desk.desk_restore_data()->app_id_to_launch_list();
+
+  auto app_it = app_id ? app_id_to_launch_list.find(*app_id)
+                       : app_id_to_launch_list.begin();
+  if (app_it == app_id_to_launch_list.end()) {
+    // No matching app found, or the app list is empty.
+    return nullptr;
+  }
+
+  const auto& launch_list = app_it->second;
+  auto window_it =
+      window_id ? launch_list.find(*window_id) : launch_list.begin();
+  if (window_it == launch_list.end()) {
+    // No matching window found, or the window list is is empty.
+    return nullptr;
+  }
+
+  return window_it->second.get();
+}
+
 }  // namespace ash

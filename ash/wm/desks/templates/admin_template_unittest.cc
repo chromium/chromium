@@ -6,6 +6,7 @@
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/wm/desks/templates/admin_template_launch_tracker.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
+#include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "base/json/json_string_value_serializer.h"
 #include "components/app_restore/restore_data.h"
@@ -106,35 +107,13 @@ class AdminTemplateTest : public OverviewTestBase,
 
     return admin_template;
   }
-
-  // Returns the app restore data for `app_id` and `window_id` in
-  // `admin_template`.
-  const app_restore::AppRestoreData* GetRestoreData(
-      const DeskTemplate& admin_template,
-      const std::string& app_id,
-      absl::optional<int32_t> window_id = absl::nullopt) {
-    const auto& app_id_to_launch_list =
-        admin_template.desk_restore_data()->app_id_to_launch_list();
-    auto it = app_id_to_launch_list.find(app_id);
-    if (it == app_id_to_launch_list.end()) {
-      return nullptr;
-    }
-
-    const auto& launch_list = it->second;
-    if (window_id.has_value()) {
-      auto it2 = launch_list.find(*window_id);
-      return it2 != launch_list.end() ? it2->second.get() : nullptr;
-    }
-    return launch_list.begin()->second.get();
-  }
 };
 
 TEST_F(AdminTemplateTest, MergeAdminTemplateWindowUpdate) {
   auto admin_template = CreateTemplateFromJson(kAdminTemplateJson);
   ASSERT_TRUE(admin_template);
 
-  const auto* app_restore_data =
-      GetRestoreData(*admin_template, "mgndgikekgjfcpckkfioiadnlibdjbkf", 1);
+  const auto* app_restore_data = QueryRestoreData(*admin_template, {});
   ASSERT_TRUE(app_restore_data);
 
   // Using a window ID not present in the template.
@@ -269,9 +248,7 @@ TEST_P(AdminTemplateTest, LaunchTemplate) {
                                 /*default_display_id=*/-1);
 
   ASSERT_TRUE(launched_template);
-  // The first launched window will start at -2.
-  const auto* app_restore_data =
-      GetRestoreData(*launched_template, "mgndgikekgjfcpckkfioiadnlibdjbkf");
+  const auto* app_restore_data = QueryRestoreData(*launched_template, {});
   ASSERT_TRUE(app_restore_data);
 
   // Verifies that the window has been assigned with bounds.
