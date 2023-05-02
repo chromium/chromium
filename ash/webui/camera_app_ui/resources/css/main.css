@@ -228,7 +228,9 @@ body.doc-mode-reviewing #mode-selector {
 
 #mode-selector::before,
 #mode-selector::after {
-  background: linear-gradient(to right, var(--grey-900), transparent);
+  /* This is for "fading" effect when window is narrow and the mode selector
+   * overflows, so we use the same color as the background color here. */
+  background: linear-gradient(to right, var(--cros-sys-app_base), transparent);
   content: '';
   display: block;
   height: calc(100% - var(--scrollbar-height));
