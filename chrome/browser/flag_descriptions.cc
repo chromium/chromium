@@ -6716,11 +6716,6 @@ const char kSyncChromeOSExplicitPassphraseSharingName[] =
 const char kSyncChromeOSExplicitPassphraseSharingDescription[] =
     "Allows sharing custom sync passphrase between OS and Browser on ChromeOS";
 
-const char kChromeOSSyncedSessionSharingName[] =
-    "Synced session sharing on ChromeOS";
-const char kChromeOSSyncedSessionSharingDescription[] =
-    "Allows sharing synced sessions between OS and Browser on ChromeOS";
-
 const char kTouchTextEditingRedesignName[] = "Touch Text Editing Redesign";
 const char kTouchTextEditingRedesignDescription[] =
     "Enables new touch text editing features.";

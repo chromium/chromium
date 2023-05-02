@@ -9212,12 +9212,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(syncer::kSyncChromeOSExplicitPassphraseSharing)},
 
-    {"chromeos-synced-session-sharing",
-     flag_descriptions::kChromeOSSyncedSessionSharingName,
-     flag_descriptions::kChromeOSSyncedSessionSharingDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(syncer::kChromeOSSyncedSessionSharing)},
-
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

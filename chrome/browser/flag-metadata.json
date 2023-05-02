@@ -1073,11 +1073,6 @@
     "expiry_milestone": 122
   },
   {
-    "name": "chromeos-synced-session-sharing",
-    "owners": ["hansenmichael", "chromeos-cross-device-eng@google.com"],
-    "expiry_milestone": 115
-  },
-  {
     "name": "clear-cross-site-cross-browsing-context-group-window-name",
     "owners": [ "shuuran", "kaustubhag" ],
     "expiry_milestone": 115
@@ -5124,12 +5119,12 @@
   {
     "name": "nearby-sharing-self-share-auto-accept",
     "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "nearby-sharing-self-share-ui",
     "owners": [ "hansenmichael@google.com", "chromeos-cross-device-eng@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 125
   },
   {
     "name": "network-service-in-process",
