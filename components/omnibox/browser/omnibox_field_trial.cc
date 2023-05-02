@@ -724,7 +724,7 @@ const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeTouchUI(
 const base::FeatureParam<int> OmniboxFieldTrial::kFontSizeNonTouchUI(
     &omnibox::kOmniboxSteadyStateTextStyle,
     "OmniboxFontSizeNonTouchUI",
-    12);
+    13);
 
 bool OmniboxFieldTrial::IsCr23LayoutEnabled() {
   static const bool enabled =
