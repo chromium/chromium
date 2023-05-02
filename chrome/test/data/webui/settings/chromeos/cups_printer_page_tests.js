@@ -106,12 +106,15 @@ suite('CupsPrinterUITests', () => {
           page.shadowRoot.querySelector('#nearbyPrinterToggleButton');
       assertTrue(
           isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+      assertTrue(isVisible(page.shadowRoot.querySelector('#helpSection')));
       toggleButton.click();
       assertFalse(
           isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+      assertFalse(isVisible(page.shadowRoot.querySelector('#helpSection')));
       toggleButton.click();
       assertTrue(
           isVisible(page.shadowRoot.querySelector('#collapsibleSection')));
+      assertTrue(isVisible(page.shadowRoot.querySelector('#helpSection')));
     });
   });
 });

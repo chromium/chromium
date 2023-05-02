@@ -63,7 +63,7 @@
   }
 
   #nearbyPrintersDescription {
-    flex: 1 ;
+    flex: 1;
   }
 
   #nearbyPrinterToggleButton {
@@ -80,6 +80,39 @@
 
   #nearbyPrinterToggleButton:focus {
     outline: none;
+  }
+
+  #collapsibleSection {
+    padding-top: 0;
+  }
+
+  #helpSection {
+    align-items: center;
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 12px;
+    display: flex;
+    margin-bottom: 10px;
+  }
+
+  #helpIconSection {
+    flex-basis: 100px;
+  }
+
+  #helpIcon {
+    display: block;
+    margin: auto;
+  }
+
+  #helpSectionText {
+    flex: 1;
+    margin: 20px auto;
+  }
+
+  .help-title {
+    color: var(--cros-text-color-primary);
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 5px;
   }
 </style>
 
@@ -176,7 +209,24 @@
   </div>
 
   <template is="dom-if" if="[[canAddPrinter]]" restamp>
-    <div id="collapsibleSection" hidden="[[!nearbyPrintersExpanded_]]">
+    <div id="collapsibleSection" class="padded"
+        hidden="[[!nearbyPrintersExpanded_]]">
+      <div id="helpSection" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+        <div id="helpIconSection">
+          <!-- TODO(b/278621575): Replace with printer help icon when
+              available -->
+          <iron-icon id="helpIcon" icon="os-settings:printer-status-grey">
+          </iron-icon>
+        </div>
+        <div id="helpSectionText">
+          <div class="help-title">
+            $i18n{helpSectionTitle}
+          </div>
+          <div class="secondary">
+            $i18n{helpSectionDescription}
+          </div>
+        </div>
+      </div>
       <settings-cups-nearby-printers search-term="[[searchTerm]]"
           user-printers-allowed="[[!prefs.native_printing.
               user_native_printers_allowed.value]]"
