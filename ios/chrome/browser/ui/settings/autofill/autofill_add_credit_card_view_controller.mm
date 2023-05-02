@@ -236,6 +236,22 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return cell;
 }
 
+#pragma mark - AutofillEditTableViewController
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
+  switch (itemType) {
+    case ItemTypeName:
+    case ItemTypeCardNumber:
+    case ItemTypeExpirationMonth:
+    case ItemTypeExpirationYear:
+    case ItemTypeCardNickname:
+      return YES;
+  }
+  NOTREACHED();
+  return NO;
+}
+
 #pragma mark - Private
 
 // Handles Add button to add a new credit card.

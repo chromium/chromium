@@ -322,6 +322,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return !self.tableView.editing;
 }
 
+#pragma mark - AutofillEditTableViewController
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
+  switch (itemType) {
+    case ItemTypeCardholderName:
+    case ItemTypeCardNumber:
+    case ItemTypeExpirationMonth:
+    case ItemTypeExpirationYear:
+    case ItemTypeNickname:
+    case ItemTypeCopiedToChrome:
+      return YES;
+  }
+  NOTREACHED();
+  return NO;
+}
+
 #pragma mark - Actions
 
 - (void)buttonTapped:(UIButton*)button {

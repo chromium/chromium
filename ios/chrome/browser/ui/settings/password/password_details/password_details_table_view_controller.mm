@@ -1017,27 +1017,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
   }
 }
 
-- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
-  switch (static_cast<PasswordDetailsItemType>(itemType)) {
-    case PasswordDetailsItemTypeUsername:
-    case PasswordDetailsItemTypePassword:
-      return YES;
-    case PasswordDetailsItemTypeWebsite:
-    case PasswordDetailsItemTypeFederation:
-    case PasswordDetailsItemTypeChangePasswordButton:
-    case PasswordDetailsItemTypeChangePasswordRecommendation:
-    case PasswordDetailsItemTypeDismissWarningButton:
-    case PasswordDetailsItemTypeRestoreWarningButton:
-    case PasswordDetailsItemTypeDeleteButton:
-    case PasswordDetailsItemTypeMoveToAccountButton:
-    case PasswordDetailsItemTypeMoveToAccountRecommendation:
-    case PasswordDetailsItemTypeNoteFooter:
-    case PasswordDetailsItemTypeNote:
-      return NO;
-  }
-}
-
 // Checks if the usernames are valid and updates items accordingly.
 - (BOOL)checkIfValidUsernames {
   DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
@@ -1328,6 +1307,29 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
                             selector:@selector(authValidityTimerFired:)
                             userInfo:nil
                              repeats:NO];
+}
+
+#pragma mark - AutofillEditTableViewController
+
+- (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
+  switch (static_cast<PasswordDetailsItemType>(itemType)) {
+    case PasswordDetailsItemTypeUsername:
+    case PasswordDetailsItemTypePassword:
+      return YES;
+    case PasswordDetailsItemTypeWebsite:
+    case PasswordDetailsItemTypeFederation:
+    case PasswordDetailsItemTypeChangePasswordButton:
+    case PasswordDetailsItemTypeChangePasswordRecommendation:
+    case PasswordDetailsItemTypeDismissWarningButton:
+    case PasswordDetailsItemTypeRestoreWarningButton:
+    case PasswordDetailsItemTypeDeleteButton:
+    case PasswordDetailsItemTypeMoveToAccountButton:
+    case PasswordDetailsItemTypeMoveToAccountRecommendation:
+    case PasswordDetailsItemTypeNoteFooter:
+    case PasswordDetailsItemTypeNote:
+      return NO;
+  }
 }
 
 #pragma mark - Actions

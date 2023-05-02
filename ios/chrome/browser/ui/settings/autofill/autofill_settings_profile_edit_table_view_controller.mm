@@ -37,6 +37,8 @@
   [self.handler loadFooterForSettings];
 }
 
+#pragma mark - AutofillEditTableViewController
+
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
   return [self.handler isItemAtIndexPathTextEditCell:cellPath];
 }

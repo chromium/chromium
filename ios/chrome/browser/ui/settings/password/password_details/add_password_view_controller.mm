@@ -713,7 +713,7 @@ const int kMinNoteCharAmountForWarning = 901;
   return YES;
 }
 
-#pragma mark - Private
+#pragma mark - AutofillEditTableViewController
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:cellPath];
@@ -729,6 +729,8 @@ const int kMinNoteCharAmountForWarning = 901;
       return NO;
   };
 }
+
+#pragma mark - Private
 
 - (BOOL)checkIfValidSite {
   BOOL siteEmpty = [self.websiteTextItem.textFieldValue length] == 0;
