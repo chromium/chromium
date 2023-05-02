@@ -1,4 +1,5 @@
 caption: Minimum SSL version enabled
+deprecated: true
 desc: |-
   Setting the policy to a valid value means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> won't use SSL/TLS versions less than the specified version. Unrecognized values are ignored.
 
@@ -41,8 +42,8 @@ schema:
   - tls1.2
   type: string
 supported_on:
-- chrome.*:66-
-- chrome_os:66-
-- android:66-
+- chrome.*:66-97
+- chrome_os:66-97
+- android:66-97
 tags: []
 type: string-enum
