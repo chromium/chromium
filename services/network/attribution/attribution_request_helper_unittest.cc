@@ -24,7 +24,9 @@
 #include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_test_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,6 +34,12 @@
 #include "url/gurl.h"
 
 namespace network {
+namespace {
+
+using ::network::mojom::AttributionReportingEligibility;
+
+constexpr char kAttributionReportingEligible[] =
+    "Attribution-Reporting-Eligible";
 
 class AttributionRequestHelperTest : public testing::Test {
  protected:
@@ -46,10 +54,8 @@ class AttributionRequestHelperTest : public testing::Test {
         /*key=*/"any-key",
         /*protocol_version=*/mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
         /*issuer_url=*/example_valid_request_url_);
-    net::HttpRequestHeaders request_headers;
-    request_headers.SetHeader("Attribution-Reporting-Eligible", "trigger");
     helper_ = AttributionRequestHelper::CreateForTesting(
-        request_headers,
+        AttributionReportingEligibility::kTrigger,
         /*create_mediator=*/base::BindRepeating(
             &CreateTestAttestationMediator,
             trust_token_key_commitments_.get()));
@@ -386,41 +392,75 @@ TEST_F(AttributionRequestHelperTest, Finalize_NotBegun) {
 
 TEST_F(AttributionRequestHelperTest, CreateIfNeeded) {
   const struct {
-    std::string header_name;
-    std::string header_value;
+    AttributionReportingEligibility eligibility;
     bool expect_instance_to_be_created;
-  } test_cases[] = {
-      {"Some-Random-Header", "dont-care", false},
-      {"Attribution-Reporting-Eligible", "source", false},
-      {"Attribution-Reporting-Eligible", "source,trigger", true},
-      {"Attribution-Reporting-Eligible", "source,Trigger", false},
+  } kTestCases[] = {
+      {AttributionReportingEligibility::kUnset, false},
+      {AttributionReportingEligibility::kEmpty, false},
+      {AttributionReportingEligibility::kEventSource, false},
+      {AttributionReportingEligibility::kNavigationSource, false},
+      {AttributionReportingEligibility::kTrigger, true},
+      {AttributionReportingEligibility::kEventSourceOrTrigger, true},
   };
 
   auto key_commitment = CreateTestTrustTokenKeyCommitments(
       "dont-care", mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb,
       example_valid_request_url_);
 
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(base::JoinString(
-        {test_case.header_name, test_case.header_value}, ": "));
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.eligibility);
+
+    // If the feature is disabled, the helper should never be created.
+    EXPECT_FALSE(AttributionRequestHelper::CreateIfNeeded(
+        test_case.eligibility, key_commitment.get()));
+
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(
         network::features::kAttributionReportingTriggerAttestation);
-    net::HttpRequestHeaders request_headers;
-    request_headers.SetHeader(test_case.header_name, test_case.header_value);
 
     auto instance = AttributionRequestHelper::CreateIfNeeded(
-        request_headers, key_commitment.get());
+        test_case.eligibility, key_commitment.get());
     bool instance_created = !!instance;
     EXPECT_EQ(instance_created, test_case.expect_instance_to_be_created);
-
-    feature_list.Reset();
-    feature_list.InitAndDisableFeature(
-        network::features::kAttributionReportingTriggerAttestation);
-    EXPECT_EQ(AttributionRequestHelper::CreateIfNeeded(request_headers,
-                                                       key_commitment.get()),
-              nullptr);
   }
 }
 
+TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
+  const struct {
+    AttributionReportingEligibility eligibility;
+    const char* expected_eligible_header;
+  } kTestCases[] = {
+      {AttributionReportingEligibility::kUnset, nullptr},
+      {AttributionReportingEligibility::kEmpty, ""},
+      {AttributionReportingEligibility::kEventSource, "event-source"},
+      {AttributionReportingEligibility::kNavigationSource, "navigation-source"},
+      {AttributionReportingEligibility::kTrigger, "trigger"},
+      {AttributionReportingEligibility::kEventSourceOrTrigger,
+       "event-source, trigger"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.eligibility);
+
+    std::unique_ptr<net::URLRequest> request = CreateTestUrlRequestFrom(
+        /*to_url=*/example_valid_request_url_,
+        /*from_url=*/GURL("https://origin.example/path/123#foo"));
+
+    ResourceRequest resource_request;
+    resource_request.attribution_reporting_eligibility = test_case.eligibility;
+    SetAttributionReportingHeaders(*request, resource_request);
+
+    if (test_case.expected_eligible_header) {
+      std::string actual;
+      request->extra_request_headers().GetHeader(kAttributionReportingEligible,
+                                                 &actual);
+      EXPECT_EQ(actual, test_case.expected_eligible_header);
+    } else {
+      EXPECT_FALSE(request->extra_request_headers().HasHeader(
+          kAttributionReportingEligible));
+    }
+  }
+}
+
+}  // namespace
 }  // namespace network

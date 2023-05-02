@@ -497,6 +497,12 @@ struct URLRequest {
 
  // Indicates whether web or OS-level Attribution Reporting is supported.
   AttributionSupport attribution_reporting_support;
+
+  // Indicates the value of the request's `Attribution-Reporting-Eligible`
+  // header; how this header is interpreted depends on the context in which
+  // the request is made.
+  AttributionReportingEligibility attribution_reporting_eligibility =
+    AttributionReportingEligibility.kUnset;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.

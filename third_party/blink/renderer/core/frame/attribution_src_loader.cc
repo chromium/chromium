@@ -19,8 +19,6 @@
 #include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "components/attribution_reporting/eligibility.h"
-#include "components/attribution_reporting/eligibility_error.mojom-shared.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -58,7 +56,6 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -83,8 +80,8 @@ namespace blink {
 
 namespace {
 
-using ::attribution_reporting::mojom::EligibilityError;
 using ::attribution_reporting::mojom::RegistrationType;
+using ::network::mojom::AttributionReportingEligibility;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -421,10 +418,10 @@ bool AttributionSrcLoader::DoRegistration(
     request.SetRequestContext(
         mojom::blink::RequestContextType::ATTRIBUTION_SRC);
 
-    request.SetHttpHeaderField(http_names::kAttributionReportingEligible,
-                               attribution_src_token.has_value()
-                                   ? "navigation-source"
-                                   : kAttributionEligibleEventSourceAndTrigger);
+    request.SetAttributionReportingEligibility(
+        attribution_src_token.has_value()
+            ? AttributionReportingEligibility::kNavigationSource
+            : AttributionReportingEligibility::kEventSourceOrTrigger);
 
     FetchParameters params(
         std::move(request),
@@ -569,45 +566,40 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
   if (!reporting_origin)
     return false;
 
-  // Determine eligibility for this registration by considering first request
-  // for a resource (even if `response` is for a redirect). This indicates
-  // whether the redirect chain was configured for eligibility.
-  // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registering-attribution-sources
-  const AtomicString& eligible_header =
-      resource->GetResourceRequest().HttpHeaderField(
-          http_names::kAttributionReportingEligible);
+  RegistrationType src_type;
 
-  auto src_type = attribution_reporting::ParseEligibleHeader(
-      eligible_header.IsNull()
-          ? absl::nullopt
-          : absl::make_optional(
-                StringUTF8Adaptor(eligible_header).AsStringPiece()));
-
-  if (!src_type.has_value()) {
-    switch (src_type.error()) {
-      case EligibilityError::kInvalidStructuredHeader:
-      case EligibilityError::kContainsNavigationSource:
-        LogAuditIssue(local_frame_->DomWindow(),
-                      AttributionReportingIssueType::kInvalidEligibleHeader,
-                      /*element=*/nullptr, request_id,
-                      /*invalid_parameter=*/eligible_header);
-        break;
-      case EligibilityError::kIneligible:
-        headers.MaybeLogAllSourceHeadersIgnored(local_frame_->DomWindow());
-        headers.MaybeLogAllTriggerHeadersIgnored(local_frame_->DomWindow());
-        break;
-    }
-    return false;
+  switch (request.GetAttributionReportingEligibility()) {
+    case AttributionReportingEligibility::kEmpty:
+      headers.MaybeLogAllSourceHeadersIgnored(local_frame_->DomWindow());
+      headers.MaybeLogAllTriggerHeadersIgnored(local_frame_->DomWindow());
+      return false;
+    case AttributionReportingEligibility::kNavigationSource:
+      // Navigation sources are only processed on navigations, which are handled
+      // by the browser, or on background attributionsrc requests on
+      // navigations, which are handled by `ResourceClient`, so this branch
+      // shouldn't be reachable in practice.
+      NOTREACHED();
+      return false;
+    case AttributionReportingEligibility::kEventSource:
+      src_type = RegistrationType::kSource;
+      break;
+    case AttributionReportingEligibility::kUnset:
+    case AttributionReportingEligibility::kTrigger:
+      src_type = RegistrationType::kTrigger;
+      break;
+    case AttributionReportingEligibility::kEventSourceOrTrigger:
+      src_type = RegistrationType::kSourceOrTrigger;
+      break;
   }
 
   if (Document* document = local_frame_->DomWindow()->document();
       document->IsPrerendering()) {
     document->AddPostPrerenderingActivationStep(WTF::BindOnce(
         &AttributionSrcLoader::RegisterAttributionHeaders,
-        WrapPersistentIfNeeded(this), *src_type, std::move(*reporting_origin),
+        WrapPersistentIfNeeded(this), src_type, std::move(*reporting_origin),
         std::move(headers), response.GetTriggerAttestation()));
   } else {
-    RegisterAttributionHeaders(*src_type, std::move(*reporting_origin), headers,
+    RegisterAttributionHeaders(src_type, std::move(*reporting_origin), headers,
                                response.GetTriggerAttestation());
   }
 

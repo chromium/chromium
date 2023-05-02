@@ -121,10 +121,6 @@ const getFetchParams = (origin, cookie) => {
       name: allowOriginHeader,
       value: `${location.origin}`,
     });
-    headers.push({
-      name: allowHeadersHeader,
-      value: `${eligibleHeader}`,
-    })
   } else {
     headers.push({
       name: allowOriginHeader,
@@ -186,8 +182,6 @@ const registerAttributionSrcByImg = (attributionSrc) => {
   const element = document.createElement('img');
   element.attributionSrc = attributionSrc;
 };
-
-const eligibleHeader = 'Attribution-Reporting-Eligible';
 
 const registerAttributionSrc = async ({
   source,
@@ -295,19 +289,20 @@ const registerAttributionSrc = async ({
         }
       });
       return 'navigation';
-    case 'fetch':
-      const headers = {};
+    case 'fetch': {
+      let attributionReporting;
       if (eligible !== null) {
-        headers[eligibleHeader] = eligible;
+        attributionReporting = JSON.parse(eligible);
       }
-      await fetch(url, {headers, credentials});
+      await fetch(url, {credentials, attributionReporting});
       return 'event';
+    }
     case 'xhr':
       await new Promise((resolve, reject) => {
         const req = new XMLHttpRequest();
         req.open('GET', url);
         if (eligible !== null) {
-          req.setRequestHeader(eligibleHeader, eligible);
+          req.setAttributionReporting(JSON.parse(eligible));
         }
         req.onload = resolve;
         req.onerror = () => reject(req.statusText);

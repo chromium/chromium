@@ -223,6 +223,8 @@ std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
   request->SetFetchLikeAPI(IsFetchLikeAPI());
   request->SetFavicon(IsFavicon());
   request->SetAttributionReportingSupport(GetAttributionReportingSupport());
+  request->SetAttributionReportingEligibility(
+      GetAttributionReportingEligibility());
 
   return request;
 }

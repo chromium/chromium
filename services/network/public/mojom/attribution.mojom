@@ -25,3 +25,22 @@ enum AttributionSupport {
   [EnableIf=is_android]
   kNone,
 };
+
+// Controls the value of the Attribution-Reporting-Eligible request header, if
+// any. This header controls which registrations a response is allowed to
+// register. In most contexts, by default, a response is allowed to register
+// triggers when the header is omitted.
+enum AttributionReportingEligibility {
+  // The header is not set.
+  kUnset,
+  // The header is set to the empty string.
+  kEmpty,
+  // The header contains `event-source`.
+  kEventSource,
+  // The header contains `navigation-source`.
+  kNavigationSource,
+  // The header contains `trigger`.
+  kTrigger,
+  // The header contains `event-source, trigger`.
+  kEventSourceOrTrigger,
+};

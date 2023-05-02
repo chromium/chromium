@@ -404,6 +404,9 @@ void PopulateResourceRequest(const ResourceRequestHead& src,
   dest->has_storage_access = src.GetHasStorageAccess();
 
   dest->attribution_reporting_support = src.GetAttributionReportingSupport();
+
+  dest->attribution_reporting_eligibility =
+      src.GetAttributionReportingEligibility();
 }
 
 }  // namespace blink

@@ -328,6 +328,11 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
 
   new_request->attribution_reporting_support = AttributionManager::GetSupport();
 
+  new_request->attribution_reporting_eligibility =
+      request_info.begin_params->impression.has_value()
+          ? network::mojom::AttributionReportingEligibility::kNavigationSource
+          : network::mojom::AttributionReportingEligibility::kUnset;
+
   return new_request;
 }
 

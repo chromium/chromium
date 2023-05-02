@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
-#include "third_party/blink/renderer/platform/loader/attribution_header_constants.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -107,7 +106,7 @@ struct AttributionSrcTestCase {
   bool use_secure_document_url;
   const char* base_url;
   const char* input_html;
-  const char* expected_eligible_header;
+  network::mojom::AttributionReportingEligibility expected_eligibility;
   network::mojom::AttributionSupport attribution_support =
       network::mojom::AttributionSupport::kWeb;
 };
@@ -253,15 +252,16 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
 
   void AttributionSrcRequestVerification(
       Document* document,
-      const char* expected_eligible_header,
+      network::mojom::AttributionReportingEligibility expected_eligibility,
       network::mojom::AttributionSupport expected_support) {
     ASSERT_TRUE(preload_request_.get());
     Resource* resource = preload_request_->Start(document);
     ASSERT_TRUE(resource);
 
-    EXPECT_EQ(expected_eligible_header,
-              resource->GetResourceRequest().HttpHeaderField(
-                  http_names::kAttributionReportingEligible));
+    EXPECT_EQ(
+        expected_eligibility,
+        resource->GetResourceRequest().GetAttributionReportingEligibility());
+
     EXPECT_EQ(expected_support,
               resource->GetResourceRequest().GetAttributionReportingSupport());
   }
@@ -448,9 +448,9 @@ class HTMLPreloadScannerTest : public PageTestBase {
     scanner_->AppendToEnd(String(test_case.input_html));
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
-    preloader.AttributionSrcRequestVerification(
-        &GetDocument(), test_case.expected_eligible_header,
-        test_case.attribution_support);
+    preloader.AttributionSrcRequestVerification(&GetDocument(),
+                                                test_case.expected_eligibility,
+                                                test_case.attribution_support);
   }
 
  private:
@@ -1127,31 +1127,35 @@ TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
   AttributionSrcTestCase test_cases[] = {
     // Insecure context
     {kInsecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-     nullptr},
+     network::mojom::AttributionReportingEligibility::kUnset},
     {kInsecureDocumentUrl, kSecureBaseURL,
-     "<script src='/script' attributionsrc></script>", nullptr},
+     "<script src='/script' attributionsrc></script>",
+     network::mojom::AttributionReportingEligibility::kUnset},
     // No attributionsrc attribute
-    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>", nullptr},
+    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
+     network::mojom::AttributionReportingEligibility::kUnset},
     {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
-     nullptr},
+     network::mojom::AttributionReportingEligibility::kUnset},
     // Irrelevant element type
     {kSecureDocumentUrl, kSecureBaseURL,
-     "<video poster='/image' attributionsrc>", nullptr},
+     "<video poster='/image' attributionsrc>",
+     network::mojom::AttributionReportingEligibility::kUnset},
     // Not potentially trustworthy reporting origin
     {kSecureDocumentUrl, kInsecureBaseURL, "<img src='/image' attributionsrc>",
-     nullptr},
+     network::mojom::AttributionReportingEligibility::kUnset},
     {kSecureDocumentUrl, kInsecureBaseURL,
-     "<script src='/script' attributionsrc></script>", nullptr},
+     "<script src='/script' attributionsrc></script>",
+     network::mojom::AttributionReportingEligibility::kUnset},
     // Secure context, potentially trustworthy reporting origin,
     // attributionsrc attribute
     {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-     kAttributionEligibleEventSourceAndTrigger},
+     network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
     {kSecureDocumentUrl, kSecureBaseURL,
      "<script src='/script' attributionsrc></script>",
-     kAttributionEligibleEventSourceAndTrigger},
+     network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
 #if BUILDFLAG(IS_ANDROID)
     {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-     kAttributionEligibleEventSourceAndTrigger,
+     network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger,
      network::mojom::AttributionSupport::kWebAndOs},
 #endif
   };

@@ -17,6 +17,7 @@
 #include "services/network/attribution/attribution_attestation_mediator_metrics_recorder.h"
 #include "services/network/attribution/attribution_request_helper.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -147,11 +148,10 @@ std::unique_ptr<TrustTokenKeyCommitments> CreateTestTrustTokenKeyCommitments(
 std::unique_ptr<AttributionRequestHelper> CreateTestAttributionRequestHelper(
     TrustTokenKeyCommitments* trust_token_key_commitments) {
   DCHECK(trust_token_key_commitments);
-  net::HttpRequestHeaders request_headers;
-  request_headers.SetHeader("Attribution-Reporting-Eligible", "trigger");
   return AttributionRequestHelper::CreateForTesting(
-      request_headers, /*create_mediator=*/base::BindRepeating(
-          &CreateTestAttestationMediator, trust_token_key_commitments));
+      mojom::AttributionReportingEligibility::kTrigger,
+      /*create_mediator=*/base::BindRepeating(&CreateTestAttestationMediator,
+                                              trust_token_key_commitments));
 }
 
 AttributionAttestationMediator CreateTestAttestationMediator(

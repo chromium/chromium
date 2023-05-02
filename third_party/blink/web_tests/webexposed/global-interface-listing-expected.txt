@@ -11469,6 +11469,7 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget
     method open
     method overrideMimeType
     method send
+    method setAttributionReporting
     method setPrivateToken
     method setRequestHeader
     setter onreadystatechange

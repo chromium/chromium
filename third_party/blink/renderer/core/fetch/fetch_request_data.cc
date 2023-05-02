@@ -202,6 +202,9 @@ FetchRequestData* FetchRequestData::Create(
     request->SetTrustTokenParams(trust_token_params);
   }
 
+  request->SetAttributionReportingEligibility(
+      fetch_api_request->attribution_reporting_eligibility);
+
   return request;
 }
 
@@ -231,6 +234,8 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->is_history_navigation_ = is_history_navigation_;
   request->window_id_ = window_id_;
   request->trust_token_params_ = trust_token_params_;
+  request->attribution_reporting_eligibility_ =
+      attribution_reporting_eligibility_;
   return request;
 }
 

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -43,8 +42,7 @@ namespace network {
 
 namespace {
 
-constexpr char kAttributionReportingEligibleHeader[] =
-    "Attribution-Reporting-Eligible";
+using ::network::mojom::AttributionReportingEligibility;
 
 void RecordDestinationOriginStatus(
     AttributionRequestHelper::DestinationOriginStatus status) {
@@ -61,13 +59,17 @@ bool IsSuitableDestinationOrigin(const url::Origin& origin) {
          network::IsOriginPotentiallyTrustworthy(origin);
 }
 
-bool IsNeededForRequest(const net::HttpRequestHeaders& request_headers) {
-  std::string attribution_header;
-  bool is_trigger_ping =
-      request_headers.GetHeader(kAttributionReportingEligibleHeader,
-                                &attribution_header) &&
-      base::Contains(attribution_header, "trigger");
-  return is_trigger_ping;
+bool IsNeededForRequest(AttributionReportingEligibility eligibility) {
+  switch (eligibility) {
+    case AttributionReportingEligibility::kUnset:
+    case AttributionReportingEligibility::kEmpty:
+    case AttributionReportingEligibility::kEventSource:
+    case AttributionReportingEligibility::kNavigationSource:
+      return false;
+    case AttributionReportingEligibility::kTrigger:
+    case AttributionReportingEligibility::kEventSourceOrTrigger:
+      return true;
+  }
 }
 
 }  // namespace
@@ -100,13 +102,13 @@ std::string AttributionRequestHelper::AttestationOperation::Message(
 
 std::unique_ptr<AttributionRequestHelper>
 AttributionRequestHelper::CreateIfNeeded(
-    const net::HttpRequestHeaders& request_headers,
+    AttributionReportingEligibility eligibility,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter) {
   DCHECK(key_commitment_getter);
 
   if (!base::FeatureList::IsEnabled(
           network::features::kAttributionReportingTriggerAttestation) ||
-      !IsNeededForRequest(request_headers)) {
+      !IsNeededForRequest(eligibility)) {
     return nullptr;
   }
 
@@ -125,9 +127,9 @@ AttributionRequestHelper::CreateIfNeeded(
 
 std::unique_ptr<AttributionRequestHelper>
 AttributionRequestHelper::CreateForTesting(
-    const net::HttpRequestHeaders& request_headers,
+    AttributionReportingEligibility eligibility,
     base::RepeatingCallback<AttributionAttestationMediator()> create_mediator) {
-  if (!IsNeededForRequest(request_headers)) {
+  if (!IsNeededForRequest(eligibility)) {
     return nullptr;
   }
 
@@ -278,11 +280,35 @@ void AttributionRequestHelper::OnDoneProcessingAttestationResponse(
   std::move(done).Run();
 }
 
+// https://wicg.github.io/attribution-reporting-api/#mark-a-request-for-attribution-reporting-eligibility
 void SetAttributionReportingHeaders(net::URLRequest& url_request,
                                     const ResourceRequest& request) {
+  base::StringPiece eligibility_header;
+  switch (request.attribution_reporting_eligibility) {
+    case AttributionReportingEligibility::kUnset:
+      return;
+    case AttributionReportingEligibility::kEmpty:
+      eligibility_header = "";
+      break;
+    case AttributionReportingEligibility::kEventSource:
+      eligibility_header = "event-source";
+      break;
+    case AttributionReportingEligibility::kNavigationSource:
+      eligibility_header = "navigation-source";
+      break;
+    case AttributionReportingEligibility::kTrigger:
+      eligibility_header = "trigger";
+      break;
+    case AttributionReportingEligibility::kEventSourceOrTrigger:
+      eligibility_header = "event-source, trigger";
+      break;
+  }
+  url_request.SetExtraRequestHeaderByName("Attribution-Reporting-Eligible",
+                                          eligibility_header,
+                                          /*overwrite=*/true);
+
   if (base::FeatureList::IsEnabled(
-          features::kAttributionReportingCrossAppWeb) &&
-      request.headers.HasHeader(kAttributionReportingEligibleHeader)) {
+          features::kAttributionReportingCrossAppWeb)) {
     url_request.SetExtraRequestHeaderByName(
         "Attribution-Reporting-Support",
         GetAttributionSupportHeader(request.attribution_reporting_support),

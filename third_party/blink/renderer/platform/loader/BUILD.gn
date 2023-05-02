@@ -20,8 +20,6 @@ blink_platform_sources("loader") {
   sources = [
     "allowed_by_nosniff.cc",
     "allowed_by_nosniff.h",
-    "attribution_header_constants.cc",
-    "attribution_header_constants.h",
     "child_url_loader_factory_bundle.cc",
     "cors/cors.cc",
     "cors/cors.h",

@@ -561,6 +561,16 @@ class PLATFORM_EXPORT ResourceRequestHead {
     attribution_reporting_support_ = attribution_support;
   }
 
+  network::mojom::AttributionReportingEligibility
+  GetAttributionReportingEligibility() const {
+    return attribution_reporting_eligibility_;
+  }
+
+  void SetAttributionReportingEligibility(
+      network::mojom::AttributionReportingEligibility eligibility) {
+    attribution_reporting_eligibility_ = eligibility;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -683,6 +693,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   network::mojom::AttributionSupport attribution_reporting_support_ =
       network::mojom::AttributionSupport::kWeb;
+
+  network::mojom::AttributionReportingEligibility
+      attribution_reporting_eligibility_ =
+          network::mojom::AttributionReportingEligibility::kUnset;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

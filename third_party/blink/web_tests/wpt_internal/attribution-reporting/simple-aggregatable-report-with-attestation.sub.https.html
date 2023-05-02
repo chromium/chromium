@@ -36,8 +36,8 @@ attribution_reporting_promise_test(async (t) => {
   const triggerRegistrationResponse = await fetch(
     '/wpt_internal/attribution-reporting/resources/trigger_with_attestation.py',
     {
+      attributionReporting: {triggerEligible: true, eventSourceEligible: false},
       headers: {
-        'Attribution-Reporting-Eligible': 'trigger',
         'Test-Trigger-Header-Value': JSON.stringify(trigger),
       },
       keepalive: true,
