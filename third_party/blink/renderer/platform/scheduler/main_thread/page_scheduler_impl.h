@@ -31,9 +31,6 @@ namespace blink {
 namespace scheduler {
 namespace page_scheduler_impl_unittest {
 class PageSchedulerImplTest;
-class PageSchedulerImplPageTransitionTest;
-class
-    PageSchedulerImplPageTransitionTest_PageLifecycleStateTransitionMetric_Test;
 }  // namespace page_scheduler_impl_unittest
 
 class CPUTimeBudgetPool;
@@ -145,10 +142,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
  private:
   friend class FrameSchedulerImpl;
   friend class page_scheduler_impl_unittest::PageSchedulerImplTest;
-  friend class page_scheduler_impl_unittest::
-      PageSchedulerImplPageTransitionTest;
-  friend class page_scheduler_impl_unittest::
-      PageSchedulerImplPageTransitionTest_PageLifecycleStateTransitionMetric_Test;
 
   enum class AudioState {
     kSilent,
@@ -157,24 +150,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   };
 
   enum class NotificationPolicy { kNotifyFrames, kDoNotNotifyFrames };
-
-  // This enum is used for a histogram and should not be renumbered.
-  // It tracks permissible page state transitions between PageLifecycleStates.
-  // We allow all transitions except for visible to frozen and self transitions.
-  enum class PageLifecycleStateTransition {
-    kActiveToHiddenForegrounded = 0,
-    kActiveToHiddenBackgrounded = 1,
-    kHiddenForegroundedToActive = 2,
-    kHiddenForegroundedToHiddenBackgrounded = 3,
-    kHiddenForegroundedToFrozen = 4,
-    kHiddenBackgroundedToActive = 5,
-    kHiddenBackgroundedToHiddenForegrounded = 6,
-    kHiddenBackgroundedToFrozen = 7,
-    kFrozenToActive = 8,
-    kFrozenToHiddenForegrounded = 9,
-    kFrozenToHiddenBackgrounded = 10,
-    kMaxValue = kFrozenToHiddenBackgrounded,
-  };
 
   void RegisterFrameSchedulerImpl(FrameSchedulerImpl* frame_scheduler);
 
