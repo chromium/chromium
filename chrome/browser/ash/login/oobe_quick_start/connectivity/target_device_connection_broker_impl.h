@@ -12,7 +12,9 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
 
 namespace ash::quick_start {
 
@@ -49,6 +51,7 @@ class TargetDeviceConnectionBrokerImpl
   TargetDeviceConnectionBrokerImpl(
       base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
       std::unique_ptr<Connection::Factory> connection_factory,
+      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
       bool is_resume_after_update = false);
   TargetDeviceConnectionBrokerImpl(TargetDeviceConnectionBrokerImpl&) = delete;
   TargetDeviceConnectionBrokerImpl& operator=(
@@ -121,6 +124,8 @@ class TargetDeviceConnectionBrokerImpl
   base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager_;
   std::unique_ptr<Connection::Factory> connection_factory_;
   std::unique_ptr<Connection> connection_;
+
+  mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};

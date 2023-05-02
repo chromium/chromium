@@ -134,9 +134,11 @@ TargetDeviceConnectionBrokerImpl::BluetoothAdapterFactoryWrapper*
 TargetDeviceConnectionBrokerImpl::TargetDeviceConnectionBrokerImpl(
     base::WeakPtr<NearbyConnectionsManager> nearby_connections_manager,
     std::unique_ptr<Connection::Factory> connection_factory,
+    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     bool is_resume_after_update)
     : nearby_connections_manager_(nearby_connections_manager),
-      connection_factory_(std::move(connection_factory)) {
+      connection_factory_(std::move(connection_factory)),
+      quick_start_decoder_(std::move(quick_start_decoder)) {
   if (is_resume_after_update) {
     FetchPersistedSessionContext();
   } else {

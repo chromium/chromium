@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_quick_start_decoder.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fast_pair_advertiser.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "chromeos/constants/devicetype.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -338,11 +340,16 @@ class FakeTargetDeviceConnectionBrokerFactory
     connection_factory_ = connection_factory.get();
     return std::make_unique<TargetDeviceConnectionBrokerImpl>(
         nearby_connections_manager, std::move(connection_factory),
+        mojo::SharedRemote<mojom::QuickStartDecoder>(
+            fake_quick_start_decoder_->GetRemote()),
         is_resume_after_update);
   }
 
   raw_ptr<FakeConnection::Factory, ExperimentalAsh> connection_factory_ =
       nullptr;
+
+  std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
+      std::make_unique<FakeQuickStartDecoder>();
 };
 
 }  // namespace

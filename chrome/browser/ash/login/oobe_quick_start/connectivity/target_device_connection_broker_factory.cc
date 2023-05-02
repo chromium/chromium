@@ -7,6 +7,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/connection.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 
 namespace ash::quick_start {
 
@@ -21,9 +22,10 @@ TargetDeviceConnectionBrokerFactory::Create(
   }
 
   auto connection_factory = std::make_unique<Connection::Factory>();
+  // b/280330705: Properly pass QuickStartDecoder through the factory.
   return std::make_unique<TargetDeviceConnectionBrokerImpl>(
       nearby_connections_manager, std::move(connection_factory),
-      is_resume_after_update);
+      mojo::SharedRemote<mojom::QuickStartDecoder>(), is_resume_after_update);
 }
 
 // static
