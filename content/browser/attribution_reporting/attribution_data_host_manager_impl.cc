@@ -503,6 +503,11 @@ void AttributionDataHostManagerImpl::ParseSource(
         break;
       }
 #if BUILDFLAG(IS_ANDROID)
+      if (auto* rfh = RenderFrameHostImpl::FromID(it->render_frame_id())) {
+        GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+            rfh, blink::mojom::WebFeature::kAttributionReportingCrossAppWeb);
+      }
+
       it->pending_os_decodes().emplace_back(std::move(header.header));
       // Only perform the decode if it is the only one in the queue. Otherwise,
       // there's already an async decode in progress.
