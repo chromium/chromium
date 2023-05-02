@@ -165,7 +165,7 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:chromium/targets_spec_verifier",
+    name = "recipe:chromium/targets_config_verifier",
 )
 
 build_recipe(

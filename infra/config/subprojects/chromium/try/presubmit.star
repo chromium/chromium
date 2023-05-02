@@ -125,9 +125,9 @@ presubmit_builder(
 )
 
 presubmit_builder(
-    name = "targets-spec-verifier",
-    description_html = "checks that target specs specified in starlark match those specified in //testing/buildbot",
-    executable = "recipe:chromium/targets_spec_verifier",
+    name = "targets-config-verifier",
+    description_html = "checks that target configs specified in starlark match those specified in //testing/buildbot",
+    executable = "recipe:chromium/targets_config_verifier",
     properties = {
         "builder_config_directory": "infra/config/generated/builders",
     },
