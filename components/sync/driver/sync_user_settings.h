@@ -53,6 +53,10 @@ class SyncUserSettings {
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
   virtual void SetSelectedTypes(bool sync_everything,
                                 UserSelectableTypeSet types) = 0;
+#if BUILDFLAG(IS_IOS)
+  // Enables the account storage for bookmark and reading list datatype.
+  virtual void SetBookmarksAndReadingListAccountStorageOptIn(bool value) = 0;
+#endif  // BUILDFLAG(IS_IOS)
   // Registered user selectable types are derived from registered model types.
   // A UserSelectableType is registered if any of its ModelTypes is registered.
   virtual UserSelectableTypeSet GetRegisteredSelectableTypes() const = 0;

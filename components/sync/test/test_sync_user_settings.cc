@@ -71,6 +71,11 @@ void TestSyncUserSettings::SetSelectedTypes(bool sync_everything,
   }
 }
 
+#if BUILDFLAG(IS_IOS)
+void TestSyncUserSettings::SetBookmarksAndReadingListAccountStorageOptIn(
+    bool value) {}
+#endif  // BUILDFLAG(IS_IOS)
+
 UserSelectableTypeSet TestSyncUserSettings::GetSelectedTypes() const {
   return selected_types_;
 }
