@@ -619,7 +619,7 @@ crbug.com/1237319 [ chromeos angle-opengles passthrough intel ] conformance/exte
 crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 # Failures on validating command decoder only; won't fix.
-crbug.com/angleproject/5038 [ chromeos no-passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
+crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 no-passthrough target-cpu-64 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 ## Arm-based issues. ##
 crbug.com/957807 [ chromeos chromeos-board-kevin ] deqp/data/gles2/shaders/conversions* [ Failure ]
