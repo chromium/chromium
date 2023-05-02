@@ -195,10 +195,6 @@ public class AttributionOsLevelManager {
                     PERMISSION_ACCESS_ADSERVICES_ATTRIBUTION, Process.myPid(), Process.myUid())
                 != PackageManager.PERMISSION_GRANTED) {
             // Permission may not be granted when embedded as WebView.
-            Log.i(TAG,
-                    "OS-provided attribution support is disabled. Needs "
-                            + PERMISSION_ACCESS_ADSERVICES_ATTRIBUTION + " permission. "
-                            + "See https://developer.android.com/design-for-safety/privacy-sandbox/setup-api-access");
             AttributionOsLevelManagerJni.get().onMeasurementStateReturned(0);
             return;
         }
