@@ -56,8 +56,8 @@ jobs:
         if: ${{ always() }}
         run: >
           node test-report/htmlWptReport.mjs
-          out/wptreport-chromedriver.json
-          out/wptreport-chromedriver.html
+          out/wptreport.json
+          out/wptreport.html
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
@@ -68,7 +68,7 @@ jobs:
       # The following steps should be done only for merges in `main`.
       - name: Prepare Pages
         if: ${{ always() }}
-        run: mkdir -p out/site; cp out/wptreport-chromedriver.html out/site/index.html
+        run: mkdir -p out/site; cp out/wptreport.html out/site/index.html
       - name: Setup Pages
         if: ${{ always() }}
         uses: actions/configure-pages@v3
