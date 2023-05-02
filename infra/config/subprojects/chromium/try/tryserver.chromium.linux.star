@@ -401,6 +401,8 @@ try_.orchestrator_builder(
     compilator = "linux_chromium_asan_rel_ng-compilator",
     experiments = {
         "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
@@ -554,6 +556,8 @@ try_.orchestrator_builder(
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     experiments = {
         "chromium_rts.inverted_rts": 100,
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
     },
     main_list_view = "try",
     tryjob = try_.job(),
