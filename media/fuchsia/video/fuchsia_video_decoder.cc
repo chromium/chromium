@@ -318,11 +318,6 @@ void FuchsiaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   protected_output_ =
       secure_mode != media::mojom::VideoDecoderSecureMemoryMode::CLEAR;
 
-  LOG(ERROR) << "+++ SECURE MODE = " << static_cast<int>(secure_mode)
-             << " use_overlays=" << use_overlays_for_video_ << " force="
-             << base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    switches::kForceProtectedVideoOutputBuffers);
-
   // Reset output buffers since we won't be able to re-use them.
   ReleaseOutputBuffers();
 
