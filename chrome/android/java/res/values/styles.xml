@@ -43,8 +43,10 @@ found in the LICENSE file.
     <!-- This is distinct from Theme.Chromium.Activity.Fullscreen.Transparent, which makes the
          payment handler window overlap the bottom nav bar. -->
     <style name="Base.Theme.Chromium.Activity.Fullscreen" parent="Theme.BrowserUI.DayNight" />
-    <style name="Theme.Chromium.Activity.Fullscreen"
+    <style name="Base.V27.Theme.Chromium.Activity.Fullscreen"
         parent="Base.Theme.Chromium.Activity.Fullscreen" />
+    <style name="Theme.Chromium.Activity.Fullscreen"
+        parent="Base.V27.Theme.Chromium.Activity.Fullscreen" />
     <style name="Theme.Chromium.Activity.Fullscreen.Transparent">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowContentOverlay">@null</item>

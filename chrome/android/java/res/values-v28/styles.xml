@@ -12,4 +12,8 @@ found in the LICENSE file.
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
     </style>
+    <style name="Theme.Chromium.Activity.Fullscreen" parent="Base.V27.Theme.Chromium.Activity.Fullscreen">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
+    </style>
 </resources>
