@@ -2122,7 +2122,7 @@
       // Enable AnimationFrameTimingMonitor, which measures long animation
       // frames. Can be used for UKM or for the perofrmance API.
       name: "LongAnimationFrameMonitoring",
-      implied_by: ["LongAnimationFrameTiming", "LongAnimationFrameUKM"],
+      implied_by: ["LongAnimationFrameTiming", "LongAnimationFrameUKM", "LongTaskFromLongAnimationFrame"],
       status: "experimental"
     },
     {
@@ -2135,6 +2135,10 @@
       // Enables long aniamtion frame logging to UKM
       name: "LongAnimationFrameUKM",
       status: "stable"
+    },
+    {
+      // Use LongAnimationFrameMonitor to emit longtask entries
+      name: "LongTaskFromLongAnimationFrame"
     },
     {
       name: "MachineLearningCommon",

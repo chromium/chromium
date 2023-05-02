@@ -68,12 +68,6 @@ class WindowPerformanceTest : public testing::Test,
     ResetPerformance();
   }
 
-  bool ObservingLongTasks() {
-    return !PerformanceMonitor::Monitor(performance_->GetExecutionContext())
-                ->thresholds_[PerformanceMonitor::kLongTask]
-                .is_zero();
-  }
-
   void AddLongTaskObserver() {
     // simulate with filter options.
     performance_->observer_filter_options_ |= PerformanceEntry::kLongTask;
@@ -82,14 +76,6 @@ class WindowPerformanceTest : public testing::Test,
   void RemoveLongTaskObserver() {
     // simulate with filter options.
     performance_->observer_filter_options_ = PerformanceEntry::kInvalid;
-  }
-
-  void SimulateDidProcessLongTask() {
-    auto* monitor = GetFrame()->GetPerformanceMonitor();
-    monitor->WillExecuteScript(GetWindow());
-    monitor->DidExecuteScript();
-    monitor->DidProcessTask(base::TimeTicks(),
-                            base::TimeTicks() + base::Seconds(1));
   }
 
   void SimulatePaint() { performance_->OnPaintFinished(); }
@@ -216,20 +202,6 @@ class WindowPerformanceTest : public testing::Test,
   base::test::ScopedFeatureList features_;
 };
 
-TEST_P(WindowPerformanceTest, LongTaskObserverInstrumentation) {
-  // Check that we're always observing longtasks
-  EXPECT_TRUE(ObservingLongTasks());
-
-  // Adding LongTask observer.
-  AddLongTaskObserver();
-  EXPECT_TRUE(ObservingLongTasks());
-
-  // Removing LongTask observer doeos not cause us to stop observing. We still
-  // observe because entries should still be added to the longtasks buffer.
-  RemoveLongTaskObserver();
-  EXPECT_TRUE(ObservingLongTasks());
-}
-
 TEST_P(WindowPerformanceTest, SanitizedLongTaskName) {
   // Unable to attribute, when no execution contents are available.
   EXPECT_EQ("unknown", SanitizedAttribution(nullptr, false, GetFrame()));
@@ -261,13 +233,9 @@ TEST_P(WindowPerformanceTest, SanitizedLongTaskName_CrossOrigin) {
 // to the old window do not cause a crash.
 TEST_P(WindowPerformanceTest, NavigateAway) {
   AddLongTaskObserver();
-  EXPECT_TRUE(ObservingLongTasks());
 
   // Simulate navigation commit.
   GetFrame()->DomWindow()->FrameDestroyed();
-
-  // m_performance is still alive, and should not crash when notified.
-  SimulateDidProcessLongTask();
 }
 
 // Checks that WindowPerformance object and its fields (like PerformanceTiming)

@@ -201,8 +201,10 @@ WindowPerformance::WindowPerformance(LocalDOMWindow* window)
           MakeGarbageCollected<ResponsivenessMetrics>(this)) {
   DCHECK(window);
   DCHECK(window->GetFrame()->GetPerformanceMonitor());
-  window->GetFrame()->GetPerformanceMonitor()->Subscribe(
-      PerformanceMonitor::kLongTask, kLongTaskObserverThreshold, this);
+  if (!RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled()) {
+    window->GetFrame()->GetPerformanceMonitor()->Subscribe(
+        PerformanceMonitor::kLongTask, kLongTaskObserverThreshold, this);
+  }
   if (RuntimeEnabledFeatures::VisibilityStateEntryEnabled()) {
     DCHECK(GetPage());
     AddVisibilityStateEntry(GetPage()->IsPageVisible(), base::TimeTicks());

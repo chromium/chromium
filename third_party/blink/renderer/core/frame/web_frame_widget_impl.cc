@@ -1451,6 +1451,23 @@ void WebFrameWidgetImpl::ReportLongAnimationFrameTiming(
       });
 }
 
+void WebFrameWidgetImpl::ReportLongTaskTiming(base::TimeTicks start_time,
+                                              base::TimeTicks end_time,
+                                              ExecutionContext* task_context) {
+  CHECK(local_root_);
+  CHECK(local_root_->GetFrame());
+  ForEachLocalFrameControlledByWidget(
+      local_root_->GetFrame(), [&](WebLocalFrameImpl* local_frame) {
+        CHECK(local_frame->GetFrame());
+        CHECK(local_frame->GetFrame()->DomWindow());
+        // Note: |task_context| could be the execution context of any same-agent
+        // frame.
+        DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
+            ->ReportLongTask(start_time, end_time, task_context,
+                             /*has_multiple_contexts=*/false);
+      });
+}
+
 bool WebFrameWidgetImpl::ShouldReportLongAnimationFrameTiming() const {
   return widget_base_ && !IsHidden();
 }

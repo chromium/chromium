@@ -1977,5 +1977,12 @@
       "--enable-features=MainThreadHighPriorityImageLoading"
     ],
     "expires": "Dec 1, 2023"
+  },
+  {
+    "prefix": "longtask-from-loaf",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/longtask-timing"],
+    "args": ["--enable-blink-features=LongTaskFromLongAnimationFrame"],
+    "expires": "Aug 1, 2023"
   }
 ]

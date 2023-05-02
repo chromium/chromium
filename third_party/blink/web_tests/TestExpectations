@@ -4368,6 +4368,10 @@ crbug.com/907125 external/wpt/lifecycle/worker-dispay-none.tentative.html [ Fail
 # Sheriff 2019-11-15
 crbug.com/1025123 external/wpt/longtask-timing/longtask-in-sibling-iframe-crossorigin.html [ Failure Pass ]
 
+crbug.com/1251964 external/wpt/longtask-timing/longtask-promise.html [ Timeout ]
+crbug.com/1251964 virtual/longtask-from-loaf/external/wpt/longtask-timing/longtask-promise.html [ Pass ]
+
+
 # Timeout media preload test until preloading media destinations gets enabled.
 crbug.com/977033 http/tests/priorities/resource-load-priorities-media-preload.html [ Timeout ]
 

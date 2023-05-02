@@ -327,6 +327,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   // AnimationFrameTimingMonitor::Client overrides
   void ReportLongAnimationFrameTiming(AnimationFrameTimingInfo* info) override;
   bool ShouldReportLongAnimationFrameTiming() const override;
+  void ReportLongTaskTiming(base::TimeTicks start_time,
+                            base::TimeTicks end,
+                            ExecutionContext* task_context) override;
   bool RequestedMainFramePending() override;
   ukm::UkmRecorder* MainFrameUkmRecorder() override;
   ukm::SourceId MainFrameUkmSourceId() override;

@@ -26,6 +26,7 @@ namespace blink {
 
 namespace {
 constexpr base::TimeDelta kLongAnimationFrameDuration = base::Milliseconds(50);
+constexpr base::TimeDelta kLongTaskDuration = base::Milliseconds(50);
 constexpr base::TimeDelta kLongScriptDuration = base::Milliseconds(5);
 }  // namespace
 
@@ -159,8 +160,14 @@ void AnimationFrameTimingMonitor::OnTaskCompleted(
 
   // If we already need an update and a new task is processed, count its
   // duration towards blockingTime.
-  if (frame && state_ == State::kPendingFrame) {
-    ApplyTaskDuration(task_duration);
+  if (frame) {
+    if (RuntimeEnabledFeatures::LongTaskFromLongAnimationFrameEnabled() &&
+        task_duration >= kLongTaskDuration) {
+      client_.ReportLongTaskTiming(start_time, end_time, frame->DomWindow());
+    }
+    if (state_ == State::kPendingFrame) {
+      ApplyTaskDuration(task_duration);
+    }
   }
 
   if (state_ != State::kProcessingTask) {
