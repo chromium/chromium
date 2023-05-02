@@ -2944,21 +2944,26 @@ void InjectNTP(Browser* browser) {
   };
 
   if (self.settingsNavigationController) {
+    // Store a reference to the presentingViewController in case the user
+    // is dismissing the Signin screen and then dismisses Settings before
+    // the Signin screen is done animating, which will delay the execution of
+    // the `dismissSettings` block stopping the code from accessing
+    // the `presentingViewController` property.
+    __weak UIViewController* weakPresentingViewController =
+        [self.settingsNavigationController presentingViewController];
     ProceduralBlock dismissSettings = ^() {
-      [self.settingsNavigationController cleanUpSettings];
-      UIViewController* presentingViewController =
-          [self.settingsNavigationController presentingViewController];
-      // If presentingViewController is nil it means the VC was already
-      // dismissed by some other action like swiping down.
-      DCHECK(presentingViewController);
-      [presentingViewController dismissViewControllerAnimated:animated
-                                                   completion:completion];
-      self.settingsNavigationController = nil;
+      [weakSelf.settingsNavigationController cleanUpSettings];
+      DCHECK(weakPresentingViewController);
+      [weakPresentingViewController dismissViewControllerAnimated:animated
+                                                       completion:completion];
+      weakSelf.settingsNavigationController = nil;
     };
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
     // to be closed first.
     if (self.signinCoordinator) {
+      // If signinCoordinator is already dismissing, completion execution will
+      // happen when it is done animating.
       [self interruptSigninCoordinatorAnimated:animated
                                     completion:dismissSettings];
     } else if (dismissSettings) {
