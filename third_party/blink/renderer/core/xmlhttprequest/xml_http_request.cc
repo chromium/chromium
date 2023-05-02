@@ -1477,7 +1477,8 @@ void XMLHttpRequest::setAttributionReporting(
   }
 
   attribution_reporting_eligibility_ =
-      ConvertAttributionReportingRequestOptionsToMojom(*options);
+      ConvertAttributionReportingRequestOptionsToMojom(
+          *options, *GetExecutionContext(), exception_state);
 }
 
 bool XMLHttpRequest::HasContentTypeRequestHeader() const {

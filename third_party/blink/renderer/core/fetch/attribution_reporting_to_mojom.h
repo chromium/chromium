@@ -11,12 +11,18 @@
 namespace blink {
 
 class AttributionReportingRequestOptions;
+class ExceptionState;
+class ExecutionContext;
 
 // Converts an IDL AttributionReportingRequestOptions to its Mojo counterpart.
+// Throws an exception if the execution context doesn't allow Attribution
+// Reporting in its permission policy.
 CORE_EXPORT
 network::mojom::AttributionReportingEligibility
 ConvertAttributionReportingRequestOptionsToMojom(
-    const AttributionReportingRequestOptions&);
+    const AttributionReportingRequestOptions&,
+    const ExecutionContext&,
+    ExceptionState&);
 
 }  // namespace blink
 
