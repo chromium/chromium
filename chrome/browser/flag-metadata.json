@@ -5190,7 +5190,7 @@
       "msramek",
       "chrome-friendly-settings@google.com"
     ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "notification-permission-rationale-bottom-sheet",
@@ -6450,7 +6450,7 @@
       "sideyilmaz",
       "dullweber",
       "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "record-snapshot-size",
@@ -6598,12 +6598,12 @@
   {
     "name": "safety-check-notification-permissions",
     "owners": ["sideyilmaz"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "safety-check-unused-site-permissions",
     "owners": ["sideyilmaz"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "sanitizer-api",
