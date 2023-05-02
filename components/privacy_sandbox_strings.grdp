@@ -126,7 +126,8 @@
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE" desc="Title of the restricted notice" formatter_data="android_java">
     New ad privacy feature now available
   </message>
-  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1" desc="First description in the restricted notice" translateable="false">
+  <!-- Note that this string differs slightly on Android, which instead uses `privacy_sandbox_m1_notice_restricted_description_1_android` -->
+  <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1" desc="First description in the restricted notice">
     Chrome now shares only very limited information between sites, such as when an ad was shown to you, to help sites measure the performance of ads.
   </message>
   <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2" desc="Second description in the restricted notice"  formatter_data="android_java">
