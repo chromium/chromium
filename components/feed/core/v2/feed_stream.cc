@@ -205,6 +205,7 @@ const FeedStream::Stream* FeedStream::FindStream(
 }
 
 FeedStream::Stream& FeedStream::GetStream(const StreamType& stream_type) {
+  CHECK(stream_type.IsValid());
   auto iter = streams_.find(stream_type);
   if (iter != streams_.end())
     return iter->second;
@@ -385,12 +386,16 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
 void FeedStream::OnEnterBackground() {
   metrics_reporter_->OnEnterBackground();
   if (GetFeedConfig().upload_actions_on_enter_background) {
-    task_queue_.AddTask(FROM_HERE,
-                        std::make_unique<UploadActionsTask>(
-                            this,
-                            /*launch_reliability_logger=*/nullptr,
-                            base::BindOnce(&FeedStream::UploadActionsComplete,
-                                           base::Unretained(this))));
+    task_queue_.AddTask(
+        FROM_HERE,
+        std::make_unique<UploadActionsTask>(
+            // Pass empty list to read pending actions from the store.
+            std::vector<feedstore::StoredAction>(),
+            /*from_load_more=*/false,
+            // Pass unknown stream type to skip logging upload actions events.
+            StreamType(), this,
+            base::BindOnce(&FeedStream::UploadActionsComplete,
+                           base::Unretained(this))));
   }
 }
 
@@ -554,7 +559,8 @@ void FeedStream::EnabledPreferencesChanged() {
 
 void FeedStream::LoadMore(const FeedStreamSurface& surface,
                           base::OnceCallback<void(bool)> callback) {
-  Stream& stream = GetStream(surface.GetStreamType());
+  StreamType stream_type = surface.GetStreamType();
+  Stream& stream = GetStream(stream_type);
   if (!stream.model) {
     DLOG(ERROR) << "Ignoring LoadMore() before the model is loaded";
     return std::move(callback).Run(false);
@@ -566,6 +572,8 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
           .load_stream_status != LoadStreamStatus::kNoStatus) {
     return std::move(callback).Run(false);
   }
+
+  stream.surface_updater->launch_reliability_logger().LogLoadMoreStarted();
 
   metrics_reporter_->OnLoadMoreBegin(surface.GetStreamType(),
                                      surface.GetSurfaceId());
@@ -1262,10 +1270,14 @@ void FeedStream::UploadAction(
     const LoggingParameters& logging_parameters,
     bool upload_now,
     base::OnceCallback<void(UploadActionsTask::Result)> callback) {
+  UploadActionsTask::WireAction wire_action(action, logging_parameters,
+                                            upload_now);
   task_queue_.AddTask(
-      FROM_HERE, std::make_unique<UploadActionsTask>(
-                     std::move(action), upload_now, logging_parameters, this,
-                     std::move(callback)));
+      FROM_HERE,
+      std::make_unique<UploadActionsTask>(
+          std::move(wire_action),
+          // Pass unknown string type to skip logging upload actions events.
+          StreamType(), this, std::move(callback)));
 }
 
 void FeedStream::LoadModel(const StreamType& stream_type,

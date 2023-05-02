@@ -94,7 +94,7 @@ StreamType StreamTypeFromKey(base::StringPiece id) {
 }
 
 int64_t ToTimestampMillis(base::Time t) {
-  return (t - base::Time::UnixEpoch()).InMilliseconds();
+  return t.is_null() ? 0L : (t - base::Time::UnixEpoch()).InMilliseconds();
 }
 
 base::Time FromTimestampMillis(int64_t millis) {
@@ -102,7 +102,7 @@ base::Time FromTimestampMillis(int64_t millis) {
 }
 
 int64_t ToTimestampNanos(base::Time t) {
-  return (t - base::Time::UnixEpoch()).InNanoseconds();
+  return t.is_null() ? 0L : (t - base::Time::UnixEpoch()).InNanoseconds();
 }
 
 base::Time FromTimestampMicros(int64_t micros) {

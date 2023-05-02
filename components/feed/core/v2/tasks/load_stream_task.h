@@ -16,7 +16,6 @@
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_network.h"
-#include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
@@ -31,6 +30,7 @@
 
 namespace feed {
 class FeedStream;
+class LaunchReliabilityLogger;
 
 // Loads the stream model from storage or network. If data is refreshed from the
 // network, it is persisted to |FeedStore| by overwriting any existing stream
@@ -115,9 +115,10 @@ class LoadStreamTask : public offline_pages::Task {
   bool CheckPreconditions();
   void PassedPreconditions();
 
-  void LoadFromNetwork(
-      std::vector<feedstore::StoredAction> pending_actions_from_store,
-      bool need_to_read_pending_actions);
+  void UploadActions(
+      std::vector<feedstore::StoredAction> pending_actions_from_store);
+  void SendFeedQueryRequest();
+
   void LoadFromStoreComplete(LoadStreamFromStoreTask::Result result);
   void UploadActionsComplete(UploadActionsTask::Result result);
   void QueryApiRequestComplete(
@@ -127,6 +128,8 @@ class LoadStreamTask : public offline_pages::Task {
                               NetworkResponseInfo response_info);
   void RequestFinished(LaunchResult result);
   void Done(LaunchResult result);
+
+  LaunchReliabilityLogger& GetLaunchReliabilityLogger() const;
 
   Options options_;
   const raw_ref<FeedStream> stream_;  // Unowned.
@@ -151,7 +154,6 @@ class LoadStreamTask : public offline_pages::Task {
   base::OnceCallback<void(Result)> done_callback_;
   std::unique_ptr<UploadActionsTask> upload_actions_task_;
   std::unique_ptr<UploadActionsTask::Result> upload_actions_result_;
-  const raw_ref<LaunchReliabilityLogger> launch_reliability_logger_;
   int64_t server_receive_timestamp_ns_ = 0l;
   int64_t server_send_timestamp_ns_ = 0l;
   bool is_web_feed_subscriber_ = false;

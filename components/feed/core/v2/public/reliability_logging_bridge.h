@@ -55,6 +55,16 @@ class ReliabilityLoggingBridge {
   virtual void LogLaunchFinishedAfterStreamUpdate(
       feedwire::DiscoverLaunchResult result) = 0;
 
+  virtual void LogLoadMoreStarted() = 0;
+  virtual void LogLoadMoreIndicatorShown() = 0;
+  virtual void LogLoadMoreActionUploadRequestStarted() = 0;
+  virtual void LogLoadMoreRequestSent() = 0;
+  virtual void LogLoadMoreResponseReceived(
+      int64_t server_receive_timestamp_ns,
+      int64_t server_send_timestamp_ns) = 0;
+  virtual void LogLoadMoreRequestFinished(int canonical_status) = 0;
+  virtual void LogLoadMoreEnded(bool success) = 0;
+
   virtual ~ReliabilityLoggingBridge() = default;
 };
 
