@@ -144,10 +144,6 @@ class ASH_EXPORT AmbientController
   // device into sleep. |minutes| with a value 0 means forever.
   void SetScreenSaverDuration(int minutes);
 
-  // Get the number of minutes to run screen saver before sleep from
-  // pref_service. A nullopt means failed to fetch duration pref value.
-  absl::optional<int> GetScreenSaverDuration();
-
   void StartTimerToReleaseWakeLock();
 
   // Returns true if ambient mode containers are visible or are being

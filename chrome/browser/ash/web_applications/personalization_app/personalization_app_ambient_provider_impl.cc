@@ -348,16 +348,16 @@ void PersonalizationAppAmbientProviderImpl::OnAmbientUiSettingsChanged() {
 }
 
 void PersonalizationAppAmbientProviderImpl::OnScreenSaverDurationChanged() {
-  absl::optional<int> duration_pref_value =
-      Shell::Get()->ambient_controller()->GetScreenSaverDuration();
-
-  if (!ambient_observer_remote_.is_bound() ||
-      !duration_pref_value.has_value() || duration_pref_value.value() < 0) {
+  if (!ambient_observer_remote_.is_bound()) {
     return;
   }
 
-  ambient_observer_remote_->OnScreenSaverDurationChanged(
-      duration_pref_value.value());
+  PrefService* pref_service = profile_->GetPrefs();
+  DCHECK(pref_service);
+  int duration_minutes = pref_service->GetInteger(
+      ambient::prefs::kAmbientModeRunningDurationMinutes);
+  CHECK(duration_minutes >= 0);
+  ambient_observer_remote_->OnScreenSaverDurationChanged(duration_minutes);
 }
 
 void PersonalizationAppAmbientProviderImpl::OnTemperatureUnitChanged() {

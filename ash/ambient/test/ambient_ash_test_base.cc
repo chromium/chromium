@@ -709,8 +709,11 @@ void AmbientAshTestBase::SetScreenSaverDuration(int minutes) {
   ambient_controller()->SetScreenSaverDuration(minutes);
 }
 
-absl::optional<int> AmbientAshTestBase::GetScreenSaverDuration() {
-  return ambient_controller()->GetScreenSaverDuration();
+int AmbientAshTestBase::GetScreenSaverDuration() {
+  return Shell::Get()
+      ->session_controller()
+      ->GetPrimaryUserPrefService()
+      ->GetInteger(ambient::prefs::kAmbientModeRunningDurationMinutes);
 }
 
 }  // namespace ash
