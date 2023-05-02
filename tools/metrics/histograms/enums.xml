@@ -49472,6 +49472,12 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Dismiss dialog"/>
 </enum>
 
+<enum name="HighEfficiencyChipState">
+  <int value="0" label="Collapsed chip"/>
+  <int value="1" label="Expanded educational chip"/>
+  <int value="2" label="Expanded chip with savings"/>
+</enum>
+
 <enum name="HighEfficiencyModeExceptionListAction">
   <int value="0" label="Add"/>
   <int value="1" label="Edit"/>

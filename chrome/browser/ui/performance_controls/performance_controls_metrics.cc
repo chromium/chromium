@@ -25,3 +25,8 @@ void RecordHighEfficiencyIPHEnableMode(bool success) {
   base::UmaHistogramBoolean("PerformanceControls.HighEfficiency.IPHEnableMode",
                             success);
 }
+
+void RecordHighEfficiencyChipState(HighEfficiencyChipState state) {
+  base::UmaHistogramEnumeration("PerformanceControls.HighEfficiency.ChipState",
+                                state);
+}

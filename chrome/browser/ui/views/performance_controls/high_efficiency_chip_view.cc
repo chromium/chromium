@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/performance_controls/high_efficiency_chip_tab_helper.h"
+#include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -105,15 +106,17 @@ void HighEfficiencyChipView::UpdateImpl() {
   if (tab_helper->ShouldChipBeVisible() && is_high_efficiency_mode_enabled_) {
     SetVisible(true);
     if (tab_helper->ShouldIconAnimate()) {
+      tab_helper->SetWasAnimated();
       // Show an informational message the first 3 times the chip is shown.
       PrefService* const pref_service = browser_->profile()->GetPrefs();
       int times_rendered =
           pref_service->GetInteger(prefs::kHighEfficiencyChipExpandedCount);
       if (times_rendered < kChipAnimationCount) {
         AnimateIn(IDS_HIGH_EFFICIENCY_CHIP_LABEL);
-        tab_helper->SetWasAnimated();
         pref_service->SetInteger(prefs::kHighEfficiencyChipExpandedCount,
                                  times_rendered + 1);
+        RecordHighEfficiencyChipState(
+            HighEfficiencyChipState::kExpandedEducation);
       } else if (ShouldHighlightMemorySavingsWithExpandedChip(tab_helper,
                                                               pref_service)) {
         int const memory_savings = tab_helper->GetMemorySavingsInBytes();
@@ -121,9 +124,12 @@ void HighEfficiencyChipView::UpdateImpl() {
             l10n_util::GetStringFUTF16(IDS_HIGH_EFFICIENCY_CHIP_SAVINGS_LABEL,
                                        {ui::FormatBytes(memory_savings)}));
         AnimateIn(absl::nullopt);
-        tab_helper->SetWasAnimated();
         pref_service->SetTime(prefs::kLastHighEfficiencyChipExpandedTimestamp,
                               base::Time::Now());
+        RecordHighEfficiencyChipState(
+            HighEfficiencyChipState::kExpandedWithSavings);
+      } else {
+        RecordHighEfficiencyChipState(HighEfficiencyChipState::kCollapsed);
       }
     } else if (tab_helper->HasChipBeenHidden()) {
       UnpauseAnimation();

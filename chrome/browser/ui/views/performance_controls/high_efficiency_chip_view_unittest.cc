@@ -182,6 +182,28 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowWhenPrefIsFalse) {
   EXPECT_FALSE(view->GetVisible());
 }
 
+// When the collapsed chip is shown, UMA metrics should be logged.
+TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCollapsedChip) {
+  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetHighEfficiencyModeEnabled(true);
+  SetTabDiscardState(0, true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceControls.HighEfficiency.ChipState",
+      HighEfficiencyChipState::kCollapsed, 1);
+}
+
+// When the educational expanded chip is shown, UMA metrics should be logged.
+TEST_F(HighEfficiencyChipViewTest,
+       ShouldLogMetricsForCInformationalExpandedChip) {
+  SetHighEfficiencyModeEnabled(true);
+  SetTabDiscardState(0, true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceControls.HighEfficiency.ChipState",
+      HighEfficiencyChipState::kExpandedEducation, 1);
+}
+
 // When the previous page was not previously discarded, the icon should not be
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
@@ -252,6 +274,21 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_TRUE(view->GetVisible());
   EXPECT_FALSE(view->ShouldShowLabel());
+}
+
+// When the celebratory expanded chip is shown, UMA metrics should be logged.
+TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCelebratoryExpandedChip) {
+  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  SetHighEfficiencyModeEnabled(true);
+  AddNewTab(kHighMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  task_environment()->AdvanceClock(base::Hours(8));
+  SetTabDiscardState(0, true);
+
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceControls.HighEfficiency.ChipState",
+      HighEfficiencyChipState::kExpandedWithSavings, 1);
 }
 
 // When the page action chip is clicked, the dialog should open.

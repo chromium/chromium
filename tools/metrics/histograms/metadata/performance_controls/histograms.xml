@@ -64,6 +64,18 @@ each histogram. Maybe add here or add a new performance controls one
   </summary>
 </histogram>
 
+<histogram name="PerformanceControls.HighEfficiency.ChipState"
+    enum="HighEfficiencyChipState" expires_after="2023-11-01">
+  <owner>agale@chromium.org</owner>
+  <owner>chrome-performance-ui-sea@google.com</owner>
+  <summary>
+    Logged the first time a user revisits a discarded tab indicating the state
+    of the high efficiency page action chip. This will be used to tune the
+    parameters for how often we show the informational and promotional page
+    action chips.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceControls.HighEfficiency.InfoIPHOpenSettings"
     units="BooleanSettingsOpened" expires_after="2023-09-17">
   <owner>agale@chromium.org</owner>
