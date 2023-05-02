@@ -9,7 +9,7 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
-import '../../controls/controlled_button.js';
+import '/shared/settings/controls/controlled_button.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_components/settings_prefs/pref_util.js';

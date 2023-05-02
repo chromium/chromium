@@ -88,6 +88,7 @@ export {CaptionsBrowserProxy, CaptionsBrowserProxyImpl, LiveCaptionLanguageList}
 // </if>
 
 export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/settings/appearance_page/fonts_browser_proxy.js';
+export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
 export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
 export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -139,7 +140,6 @@ export {ClearBrowsingDataBrowserProxy, ClearBrowsingDataBrowserProxyImpl, ClearB
 export {SettingsClearBrowsingDataDialogElement} from './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 export {SettingsHistoryDeletionDialogElement} from './clear_browsing_data_dialog/history_deletion_dialog.js';
 export {SettingsPasswordsDeletionDialogElement} from './clear_browsing_data_dialog/passwords_deletion_dialog.js';
-export {ControlledButtonElement} from './controls/controlled_button.js';
 export {SettingsCheckboxElement} from './controls/settings_checkbox.js';
 export {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';

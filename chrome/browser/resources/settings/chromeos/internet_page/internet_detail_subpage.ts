@@ -28,7 +28,7 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import '../../controls/controlled_button.js';
+import '/shared/settings/controls/controlled_button.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import './cellular_roaming_toggle_button.js';
 import './internet_shared.css.js';

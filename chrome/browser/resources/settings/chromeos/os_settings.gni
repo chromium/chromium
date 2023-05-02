@@ -255,7 +255,6 @@ web_component_files = [
   # Files below are from Browser Settings and shared with ChromeOS Settings
   "a11y_page/captions_subpage.ts",
   "a11y_page/live_caption_section.ts",
-  "controls/controlled_button.ts",
   "controls/password_prompt_dialog.ts",
   "privacy_page/secure_dns.ts",
   "privacy_page/secure_dns_input.ts",

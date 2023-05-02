@@ -11,7 +11,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../controls/controlled_button.js';
+import '/shared/settings/controls/controlled_button.js';
 import '/shared/settings/controls/settings_toggle_button.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import 'chrome://resources/cr_components/settings_prefs/pref_util.js';
