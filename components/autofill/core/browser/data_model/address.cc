@@ -186,8 +186,8 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                          : std::string();
     }
 
-    structured_address_.SetValueForTypeIfPossible(ADDRESS_HOME_COUNTRY,
-                                                  country_code, status);
+    structured_address_.SetValueForTypeIfPossible(
+        ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code), status);
     return !country_code.empty();
   }
 
@@ -202,8 +202,8 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
             value, locale);
 
-    structured_address_.SetValueForTypeIfPossible(ADDRESS_HOME_COUNTRY,
-                                                  country_code, status);
+    structured_address_.SetValueForTypeIfPossible(
+        ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code), status);
     return !GetRawInfo(ADDRESS_HOME_COUNTRY).empty();
   }
 

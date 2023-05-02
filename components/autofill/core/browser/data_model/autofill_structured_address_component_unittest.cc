@@ -48,11 +48,10 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   }
 
   bool ConvertAndSetValueForAdditionalFieldTypeName(
-      const std::string& field_type_name,
+      ServerFieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status) override {
-    if (field_type_name ==
-        AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
+    if (field_type == NAME_MIDDLE_INITIAL) {
       SetValue(value, status);
       return true;
     }
@@ -60,10 +59,9 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
   }
 
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      const std::string& field_type_name,
+      ServerFieldType field_type,
       std::u16string* value) const override {
-    if (field_type_name ==
-        AutofillType::ServerFieldTypeToString(NAME_MIDDLE_INITIAL)) {
+    if (field_type == NAME_MIDDLE_INITIAL) {
       if (value) {
         *value = GetValue().substr(0, 1);
       }
@@ -314,8 +312,8 @@ TEST(AutofillStructuredAddressAddressComponent, ConstructAndDestruct) {
 TEST(AutofillStructuredAddressAddressComponent,
      TestNonProperTreeDcheckFailure) {
   TestNonProperFirstNameAddressComponent non_proper_compound;
-  ServerFieldTypeSet supported_tpyes;
-  EXPECT_DCHECK_DEATH(non_proper_compound.GetSupportedTypes(&supported_tpyes));
+  ServerFieldTypeSet supported_types;
+  EXPECT_DCHECK_DEATH(non_proper_compound.GetSupportedTypes(&supported_types));
 }
 
 // Tests getting the root node.
@@ -345,7 +343,7 @@ TEST(AutofillStructuredAddressAddressComponent, TestGetSupportedFieldType) {
   first_name_component.GetAdditionalSupportedFieldTypes(&field_type_set);
   EXPECT_EQ(field_type_set, ServerFieldTypeSet({}));
 
-  // The middle name supports an iniital.
+  // The middle name supports an initial.
   middle_name_component.GetAdditionalSupportedFieldTypes(&field_type_set);
   EXPECT_EQ(field_type_set, ServerFieldTypeSet({NAME_MIDDLE_INITIAL}));
 }
@@ -741,7 +739,7 @@ TEST(AutofillStructuredAddressAddressComponent, FormatValueFromSubcomponents) {
 
 // Tests that formatted values are correctly trimmed.
 TEST(AutofillStructuredAddressAddressComponent,
-     FormatAndTrimmValueFromSubcomponents) {
+     FormatAndTrimValueFromSubcomponents) {
   std::u16string first_name = u"";
   std::u16string middle_name = u"O'Brien   ";
   std::u16string last_name = u"Smith";
@@ -1168,7 +1166,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 // Tests that the tree is completed successfully both upwards and downwards when
 // a node with both subcomponents and a parent is set.
 TEST(AutofillStructuredAddressAddressComponent,
-     TestUnsettingParsedAndFormatedValues) {
+     TestUnsettingParsedAndFormattedValues) {
   // Define Some values.
 
   TestCompoundNameWithTitleAddressComponent compound_component;
@@ -1239,7 +1237,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   // Should be mergeable because the values are the same after normalization.
   EXPECT_TRUE(one.MergeWithComponent(two));
-  // The value should be Muller bebause of its higher validation status.
+  // The value should be Muller because of its higher validation status.
   EXPECT_EQ(one.GetValue(), u"Muller");
 
   // The actual action is that the higher verification status is picked.
@@ -1247,7 +1245,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 }
 
 TEST(AutofillStructuredAddressAddressComponent,
-     MergeAtomicComponentsWithPermutatedValue) {
+     MergeAtomicComponentsWithPermutedValue) {
   TestAtomicFirstNameAddressComponent one;
   one.SetValue(u"Peter Pan", VerificationStatus::kFormatted);
 
@@ -1381,7 +1379,7 @@ TEST(AutofillStructuredAddressAddressComponent,
 
 // This test verifies that the formatted value is successfully replaced by the
 // user-verified value while the substructure is corrected by the observation.
-TEST(AutofillStructuredAddressAddressComponent, MergePermutatedComponent) {
+TEST(AutofillStructuredAddressAddressComponent, MergePermutedComponent) {
   TestCompoundNameAddressComponent one;
   TestCompoundNameAddressComponent two;
 
@@ -1562,10 +1560,10 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   TestCompoundNameMerging(superset, superset_substring, superset, true,
                           MergeMode::kUseMostRecentSubstring,
-                          /*newer_is_more_recently_used=*/false);
+                          /*newer_was_more_recently_used=*/false);
   TestCompoundNameMerging(superset_substring, superset, superset_substring,
                           true, MergeMode::kUseMostRecentSubstring,
-                          /*newer_is_more_recently_used=*/false);
+                          /*newer_was_more_recently_used=*/false);
 
   TestCompoundNameMerging(superset, not_superset_substring, superset, false,
                           MergeMode::kUseMostRecentSubstring);
@@ -1692,7 +1690,7 @@ TEST(AutofillStructuredAddressAddressComponent,
       VerificationStatus::kUserVerified, VerificationStatus::kServerParsed));
 }
 
-// Tests gettings the more significant VerificationStatus.
+// Tests getting the more significant VerificationStatus.
 TEST(AutofillStructuredAddressAddressComponent,
      GetMoreSignificantVerificationStatus) {
   EXPECT_EQ(VerificationStatus::kFormatted,
@@ -1707,7 +1705,7 @@ TEST(AutofillStructuredAddressAddressComponent,
                                            VerificationStatus::kUserVerified));
 }
 
-// Tests merging using the Mermode::KUseBetterOrMoreRecentIfDifferent|
+// Tests merging using the MergeMode::KUseBetterOrMoreRecentIfDifferent|
 TEST(AutofillStructuredAddressAddressComponent,
      TestUseBetterOfMoreRecentIfDifferentMergeStrategy) {
   AddressComponentTestValues old_values = {
@@ -1729,25 +1727,25 @@ TEST(AutofillStructuredAddressAddressComponent,
 
   // Test that the newer values are used.
   TestAtomMerging(NAME_FIRST, old_values, newer_values, newer_values,
-                  /*is_mergable=*/true,
+                  /*is_mergeable=*/true,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
 
   // Test that the better values are used.
   TestAtomMerging(NAME_FIRST, old_values, better_values, better_values,
-                  /*is_mergable=*/true,
+                  /*is_mergeable=*/true,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
   // Should work equally in both directions.
   TestAtomMerging(NAME_FIRST, better_values, old_values, better_values,
-                  /*is_mergable=*/true,
+                  /*is_mergeable=*/true,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
 
   // Test that the not better values are not used.
   TestAtomMerging(NAME_FIRST, old_values, not_better_values, old_values,
-                  /*is_mergable=*/true,
+                  /*is_mergeable=*/true,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
   // Should work equally in both directions.
   TestAtomMerging(NAME_FIRST, not_better_values, old_values, old_values,
-                  /*is_mergable=*/true,
+                  /*is_mergeable=*/true,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
 }
 

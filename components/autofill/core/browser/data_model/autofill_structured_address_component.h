@@ -206,52 +206,20 @@ class AddressComponent {
   // |invalidate_child_nodes|, all child nodes of the assigned node are
   // unassigned. If |invalidate_parent_nodes|, all ancestor nodes of the
   // assigned node as unassigned.
-  bool SetValueForTypeIfPossible(const ServerFieldType& type,
+  bool SetValueForTypeIfPossible(ServerFieldType field_type,
                                  const std::u16string& value,
-                                 const VerificationStatus& verification_status,
-                                 bool invalidate_child_nodes = false,
-                                 bool invalidate_parent_nodes = false);
-
-  // Same as |SetValueForTypeIfPossible()| but the type is supplied in the
-  // corresponding string representation.
-  bool SetValueForTypeIfPossible(const std::string& type_name,
-                                 const std::u16string& value,
-                                 const VerificationStatus& verification_status,
-                                 bool invalidate_child_nodes = false,
-                                 bool invalidate_parent_nodes = false);
-
-  // Convenience wrapper to allow setting the value using a std::string.
-  bool SetValueForTypeIfPossible(const ServerFieldType& type,
-                                 const std::string& value,
-                                 const VerificationStatus& verification_status,
-                                 bool invalidate_child_nodes = false,
-                                 bool invalidate_parent_nodes = false);
-
-  // Convenience wrapper to allow setting the value using a std::string.
-  bool SetValueForTypeIfPossible(const std::string& type_name,
-                                 const std::string& value,
                                  const VerificationStatus& verification_status,
                                  bool invalidate_child_nodes = false,
                                  bool invalidate_parent_nodes = false);
 
   // Convenience method to get the value of |type|.
   // Returns an empty string if |type| is not supported.
-  std::u16string GetValueForType(const ServerFieldType& type) const;
-
-  // Convenience method to get the value of |type| identified by its string
-  // representation name. Returns an empty string if |type| is not supported.
-  std::u16string GetValueForType(const std::string& type) const;
+  std::u16string GetValueForType(ServerFieldType field_type) const;
 
   // Convenience method to get the verification status of |type|.
   // Returns |VerificationStatus::kNoStatus| if |type| is not supported.
   VerificationStatus GetVerificationStatusForType(
-      const ServerFieldType& type) const;
-
-  // Convenience method to get the verification status of |type| identified by
-  // its name. Returns |VerificationStatus::kNoStatus| if |type| is not
-  // supported.
-  VerificationStatus GetVerificationStatusForType(
-      const std::string& type) const;
+      ServerFieldType field_type) const;
 
   // Get the value and status of a |type|,
   // Returns false if the |type| is not supported by the structure.
@@ -261,19 +229,13 @@ class AddressComponent {
   // |type|. Otherwise, the call is delegated recursively to the node's
   // children. Returns false if the neither the node or one of its ancestors
   // supports |type|.
-  bool GetValueAndStatusForTypeIfPossible(const ServerFieldType& type,
-                                          std::u16string* value,
-                                          VerificationStatus* status) const;
-
-  // Get the value and status of a |type| identified by its name.
-  // Returns false if the |type| is not supported by the structure.
-  bool GetValueAndStatusForTypeIfPossible(const std::string& type_name,
+  bool GetValueAndStatusForTypeIfPossible(ServerFieldType field_type,
                                           std::u16string* value,
                                           VerificationStatus* status) const;
 
   // Returns true if the |value| and |verification_status| were successfully
   // unset for |type|.
-  bool UnsetValueForTypeIfSupported(const ServerFieldType& type);
+  bool UnsetValueForTypeIfSupported(ServerFieldType field_type);
 
   // Parses |value_| to assign values to the subcomponents.
   // The method uses 3 stages:
@@ -356,12 +318,8 @@ class AddressComponent {
   // Recursively unsets all subcomponents.
   void RecursivelyUnsetSubcomponents();
 
-  // Return if the value associated with |field_type_name| is valid.
+  // Return if the value associated with |field_type| is valid.
   // If |wipe_if_not|, the value is unset if invalid.
-  bool IsValueForTypeValid(const std::string& field_type_name,
-                           bool wipe_if_not = false);
-
-  // Convenience wrapper to work the ServerFieldTypes.
   bool IsValueForTypeValid(ServerFieldType field_type,
                            bool wipe_if_not = false);
 
@@ -369,7 +327,7 @@ class AddressComponent {
   // with |field_type_name|.  If |wipe_if_not|, the value is unset if invalid.
   // Returns true if it is possible to determine the validity status of the
   // value in this subcomponent.
-  bool GetIsValueForTypeValidIfPossible(const std::string& field_type_name,
+  bool GetIsValueForTypeValidIfPossible(ServerFieldType field_type,
                                         bool* validity_status,
                                         bool wipe_if_not = false);
 
@@ -466,7 +424,7 @@ class AddressComponent {
   // storage type. It must implement the conversion logic specific to each type.
   // It returns true if conversion logic exists and the type can be set.
   virtual bool ConvertAndSetValueForAdditionalFieldTypeName(
-      const std::string& field_type_name,
+      ServerFieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status);
 
@@ -476,7 +434,7 @@ class AddressComponent {
   // value can be written back to value.
   // The method must handle |nullptr|s for both the value and status.
   virtual bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      const std::string& field_type_name,
+      ServerFieldType field_type,
       std::u16string* value) const;
 
   // Clears all parsed and formatted values.

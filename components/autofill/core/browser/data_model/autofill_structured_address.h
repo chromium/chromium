@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -133,12 +134,12 @@ class StreetAddressNode : public AddressComponentWithRewriter {
  protected:
   // Implements support for getting the value of the individual address lines.
   bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      const std::string& type_name,
+      ServerFieldType field_type,
       std::u16string* value) const override;
 
   // Implements support for setting the value of the individual address lines.
   bool ConvertAndSetValueForAdditionalFieldTypeName(
-      const std::string& type_name,
+      ServerFieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status) override;
 
@@ -148,6 +149,10 @@ class StreetAddressNode : public AddressComponentWithRewriter {
  private:
   // Calculates the address line from the street address.
   void CalculateAddressLines();
+
+  // Returns the corresponding address line depending on `type`. Assumes that
+  // `type` is ADDRESS_HOME_LINE(1|2|3).
+  std::u16string GetAddressLine(ServerFieldType type) const;
 
   StreetAndDependentStreetNameNode streets_{this};
   HouseNumberNode number_{this};

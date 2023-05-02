@@ -4,8 +4,11 @@
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address.h"
 
+#include <string>
 #include <utility>
+
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -13,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/metrics/converge_to_extreme_length_address_metrics.h"
@@ -221,68 +225,59 @@ bool StreetAddressNode::IsValueValid() const {
 }
 
 bool StreetAddressNode::ConvertAndGetTheValueForAdditionalFieldTypeName(
-    const std::string& type_name,
+    ServerFieldType field_type,
     std::u16string* value) const {
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
-    if (value) {
-      *value =
-          address_lines_.size() > 0 ? address_lines_.at(0) : std::u16string();
-    }
-    return true;
+  ServerFieldTypeSet supported_types;
+  if (GetAdditionalSupportedFieldTypes(&supported_types);
+      !supported_types.contains(field_type)) {
+    return false;
   }
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
-    if (value) {
-      *value =
-          address_lines_.size() > 1 ? address_lines_.at(1) : std::u16string();
-    }
-    return true;
+  // It is assumed below this point that field_type is an address line type.
+  CHECK(field_type == ADDRESS_HOME_LINE1 || field_type == ADDRESS_HOME_LINE2 ||
+        field_type == ADDRESS_HOME_LINE3);
+  if (value) {
+    *value = GetAddressLine(field_type);
   }
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
-    if (value) {
-      *value =
-          address_lines_.size() > 2 ? address_lines_.at(2) : std::u16string();
-    }
-    return true;
-  }
+  return true;
+}
 
-  return false;
+std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
+  const size_t line_index = AddressLineIndex(type);
+  return address_lines_.size() > line_index ? address_lines_.at(line_index)
+                                            : std::u16string();
 }
 
 // Implements support for setting the value of the individual address lines.
 bool StreetAddressNode::ConvertAndSetValueForAdditionalFieldTypeName(
-    const std::string& type_name,
+    ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
-  size_t index = 0;
-  if (type_name == AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE1)) {
-    index = 0;
-  } else if (type_name ==
-             AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE2)) {
-    index = 1;
-  } else if (type_name ==
-             AutofillType::ServerFieldTypeToString(ADDRESS_HOME_LINE3)) {
-    index = 2;
-  } else {
+  ServerFieldTypeSet supported_types;
+  GetAdditionalSupportedFieldTypes(&supported_types);
+  if (!supported_types.contains(field_type)) {
     return false;
   }
-
+  // It is assumed below this point that field_type is an address line type.
+  CHECK(field_type == ADDRESS_HOME_LINE1 || field_type == ADDRESS_HOME_LINE2 ||
+        field_type == ADDRESS_HOME_LINE3);
+  const size_t line_index = AddressLineIndex(field_type);
   // Make sure that there are three address lines stored.
-  if (index >= address_lines_.size())
-    address_lines_.resize(index + 1, std::u16string());
-
-  bool change = address_lines_[index] != value;
-  if (change)
-    address_lines_[index] = value;
-
-  while (!address_lines_.empty() && address_lines_.back().empty())
+  if (line_index >= address_lines_.size()) {
+    address_lines_.resize(line_index + 1, std::u16string());
+  }
+  const bool change = address_lines_[line_index] != value;
+  if (change) {
+    address_lines_[line_index] = value;
+  }
+  // Remove empty trailing address lines.
+  while (!address_lines_.empty() && address_lines_.back().empty()) {
     address_lines_.pop_back();
-
+  }
   // By calling the base class implementation, the recreation of the address
   // lines from the street address is omitted.
   if (change) {
     AddressComponent::SetValue(base::JoinString(address_lines_, u"\n"), status);
   }
-
   return true;
 }
 
