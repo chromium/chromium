@@ -205,12 +205,16 @@ void PaintChunker::AddSelectionToCurrentChunk(
 #if DCHECK_IS_ON()
   if (start) {
     gfx::Rect edge_rect = gfx::BoundingRect(start->edge_start, start->edge_end);
-    DCHECK(chunk.bounds.Contains(edge_rect));
+    DCHECK(chunk.bounds.Contains(edge_rect))
+        << chunk.bounds.ToString() << " does not contain "
+        << edge_rect.ToString();
   }
 
   if (end) {
     gfx::Rect edge_rect = gfx::BoundingRect(end->edge_start, end->edge_end);
-    DCHECK(chunk.bounds.Contains(edge_rect));
+    DCHECK(chunk.bounds.Contains(edge_rect))
+        << chunk.bounds.ToString() << " does not contain "
+        << edge_rect.ToString();
   }
 #endif
 
