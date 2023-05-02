@@ -1436,22 +1436,29 @@ public class PersonalDataManager {
         int width = res.getDimensionPixelSize(widthId);
         int height = res.getDimensionPixelSize(heightId);
         float cornerRadius = res.getDimension(cornerRadiusId);
-        GURL urlWithParams =
-                AutofillUiUtils.getCreditCardIconUrlWithParams(customImageUrl, width, height);
 
-        if (mCreditCardArtImages.containsKey(urlWithParams.getSpec())) {
-            return mCreditCardArtImages.get(urlWithParams.getSpec());
+        // TODO(crbug.com/1313616): The Capital One icon for virtual cards is available in a single
+        // size via a static URL. Cache this image at different sizes so it can be used by different
+        // surfaces.
+        GURL urlToCache =
+                AutofillUiUtils.getCreditCardIconUrlWithParams(customImageUrl, width, height);
+        GURL urlToFetch = customImageUrl.getSpec().equals(AutofillUiUtils.CAPITAL_ONE_ICON_URL)
+                ? customImageUrl
+                : urlToCache;
+
+        if (mCreditCardArtImages.containsKey(urlToCache.getSpec())) {
+            return mCreditCardArtImages.get(urlToCache.getSpec());
         }
         // Schedule the fetching of image and return null so that the UI thread does not have to
         // wait and can show the default network icon.
-        fetchImage(urlWithParams, bitmap -> {
+        fetchImage(urlToFetch, bitmap -> {
             // TODO (crbug.com/1410418): Log image fetching failure metrics.
             // If the image fetching was unsuccessful, silently return.
             if (bitmap == null) return;
 
             // When adding new sizes for card icons, check if the corner radius needs to be added as
             // a suffix for caching (crbug.com/1431283).
-            mCreditCardArtImages.put(urlWithParams.getSpec(),
+            mCreditCardArtImages.put(urlToCache.getSpec(),
                     AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(bitmap, width, height,
                             cornerRadius,
                             ChromeFeatureList.isEnabled(

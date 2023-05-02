@@ -261,11 +261,15 @@ public class PersonalDataManagerTest {
         int widthPixels = 32;
         int heightPixels = 20;
 
-        // For virtual card icon, the URL should not be updated. For card art icon, the URL should
-        // be updated as `cardArtUrl=w{width}-h{height}`.
+        // The URL should be updated as `cardArtUrl=w{width}-h{height}`.
         assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
                            capitalOneIconUrl, widthPixels, heightPixels))
-                .isEqualTo(capitalOneIconUrl);
+                .isEqualTo(new GURL(new StringBuilder(capitalOneIconUrl.getSpec())
+                                            .append("=w")
+                                            .append(widthPixels)
+                                            .append("-h")
+                                            .append(heightPixels)
+                                            .toString()));
         assertThat(AutofillUiUtils.getCreditCardIconUrlWithParams(
                            cardArtUrl, widthPixels, heightPixels))
                 .isEqualTo(new GURL(new StringBuilder(cardArtUrl.getSpec())
