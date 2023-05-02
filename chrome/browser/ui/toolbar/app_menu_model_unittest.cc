@@ -370,38 +370,3 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-class AppMenuModelPasswordManagerTest
-    : public AppMenuModelTest,
-      public testing::WithParamInterface<bool> {
- public:
-  AppMenuModelPasswordManagerTest() {
-    feature_list_.InitWithFeatureState(
-        password_manager::features::kPasswordManagerRedesign, GetParam());
-  }
-
-  AppMenuModelPasswordManagerTest(const AppMenuModelPasswordManagerTest&) =
-      delete;
-  AppMenuModelPasswordManagerTest& operator=(
-      const AppMenuModelPasswordManagerTest&) = delete;
-
-  ~AppMenuModelPasswordManagerTest() override = default;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AppMenuModelPasswordManagerTest,
-    /* features::kPasswordManagerRedesign enabled */ testing::Bool());
-
-TEST_P(AppMenuModelPasswordManagerTest, NewPasswordManagerHasMenuEntry) {
-  AppMenuModel model(this, browser());
-  model.Init();
-  auto index = model.GetIndexOfCommandId(IDC_VIEW_PASSWORDS);
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign)) {
-    ASSERT_TRUE(index.has_value());
-    EXPECT_TRUE(model.IsVisibleAt(index.value()));
-  } else {
-    EXPECT_FALSE(index.has_value());
-  }
-}
