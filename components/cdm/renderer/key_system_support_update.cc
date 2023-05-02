@@ -189,6 +189,14 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability,
         supported_codecs |= media::EME_CODEC_DTSXP2;
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+      case media::AudioCodec::kAC3:
+        supported_codecs |= media::EME_CODEC_AC3;
+        break;
+      case media::AudioCodec::kEAC3:
+        supported_codecs |= media::EME_CODEC_EAC3;
+        break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
       default:
         DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
