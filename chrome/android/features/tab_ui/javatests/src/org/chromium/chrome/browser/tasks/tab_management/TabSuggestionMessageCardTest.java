@@ -167,6 +167,7 @@ public class TabSuggestionMessageCardTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1441919")
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_CLOSE_SUGGESTION_PARAM})
     public void closeTabSuggestionReviewedAndAccepted() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
