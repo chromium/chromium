@@ -9,13 +9,11 @@ import android.os.Bundle;
 import androidx.annotation.AnyThread;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ByteArrayGenerator;
 import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
-import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.Key;
 import java.security.SecureRandom;
@@ -94,9 +92,6 @@ public class CipherFactory {
 
     /** Holds data for cipher generation. */
     private CipherData mData;
-
-    /** Generates random data for the Ciphers. May be swapped out for tests. */
-    private ByteArrayGenerator mRandomNumberProvider;
 
     /** A list of observers for this class. */
     private Runnable mTestCipherDataGeneratedCallback;
@@ -178,29 +173,21 @@ public class CipherFactory {
     }
 
     /**
-     * Creates a Callable that generates the data required to create a Cipher. This is done on a
-     * background thread to prevent blocking on the I/O required for
-     * {@link ByteArrayGenerator#getBytes(int)}.
+     * Creates a Callable that generates the data required to create a Cipher.
      * @return Callable that generates the Cipher data.
      */
     private Callable<CipherData> createGeneratorCallable() {
+        // TODO(crbug.com/1440828): This historically ran on a background thread due to file I/O but
+        // no longer needs to.
         return new Callable<CipherData>() {
             @Override
             public CipherData call() {
                 // Poll random data to generate initialization parameters for the Cipher.
-                byte[] iv;
-                try {
-                    iv = mRandomNumberProvider.getBytes(NUM_BYTES);
-                } catch (IOException e) {
-                    Log.e(TAG, "Couldn't get generator data.");
-                    return null;
-                } catch (GeneralSecurityException e) {
-                    Log.e(TAG, "Couldn't get generator data.");
-                    return null;
-                }
-
                 try {
                     SecureRandom random = new SecureRandom();
+
+                    byte[] iv = new byte[NUM_BYTES];
+                    random.nextBytes(iv);
 
                     KeyGenerator generator = KeyGenerator.getInstance("AES");
                     generator.init(128, random);
@@ -290,14 +277,6 @@ public class CipherFactory {
         return false;
     }
 
-    /**
-     * Overrides the random number generated that is normally used by the class.
-     * @param mockProvider Should be used to provide non-random data.
-     */
-    void setRandomNumberProviderForTests(ByteArrayGenerator mockProvider) {
-        mRandomNumberProvider = mockProvider;
-    }
-
     void setTestCipherDataGeneratedCallback(Runnable callback) {
         mTestCipherDataGeneratedCallback = callback;
     }
@@ -306,7 +285,5 @@ public class CipherFactory {
         if (mTestCipherDataGeneratedCallback != null) mTestCipherDataGeneratedCallback.run();
     }
 
-    private CipherFactory() {
-        mRandomNumberProvider = new ByteArrayGenerator();
-    }
+    private CipherFactory() {}
 }
