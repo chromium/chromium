@@ -157,10 +157,11 @@ public class BookmarkManagerMediatorTest {
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean>
             mSelectableListLayoutHandleBackPressChangedSupplier = new ObservableSupplierImpl<>();
-    private final BookmarkId mFolderId1 = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId2 = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
-    private final BookmarkId mFolderId3 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
-    private final BookmarkId mBookmarkId21 = new BookmarkId(/*id=*/4, BookmarkType.NORMAL);
+    private final BookmarkId mRootFolderId = new BookmarkId(/*id=*/1, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId1 = new BookmarkId(/*id=*/2, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId2 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
+    private final BookmarkId mFolderId3 = new BookmarkId(/*id=*/4, BookmarkType.NORMAL);
+    private final BookmarkId mBookmarkId21 = new BookmarkId(/*id=*/5, BookmarkType.NORMAL);
     private final BookmarkItem mFolderItem1 =
             new BookmarkItem(mFolderId1, "Folder1", null, true, null, true, false, 0, false);
     private final BookmarkItem mFolderItem2 =
@@ -197,6 +198,7 @@ public class BookmarkManagerMediatorTest {
             mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
 
             // Setup BookmarkModel.
+            doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
             doReturn(Arrays.asList(mFolderId2, mFolderId3))
                     .when(mBookmarkModel)
@@ -383,10 +385,11 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolderId1);
         assertEquals(2, mModelList.size());
 
+        mMediator.openSearchUi();
         mMediator.search("3");
         assertEquals(1, mModelList.size());
 
-        mMediator.closeSearchUi();
+        mMediator.onEndSearch();
         assertEquals(2, mModelList.size());
     }
 

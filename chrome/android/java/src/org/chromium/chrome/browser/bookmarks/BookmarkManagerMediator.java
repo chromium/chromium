@@ -222,7 +222,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
                 if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
                     search(mSearchText);
                 } else {
-                    closeSearchUi();
+                    onEndSearch();
                 }
             }
         }
@@ -647,11 +647,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
     public void openSearchUi() {
         setState(BookmarkUiState.createSearchState());
         mSelectableListLayout.onStartSearch(R.string.bookmark_no_result);
-    }
-
-    @Override
-    public void closeSearchUi() {
-        setState(mStateStack.pop());
     }
 
     @Override

@@ -66,11 +66,6 @@ public interface BookmarkDelegate {
     void openSearchUi();
 
     /**
-     * Dismisses the search UI.
-     */
-    void closeSearchUi();
-
-    /**
      * Add an observer to bookmark UI changes.
      */
     void addUiObserver(BookmarkUiObserver observer);
