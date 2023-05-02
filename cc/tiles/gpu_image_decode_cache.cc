@@ -14,7 +14,6 @@
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/debug/alias.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -28,6 +27,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -69,6 +69,12 @@
 #include "ui/gl/trace_util.h"
 
 namespace cc {
+
+// A feature that will start a task on a timer to purge old cache entries.
+BASE_FEATURE(kPurgeOldCacheEntriesOnTimer,
+             "PurgeOldCacheEntriesOnTimer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 // The number or entries to keep in the cache, depending on the memory state of
 // the system. This limit can be breached by in-use cache items, which cannot
@@ -1228,6 +1234,10 @@ GpuImageDecodeCache::GpuImageDecodeCache(
       context_->ContextSupport()->IsWebPDecodeAccelerationSupported() &&
       base::FeatureList::IsEnabled(features::kVaapiWebPImageDecodeAcceleration);
 
+  // The timer needs to run its task on the same thread that it is destroyed on,
+  // so we explicitly set the TaskRunner here.
+  timer_.SetTaskRunner(base::SequencedTaskRunner::GetCurrentDefault());
+
   {
     // TODO(crbug.com/1110007): We shouldn't need to lock to get capabilities.
     absl::optional<viz::RasterContextProvider::ScopedRasterContextLock>
@@ -1650,7 +1660,12 @@ void GpuImageDecodeCache::AddToPersistentCache(const DrawImage& draw_image,
     EnsureCapacity(0);
   }
 
-  MaybePurgeOldCacheEntries();
+  if (base::FeatureList::IsEnabled(kPurgeOldCacheEntriesOnTimer)) {
+    DCHECK(persistent_cache_.empty() || has_pending_purge_task());
+    PostPurgeOldCacheEntriesTask();
+  } else {
+    MaybePurgeOldCacheEntries();
+  }
 
   WillAddCacheEntry(draw_image);
   persistent_cache_memory_size_ += data->GetTotalSize();
@@ -1689,15 +1704,11 @@ Iterator GpuImageDecodeCache::RemoveFromPersistentCache(Iterator it) {
   return persistent_cache_.Erase(it);
 }
 
-void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
-  if (!base::FeatureList::IsEnabled(kLimitImageDecodeCacheAge)) {
-    return;
-  }
-
-  const base::TimeTicks min_last_use =
-      base::TimeTicks::Now() - base::Seconds(kCacheAgeLimitSeconds.Get());
+void GpuImageDecodeCache::DoPurgeOldCacheEntries(base::TimeDelta max_age) {
+  const base::TimeTicks min_last_use = base::TimeTicks::Now() - max_age;
   for (auto it = persistent_cache_.rbegin();
-       it != persistent_cache_.rend() && it->second->last_use < min_last_use;) {
+       it != persistent_cache_.rend() &&
+       it->second->last_use <= min_last_use;) {
     if (it->second->decode.ref_count != 0 ||
         it->second->upload.ref_count != 0) {
       ++it;
@@ -1706,6 +1717,41 @@ void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
 
     it = RemoveFromPersistentCache(it);
   }
+}
+
+void GpuImageDecodeCache::MaybePurgeOldCacheEntries() {
+  if (!base::FeatureList::IsEnabled(kLimitImageDecodeCacheAge)) {
+    return;
+  }
+
+  DoPurgeOldCacheEntries(base::Seconds(kCacheAgeLimitSeconds.Get()));
+}
+
+void GpuImageDecodeCache::PurgeOldCacheEntriesCallback() {
+  base::AutoLock locker(lock_);
+  DoPurgeOldCacheEntries(kPurgeMaxAge);
+
+  // If the cache is empty, we stop posting the task, to avoid endless wakeups.
+  if (persistent_cache_.empty()) {
+    return;
+  }
+
+  PostPurgeOldCacheEntriesTask();
+}
+
+void GpuImageDecodeCache::PostPurgeOldCacheEntriesTask() {
+  if (has_pending_purge_task()) {
+    return;
+  }
+
+  // |base::Unretained(this)| is fine in this case, since |timer_| is a member
+  // of |this|, (so destroying |this| will also destroy |timer_| and cancel the
+  // task), and the task will be run on the same thread that |this| is destroyed
+  // on.
+  timer_.Start(
+      FROM_HERE, GpuImageDecodeCache::kPurgeInterval,
+      base::BindOnce(&GpuImageDecodeCache::PurgeOldCacheEntriesCallback,
+                     base::Unretained(this)));
 }
 
 size_t GpuImageDecodeCache::GetMaximumMemoryLimitBytes() const {
@@ -3400,6 +3446,14 @@ bool GpuImageDecodeCache::NeedsDarkModeFilterForTesting(
       draw_image, InUseCacheKeyFromDrawImage(draw_image));
 
   return NeedsDarkModeFilter(draw_image, image_data);
+}
+
+void GpuImageDecodeCache::TouchCacheEntryForTesting(
+    const DrawImage& draw_image) {
+  base::AutoLock locker(lock_);
+  ImageData* image_data = GetImageDataForDrawImage(
+      draw_image, InUseCacheKeyFromDrawImage(draw_image));
+  image_data->last_use = base::TimeTicks::Now();
 }
 
 void GpuImageDecodeCache::OnMemoryPressure(
