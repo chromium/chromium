@@ -1568,6 +1568,11 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
   scoped_refptr<EncodedFormData> form_body = request_body_.FormBody();
   PopulateResourceRequest(request, std::move(request_body_),
                           network_resource_request.get());
+
+  recordreplay::Assert(
+      "[RUN-1725-1852] ResourceLoader::RequestAsynchronously %s",
+       network_resource_request->devtools_request_id ? network_resource_request->devtools_request_id->c_str() : "");
+
   if (form_body)
     request_body_ = ResourceRequestBody(std::move(form_body));
   loader_->LoadAsynchronously(
