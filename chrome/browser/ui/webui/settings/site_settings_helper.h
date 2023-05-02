@@ -51,7 +51,6 @@ constexpr char kEmbeddingOrigin[] = "embeddingOrigin";
 constexpr char kIncognito[] = "incognito";
 constexpr char kObject[] = "object";
 constexpr char kDisabled[] = "disabled";
-constexpr char kIsolatedWebAppName[] = "isolatedWebAppName";
 constexpr char kOrigin[] = "origin";
 constexpr char kOriginForFavicon[] = "originForFavicon";
 constexpr char kRecentPermissions[] = "recentPermissions";
