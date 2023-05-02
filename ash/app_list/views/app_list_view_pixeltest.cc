@@ -261,7 +261,8 @@ INSTANTIATE_TEST_SUITE_P(RTL,
                                           testing::Bool()),
                          &GenerateTestSuffix);
 
-TEST_P(AppListViewLauncherSearchIphTest, Basic) {
+// TODO(http://b/280356293): RTL.rtl_light_clamshell is flaky.
+TEST_P(AppListViewLauncherSearchIphTest, DISABLED_Basic) {
   raw_ptr<SearchBoxView> search_box_view =
       GetAppListTestHelper()->GetSearchBoxView();
 
