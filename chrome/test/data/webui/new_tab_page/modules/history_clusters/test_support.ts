@@ -4,8 +4,17 @@
 
 import {SearchQuery, URLVisit} from 'chrome://new-tab-page/history_cluster_types.mojom-webui.js';
 import {LAYOUT_1_MIN_IMAGE_VISITS, LAYOUT_1_MIN_VISITS} from 'chrome://new-tab-page/lazy_load.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 export const MIN_RELATED_SEARCHES = 3;
+
+export function assertModuleHeaderTitle(
+    headerElement: HTMLElement, title: string) {
+  const moduleHeaderTextContent = headerElement.textContent!.trim();
+  const headerText = moduleHeaderTextContent.split(/\r?\n/);
+  assertTrue(headerText.length > 0);
+  assertEquals(title, headerText[0]!.trim());
+}
 
 export function createVisit(overrides?: Partial<URLVisit>): URLVisit {
   return Object.assign(

@@ -19,7 +19,7 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../test_support.js';
 
-import {createRelatedSearches, createSampleVisits, GOOGLE_SEARCH_BASE_URL, MIN_RELATED_SEARCHES} from './test_support.js';
+import {assertModuleHeaderTitle, createRelatedSearches, createSampleVisits, GOOGLE_SEARCH_BASE_URL, MIN_RELATED_SEARCHES} from './test_support.js';
 
 const DISPLAY_LAYOUT_METRIC_NAME = 'NewTabPage.HistoryClusters.DisplayLayout';
 
@@ -30,13 +30,6 @@ function assertLayoutSet(
   assertEquals(layoutType, moduleElement.layoutType);
   assertEquals(layoutElements.length, 1);
   assertEquals(layoutElements[0]!.id, `layout${layoutType}`);
-}
-
-function assertModuleHeaderTitle(headerElement: HTMLElement, title: string) {
-  const moduleHeaderTextContent = headerElement.textContent!.trim();
-  const headerText = moduleHeaderTextContent.split(/\r?\n/);
-  assertTrue(headerText.length > 0);
-  assertEquals(title, headerText[0]!.trim());
 }
 
 function createLayoutSuitableSampleVisits(

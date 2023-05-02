@@ -493,6 +493,29 @@ TEST_F('NewTabPageModulesHistoryClustersModuleCartTileTest', 'All', function() {
   mocha.run();
 });
 
+var NewTabPageModulesHistoryClustersV2ModuleTest =
+    class extends NewTabPageBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/modules/history_clusters_v2/module_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'ntp_features::kNtpHistoryClustersModule',
+        'ntp_features::kNtpModulesRedesigned',
+        'ntp_features::kNtpModulesRedesignedLayout'
+      ],
+    };
+  }
+};
+
+TEST_F('NewTabPageModulesHistoryClustersV2ModuleTest', 'Core', function() {
+  runMochaSuite('NewTabPageModulesHistoryClustersV2ModuleTest core');
+});
+
 // https://crbug.com/1227564: Flaky on Chrome OS.
 GEN('#if BUILDFLAG(IS_CHROMEOS)');
 GEN('#define MAYBE_All DISABLED_All');
