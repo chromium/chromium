@@ -11,12 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.FOLDER_BOOKMARK_ID_A;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.MOBILE_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.OTHER_BOOKMARK_ID;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.READING_LIST_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.ROOT_BOOKMARK_ID;
 import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_A;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_B;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_D;
-import static org.chromium.chrome.browser.bookmarks.SharedBookmarkModelMocks.URL_BOOKMARK_ID_E;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,12 +28,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
-import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.Arrays;
@@ -131,39 +125,8 @@ public class LegacyBookmarkQueryHandlerTest {
     }
 
     @Test
-    public void testBuildBookmarkListForParent_shopping() {
-        BookmarkQueryHandler bookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
-        List<BookmarkListEntry> result =
-                bookmarkQueryHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
-
-        // Both URL_BOOKMARK_ID_B and URL_BOOKMARK_ID_C will be returned as children of
-        // BookmarkId.SHOPPING_FOLDER , but only URL_BOOKMARK_ID_B will have a correct meta.
-        Assert.assertEquals(1, result.size());
-        Assert.assertEquals(URL_BOOKMARK_ID_B, result.get(0).getBookmarkItem().getId());
-    }
-
-    @Test
-    public void testBuildBookmarkListForParent_readingList() {
-        BookmarkQueryHandler bookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
-        List<BookmarkListEntry> result =
-                bookmarkQueryHandler.buildBookmarkListForParent(READING_LIST_BOOKMARK_ID);
-
-        Assert.assertEquals(4, result.size());
-        // While the getChildIds call will return [D, E], due to the read status, they should get
-        // flipped around to show the unread E first. Headers will also be inserted.
-        Assert.assertEquals(ViewType.SECTION_HEADER, result.get(0).getViewType());
-        Assert.assertEquals(URL_BOOKMARK_ID_E, result.get(1).getBookmarkItem().getId());
-        Assert.assertEquals(ViewType.SECTION_HEADER, result.get(2).getViewType());
-        Assert.assertEquals(URL_BOOKMARK_ID_D, result.get(3).getBookmarkItem().getId());
-    }
-
-    @Test
     public void testBuildBookmarkListForSearch() {
         BookmarkQueryHandler bookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
-        verify(mBookmarkModel)
-                .finishLoadingBookmarkModel(mFinishLoadingBookmarkModelCaptor.capture());
-        mFinishLoadingBookmarkModelCaptor.getValue().run();
-
         doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A))
                 .when(mBookmarkModel)
                 .searchBookmarks("A", 500);

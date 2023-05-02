@@ -27,7 +27,7 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     private final BookmarkModel mBookmarkModel;
-    private final LegacyBookmarkQueryHandler mLegacyBookmarkQueryHandler;
+    private final BasicBookmarkQueryHandler mBasicBookmarkQueryHandler;
 
     /**
      * Constructs a handle that operates on the given backend.
@@ -35,12 +35,12 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
      */
     public ImprovedBookmarkQueryHandler(BookmarkModel bookmarkModel) {
         mBookmarkModel = bookmarkModel;
-        mLegacyBookmarkQueryHandler = new LegacyBookmarkQueryHandler(bookmarkModel);
+        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel);
     }
 
     @Override
     public void destroy() {
-        mLegacyBookmarkQueryHandler.destroy();
+        mBasicBookmarkQueryHandler.destroy();
     }
 
     @Override
@@ -48,14 +48,14 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         if (parentId.equals(mBookmarkModel.getRootFolderId())) {
             return buildBookmarkListForRootView();
         } else {
-            return mLegacyBookmarkQueryHandler.buildBookmarkListForParent(parentId);
+            return mBasicBookmarkQueryHandler.buildBookmarkListForParent(parentId);
         }
     }
 
     @Override
     public List<BookmarkListEntry> buildBookmarkListForSearch(String query) {
         // TODO(https://crbug.com/1439584): Sort based on selection in toolbar.
-        return mLegacyBookmarkQueryHandler.buildBookmarkListForSearch(query);
+        return mBasicBookmarkQueryHandler.buildBookmarkListForSearch(query);
     }
 
     private List<BookmarkListEntry> buildBookmarkListForRootView() {

@@ -11,7 +11,7 @@ import java.util.List;
 /** Builds {@link List} of {@link BookmarkListEntry} for various scenarios. */
 public interface BookmarkQueryHandler {
     /** Cleans up observers this class held. */
-    void destroy();
+    default void destroy() {}
 
     /**
      * Builds entries for a given parent folder.

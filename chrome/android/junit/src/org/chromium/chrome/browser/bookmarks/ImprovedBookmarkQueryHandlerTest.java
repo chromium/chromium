@@ -26,7 +26,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
@@ -42,17 +41,14 @@ public class ImprovedBookmarkQueryHandlerTest {
     @Mock
     private BookmarkModel mBookmarkModel;
     @Mock
-    private SyncService mSyncService;
-    @Mock
     Tracker mTracker;
     @Mock
     Profile mProfile;
 
     @Before
     public void setup() {
-        SyncService.overrideForTests(mSyncService);
-        TrackerFactory.setTrackerForTests(mTracker);
         Profile.setLastUsedProfileForTesting(mProfile);
+        TrackerFactory.setTrackerForTests(mTracker);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
     }
 
