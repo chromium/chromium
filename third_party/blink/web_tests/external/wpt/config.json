@@ -3,7 +3,6 @@
   "ws_doc_root": null,
   "check_subdomains": false,
   "server_host": "127.0.0.1",
-  "log_level": "info",
   "ports": {
     "http": [8001, 8081],
     "http-private": [8082],
@@ -45,5 +44,9 @@
       "url-path": "/common/vendor-prefix.js",
       "local-dir": "resources"
     }
-  ]
+  ],
+  "logging": {
+      "level": "info",
+      "suppress_handler_traceback": false
+  }
 }
