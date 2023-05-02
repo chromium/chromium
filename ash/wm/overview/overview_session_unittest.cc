@@ -745,7 +745,7 @@ TEST_P(OverviewSessionTest, CloseAnimationShadow) {
   ASSERT_TRUE(InOverviewSession());
 
   // The shadow bounds are empty, which means its not visible.
-  EXPECT_EQ(gfx::Rect(), item->GetShadowBoundsForTesting());
+  EXPECT_EQ(gfx::Rect(), GetShadowBounds(item));
 }
 
 // Tests minimizing/unminimizing in overview mode.
@@ -2575,8 +2575,8 @@ TEST_P(OverviewSessionTest, ShadowVisibilityDragging) {
   EXPECT_FALSE(window1->layer()->GetAnimator()->is_animating());
   EXPECT_FALSE(window2->layer()->GetAnimator()->is_animating());
 
-  EXPECT_TRUE(item1->GetShadowBoundsForTesting().IsEmpty());
-  EXPECT_FALSE(item2->GetShadowBoundsForTesting().IsEmpty());
+  EXPECT_TRUE(GetShadowBounds(item1).IsEmpty());
+  EXPECT_FALSE(GetShadowBounds(item2).IsEmpty());
 
   // Drag to horizontally and then back to the start to avoid activating the
   // window, drag to close or entering splitview. Verify that the shadow is
@@ -2586,35 +2586,35 @@ TEST_P(OverviewSessionTest, ShadowVisibilityDragging) {
   // The drop target window should be created with no shadow.
   OverviewItem* drop_target_item = GetDropTarget(0);
   ASSERT_TRUE(drop_target_item);
-  EXPECT_TRUE(drop_target_item->GetShadowBoundsForTesting().IsEmpty());
+  EXPECT_TRUE(GetShadowBounds(drop_target_item).IsEmpty());
 
   generator->MoveMouseTo(start_drag);
   generator->ReleaseLeftButton();
   EXPECT_TRUE(window1->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(window2->layer()->GetAnimator()->is_animating());
-  EXPECT_TRUE(item1->GetShadowBoundsForTesting().IsEmpty());
-  EXPECT_TRUE(item2->GetShadowBoundsForTesting().IsEmpty());
+  EXPECT_TRUE(GetShadowBounds(item1).IsEmpty());
+  EXPECT_TRUE(GetShadowBounds(item2).IsEmpty());
 
   // Verify that the shadow is visble again after animation is finished.
   window1->layer()->GetAnimator()->StopAnimating();
   window2->layer()->GetAnimator()->StopAnimating();
-  EXPECT_FALSE(item1->GetShadowBoundsForTesting().IsEmpty());
-  EXPECT_FALSE(item2->GetShadowBoundsForTesting().IsEmpty());
+  EXPECT_FALSE(GetShadowBounds(item1).IsEmpty());
+  EXPECT_FALSE(GetShadowBounds(item2).IsEmpty());
 }
 
 // Tests that the shadows in overview mode are placed correctly.
 TEST_P(OverviewSessionTest, ShadowBounds) {
   // Helper function to check if the bounds of a shadow owned by |shadow_parent|
   // is contained within the bounds of |widget|.
-  auto contains = [](views::Widget* widget, OverviewItem* shadow_parent) {
+  auto contains = [&](views::Widget* widget, OverviewItem* shadow_parent) {
     return gfx::Rect(widget->GetNativeWindow()->bounds().size())
-        .Contains(shadow_parent->GetShadowBoundsForTesting());
+        .Contains(GetShadowBounds(shadow_parent));
   };
 
   // Helper function which returns the ratio of the shadow owned by
   // |shadow_parent| width and height.
-  auto shadow_ratio = [](OverviewItem* shadow_parent) {
-    gfx::RectF boundsf = gfx::RectF(shadow_parent->GetShadowBoundsForTesting());
+  auto shadow_ratio = [&](OverviewItem* shadow_parent) {
+    gfx::RectF boundsf = gfx::RectF(GetShadowBounds(shadow_parent));
     return boundsf.width() / boundsf.height();
   };
 
@@ -2812,8 +2812,8 @@ TEST_P(OverviewSessionTest, PositionWindows) {
 
   // Verify that items that are animating before closing are ignored by
   // PositionWindows.
-  item1->set_animating_to_close_for_testing(true);
-  item2->set_animating_to_close_for_testing(true);
+  SetAnimatingToClose(item1, true);
+  SetAnimatingToClose(item2, true);
   GetOverviewSession()->PositionWindows(/*animate=*/false);
   EXPECT_EQ(bounds1, item1->target_bounds());
   EXPECT_EQ(bounds2, item2->target_bounds());
@@ -3853,8 +3853,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderSplitViewWindow) {
   // snapped, and that both `window2` and the widget are lower z-order than
   // `window1`.
   views::Widget* cannot_snap_widget =
-      static_cast<views::Widget*>(GetOverviewItemForWindow(window2.get())
-                                      ->cannot_snap_widget_for_testing());
+      GetCannotSnapWidget(GetOverviewItemForWindow(window2.get()));
   ASSERT_TRUE(cannot_snap_widget);
   aura::Window* cannot_snap_window = cannot_snap_widget->GetNativeWindow();
   ASSERT_EQ(window1->parent(), cannot_snap_window->parent());
@@ -5579,20 +5578,18 @@ TEST_F(SplitViewOverviewSessionTest, OverviewUnsnappableIndicatorVisibility) {
       GetOverviewItemForWindow(unsnappable_window.get());
 
   // Note: |cannot_snap_label_view_| and its parent will be created on demand.
-  EXPECT_FALSE(snappable_overview_item->cannot_snap_widget_for_testing());
-  ASSERT_FALSE(unsnappable_overview_item->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(snappable_overview_item));
+  ASSERT_FALSE(GetCannotSnapWidget(unsnappable_overview_item));
 
   // Snap the extra snappable window to enter split view mode.
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
-  EXPECT_FALSE(snappable_overview_item->cannot_snap_widget_for_testing());
-  ASSERT_TRUE(unsnappable_overview_item->cannot_snap_widget_for_testing());
-  ui::Layer* unsnappable_layer =
-      unsnappable_overview_item->cannot_snap_widget_for_testing()
-          ->GetNativeWindow()
-          ->layer();
-  EXPECT_EQ(1.f, unsnappable_layer->opacity());
+  EXPECT_FALSE(GetCannotSnapWidget(snappable_overview_item));
+  views::Widget* cannot_snap_widget =
+      GetCannotSnapWidget(unsnappable_overview_item);
+  ASSERT_TRUE(cannot_snap_widget);
+  EXPECT_EQ(1.f, cannot_snap_widget->GetLayer()->opacity());
 
   // Exiting the splitview will hide the unsnappable label.
   const gfx::Rect divider_bounds =
@@ -5603,7 +5600,7 @@ TEST_F(SplitViewOverviewSessionTest, OverviewUnsnappableIndicatorVisibility) {
   SkipDividerSnapAnimation();
 
   EXPECT_FALSE(split_view_controller()->InSplitViewMode());
-  EXPECT_EQ(0.f, unsnappable_layer->opacity());
+  EXPECT_EQ(0.f, cannot_snap_widget->GetLayer()->opacity());
 }
 
 // Verify that during "normal" dragging from overview (not drag-to-close), the
@@ -5625,11 +5622,10 @@ TEST_F(SplitViewOverviewSessionTest,
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
   OverviewItem* unsnappable_overview_item =
       GetOverviewItemForWindow(unsnappable_window.get());
-  ASSERT_TRUE(unsnappable_overview_item->cannot_snap_widget_for_testing());
-  ui::Layer* unsnappable_layer =
-      unsnappable_overview_item->cannot_snap_widget_for_testing()
-          ->GetNativeWindow()
-          ->layer();
+  views::Widget* cannot_snap_widget =
+      GetCannotSnapWidget(unsnappable_overview_item);
+  ASSERT_TRUE(cannot_snap_widget);
+  ui::Layer* unsnappable_layer = cannot_snap_widget->GetLayer();
   ASSERT_EQ(1.f, unsnappable_layer->opacity());
 
   // Test that the unsnappable label is temporarily suppressed during mouse
@@ -5728,7 +5724,7 @@ TEST_F(SplitViewOverviewSessionTest,
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
   OverviewItem* overview_item = GetOverviewItemForWindow(overview_window.get());
   // Note: |cannot_snap_label_view_| and its parent will be created on demand.
-  EXPECT_FALSE(overview_item->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(overview_item));
 
   // Rotate to primary portrait orientation. The unsnappable indicator appears.
   display::test::DisplayManagerTestApi(Shell::Get()->display_manager())
@@ -5737,9 +5733,9 @@ TEST_F(SplitViewOverviewSessionTest,
       Shell::Get()->screen_orientation_controller());
   test_api.SetDisplayRotation(display::Display::ROTATE_270,
                               display::Display::RotationSource::ACTIVE);
-  ASSERT_TRUE(overview_item->cannot_snap_widget_for_testing());
-  ui::Layer* unsnappable_layer =
-      overview_item->cannot_snap_widget_for_testing()->GetLayer();
+  views::Widget* cannot_snap_widget = GetCannotSnapWidget(overview_item);
+  ASSERT_TRUE(cannot_snap_widget);
+  ui::Layer* unsnappable_layer = cannot_snap_widget->GetLayer();
   EXPECT_EQ(1.f, unsnappable_layer->opacity());
 
   // Rotate to primary landscape orientation. The unsnappable indicator hides.
@@ -7274,7 +7270,7 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
   ASSERT_TRUE(split_view_controller()->InSplitViewMode());
   OverviewItem* overview_item = GetOverviewItemForWindow(overview_window.get());
   // Note: |cannot_snap_label_view_| and its parent will be created on demand.
-  EXPECT_FALSE(overview_item->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(overview_item));
 
   // Rotate to primary portrait orientation. The unsnappable indicator appears.
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
@@ -7282,9 +7278,9 @@ TEST_F(SplitViewOverviewSessionInClamshellTest,
       display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display_manager->SetDisplayRotation(display_id, display::Display::ROTATE_270,
                                       display::Display::RotationSource::ACTIVE);
-  ASSERT_TRUE(overview_item->cannot_snap_widget_for_testing());
-  ui::Layer* unsnappable_layer =
-      overview_item->cannot_snap_widget_for_testing()->GetLayer();
+  views::Widget* cannot_snap_widget = GetCannotSnapWidget(overview_item);
+  ASSERT_TRUE(cannot_snap_widget);
+  ui::Layer* unsnappable_layer = cannot_snap_widget->GetLayer();
   EXPECT_EQ(1.f, unsnappable_layer->opacity());
 
   // Rotate to primary landscape orientation. The unsnappable indicator hides.
@@ -8230,49 +8226,47 @@ TEST_F(SplitViewOverviewSessionInClamshellTestMultiDisplayOnly,
   // Note: |cannot_snap_label_view_| and its parent will be created on demand.
   ASSERT_FALSE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   ASSERT_FALSE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
-  EXPECT_FALSE(item2->cannot_snap_widget_for_testing());
-  EXPECT_FALSE(item3->cannot_snap_widget_for_testing());
-  EXPECT_FALSE(item5->cannot_snap_widget_for_testing());
-  EXPECT_FALSE(item6->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item2));
+  EXPECT_FALSE(GetCannotSnapWidget(item3));
+  EXPECT_FALSE(GetCannotSnapWidget(item5));
+  EXPECT_FALSE(GetCannotSnapWidget(item6));
 
   SplitViewController::Get(root_windows[0])
       ->SnapWindow(window1.get(), SplitViewController::SnapPosition::kPrimary);
   ASSERT_TRUE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   ASSERT_FALSE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
-  EXPECT_FALSE(item2->cannot_snap_widget_for_testing());
-  ASSERT_TRUE(item3->cannot_snap_widget_for_testing());
-  ui::Layer* item3_unsnappable_layer =
-      item3->cannot_snap_widget_for_testing()->GetNativeWindow()->layer();
+  EXPECT_FALSE(GetCannotSnapWidget(item2));
+  ASSERT_TRUE(GetCannotSnapWidget(item3));
+  ui::Layer* item3_unsnappable_layer = GetCannotSnapWidget(item3)->GetLayer();
   EXPECT_EQ(1.f, item3_unsnappable_layer->opacity());
-  EXPECT_FALSE(item5->cannot_snap_widget_for_testing());
-  EXPECT_FALSE(item6->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item5));
+  EXPECT_FALSE(GetCannotSnapWidget(item6));
 
   SplitViewController::Get(root_windows[1])
       ->SnapWindow(window4.get(), SplitViewController::SnapPosition::kPrimary);
   ASSERT_TRUE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   ASSERT_TRUE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
-  EXPECT_FALSE(item2->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item2));
   EXPECT_EQ(1.f, item3_unsnappable_layer->opacity());
-  EXPECT_FALSE(item5->cannot_snap_widget_for_testing());
-  ASSERT_TRUE(item6->cannot_snap_widget_for_testing());
-  ui::Layer* item6_unsnappable_layer =
-      item6->cannot_snap_widget_for_testing()->GetNativeWindow()->layer();
+  EXPECT_FALSE(GetCannotSnapWidget(item5));
+  ASSERT_TRUE(GetCannotSnapWidget(item6));
+  ui::Layer* item6_unsnappable_layer = GetCannotSnapWidget(item6)->GetLayer();
   EXPECT_EQ(1.f, item6_unsnappable_layer->opacity());
 
   SplitViewController::Get(root_windows[0])->EndSplitView();
   ASSERT_FALSE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   ASSERT_TRUE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
-  EXPECT_FALSE(item2->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item2));
   EXPECT_EQ(0.f, item3_unsnappable_layer->opacity());
-  EXPECT_FALSE(item5->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item5));
   EXPECT_EQ(1.f, item6_unsnappable_layer->opacity());
 
   SplitViewController::Get(root_windows[1])->EndSplitView();
   ASSERT_FALSE(SplitViewController::Get(root_windows[0])->InSplitViewMode());
   ASSERT_FALSE(SplitViewController::Get(root_windows[1])->InSplitViewMode());
-  EXPECT_FALSE(item2->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item2));
   EXPECT_EQ(0.f, item3_unsnappable_layer->opacity());
-  EXPECT_FALSE(item5->cannot_snap_widget_for_testing());
+  EXPECT_FALSE(GetCannotSnapWidget(item5));
   EXPECT_EQ(0.f, item6_unsnappable_layer->opacity());
 }
 

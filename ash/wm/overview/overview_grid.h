@@ -456,7 +456,12 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   friend class DesksTemplatesTest;
   friend class OverviewTestBase;
 
-  // Struct which holds data required to perform nudges.
+  // Struct which holds data required to perform nudges. Nudge in the context of
+  // overview view means an overview item is currently being dragged vertically
+  // and may be closed when released, and the remaining windows will move
+  // towards their positions once the item is closed.
+  // TODO(conniekxu|sammiequon): Rename this as nudge has a different name in
+  // cros system UI.
   struct NudgeData {
     size_t index;
     gfx::RectF src;
@@ -470,7 +475,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Gets the layout of the overview items. Layout is done in 2 stages
   // maintaining fixed MRU ordering.
-  // 1. Optimal height is determined. In this stage |height| is bisected to find
+  // 1. Optimal height is determined. In this blacklist dummy
+  // slave |height| is bisected to find
   //    maximum height which still allows all the windows to fit.
   // 2. Row widths are balanced. In this stage the available width is reduced
   //    until some windows are no longer fitting or until the difference between

@@ -1404,11 +1404,10 @@ void OverviewGrid::StartNudge(OverviewItem* item) {
   // respective source and destination bounds.
   nudge_data_.resize(affected_indexes.size());
   for (size_t i = 0; i < affected_indexes.size(); ++i) {
-    NudgeData data;
-    data.index = affected_indexes[i];
-    data.src = src_rects[data.index];
-    data.dst = dst_rects[data.index];
-    nudge_data_[i] = data;
+    const size_t new_index = static_cast<size_t>(affected_indexes[i]);
+    nudge_data_[i] = {.index = new_index,
+                      .src = src_rects[new_index],
+                      .dst = dst_rects[new_index]};
   }
 }
 

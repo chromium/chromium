@@ -329,12 +329,12 @@ float OverviewItem::GetItemScale(const gfx::Size& size) {
       transform_window_.GetTopInset(), kHeaderHeightDp);
 }
 
-gfx::RectF OverviewItem::GetTargetBoundsInScreen() const {
-  return ::ash::GetTargetBoundsInScreen(transform_window_.window());
-}
-
 gfx::RectF OverviewItem::GetTransformedBounds() const {
   return transform_window_.GetTransformedBounds();
+}
+
+gfx::RectF OverviewItem::GetTargetBoundsInScreen() const {
+  return ::ash::GetTargetBoundsInScreen(transform_window_.window());
 }
 
 gfx::RectF OverviewItem::GetWindowTargetBoundsWithInsets() const {
@@ -684,7 +684,7 @@ void OverviewItem::UpdateItemContentViewForMinimizedWindow() {
   overview_item_view_->RefreshPreviewView();
 }
 
-bool OverviewItem::IsDragItem() {
+bool OverviewItem::IsDragItem() const {
   return overview_session_->GetCurrentDraggedOverviewItem() == this;
 }
 
@@ -862,7 +862,7 @@ float OverviewItem::GetOpacity() {
   return item_widget_->GetNativeWindow()->layer()->GetTargetOpacity();
 }
 
-OverviewAnimationType OverviewItem::GetExitOverviewAnimationType() {
+OverviewAnimationType OverviewItem::GetExitOverviewAnimationType() const {
   if (overview_session_->enter_exit_overview_type() ==
       OverviewEnterExitType::kImmediateExit) {
     return OVERVIEW_ANIMATION_NONE;
@@ -873,7 +873,7 @@ OverviewAnimationType OverviewItem::GetExitOverviewAnimationType() {
              : OVERVIEW_ANIMATION_NONE;
 }
 
-OverviewAnimationType OverviewItem::GetExitTransformAnimationType() {
+OverviewAnimationType OverviewItem::GetExitTransformAnimationType() const {
   if (is_moving_to_another_desk_ ||
       overview_session_->enter_exit_overview_type() ==
           OverviewEnterExitType::kImmediateExit) {
@@ -1120,20 +1120,6 @@ void OverviewItem::OnPostWindowStateTypeChange(WindowState* window_state,
   item_widget_->GetLayer()->SetOpacity(1.f);
 
   overview_grid_->PositionWindows(/*animate=*/false);
-}
-
-gfx::Rect OverviewItem::GetShadowBoundsForTesting() {
-  if (!shadow_ || !shadow_->GetLayer()->visible())
-    return gfx::Rect();
-
-  return shadow_->GetContentBounds();
-}
-
-gfx::RectF OverviewItem::GetUnclippedShadowBounds() const {
-  return transform_window_.IsMinimized()
-             ? gfx::RectF(
-                   overview_item_view_->preview_view()->GetBoundsInScreen())
-             : transform_window_.GetTransformedBounds();
 }
 
 void OverviewItem::OnWindowCloseAnimationCompleted() {

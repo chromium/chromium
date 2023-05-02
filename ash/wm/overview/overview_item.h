@@ -35,7 +35,9 @@ class OverviewItemView;
 class RoundedLabelWidget;
 class SystemShadow;
 
-// This class represents an item in overview mode.
+// This class represents an item in overview mode. It handles placing the window
+// in the correct bounds given by `OverviewGrid`, and owns a widget which
+// contains an item's overview specific ui (title, icon, close button, etc.).
 class ASH_EXPORT OverviewItem : public aura::WindowObserver,
                                 public WindowStateObserver {
  public:
@@ -47,8 +49,6 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   OverviewItem& operator=(const OverviewItem&) = delete;
 
   ~OverviewItem() override;
-
-  SystemShadow* shadow() { return shadow_.get(); }
 
   aura::Window* GetWindow();
 
@@ -160,7 +160,7 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void UpdateItemContentViewForMinimizedWindow();
 
   // Checks if this item is currently being dragged.
-  bool IsDragItem();
+  bool IsDragItem() const;
 
   // Inserts the window back to its original stacking order so that the order of
   // windows is the same as when entering overview.
@@ -193,10 +193,11 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
   void SetOpacity(float opacity);
   float GetOpacity();
 
-  OverviewAnimationType GetExitOverviewAnimationType();
-  OverviewAnimationType GetExitTransformAnimationType();
+  OverviewAnimationType GetExitOverviewAnimationType() const;
+  OverviewAnimationType GetExitTransformAnimationType() const;
 
-  // If kNewOverviewLayout is on, use this function for handling events.
+  // If in tablet mode, maybe forward events to `OverviewGridEventHandler` as we
+  // might want to process scroll events on the item.
   void HandleGestureEventForTabletModeLayout(ui::GestureEvent* event);
 
   // Handles events forwarded from |overview_item_view_|.
@@ -272,25 +273,13 @@ class ASH_EXPORT OverviewItem : public aura::WindowObserver,
     return scrolling_bounds_;
   }
 
-  gfx::Rect GetShadowBoundsForTesting();
-  RoundedLabelWidget* cannot_snap_widget_for_testing() {
-    return cannot_snap_widget_.get();
-  }
-
   void set_target_bounds_for_testing(const gfx::RectF& target_bounds) {
     target_bounds_ = target_bounds;
-  }
-  void set_animating_to_close_for_testing(bool val) {
-    animating_to_close_ = val;
   }
 
  private:
   friend class OverviewTestBase;
   FRIEND_TEST_ALL_PREFIXES(SplitViewOverviewSessionTest, Clipping);
-
-  // The shadow should match the size of the transformed window or preview
-  // window if unclipped.
-  gfx::RectF GetUnclippedShadowBounds() const;
 
   // Functions to be called back when their associated animations complete.
   void OnWindowCloseAnimationCompleted();

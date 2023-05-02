@@ -11,6 +11,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/style/close_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/test_shell_delegate.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
@@ -126,6 +127,23 @@ views::View* OverviewTestBase::GetBackdropView(OverviewItem* item) {
 
 WindowPreviewView* OverviewTestBase::GetPreviewView(OverviewItem* item) {
   return item->overview_item_view_->preview_view();
+}
+
+gfx::Rect OverviewTestBase::GetShadowBounds(OverviewItem* item) const {
+  SystemShadow* shadow = item->shadow_.get();
+  if (!shadow || !shadow->GetLayer()->visible()) {
+    return gfx::Rect();
+  }
+
+  return shadow->GetContentBounds();
+}
+
+views::Widget* OverviewTestBase::GetCannotSnapWidget(OverviewItem* item) {
+  return item->cannot_snap_widget_.get();
+}
+
+void OverviewTestBase::SetAnimatingToClose(OverviewItem* item, bool val) {
+  item->animating_to_close_ = val;
 }
 
 float OverviewTestBase::GetCloseButtonOpacity(OverviewItem* item) {
