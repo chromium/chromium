@@ -20,4 +20,5 @@ enum XRDeviceId {
   [EnableIf=enable_arcore] ARCORE_DEVICE_ID = 7,
   [EnableIf=enable_openxr] OPENXR_DEVICE_ID = 8,
   [EnableIf=enable_cardboard] CARDBOARD_DEVICE_ID = 9,
+  WVR_DEVICE_ID = 10,
 };

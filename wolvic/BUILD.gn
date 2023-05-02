@@ -19,6 +19,17 @@ shared_library("libcontent_native") {
   sources = [
     "../content/shell/browser/shell_paths.cc",
     "browser/tab_jni.cc",
+    "browser/vr/moz_external_vr.h",
+    "browser/vr/wolvic_xr_integration_client.cc",
+    "browser/vr/wolvic_xr_integration_client.h",
+    "browser/vr/wvr_device.cc",
+    "browser/vr/wvr_device.h",
+    "browser/vr/wvr_device_provider.cc",
+    "browser/vr/wvr_device_provider.h",
+    "browser/vr/wvr_manager.cc",
+    "browser/vr/wvr_manager.h",
+    "browser/vr/wvr_thread.cc",
+    "browser/vr/wvr_thread.h",
     "wolvic_browser_context.cc",
     "wolvic_browser_context.h",
     "wolvic_content_browser_client.cc",
@@ -100,6 +111,7 @@ static_library("content_native_lib") {
     "//components/variations",
     "//components/variations/service",
     "//components/web_cache/renderer",
+    "//components/webxr:webxr",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
     "//content/common:main_frame_counter",
@@ -161,13 +173,19 @@ jinja_template("content_manifest") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/org/chromium/wolvic/Tab.java" ]
+  sources = [
+    "java/org/chromium/wolvic/Tab.java",
+    "java/org/chromium/wolvic/VRManager.java",
+    "java/org/chromium/wolvic/WVRSurfaceTexture.java",
+  ]
 }
 
 android_library("wolvic_java") {
   sources = [
     "java/org/chromium/wolvic/Tab.java",
     "java/org/chromium/wolvic/TabCompositorView.java",
+    "java/org/chromium/wolvic/VRManager.java",
+    "java/org/chromium/wolvic/WVRSurfaceTexture.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
@@ -182,6 +200,7 @@ android_library("wolvic_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
 
