@@ -29,9 +29,7 @@ DelayBasedTimeSource::DelayBasedTimeSource(
       last_tick_time_(base::TimeTicks() - interval_),
       task_runner_(task_runner),
       tick_closure_(base::BindRepeating(&DelayBasedTimeSource::OnTimerTick,
-                                        base::Unretained(this))) {
-  timer_.SetTaskRunner(task_runner_.get());
-}
+                                        base::Unretained(this))) {}
 
 DelayBasedTimeSource::~DelayBasedTimeSource() = default;
 
@@ -44,6 +42,7 @@ void DelayBasedTimeSource::SetActive(bool active) {
   active_ = active;
 
   if (active_) {
+    timer_.SetTaskRunner(task_runner_.get());
     PostNextTickTask(Now());
   } else {
     timer_.Stop();
