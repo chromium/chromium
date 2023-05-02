@@ -95,6 +95,10 @@ class MockQuotaManager : public QuotaManager {
                         blink::mojom::StorageType type,
                         UsageAndQuotaCallback callback) override;
 
+  int64_t GetQuotaForStorageKey(const blink::StorageKey& storage_key,
+                                blink::mojom::StorageType type,
+                                const QuotaSettings& settings) const override;
+
   // Overrides QuotaManager's implementation with a canned implementation that
   // allows clients to set up the storage key database that should be queried.
   // This method will only search through the storage keys added explicitly via

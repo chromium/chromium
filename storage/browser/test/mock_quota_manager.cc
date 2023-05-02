@@ -185,6 +185,18 @@ void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
   }
 }
 
+int64_t MockQuotaManager::GetQuotaForStorageKey(
+    const blink::StorageKey& storage_key,
+    blink::mojom::StorageType type,
+    const QuotaSettings& settings) const {
+  auto quota = quota_map_.find(std::make_pair(storage_key, type));
+  if (quota != quota_map_.end()) {
+    return quota->second.quota;
+  }
+
+  return QuotaManager::GetQuotaForStorageKey(storage_key, type, settings);
+}
+
 void MockQuotaManager::SetQuota(const StorageKey& storage_key,
                                 StorageType type,
                                 int64_t quota) {

@@ -730,14 +730,14 @@ void CacheStorageCache::WriteSideData(ErrorCallback callback,
     return;
   }
 
-  // GetUsageAndQuota is called before entering a scheduled operation since it
-  // can call Size, another scheduled operation.
-  quota_manager_proxy_->GetUsageAndQuota(
-      bucket_locator_.storage_key, blink::mojom::StorageType::kTemporary,
-      scheduler_task_runner_,
-      base::BindOnce(&CacheStorageCache::WriteSideDataDidGetQuota,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback), url,
-                     expected_response_time, trace_id, buffer, buf_len));
+  // GetBucketSpaceRemaining is called before entering a scheduled operation
+  // since it can call Size, another scheduled operation.
+  quota_manager_proxy_->GetBucketSpaceRemaining(
+      bucket_locator_, scheduler_task_runner_,
+      base::BindOnce(
+          &CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback), url,
+          expected_response_time, trace_id, buffer, buf_len));
 }
 
 void CacheStorageCache::BatchOperation(
@@ -815,15 +815,9 @@ void CacheStorageCache::BatchOperation(
   uint64_t space_required = safe_space_required.ValueOrDie();
   uint64_t side_data_size = safe_side_data_size.ValueOrDie();
   if (space_required || side_data_size) {
-    // GetUsageAndQuota is called before entering a scheduled operation since it
-    // can call Size, another scheduled operation. This is racy. The decision
-    // to commit is made before the scheduled Put operation runs. By the time
-    // Put runs, the cache might already be full and the usage will be larger
-    // than it's supposed to be.
-    quota_manager_proxy_->GetUsageAndQuota(
-        bucket_locator_.storage_key, blink::mojom::StorageType::kTemporary,
-        scheduler_task_runner_,
-        base::BindOnce(&CacheStorageCache::BatchDidGetUsageAndQuota,
+    quota_manager_proxy_->GetBucketSpaceRemaining(
+        bucket_locator_, scheduler_task_runner_,
+        base::BindOnce(&CacheStorageCache::BatchDidGetBucketSpaceRemaining,
                        weak_ptr_factory_.GetWeakPtr(), std::move(operations),
                        trace_id, std::move(callback),
                        std::move(bad_message_callback), std::move(message),
@@ -831,14 +825,13 @@ void CacheStorageCache::BatchOperation(
     return;
   }
 
-  BatchDidGetUsageAndQuota(std::move(operations), trace_id, std::move(callback),
-                           std::move(bad_message_callback), std::move(message),
-                           0 /* space_required */, 0 /* side_data_size */,
-                           blink::mojom::QuotaStatusCode::kOk, 0 /* usage */,
-                           0 /* quota */);
+  BatchDidGetBucketSpaceRemaining(
+      std::move(operations), trace_id, std::move(callback),
+      std::move(bad_message_callback), std::move(message),
+      0 /* space_required */, 0 /* side_data_size */, 0 /* space_remaining */);
 }
 
-void CacheStorageCache::BatchDidGetUsageAndQuota(
+void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
     std::vector<blink::mojom::BatchOperationPtr> operations,
     int64_t trace_id,
     VerboseErrorCallback callback,
@@ -846,17 +839,15 @@ void CacheStorageCache::BatchDidGetUsageAndQuota(
     absl::optional<std::string> message,
     uint64_t space_required,
     uint64_t side_data_size,
-    blink::mojom::QuotaStatusCode status_code,
-    int64_t usage,
-    int64_t quota) {
+    storage::QuotaErrorOr<int64_t> space_remaining) {
   TRACE_EVENT_WITH_FLOW1("CacheStorage",
-                         "CacheStorageCache::BatchDidGetUsageAndQuota",
+                         "CacheStorageCache::BatchDidGetBucketSpaceRemaining",
                          TRACE_ID_GLOBAL(trace_id),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT,
                          "operations", CacheStorageTracedValue(operations));
+
   base::CheckedNumeric<uint64_t> safe_space_required = space_required;
   base::CheckedNumeric<uint64_t> safe_space_required_with_side_data;
-  safe_space_required += usage;
   safe_space_required_with_side_data = safe_space_required + side_data_size;
   if (!safe_space_required.IsValid() ||
       !safe_space_required_with_side_data.IsValid()) {
@@ -872,8 +863,8 @@ void CacheStorageCache::BatchDidGetUsageAndQuota(
                 std::move(message))));
     return;
   }
-  if (status_code != blink::mojom::QuotaStatusCode::kOk ||
-      safe_space_required.ValueOrDie() > quota) {
+  if (!space_remaining.has_value() ||
+      safe_space_required.ValueOrDie() > space_remaining.value()) {
     scheduler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   CacheStorageVerboseError::New(
@@ -881,7 +872,8 @@ void CacheStorageCache::BatchDidGetUsageAndQuota(
                                       std::move(message))));
     return;
   }
-  bool skip_side_data = safe_space_required_with_side_data.ValueOrDie() > quota;
+  bool skip_side_data = safe_space_required_with_side_data.ValueOrDie() >
+                        static_cast<uint64_t>(space_remaining.value());
 
   auto completion_callback = base::BindRepeating(
       &CacheStorageCache::BatchDidOneOperation, weak_ptr_factory_.GetWeakPtr(),
@@ -1549,23 +1541,21 @@ void CacheStorageCache::WriteMetadata(disk_cache::Entry* entry,
     std::move(split_callback.second).Run(rv);
 }
 
-void CacheStorageCache::WriteSideDataDidGetQuota(
+void CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining(
     ErrorCallback callback,
     const GURL& url,
     base::Time expected_response_time,
     int64_t trace_id,
     scoped_refptr<net::IOBuffer> buffer,
     int buf_len,
-    blink::mojom::QuotaStatusCode status_code,
-    int64_t usage,
-    int64_t quota) {
-  TRACE_EVENT_WITH_FLOW0("CacheStorage",
-                         "CacheStorageCache::WriteSideDataDidGetQuota",
-                         TRACE_ID_GLOBAL(trace_id),
-                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+    storage::QuotaErrorOr<int64_t> space_remaining) {
+  TRACE_EVENT_WITH_FLOW0(
+      "CacheStorage",
+      "CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining",
+      TRACE_ID_GLOBAL(trace_id),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  if (status_code != blink::mojom::QuotaStatusCode::kOk ||
-      (buf_len > quota - usage)) {
+  if (!space_remaining.has_value() || space_remaining.value() < buf_len) {
     scheduler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   CacheStorageError::kErrorQuotaExceeded));

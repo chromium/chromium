@@ -419,9 +419,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Calculates the quota for the given storage key, taking into account whether
   // the storage should be session only for this key. This will return 0 for
   // unlimited storage situations.
-  int64_t GetQuotaForStorageKey(const blink::StorageKey& storage_key,
-                                blink::mojom::StorageType type,
-                                const QuotaSettings& settings) const;
+  // Virtual for testing.
+  virtual int64_t GetQuotaForStorageKey(const blink::StorageKey& storage_key,
+                                        blink::mojom::StorageType type,
+                                        const QuotaSettings& settings) const;
 
   virtual void GetBucketsModifiedBetween(blink::mojom::StorageType type,
                                          base::Time begin,

@@ -568,7 +568,7 @@ class CacheStorageCacheTest : public testing::Test {
         std::vector<uint8_t>(expected_blob_data_.begin(),
                              expected_blob_data_.end()));
 
-    auto bucket_locator = GetOrCreateBucket(kTestUrl);
+    auto bucket_locator = GetOrCreateDefaultBucket(kTestUrl);
     ASSERT_TRUE(bucket_locator.has_value());
     // Use a mock CacheStorage object so we can use real
     // CacheStorageCacheHandle reference counting.  A CacheStorage
@@ -588,13 +588,13 @@ class CacheStorageCacheTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
-  storage::QuotaErrorOr<storage::BucketLocator> GetOrCreateBucket(
+  storage::QuotaErrorOr<storage::BucketLocator> GetOrCreateDefaultBucket(
       const GURL& url) {
     const auto storage_key =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(url));
     base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
     quota_manager_proxy_->UpdateOrCreateBucket(
-        storage::BucketInitParams(storage_key, storage::kDefaultBucketName),
+        storage::BucketInitParams::ForDefaultBucket(storage_key),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         future.GetCallback());
     return future.Take().transform(&storage::BucketInfo::ToBucketLocator);
@@ -2070,7 +2070,28 @@ TEST_P(CacheStorageCacheTestP, QuotaManagerModified) {
 }
 
 TEST_P(CacheStorageCacheTestP, PutObeysQuotaLimits) {
-  SetQuota(0);
+  SetQuota(10);
+  EXPECT_FALSE(Put(body_request_, CreateBlobBodyResponse()));
+  EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutObeysBucketQuotaLimits) {
+  SetQuota(1000000);
+  EXPECT_TRUE(Put(body_request_, CreateBlobBodyResponse()));
+
+  const auto storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+  storage::BucketInitParams bucket(storage_key, "inbox");
+  bucket.quota = 15;
+  quota_manager_proxy_->UpdateOrCreateBucket(
+      bucket, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      future.GetCallback());
+  auto value = future.Take();
+
+  ASSERT_TRUE(value.has_value());
+  InitCache(nullptr, value->ToBucketLocator());
+
   EXPECT_FALSE(Put(body_request_, CreateBlobBodyResponse()));
   EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
 }
@@ -2204,8 +2225,8 @@ TEST_P(CacheStorageCacheTestP, PutResponseUrlListObeysQuotaLimits) {
   EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
 }
 
-TEST_P(CacheStorageCacheTestP, PutObeysQuotaLimitsWithEmptyResponseZeroQuota) {
-  SetQuota(0);
+TEST_P(CacheStorageCacheTestP, PutObeysQuotaLimitsWithEmptyResponseTinyQuota) {
+  SetQuota(1);
   EXPECT_FALSE(Put(body_request_, CreateNoBodyResponse()));
   EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
 }
@@ -2399,7 +2420,7 @@ TEST_P(CacheStorageCacheTestP, UnfinishedPutsShouldNotBeReusable) {
   base::RunLoop().RunUntilIdle();
 
   // Create a new Cache in the same space.
-  auto bucket = GetOrCreateBucket(kTestUrl);
+  auto bucket = GetOrCreateDefaultBucket(kTestUrl);
   ASSERT_TRUE(bucket.has_value());
   InitCache(nullptr, *std::move(bucket));
 
