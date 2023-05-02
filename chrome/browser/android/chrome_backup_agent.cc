@@ -24,17 +24,15 @@ static_assert(46 == syncer::GetNumModelTypes(),
               "If the new type has a corresponding pref, add it here");
 const char* backed_up_preferences_[] = {
     autofill::prefs::kAutofillWalletImportEnabled,
-    syncer::prefs::kSyncFirstSetupComplete,
     syncer::prefs::kSyncKeepEverythingSynced,
     syncer::prefs::kSyncAutofill,
     syncer::prefs::kSyncBookmarks,
     syncer::prefs::kSyncPasswords,
     syncer::prefs::kSyncPreferences,
     syncer::prefs::kSyncReadingList,
-    syncer::prefs::kSyncRequested,
+    syncer::prefs::kSyncSavedTabGroups,
     syncer::prefs::kSyncTabs,
     syncer::prefs::kSyncTypedUrls,
-    syncer::prefs::kSyncSavedTabGroups,
 };
 
 }  // namespace
