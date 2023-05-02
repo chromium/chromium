@@ -20,6 +20,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -101,7 +103,15 @@ class LoaderTask : public content::WebContentsObserver {
     if (validated_url == content::kUnreachableWebDataURL) {
       // Navigation ends up in an error page. For example, network errors and
       // policy blocked URLs.
-      // TODO(https://crbug.com/1071300): Handle error codes appropriately.
+      PostResultTask(WebAppUrlLoader::Result::kFailedErrorPageLoaded);
+      return;
+    }
+
+    const net::HttpResponseHeaders* headers =
+        render_frame_host->GetLastResponseHeaders();
+    if (headers && headers->response_code() != net::HTTP_OK) {
+      // Navigation loads content but is not successful. For example, HTTP-500
+      // class of errors.
       PostResultTask(WebAppUrlLoader::Result::kFailedErrorPageLoaded);
       return;
     }
