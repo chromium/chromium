@@ -22,7 +22,7 @@ import {getTemplate} from './switch_access_action_assignment_dialog.html.js';
 import {SwitchAccessCommand} from './switch_access_constants.js';
 import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
 
-interface SettingsSwitchAccessActionAssignmentDialogElement {
+export interface SettingsSwitchAccessActionAssignmentDialogElement {
   $: {
     switchAccessActionAssignmentDialog: CrDialogElement,
   };
@@ -31,7 +31,7 @@ interface SettingsSwitchAccessActionAssignmentDialogElement {
 const SettingsSwitchAccessActionAssignmentDialogElementBase =
     I18nMixin(PolymerElement);
 
-class SettingsSwitchAccessActionAssignmentDialogElement extends
+export class SettingsSwitchAccessActionAssignmentDialogElement extends
     SettingsSwitchAccessActionAssignmentDialogElementBase {
   static get is() {
     return 'settings-switch-access-action-assignment-dialog';

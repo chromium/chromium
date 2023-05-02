@@ -462,6 +462,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'os_a11y_page/manage_a11y_subpage_test.js',
  ],
  [
+   'OsA11yPageSwitchAccessActionAssignmentDialog',
+   'os_a11y_page/switch_access_action_assignment_dialog_test.js',
+ ],
+ [
    'OsA11yPageTextToSpeechSubpage',
    'os_a11y_page/text_to_speech_subpage_test.js',
    {enabled: ['features::kPdfOcr']},
@@ -570,10 +574,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    {enabled: ['features::kAccessibilitySelectToSpeakPageMigration']},
  ],
  ['SettingsTrafficCounters', 'settings_traffic_counters_test.js'],
- [
-   'SwitchAccessActionAssignmentDialog',
-   'switch_access_action_assignment_dialog_test.js',
- ],
  ['SwitchAccessSetupGuideDialog', 'switch_access_setup_guide_dialog_test.js'],
  ['SwitchAccessSubpage', 'switch_access_subpage_tests.js'],
 ].forEach(test => registerTest(...test));
