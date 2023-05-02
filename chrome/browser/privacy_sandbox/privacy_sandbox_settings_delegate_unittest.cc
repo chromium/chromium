@@ -153,15 +153,28 @@ TEST_F(PrivacySandboxSettingsDelegateTest,
   EXPECT_FALSE(delegate()->IsSubjectToM1NoticeRestricted());
 }
 
-TEST_F(PrivacySandboxSettingsDelegateTest, UnrestrictedPref_UserSignedIn) {
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       UnrestrictedPref_UserSignedInWithAccountCapability) {
   identity_test_env()->MakePrimaryAccountAvailable(
       kTestEmail, signin::ConsentLevel::kSignin);
-  SetRestrictedNoticeCapability(kTestEmail, false);
+  SetPrivacySandboxAccountCapability(kTestEmail, true);
 
   // Calls to IsPrivacySandboxRestricted should set the unrestricted pref
   EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
   delegate()->IsPrivacySandboxRestricted();
   EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
+}
+
+TEST_F(PrivacySandboxSettingsDelegateTest,
+       UnrestrictedPref_UserSignedInWithoutAccountCapability) {
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestEmail, signin::ConsentLevel::kSignin);
+  SetPrivacySandboxAccountCapability(kTestEmail, false);
+
+  // Calls to IsPrivacySandboxRestricted should NOT set the unrestricted pref
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
+  delegate()->IsPrivacySandboxRestricted();
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1Unrestricted));
 }
 
 TEST_F(PrivacySandboxSettingsDelegateTest, UnrestrictedPref_UserNotSignedIn) {
