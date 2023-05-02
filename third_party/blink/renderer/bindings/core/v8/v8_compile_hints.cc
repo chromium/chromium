@@ -193,7 +193,7 @@ bool V8CrowdsourcedCompileHintsProducer::SendDataToUkm() {
   // Send the data to UKM.
   DCHECK_NE(execution_context->UkmSourceID(), ukm::kInvalidSourceId);
   ukm::UkmRecorder* ukm_recorder = execution_context->UkmRecorder();
-  ukm::builders::V8CompileHints_Version4(execution_context->UkmSourceID())
+  ukm::builders::V8CompileHints_Version5(execution_context->UkmSourceID())
       .SetData0(static_cast<int64_t>(raw_data[1]) << 32 | raw_data[0])
       .SetData1(static_cast<int64_t>(raw_data[3]) << 32 | raw_data[2])
       .SetData2(static_cast<int64_t>(raw_data[5]) << 32 | raw_data[4])

@@ -764,7 +764,7 @@ BASE_FEATURE(kProduceCompileHints,
 const base::FeatureParam<int> kProduceCompileHintsOnIdleDelayParam{
     &kProduceCompileHints, "delay-in-ms", 10000};
 const base::FeatureParam<double> kProduceCompileHintsNoiseLevel{
-    &kProduceCompileHints, "noise probability", 0.9};
+    &kProduceCompileHints, "noise probability", 0.5};
 
 // Make all pending 'display: auto' web fonts enter the swap or failure period
 // immediately before reaching the LCP time limit (~2500ms), so that web fonts
