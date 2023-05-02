@@ -44,12 +44,6 @@ bool CodecSupportsFloatOutput(AudioCodec codec) {
 
 bool CodecSupportsFormat(const AudioDecoderConfig& config,
                          const WAVEFORMATEX& format) {
-  // Can this really happen? Seems like it's required by the subtype being
-  // MFAudioFormat_Float.
-  if (format.nBlockAlign != format.nChannels * sizeof(float)) {
-    return false;
-  }
-
   if (config.channels() == format.nChannels &&
       config.samples_per_second() == static_cast<int>(format.nSamplesPerSec)) {
     return true;
@@ -61,6 +55,14 @@ bool CodecSupportsFormat(const AudioDecoderConfig& config,
       2 * config.channels() == format.nChannels &&
       2 * config.samples_per_second() ==
           static_cast<int>(format.nSamplesPerSec)) {
+    return true;
+  }
+
+  // For AC3/EAC3, we expect channel config changes, no need to compare channels
+  // here.
+  if ((config.codec() == AudioCodec::kAC3 ||
+       config.codec() == AudioCodec::kEAC3) &&
+      config.samples_per_second() == static_cast<int>(format.nSamplesPerSec)) {
     return true;
   }
 
