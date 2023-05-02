@@ -138,6 +138,7 @@ class HistoryClustersServiceTestBase : public testing::Test {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {
     Config config;
+    config.is_journeys_enabled_no_locale_check = true;
     // TODO(b/276488340): Update this test when non context clusterer code gets
     //   cleaned up.
     config.use_navigation_context_clusters = false;
@@ -1409,6 +1410,10 @@ class HistoryClustersServiceJourneysDisabledTest
             internal::kJourneys,
             internal::kPersistContextAnnotationsInHistoryDb,
         });
+
+    Config config;
+    config.is_journeys_enabled_no_locale_check = false;
+    SetConfigForTesting(config);
   }
 };
 
@@ -1425,6 +1430,18 @@ TEST_F(HistoryClustersServiceJourneysDisabledTest,
   history_clusters_service_->CompleteVisitContextAnnotationsIfReady(0);
   EXPECT_FALSE(
       history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
+}
+
+TEST_F(HistoryClustersServiceJourneysDisabledTest, QueryClusters) {
+  // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
+  AddHardcodedTestDataToHistoryService();
+
+  QueryClustersContinuationParams continuation_params = {};
+  continuation_params.continuation_time = base::Time::Now();
+
+  const auto [clusters, visits] = NextQueryClusters(
+      continuation_params, /*expect_clustering_backend_call=*/false);
+  EXPECT_TRUE(clusters.empty());
 }
 
 class HistoryClustersServiceMaxKeywordsTest

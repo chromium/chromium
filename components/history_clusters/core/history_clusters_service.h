@@ -142,11 +142,6 @@ class HistoryClustersService : public base::SupportsUserData,
       bool recluster,
       QueryClustersCallback callback);
 
-  // Invokes `UpdateClusters()` after a short delay, then again periodically.
-  // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,
-  // then every 1 hour afterwards.
-  void RepeatedlyUpdateClusters();
-
   // Entrypoint to the `HistoryClustersServiceTaskUpdateClusters`. Updates the
   // persisted clusters in the history DB and invokes `callback` when done.
   void UpdateClusters();
@@ -174,6 +169,11 @@ class HistoryClustersService : public base::SupportsUserData,
  private:
   friend class HistoryClustersServiceTestApi;
   friend class HistoryClustersServiceTestBase;
+
+  // Invokes `UpdateClusters()` after a short delay, then again periodically.
+  // E.g., might invoke `UpdateClusters()` initially 5 minutes after startup,
+  // then every 1 hour afterwards.
+  void RepeatedlyUpdateClusters();
 
   // Starts a keyword cache refresh, if necessary.
   // TODO(manukh): `StartKeywordCacheRefresh()` and
@@ -279,7 +279,8 @@ class HistoryClustersService : public base::SupportsUserData,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
 
-  ContextClustererHistoryServiceObserver context_clusterer_observer_;
+  std::unique_ptr<ContextClustererHistoryServiceObserver>
+      context_clusterer_observer_;
 
   // Used to store keyword caches across restarts.
   raw_ptr<PrefService> pref_service_ = nullptr;
