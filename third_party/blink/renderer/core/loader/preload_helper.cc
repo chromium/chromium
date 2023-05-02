@@ -821,6 +821,7 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
         document.GetRenderBlockingResourceManager()
             ->EnsureStartFontPreloadMaxBlockingTimer();
       }
+      document.CountUse(mojom::blink::WebFeature::kLinkRelPreloadAsFont);
       break;
     case ResourceType::kAudio:
     case ResourceType::kVideo:

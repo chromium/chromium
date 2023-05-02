@@ -42258,6 +42258,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="ServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial"/>
   <int value="4560"
       label="EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved"/>
+  <int value="4561" label="LinkRelPreloadAsFont"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
