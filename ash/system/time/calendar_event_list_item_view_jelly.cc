@@ -20,6 +20,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/calendar_view_controller.h"
 #include "ash/system/time/event_date_formatter_util.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "google_apis/calendar/calendar_api_response_types.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,18 +58,27 @@ constexpr int kColorDotViewSize = kColorDotRadius * 2;
 constexpr char kDefaultColorId[] = "7";
 
 // Map of Calendar API color ids and their respective hex color code.
-std::map<std::string, std::string> kEventHexColorCodes = {
-    {"1", "a4bdfc"}, {"2", "7ae7bf"},  {"3", "dbadff"}, {"4", "ff887c"},
-    {"5", "fbd75b"}, {"6", "ffb878"},  {"7", "46d6db"}, {"8", "e1e1e1"},
-    {"9", "5484ed"}, {"10", "51b749"}, {"11", "dc2127"}};
+constexpr auto kEventHexColorCodes =
+    base::MakeFixedFlatMap<base::StringPiece, base::StringPiece>(
+        {{"1", "6994FF"},
+         {"2", "3CBD8E"},
+         {"3", "BB74F2"},
+         {"4", "FA827A"},
+         {"5", "C7C419"},
+         {"6", "F0A85F"},
+         {"7", "60BDBD"},
+         {"8", "BD9C9C"},
+         {"9", "7077DC"},
+         {"10", "5B9157"},
+         {"11", "D45D5D"}});
 
 // Renders an Event color dot.
 class CalendarEventListItemDot : public views::View {
  public:
   explicit CalendarEventListItemDot(std::string color_id) {
     DCHECK(color_id.empty() || kEventHexColorCodes.count(color_id));
-    std::string hex_code =
-        kEventHexColorCodes[color_id.empty() ? kDefaultColorId : color_id];
+
+    base::BasicStringPiece<char> hex_code = LookupColorId(color_id);
     base::HexStringToInt(hex_code, &color_);
     SetPreferredSize(gfx::Size(
         kColorDotViewSize,
@@ -90,6 +100,14 @@ class CalendarEventListItemDot : public views::View {
   }
 
  private:
+  base::BasicStringPiece<char> LookupColorId(std::string color_id) {
+    const auto* iter = kEventHexColorCodes.find(color_id);
+    if (iter == kEventHexColorCodes.end()) {
+      return kEventHexColorCodes.at(kDefaultColorId);
+    }
+    return iter->second;
+  }
+
   // The color value of the dot.
   int color_;
 };

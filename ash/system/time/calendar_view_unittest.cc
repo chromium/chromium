@@ -250,7 +250,7 @@ class CalendarViewTest : public AshTestBase {
     calendar_view_->check_upcoming_events_timer_.user_task().Run();
   }
 
-  CalendarSlidingSurface* calendar_sliding_surface_view() {
+  views::View* calendar_sliding_surface_view() {
     return calendar_view_->calendar_sliding_surface_;
   }
 

@@ -133,7 +133,7 @@ TEST_F(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_single_upcoming_event",
-      /*revision_number=*/1, Widget()));
+      /*revision_number=*/2, Widget()));
 }
 
 TEST_F(CalendarUpNextViewPixelTest,
@@ -157,7 +157,7 @@ TEST_F(CalendarUpNextViewPixelTest,
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "calendar_up_next_multiple_upcoming_events",
-      /*revision_number=*/1, Widget()));
+      /*revision_number=*/2, Widget()));
 }
 
 TEST_F(

@@ -196,7 +196,8 @@ void CalendarEventListView::OnThemeChanged() {
   views::View::OnThemeChanged();
   auto color =
       features::IsCalendarJellyEnabled() && chromeos::features::IsJellyEnabled()
-          ? GetColorProvider()->GetColor((cros_tokens::kCrosSysSystemOnBase))
+          ? GetColorProvider()->GetColor(
+                (cros_tokens::kCrosSysSystemOnBaseOpaque))
           : GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque);
   SetBackground(views::CreateSolidBackground(color));
 }

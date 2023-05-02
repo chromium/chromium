@@ -43,7 +43,6 @@ namespace ash {
 class CalendarEventListView;
 class CalendarMonthView;
 class IconButton;
-class CalendarSurfaceLayerMask;
 class CalendarView;
 
 // The header of the calendar view, which shows the current month and year.
@@ -71,25 +70,6 @@ class CalendarHeaderView : public views::View {
 
   // The year header which follows the `header_`.
   const raw_ptr<views::Label, ExperimentalAsh> header_year_;
-};
-
-// Container view used for holding the event list view and / or the up next
-// view and animating them together.
-// Calculates the path for the `CalendarSurfaceLayerMask` to use.
-class CalendarSlidingSurface : public views::View {
- public:
-  METADATA_HEADER(CalendarSlidingSurface);
-  explicit CalendarSlidingSurface(CalendarView* calendar_view)
-      : calendar_view_(calendar_view) {}
-  CalendarSlidingSurface(const CalendarSlidingSurface& other) = delete;
-  CalendarSlidingSurface& operator=(const CalendarSlidingSurface& other) =
-      delete;
-  ~CalendarSlidingSurface() override = default;
-
-  SkPath GetPath() const;
-
- private:
-  const raw_ptr<CalendarView, ExperimentalAsh> calendar_view_;
 };
 
 // This view displays a scrollable calendar.
@@ -373,9 +353,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   // that the calendar view can be in.
   void ClipScrollViewHeight(ScrollViewState state_to_change_to);
 
-  // Creates the `CalendarSurfaceLayerMask` if it doesn't already exist.
-  void MaybeCreateLayerMask();
-
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
     should_header_animate_ = should_animate;
@@ -414,17 +391,13 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   raw_ptr<IconButton, ExperimentalAsh> managed_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> up_button_ = nullptr;
   raw_ptr<IconButton, ExperimentalAsh> down_button_ = nullptr;
-  raw_ptr<CalendarSlidingSurface, ExperimentalAsh> calendar_sliding_surface_ =
-      nullptr;
+  raw_ptr<views::View, ExperimentalAsh> calendar_sliding_surface_ = nullptr;
   raw_ptr<CalendarEventListView, ExperimentalAsh> event_list_view_ = nullptr;
   // Owned by CalendarView.
   raw_ptr<CalendarUpNextView, ExperimentalAsh> up_next_view_ = nullptr;
   std::map<base::Time, CalendarModel::FetchingStatus> on_screen_month_;
   raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_ =
       Shell::Get()->system_tray_model()->calendar_model();
-
-  // Layer mask that sits over the scrollview and hides the content underneath.
-  std::unique_ptr<CalendarSurfaceLayerMask> calendar_surface_layer_mask_;
 
   // If it `is_resetting_scroll_`, we don't calculate the scroll position and we
   // don't need to check if we need to update the month or not.
