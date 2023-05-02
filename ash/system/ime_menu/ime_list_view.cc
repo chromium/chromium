@@ -323,13 +323,15 @@ void ImeListView::AppendImeListAndProperties(
   DCHECK(ime_map_.empty());
   DCHECK(container_);
 
+  const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
   for (size_t i = 0; i < list.size(); i++) {
     const bool selected = current_ime_id == list[i].id;
     views::View* ime_view =
         container_->AddChildView(std::make_unique<ImeListItemView>(
             this, list[i].short_name, list[i].name, selected,
-            kColorAshIconColorProminent));
-
+            is_jelly_enabled
+                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
+                : kColorAshIconColorProminent));
     ime_map_[ime_view] = list[i].id;
 
     if (selected)
@@ -345,7 +347,9 @@ void ImeListView::AppendImeListAndProperties(
         ImeListItemView* property_view =
             container_->AddChildView(std::make_unique<ImeListItemView>(
                 this, std::u16string(), property.label, property.checked,
-                kColorAshIconColorPrimary));
+                is_jelly_enabled
+                    ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+                    : kColorAshIconColorPrimary));
 
         property_map_[property_view] = property.key;
       }

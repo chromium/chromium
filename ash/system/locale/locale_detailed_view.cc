@@ -96,7 +96,7 @@ class LocaleItemView : public ActionableView {
       checked_image->SetImage(ui::ImageModel::FromVectorIcon(
           kCheckCircleIcon,
           is_jelly_enabled
-              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysPrimary)
               : kColorAshIconColorProminent,
           kMenuIconSize));
       tri_view->AddView(TriView::Container::END, checked_image);
