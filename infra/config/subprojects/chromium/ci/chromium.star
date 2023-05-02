@@ -529,8 +529,7 @@ ci.builder(
             target_bits = 64,
         ),
     ),
-    # Bump to 8 cores if needed.
-    cores = 4,
+    cores = 12,
     os = os.MAC_DEFAULT,
     tree_closing = True,
     console_view_entry = consoles.console_view_entry(
