@@ -51,8 +51,8 @@ found in the LICENSE file.
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/privacy_guide_privacy_sandbox_description"
                 style="@style/TextAppearance.TextMedium.Secondary" />
@@ -62,9 +62,11 @@ found in the LICENSE file.
                 android:layout_width="@dimen/done_step_link_button_size"
                 android:layout_height="@dimen/done_step_link_button_size"
                 android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="@dimen/done_step_link_button_marginHorizontal"
+                android:padding="@dimen/done_step_link_button_padding"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
                 android:src="@drawable/open_in_new_tab"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="?attr/actionBarItemBackground"
                 android:contentDescription="@string/accessibility_expand_button"
                 app:tint="@color/default_icon_color_tint_list" />
         </LinearLayout>
@@ -83,8 +85,8 @@ found in the LICENSE file.
             android:orientation="horizontal">
 
             <TextView
-                android:layout_width="0dp"
                 android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="@string/privacy_guide_web_app_activity_description"
                 style="@style/TextAppearance.TextMedium.Secondary" />
@@ -94,9 +96,11 @@ found in the LICENSE file.
                 android:layout_width="@dimen/done_step_link_button_size"
                 android:layout_height="@dimen/done_step_link_button_size"
                 android:layout_gravity="center_vertical"
-                android:layout_marginHorizontal="@dimen/done_step_link_button_marginHorizontal"
+                android:padding="@dimen/done_step_link_button_padding"
+                android:adjustViewBounds="true"
+                android:scaleType="centerInside"
                 android:src="@drawable/open_in_new_tab"
-                android:background="?android:attr/selectableItemBackground"
+                android:background="?attr/actionBarItemBackground"
                 android:contentDescription="@string/accessibility_expand_button"
                 app:tint="@color/default_icon_color_tint_list" />
         </LinearLayout>
