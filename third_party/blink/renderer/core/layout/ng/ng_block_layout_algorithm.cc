@@ -1753,6 +1753,9 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
       /* is_new_fc */ false, forced_bfc_block_offset,
       has_clearance_past_adjoining_floats,
       previous_inflow_position->block_end_annotation_space);
+  recordreplay::Assert("[RUN-1855-1856] NGBlockLayoutAlgorithm::HandleInflow (%s)",
+    child_space.ToString().Ascii().c_str()
+  );
   auto minimum_top = CreateMinimumTopScopeForChild(child, child_data);
   const NGLayoutResult* layout_result =
       LayoutInflow(child_space, child_break_token, early_break_,
@@ -2622,6 +2625,9 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     const absl::optional<LayoutUnit> child_bfc_block_offset,
     bool has_clearance_past_adjoining_floats,
     LayoutUnit block_start_annotation_space) {
+  recordreplay::Assert("[RUN-1855-1856] NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild %d #0",
+    child.RecordReplayId()
+  );
   const ComputedStyle& child_style = child.Style();
   const auto child_writing_direction = child_style.GetWritingDirection();
 
