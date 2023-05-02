@@ -17,7 +17,7 @@ namespace {
 class MockTailoredSecurityService : public TailoredSecurityService {
  public:
   MockTailoredSecurityService() : TailoredSecurityService(nullptr, nullptr) {}
-  MOCK_METHOD(void, AddQueryRequest, (), (override));
+  MOCK_METHOD(bool, AddQueryRequest, (), (override));
   MOCK_METHOD(void, RemoveQueryRequest, (), (override));
   MOCK_METHOD(void, MaybeNotifySyncUser, (bool, base::Time), (override));
   MOCK_METHOD(scoped_refptr<network::SharedURLLoaderFactory>,
@@ -37,7 +37,7 @@ TEST_F(TailoredSecurityUrlObserverTest, QueryRequestOnFocus) {
   TailoredSecurityUrlObserver* url_observer =
       TailoredSecurityUrlObserver::FromWebContents(web_contents());
 
-  EXPECT_CALL(mock_service, AddQueryRequest());
+  EXPECT_CALL(mock_service, AddQueryRequest()).WillOnce(testing::Return(true));
   NavigateAndCommit(GURL("https://google.com"));
 
   EXPECT_CALL(mock_service, RemoveQueryRequest());
@@ -53,7 +53,7 @@ TEST_F(TailoredSecurityUrlObserverTest, QueryRequestOnNavigation) {
 
   url_observer->OnWebContentsFocused(nullptr);
 
-  EXPECT_CALL(mock_service, AddQueryRequest());
+  EXPECT_CALL(mock_service, AddQueryRequest()).WillOnce(testing::Return(true));
   NavigateAndCommit(GURL("https://google.com"));
 
   EXPECT_CALL(mock_service, RemoveQueryRequest());

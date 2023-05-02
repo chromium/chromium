@@ -47,6 +47,12 @@ class TailoredSecurityTabHelper
   // infobars::InfoBarManager::Observer implementation.
   void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
 
+  // Called when the app has been backgrounded.
+  void AppDidEnterBackground();
+
+  // Called when the app has been foregrounded.
+  void AppWillEnterForeground();
+
  private:
   friend class web::WebStateUserData<TailoredSecurityTabHelper>;
 
@@ -79,6 +85,10 @@ class TailoredSecurityTabHelper
   base::ScopedObservation<infobars::InfoBarManager,
                           infobars::InfoBarManager::Observer>
       infobar_manager_scoped_observation_{this};
+
+  // Observers for NSNotificationCenter notifications.
+  id application_backgrounding_observer_;
+  id application_foregrounding_observer_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_TAILORED_SECURITY_TAILORED_SECURITY_TAB_HELPER_H_

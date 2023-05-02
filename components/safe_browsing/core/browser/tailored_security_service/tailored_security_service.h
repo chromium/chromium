@@ -88,8 +88,9 @@ class TailoredSecurityService : public KeyedService {
   // Called to increment/decrement |active_query_request_|. When
   // |active_query_request_| goes from zero to nonzero, we begin querying the
   // tailored security setting. When it goes from nonzero to zero, we stop
-  // querying the tailored security setting. Virtual for tests.
-  virtual void AddQueryRequest();
+  // querying the tailored security setting. Virtual for tests. Returns a
+  // boolean value for if a query was added successfully.
+  virtual bool AddQueryRequest();
   virtual void RemoveQueryRequest();
 
   // Queries whether TailoredSecurity is enabled on the server.
@@ -103,6 +104,13 @@ class TailoredSecurityService : public KeyedService {
       bool is_enabled,
       QueryTailoredSecurityBitCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  // Enables/disables sending queries to the tailored security API. If any
+  // queries are issued while querying is disabled, the most recent query will
+  // be stored to be ran when querying is re-enabled. On iOS,
+  // TailoredSecurityTabHelper uses this method to stop querying when the app is
+  // backgrounded.
+  void SetCanQuery(bool can_query);
 
   // KeyedService implementation:
   void Shutdown() override;
@@ -155,6 +163,8 @@ class TailoredSecurityService : public KeyedService {
   GetURLLoaderFactory() = 0;
 
  private:
+  friend class TailoredSecurityTabHelperTest;
+
   // Stores pointer to IdentityManager instance. It must outlive the
   // TailoredSecurityService and can be null during tests.
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -179,6 +189,14 @@ class TailoredSecurityService : public KeyedService {
   base::Time last_updated_;
 
   bool is_shut_down_ = false;
+
+  // Allows querying and requests to start. On iOS platforms, this is used to
+  // ensure that requests aren't made when the app is backgrounded.
+  bool can_query_ = true;
+
+  // Used to store and call the most recent callback request when querying is
+  // disabled.
+  QueryTailoredSecurityBitCallback saved_callback_;
 
   // The preferences for the given profile.
   raw_ptr<PrefService> prefs_;
