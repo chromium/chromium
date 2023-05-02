@@ -125,9 +125,6 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
       const NGConstraintSpace&,
       const MinMaxSizesFloatInput float_input = MinMaxSizesFloatInput()) const;
 
-  MinMaxSizes ComputeMinMaxSizesFromLegacy(const MinMaxSizesType,
-                                           const NGConstraintSpace&) const;
-
   NGLayoutInputNode FirstChild() const;
 
   NGBlockNode GetRenderedLegend() const;

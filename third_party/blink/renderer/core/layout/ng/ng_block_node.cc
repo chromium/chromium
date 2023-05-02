@@ -993,14 +993,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // important.
 
     MinMaxSizes sizes;
-    // Some other areas of the code can query the intrinsic-sizes while outside
-    // of the layout phase.
-    // TODO(ikilpatrick): Remove this check.
-    if (!is_in_perform_layout) {
-      sizes = ComputeMinMaxSizesFromLegacy(type, constraint_space);
-      return MinMaxSizesResult(sizes,
-                               /* depends_on_block_constraints */ false);
-    }
+    CHECK(is_in_perform_layout);
 
     // If we're computing MinMax after layout, we need to disable side effects
     // so that |Layout| does not update the |LayoutObject| tree and other global
@@ -1080,19 +1073,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
 
   box_->SetIntrinsicLogicalWidthsDirty(kMarkOnlyThis);
 
-  if (!CanUseNewLayout()) {
-    MinMaxSizes sizes = ComputeMinMaxSizesFromLegacy(type, constraint_space);
-
-    // Update the cache bits for this legacy root (but not the intrinsic
-    // inline-sizes themselves).
-    box_->SetIntrinsicLogicalWidthsFromNG(
-        initial_block_size, self_depends_on_block_constraints,
-        /* child_depends_on_block_constraints */ true,
-        /* flex_intrinsic_sizing */ false,
-        /* sizes */ nullptr);
-
-    return MinMaxSizesResult(sizes, self_depends_on_block_constraints);
-  }
+  CHECK(CanUseNewLayout());
 
   const NGBoxStrut border_padding =
       fragment_geometry.border + fragment_geometry.padding;
@@ -1138,23 +1119,6 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   // input %-block-size, or one of children said it depended on this.
   result.depends_on_block_constraints = depends_on_block_constraints;
   return result;
-}
-
-MinMaxSizes NGBlockNode::ComputeMinMaxSizesFromLegacy(
-    const MinMaxSizesType type,
-    const NGConstraintSpace& space) const {
-  BoxLayoutExtraInput extra_input(*box_);
-  SetupBoxLayoutExtraInput(space, *box_, &extra_input);
-
-  // Tables don't calculate their min/max content contribution the same way as
-  // other layout nodes. This is because width/min-width/etc have a different
-  // meaning for tables.
-  //
-  // Due to this the min/max content contribution is their min/max content size.
-  MinMaxSizes sizes = box_->IsTable() ? box_->PreferredLogicalWidths()
-                                      : box_->IntrinsicLogicalWidths(type);
-
-  return sizes;
 }
 
 NGLayoutInputNode NGBlockNode::NextSibling() const {
