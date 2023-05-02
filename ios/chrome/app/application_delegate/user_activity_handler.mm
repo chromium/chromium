@@ -640,7 +640,13 @@ NSArray* CompatibleModeForActivityType(NSString* activityType) {
     return YES;
   }
 
-  NOTREACHED();
+  // Use 16 as the maximum length of the reported value for this key (15
+  // characters + '\0'). Expected values are UIApplicationShortcutItemType
+  // entries in Info.plist.
+  static crash_reporter::CrashKeyString<16> key("shortcut-item");
+  crash_reporter::ScopedCrashKeyString crash_key(
+      &key, base::SysNSStringToUTF8(shortcutItem.type));
+  base::debug::DumpWithoutCrashing();
   return NO;
 }
 
