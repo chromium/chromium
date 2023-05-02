@@ -14,6 +14,7 @@
 
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
+#include "base/allocator/partition_allocator/chromeos_buildflags.h"
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
@@ -2232,6 +2233,84 @@ TEST_F(BackupRefPtrTest, QuarantineHook) {
 
   partition_alloc::PartitionAllocHooks::SetQuarantineOverrideHook(nullptr);
 }
+
+#if BUILDFLAG(PA_IS_CHROMEOS_ASH)
+TEST_F(BackupRefPtrTest, ExperimentalAsh) {
+  // Allocate a slot so that a slot span doesn't get decommitted from memory,
+  // while we allocate/deallocate/access the tested slot below.
+  void* sentinel = allocator_.root()->Alloc(sizeof(unsigned char), "");
+
+  // Plain raw_ptr, BRP is expected to be on.
+  {
+    raw_ptr<unsigned char> ptr = static_cast<unsigned char*>(
+        allocator_.root()->Alloc(sizeof(unsigned char), ""));
+    *ptr = 0;
+    allocator_.root()->Free(ptr);
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
+#else
+    EXPECT_EQ(partition_alloc::internal::kQuarantinedByte, *ptr);
+#endif
+  }
+  // raw_ptr with ExperimentalAsh, BRP is expected to be off, as it is enabled
+  // independently for these pointers.
+  {
+    raw_ptr<unsigned char, ExperimentalAsh> ptr = static_cast<unsigned char*>(
+        allocator_.root()->Alloc(sizeof(unsigned char), ""));
+    *ptr = 0;
+    allocator_.root()->Free(ptr);
+    EXPECT_EQ(0, *ptr);
+  }
+
+  RawPtrGlobalSettings::EnableExperimentalAsh();
+  // BRP should be on for both types of pointers.
+  {
+    raw_ptr<unsigned char> ptr = static_cast<unsigned char*>(
+        allocator_.root()->Alloc(sizeof(unsigned char), ""));
+    *ptr = 0;
+    allocator_.root()->Free(ptr);
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
+#else
+    EXPECT_EQ(partition_alloc::internal::kQuarantinedByte, *ptr);
+#endif
+  }
+  {
+    raw_ptr<unsigned char, ExperimentalAsh> ptr = static_cast<unsigned char*>(
+        allocator_.root()->Alloc(sizeof(unsigned char), ""));
+    *ptr = 0;
+    allocator_.root()->Free(ptr);
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
+#else
+    EXPECT_EQ(partition_alloc::internal::kQuarantinedByte, *ptr);
+#endif
+  }
+
+  RawPtrGlobalSettings::DisableExperimentalAshForTest();
+  // And back to normal.
+  {
+    raw_ptr<unsigned char> ptr = static_cast<unsigned char*>(
+        allocator_.root()->Alloc(sizeof(unsigned char), ""));
+    *ptr = 0;
+    allocator_.root()->Free(ptr);
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    EXPECT_DEATH_IF_SUPPORTED(*ptr = 0, "");
+#else
+    EXPECT_EQ(partition_alloc::internal::kQuarantinedByte, *ptr);
+#endif
+  }
+  {
+    raw_ptr<unsigned char, ExperimentalAsh> ptr = static_cast<unsigned char*>(
+        allocator_.root()->Alloc(sizeof(unsigned char), ""));
+    *ptr = 0;
+    allocator_.root()->Free(ptr);
+    EXPECT_EQ(0, *ptr);
+  }
+
+  allocator_.root()->Free(sentinel);
+}
+#endif  // BUILDFLAG(PA_IS_CHROMEOS_ASH)
 
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

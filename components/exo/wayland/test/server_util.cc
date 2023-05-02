@@ -17,7 +17,7 @@ wl_resource* LookUpResource(Server* server, const ResourceKey& key) {
     const raw_ref<const ResourceKey, ExperimentalAsh> key;
   };
 
-  IteratorData iterator_data{.key = raw_ref(key)};
+  IteratorData iterator_data{.key = ToRawRef<ExperimentalAsh>(key)};
 
   wl_client* client = nullptr;
   wl_list* all_clients =

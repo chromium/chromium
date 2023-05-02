@@ -661,9 +661,10 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
 
     auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
 
-    std::move(setup).Run({mock_browsing_data_cookie_helper,
-                          mock_browsing_data_local_storage_helper,
-                          raw_ref(*fake_browsing_data_model)});
+    std::move(setup).Run(
+        {mock_browsing_data_cookie_helper,
+         mock_browsing_data_local_storage_helper,
+         ToRawRef<ExperimentalAsh>(*fake_browsing_data_model)});
 
     mock_browsing_data_local_storage_helper->Notify();
     mock_browsing_data_cookie_helper->Notify();

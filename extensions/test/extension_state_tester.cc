@@ -103,10 +103,13 @@ bool ExtensionStateTester::ExpectOnlyInSet(const ExtensionId& extension_id,
     const raw_ref<const ExtensionSet, ExperimentalAsh> extensions;
     const char* set_name;
   } registry_sets[] = {
-      {raw_ref(registry_->enabled_extensions()), kEnabledSet},
-      {raw_ref(registry_->disabled_extensions()), kDisabledSet},
-      {raw_ref(registry_->terminated_extensions()), kTerminatedSet},
-      {raw_ref(registry_->blocklisted_extensions()), kBlocklistedSet},
+      {ToRawRef<ExperimentalAsh>(registry_->enabled_extensions()), kEnabledSet},
+      {ToRawRef<ExperimentalAsh>(registry_->disabled_extensions()),
+       kDisabledSet},
+      {ToRawRef<ExperimentalAsh>(registry_->terminated_extensions()),
+       kTerminatedSet},
+      {ToRawRef<ExperimentalAsh>(registry_->blocklisted_extensions()),
+       kBlocklistedSet},
   };
 
   auto get_error = [extension_id](const char* set_name, bool expected_in_set) {

@@ -117,6 +117,11 @@ BASE_FEATURE(kPartitionAllocBackupRefPtr,
 #endif
 );
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtrForAsh);
+BASE_FEATURE(kPartitionAllocBackupRefPtrForAsh,
+             "PartitionAllocBackupRefPtrForAsh",
+             FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {
         {BackupRefPtrEnabledProcesses::kBrowserOnly, "browser-only"},

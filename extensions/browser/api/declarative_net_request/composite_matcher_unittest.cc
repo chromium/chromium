@@ -443,24 +443,33 @@ TEST_F(CompositeMatcherTest, NotifyWithholdFromPageAccess) {
   } test_cases[] = {
       // If access to the request is allowed, we should not notify that
       // the request is withheld.
-      {raw_ref(google_url), PageAccess::kAllowed, ruleset1_url, false},
-      {raw_ref(example_url), PageAccess::kAllowed, https_example_url, false},
-      {raw_ref(yahoo_url), PageAccess::kAllowed, absl::nullopt, false},
+      {ToRawRef<ExperimentalAsh>(google_url), PageAccess::kAllowed,
+       ruleset1_url, false},
+      {ToRawRef<ExperimentalAsh>(example_url), PageAccess::kAllowed,
+       https_example_url, false},
+      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kAllowed,
+       absl::nullopt, false},
 
       // Notify the request is withheld if it matches with a redirect rule.
-      {raw_ref(google_url), PageAccess::kWithheld, absl::nullopt, true},
+      {ToRawRef<ExperimentalAsh>(google_url), PageAccess::kWithheld,
+       absl::nullopt, true},
       // If the page access to the request is withheld but it matches with
       // an upgrade rule, or no rule, then we should not notify.
-      {raw_ref(example_url), PageAccess::kWithheld, https_example_url, false},
-      {raw_ref(yahoo_url), PageAccess::kWithheld, absl::nullopt, false},
+      {ToRawRef<ExperimentalAsh>(example_url), PageAccess::kWithheld,
+       https_example_url, false},
+      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kWithheld,
+       absl::nullopt, false},
 
       // If access to the request is denied instead of withheld, the extension
       // should not be notified.
-      {raw_ref(google_url), PageAccess::kDenied, absl::nullopt, false},
+      {ToRawRef<ExperimentalAsh>(google_url), PageAccess::kDenied,
+       absl::nullopt, false},
       // If the page access to the request is denied but it matches with
       // an upgrade rule, or no rule, then we should not notify.
-      {raw_ref(example_url), PageAccess::kDenied, https_example_url, false},
-      {raw_ref(yahoo_url), PageAccess::kDenied, absl::nullopt, false},
+      {ToRawRef<ExperimentalAsh>(example_url), PageAccess::kDenied,
+       https_example_url, false},
+      {ToRawRef<ExperimentalAsh>(yahoo_url), PageAccess::kDenied, absl::nullopt,
+       false},
   };
 
   for (const auto& test_case : test_cases) {
