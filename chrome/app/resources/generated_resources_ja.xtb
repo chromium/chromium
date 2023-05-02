@@ -214,7 +214,7 @@
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="117916940443676133">セキュリティ キーは PIN で保護されていません。ログインデータを管理するには、まず PIN を作成してください。</translation>
 <translation id="1181037720776840403">削除</translation>
-<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1181366777303791449">ドメイン: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">ローカル キャッシュの <ph name="EXTERNAL_CRX_FILE" /> はインストールできません。</translation>
 <translation id="1184709369107246085">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、有効な <ph name="APPLICATION_NAME" /> URL が必要です。</translation>
 <translation id="1185924365081634987">このネットワーク エラーを解決するには、<ph name="GUEST_SIGNIN_LINK_START" />ゲストとしてブラウジング<ph name="GUEST_SIGNIN_LINK_END" />もお試しください。</translation>
