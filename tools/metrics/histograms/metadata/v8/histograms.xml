@@ -1120,23 +1120,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GCScavenger.ScavengeMain" units="ms"
-    expires_after="2023-06-11">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Wall time spent in the main scavenging phase that copies over all reachable
-    objects during a V8 scavenge.
-  </summary>
-</histogram>
-
-<histogram name="V8.GCScavenger.ScavengeRoots" units="ms"
-    expires_after="2023-06-11">
-  <owner>mlippautz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>Time spent in scavenging the roots during a V8 scavenge.</summary>
-</histogram>
-
 <histogram name="V8.GCScavengerBackground" units="ms"
     expires_after="2022-04-01">
   <obsolete>
