@@ -96,7 +96,6 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    cores = 4,
     os = os.MAC_DEFAULT,
     goma_jobs = goma.jobs.J80,
 )
@@ -257,7 +256,6 @@ fyi_goma_rbe_canary_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    cores = 4,
     os = os.MAC_DEFAULT,
     goma_jobs = goma.jobs.J80,
 )
@@ -410,7 +408,6 @@ fyi_goma_rbe_latest_client_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    cores = 4,
     os = os.MAC_DEFAULT,
     goma_jobs = goma.jobs.J80,
 )
@@ -627,7 +624,6 @@ fyi_goma_rbe_latest_client_builder(
             build_gs_bucket = "chromium-fyi-archive",
         ),
     ),
-    cores = 4,
     os = os.MAC_DEFAULT,
     goma_jobs = goma.jobs.J80,
 )
@@ -847,7 +843,6 @@ def goma_mac_builder(
         **kwargs):
     return goma_builder(
         name = name,
-        cores = 4,
         goma_jobs = goma.jobs.J80,
         os = os,
         **kwargs
