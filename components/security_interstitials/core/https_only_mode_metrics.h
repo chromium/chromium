@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_HTTPS_ONLY_MODE_METRICS_H_
 
+#include <cstddef>
+
 namespace security_interstitials::https_only_mode {
 
 // The main histogram that records events about HTTPS-First Mode and HTTPS
@@ -19,6 +21,14 @@ extern const char kNavigationRequestSecurityLevelHistogram[];
 // Histogram that records enabled/disabled states for sites. If HFM gets enabled
 // or disabled due to Site Engagement on a site, records an entry.
 extern const char kSiteEngagementHeuristicStateHistogram[];
+
+// Histogram that records the current number of host that have HFM enabled due
+// to the site engagement heuristic. Includes hosts that have HTTP allowed.
+extern const char kSiteEngagementHeuristicHostCountHistogram[];
+// Histogram that records the accumulated number of host that have HFM enabled
+// at some point due to the site engagement heuristic. Includes hosts that have
+// HTTP allowed.
+extern const char kSiteEngagementHeuristicAccumulatedHostCountHistogram[];
 
 // Recorded by HTTPS-First Mode and HTTPS-Upgrade logic when a navigation is
 // upgraded, or is eligible to be upgraded but wasn't.
@@ -142,6 +152,14 @@ void RecordNavigationRequestSecurityLevel(NavigationRequestSecurityLevel level);
 
 // Helper to record Site Engagement Heuristic enabled state.
 void RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState state);
+
+// Helper to record metrics about the number of hosts affected by the Site
+// Engagement Heuristic.
+// `current_count` is the number of hosts that currently have HFM enabled.
+// `accumulated_count` is the number of accumulated hosts that had HFM enabled
+// at some point.
+void RecordSiteEngagementHeuristicCurrentHostCounts(size_t current_count,
+                                                    size_t accumulated_count);
 
 }  // namespace security_interstitials::https_only_mode
 

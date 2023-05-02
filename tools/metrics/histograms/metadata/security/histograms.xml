@@ -195,6 +195,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Security.HttpsFirstModeWithEngagementHeuristic.AccumulatedHostCount"
+    units="hostnames" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the accumulated number of host that have HFM enabled at some point
+    due to the site engagement heuristic. Includes hosts that have HTTP allowed.
+    Recorded at the time of navigation when HFM upgrades trigger.
+  </summary>
+</histogram>
+
+<histogram name="Security.HttpsFirstModeWithEngagementHeuristic.HostCount"
+    units="hostnames" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the current number of host that have HFM enabled due to the site
+    engagement heuristic. Includes hosts that have HTTP allowed. Recorded at the
+    time of navigation when HFM upgrades trigger.
+  </summary>
+</histogram>
+
+<histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
     enum="HttpsFirstModeNavigationEvent" expires_after="2023-09-10">
   <owner>meacer@chromium.org</owner>

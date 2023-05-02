@@ -1,5 +1,6 @@
 include_rules = [
   "+components/content_settings/core/browser",
+  "+components/content_settings/core/common",
   "+components/google/core",
   "+components/history/core/browser",
   "+components/metrics",

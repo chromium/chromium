@@ -17,6 +17,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using security_interstitials::https_only_mode::
+    kSiteEngagementHeuristicHostCountHistogram;
+using security_interstitials::https_only_mode::
     kSiteEngagementHeuristicStateHistogram;
 using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 
@@ -73,6 +75,8 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
       "example.com", profile()->GetDefaultStoragePartition()));
   histograms.ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 0);
 
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 0);
+
   // Increase the score, should now enable HFM.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
@@ -83,6 +87,11 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
                                SiteEngagementHeuristicState::kEnabled, 1);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                SiteEngagementHeuristicState::kDisabled, 0);
+
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 1);
+  // Subdomains shouldn't be affected.
+  EXPECT_FALSE(state->IsHttpsEnforcedForHost(
+      "test.example.com", profile()->GetDefaultStoragePartition()));
 
   // Decrease the score, but only slightly. This shouldn't result in HFM being
   // disabled.
@@ -96,6 +105,10 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                SiteEngagementHeuristicState::kDisabled, 0);
 
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 1);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/1, /*expected_count=*/1);
+
   // Decrease the score further. This should result in HFM being disabled.
   engagement_service->ResetBaseScoreForURL(https_url, 25);
   service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
@@ -107,6 +120,12 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                SiteEngagementHeuristicState::kDisabled, 1);
 
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 2);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/0, /*expected_count=*/1);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/1, /*expected_count=*/1);
+
   // Increase the score again and re-enable HFM.
   engagement_service->ResetBaseScoreForURL(https_url, 90);
   service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
@@ -117,6 +136,12 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
                                SiteEngagementHeuristicState::kEnabled, 2);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                SiteEngagementHeuristicState::kDisabled, 1);
+
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 3);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/0, /*expected_count=*/1);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/1, /*expected_count=*/2);
 
   // Also increase the HTTP score. This should disable HFM even though the
   // HTTPS score is still high.
@@ -130,8 +155,15 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                SiteEngagementHeuristicState::kDisabled, 2);
 
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 4);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/0, /*expected_count=*/2);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/1, /*expected_count=*/2);
+
   // Set HTTP score to max and set HTTPS score to zero. This simulates the user
-  // spending their time on the HTTP URL and the HTTPS score decaying over time.
+  // spending their time on the HTTP URL and the HTTPS score decaying over
+  // time.
   engagement_service->ResetBaseScoreForURL(https_url, 0);
   engagement_service->ResetBaseScoreForURL(http_url, 100);
   service->MaybeEnableHttpsFirstModeForUrl(profile(), https_url);
@@ -142,6 +174,13 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, SiteEngagementHeuristic) {
                                SiteEngagementHeuristicState::kEnabled, 2);
   histograms.ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                SiteEngagementHeuristicState::kDisabled, 2);
+
+  // Shouldn't change:
+  histograms.ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 4);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/0, /*expected_count=*/2);
+  histograms.ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram,
+                               /*sample=*/1, /*expected_count=*/2);
 
   service->Shutdown();
 }

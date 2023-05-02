@@ -55,7 +55,14 @@ using security_interstitials::https_only_mode::
     kEventHistogramWithEngagementHeuristic;
 using security_interstitials::https_only_mode::
     kNavigationRequestSecurityLevelHistogram;
+using security_interstitials::https_only_mode::
+    kSiteEngagementHeuristicAccumulatedHostCountHistogram;
+using security_interstitials::https_only_mode::
+    kSiteEngagementHeuristicHostCountHistogram;
+using security_interstitials::https_only_mode::
+    kSiteEngagementHeuristicStateHistogram;
 using security_interstitials::https_only_mode::NavigationRequestSecurityLevel;
+using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 
 // Many of the following tests have only minor variations for HTTPS-First Mode
 // vs. HTTPS-Upgrades. These get parameterized so the tests run under both
@@ -503,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(
             contents));
   }
 
-  // // Verify that navigation event metrics were correctly recorded.
+  // Verify that navigation event metrics were correctly recorded.
   if (IsHttpUpgradingEnabled()) {
     histograms()->ExpectTotalCount(kEventHistogram, 3);
     histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted,
@@ -529,6 +536,25 @@ IN_PROC_BROWSER_TEST_P(
     histograms()->ExpectBucketCount(kEventHistogram,
                                     Event::kUpgradeNotAttempted, 1);
   }
+
+  histograms()->ExpectTotalCount(kSiteEngagementHeuristicStateHistogram, 1);
+  histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
+                                  SiteEngagementHeuristicState::kDisabled, 0);
+  histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
+                                  SiteEngagementHeuristicState::kEnabled, 1);
+
+  histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 1);
+  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 0,
+                                  0);
+  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 1,
+                                  1);
+
+  histograms()->ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1);
+  histograms()->ExpectBucketCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, 0);
+  histograms()->ExpectBucketCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, 1);
 }
 
 // If the user triggers an HTTPS-Only Mode interstitial for a host and then

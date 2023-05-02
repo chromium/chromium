@@ -19,6 +19,12 @@ const char kNavigationRequestSecurityLevelHistogram[] =
 const char kSiteEngagementHeuristicStateHistogram[] =
     "Security.HttpsFirstModeWithEngagementHeuristic.State";
 
+const char kSiteEngagementHeuristicHostCountHistogram[] =
+    "Security.HttpsFirstModeWithEngagementHeuristic.HostCount";
+
+const char kSiteEngagementHeuristicAccumulatedHostCountHistogram[] =
+    "Security.HttpsFirstModeWithEngagementHeuristic.AccumulatedHostCount";
+
 // TODO(crbug.com/1394910): Rename these metrics now that they apply to both
 // HTTPS-First Mode and HTTPS Upgrades.
 void RecordHttpsFirstModeNavigation(
@@ -43,6 +49,14 @@ void RecordNavigationRequestSecurityLevel(
 
 void RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState state) {
   base::UmaHistogramEnumeration(kSiteEngagementHeuristicStateHistogram, state);
+}
+
+void RecordSiteEngagementHeuristicCurrentHostCounts(size_t current_count,
+                                                    size_t accumulated_count) {
+  base::UmaHistogramCounts1000(kSiteEngagementHeuristicHostCountHistogram,
+                               current_count);
+  base::UmaHistogramCounts1000(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, accumulated_count);
 }
 
 }  // namespace security_interstitials::https_only_mode
