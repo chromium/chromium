@@ -2734,6 +2734,10 @@
                     "name": "MinTtlMs250_20230427",
                     "enable_features": [
                         "CrOSLateBootLruMinTtlMs250"
+                    ],
+                    "disable_features": [
+                        "CrOSLateBootLruMinTtlMs100",
+                        "CrOSLateBootLruMinTtlMs500"
                     ]
                 }
             ]
