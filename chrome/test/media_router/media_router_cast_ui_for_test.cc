@@ -169,7 +169,7 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
                 return sink_view->sink().friendly_name ==
                            base::UTF8ToUTF16(*watch_sink_name_) &&
                        sink_view->sink().state == UIMediaSinkState::AVAILABLE &&
-                       sink_view->GetEnabled();
+                       sink_view->cast_sink_button_for_test()->GetEnabled();
               case WatchType::kAnyIssue:
                 return sink_view->sink().issue.has_value();
               case WatchType::kAnyRoute:
