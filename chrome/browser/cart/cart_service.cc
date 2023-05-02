@@ -350,6 +350,12 @@ void CartService::HasActiveCartForURL(const GURL& url,
                           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+bool CartService::IsCartEnabled() {
+  const base::Value::List& list =
+      profile_->GetPrefs()->GetList(prefs::kNtpDisabledModules);
+  return !base::Contains(list, base::Value(kCartPrefsKey));
+}
+
 void CartService::ShouldShowDiscountConsent(
     base::OnceCallback<void(bool)> callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));

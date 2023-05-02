@@ -165,6 +165,8 @@ class CartService : public history::HistoryServiceObserver,
   // returns the result in the callback.
   virtual void HasActiveCartForURL(const GURL& url,
                                    base::OnceCallback<void(bool)> callback);
+  // Checks if the cart feature is enabled based on user's setting.
+  virtual bool IsCartEnabled();
 
  private:
   friend class CartServiceFactory;

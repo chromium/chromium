@@ -16,11 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 
-namespace {
-// TODO(crbug.com/1441142): Consolidate module name strings in one place.
-constexpr char kCartPrefsKey[] = "chrome_cart";
-}  // namespace
-
 CartHandler::CartHandler(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
     Profile* profile,
@@ -49,9 +44,7 @@ void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
 
 void CartHandler::GetCartFeatureEnabled(
     GetCartFeatureEnabledCallback callback) {
-  const base::Value::List& list =
-      pref_service_->GetList(prefs::kNtpDisabledModules);
-  std::move(callback).Run(!base::Contains(list, base::Value(kCartPrefsKey)));
+  std::move(callback).Run(cart_service_->IsCartEnabled());
 }
 
 void CartHandler::HideCartModule() {
