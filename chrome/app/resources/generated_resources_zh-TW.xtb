@@ -8591,7 +8591,6 @@
 <translation id="8498214519255567734">讓你在光線昏暗的環境下更容易看清畫面內容或閱讀文字</translation>
 <translation id="8498395510292172881">在 Chrome 中繼續閱讀</translation>
 <translation id="8499083585497694743">將麥克風取消靜音</translation>
-<translation id="8499526927826495298">傳送<ph name="BEGIN_LINK1" />自動填入中繼資料<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">如要使用透過 Google Play 安裝的應用程式，請先還原你的應用程式。這可能導致部分資料遺失。</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="850382998924680137">今天看過</translation>
@@ -8844,6 +8843,9 @@
 <translation id="8725178340343806893">我的收藏/書籤</translation>
 <translation id="87254326763805752">確認密碼金鑰</translation>
 <translation id="8726206820263995930">從伺服器擷取政策設定時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
+<translation id="8727751378406387165">傳送<ph name="BEGIN_LINK1" />自動填入中繼資料<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (系統不會共用自動填入資料)</translation>
 <translation id="8728351286589123703">系統會重設你已選擇的權限。</translation>
 <translation id="8729133765463465108">使用相機掃描 QR 圖碼</translation>
 <translation id="8730621377337864115">完成</translation>

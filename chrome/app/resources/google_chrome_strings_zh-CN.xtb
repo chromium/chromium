@@ -113,6 +113,7 @@
 <translation id="2929907241665500097">Chrome 未能更新，因为出了点问题。<ph name="BEGIN_LINK" />请解决导致 Chrome 更新失败的问题<ph name="END_LINK" />。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 网络登录 - Chrome</translation>
 <translation id="3019382870990049182">重新启动以更新 &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{多个 Google Chrome 扩展程序刚刚访问了 HID 设备}=1{多个 Google Chrome 扩展程序正在访问 HID 设备}other{多个 Google Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="303514781271618814">Chrome 团队正在探索新功能，以便网站只需使用您的较少数据就能提供同样的浏览体验</translation>
 <translation id="3037838751736561277">Google Chrome处于后台运行模式。</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
@@ -218,6 +219,7 @@
 <translation id="4970880042055371251">Chrome 操作系统版本</translation>
 <translation id="4970947549776831107">Chrome 屏蔽了此文件，因为这类文件包含危险内容</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{一个 Google Chrome 扩展程序刚刚访问了 HID 设备}=1{一个 Google Chrome 扩展程序正在访问 1 部 HID 设备}other{一个 Google Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{您的管理员已将 Chrome 设置为，在闲置 1 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}other{您的管理员已将 Chrome 设置为，在闲置 # 分钟后自动关闭。浏览数据会被删除。其中可能包括历史记录、自动填充和下载内容。}}</translation>
 <translation id="5098668839038261629">若开启此选项，关闭所有窗口的同时您也会退出登录 Chrome 的帐号</translation>
 <translation id="5132929315877954718">查找适用于Google Chrome的精彩应用、游戏、扩展程序和主题背景。</translation>

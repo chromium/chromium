@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">No s'ha actualitzat Chrome. S'ha produït un error. <ph name="BEGIN_LINK" />Soluciona els problemes i errors d'actualització de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Inici de sessió a la xarxa - Chrome</translation>
 <translation id="3019382870990049182">Reinicia per actualitzar &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Les extensions de Google Chrome estaven accedint als dispositius HID}=1{Les extensions de Google Chrome estan accedint a un dispositiu HID}other{Les extensions de Google Chrome estan accedint a # dispositius HID}}</translation>
 <translation id="303514781271618814">Chrome està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys dades</translation>
 <translation id="3037838751736561277">Google Chrome està en mode de segon pla.</translation>
 <translation id="3038232873781883849">S'està esperant per instal·lar...</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">Versió de Chrome OS</translation>
 <translation id="4970947549776831107">Chrome ha bloquejat aquest fitxer perquè aquest tipus de fitxer és perillós</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Una extensió de Google Chrome estava accedint als dispositius HID}=1{Una extensió de Google Chrome està accedint a un dispositiu HID}other{Una extensió de Google Chrome està accedint a # dispositius HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{El teu administrador tanca Chrome automàticament quan no s'utilitza durant 1 minut. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}other{El teu administrador tanca Chrome automàticament quan no s'utilitza durant # minuts. Les dades de navegació se suprimeixen. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.}}</translation>
 <translation id="5098668839038261629">Si aquesta opció està activada, també se't tancarà la sessió de Chrome</translation>
 <translation id="5132929315877954718">Descobriu aplicacions, jocs, extensions i temes genials per a Google Chrome.</translation>

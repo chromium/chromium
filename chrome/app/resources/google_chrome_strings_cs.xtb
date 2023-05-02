@@ -118,6 +118,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2929907241665500097">Prohlížeč Chrome se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací Chromu a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – přihlášení k síti – Chrome</translation>
 <translation id="3019382870990049182">Spustit znovu a aktualizovat &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Rozšíření prohlížeče Google Chrome používala zařízení HID}=1{Rozšíření prohlížeče Google Chrome používají zařízení HID}few{Rozšíření prohlížeče Google Chrome používají # zařízení HID}many{Rozšíření prohlížeče Google Chrome používají # zařízení HID}other{Rozšíření prohlížeče Google Chrome používají # zařízení HID}}</translation>
 <translation id="303514781271618814">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně dat</translation>
 <translation id="3037838751736561277">Google Chrome je v režimu na pozadí.</translation>
 <translation id="3038232873781883849">Čekání na instalaci…</translation>
@@ -223,6 +224,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4970880042055371251">Verze systému ChromeOS</translation>
 <translation id="4970947549776831107">Chrome tento soubor zablokoval, protože tento typ souboru je nebezpečný</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Rozšíření prohlížeče Google Chrome používalo zařízení HID}=1{Rozšíření prohlížeče Google Chrome používá 1 zařízení HID}few{Rozšíření prohlížeče Google Chrome používá # zařízení HID}many{Rozšíření prohlížeče Google Chrome používá # zařízení HID}other{Rozšíření prohlížeče Google Chrome používá # zařízení HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Váš administrátor nakonfiguroval Chrome tak, aby se po 1 minutě nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}few{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}many{Váš administrátor nakonfiguroval Chrome tak, aby se po # minuty nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}other{Váš administrátor nakonfiguroval Chrome tak, aby se po # minutách nečinnosti automaticky zavřel. Údaje o prohlížení se smažou. To může zahrnovat historii, automatické vyplňování a stažené soubory.}}</translation>
 <translation id="5098668839038261629">Když zapnete tuto možnost, budete také odhlášeni z Chromu</translation>
 <translation id="5132929315877954718">Objevte skvělé aplikace, hry, rozšíření a motivy prohlížeče Google Chrome.</translation>

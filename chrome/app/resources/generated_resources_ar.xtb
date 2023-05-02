@@ -480,6 +480,7 @@
 <translation id="1410616244180625362">مواصلة السماح لـ <ph name="HOST" /> بالدخول إلى الكاميرا</translation>
 <translation id="1410797069449661718">الانتقال إلى علامة التبويب الأولى</translation>
 <translation id="1410806973194718079">يتعذّر التحقّق من السياسات.</translation>
+<translation id="1411400282355634827">هل تريد إعادة ضبط جميع أذونات الأجهزة التي تتضمّن بلوتوث؟</translation>
 <translation id="1411724932979011919">‏يجب أن يكون الإدخال بتنسيق LPA:1$&lt;smdp address&gt;$&lt;activation code&gt;</translation>
 <translation id="1412681350727866021">الإضافات الأخرى</translation>
 <translation id="1414315029670184034">عدم السماح للمواقع الإلكترونية باستخدام الكاميرا</translation>
@@ -4801,6 +4802,7 @@
 <translation id="5178667623289523808">البحث عن السابق</translation>
 <translation id="5181140330217080051">تنزيل</translation>
 <translation id="5181172023548002891">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google للحساب <ph name="ACCOUNT" /></translation>
+<translation id="5183344263225877832">‏هل تريد إعادة ضبط جميع أذونات أجهزة الواجهة البشرية (HID)؟</translation>
 <translation id="5184063094292164363">‏و&amp;حدة تحكم JavaScript</translation>
 <translation id="5184209580557088469">تتوفر تذكرة باسم المستخدم هذا مسبقًا.</translation>
 <translation id="5184662919967270437">تحديث جهازك</translation>
@@ -6490,6 +6492,7 @@
 <translation id="6691541770654083180">الأرض</translation>
 <translation id="6691936601825168937">إعا&amp;دة توجيه</translation>
 <translation id="6693745645188488741">{COUNT,plural, =1{صفحة واحدة}zero{{COUNT} صفحة}two{صفحتان ({COUNT})}few{{COUNT} صفحات}many{{COUNT} صفحة}other{{COUNT} صفحة}}</translation>
+<translation id="6693820805264897502">استبدال كلمات المرور الحالية</translation>
 <translation id="6697172646384837537">اختيار مكان استيراد كلمات المرور</translation>
 <translation id="6697492270171225480">عرض اقتراحات للصفحات المشابهة عند تعذّر العثور على صفحة</translation>
 <translation id="6697690052557311665">‏للمشاركة، انقر بزر الماوس الأيمن على مجلَّد في تطبيق "الملفات"، ثم اختَر "المشاركة مع نظام التشغيل Linux".</translation>
@@ -7458,7 +7461,7 @@
 <translation id="7557411183415085169">‏أوشكت مساحة التخزين في Linux على النفاد</translation>
 <translation id="7559719679815339381">‏يُرجى الانتظار ...بينما يتم تحديث تطبيق Kiosk. لا تقم بإزالة جهاز USB.</translation>
 <translation id="7560756177962144929">مزامنة <ph name="DEVICE_TYPE" /></translation>
-<translation id="7561196759112975576">دومًا</translation>
+<translation id="7561196759112975576">دائمًا</translation>
 <translation id="7561759921596375678">تفعيل الصوت</translation>
 <translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="756445078718366910">فتح نافذة المتصفح</translation>
@@ -7603,6 +7606,7 @@
 <translation id="7674542105240814168">تم رفض الوصول إلى الموقع الجغرافي</translation>
 <translation id="7676119992609591770">تم العثور على <ph name="NUM" /> علامة تبويب حول "<ph name="SEARCH_TEXT" />".</translation>
 <translation id="7676867886086876795">‏يمكنك إرسال صوتك إلى Google للسماح بالإملاء في أي حقل نصي.</translation>
+<translation id="7678588695732963732">‏هل تريد إعادة ضبط جميع أذونات أجهزة USB؟</translation>
 <translation id="7679171213002716280">تتوفّر <ph name="PRINTER_COUNT" /> طابعة مُدارة.</translation>
 <translation id="7680416688940118410">معايرة الشاشة التي تعمل باللمس</translation>
 <translation id="7681095912841365527">يمكن للموقع الإلكتروني استخدام البلوتوث.</translation>
@@ -8563,7 +8567,6 @@
 <translation id="8498214519255567734">يمكنك تسهيل النظر إلى الشاشة أو القراءة في الضوء الخافت</translation>
 <translation id="8498395510292172881">‏متابعة القراءة في Chrome</translation>
 <translation id="8499083585497694743">إعادة صوت الميكروفون</translation>
-<translation id="8499526927826495298">إرسال <ph name="BEGIN_LINK1" />البيانات الوصفية للملء التلقائي<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">‏لاستخدام التطبيقات من Google Play، عليك استعادة تطبيقاتك أولاً. وقد تلاحظ فقدان بعض بياناتك.</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="850382998924680137">تم العرض اليوم</translation>
@@ -9360,6 +9363,7 @@
 <translation id="9192019773545828776">‏يمكنك سماع وصف شفهي للشاشة حتى تتمكّن من استخدام جهازك بدون النظر إلى الشاشة. يتوفّر الوصف الشفهي بلغة برايل عند توصيل جهاز متوافق. اضغط على Ctrl ‏+ Alt ‏+ Z لتفعيل قارئ الشاشة ChromeVox أو إيقافه. واضغط على مفتاح البحث + السهم المتّجه لليسار أو السهم المتّجه لليمين للتنقّل. اضغط على مفتاح البحث + مفتاح المسافة للاختيار (التفعيل).</translation>
 <translation id="919686179725692564">مزيد من المعلومات عن الاحتفاظ بنسخة احتياطية من بيانات تطبيقاتك</translation>
 <translation id="9199503643457729322">انقر على هذا الزر للخروج من "دليل الخصوصية".</translation>
+<translation id="9199695835892108985">هل تريد إعادة ضبط جميع أذونات المنافذ التسلسلية؟</translation>
 <translation id="9200339982498053969">سيتمكّن <ph name="ORIGIN" /> من تعديل الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="920045321358709304">البحث في <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201023452444595544">سيتم محو أي بيانات متوفرة بلا اتصال بالإنترنت.</translation>

@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">显示剪贴板内容</translation>
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">已关联</translation>
 <translation id="3123734510202723619">通告</translation>
 <translation id="3134784203083076891">”</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
@@ -1265,6 +1264,7 @@
 <translation id="7709918231054955894">同步显示您的所有标签页</translation>
 <translation id="772434085369393266">将导航路径升级到 HTTPS，并在加载不支持 HTTPS 的网站前向您发出警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="7725024127233776428">您添加了书签的网页会显示在此处</translation>
+<translation id="7733878270780732638">设备上的存储空间不足。</translation>
 <translation id="7757787379047923882">分享自“<ph name="DEVICE_NAME" />”的文字</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>

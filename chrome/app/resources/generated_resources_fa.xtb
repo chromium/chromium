@@ -8609,7 +8609,6 @@
 <translation id="8498214519255567734">نگاه کردن به صفحه یا خواندن در نور کم را آسان‌تر می‌کند</translation>
 <translation id="8498395510292172881">‏ادامه خواندن در Chrome</translation>
 <translation id="8499083585497694743">باصدا کردن میکروفون</translation>
-<translation id="8499526927826495298">ارسال <ph name="BEGIN_LINK1" />فراداده‌های تکمیل خودکار<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">‏برای استفاده از برنامه‌های Google Play، ابتدا باید برنامه‌هایتان را بازیابی کنید. ممکن است برخی از داده‌ها از دست رفته باشد.</translation>
 <translation id="8503813439785031346">نام کاربری</translation>
 <translation id="850382998924680137">امروز مشاهده شده است</translation>
@@ -8862,6 +8861,9 @@
 <translation id="8725178340343806893">موارد دلخواه/نشانک‌ها</translation>
 <translation id="87254326763805752">تأیید گذرکلید</translation>
 <translation id="8726206820263995930">خطا هنگام واکشی تنظیمات خط‌مشی از سرور: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">ارسال <ph name="BEGIN_LINK1" />فراداده‌های تکمیل خودکار<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (داده‌های تکمیل خودکار شما هم‌رسانی نخواهد شد)</translation>
 <translation id="8728351286589123703">اجازه‌های انتخابی شما بازنشانی خواهد شد</translation>
 <translation id="8729133765463465108">استفاده از دوربین برای اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="8730621377337864115">تمام</translation>

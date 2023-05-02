@@ -610,6 +610,7 @@
 <translation id="4979397965658815378">登录 Google 帐号，即可获取您在任何登录过的设备上的书签、密码、历史记录及其他设置</translation>
 <translation id="4986678885919050584">从此设备中移除</translation>
 <translation id="498985224078955265">若要将此标签页发送到另一设备，请在这两部设备上都登录 Chrome。</translation>
+<translation id="4996567535980789550">开启同步功能即可管理您看到的内容</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5016420433031926653">发送至 <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">稍后提醒我</translation>
@@ -1237,6 +1238,7 @@
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 帐号。您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
 <translation id="9037965129289936994">显示原始网页</translation>
 <translation id="9039373489628511875">带宽</translation>
+<translation id="9043368763795653245">若要对“探索”专区信息流和 Chrome 进行个性化设置，请开启同步功能。</translation>
 <translation id="9055772144595778347">无法登录</translation>
 <translation id="9055960261314198756">已关闭增强型保护</translation>
 <translation id="9057972802061533987">无法关注。出了点问题。</translation>

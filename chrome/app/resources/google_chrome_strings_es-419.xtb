@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">No se actualizó Chrome porque se produjo un error. <ph name="BEGIN_LINK" />Soluciona los problemas de actualización y las actualizaciones con error de Chrome.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />: Acceso a la red - Chrome</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar Chrome OS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Las extensiones de Google Chrome tenían acceso a dispositivos HID}=1{Las extensiones de Google Chrome tienen acceso a dispositivos HID}other{Las extensiones de Google Chrome tienen acceso a # dispositivos HID}}</translation>
 <translation id="303514781271618814">Chrome está explorando funciones nuevas que les permiten a los sitios ofrecer la misma experiencia de navegación usando menos de tus datos</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano</translation>
 <translation id="3038232873781883849">Esperando para instalar...</translation>
@@ -219,6 +220,7 @@
 <translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4970947549776831107">Chrome bloqueó este archivo porque este tipo de archivo es peligroso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Una extensión de Google Chrome tenía acceso a dispositivos HID}=1{Una extensión de Google Chrome tiene acceso a 1 dispositivo HID}other{Una extensión de Google Chrome tiene acceso a # dispositivos HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{El administrador cierra Chrome automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{El administrador cierra Chrome automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="5098668839038261629">Si activas esta opción, saldrás de Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicaciones, juegos, extensiones y temas geniales para Google Chrome.</translation>

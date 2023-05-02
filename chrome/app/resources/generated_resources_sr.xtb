@@ -8598,7 +8598,6 @@
 <translation id="8498214519255567734">Омогућава да лакше прегледате садржај екрана или да читате при пригушеном светлу</translation>
 <translation id="8498395510292172881">Наставите да читате у Chrome-у</translation>
 <translation id="8499083585497694743">Укључи звук микрофона</translation>
-<translation id="8499526927826495298">Шаљи <ph name="BEGIN_LINK1" />метаподатке о аутоматском попуњавању<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Да бисте користили апликације са Google Play-а, прво морате да вратите апликације. Неки подаци су можда изгубљени.</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="850382998924680137">Погледано данас</translation>
@@ -8851,6 +8850,9 @@
 <translation id="8725178340343806893">Омиљено/Обележивачи</translation>
 <translation id="87254326763805752">Потврдите приступни кôд</translation>
 <translation id="8726206820263995930">Грешка при преузимању подешавања смерница са сервера: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Шаљи <ph name="BEGIN_LINK1" />метаподатке за аутоматско попуњавање<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (подаци за аутоматско попуњавање се не деле)</translation>
 <translation id="8728351286589123703">Одабране дозволе ће бити ресетоване</translation>
 <translation id="8729133765463465108">Скенирај QR кôд помоћу камере</translation>
 <translation id="8730621377337864115">Готово</translation>

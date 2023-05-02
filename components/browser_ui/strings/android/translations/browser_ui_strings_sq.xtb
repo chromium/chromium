@@ -148,6 +148,7 @@
 <translation id="3600792891314830896">Hiq zërin për sajtet që luajnë tinguj</translation>
 <translation id="3602290021589620013">Pamje paraprake</translation>
 <translation id="3628308229821498208">Kërkimet e sugjeruara</translation>
+<translation id="3707034683772193706">Një sajt që ti viziton mund të ruajë një sasi të vogël informacionesh me Chrome, kryesisht për të vërtetuar që nuk je një robot</translation>
 <translation id="3721953990244350188">Hiq dhe shfaq veprimin tjetër të disponueshëm</translation>
 <translation id="3744111561329211289">Sinkronizimi në sfond</translation>
 <translation id="3763247130972274048">Trokit dy herë videon majtas ose djathtas për të kapërcyer 10 sek.</translation>
@@ -344,6 +345,7 @@
 <translation id="7302486331832100261">Ti i bllokon zakonisht njoftimet. Për t'i lejuar, trokit te "Detajet".</translation>
 <translation id="7366415735885268578">Shto një sajt</translation>
 <translation id="7383715096023715447">Cilësimet për <ph name="DOMAIN" /></translation>
+<translation id="7406113532070524618">Ky cilësim funksionon pa të identifikuar ty ose pa i lejuar sajtet që të shikojnë historikun tënd të shfletimit, megjithëse sajtet mund të ndajnë një sasi të vogël informacionesh si pjesë e verifikimit</translation>
 <translation id="7423098979219808738">Pyet në fillim</translation>
 <translation id="7423538860840206698">Bllokuar për leximin e kujtesës së fragmenteve</translation>
 <translation id="7425915948813553151">Tema e errët për sajtet</translation>
@@ -433,6 +435,7 @@
 <translation id="8816026460808729765">Bllokojua faqeve hapjen e sensorëve</translation>
 <translation id="8823559166155093873">Blloko kukit</translation>
 <translation id="8847988622838149491">USB</translation>
+<translation id="8889294078294184559">Ndërkohë që ti vazhdon të shfletosh, sajtet mund të kontrollojnë në Chrome dhe të verifikojnë nga një sajt i mëparshëm që ke vizituar që ka gjasa të jesh një person real.</translation>
 <translation id="8899807382908246773">Reklamat ndërhyrëse</translation>
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>

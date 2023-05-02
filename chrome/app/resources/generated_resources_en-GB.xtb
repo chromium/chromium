@@ -8611,7 +8611,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8498214519255567734">Make it easier to look at your screen or read in dim light</translation>
 <translation id="8498395510292172881">Continue reading in Chrome</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>
-<translation id="8499526927826495298">Send <ph name="BEGIN_LINK1" />auto-fill metadata<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">To use apps from Google Play, you must first restore your apps. Some data may have been lost.</translation>
 <translation id="8503813439785031346">Username</translation>
 <translation id="850382998924680137">Viewed today</translation>
@@ -8864,6 +8863,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8725178340343806893">Favourites/bookmarks</translation>
 <translation id="87254326763805752">Confirm passkey</translation>
 <translation id="8726206820263995930">Error when fetching policy settings from the server: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Send <ph name="BEGIN_LINK1" />autofill metadata<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (your autofill data won't be shared)</translation>
 <translation id="8728351286589123703">Your chosen permissions will be reset</translation>
 <translation id="8729133765463465108">Use camera to scan QR code</translation>
 <translation id="8730621377337864115">Done</translation>

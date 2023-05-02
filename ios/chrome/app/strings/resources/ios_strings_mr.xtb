@@ -353,7 +353,7 @@
 <translation id="3264775633254836593">पासवर्ड ऑटोफिल करा</translation>
 <translation id="3268451620468152448">उघडे Tabs</translation>
 <translation id="3272527697863656322">रद्द करा</translation>
-<translation id="3277021493514034324">साइट पत्ता कॉपी केला</translation>
+<translation id="3277021493514034324">साइट अ‍ॅड्रेस कॉपी केला</translation>
 <translation id="3285962946108803577">पेज शेअर करा...</translation>
 <translation id="3289505634533552500">व्हॉइस शोध</translation>
 <translation id="3290875554372353449">एक खाते निवडा</translation>
@@ -610,6 +610,7 @@
 <translation id="4979397965658815378">आपल्या सर्व डिव्हाइसेसवर तुमचे बुकमार्क, पासवर्ड, इतिहास आणि अन्य सेटिंग्ज प्राप्त करण्यासाठी आपल्या Google खात्यासह साइन इन करा</translation>
 <translation id="4986678885919050584">या डिव्हाइसवरून काढून टाका</translation>
 <translation id="498985224078955265">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, दोन्ही डिव्हाइसवर Chrome मध्ये साइन इन करा.</translation>
+<translation id="4996567535980789550">तुम्हाला दिसत असलेला आशय व्यवस्थापित करण्यासाठी सिंक सुरू करा</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> ला पाठवा</translation>
 <translation id="5017828934289857214">मला नंतर आठवण करून द्या</translation>
@@ -1238,6 +1239,7 @@
 <translation id="9034759925968272072">तुम्हाला आपल्या Google खात्यामधून साइन आउट केले जाणार नाही. आपल्या Google खात्यात <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> वर ब्राउझिंग इतिहासाची इतर स्वरूपे असू शकतात.</translation>
 <translation id="9037965129289936994">मूळ दर्शवा</translation>
 <translation id="9039373489628511875">बँडविड्थ</translation>
+<translation id="9043368763795653245">तुमचे Discover फीड आणि Chrome पर्सनलाइझ करण्यासाठी सिंक सुरू करा.</translation>
 <translation id="9055772144595778347">साइन इन करणे शक्य नाही</translation>
 <translation id="9055960261314198756">वर्धित संरक्षण बंद आहे</translation>
 <translation id="9057972802061533987">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>

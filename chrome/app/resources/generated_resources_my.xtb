@@ -8605,7 +8605,6 @@
 <translation id="8498214519255567734">မီးရောင်မှိန်မှိန်တွင် သင်၏မျက်နှာပြင်ကို ကြည့်ရန် သို့မဟုတ် စာဖတ်ရန် ပိုမိုလွယ်ကူစေပါသည်</translation>
 <translation id="8498395510292172881">Chrome တွင် ဆက်ဖတ်ရန်</translation>
 <translation id="8499083585497694743">မိုက်ခရိုဖုန်း ပြန်ဖွင့်ရန်</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />အော်တိုဖြည့် မက်တာဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="8502536196501630039">Google Play မှအက်ပ်များကို အသုံးပြုရန် သင်၏အက်ပ်များကို ဦးစွာ ပြန်ယူရပါမည်။ အချို့ဒေတာများ ပျောက်ဆုံးမှု ရှိနိုင်ပါသည်။</translation>
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="850382998924680137">ယနေ့ ကြည့်ထားသည်</translation>
@@ -8858,6 +8857,9 @@
 <translation id="8725178340343806893">နှစ်သက်ရာများ/ဘွတ်ခ်မတ်များ</translation>
 <translation id="87254326763805752">လျှို့ဝှက်ကီးအတည်ပြုရန်</translation>
 <translation id="8726206820263995930">ဆာဗာ: <ph name="CLIENT_ERROR" /> မှ ပေါ်လစီဆက်တင်ကို ရယူစဉ် အမှားဖြစ်ပေါ်သည်။</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />အော်တိုဖြည့် မက်တာဒေတာ<ph name="END_LINK1" /> ပို့ရန်
+          <ph name="LINE_BREAK" />
+          (သင့်အော်တိုဖြည့်ဒေတာကို မျှဝေမည်မဟုတ်ပါ)</translation>
 <translation id="8728351286589123703">ရွေးထားသော ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်မည်</translation>
 <translation id="8729133765463465108">QR ကုဒ် စကင်ဖတ်ရန် ကင်မရာကို အသုံးပြုပါ</translation>
 <translation id="8730621377337864115">ပြီးပါပြီ</translation>

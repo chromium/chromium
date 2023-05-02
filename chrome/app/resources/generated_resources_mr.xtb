@@ -8607,7 +8607,6 @@
 <translation id="8498214519255567734">तुमच्या स्क्रीनकडे पाहणे किंवा मंद उजेडात वाचणे सोपे करते</translation>
 <translation id="8498395510292172881">Chrome मध्ये वाचन सुरू ठेवा</translation>
 <translation id="8499083585497694743">मायक्रोफोन अनम्यूट करा</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />ऑटोफिल मेटाडेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="8502536196501630039">Google Play वरचे ॲप्स वापरण्यासाठी, तुम्ही प्रथम तुमचे ॲप्स रिस्टोअर करणे आवश्यक आहे. काही डेटा गमावला असू शकतो.</translation>
 <translation id="8503813439785031346">वापरकर्ता नाव</translation>
 <translation id="850382998924680137">आज पाहिलेले</translation>
@@ -8860,6 +8859,9 @@
 <translation id="8725178340343806893">मनपसंत/बुकमार्क</translation>
 <translation id="87254326763805752">पासकी कंफर्म करा</translation>
 <translation id="8726206820263995930">सर्व्हरवरून धोरण सेटिंग्ज आणताना एरर: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ऑटोफिल मेटाडेटा<ph name="END_LINK1" /> पाठवा
+          <ph name="LINE_BREAK" />
+          (तुमचा ऑटोफिल डेटा शेअर केला जाणार नाही)</translation>
 <translation id="8728351286589123703">तुम्ही निवडलेल्या परवानग्या रीसेट केल्या जातील</translation>
 <translation id="8729133765463465108">QR कोड स्कॅन करण्यासाठी कॅमेरा वापरा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>

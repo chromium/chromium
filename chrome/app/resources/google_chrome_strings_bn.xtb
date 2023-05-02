@@ -116,6 +116,7 @@
 <translation id="2929907241665500097">Chrome আপডেট করা যায়নি, কোনও সমস্যা হয়েছে। <ph name="BEGIN_LINK" />Chrome-এ আপডেট করতে না পারার সমস্যা ও আপডেট করা যায়নি এমন সমস্যার সমাধান করুন।<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - নেটওয়ার্ক সাইন-ইন - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex আপডেট করার জন্য আবার চালু করুন</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome এক্সটেনশন HID ডিভাইস অ্যাক্সেস করছিল}=1{Google Chrome এক্সটেনশন HID ডিভাইস অ্যাক্সেস করছে}one{Google Chrome এক্সটেনশন #টি HID ডিভাইস অ্যাক্সেস করছে}other{Google Chrome এক্সটেনশন #টি HID ডিভাইস অ্যাক্সেস করছে}}</translation>
 <translation id="303514781271618814">Chrome নতুন ফিচার এক্সপ্লোর করছে যা সাইটগুলিকে আপনার কম ডেটা ব্যবহার করে একই ব্রাউজিং অভিজ্ঞতা প্রদান করতে দেয়</translation>
 <translation id="3037838751736561277">Google Chrome পটভূমি মোডে রয়েছে।</translation>
 <translation id="3038232873781883849">ইনস্টল করার জন্য অপেক্ষা করা হচ্ছে...</translation>
@@ -221,6 +222,7 @@
 <translation id="4970880042055371251">ChromeOS ভার্সন</translation>
 <translation id="4970947549776831107">এই ধরনের ফাইল বিপজ্জনক বলে Chrome এটি ব্লক করেছে</translation>
 <translation id="4990567037958725628">Google Chrome  ক্যানারি</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{একটি Google Chrome এক্সটেনশন HID ডিভাইস অ্যাক্সেস করছিল}=1{একটি Google Chrome এক্সটেনশন ১টি HID ডিভাইস অ্যাক্সেস করছে}one{একটি Google Chrome এক্সটেনশন #টি HID ডিভাইস অ্যাক্সেস করছে}other{একটি Google Chrome এক্সটেনশন #টি HID ডিভাইস অ্যাক্সেস করছে}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Chrome প্ল্যাটফর্মে ১ মিনিট কিছু অ্যাক্টিভিটি না করলে, অ্যাডমিনিস্ট্রেটর অটোমেটিক এটি বন্ধ করে দেয়। ব্রাউজ করা ডেটা মুছে ফেলা হয়। এর মধ্যে ইতিহাস, অটোফিল এবং ডাউনলোড আছে।}one{Chrome প্ল্যাটফর্মে # মিনিট কিছু অ্যাক্টিভিটি না করলে, অ্যাডমিনিস্ট্রেটর অটোমেটিক এটি বন্ধ করে দেয়। ব্রাউজ করা ডেটা মুছে ফেলা হয়। এর মধ্যে ইতিহাস, অটোফিল এবং ডাউনলোড আছে।}other{Chrome প্ল্যাটফর্মে # মিনিট কিছু অ্যাক্টিভিটি না করলে, অ্যাডমিনিস্ট্রেটর অটোমেটিক এটি বন্ধ করে দেয়। ব্রাউজ করা ডেটা মুছে ফেলা হয়। এর মধ্যে ইতিহাস, অটোফিল এবং ডাউনলোড আছে।}}</translation>
 <translation id="5098668839038261629">চালু হলে, আপনি Chrome থেকেও সাইন-আউট হয়ে যাবেন</translation>
 <translation id="5132929315877954718">Google Chrome-এর দুর্দান্ত অ্যাপ্লিকেশান, গেম, এক্সটেনশান এবং থিম আবিষ্কার করুন৷</translation>

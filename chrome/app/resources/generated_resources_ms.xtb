@@ -8612,7 +8612,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8498214519255567734">Memudahkan anda melihat skrin atau membaca dalam cahaya malap</translation>
 <translation id="8498395510292172881">Teruskan membaca dalam Chrome</translation>
 <translation id="8499083585497694743">Nyahredamkan mikrofon</translation>
-<translation id="8499526927826495298">Hantar <ph name="BEGIN_LINK1" />metadata autolengkap<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Untuk menggunakan apl daripada Google Play, anda mesti memulihkan apl anda dahulu. Sesetengah data mungkin hilang.</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="850382998924680137">Dilihat hari ini</translation>
@@ -8865,6 +8864,9 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8725178340343806893">Kegemaran/Penanda halaman</translation>
 <translation id="87254326763805752">Sahkan kunci laluan</translation>
 <translation id="8726206820263995930">Ralat semasa mengambil tetapan dasar dari pelayan: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Hantar <ph name="BEGIN_LINK1" />metadata autolengkap<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (data autolengkap anda tidak akan dikongsi)</translation>
 <translation id="8728351286589123703">Kebenaran yang anda pilih akan ditetapkan semula</translation>
 <translation id="8729133765463465108">Gunakan kamera untuk mengimbas Kod QR</translation>
 <translation id="8730621377337864115">Selesai</translation>

@@ -8597,7 +8597,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8498214519255567734">Torna mais fácil olhar para o ecrã ou ler com pouca luz</translation>
 <translation id="8498395510292172881">Continuar a ler no Chrome</translation>
 <translation id="8499083585497694743">Reativar microfone</translation>
-<translation id="8499526927826495298">Enviar <ph name="BEGIN_LINK1" />metadados de preenchimento automático<ph name="END_LINK1" /></translation>
 <translation id="8502536196501630039">Para utilizar aplicações do Google Play, é necessário restaurar primeiro as suas aplicações. Pode ter perdido alguns dados.</translation>
 <translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="850382998924680137">Visto hoje</translation>
@@ -8850,6 +8849,9 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8725178340343806893">Favoritos/Marcadores</translation>
 <translation id="87254326763805752">Confirme o token de acesso</translation>
 <translation id="8726206820263995930">Erro ao obter as definições da política do servidor: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Enviar <ph name="BEGIN_LINK1" />metadados de preenchimento automático<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (os dados de preenchimento automático não são partilhados)</translation>
 <translation id="8728351286589123703">As suas autorizações escolhidas serão repostas</translation>
 <translation id="8729133765463465108">Usar a câmara para ler o código QR</translation>
 <translation id="8730621377337864115">Concluído</translation>

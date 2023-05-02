@@ -117,6 +117,7 @@
 <translation id="2929907241665500097">Chrome යාවත්කාලීන නොවිය, යම් දෙයක් වැරදිණි. <ph name="BEGIN_LINK" />Chrome යාවත්කාලීන ගැටලු සහ අසමත් වූ යාවත්කාලීන නිරාකරණ කරන්න.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ජාල පුරනය - Chrome</translation>
 <translation id="3019382870990049182">&amp;ChromeOS Flex යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome දිගු HID උපාංග වෙත ප්‍රවේශ විය}=1{Google Chrome දිගු HID උපාංග වෙත ප්‍රවේශ වේ}one{Google Chrome දිගු HID උපාංග #ක් වෙත ප්‍රවේශ වේ}other{Google Chrome දිගු HID උපාංග #ක් වෙත ප්‍රවේශ වේ}}</translation>
 <translation id="303514781271618814">Chrome ඔබගේ දත්ත අඩුවෙන් භාවිත කරමින් එකම බ්‍රවුස් කිරීමේ අත්දැකීම ලබා දීමට අඩවිවලට ඉඩ සලසන නව විශේෂාංග ගවේෂණය කරයි</translation>
 <translation id="3037838751736561277">Google Chrome පසුබිම් ප්‍රකාරය තුළ ඇත.</translation>
 <translation id="3038232873781883849">ස්ථාපනය කිරීමට පොරොත්තුවෙන්...</translation>
@@ -222,6 +223,7 @@
 <translation id="4970880042055371251">ChromeOS අනුවාදය</translation>
 <translation id="4970947549776831107">Chrome මෙම වර්ගයේ ගොනු හානිකර නිසා මෙම ගොනුව අවහිර කළේය</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome දිගුවක් HID උපාංග වෙත ප්‍රවේශ විය}=1{Google Chrome දිගුවක් 1 HID උපාංගයක් වෙත ප්‍රවේශ වේ}one{Google Chrome දිගුවක් HID උපාංග #ක් වෙත ප්‍රවේශ වේ}other{Google Chrome දිගුවක් HID උපාංග #ක් වෙත ප්‍රවේශ වේ}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{ඔබේ පරිපාලකයා Chrome මිනිත්තු 1ක් සඳහා භාවිතා නොකරන විට ස්වයංක්‍රීයව වසයි. බ්‍රවුස් කිරීමේ දත්ත මකා ඇත. මෙයට ඉතිහාසය, ස්වයං පිරවීම, සහ බාගැනීම් ඇතුළත් විය හැක.}one{ඔබේ පරිපාලකයා Chrome මිනිත්තු #ක් සඳහා භාවිතා නොකරන විට ස්වයංක්‍රීයව වසයි. බ්‍රවුස් කිරීමේ දත්ත මකා ඇත. මෙයට ඉතිහාසය, ස්වයං පිරවීම, සහ බාගැනීම් ඇතුළත් විය හැක.}other{ඔබේ පරිපාලකයා Chrome මිනිත්තු #ක් සඳහා භාවිතා නොකරන විට ස්වයංක්‍රීයව වසයි. බ්‍රවුස් කිරීමේ දත්ත මකා ඇත. මෙයට ඉතිහාසය, ස්වයං පිරවීම, සහ බාගැනීම් ඇතුළත් විය හැක.}}</translation>
 <translation id="5098668839038261629">ක්‍රියාත්මක විට, ඔබව Chrome වෙතින්ද වරනු ඇත</translation>
 <translation id="5132929315877954718">Google Chrome සඳහා විශිෂ්ට යෙදුම්, ක්‍රීඩා, දිගු සහ තේමා සොයා ගන්න.</translation>

@@ -221,7 +221,7 @@
 <translation id="1178581264944972037">一時停止</translation>
 <translation id="117916940443676133">セキュリティ キーは PIN で保護されていません。ログインデータを管理するには、まず PIN を作成してください。</translation>
 <translation id="1181037720776840403">削除</translation>
-<translation id="1181366777303791449"><ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
+<translation id="1181366777303791449">ドメイン: <ph name="MAIN_FRAME_ETLD_PLUS_ONE" /></translation>
 <translation id="1183237619868651138">ローカル キャッシュの <ph name="EXTERNAL_CRX_FILE" /> はインストールできません。</translation>
 <translation id="1184709369107246085">アプリケーション <ph name="APPLICATION_NAME" /> で開くには、有効な <ph name="APPLICATION_NAME" /> URL が必要です。</translation>
 <translation id="1185924365081634987">このネットワーク エラーを解決するには、<ph name="GUEST_SIGNIN_LINK_START" />ゲストとしてブラウジング<ph name="GUEST_SIGNIN_LINK_END" />もお試しください。</translation>
@@ -8581,7 +8581,6 @@
 <translation id="8498214519255567734">薄明かりの下でも画面を見やすくします</translation>
 <translation id="8498395510292172881">Chrome で続きを読む</translation>
 <translation id="8499083585497694743">マイクのミュートを解除</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />自動入力メタデータ<ph name="END_LINK1" />を送信する</translation>
 <translation id="8502536196501630039">Google Play のアプリを使用するには、まずアプリを復元する必要があります。一部のデータは失われている可能性があります。</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="850382998924680137">今日表示</translation>
@@ -8834,6 +8833,9 @@
 <translation id="8725178340343806893">お気に入り/ブックマーク</translation>
 <translation id="87254326763805752">パスキーの確認</translation>
 <translation id="8726206820263995930">サーバーからポリシー設定を取得するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />自動入力メタデータ<ph name="END_LINK1" />を送信する
+          <ph name="LINE_BREAK" />
+          （自動入力データは共有されません）</translation>
 <translation id="8728351286589123703">選択した権限がリセットされます</translation>
 <translation id="8729133765463465108">カメラを使用して QR コードをスキャンする</translation>
 <translation id="8730621377337864115">完了</translation>

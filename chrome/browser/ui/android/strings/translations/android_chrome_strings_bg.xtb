@@ -387,7 +387,6 @@
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
-<translation id="311958134571892113">свързано с(ъс)</translation>
 <translation id="3123734510202723619">Съобщения</translation>
 <translation id="3134784203083076891">“</translation>
 <translation id="314939179385989105">Началната страница на Chrome</translation>
@@ -1265,6 +1264,7 @@
 <translation id="7709918231054955894">Преглед на всичките ви раздели</translation>
 <translation id="772434085369393266">Надстройва трафика до HTTPS и ви предупреждава, преди да бъдат заредени сайтове, които не поддържат този протокол. Не можете да промените настройката, защото сте активирали „Разширена защита“.</translation>
 <translation id="7725024127233776428">Запазените от вас отметки към страници се показват тук</translation>
+<translation id="7733878270780732638">Няма достатъчно място на устройството.</translation>
 <translation id="7757787379047923882">Текст, споделен от <ph name="DEVICE_NAME" /></translation>
 <translation id="7762668264895820836">SD карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Добавяне на адрес</translation>

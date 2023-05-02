@@ -3185,6 +3185,7 @@
 <translation id="3706463572498736864">हर शीट पर मौजूद पेज की संख्या</translation>
 <translation id="370649949373421643">वाई-फ़ाई  सक्षम करें</translation>
 <translation id="370665806235115550">लोड हो रही हैं...</translation>
+<translation id="3707034683772193706">किसी साइट पर जाने से, Chrome की मदद से कुछ जानकारी सेव की जा सकती है. ऐसा करके, यह पुष्टि की जाती है कि आप बॉट नहीं हैं</translation>
 <translation id="3707163604290651814">इस समय <ph name="NAME" /> के रूप में साइन इन किया गया है</translation>
 <translation id="3707348585109246684">लिंक को नए <ph name="APP" /> टैब में खोलें</translation>
 <translation id="3708295717182051206">सबटाइटल</translation>
@@ -3736,6 +3737,7 @@
 <translation id="4180788401304023883">CA प्रमाणपत्र "<ph name="CERTIFICATE_NAME" />" मिटाएं?</translation>
 <translation id="4181602000363099176">20x</translation>
 <translation id="4181841719683918333">भाषाएं</translation>
+<translation id="4182339886482390129">बेहतर सुरक्षित ब्राउज़िंग की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4184803915913850597">एचआईडी डिवाइस (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Search</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" /> सेट अप किया जा रहा है...</translation>
@@ -3888,6 +3890,7 @@
 <translation id="4322394346347055525">अन्य टैब बंद करें</translation>
 <translation id="4324577459193912240">फ़ाइल अधूरी है</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> अनइंस्टॉल हो रहा है...</translation>
+<translation id="4326146840124313313">Chrome की सबसे मज़बूत सुरक्षा की सुविधा, आपको नुकसान पहुंचाने वाली वेबसाइटों, डाउनलोड, और एक्सटेंशन से बचाती है</translation>
 <translation id="4330191372652740264">आइस वॉटर</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> का कभी अनुवाद ना करें</translation>
 <translation id="4332976768901252016">माता-पिता के नियंत्रण सेट अप करें</translation>
@@ -5552,6 +5555,7 @@
 <translation id="5833726373896279253">ये सेटिंग केवल मालिक द्वारा ही संशोधित की जा सकती हैं:</translation>
 <translation id="583431638776747">साइट को ऐक्सेस नहीं किया जा सका</translation>
 <translation id="5834581999798853053">करीब <ph name="TIME" /> मिनट शेष हैं</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />, एचआईडी डिवाइसों को ऐक्सेस कर रहा है}=2{डिवाइसों को ऐक्सेस करने वाले एक्सटेंशन: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{डिवाइसों को ऐक्सेस करने वाले एक्सटेंशन: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} और}other{डिवाइसों को ऐक्सेस करने वाले एक्सटेंशन: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + {3} और}}</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - कैमरा या माइक्रोफ़ोन रिकॉर्डिंग</translation>
 <translation id="583673505367439042">साइटें आपके डिवाइस पर फ़ाइलों या फ़ोल्डर में बदलाव करने की अनुमति मांग सकती हैं</translation>
 <translation id="5836999627049108525">वह भाषा जिससे अनुवाद करना है</translation>
@@ -7231,6 +7235,7 @@
 <translation id="7339763383339757376">PKCS #7, एकल प्रमाणपत्र</translation>
 <translation id="7339785458027436441">लिखते समय स्पेलिंग की जाँच करें</translation>
 <translation id="7339898014177206373">नई विंडो</translation>
+<translation id="7340179705876485790">पिछले पेज से पहले वाले किसी पेज पर जाने के लिए, 'वापस जाएं' पर क्लिक करके रखें.</translation>
 <translation id="7340431621085453413"><ph name="FULLSCREEN_ORIGIN" /> अब फ़ुल स्‍क्रीन है.</translation>
 <translation id="7340650977506865820">साइट आपकी स्क्रीन शेयर कर रही है</translation>
 <translation id="7340757554212515731">क्रैश रिपोर्ट, गड़बड़ी की जानकारी, और इस्तेमाल से जुड़ा डेटा, Google को अपने-आप भेजा जाता है</translation>
@@ -7277,6 +7282,7 @@
 <translation id="7374376573160927383">अपने यूएसबी डिवाइस प्रबंधित करें</translation>
 <translation id="7376124766545122644">इस लिंक का इस्तेमाल नहीं किया जा सकता. दोबारा कोशिश करते समय यह देखें कि आपका लिंक 'http://' या 'https://' से शुरू होता हो.</translation>
 <translation id="7376553024552204454">माउस कर्सर के हिलने पर उसे हाइलाइट करें</translation>
+<translation id="7377250337652426186">पिछले पेज से पहले वाले किसी पेज पर जाने के लिए, 'वापस जाएं' बटन पर क्लिक करके रखें.</translation>
 <translation id="737728204345822099">आपके इस साइट पर आने की जानकारी को आपकी सुरक्षा कुंजी पर सेव किया जा सकता है.</translation>
 <translation id="7377451353532943397">सेंसर का ऐक्सेस ब्लॉक करते रहें</translation>
 <translation id="7377481913241237033">कोड का इस्तेमाल करके कनेक्ट करें</translation>
@@ -7312,6 +7318,7 @@
 <translation id="7403642243184989645">संसाधन डाउनलोड हाे रहे हैं</translation>
 <translation id="7404065585741198296">आपका फ़ोन और यूएसबी केबल</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{सुरक्षा जांच 1 घंटे पहले हुई है}one{सुरक्षा जांच {NUM_HOURS} घंटे पहले हुई है}other{सुरक्षा जांच {NUM_HOURS} घंटे पहले हुई है}}</translation>
+<translation id="7406113532070524618">इससे आपकी पहचान ज़ाहिर नहीं होती. इसके अलावा, साइटों को आपका ब्राउज़िंग इतिहास देखने की अनुमति भी नहीं मिलती. हालांकि, पुष्टि के दौरान साइटें कुछ जानकारी शेयर कर सकती हैं</translation>
 <translation id="740624631517654988">पॉप-अप अवरोधित</translation>
 <translation id="7406912950279255498">रंग बदलने की सुविधा वाला मोड</translation>
 <translation id="7407430846095439694">आयात करें और आबद्ध करें</translation>
@@ -8604,7 +8611,6 @@
 <translation id="8498214519255567734">यह मंद रोशनी में आपकी स्क्रीन देखना या पढ़ना आसान बनाती है</translation>
 <translation id="8498395510292172881">Chrome में पढ़ना जारी रखें</translation>
 <translation id="8499083585497694743">माइक्रोफ़ोन को अनम्यूट करें</translation>
-<translation id="8499526927826495298"><ph name="BEGIN_LINK1" />ऑटोमैटिक भरने वाला मेटाडेटा<ph name="END_LINK1" /> भेजें</translation>
 <translation id="8502536196501630039">Google Play के ऐप्लिकेशन इस्तेमाल करने के लिए, पहले आपको अपने ऐप्लिकेशन बहाल करने होंगे. कुछ डेटा का नुकसान हो सकता है.</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="850382998924680137">आज देखा गया</translation>
@@ -8857,6 +8863,9 @@
 <translation id="8725178340343806893">पसंदीदा/बुकमार्क बार</translation>
 <translation id="87254326763805752">पासवर्ड की पुष्टि करें</translation>
 <translation id="8726206820263995930">सर्वर से नीति सेटिंग फ़ेच करते समय गड़बड़ी: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ऑटोमैटिक भरने वाला मेटाडेटा<ph name="END_LINK1" /> भेजें
+          <ph name="LINE_BREAK" />
+          (आपका ऑटोमैटिक भरने वाला डेटा शेयर नहीं किया जाएगा)</translation>
 <translation id="8728351286589123703">आपकी चुनी हुई अनुमतियों को रीसेट किया जाएगा</translation>
 <translation id="8729133765463465108">क्यूआर कोड स्कैन करने के लिए कैमरा इस्तेमाल करें</translation>
 <translation id="8730621377337864115">हो गया</translation>
@@ -9049,6 +9058,7 @@
 <translation id="8884023684057697730"><ph name="BEGIN_BOLD" />अपना डेटा कैसे मैनेज करें:<ph name="END_BOLD" /> आपकी निजता को सुरक्षित रखने के लिए, हम सूची से उन साइटों को ऑटोमैटिकली मिटा देते हैं जिन्हें चार हफ़्ते से पहले देखा गया था. अगर आपने किसी साइट को फिर से देखा है, तो उसे सूची में दोबारा शामिल किया जा सकता है. इसके अलावा, जिस साइट को पसंद के विषयों का अनुमान लगाने वाली सूची में शामिल नहीं करवाना है उसे हटाया भी जा सकता है.</translation>
 <translation id="8884570509232205463">आपका डिवाइस अब <ph name="UNLOCK_TIME" /> बजे अनलॉक होगा.</translation>
 <translation id="8888253246822647887">अपग्रेड पूरा होने पर आपका ऐप्लिकेशन खुल जाएगा. अपग्रेड में कुछ समय लग सकता है.</translation>
+<translation id="8889294078294184559">आपके ब्राउज़ करने के दौरान, साइटें Chrome की मदद से यह जांच कर सकती हैं कि आप असली उपयोगकर्ता हैं या नहीं. ऐसा, आपकी पहले विज़िट की गई साइट की जानकारी से किया जाता है</translation>
 <translation id="8889651696183044030"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों और फ़ोल्डर में बदलाव कर सकती है</translation>
 <translation id="8890170499370378450">हो सकता है कि आपको मोबाइल डेटा का शुल्क देना पड़े</translation>
 <translation id="8890516388109605451">स्रोत</translation>

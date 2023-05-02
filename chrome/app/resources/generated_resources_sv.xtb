@@ -3379,7 +3379,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3855676282923585394">Importera bokmärken och inställningar...</translation>
 <translation id="3856096718352044181">Verifiera att detta är en giltig leverantör eller försök igen senare</translation>
 <translation id="3856800405688283469">Välj tidszon</translation>
-<translation id="3857807444929313943">Lyft och tryck sedan igen</translation>
+<translation id="3857807444929313943">Lyft och nudda sedan igen</translation>
 <translation id="3858860766373142691">Namn</translation>
 <translation id="385939467708172187">Använd ett starkt lösenord</translation>
 <translation id="3861638017150647085">Användarnamnet <ph name="USERNAME" /> är inte tillgängligt</translation>
@@ -8611,7 +8611,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8498214519255567734">Gör det behagligare för ögonen att titta på skärmen eller läsa i svag belysning</translation>
 <translation id="8498395510292172881">Fortsätt läsa i Chrome</translation>
 <translation id="8499083585497694743">Slå på mikrofonen</translation>
-<translation id="8499526927826495298">Skicka <ph name="BEGIN_LINK1" />metadata om autofyll<ph name="END_LINK1" />.</translation>
 <translation id="8502536196501630039">Om du vill använda appar från Google Play måste du först återställa apparna. En del data kan ha gått förlorad.</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="850382998924680137">Visades i dag</translation>
@@ -8864,6 +8863,9 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8725178340343806893">Favoriter/bokmärken</translation>
 <translation id="87254326763805752">Bekräfta nyckel</translation>
 <translation id="8726206820263995930">Det uppstod ett fel när policyinställningarna hämtades från servern: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Skicka <ph name="BEGIN_LINK1" />metadata för autofyll<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (din autofylldata delas inte)</translation>
 <translation id="8728351286589123703">Dina valda behörigheter återställs</translation>
 <translation id="8729133765463465108">Skanna QR-koden med kameran</translation>
 <translation id="8730621377337864115">Klart</translation>
