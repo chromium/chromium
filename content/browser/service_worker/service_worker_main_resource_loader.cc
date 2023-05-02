@@ -20,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/fetch/fetch_request_type_converters.h"
@@ -60,6 +61,41 @@ const std::string ComposeNavigationTypeString(
              ? "SameOriginNavigation"
              : "CrossOriginNavigation";
 }
+
+bool IsEligibleForRaceNetworkRequestByOriginTrial(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  return version->origin_trial_tokens() &&
+         version->origin_trial_tokens()->contains(
+             "ServiceWorkerBypassFetchHandlerWithRaceNetworkRequest");
+}
+
+bool IsEligibleForRaceNetworkRequest(
+    scoped_refptr<ServiceWorkerVersion> version) {
+  if (!base::FeatureList::IsEnabled(
+          features::kServiceWorkerBypassFetchHandler)) {
+    return false;
+  }
+  if (features::kServiceWorkerBypassFetchHandlerTarget.Get() !=
+      features::ServiceWorkerBypassFetchHandlerTarget::
+          kAllWithRaceNetworkRequest) {
+    return false;
+  }
+
+  switch (features::kServiceWorkerBypassFetchHandlerStrategy.Get()) {
+    // kFeatureOptIn means that the feature relies on the manual feature
+    // toggle from about://flags etc, which is triggered by developers.
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kFeatureOptIn:
+      return true;
+    // If kAllowList, the allowlist should be specified. In this case,
+    // RaceNetworkRequest is allowed only when the sha256 checksum of the
+    // script is in the allowlist.
+    case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
+      return content::service_worker_loader_helpers::
+          FetchHandlerBypassedHashStrings()
+              .contains(version->sha256_script_checksum());
+  }
+}
+
 }  // namespace
 
 // This class waits for completion of a stream response from the service worker.
@@ -219,16 +255,9 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     scoped_refptr<ServiceWorkerVersion> version) {
-  bool is_enabled_by_feature_flag =
-      base::FeatureList::IsEnabled(
-          features::kServiceWorkerBypassFetchHandler) &&
-      features::kServiceWorkerBypassFetchHandlerTarget.Get() ==
-          features::ServiceWorkerBypassFetchHandlerTarget::
-              kAllWithRaceNetworkRequest;
+  bool is_enabled_by_feature_flag = IsEligibleForRaceNetworkRequest(version);
   bool is_enabled_by_origin_trial =
-      version->origin_trial_tokens() &&
-      version->origin_trial_tokens()->contains(
-          "ServiceWorkerBypassFetchHandlerWithRaceNetworkRequest");
+      IsEligibleForRaceNetworkRequestByOriginTrial(version);
 
   if (!(is_enabled_by_feature_flag || is_enabled_by_origin_trial)) {
     return false;

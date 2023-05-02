@@ -20,6 +20,7 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -86,16 +87,6 @@ const char* FetchHandlerTypeToString(
   }
 }
 
-// Returns the set of hash strings of fetch handlers which can be bypassed.
-const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {
-  const static base::NoDestructor<base::flat_set<std::string>> result(
-      base::SplitString(
-          features::kServiceWorkerBypassFetchHandlerBypassedHashStrings.Get(),
-          ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-  return *result;
-}
-
 bool ShouldBypassFetchHandlerForMainResource(ServiceWorkerVersion& version) {
   if (!base::FeatureList::IsEnabled(
           features::kServiceWorkerBypassFetchHandler)) {
@@ -122,8 +113,9 @@ bool ShouldBypassFetchHandlerForMainResource(ServiceWorkerVersion& version) {
     // resource fetch handlers are bypassed only when the sha256 checksum of the
     // script is in the allowlist.
     case features::ServiceWorkerBypassFetchHandlerStrategy::kAllowList:
-      if (FetchHandlerBypassedHashStrings().contains(
-              version.sha256_script_checksum())) {
+      if (content::service_worker_loader_helpers::
+              FetchHandlerBypassedHashStrings()
+                  .contains(version.sha256_script_checksum())) {
         version.CountFeature(
             blink::mojom::WebFeature::
                 kServiceWorkerBypassFetchHandlerForMainResource);
