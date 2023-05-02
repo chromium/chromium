@@ -52,18 +52,27 @@ void ScreensaverImagesPolicyHandler::
     return;
   }
 
-  // TODO(b/277729103): If the pref value is empty, delete files in the download
-  // directory, clear `downloaded_images_`, and do not trigger new download
-  // jobs.
+  // TODO(b/278857721): Do not download/cache images if the ScreensaverEnabled
+  // pref is false.
 
-  // TODO(b/271093110): Implement clean up logic before sending new download
-  // jobs.
+  const base::Value::List& url_list = user_pref_service_->GetList(
+      ash::ambient::prefs::kAmbientModeManagedScreensaverImages);
+  if (url_list.empty()) {
+    // If the screensaver is listening to updates, notify that the images are no
+    // longer available before deleting them.
+    if (on_images_updated_callback_) {
+      on_images_updated_callback_.Run(std::vector<base::FilePath>());
+    }
 
-  const base::Value::List& urls_list = user_pref_service_->GetList(
-      ambient::prefs::kAmbientModeManagedScreensaverImages);
-  for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy && i < urls_list.size();
+    image_downloader_->ClearRequestQueue();
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    image_downloader_->DeleteDownloadedImages();
+    return;
+  }
+
+  for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy && i < url_list.size();
        ++i) {
-    const base::Value& url = urls_list[i];
+    const base::Value& url = url_list[i];
     if (!url.is_string() || url.GetString().empty()) {
       continue;
     }
@@ -85,8 +94,10 @@ void ScreensaverImagesPolicyHandler::OnDownloadJobCompleted(
   CHECK(path.has_value());
   downloaded_images_.insert(*path);
 
-  on_images_updated_callback_.Run(std::vector<base::FilePath>(
-      downloaded_images_.begin(), downloaded_images_.end()));
+  if (on_images_updated_callback_) {
+    on_images_updated_callback_.Run(std::vector<base::FilePath>(
+        downloaded_images_.begin(), downloaded_images_.end()));
+  }
 }
 
 void ScreensaverImagesPolicyHandler::SetScreensaverImagesUpdatedCallback(
@@ -124,7 +135,7 @@ void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(
       ambient::prefs::kAmbientModeManagedScreensaverImages,
       base::BindRepeating(&ScreensaverImagesPolicyHandler::
                               OnAmbientModeManagedScreensaverImagesPrefChanged,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 
   OnAmbientModeManagedScreensaverImagesPrefChanged();
 }

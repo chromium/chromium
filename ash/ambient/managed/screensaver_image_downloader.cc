@@ -141,6 +141,27 @@ void ScreensaverImageDownloader::QueueDownloadJob(
   }
 }
 
+void ScreensaverImageDownloader::ClearRequestQueue() {
+  base::queue<std::unique_ptr<Job>> buffer_queue;
+  buffer_queue.swap(downloading_queue_);
+  queue_state_ = QueueState::kWaiting;
+
+  while (!buffer_queue.empty()) {
+    FinishDownloadJob(std::move(buffer_queue.front()),
+                      ScreensaverImageDownloadResult::kCancelled,
+                      absl::nullopt);
+    buffer_queue.pop();
+  }
+}
+
+void ScreensaverImageDownloader::DeleteDownloadedImages() {
+  // TODO(b/278548884): Do not ignore callback result and track its result.
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(base::IgnoreResult(&base::DeletePathRecursively),
+                     download_directory_));
+}
+
 void ScreensaverImageDownloader::StartDownloadJob(
     std::unique_ptr<Job> download_job) {
   queue_state_ = QueueState::kDownloading;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/hash/sha1.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,11 +25,14 @@
 namespace ash {
 
 namespace {
+
 constexpr char kImageUrl1[] = "http://example.com/image1.jpg";
 constexpr char kImageUrl2[] = "http://example.com/image2.jpg";
 constexpr char kImageUrl3[] = "http://example.com/image3.jpg";
 constexpr char kFileContents[] = "file contents";
 constexpr char kCacheFileExt[] = ".cache";
+
+constexpr char kTestDownloadFolder[] = "test_download_folder";
 
 }  // namespace
 
@@ -49,21 +53,30 @@ class ScreensaverImageDownloaderTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    EXPECT_TRUE(tmp_dir_.CreateUniqueTempDir());
+    test_download_folder_ = tmp_dir_.GetPath().AppendASCII(kTestDownloadFolder);
 
     screensaver_image_downloader_ =
         std::make_unique<ScreensaverImageDownloader>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &url_loader_factory_),
-            temp_dir());
+            test_download_folder_);
   }
 
-  void DeleteTempFolder() { EXPECT_TRUE(temp_dir_.Delete()); }
-
-  const base::FilePath& temp_dir() { return temp_dir_.GetPath(); }
+  ScreensaverImageDownloader* screensaver_image_downloader() {
+    return screensaver_image_downloader_.get();
+  }
 
   network::TestURLLoaderFactory* url_loader_factory() {
     return &url_loader_factory_;
+  }
+
+  const base::FilePath& test_download_folder() { return test_download_folder_; }
+
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
+
+  void DeleteTestDownloadFolder() {
+    EXPECT_TRUE(base::DeletePathRecursively(test_download_folder_));
   }
 
   void VerifyDownloadingQueueSize(size_t expected_size) const {
@@ -85,13 +98,32 @@ class ScreensaverImageDownloaderTest : public testing::Test {
   base::FilePath GetExpectedFilePath(const std::string url) {
     const std::string hash = base::SHA1HashString(url);
     const std::string encoded_hash = base::HexEncode(hash.data(), hash.size());
-    return temp_dir_.GetPath().AppendASCII(encoded_hash + kCacheFileExt);
+    return test_download_folder_.AppendASCII(encoded_hash + kCacheFileExt);
+  }
+
+  void VerifySucessfulImageRequest(
+      std::unique_ptr<DownloadResultFuture> result_future,
+      const std::string& url,
+      const std::string& file_contents) {
+    ASSERT_TRUE(result_future.get());
+    ASSERT_TRUE(result_future->Wait()) << "Callback expected to be called.";
+
+    auto [result, optional_path] = result_future->Take();
+    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result);
+    ASSERT_TRUE(optional_path.has_value());
+    EXPECT_EQ(GetExpectedFilePath(url), *optional_path);
+
+    ASSERT_TRUE(base::PathExists(*optional_path));
+    std::string actual_file_contents;
+    EXPECT_TRUE(base::ReadFileToString(*optional_path, &actual_file_contents));
+    EXPECT_EQ(file_contents, actual_file_contents);
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
 
-  base::ScopedTempDir temp_dir_;
+  base::ScopedTempDir tmp_dir_;
+  base::FilePath test_download_folder_;
   network::TestURLLoaderFactory url_loader_factory_;
 
   // Class under test
@@ -100,16 +132,9 @@ class ScreensaverImageDownloaderTest : public testing::Test {
 
 TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
   // Test successful download.
-  {
-    url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
-
-    std::unique_ptr<DownloadResultFuture> result_future =
-        QueueNewJobWithFuture(kImageUrl1);
-    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
-              result_future->Get<0>());
-    ASSERT_TRUE(result_future->Get<1>().has_value());
-    EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future->Get<1>());
-  }
+  url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1), kImageUrl1,
+                              kFileContents);
 
   // Test download with a fake network error.
   {
@@ -140,7 +165,7 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
           ASSERT_TRUE(request.url.is_valid());
           EXPECT_EQ(kImageUrl3, request.url);
 
-          DeleteTempFolder();
+          DeleteTestDownloadFolder();
           url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
         }));
     EXPECT_EQ(ScreensaverImageDownloadResult::kFileSaveError,
@@ -213,9 +238,8 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // Resolve the first job
   url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
-  EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result_future1->Get<0>());
-  ASSERT_TRUE(result_future1->Get<1>().has_value());
-  EXPECT_EQ(GetExpectedFilePath(kImageUrl1), result_future1->Get<1>());
+  VerifySucessfulImageRequest(std::move(result_future1), kImageUrl1,
+                              kFileContents);
 
   // First job has been resolved, second job should be executing and expecting
   // the URL response.
@@ -231,22 +255,66 @@ TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
 
   // Resolve the second job
   url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
-  EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result_future2->Get<0>());
-  ASSERT_TRUE(result_future2->Get<1>().has_value());
-  EXPECT_EQ(GetExpectedFilePath(kImageUrl2), result_future2->Get<1>());
+  VerifySucessfulImageRequest(std::move(result_future2), kImageUrl2,
+                              kFileContents);
 
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
 
   // Resolve the third job
   url_loader_factory()->AddResponse(kImageUrl3, kFileContents);
-  EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess, result_future3->Get<0>());
-  ASSERT_TRUE(result_future3->Get<1>().has_value());
-  EXPECT_EQ(GetExpectedFilePath(kImageUrl3), result_future3->Get<1>());
+  VerifySucessfulImageRequest(std::move(result_future3), kImageUrl3,
+                              kFileContents);
 
   // Ensure that the queue remains empty
   base::RunLoop().RunUntilIdle();
   VerifyDownloadingQueueSize(0u);
+}
+
+TEST_F(ScreensaverImageDownloaderTest, DeleteDownloadedImagesTest) {
+  // Download two images to attempt clearing later.
+  url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
+  url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl1), kImageUrl1,
+                              kFileContents);
+  VerifySucessfulImageRequest(QueueNewJobWithFuture(kImageUrl2), kImageUrl2,
+                              kFileContents);
+
+  // Verify that images saved into disk are deleted properly.
+  screensaver_image_downloader()->DeleteDownloadedImages();
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(base::PathExists(test_download_folder()));
+}
+
+TEST_F(ScreensaverImageDownloaderTest, ClearRequestQueueTest) {
+  // Queue 3 download request, the first one one will be executed, the latter
+  // will be queued.
+  std::unique_ptr<DownloadResultFuture> result_future1 =
+      QueueNewJobWithFuture(kImageUrl1);
+  std::unique_ptr<DownloadResultFuture> result_future2 =
+      QueueNewJobWithFuture(kImageUrl2);
+  std::unique_ptr<DownloadResultFuture> result_future3 =
+      QueueNewJobWithFuture(kImageUrl3);
+
+  base::RunLoop().RunUntilIdle();
+  VerifyDownloadingQueueSize(2u);
+
+  // Clear the queue and resolve the first request.
+  url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
+  screensaver_image_downloader()->ClearRequestQueue();
+
+  // Verify that the pending request was executed until completion.
+  VerifySucessfulImageRequest(std::move(result_future1), kImageUrl1,
+                              kFileContents);
+
+  // Verify that the other requests were notified of them being cancelled.
+  EXPECT_EQ(ScreensaverImageDownloadResult::kCancelled,
+            result_future2->Get<0>());
+  EXPECT_FALSE(result_future2->Get<1>().has_value());
+
+  EXPECT_EQ(ScreensaverImageDownloadResult::kCancelled,
+            result_future3->Get<0>());
+  EXPECT_FALSE(result_future3->Get<1>().has_value());
 }
 
 }  // namespace ash

@@ -28,6 +28,7 @@ enum class ScreensaverImageDownloadResult {
   kNetworkError,
   kFileSaveError,
   kFileSystemWriteError,
+  kCancelled,
 };
 
 // Provides a cache service to download and store external image files that will
@@ -88,6 +89,13 @@ class ASH_EXPORT ScreensaverImageDownloader {
   // `file_name`. The async `callback` will pass the result, and the file path
   // if the operation succeeded.
   void QueueDownloadJob(std::unique_ptr<Job> download_job);
+
+  // Empties the downloading queue, and replies to pending requests to indicate
+  // that they have been cancelled.
+  void ClearRequestQueue();
+
+  // Clears out the download folder.
+  void DeleteDownloadedImages();
 
  private:
   friend class ScreensaverImageDownloaderTest;
