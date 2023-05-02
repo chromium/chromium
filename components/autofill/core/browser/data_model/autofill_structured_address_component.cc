@@ -365,6 +365,24 @@ void AddressComponent::UnsetSubcomponents() {
     component->UnsetAddressComponentAndItsSubcomponents();
 }
 
+void AddressComponent::FillTreeGaps() {
+  if (IsAtomic()) {
+    return;
+  }
+
+  for (auto* component : subcomponents_) {
+    component->FillTreeGaps();
+  }
+
+  bool children_has_value = base::ranges::any_of(
+      Subcomponents(), [](const auto* c) { return !c->GetValue().empty(); });
+
+  if (GetValue().empty() && children_has_value &&
+      GetVerificationStatus() == VerificationStatus::kNoStatus) {
+    FormatValueFromSubcomponents();
+  }
+}
+
 bool AddressComponent::GetValueAndStatusForTypeIfPossible(
     const ServerFieldType& type,
     std::u16string* value,
@@ -709,6 +727,8 @@ bool AddressComponent::CompleteFullTree() {
       return true;
     // In any other case, the tree is not completable.
     default:
+      // The tree is potentially complete, we can try filling gaps.
+      GetRootNode().FillTreeGaps();
       return false;
   }
 }

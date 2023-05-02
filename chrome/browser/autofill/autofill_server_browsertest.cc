@@ -263,9 +263,9 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   std::string data_present;
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSupportForHonorificPrefixes)) {
-    data_present = "1f7e0003f80000080004000001c40418";
+    data_present = "1f7e0003f80000080004000001c46418";
   } else {
-    data_present = "1f7e0003f80000080004000001c40018";
+    data_present = "1f7e0003f80000080004000001c46018";
   }
 
   // TODO(crbug.com/1311937): Additional phone number trunk types are present

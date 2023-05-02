@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1748,6 +1749,61 @@ TEST(AutofillStructuredAddressAddressComponent,
   TestAtomMerging(NAME_FIRST, not_better_values, old_values, old_values,
                   /*is_mergable=*/true,
                   MergeMode::kUseBetterOrMostRecentIfDifferent);
+}
+
+TEST(AutofillStructuredAddressAddressComponent, TestFillTreeGaps) {
+  NameFullWithPrefix name;
+
+  AddressComponentTestValues name_filled_values = {
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved}};
+
+  AddressComponentTestValues expectation = {
+      {.type = NAME_FULL_WITH_HONORIFIC_PREFIX,
+       .value = "Mr Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kFormatted},
+      {.type = NAME_FULL,
+       .value = "Pablo Diego Ruiz y Picasso",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_HONORIFIC_PREFIX,
+       .value = "Mr",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_FIRST,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = NAME_MIDDLE,
+       .value = "",
+       .status = VerificationStatus::kNoStatus},
+      {.type = NAME_LAST,
+       .value = "Ruiz y Picasso",
+       .status = VerificationStatus::kFormatted},
+      {.type = NAME_LAST_FIRST,
+       .value = "Ruiz",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_CONJUNCTION,
+       .value = "y",
+       .status = VerificationStatus::kObserved},
+      {.type = NAME_LAST_SECOND,
+       .value = "Picasso",
+       .status = VerificationStatus::kObserved},
+  };
+
+  SetTestValues(&name, name_filled_values);
+  name.CompleteFullTree();
+  VerifyTestValues(&name, expectation);
 }
 
 }  // namespace autofill

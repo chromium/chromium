@@ -551,6 +551,12 @@ class AddressComponent {
   // Unsets the children of a node.
   void UnsetSubcomponents();
 
+  // In cases where the tree has been initially completed, there might still be
+  // nodes that are empty (e.g. a new leaf or internal node got recently
+  // introduced). Gap filling addresses all those cases.
+  // TODO(crbug.com/1440168) Include also parsing as a strategy for gap filling.
+  void FillTreeGaps();
+
   // Determines a value from the subcomponents by using the
   // most suitable format string determined by |GetBestFormatString()|.
   std::u16string GetFormattedValueFromSubcomponents();

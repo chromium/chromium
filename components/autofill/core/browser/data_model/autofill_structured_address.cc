@@ -409,7 +409,14 @@ bool AddressNode::WipeInvalidStructure() {
   // For structured addresses, currently it is sufficient to wipe the structure
   // of the street address, because this is the only directly assignable value
   // that has a substructure.
-  return street_address_.WipeInvalidStructure();
+  if (street_address_.WipeInvalidStructure()) {
+    // Unset value for the root, which is the remaining non settings visible
+    // node.
+    UnsetValue();
+    return true;
+  }
+
+  return false;
 }
 
 void AddressNode::MigrateLegacyStructure(bool is_verified_profile) {
