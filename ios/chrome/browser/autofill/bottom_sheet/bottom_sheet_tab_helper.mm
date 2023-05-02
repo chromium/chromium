@@ -94,7 +94,7 @@ bool BottomSheetTabHelper::HasReachedDismissLimit() {
   PrefService* const pref_service =
       ChromeBrowserState ::FromBrowserState(web_state_->GetBrowserState())
           ->GetPrefs();
-  return pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >
+  return pref_service->GetInteger(prefs::kIosPasswordBottomSheetDismissCount) >=
          kIosPasswordBottomSheetMaxDismissCount;
 }
 
