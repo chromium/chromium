@@ -9,6 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/history/core/browser/features.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "sql/database.h"
@@ -380,6 +382,11 @@ TEST_F(URLDatabaseTest, KeywordSearchTerms_ZeroPrefix) {
 
 // Tests querying most repeated keyword search terms.
 TEST_F(URLDatabaseTest, KeywordSearchTerms_MostRepeated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      history::kOrganicRepeatableQueries,
+      {{history::kRepeatableQueriesIgnoreDuplicateVisits.name, "false"},
+       {history::kRepeatableQueriesMinVisitCount.name, "1"}});
   KeywordID keyword_id = 100;
   // Choose the local midnight of yesterday as the baseline for the time.
   base::Time local_midnight = Time::Now().LocalMidnight() - base::Days(1);
