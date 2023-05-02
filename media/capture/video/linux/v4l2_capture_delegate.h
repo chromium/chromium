@@ -78,6 +78,11 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
 
   base::WeakPtr<V4L2CaptureDelegate> GetWeakPtr();
 
+  static bool IsBlockedControl(int control_id);
+  static bool IsControllableControl(
+      int control_id,
+      const base::RepeatingCallback<int(int, void*)>& do_ioctl);
+
  private:
   friend class V4L2CaptureDelegateTest;
 
