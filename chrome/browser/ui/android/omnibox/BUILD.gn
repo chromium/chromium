@@ -132,7 +132,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionView.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinder.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewProperties.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchService.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java",
   ]
 
@@ -309,7 +308,6 @@ android_resources("java_resources") {
     "java/res/drawable-xxxhdpi/ic_history_googblue_24dp.png",
     "java/res/drawable-xxxhdpi/ic_suggestion_magnifier.png",
     "java/res/drawable/ic_book_round.xml",
-    "java/res/drawable/ic_colorful_mic.xml",
     "java/res/drawable/ic_content_copy_black.xml",
     "java/res/drawable/ic_equals_sign_round.xml",
     "java/res/drawable/ic_event_round.xml",
@@ -442,9 +440,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/MostVisitedTilesProcessorUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/AlignmentManagerUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/suggestions/tail/TailSuggestionViewBinderUnitTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantActionsHandlerUnitTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceRecognitionHandlerUnitTest.java",
-    "java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchServiceUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/RecognitionTestHelper.java",
     "java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandlerUnitTest.java",
   ]

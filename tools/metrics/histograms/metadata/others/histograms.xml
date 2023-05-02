@@ -13821,7 +13821,11 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantActionPerformed{Source}"
-    enum="AssistantActionPerformed" expires_after="2023-07-05">
+    enum="AssistantActionPerformed" expires_after="2023-04-20">
+  <obsolete>
+    Deprecated as of 2023/04 as the Assistant integration project has been
+    calcelled
+  </obsolete>
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -13842,7 +13846,11 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.AssistantIntent.TranslateExtrasAttached"
-    enum="BooleanSuccess" expires_after="2023-07-05">
+    enum="BooleanSuccess" expires_after="2023-04-10">
+  <obsolete>
+    Deprecated as of 2023/04 as the Assistant integration project has been
+    calcelled
+  </obsolete>
   <owner>basiaz@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

@@ -11,9 +11,9 @@ import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 
-import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
@@ -21,14 +21,9 @@ import org.chromium.chrome.browser.lens.LensQueryParams;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,15 +32,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import java.util.ArrayList;
 import java.util.List;
 
-class SearchBoxMediator
-        implements DestroyObserver, NativeInitObserver, AssistantVoiceSearchService.Observer {
+class SearchBoxMediator implements DestroyObserver, NativeInitObserver {
     private final Context mContext;
     private final PropertyModel mModel;
     private final ViewGroup mView;
     private final List<OnClickListener> mVoiceSearchClickListeners = new ArrayList<>();
     private final List<OnClickListener> mLensClickListeners = new ArrayList<>();
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private AssistantVoiceSearchService mAssistantVoiceSearchService;
 
     /** Constructor. */
     SearchBoxMediator(Context context, PropertyModel model, ViewGroup view) {
@@ -72,11 +65,6 @@ class SearchBoxMediator
 
     @Override
     public void onDestroy() {
-        if (mAssistantVoiceSearchService != null) {
-            mAssistantVoiceSearchService.destroy();
-            mAssistantVoiceSearchService = null;
-        }
-
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(this);
             mActivityLifecycleDispatcher = null;
@@ -85,25 +73,11 @@ class SearchBoxMediator
 
     @Override
     public void onFinishNativeInitialization() {
-        Profile profile = Profile.getLastUsedRegularProfile();
-        mAssistantVoiceSearchService = new AssistantVoiceSearchService(mContext,
-                ExternalAuthUtils.getInstance(), TemplateUrlServiceFactory.getForProfile(profile),
-                GSAState.getInstance(), this, SharedPreferencesManager.getInstance(),
-                IdentityServicesProvider.get().getIdentityManager(profile),
-                AccountManagerFacadeProvider.getInstance());
-        onAssistantVoiceSearchServiceChanged();
-    }
-
-    @Override
-    public void onAssistantVoiceSearchServiceChanged() {
-        // Potential race condition between destroy and the observer, see crbug.com/1055274.
-        if (mAssistantVoiceSearchService == null) return;
-
-        Drawable drawable = mAssistantVoiceSearchService.getCurrentMicDrawable();
+        Drawable drawable = AppCompatResources.getDrawable(mContext, R.drawable.btn_mic);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_DRAWABLE, drawable);
 
-        ColorStateList colorStateList = mAssistantVoiceSearchService.getButtonColorStateList(
-                BrandedColorScheme.APP_DEFAULT, mContext);
+        ColorStateList colorStateList =
+                ThemeUtils.getThemedToolbarIconTint(mContext, BrandedColorScheme.APP_DEFAULT);
         mModel.set(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST, colorStateList);
     }
 

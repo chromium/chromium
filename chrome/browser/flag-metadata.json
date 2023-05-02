@@ -397,33 +397,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "assistant-intent-page-url",
-    "owners": [
-      "jds@google.com",
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "assistant-intent-translate-info",
-    "owners": [
-      "jds@google.com",
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "assistant-non-personalized-voice-search",
-    "owners": [
-      "jds@google.com",
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "attribution-reporting-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
     "expiry_milestone": 117
@@ -5413,14 +5386,6 @@
     "name": "omnibox-adaptive-suggestions-visible-group-eligibility-update",
     "owners": [ "ender", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 125
-  },
-  {
-    "name": "omnibox-assistant-voice-search",
-    "owners": [
-      "basiaz@google.com",
-      "chrome-voice@google.com"
-    ],
-    "expiry_milestone": 115
   },
   {
     "name": "omnibox-bookmark-paths",

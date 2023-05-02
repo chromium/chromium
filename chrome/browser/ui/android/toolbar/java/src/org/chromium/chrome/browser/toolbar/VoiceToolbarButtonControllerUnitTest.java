@@ -124,10 +124,8 @@ public final class VoiceToolbarButtonControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2,
-            ChromeFeatureList.TOOLBAR_MIC_IPH_ANDROID})
-    public void
-    testIPHCommandHelper() {
+    @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
+    public void testIPHCommandHelper() {
         assertNull(mVoiceToolbarButtonController.get(/*tab*/ null)
                            .getButtonSpec()
                            .getIPHCommandBuilder());

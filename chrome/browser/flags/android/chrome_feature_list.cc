@@ -176,9 +176,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidWidgetFullscreenToast,
     &kAndroidImprovedBookmarks,
     &kAnimatedImageDragShadow,
-    &kAssistantIntentExperimentId,
-    &kAssistantIntentTranslateInfo,
-    &kAssistantNonPersonalizedVoiceSearch,
     &kAppMenuMobileSiteOption,
     &kBackGestureActivityTabProvider,
     &kBackGestureRefactorActivityAndroid,
@@ -363,7 +360,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &offline_pages::kOfflinePagesDescriptiveFailStatusFeature,
     &offline_pages::kOfflinePagesDescriptivePendingStatusFeature,
     &offline_pages::kOfflinePagesLivePageSharingFeature,
-    &omnibox::kOmniboxAssistantVoiceSearch,
     &omnibox::kOmniboxMatchToolbarAndStatusBarColor,
     &omnibox::kOmniboxModernizeVisualUpdate,
     &omnibox::kOmniboxMostVisitedTilesAddRecycledViewPool,
@@ -498,18 +494,6 @@ BASE_FEATURE(kAndroidWidgetFullscreenToast,
 
 BASE_FEATURE(kAnimatedImageDragShadow,
              "AnimatedImageDragShadow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantIntentExperimentId,
-             "AssistantIntentExperimentId",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantIntentTranslateInfo,
-             "AssistantIntentTranslateInfo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAssistantNonPersonalizedVoiceSearch,
-             "AssistantNonPersonalizedVoiceSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAppMenuMobileSiteOption,

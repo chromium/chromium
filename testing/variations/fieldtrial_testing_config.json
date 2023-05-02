@@ -848,30 +848,6 @@
             ]
         }
     ],
-    "AssistantVoiceSearch": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20221111",
-                    "params": {
-                        "colorful_mic": "false",
-                        "enable_multi_account_check": "false",
-                        "experiment_id": "48114790",
-                        "min_agsa_version": "13.45"
-                    },
-                    "enable_features": [
-                        "AssistantIntentExperimentId",
-                        "AssistantNonPersonalizedVoiceSearch",
-                        "OmniboxAssistantVoiceSearch",
-                        "VoiceSearchAudioCapturePolicy"
-                    ]
-                }
-            ]
-        }
-    ],
     "AsyncDnsLinux": [
         {
             "platforms": [

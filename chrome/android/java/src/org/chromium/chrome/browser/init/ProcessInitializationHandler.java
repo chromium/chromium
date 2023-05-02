@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.metrics.WebApkUninstallUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChannelsUpdater;
 import org.chromium.chrome.browser.ntp.FeedPositionUtils;
 import org.chromium.chrome.browser.offlinepages.measurements.OfflineMeasurementsBackgroundTask;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeFactory;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.photo_picker.DecoderService;
@@ -440,10 +439,6 @@ public class ProcessInitializationHandler {
         deferredStartupHandler.addDeferredTask(
                 () -> OfflineMeasurementsBackgroundTask.clearPersistedDataFromPrefs());
         deferredStartupHandler.addDeferredTask(() -> QueryTileUtils.isQueryTilesEnabledOnNTP());
-        deferredStartupHandler.addDeferredTask(
-                ()
-                        -> AssistantVoiceSearchService.reportStartupUserEligibility(
-                                ContextUtils.getApplicationContext()));
         deferredStartupHandler.addDeferredTask(() -> {
             GlobalAppLocaleController.getInstance().maybeSetupLocaleManager();
             GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics();

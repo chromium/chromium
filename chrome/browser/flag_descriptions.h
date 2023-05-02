@@ -213,9 +213,6 @@ extern const char kUseCustomMessagesDomainDescription[];
 extern const char kUseMojoVideoDecoderForPepperName[];
 extern const char kUseMojoVideoDecoderForPepperDescription[];
 
-extern const char kAssistantNonPersonalizedVoiceSearchName[];
-extern const char kAssistantNonPersonalizedVoiceSearchDescription[];
-
 extern const char kEnableAutoDisableAccessibilityName[];
 extern const char kEnableAutoDisableAccessibilityDescription[];
 
@@ -1187,9 +1184,6 @@ extern const char
 extern const char kOmniboxAdaptNarrowTabletWindowsName[];
 extern const char kOmniboxAdaptNarrowTabletWindowsDescription[];
 
-extern const char kOmniboxAssistantVoiceSearchName[];
-extern const char kOmniboxAssistantVoiceSearchDescription[];
-
 extern const char kOmniboxCacheSuggestionResourcesName[];
 extern const char kOmniboxCacheSuggestionResourcesDescription[];
 
@@ -2097,9 +2091,6 @@ extern const char kAnimatedImageDragShadowName[];
 extern const char kAnimatedImageDragShadowDescription[];
 extern const char kAndroidImprovedBookmarksName[];
 extern const char kAndroidImprovedBookmarksDescription[];
-
-extern const char kAssistantIntentTranslateInfoName[];
-extern const char kAssistantIntentTranslateInfoDescription[];
 
 extern const char kAutofillAccessoryViewName[];
 extern const char kAutofillAccessoryViewDescription[];

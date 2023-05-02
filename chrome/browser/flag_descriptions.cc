@@ -364,12 +364,6 @@ extern const char kIsolatedSandboxedIframesDescription[] =
     "grouped into processes based on their URL's site or origin. The default "
     "grouping when enabled is per-site.";
 
-const char kAssistantNonPersonalizedVoiceSearchName[] =
-    "AssistantNonPersonalizedVoiceSearch";
-const char kAssistantNonPersonalizedVoiceSearchDescription[] =
-    "Enables the Assistant voice recognition and search without any "
-    "personalization.";
-
 const char kAutofillAlwaysReturnCloudTokenizedCardName[] =
     "Return cloud token details for server credit cards when possible";
 const char kAutofillAlwaysReturnCloudTokenizedCardDescription[] =
@@ -2115,12 +2109,6 @@ const char kOmniboxAdaptNarrowTabletWindowsDescription[] =
     "When enabled the omnibox uses a phone-like appearance for windows that "
     "are less than 600dp wide, regardless of the overall display width.";
 
-const char kOmniboxAssistantVoiceSearchName[] =
-    "Omnibox Assistant Voice Search";
-const char kOmniboxAssistantVoiceSearchDescription[] =
-    "When enabled, use Assistant for omnibox voice query recognition instead of"
-    " Android's built-in voice recognition service. Only works on Android.";
-
 const char kOmniboxCacheSuggestionResourcesName[] =
     "Omnibox cache suggestion resources";
 const char kOmniboxCacheSuggestionResourcesDescription[] =
@@ -3635,13 +3623,6 @@ const char kAnimatedImageDragShadowDescription[] =
     "Animate the shadow image from its original bound to the touch point. "
     "Image drag on Android is available when flag touch-drag-and-context-menu "
     "is enabled.";
-
-const char kAssistantIntentTranslateInfoName[] =
-    "Translate info in Assistant intent";
-const char kAssistantIntentTranslateInfoDescription[] =
-    "Include page translation details in the Assistant voice transcription "
-    "intent. This includes the page's URL and its original, current, and "
-    "default target language.";
 
 const char kAutofillAccessoryViewName[] =
     "Autofill suggestions as keyboard accessory view";

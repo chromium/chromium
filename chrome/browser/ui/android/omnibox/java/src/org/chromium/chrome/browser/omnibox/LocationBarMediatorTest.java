@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 
@@ -66,7 +65,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
@@ -74,7 +72,6 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.test.R;
-import org.chromium.chrome.browser.omnibox.voice.AssistantVoiceSearchService;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJni;
@@ -107,9 +104,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {LocationBarMediatorTest.ShadowUrlUtilities.class,
                 LocationBarMediatorTest.ShadowGeolocationHeader.class,
-                LocationBarMediatorTest.ObjectAnimatorShadow.class,
-                LocationBarMediatorTest.GSAStateShadow.class})
-@Features.EnableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
+                LocationBarMediatorTest.ObjectAnimatorShadow.class})
 @Features.DisableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR,
         ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class LocationBarMediatorTest {
@@ -146,19 +141,6 @@ public class LocationBarMediatorTest {
 
         static void setUrlAnimator(ObjectAnimator objectAnimator) {
             sUrlAnimator = objectAnimator;
-        }
-    }
-
-    @Implements(GSAState.class)
-    static class GSAStateShadow {
-        private static GSAState sGSAState;
-        @Implementation
-        public static GSAState getInstance() {
-            return sGSAState;
-        }
-
-        static void setGSAState(GSAState gsaState) {
-            sGSAState = gsaState;
         }
     }
 
@@ -215,8 +197,7 @@ public class LocationBarMediatorTest {
     private ObjectAnimator mUrlAnimator;
     @Mock
     private View mRootView;
-    @Mock
-    private GSAState mGSAState;
+
     @Mock
     private SearchEngineLogoUtils mSearchEngineLogoUtils;
     @Mock
@@ -273,7 +254,6 @@ public class LocationBarMediatorTest {
                 tab -> true, mOmniboxUma, () -> mIsToolbarMicEnabled, mEmbedderImpl);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
-        GSAStateShadow.setGSAState(mGSAState);
 
         mTabletMediator = new LocationBarMediator(mContext, mLocationBarTablet,
                 mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
@@ -286,23 +266,6 @@ public class LocationBarMediatorTest {
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
-    }
-
-    @Test
-    public void testVoiceSearchService_initializedWithNative() {
-        ShadowLooper looper = ShadowLooper.shadowMainLooper();
-        mMediator.onFinishNativeInitialization();
-        looper.idle();
-        assertNotNull(mMediator.getAssistantVoiceSearchServiceSupplierForTesting().get());
-    }
-
-    @Test
-    @Features.DisableFeatures(ChromeFeatureList.OMNIBOX_ASSISTANT_VOICE_SEARCH)
-    public void testVoiceSearchService_initializedWithNative_featureDisabled() {
-        ShadowLooper looper = ShadowLooper.shadowMainLooper();
-        mMediator.onFinishNativeInitialization();
-        looper.idle();
-        assertNotNull(mMediator.getAssistantVoiceSearchServiceSupplierForTesting().get());
     }
 
     @Test
@@ -648,33 +611,6 @@ public class LocationBarMediatorTest {
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_9, mKeyEvent));
         verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
-    }
-
-    @Test
-    public void testUpdateAssistantVoiceSearchDrawablesAndColors() {
-        AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
-        ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), any());
-        mMediator.setAssistantVoiceSearchServiceForTesting(avs);
-
-        verify(mLocationBarLayout).setMicButtonTint(csl);
-    }
-
-    @Test
-    public void testUpdateLensButtonColors() {
-        AssistantVoiceSearchService avs = Mockito.mock(AssistantVoiceSearchService.class);
-        ColorStateList csl = Mockito.mock(ColorStateList.class);
-        doReturn(csl).when(avs).getButtonColorStateList(anyInt(), any());
-        mMediator.setAssistantVoiceSearchServiceForTesting(avs);
-
-        verify(mLocationBarLayout).setLensButtonTint(csl);
-    }
-
-    @Test
-    public void testUpdateAssistantVoiceSearchDrawablesAndColors_serviceNull() {
-        mMediator.updateAssistantVoiceSearchDrawableAndColors();
-        // If the service is null, the update method bails out.
-        verify(mLocationBarLayout, Mockito.times(0)).setMicButtonTint(/* arbitrary value */ null);
     }
 
     @Test
