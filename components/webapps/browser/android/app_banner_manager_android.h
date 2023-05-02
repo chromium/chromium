@@ -123,7 +123,6 @@ class AppBannerManagerAndroid : public AppBannerManager {
   void PerformInstallableWebAppCheck() override;
   void ResetCurrentPageData() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
-  void MaybeShowAmbientBadge() override;
   base::WeakPtr<AppBannerManager> GetWeakPtr() override;
   void InvalidateWeakPtrs() override;
   bool IsSupportedNonWebAppPlatform(

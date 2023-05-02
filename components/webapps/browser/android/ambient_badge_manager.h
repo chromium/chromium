@@ -17,6 +17,8 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace webapps {
 
 struct AddToHomescreenParams;
@@ -33,7 +35,8 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
       content::WebContents* web_contents,
       base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
       segmentation_platform::SegmentationPlatformService*
-          segmentation_platform_service);
+          segmentation_platform_service,
+      PrefService* prefs);
 
   AmbientBadgeManager(const AmbientBadgeManager&) = delete;
   AmbientBadgeManager& operator=(const AmbientBadgeManager&) = delete;
@@ -131,7 +134,8 @@ class AmbientBadgeManager : public InstallableAmbientBadgeClient {
   base::WeakPtr<content::WebContents> web_contents_;
   base::WeakPtr<AppBannerManagerAndroid> app_banner_manager_;
   raw_ptr<segmentation_platform::SegmentationPlatformService>
-      segmentation_platform_service_;
+      segmentation_platform_service_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   GURL validated_url_;
   std::u16string app_name_;

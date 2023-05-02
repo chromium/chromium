@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -37,10 +38,12 @@ class TestAmbientBadgeManager : public AmbientBadgeManager {
       content::WebContents* web_contents,
       base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
       segmentation_platform::SegmentationPlatformService*
-          segmentation_platform_service)
+          segmentation_platform_service,
+      PrefService* prefs)
       : AmbientBadgeManager(web_contents,
                             app_banner_manager,
-                            segmentation_platform_service) {}
+                            segmentation_platform_service,
+                            prefs) {}
 
   TestAmbientBadgeManager(const TestAmbientBadgeManager&) = delete;
   TestAmbientBadgeManager& operator=(const TestAmbientBadgeManager&) = delete;
@@ -96,9 +99,14 @@ class TestAppBannerManager : public AppBannerManagerAndroid {
   }
 
  protected:
+  Profile* profile() {
+    return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  }
+
   void MaybeShowAmbientBadge() override {
     ambient_badge_test_ = std::make_unique<TestAmbientBadgeManager>(
-        web_contents(), GetAndroidWeakPtr(), mock_segmentation_);
+        web_contents(), GetAndroidWeakPtr(), mock_segmentation_,
+        profile()->GetPrefs());
 
     ambient_badge_test_->WaitForState(target_badge_state_,
                                       std::move(on_badge_done_));
@@ -146,10 +154,6 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
  protected:
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
-  }
-
-  Profile* profile() {
-    return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
 
   virtual void SetUpFeatureList() {

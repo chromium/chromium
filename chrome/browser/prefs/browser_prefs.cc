@@ -253,6 +253,7 @@
 #include "components/ntp_tiles/popular_sites_impl.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/query_tiles/tile_service_prefs.h"
+#include "components/webapps/browser/android/install_prompt_prefs.h"
 #else  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/companion/core/promo_handler.h"
@@ -1536,6 +1537,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   usage_stats::UsageStatsBridge::RegisterProfilePrefs(registry);
   variations::VariationsService::RegisterProfilePrefs(registry);
   video_tutorials::RegisterPrefs(registry);
+  webapps::InstallPromptPrefs::RegisterLocalPrefs(registry);
 #else  // BUILDFLAG(IS_ANDROID)
   bookmarks_webui::RegisterProfilePrefs(registry);
   browser_sync::ForeignSessionHandler::RegisterProfilePrefs(registry);

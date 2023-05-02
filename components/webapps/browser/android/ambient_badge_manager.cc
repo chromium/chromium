@@ -12,6 +12,7 @@
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/messages/android/messages_feature.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/result.h"
@@ -19,6 +20,7 @@
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/ambient_badge_metrics.h"
 #include "components/webapps/browser/android/app_banner_manager_android.h"
+#include "components/webapps/browser/android/install_prompt_prefs.h"
 #include "components/webapps/browser/android/installable/installable_ambient_badge_infobar_delegate.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
@@ -43,10 +45,12 @@ AmbientBadgeManager::AmbientBadgeManager(
     content::WebContents* web_contents,
     base::WeakPtr<AppBannerManagerAndroid> app_banner_manager,
     segmentation_platform::SegmentationPlatformService*
-        segmentation_platform_service)
+        segmentation_platform_service,
+    PrefService* prefs)
     : web_contents_(web_contents->GetWeakPtr()),
       app_banner_manager_(app_banner_manager),
-      segmentation_platform_service_(segmentation_platform_service) {}
+      segmentation_platform_service_(segmentation_platform_service),
+      pref_service_(prefs) {}
 
 AmbientBadgeManager::~AmbientBadgeManager() {
   RecordAmbientBadgeTeminateState(state_);
@@ -84,6 +88,7 @@ void AmbientBadgeManager::MaybeShow(
 
 void AmbientBadgeManager::AddToHomescreenFromBadge() {
   RecordAmbientBadgeClickEvent(a2hs_params_->app_type);
+  InstallPromptPrefs::RecordInstallPromptClicked(pref_service_);
   std::move(show_banner_callback_).Run();
 }
 
@@ -93,6 +98,8 @@ void AmbientBadgeManager::BadgeDismissed() {
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_BLOCK,
       AppBannerManager::GetCurrentTime());
 
+  InstallPromptPrefs::RecordInstallPromptDismissed(
+      pref_service_, AppBannerManager::GetCurrentTime());
   RecordAmbientBadgeDismissEvent(a2hs_params_->app_type);
   UpdateState(State::kDismissed);
 }
@@ -103,6 +110,8 @@ void AmbientBadgeManager::BadgeIgnored() {
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
       AppBannerManager::GetCurrentTime());
 
+  InstallPromptPrefs::RecordInstallPromptIgnored(
+      pref_service_, AppBannerManager::GetCurrentTime());
   RecordAmbientBadgeDismissEvent(a2hs_params_->app_type);
   UpdateState(State::kDismissed);
 }
@@ -256,7 +265,16 @@ bool AmbientBadgeManager::ShouldMessageBeBlockedByGuardrail() {
     return true;
   }
 
-  // TODO(eirage): add global guardrails.
+  if (InstallPromptPrefs::IsPromptDismissedConsecutivelyRecently(
+          pref_service_, AppBannerManager::GetCurrentTime())) {
+    return true;
+  }
+
+  if (InstallPromptPrefs::IsPromptIgnoredConsecutivelyRecently(
+          pref_service_, AppBannerManager::GetCurrentTime())) {
+    return true;
+  }
+
   return false;
 }
 
