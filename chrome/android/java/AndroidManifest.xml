@@ -820,6 +820,14 @@ by a child template that "extends" this file.
             android:process=":browser_restart_process">
         </activity>
 
+        <!-- This activity is used to show an error dialog without attempting to start up Chrome. -->
+        <activity android:name="org.chromium.chrome.browser.init.LaunchFailedActivity"
+            android:launchMode="singleInstance"
+            android:exported="false"
+            android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar"
+            android:excludeFromRecents="true">
+        </activity>
+
         <!-- Components for Trusted Web Activities -->
         <receiver android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver"
             android:exported="true">

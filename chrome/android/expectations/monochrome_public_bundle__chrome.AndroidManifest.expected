@@ -279,6 +279,13 @@
         <category android:name="android.intent.category.DEFAULT"/>
       </intent-filter>  # DIFF-ANCHOR: 8f811d02
     </activity>  # DIFF-ANCHOR: b98302dc
+    <activity  # DIFF-ANCHOR: 060360d2
+        android:name="org.chromium.chrome.browser.init.LaunchFailedActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
+    </activity>  # DIFF-ANCHOR: 060360d2
     <activity  # DIFF-ANCHOR: ecd48344
         android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
         android:enabled="false"
