@@ -6,4 +6,8 @@ include_rules = [
   "+third_party/unrar",
   "+third_party/zlib",
   "+third_party/lzma_sdk/google",
+
+  # TODO(crbug/1373671): This is temporary until we move the archive analyzers
+  # to chrome/utility.
+  "+chrome/utility/safe_browsing",
 ]

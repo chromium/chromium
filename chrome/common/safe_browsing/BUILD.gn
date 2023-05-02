@@ -138,6 +138,8 @@ source_set("safe_browsing") {
 
   if (safe_browsing_mode == 1) {
     sources = [
+      "archive_analyzer.cc",
+      "archive_analyzer.h",
       "ipc_protobuf_message_macros.h",
       "ipc_protobuf_message_null_macros.h",
       "protobuf_message_log_macros.h",
@@ -165,6 +167,13 @@ source_set("safe_browsing") {
 
     if (is_linux) {
       deps += [ ":document_analyzer" ]
+    }
+
+    if (is_mac) {
+      # TODO(crbug/1373671): Most of this target should be moved to
+      # //chrome/utility/safe_browsing and merged with this one.
+      allow_circular_includes_from = [ "//chrome/utility/safe_browsing/mac" ]
+      deps += [ "//chrome/utility/safe_browsing/mac" ]
     }
 
     public_deps = [
