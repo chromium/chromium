@@ -177,7 +177,7 @@ bool PaintFlags::EqualsForTesting(const PaintFlags& other) const {
   // comparisons on all the ref'd skia objects on the SkPaint, which
   // is not true after serialization.
   return getColor() == other.getColor() &&
-         getStrokeWidth() == getStrokeWidth() &&
+         getStrokeWidth() == other.getStrokeWidth() &&
          getStrokeMiter() == other.getStrokeMiter() &&
          getBlendMode() == other.getBlendMode() &&
          getStrokeCap() == other.getStrokeCap() &&
