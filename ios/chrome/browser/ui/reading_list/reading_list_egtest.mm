@@ -1201,8 +1201,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-// TODO(crbug.com/1427934): Flaky.
-- (void)DISABLED_testContextMenuMarkAsReadAndBack {
+- (void)testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
