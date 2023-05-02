@@ -140,8 +140,6 @@ class ASH_EXPORT AmbientController
   void ShowHiddenUi();
   void CloseUi(bool immediately = false);
 
-  void ToggleInSessionUi();
-
   // |minutes| is the number of minutes to run screen saver before putting the
   // device into sleep. |minutes| with a value 0 means forever.
   void SetScreenSaverDuration(int minutes);

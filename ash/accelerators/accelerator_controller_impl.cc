@@ -14,7 +14,6 @@
 #include "ash/accelerators/debug_commands.h"
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
-#include "ash/ambient/ambient_controller.h"
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/devicetype.h"
@@ -669,8 +668,6 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return true;
     case SHOW_STYLUS_TOOLS:
       return accelerators::CanShowStylusTools();
-    case START_AMBIENT_MODE:
-      return accelerators::CanStartAmbientMode();
     case START_ASSISTANT:
       return true;
     case SWAP_PRIMARY_DISPLAY:
@@ -1166,9 +1163,6 @@ void AcceleratorControllerImpl::PerformAction(
     case SHOW_TASK_MANAGER:
       base::RecordAction(UserMetricsAction("Accel_Show_Task_Manager"));
       accelerators::ShowTaskManager();
-      break;
-    case START_AMBIENT_MODE:
-      accelerators::ToggleAmbientMode();
       break;
     case START_ASSISTANT:
       // TODO(longbowei): Move this to CanToggleAssistant().

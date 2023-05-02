@@ -703,13 +703,6 @@ void AmbientController::CloseUi(bool immediately) {
   }
 }
 
-void AmbientController::ToggleInSessionUi() {
-  if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed)
-    ShowUi();
-  else
-    CloseUi();
-}
-
 void AmbientController::SetScreenSaverDuration(int minutes) {
   auto* pref_service = GetPrimaryUserPrefService();
   if (!pref_service) {

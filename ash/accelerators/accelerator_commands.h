@@ -81,8 +81,6 @@ ASH_EXPORT bool CanScreenshot(bool take_screenshot);
 
 ASH_EXPORT bool CanShowStylusTools();
 
-ASH_EXPORT bool CanStartAmbientMode();
-
 ASH_EXPORT bool CanSwapPrimaryDisplay();
 
 ASH_EXPORT bool CanToggleCalendar();
@@ -285,9 +283,6 @@ ASH_EXPORT void SwitchToNextIme();
 
 // Takes screenshot.
 ASH_EXPORT void TakeScreenshot(bool from_snapshot_key);
-
-// Turns the ambient mode on or off.
-ASH_EXPORT void ToggleAmbientMode();
 
 // Toggles app list.
 ASH_EXPORT void ToggleAppList(AppListShowSource show_source,

@@ -121,9 +121,6 @@ const AcceleratorData kDeveloperAcceleratorData[] = {
     {true, ui::VKEY_W, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
     {true, ui::VKEY_F, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
      TOGGLE_FULLSCREEN},
-    // TODO(wutao): Get a shortcut for the Ambient mode.
-    {true, ui::VKEY_A, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN,
-     START_AMBIENT_MODE},
     // For testing on Linux desktop where it's hard to rebind the caps lock key.
     {true, ui::VKEY_A, ui::EF_ALT_DOWN, DEV_TOGGLE_APP_LIST},
 };
@@ -180,7 +177,6 @@ const AcceleratorAction kActionsAllowedAtLoginOrLockScreen[] = {
     SCALE_UI_RESET,
     SCALE_UI_UP,
     TOGGLE_IME_MENU_BUBBLE,
-    START_AMBIENT_MODE,
     SWITCH_TO_LAST_USED_IME,
     SWITCH_TO_NEXT_IME,
     TAKE_SCREENSHOT,
@@ -258,7 +254,6 @@ const AcceleratorAction kActionsAllowedAtModalWindow[] = {
     SCALE_UI_UP,
     TOGGLE_IME_MENU_BUBBLE,
     SHOW_SHORTCUT_VIEWER,
-    START_AMBIENT_MODE,
     SUSPEND,
     SWAP_PRIMARY_DISPLAY,
     SWITCH_TO_LAST_USED_IME,
