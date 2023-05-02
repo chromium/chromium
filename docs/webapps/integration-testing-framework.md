@@ -140,12 +140,14 @@ chrome/test/webapps/generate_framework_tests_and_coverage.py
 ```
 This uses the files in `chrome/test/webapps/data` and existing browsertests on the system (see `custom_partitions` and `default_partitions` in [`generate_framework_tests_and_coverage.py`][generate-script]) to:
 
-#### 1) Print to `stdout` all detected changes needed to browsertests.
-The script is not smart enough to automatically add/remove/move tests to keep complexity to a minimum. Instead, it prints out the tests that need to be added or removed to have the tests match what it expects. It assumes:
+#### 1) Print all detected browsertests' changes to `stdout` or to existing test files.
+The script can remove tests (--delete-in-place) or add tests (--add-to-file) to existing test files.
+It is not smart enough to automatically create new test files and add tests to them because it usually involves modifying the BUILD file. If the test file does not exist, the file name and the tests will be printed out to `stdout` instead.
+If none of these flags are used, the script prints out the tests that need to be added or removed to `stdout` and have the tests match what it expects. It assumes:
   * Browsertests are correctly described by the `TestPartitionDescription`s in [`generate_framework_tests_and_coverage.py`][generate-script].
   * Browsertests with the per-platform suffixes (e.g. `_mac`, `_win`, etc) are only run on those platforms
 
-This process doesn't modify the browsertest files so any test disabling done by sheriffs can remain. The script runner is thus expected to make the requested changes manually. In the rare case that a test is moving between files (if we are enabling a test on a new platform, for example), then the script runner should be careful to copy any sheriff changes to the browsertest as well.
+This process doesn't modify the browsertests that are disabled by sheriffs. The script runner is thus expected to make the requested changes manually. In the rare case that a test is moving between files (if we are enabling a test on a new platform, for example), then the script runner should be careful to copy any sheriff changes to the browsertest as well.
 
 #### 2) Generate per-platform processed required coverage `tsv` files in `chrome/test/webapps/coverage`
 These are the processed required coverage tests with markers per action to allow a conditional formatter (like the one [here][cuj-coverage-sheet]) to highlight what was and was not covered by the testing framework.

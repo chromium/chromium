@@ -73,7 +73,9 @@ The output should:
 2. Print new tests that need to be manually copied to the integration browsertest files.
 3. Print out test ids that need to be removed.
 
-Note: The option `--delete-in-place` can be used to remove all tests that aren't disabled by sheriffs.
+Note:
+1. The option `--delete-in-place` can be used to remove all tests that aren't disabled by sheriffs.
+2. The option `--add-to-file` can be used to add new tests to existing test files. If the test file does not exist, the expected file names and tests will be printed out to the console. You will have to manually create the file, copy-and-paste the tests to the new file and add the file to the BUILD file.
 
 After you make changes to the integration browsertests, please re-run the above command to verify that all of the changes were performed and no mistakes were made. If all looks right, the script will output nothing to console when run a second time.
 
@@ -92,9 +94,9 @@ It is recommended to run the new tests locally before testing them on trybots.
 This command will to generate the gtest_filter for all the new and modified tests.
 
 ```bash
-chrome/test/webapps/generate_gtest_filter_for_added_tests.py --diff_strategy <upstream|committed|staged|unstaged>
+chrome/test/webapps/generate_gtest_filter_for_added_tests.py --diff-strategy <upstream|committed|staged|unstaged>
 ```
-This script uses a default diff strategy that includes uncommitted, staged, and committed changes to the UPSTREAM. See the `--diff_strategy` option for more options here.
+This script uses a default diff strategy that includes uncommitted, staged, and committed changes to the UPSTREAM. See the `--diff-strategy` option for more options here.
 
 The output should print out the gtest_filter for any new (or modified) tests in `browser_tests` and `sync_integration_tests`.
 
