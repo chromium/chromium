@@ -23,7 +23,6 @@
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
 #import "ios/chrome/browser/default_browser/utils.h"
-#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_service_factory.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -45,9 +44,13 @@
 
 ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
     WebOmniboxEditModelDelegate* edit_model_delegate,
-    ChromeBrowserState* browser_state)
+    ChromeBrowserState* browser_state,
+    feature_engagement::Tracker* tracker)
     : edit_model_delegate_(edit_model_delegate),
-      browser_state_(browser_state) {}
+      browser_state_(browser_state),
+      engagement_tracker_(tracker) {
+  CHECK(engagement_tracker_);
+}
 
 ChromeOmniboxClientIOS::~ChromeOmniboxClientIOS() {}
 
@@ -160,8 +163,8 @@ void ChromeOmniboxClientIOS::OnUserPastedInOmniboxResultingInValidURL() {
 
   if (!browser_state_->IsOffTheRecord() &&
       HasRecentValidURLPastesAndRecordsCurrentPaste()) {
-    feature_engagement::TrackerFactory::GetForBrowserState(browser_state_)
-        ->NotifyEvent(feature_engagement::events::kBlueDotPromoCriterionMet);
+    engagement_tracker_->NotifyEvent(
+        feature_engagement::events::kBlueDotPromoCriterionMet);
   }
 }
 
@@ -227,6 +230,9 @@ void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
           [interaction donateInteractionWithCompletion:nil];
         }));
   }
+
+  engagement_tracker_->NotifyEvent(
+      feature_engagement::events::kOpenUrlFromOmnibox);
 }
 
 void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {

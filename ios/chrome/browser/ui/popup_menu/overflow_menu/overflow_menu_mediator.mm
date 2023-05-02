@@ -1602,6 +1602,8 @@ NSArray<OverflowMenuDestination*>* SortBadgedDestinations(
 
 // Dismisses the menu and opens history.
 - (void)openHistory {
+  _engagementTracker->NotifyEvent(
+      feature_engagement::events::kHistoryOnOverflowMenuUsed);
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   [self.dispatcher showHistory];
 }
