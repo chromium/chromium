@@ -61,6 +61,15 @@ bool ContainsMatchingApn(const base::Value::Dict* cellular_dict,
   return false;
 }
 
+std::vector<ApnType> GetMigratedApnTypes(
+    const ApnPropertiesPtr& pre_revamp_apn) {
+  if (pre_revamp_apn->attach.has_value() &&
+      !(*pre_revamp_apn->attach).empty()) {
+    return {ApnType::kDefault, ApnType::kAttach};
+  }
+  return {ApnType::kDefault};
+}
+
 }  // namespace
 
 ApnMigrator::ApnMigrator(
@@ -245,6 +254,8 @@ void ApnMigrator::OnGetManagedProperties(
       // Ensure the APN is enabled when it's migrated so that it's attempted
       // to be used by the new UI.
       pre_revamp_custom_apn->state = ApnState::kEnabled;
+      pre_revamp_custom_apn->apn_types =
+          GetMigratedApnTypes(pre_revamp_custom_apn);
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     } else {
@@ -288,6 +299,8 @@ void ApnMigrator::OnGetManagedProperties(
         // TODO(b/162365553): Surface a notification to the user indicating that
         // their APN configuration was changed.
       }
+      pre_revamp_custom_apn->apn_types =
+          GetMigratedApnTypes(pre_revamp_custom_apn);
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
     } else if (last_connected_attach_apn && last_connected_default_apn &&
@@ -354,9 +367,17 @@ void ApnMigrator::OnGetManagedProperties(
       pre_revamp_custom_apn->apn_types = {ApnType::kDefault};
       remote_cros_network_config_->CreateCustomApn(
           guid, std::move(pre_revamp_custom_apn));
+    } else {
+      NET_LOG(EVENT) << "Network's last connected default APN and attach APN "
+                        "do not match the "
+                        "saved custom APN, migrating APN: "
+                     << guid << " in the Disabled state.";
+      pre_revamp_custom_apn->state = ApnState::kDisabled;
+      pre_revamp_custom_apn->apn_types =
+          GetMigratedApnTypes(pre_revamp_custom_apn);
+      remote_cros_network_config_->CreateCustomApn(
+          guid, std::move(pre_revamp_custom_apn));
     }
-  // TODO(b/162365553): Implement other cases of |last_connected_attach_apn|
-  // and |last_connected_default_apn|.
   }
 
   managed_cellular_pref_handler_->AddApnMigratedIccid(iccid);
