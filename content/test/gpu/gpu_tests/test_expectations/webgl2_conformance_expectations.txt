@@ -743,9 +743,7 @@ crbug.com/1219024 [ chromeos chromeos-board-kevin ] conformance/rendering/blendi
 crbug.com/1219057 [ chromeos chromeos-board-kevin ] conformance2/buffers/uniform-buffers.html [ Failure ]
 
 crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance/context/context-hidden-alpha.html [ Failure ]
-crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance/ogles/GL/array/array_001_to_006.html [ Failure ]
 crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance/ogles/GL/functions/functions_033_to_040.html [ Failure ]
-crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance/textures/misc/copy-tex-image-2d-formats.html [ Failure ]
 crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance2/renderbuffers/multisampled-depth-renderbuffer-initialization.html [ Failure ]
 crbug.com/1374285 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/rasterizer-discard-and-implicit-clear.html [ Failure ]
