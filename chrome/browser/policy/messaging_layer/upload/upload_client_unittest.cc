@@ -164,7 +164,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
 
   ReportingServerConnector::TestEnvironment test_env;
   test_env.client()->SetDMToken(
-      policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
+      policy::DMToken::CreateValidToken("FAKE_DM_TOKEN").value());
 
   static constexpr char matched_record_template[] =
       R"JSON(
