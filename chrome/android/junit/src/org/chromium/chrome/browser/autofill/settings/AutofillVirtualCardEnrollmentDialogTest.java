@@ -65,7 +65,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     public void setUp() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
         mVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create("card label", 0, new GURL(""));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         mVirtualCardEnrollmentFields.mGoogleLegalMessages.add(createLegalMessageLine("google"));
         mVirtualCardEnrollmentFields.mIssuerLegalMessages.add(createLegalMessageLine("issuer"));
         mDialog =

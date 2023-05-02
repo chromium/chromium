@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="16dp"
         android:scaleType="fitCenter"
         android:importantForAccessibility="no" />
 
@@ -26,7 +25,7 @@
         android:layout_toEndOf="@id/card_icon" />
 
     <TextView
-        android:id="@+id/card_expiration"
+        android:id="@+id/card_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/card_name_and_number_container"
