@@ -76,7 +76,7 @@ class DeviceActivitySamplerBrowserTest
     test::MockClock::Get();
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     ::policy::SetDMTokenForTesting(
-        ::policy::DMToken::CreateValidTokenForTesting(kDMToken));
+        ::policy::DMToken::CreateValidToken(kDMToken));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

@@ -131,7 +131,7 @@ class AppUsageTelemetrySamplerBrowserTest
     crypto_home_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
     scoped_feature_list_.InitAndEnableFeature(kEnableAppMetricsReporting);
     ::policy::SetDMTokenForTesting(
-        ::policy::DMToken::CreateValidTokenForTesting(kDMToken));
+        ::policy::DMToken::CreateValidToken(kDMToken));
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
