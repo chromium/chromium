@@ -430,6 +430,12 @@ class XPy:
         # Cargo normally stores files in $HOME. Override this.
         self._env['CARGO_HOME'] = CARGO_HOME_DIR
 
+        # https://crbug.com/1441182
+        # Pretend we're a CI, since some path length reduction features are
+        # only enabled for CI. Otherwise some tests fail when the rust src
+        # directory name length is too long.
+        self._env['GITHUB_ACTIONS'] = 'true'
+
     def configure(self, build_mac_arm, x86_64_llvm_config,
                   aarch64_llvm_config):
         # Read the config.toml template file...
