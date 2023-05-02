@@ -93,6 +93,7 @@
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/install_flag.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/browser/pref_names.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -155,6 +156,9 @@ const char* const kObsoleteComponentExtensionIds[] = {
     // continued test coverage.
     "jcgeabjmjgoblfofpppfkcoakmfobdko",  // Video Player
 };
+
+// ExtensionUnpublishedAvailability policy default value.
+constexpr int kAllowUnpublishedExtensions = 0;
 
 }  // namespace
 
@@ -407,6 +411,10 @@ ExtensionService::ExtensionService(
 
   UpgradeDetector::GetInstance()->AddObserver(this);
 
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    cws_info_service_observation_.Observe(CWSInfoService::Get(profile_));
+  }
+
   ExtensionManagementFactory::GetForBrowserContext(profile_)->AddObserver(this);
 
   // Set up the ExtensionUpdater.
@@ -465,6 +473,9 @@ ExtensionService::~ExtensionService() {
 }
 
 void ExtensionService::Shutdown() {
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    cws_info_service_observation_.Reset();
+  }
   ExtensionManagementFactory::GetForBrowserContext(profile())->RemoveObserver(
       this);
   external_install_manager_->Shutdown();
@@ -1220,6 +1231,13 @@ void ExtensionService::CheckManagementPolicy() {
       disable_reasons &= (~disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
     }
 
+    // Find all extensions disabled due to published-in-webstore requirement and
+    // management policy but now satisfying it.
+    if (management->IsAllowedByUnpublishedAvailabilityPolicy(extension.get())) {
+      disable_reasons &=
+          ~disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
+    }
+
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
                                                           nullptr, nullptr)) {
       disable_reasons &= (~disable_reason::DISABLE_BLOCKED_BY_POLICY);
@@ -1801,6 +1819,19 @@ void ExtensionService::OnExtensionManagementSettingsChanged() {
   }
 
   CheckManagementPolicy();
+
+  // Request an out-of-cycle update of extension metadata information from CWS
+  // if the ExtensionUnpublishedAvailability policy setting is such that
+  // unpublished extensions should not be enabled. This update allows
+  // unpublished extensions to be disabled sooner rather than waiting till the
+  // next regularly scheduled fetch.
+  if (base::FeatureList::IsEnabled(kCWSInfoService)) {
+    if (profile_->GetPrefs()->GetInteger(
+            pref_names::kExtensionUnpublishedAvailability) !=
+        kAllowUnpublishedExtensions) {
+      CWSInfoService::Get(profile_)->CheckAndMaybeFetchInfo();
+    }
+  }
 }
 
 void ExtensionService::AddNewOrUpdatedExtension(
@@ -2176,6 +2207,10 @@ void ExtensionService::OnBlocklistUpdated() {
       registry_->GenerateInstalledExtensionsSet().GetIDs(),
       base::BindOnce(&ExtensionService::ManageBlocklist,
                      AsExtensionServiceWeakPtr()));
+}
+
+void ExtensionService::OnCWSInfoChanged() {
+  CheckManagementPolicy();
 }
 
 void ExtensionService::OnUpgradeRecommended() {

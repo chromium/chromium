@@ -190,6 +190,19 @@ bool StandardManagementPolicyProvider::MustRemainDisabled(
     }
     return true;
   }
+
+  if (!settings_->IsAllowedByUnpublishedAvailabilityPolicy(extension)) {
+    if (reason) {
+      *reason = disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
+    }
+    if (error) {
+      *error = l10n_util::GetStringFUTF16(
+          IDS_EXTENSION_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
+          base::UTF8ToUTF16(extension->name()));
+    }
+    return true;
+  }
+
   return false;
 }
 

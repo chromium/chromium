@@ -219,6 +219,8 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
         extensions::disable_reason::DISABLE_RELOAD |
         extensions::disable_reason::DISABLE_CORRUPTED |
         extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY |
+        extensions::disable_reason::
+            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY |
         extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY |
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED |
         extensions::disable_reason::DISABLE_REINSTALL;

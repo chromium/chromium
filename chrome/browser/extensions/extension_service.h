@@ -22,6 +22,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
+#include "chrome/browser/extensions/cws_info_service.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_metrics.h"
@@ -173,6 +174,7 @@ class ExtensionService : public ExtensionServiceInterface,
                          public content::RenderProcessHostCreationObserver,
                          public content::RenderProcessHostObserver,
                          public Blocklist::Observer,
+                         public CWSInfoService::Observer,
                          public ExtensionManagement::Observer,
                          public UpgradeObserver,
                          public ExtensionRegistrar::Delegate,
@@ -525,6 +527,9 @@ class ExtensionService : public ExtensionServiceInterface,
   // Blocklist::Observer implementation.
   void OnBlocklistUpdated() override;
 
+  // CWSInfoService::Observer implementation.
+  void OnCWSInfoChanged() override;
+
   // UpgradeObserver implementation.
   void OnUpgradeRecommended() override;
 
@@ -772,6 +777,9 @@ class ExtensionService : public ExtensionServiceInterface,
   base::ScopedObservation<ExtensionHostRegistry,
                           ExtensionHostRegistry::Observer>
       host_registry_observation_{this};
+
+  base::ScopedObservation<CWSInfoService, CWSInfoService::Observer>
+      cws_info_service_observation_{this};
 
   using InstallGateRegistry =
       std::map<ExtensionPrefs::DelayReason, InstallGate*>;
