@@ -111,9 +111,11 @@ void VerifyBottomMessagePromptVisibility(BOOL visibility) {
                                    : grey_notVisible()];
 }
 
-void OpenNewTabAndComeBackToTabGrid() {
-  [ChromeEarlGreyUI openNewTab];
-  [ChromeEarlGreyUI openTabGrid];
+void VerifyTabListPromptVisibility(BOOL visibility) {
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kBringAndroidTabsPromptTabListAXId)]
+      assertWithMatcher:visibility ? grey_sufficientlyVisible()
+                                   : grey_notVisible()];
 }
 
 void VerifyThatPromptDoesNotShowOnRestart(BOOL bottom_message) {

@@ -20,6 +20,12 @@ NSString* const kBringAndroidTabsPromptBottomMessageReviewButtonAXId =
 NSString* const kBringAndroidTabsPromptTabListAXId =
     @"kBringAndroidTabsPromptTabListAccessibilityIdentifier";
 
+NSString* const kBringAndroidTabsPromptTabListCancelButtonAXId =
+    @"kBringAndroidTabsPromptTabListCancelButtonAccessibilityIdentifier";
+
+NSString* const kBringAndroidTabsPromptTabListOpenButtonAXId =
+    @"kBringAndroidTabsPromptTabListOpenButtonAccessibilityIdentifier";
+
 CGFloat const kBringAndroidTabsFaviconSize = 48;
 
 CGFloat const kTabListFromAndroidCellHeight = 78.0;

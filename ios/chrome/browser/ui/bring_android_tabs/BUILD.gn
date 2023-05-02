@@ -170,6 +170,7 @@ source_set("eg2_tests") {
     "bring_android_tabs_bottom_message_egtest.mm",
     "bring_android_tabs_confirmation_alert_egtest.mm",
     "bring_android_tabs_no_initial_alert_egtest.mm",
+    "bring_android_tabs_tab_list_egtest.mm",
     "bring_android_tabs_test_utils.h",
     "bring_android_tabs_test_utils.mm",
   ]

@@ -28,6 +28,7 @@ void SignInAndSync();
 // prompt is invisible.
 void VerifyBottomMessagePromptVisibility(BOOL visibility);
 void VerifyConfirmationAlertPromptVisibility(BOOL visibility);
+void VerifyTabListPromptVisibility(BOOL visibility);
 
 // Restarts the app, goes to the tab grid, and verifies that the prompt is not
 // shown.
