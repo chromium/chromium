@@ -16,7 +16,9 @@
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/browser/bookmark_node.h"
 #import "components/bookmarks/common/bookmark_features.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
+#import "ios/chrome/browser/sync/sync_setup_service_mock.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 
@@ -316,6 +318,43 @@ TEST_P(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
   EXPECT_EQ(2u, missingNodesIndices.size());
   EXPECT_EQ(2u, missingNodesIndices[0]);
   EXPECT_EQ(3u, missingNodesIndices[1]);
+}
+
+TEST_P(BookmarkIOSUtilsUnitTest, ShouldDisplayCloudSlashIconForProfileModel) {
+  syncer::TestSyncService sync_service;
+  SyncSetupServiceMock sync_setup_service(&sync_service);
+
+  // If sync-the-feature is on, including bookmarks, the icon should not be
+  // displayed.
+  ON_CALL(sync_setup_service, CanSyncFeatureStart)
+      .WillByDefault(testing::Return(true));
+  ON_CALL(sync_setup_service, IsDataTypePreferred)
+      .WillByDefault(testing::Return(true));
+  EXPECT_FALSE(bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+      &sync_setup_service));
+
+  // If sync-the-feature is on, but bookmarks excluded, the icon should be
+  // displayed, but only if the feature is enabled (IsAccountStorageEnabled()).
+  ON_CALL(sync_setup_service, IsDataTypePreferred)
+      .WillByDefault(testing::Return(false));
+  EXPECT_EQ(IsAccountStorageEnabled(),
+            bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+                &sync_setup_service));
+
+  // If sync-the-feature is off, same thing: the icon should be displayed, but
+  // only if the feature is enabled (IsAccountStorageEnabled()).
+  ON_CALL(sync_setup_service, CanSyncFeatureStart)
+      .WillByDefault(testing::Return(true));
+  EXPECT_EQ(IsAccountStorageEnabled(),
+            bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+                &sync_setup_service));
+
+  // IsDataTypePreferred() shouldn't change anything if sync-the-feature is off.
+  ON_CALL(sync_setup_service, IsDataTypePreferred)
+      .WillByDefault(testing::Return(false));
+  EXPECT_EQ(IsAccountStorageEnabled(),
+            bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+                &sync_setup_service));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, BookmarkIOSUtilsUnitTest, ::testing::Bool());

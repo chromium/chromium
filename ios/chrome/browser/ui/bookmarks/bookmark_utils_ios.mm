@@ -184,9 +184,19 @@ bool ShouldDisplayCloudSlashIconForProfileModel(
           bookmarks::kEnableBookmarksAccountStorage)) {
     return false;
   }
-  return !(sync_setup_service->IsSyncRequested() &&
-           sync_setup_service->IsDataTypePreferred(
-               syncer::UserSelectableType::kBookmarks));
+  if (!sync_setup_service->CanSyncFeatureStart()) {
+    // In transport-only mode, any node stored in the profile model needs the
+    // icon. Note that this includes sync-disabled cases like enterprise
+    // policies.
+    return true;
+  }
+  if (sync_setup_service->IsDataTypePreferred(
+          syncer::UserSelectableType::kBookmarks)) {
+    // Sync-the-feature is on and (common case) bookmarks are selected: no icon.
+    return false;
+  }
+  // Sync-the-feature is on and (rare case) bookmarks are excluded: show icon.
+  return true;
 }
 
 bool IsAccountBookmarkModelAvailable(

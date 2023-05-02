@@ -113,8 +113,7 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
 
-// Whether the Cloud Slash icon should be displayed for `bookmark_node`.
-// This method should be called only for nodes part of the profile model.
+// Whether the Cloud Slash icon should be displayed for the profile model.
 // For nodes in account model, the icon should never been shown.
 bool ShouldDisplayCloudSlashIconForProfileModel(
     SyncSetupService* sync_setup_service);

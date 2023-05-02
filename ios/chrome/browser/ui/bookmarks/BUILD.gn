@@ -150,6 +150,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
+    "//components/sync:test_support",
     "//components/sync/driver",
     "//components/sync_preferences:test_support",
     "//ios/chrome/app/strings",
@@ -163,6 +164,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin:fake_system_identity_manager",
     "//ios/chrome/browser/signin:test_support",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
     "//testing/gtest",
   ]
 }
