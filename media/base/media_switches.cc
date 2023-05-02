@@ -291,6 +291,11 @@ const char kCastStreamingForceEnableHardwareVp8[] =
 const char kDisableUseMojoVideoDecoderForPepper[] =
     "disable-use-mojo-video-decoder-for-pepper";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kCastMirroringTargetPlayoutDelay[] =
+    "cast-mirroring-target-playout-delay";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace switches
 
 namespace media {

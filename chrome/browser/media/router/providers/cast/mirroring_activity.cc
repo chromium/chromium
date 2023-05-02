@@ -573,6 +573,8 @@ void MirroringActivity::StartSession(const std::string& destination_id,
   channel_receiver_.Bind(channel_remote.InitWithNewPipeAndPassReceiver());
 
   should_fetch_stats_on_start_ = enable_rtcp_reporting;
+  const absl::optional<base::TimeDelta> target_playout_delay =
+      GetTargetPlayoutDelay(cast_source->target_playout_delay());
 
   // If this fails, it's probably because CreateMojoBindings() hasn't been
   // called.
@@ -580,19 +582,18 @@ void MirroringActivity::StartSession(const std::string& destination_id,
   DCHECK(host_);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&MirroringActivity::StartOnUiThread,
-                     weak_ptr_factory_.GetWeakPtr(), host_->GetWeakPtr(),
-                     SessionParameters::New(
-                         session_type, cast_data_.ip_endpoint.address(),
-                         cast_data_.model_name, sink_.sink().name(),
-                         destination_id, message_handler_->source_id(),
-                         cast_source->target_playout_delay(),
-                         route().media_source().IsRemotePlaybackSource(),
-                         ShouldForceLetterboxing(cast_data_.model_name),
-                         enable_rtcp_reporting),
-                     std::move(observer_remote), std::move(channel_remote),
-                     std::move(channel_to_service_receiver_),
-                     route_.media_sink_name()));
+      base::BindOnce(
+          &MirroringActivity::StartOnUiThread, weak_ptr_factory_.GetWeakPtr(),
+          host_->GetWeakPtr(),
+          SessionParameters::New(
+              session_type, cast_data_.ip_endpoint.address(),
+              cast_data_.model_name, sink_.sink().name(), destination_id,
+              message_handler_->source_id(), target_playout_delay,
+              route().media_source().IsRemotePlaybackSource(),
+              ShouldForceLetterboxing(cast_data_.model_name),
+              enable_rtcp_reporting),
+          std::move(observer_remote), std::move(channel_remote),
+          std::move(channel_to_service_receiver_), route_.media_sink_name()));
 }
 
 void MirroringActivity::StartOnUiThread(
@@ -682,6 +683,24 @@ void MirroringActivity::FetchMirroringStats() {
 void MirroringActivity::OnMirroringStats(base::Value json_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
   debugger_->OnMirroringStats(json_stats.Clone());
+}
+
+absl::optional<base::TimeDelta> MirroringActivity::GetTargetPlayoutDelay(
+    const absl::optional<base::TimeDelta>& source_playout_delay) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_sequence_checker_);
+  absl::optional<base::TimeDelta> default_target_playout_delay =
+      source_playout_delay;
+
+  const base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
+  if (cl->HasSwitch(switches::kCastMirroringTargetPlayoutDelay)) {
+    int switch_playout_delay = 0;
+    if (base::StringToInt(
+            cl->GetSwitchValueASCII(switches::kCastMirroringTargetPlayoutDelay),
+            &switch_playout_delay)) {
+      default_target_playout_delay = base::Milliseconds(switch_playout_delay);
+    }
+  }
+  return default_target_playout_delay;
 }
 
 void MirroringActivity::Play() {
