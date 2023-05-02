@@ -492,7 +492,8 @@
       },
       {
         "args": [
-          "--force-device-scale-factor=1"
+          "--force-device-scale-factor=1",
+          "--top-chrome-touch-ui=disabled"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -1334,6 +1335,9 @@
         "test_id_prefix": "ninja://chrome/installer/util:installer_util_unittests/"
       },
       {
+        "args": [
+          "--top-chrome-touch-ui=disabled"
+        ],
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

@@ -1229,9 +1229,10 @@
       },
       'win-arm64-rel': {
         # Surface Pros aren't using 100% scaling, which some browser tests
-        # rely on.
+        # rely on. They also have touch enabled, which we need to disable.
         'args': [
           '--force-device-scale-factor=1',
+          '--top-chrome-touch-ui=disabled',
         ],
       },
       'win-asan': {
@@ -2811,6 +2812,12 @@
           'shards': 6,
           'inverse_quickrun_shards': 12,
         },
+      },
+      'win-arm64-rel': {
+        # Surface Pros have touch turned on by default, which makes some interactive-ui-tests fail.
+        'args': [
+          '--top-chrome-touch-ui=disabled',
+        ],
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
