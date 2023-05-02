@@ -666,7 +666,7 @@ void PinManager::ListItems(const Id dir_id, Path dir_path) {
   params->page_size = 1000;
   params->my_drive_results_only = true;
   params->parent_stable_id = static_cast<int64_t>(dir_id);
-  params->query_source = mojom::QueryParameters::QuerySource::kCloudOnly;
+  params->query_source = mojom::QueryParameters::QuerySource::kLocalAndCloud;
 
   Query query;
   drivefs_->StartSearchQuery(query.BindNewPipeAndPassReceiver(),
@@ -717,7 +717,8 @@ void PinManager::OnSearchResult(const Id dir_id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(progress_.stage, Stage::kListingFiles);
 
-  if (error != drive::FILE_ERROR_OK) {
+  if (error != drive::FILE_ERROR_OK &&
+      error != drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
     LOG(ERROR) << "Cannot visit " << dir_id << " " << Quote(dir_path) << ": "
                << error;
     switch (error) {
@@ -739,7 +740,7 @@ void PinManager::OnSearchResult(const Id dir_id,
 
   progress_.time_spent_listing_items = timer_.Elapsed();
 
-  if (items.empty()) {
+  if (items.empty() && error != drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
     VLOG(1) << "Visited " << dir_id << " " << Quote(dir_path);
 
     DCHECK_LE(progress_.active_queries, progress_.max_active_queries);
@@ -763,9 +764,14 @@ void PinManager::OnSearchResult(const Id dir_id,
     return StartPinning();
   }
 
-  progress_.listed_items += items.size();
-  VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
-          << Quote(dir_path);
+  if (error == drive::FILE_ERROR_OK_WITH_MORE_RESULTS) {
+    VLOG(2) << "No items returned from " << dir_id << " " << Quote(dir_path)
+            << " need to make cloud query";
+  } else {
+    progress_.listed_items += items.size();
+    VLOG(2) << "Got " << items.size() << " items from " << dir_id << " "
+            << Quote(dir_path);
+  }
 
   for (const QueryItemPtr& item : items) {
     DCHECK(item);

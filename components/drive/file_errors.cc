@@ -44,6 +44,7 @@ std::string FileErrorToString(FileError error) {
     PRINT(FILE_ERROR_NO_CONNECTION)
     PRINT(FILE_ERROR_NO_LOCAL_SPACE)
     PRINT(FILE_ERROR_SERVICE_UNAVAILABLE)
+    PRINT(FILE_ERROR_OK_WITH_MORE_RESULTS)
 #undef PRINT
   }
 
@@ -55,6 +56,7 @@ std::string FileErrorToString(FileError error) {
 base::File::Error FileErrorToBaseFileError(FileError error) {
   switch (error) {
     case FILE_ERROR_OK:
+    case FILE_ERROR_OK_WITH_MORE_RESULTS:
       return base::File::FILE_OK;
 
     case FILE_ERROR_FAILED:

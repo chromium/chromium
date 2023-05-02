@@ -1990,6 +1990,39 @@ TEST_F(DriveFsPinManagerTest, JustCheckRequiredSpace) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
+TEST_F(DriveFsPinManagerTest, WhenMoreResultsReturnedNextPageIsAttempted) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
+
+  const vector<DriveItem> items_1 = {{.size = 100 << 20}, {.size = 100 << 20}};
+  const vector<DriveItem> items_2 = {{.size = 100 << 20}, {.size = 100 << 20}};
+
+  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
+  EXPECT_CALL(drivefs_, OnGetNextPage(_))
+      .WillOnce(DoAll(PopulateSearchItems(items_1), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(),
+                      Return(FileError::FILE_ERROR_OK_WITH_MORE_RESULTS)))
+      .WillOnce(DoAll(PopulateSearchItems(items_2), Return(kFileOk)))
+      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
+  EXPECT_CALL(completion_callback, Run(Stage::kSuccess))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
+      .WillOnce(RunOnceCallback<1>(1 << 30));  // 2 GB.
+
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  manager.SetSpaceGetter(GetSpaceGetter());
+  manager.SetCompletionCallback(completion_callback.Get());
+  manager.CalculateRequiredSpace();
+  run_loop.Run();
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kSuccess);
+  EXPECT_EQ(progress.free_space, 1 << 30);
+  EXPECT_EQ(progress.required_space, 400 << 20);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+}
+
 // Tests PinManager::SetOnline().
 TEST_F(DriveFsPinManagerTest, SetOnline) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);

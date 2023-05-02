@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/drivefs/drivefs_mojom_traits.h"
+#include "components/drive/file_errors.h"
 
 namespace mojo {
 
@@ -48,6 +49,8 @@ EnumTraits<drivefs::mojom::FileError, drive::FileError>::ToMojom(
       return drivefs::mojom::FileError::kNoLocalSpace;
     case drive::FILE_ERROR_SERVICE_UNAVAILABLE:
       return drivefs::mojom::FileError::kServiceUnavailable;
+    case drive::FILE_ERROR_OK_WITH_MORE_RESULTS:
+      return drivefs::mojom::FileError::kOkWithMoreResults;
   }
   return drivefs::mojom::FileError::kFailed;
 }
@@ -112,6 +115,9 @@ bool EnumTraits<drivefs::mojom::FileError, drive::FileError>::FromMojom(
       return true;
     case drivefs::mojom::FileError::kServiceUnavailable:
       *output = drive::FILE_ERROR_SERVICE_UNAVAILABLE;
+      return true;
+    case drivefs::mojom::FileError::kOkWithMoreResults:
+      *output = drive::FILE_ERROR_OK_WITH_MORE_RESULTS;
       return true;
   }
   return false;

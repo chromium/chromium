@@ -325,6 +325,7 @@ enum FileError {
   kNoConnection = -16,
   kNoLocalSpace = -17,
   kServiceUnavailable = -18,
+  kOkWithMoreResults = -19,
 };
 
 // Errors received from DriveFS to be forwarded to the file manager UI.
