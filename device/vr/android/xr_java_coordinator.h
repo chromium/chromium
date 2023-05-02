@@ -54,7 +54,7 @@ class XrJavaCoordinator {
   virtual ~XrJavaCoordinator() = default;
   virtual bool EnsureARCoreLoaded() = 0;
   virtual base::android::ScopedJavaLocalRef<jobject>
-  GetApplicationContext() = 0;
+  GetCurrentActivityContext() = 0;
   virtual void RequestArSession(
       int render_process_id,
       int render_frame_id,

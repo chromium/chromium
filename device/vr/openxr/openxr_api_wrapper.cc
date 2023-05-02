@@ -1245,29 +1245,6 @@ std::vector<mojom::XRInputSourceStatePtr> OpenXrApiWrapper::GetInputState(
                                       GetPredictedDisplayTime());
 }
 
-#if BUILDFLAG(IS_WIN)
-XrResult OpenXrApiWrapper::GetLuid(
-    const OpenXrExtensionHelper& extension_helper,
-    LUID& luid) const {
-  DCHECK(IsInitialized());
-
-  if (extension_helper.ExtensionMethods().xrGetD3D11GraphicsRequirementsKHR ==
-      nullptr)
-    return XR_ERROR_FUNCTION_UNSUPPORTED;
-
-  XrGraphicsRequirementsD3D11KHR graphics_requirements = {
-      XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
-  RETURN_IF_XR_FAILED(
-      extension_helper.ExtensionMethods().xrGetD3D11GraphicsRequirementsKHR(
-          instance_, system_, &graphics_requirements));
-
-  luid.LowPart = graphics_requirements.adapterLuid.LowPart;
-  luid.HighPart = graphics_requirements.adapterLuid.HighPart;
-
-  return XR_SUCCESS;
-}
-#endif
-
 void OpenXrApiWrapper::EnsureEventPolling() {
   // Events are usually processed at the beginning of a frame. When frames
   // aren't being requested, this timer loop ensures OpenXR events are

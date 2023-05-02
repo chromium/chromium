@@ -8,18 +8,27 @@
 #include <d3d11_4.h>
 #include <wrl.h>
 
+#include "base/memory/weak_ptr.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
+#include "device/vr/windows/d3d11_texture_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
+class OpenXrPlatformHelperWindows;
+
+// D3D11 implementation of the OpenXrGraphicsBinding. Used to manage rendering
+// when using D3D11 with OpenXR.
 class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
  public:
   explicit OpenXrGraphicsBindingD3D11(
-      const Microsoft::WRL::ComPtr<ID3D11Device>& device);
+      D3D11TextureHelper* texture_helper,
+      base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper);
   ~OpenXrGraphicsBindingD3D11() override;
 
+  // OpenXrGraphicsBinding
+  bool Initialize() override;
   const void* GetSessionCreateInfo() const override;
   int64_t GetSwapchainFormat() const override;
   XrResult EnumerateSwapchainImages(
@@ -27,7 +36,9 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
       std::vector<SwapChainInfo>& color_swapchain_images) const override;
 
  private:
-  Microsoft::WRL::ComPtr<ID3D11Device> device_;
+  bool initialized_ = false;
+  raw_ptr<D3D11TextureHelper> texture_helper_;
+  base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper_;
 
   XrGraphicsBindingD3D11KHR binding_{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR,
                                      nullptr, nullptr};

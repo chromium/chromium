@@ -8,22 +8,65 @@
 #include <wrl.h>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/windows/openxr_platform_helper_windows.h"
+#include "device/vr/windows/d3d11_texture_helper.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
-OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
-    const Microsoft::WRL::ComPtr<ID3D11Device>& device)
-    : device_(device) {
-  CHECK(device_.Get());
-  binding_.device = device_.Get();
+// static
+void OpenXrGraphicsBinding::GetRequiredExtensions(
+    std::vector<const char*>& extensions) {
+  extensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
 }
+
+OpenXrGraphicsBindingD3D11::OpenXrGraphicsBindingD3D11(
+    D3D11TextureHelper* texture_helper,
+    base::WeakPtr<OpenXrPlatformHelperWindows> weak_platform_helper)
+    : texture_helper_(texture_helper),
+      weak_platform_helper_(weak_platform_helper) {}
+
 OpenXrGraphicsBindingD3D11::~OpenXrGraphicsBindingD3D11() = default;
 
+bool OpenXrGraphicsBindingD3D11::Initialize() {
+  if (initialized_) {
+    return true;
+  }
+
+  if (!texture_helper_) {
+    DVLOG(1) << __func__ << " No TextureHelper";
+    return false;
+  }
+
+  if (!weak_platform_helper_) {
+    DVLOG(1) << __func__ << " WeakPtr failed to resolve";
+    return false;
+  }
+
+  LUID luid;
+  if (!weak_platform_helper_->TryGetLuid(&luid)) {
+    DVLOG(1) << __func__ << " Did not get a luid";
+    return false;
+  }
+
+  texture_helper_->SetUseBGRA(true);
+  if (!texture_helper_->SetAdapterLUID(luid) ||
+      !texture_helper_->EnsureInitialized()) {
+    DVLOG(1) << __func__ << " Texture helper initialization failed";
+    return false;
+  }
+
+  binding_.device = texture_helper_->GetDevice().Get();
+  initialized_ = true;
+  return true;
+}
+
 const void* OpenXrGraphicsBindingD3D11::GetSessionCreateInfo() const {
+  CHECK(initialized_);
   return &binding_;
 }
 

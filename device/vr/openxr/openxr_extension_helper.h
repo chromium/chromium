@@ -43,9 +43,6 @@ struct OpenXrExtensionMethods {
   // Time
   PFN_xrConvertWin32PerformanceCounterToTimeKHR
       xrConvertWin32PerformanceCounterToTimeKHR{nullptr};
-  // D3D
-  PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR{
-      nullptr};
 #endif
 };
 

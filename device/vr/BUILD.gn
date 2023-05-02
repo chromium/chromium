@@ -195,6 +195,8 @@ if (enable_vr) {
         "openxr/openxr_path_helper.cc",
         "openxr/openxr_path_helper.h",
         "openxr/openxr_platform.h",
+        "openxr/openxr_platform_helper.cc",
+        "openxr/openxr_platform_helper.h",
         "openxr/openxr_render_loop.cc",
         "openxr/openxr_render_loop.h",
         "openxr/openxr_scene.cc",
@@ -209,8 +211,6 @@ if (enable_vr) {
         "openxr/openxr_scene_plane.h",
         "openxr/openxr_scene_understanding_manager.cc",
         "openxr/openxr_scene_understanding_manager.h",
-        "openxr/openxr_statics.cc",
-        "openxr/openxr_statics.h",
         "openxr/openxr_util.cc",
         "openxr/openxr_util.h",
         "openxr/openxr_view_configuration.cc",
@@ -229,6 +229,10 @@ if (enable_vr) {
         sources += [
           "openxr/windows/openxr_graphics_binding_d3d11.cc",
           "openxr/windows/openxr_graphics_binding_d3d11.h",
+          "openxr/windows/openxr_instance_wrapper.cc",
+          "openxr/windows/openxr_instance_wrapper.h",
+          "openxr/windows/openxr_platform_helper_windows.cc",
+          "openxr/windows/openxr_platform_helper_windows.h",
           "windows/d3d11_texture_helper.cc",
           "windows/d3d11_texture_helper.h",
           "windows/flip_pixel_shader.h",
@@ -243,6 +247,7 @@ if (enable_vr) {
         sources += [
           "openxr/android/openxr_graphics_binding_open_gles.cc",
           "openxr/android/openxr_graphics_binding_open_gles.h",
+          "openxr/android/openxr_platform_helper_android_statics.cc",
         ]
 
         configs += [ "//third_party/khronos:khronos_headers" ]

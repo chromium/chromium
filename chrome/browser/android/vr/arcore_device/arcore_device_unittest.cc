@@ -141,7 +141,8 @@ class StubXrJavaCoordinator : public XrJavaCoordinator {
 
   bool EnsureARCoreLoaded() override { return true; }
 
-  base::android::ScopedJavaLocalRef<jobject> GetApplicationContext() override {
+  base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
+      override {
     JNIEnv* env = base::android::AttachCurrentThread();
     jclass activityThread = env->FindClass("android/app/ActivityThread");
     jmethodID currentActivityThread =

@@ -112,10 +112,6 @@ class OpenXrApiWrapper {
   std::vector<mojom::XRViewPtr> GetDefaultViews() const;
   gfx::Size GetSwapchainSize() const;
   XrTime GetPredictedDisplayTime() const;
-#if BUILDFLAG(IS_WIN)
-  XrResult GetLuid(const OpenXrExtensionHelper& extension_helper,
-                   LUID& luid) const;
-#endif
   bool GetStageParameters(XrExtent2Df& stage_bounds,
                           gfx::Transform& local_from_stage);
   bool StageParametersEnabled() const;

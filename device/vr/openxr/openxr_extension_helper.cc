@@ -128,12 +128,6 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
               &extension_methods_.xrGetSceneMeshBuffersMSFT)));
 
 #if BUILDFLAG(IS_WIN)
-  // D3D11
-  std::ignore = xrGetInstanceProcAddr(
-      instance, "xrGetD3D11GraphicsRequirementsKHR",
-      reinterpret_cast<PFN_xrVoidFunction*>(
-          const_cast<PFN_xrGetD3D11GraphicsRequirementsKHR*>(
-              &extension_methods_.xrGetD3D11GraphicsRequirementsKHR)));
   std::ignore = xrGetInstanceProcAddr(
       instance, "xrConvertWin32PerformanceCounterToTimeKHR",
       reinterpret_cast<PFN_xrVoidFunction*>(

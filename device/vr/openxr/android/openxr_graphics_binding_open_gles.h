@@ -5,17 +5,25 @@
 #ifndef DEVICE_VR_OPENXR_ANDROID_OPENXR_GRAPHICS_BINDING_OPEN_GLES_H_
 #define DEVICE_VR_OPENXR_ANDROID_OPENXR_GRAPHICS_BINDING_OPEN_GLES_H_
 
+#include <vector>
+
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
+#include "device/vr/vr_export.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
-class OpenXrGraphicsBindingOpenGLES : public OpenXrGraphicsBinding {
+// OpenGLES version of the OpenXrGraphicsBinding. Used to manage rendering when
+// using OpenGLES with OpenXR.
+class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
+    : public OpenXrGraphicsBinding {
  public:
   OpenXrGraphicsBindingOpenGLES();
   ~OpenXrGraphicsBindingOpenGLES() override;
 
+  // OpenXrGraphicsBinding
+  bool Initialize() override;
   const void* GetSessionCreateInfo() const override;
   int64_t GetSwapchainFormat() const override;
   XrResult EnumerateSwapchainImages(

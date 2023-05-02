@@ -8,14 +8,15 @@
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "device/vr/public/cpp/features.h"
 
-#if BUILDFLAG(ENABLE_OPENXR)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
 #include "content/public/common/gpu_stream_constants.h"
 #include "device/vr/openxr/openxr_device.h"
-#include "device/vr/openxr/openxr_statics.h"
+#include "device/vr/openxr/windows/openxr_platform_helper_windows.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #endif
 
@@ -96,7 +97,7 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
   // 'preferred_device_enabled' being unused, thus [[maybe_unused]].
   [[maybe_unused]] bool preferred_device_enabled = false;
 
-#if BUILDFLAG(ENABLE_OPENXR)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
   if (!preferred_device_enabled && IsOpenXrHardwareAvailable()) {
     SetOpenXrRuntimeStatus(RuntimeStatus::kEnable);
     preferred_device_enabled = true;
@@ -120,11 +121,13 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
   // If none of the following runtimes are enabled, we'll get an error for
   // 'command_line' being unused, thus [[maybe_unused]].
 
-#if BUILDFLAG(ENABLE_OPENXR)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
   if (IsEnabled(command_line, device::features::kOpenXR,
                 switches::kWebXrRuntimeOpenXr)) {
-    should_check_openxr_ =
-        device::OpenXrStatics::GetInstance()->IsApiAvailable();
+    openxr_platform_helper_ =
+        std::make_unique<device::OpenXrPlatformHelperWindows>();
+    should_check_openxr_ = openxr_platform_helper_->EnsureInitialized() &&
+                           openxr_platform_helper_->IsApiAvailable();
     any_runtimes_available |= should_check_openxr_;
   }
 #endif
@@ -144,10 +147,9 @@ void IsolatedXRRuntimeProvider::RequestDevices(
   client_->OnDevicesEnumerated();
 }
 
-#if BUILDFLAG(ENABLE_OPENXR)
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
 bool IsolatedXRRuntimeProvider::IsOpenXrHardwareAvailable() {
-  return should_check_openxr_ &&
-         device::OpenXrStatics::GetInstance()->IsHardwareAvailable();
+  return should_check_openxr_ && openxr_platform_helper_->IsHardwareAvailable();
 }
 
 void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
@@ -156,11 +158,12 @@ void IsolatedXRRuntimeProvider::SetOpenXrRuntimeStatus(RuntimeStatus status) {
       weak_ptr_factory_.GetWeakPtr());
   SetRuntimeStatus(client_.get(), status,
                    base::BindOnce(
-                       [](VizContextProviderFactoryAsync factory_async) {
+                       [](VizContextProviderFactoryAsync factory_async,
+                          device::OpenXrPlatformHelper* platform_helper) {
                          return std::make_unique<device::OpenXrDevice>(
-                             std::move(factory_async));
+                             std::move(factory_async), platform_helper);
                        },
-                       std::move(factory_async)),
+                       std::move(factory_async), openxr_platform_helper_.get()),
                    &openxr_device_);
 }
 
@@ -202,7 +205,7 @@ void IsolatedXRRuntimeProvider::CreateContextProviderAsync(
   std::move(viz_context_provider_callback).Run(context_provider);
 }
 
-#endif  // BUILDFLAG(ENABLE_OPENXR)
+#endif  // BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
 
 IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider(
     mojo::PendingRemote<device::mojom::XRDeviceServiceHost> device_service_host,
@@ -210,4 +213,10 @@ IsolatedXRRuntimeProvider::IsolatedXRRuntimeProvider(
     : device_service_host_(std::move(device_service_host)),
       io_task_runner_(std::move(io_task_runner)) {}
 
-IsolatedXRRuntimeProvider::~IsolatedXRRuntimeProvider() = default;
+IsolatedXRRuntimeProvider::~IsolatedXRRuntimeProvider() {
+#if BUILDFLAG(ENABLE_OPENXR) && BUILDFLAG(IS_WIN)
+  // Ensure that the OpenXrPlatformHelper outlives the OpenXrDevice
+  openxr_device_.reset();
+  openxr_platform_helper_.reset();
+#endif
+}

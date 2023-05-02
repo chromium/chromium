@@ -7,19 +7,10 @@
 #include <string>
 
 #include "base/check_op.h"
-#include "base/strings/string_util.h"
-#include "base/version.h"
-#include "build/build_config.h"
-#include "components/version_info/version_info.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
-
-#if BUILDFLAG(IS_WIN)
-#include "base/win/scoped_handle.h"
-#endif
-
 namespace device {
 
 XrPosef PoseIdentity() {
@@ -64,121 +55,6 @@ XrResult GetSystem(XrInstance instance, XrSystemId* system) {
   XrSystemGetInfo system_info = {XR_TYPE_SYSTEM_GET_INFO};
   system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
   return xrGetSystem(instance, &system_info, system);
-}
-
-#if BUILDFLAG(IS_WIN)
-bool IsRunningInWin32AppContainer() {
-  base::win::ScopedHandle scopedProcessToken;
-  HANDLE processToken;
-  if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &processToken)) {
-    return false;
-  }
-
-  scopedProcessToken.Set(processToken);
-
-  BOOL isAppContainer;
-  DWORD dwSize = sizeof(BOOL);
-  if (!GetTokenInformation(scopedProcessToken.Get(), TokenIsAppContainer,
-                           &isAppContainer, dwSize, &dwSize)) {
-    return false;
-  }
-
-  return isAppContainer;
-}
-#endif
-
-XrResult CreateInstance(
-    XrInstance* instance,
-    const OpenXrExtensionEnumeration& extension_enumeration) {
-  XrInstanceCreateInfo instance_create_info = {XR_TYPE_INSTANCE_CREATE_INFO};
-
-  std::string application_name = version_info::GetProductName() + " " +
-                                 version_info::GetMajorVersionNumber();
-  size_t dest_size =
-      std::size(instance_create_info.applicationInfo.applicationName);
-  size_t src_size =
-      base::strlcpy(instance_create_info.applicationInfo.applicationName,
-                    application_name.c_str(), dest_size);
-  DCHECK_LT(src_size, dest_size);
-
-  base::Version version = version_info::GetVersion();
-  DCHECK_EQ(version.components().size(), 4uLL);
-  uint32_t build = version.components()[2];
-
-  // application version will be the build number of each vendor
-  instance_create_info.applicationInfo.applicationVersion = build;
-
-  dest_size = std::size(instance_create_info.applicationInfo.engineName);
-  src_size = base::strlcpy(instance_create_info.applicationInfo.engineName,
-                           "Chromium", dest_size);
-  DCHECK_LT(src_size, dest_size);
-
-  // engine version should be the build number of chromium
-  instance_create_info.applicationInfo.engineVersion = build;
-
-  instance_create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
-
-  // xrCreateInstance validates the list of extensions and returns
-  // XR_ERROR_EXTENSION_NOT_PRESENT if an extension is not supported,
-  // so we don't need to call xrEnumerateInstanceExtensionProperties
-  // to validate these extensions.
-  std::vector<const char*> extensions;
-
-#if BUILDFLAG(IS_WIN)
-  // Since the Windows OpenXR backend only knows how to draw with D3D11 at the
-  // moment, the XR_KHR_D3D11_ENABLE_EXTENSION_NAME is required.
-  extensions.push_back(XR_KHR_D3D11_ENABLE_EXTENSION_NAME);
-
-  // If we are in an app container, we must require the app container extension
-  // to ensure robust execution of the OpenXR runtime
-  if (IsRunningInWin32AppContainer()) {
-    // Add the win32 app container compatible extension to our list of
-    // extensions. If this runtime does not support execution in an app
-    // container environment, one of xrCreateInstance or xrGetSystem will fail.
-    extensions.push_back(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
-  }
-#endif
-
-  auto EnableExtensionIfSupported = [&extension_enumeration,
-                                     &extensions](const char* extension) {
-    if (extension_enumeration.ExtensionSupported(extension)) {
-      extensions.push_back(extension);
-    }
-  };
-
-  // XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME, is required for optional
-  // functionality (unbounded reference spaces) and thus only requested if it is
-  // available.
-  EnableExtensionIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
-
-  // Input extensions. These enable interaction profiles not defined in the core
-  // spec
-  EnableExtensionIfSupported(kExtSamsungOdysseyControllerExtensionName);
-  EnableExtensionIfSupported(kExtHPMixedRealityControllerExtensionName);
-  EnableExtensionIfSupported(kMSFTHandInteractionExtensionName);
-  EnableExtensionIfSupported(XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME);
-
-  EnableExtensionIfSupported(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
-  EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-  EnableExtensionIfSupported(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
-
-  EnableExtensionIfSupported(
-      XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
-  if (extension_enumeration.ExtensionSupported(
-          XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME)) {
-    EnableExtensionIfSupported(XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME);
-  }
-
-#if BUILDFLAG(IS_WIN)
-  EnableExtensionIfSupported(
-      XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME);
-#endif
-
-  instance_create_info.enabledExtensionCount =
-      static_cast<uint32_t>(extensions.size());
-  instance_create_info.enabledExtensionNames = extensions.data();
-
-  return xrCreateInstance(&instance_create_info, instance);
 }
 
 std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,

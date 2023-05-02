@@ -24,11 +24,9 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11_4.h>
-#include "device/vr/openxr/windows/openxr_graphics_binding_d3d11.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "device/vr/openxr/android/openxr_graphics_binding_open_gles.h"
 #include "ui/gl/gl_fence.h"
 #endif
 
@@ -37,12 +35,13 @@ namespace device {
 OpenXrRenderLoop::OpenXrRenderLoop(
     VizContextProviderFactoryAsync context_provider_factory_async,
     XrInstance instance,
-    const OpenXrExtensionHelper& extension_helper)
-    : XRCompositorCommon(),
-      instance_(instance),
+    const OpenXrExtensionHelper& extension_helper,
+    OpenXrPlatformHelper* platform_helper)
+    : instance_(instance),
       extension_helper_(extension_helper),
       context_provider_factory_async_(
-          std::move(context_provider_factory_async)) {
+          std::move(context_provider_factory_async)),
+      platform_helper_(platform_helper) {
   DCHECK(instance_ != XR_NULL_HANDLE);
 }
 
@@ -126,52 +125,61 @@ void OpenXrRenderLoop::StartRuntime(
   DCHECK(!openxr_);
 
   openxr_ = OpenXrApiWrapper::Create(instance_);
-  if (!openxr_)
+  if (!openxr_) {
+    DVLOG(1) << __func__ << " Could not create OpenXrApiWrapper";
     return std::move(start_runtime_callback).Run(false);
+  }
 
-  std::pair<StartRuntimeCallback, StartRuntimeCallback>
-      start_runtime_split_callback =
-          base::SplitOnceCallback(std::move(start_runtime_callback));
+  // TODO(https://crbug.com/1441073): Consolidate to a single, cross-platform
+  // GetGraphicsBinding method signature.
+#if BUILDFLAG(IS_WIN)
+  graphics_binding_ = platform_helper_->GetGraphicsBinding(&texture_helper_);
+#elif BUILDFLAG(IS_ANDROID)
+  graphics_binding_ = platform_helper_->GetGraphicsBinding();
+#endif
+
+  if (!graphics_binding_ || !graphics_binding_->Initialize()) {
+    DVLOG(1) << "Could not create or initialize graphics binding";
+    // We aren't actually presenting yet; so ExitPresent won't clean us up.
+    // Still call it to log the failure reason; but also explicitly call
+    // StopRuntime, which should be resilient to duplicate calls.
+    ExitPresent(ExitXrPresentReason::kStartRuntimeFailed);
+    StopRuntime();
+    std::move(start_runtime_callback).Run(false);
+    return;
+  }
 
   SessionStartedCallback on_session_started_callback = base::BindOnce(
       &OpenXrRenderLoop::OnOpenXrSessionStarted, weak_ptr_factory_.GetWeakPtr(),
-      std::move(start_runtime_split_callback.first));
+      std::move(start_runtime_callback));
   SessionEndedCallback on_session_ended_callback = base::BindRepeating(
       &OpenXrRenderLoop::ExitPresent, weak_ptr_factory_.GetWeakPtr());
   VisibilityChangedCallback on_visibility_state_changed = base::BindRepeating(
       &OpenXrRenderLoop::SetVisibilityState, weak_ptr_factory_.GetWeakPtr());
-
-#if BUILDFLAG(IS_WIN)
-  texture_helper_.SetUseBGRA(true);
-  LUID luid;
-  if (XR_FAILED(openxr_->GetLuid(*extension_helper_, luid)) ||
-      !texture_helper_.SetAdapterLUID(luid) ||
-      !texture_helper_.EnsureInitialized()) {
-    ExitPresent(ExitXrPresentReason::kStartRuntimeFailed);
-    std::move(start_runtime_split_callback.second).Run(false);
-    return;
-  }
-
-  graphics_binding_ =
-      std::make_unique<OpenXrGraphicsBindingD3D11>(texture_helper_.GetDevice());
-#elif BUILDFLAG(IS_ANDROID)
-  graphics_binding_ = std::make_unique<OpenXrGraphicsBindingOpenGLES>();
-#endif
-  CHECK(graphics_binding_);
   if (XR_FAILED(openxr_->InitSession(enabled_features_, graphics_binding_.get(),
                                      *extension_helper_,
                                      std::move(on_session_started_callback),
                                      std::move(on_session_ended_callback),
                                      std::move(on_visibility_state_changed)))) {
+    DVLOG(1) << __func__ << " InitSession Failed";
+    // We aren't actually presenting yet; so ExitPresent won't clean us up.
+    // Still call it to log the failure reason; but also explicitly call
+    // StopRuntime, which should be resilient to duplicate calls.
     ExitPresent(ExitXrPresentReason::kStartRuntimeFailed);
+    StopRuntime();
   }
 }
 
 void OpenXrRenderLoop::OnOpenXrSessionStarted(
     StartRuntimeCallback start_runtime_callback,
     XrResult result) {
+  DVLOG(1) << __func__ << " Result: " << result;
   if (XR_FAILED(result)) {
+    // We aren't actually presenting yet; so ExitPresent won't clean us up.
+    // Still call it to log the failure reason; but also explicitly call
+    // StopRuntime, which should be resilient to duplicate calls.
     ExitPresent(ExitXrPresentReason::kOpenXrStartFailed);
+    StopRuntime();
     std::move(start_runtime_callback).Run(false);
     return;
   }
@@ -590,6 +598,7 @@ void OpenXrRenderLoop::OnContextProviderCreated(
   const gpu::ContextResult context_result =
       context_provider->BindToCurrentSequence();
   if (context_result != gpu::ContextResult::kSuccess) {
+    DVLOG(1) << __func__ << " Could not get context provider";
     std::move(start_runtime_callback).Run(false);
     return;
   }

@@ -59,10 +59,6 @@ bool IsPoseValid(XrSpaceLocationFlags locationFlags);
 
 XrResult GetSystem(XrInstance instance, XrSystemId* system);
 
-XrResult CreateInstance(
-    XrInstance* instance,
-    const OpenXrExtensionEnumeration& extension_enumeration);
-
 std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
                                                            XrSystemId system);
 

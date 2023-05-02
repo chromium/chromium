@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "device/vr/openxr/android/openxr_graphics_binding_open_gles.h"
 
+#include <vector>
+
 #include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -12,8 +14,18 @@
 
 namespace device {
 
+// static
+void OpenXrGraphicsBinding::GetRequiredExtensions(
+    std::vector<const char*>& extensions) {
+  extensions.push_back(XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME);
+}
+
 OpenXrGraphicsBindingOpenGLES::OpenXrGraphicsBindingOpenGLES() = default;
 OpenXrGraphicsBindingOpenGLES::~OpenXrGraphicsBindingOpenGLES() = default;
+
+bool OpenXrGraphicsBindingOpenGLES::Initialize() {
+  return true;
+}
 
 const void* OpenXrGraphicsBindingOpenGLES::GetSessionCreateInfo() const {
   return &binding_;

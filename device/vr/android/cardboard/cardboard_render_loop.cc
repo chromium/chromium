@@ -111,7 +111,7 @@ void CardboardRenderLoop::CreateSession(
   }
 
   base::android::ScopedJavaLocalRef<jobject> application_context =
-      java_coordinator->GetApplicationContext();
+      java_coordinator->GetCurrentActivityContext();
   if (!application_context.obj()) {
     DLOG(ERROR) << "Unable to retrieve the Java context/activity!";
     std::move(session_request_callback_).Run(nullptr);
