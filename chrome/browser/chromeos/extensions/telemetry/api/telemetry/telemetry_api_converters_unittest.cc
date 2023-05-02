@@ -925,4 +925,45 @@ TEST(TelemetryApiConverters, UsbBusInfo) {
   EXPECT_EQ(result.spec_speed, cx_telem::UsbSpecSpeed::kN20Gbps);
 }
 
+TEST(TelemetryApiConverters, VpdInfoWithoutPermission) {
+  constexpr char kFirstPowerDate[] = "01/01/00";
+  constexpr char kModelName[] = "TestModel";
+  constexpr char kSkuNumber[] = "TestSKU";
+  constexpr char kSerialNumber[] = "TestNumber";
+
+  auto input = crosapi::ProbeCachedVpdInfo::New();
+  input->first_power_date = kFirstPowerDate;
+  input->model_name = kModelName;
+  input->sku_number = kSkuNumber;
+  input->serial_number = kSerialNumber;
+
+  auto result = ConvertPtr<cx_telem::VpdInfo>(
+      std::move(input), /* has_serial_number_permission= */ false);
+
+  ASSERT_TRUE(result.activate_date);
+  EXPECT_EQ(*result.activate_date, kFirstPowerDate);
+
+  ASSERT_TRUE(result.model_name);
+  EXPECT_EQ(*result.model_name, kModelName);
+
+  ASSERT_TRUE(result.sku_number);
+  EXPECT_EQ(*result.sku_number, kSkuNumber);
+
+  // serial_number is not converted in ConvertPtr() without permission.
+  EXPECT_FALSE(result.serial_number);
+}
+
+TEST(TelemetryApiConverters, VpdInfoWithPermission) {
+  constexpr char kSerialNumber[] = "TestNumber";
+
+  auto input = crosapi::ProbeCachedVpdInfo::New();
+  input->serial_number = kSerialNumber;
+
+  auto result = ConvertPtr<cx_telem::VpdInfo>(
+      std::move(input), /* has_serial_number_permission= */ true);
+
+  ASSERT_TRUE(result.serial_number);
+  EXPECT_EQ(*result.serial_number, kSerialNumber);
+}
+
 }  // namespace chromeos::converters

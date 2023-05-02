@@ -434,18 +434,10 @@ void OsTelemetryGetVpdInfoFunction::OnResult(
     return;
   }
 
-  cx_telem::VpdInfo result;
-
-  const auto& vpd_info = ptr->vpd_result->get_vpd_info();
-  result.activate_date = vpd_info->first_power_date;
-  result.model_name = vpd_info->model_name;
-  result.sku_number = vpd_info->sku_number;
-
-  // Protect accessing the serial number by a permission.
-  if (extension()->permissions_data()->HasAPIPermission(
-          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
-    result.serial_number = vpd_info->serial_number;
-  }
+  const bool has_permission = extension()->permissions_data()->HasAPIPermission(
+      extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber);
+  auto result = converters::ConvertPtr<cx_telem::VpdInfo>(
+      std::move(ptr->vpd_result->get_vpd_info()), has_permission);
 
   Respond(ArgumentList(cx_telem::GetVpdInfo::Results::Create(result)));
 }

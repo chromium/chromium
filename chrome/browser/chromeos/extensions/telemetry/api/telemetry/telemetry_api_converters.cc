@@ -369,6 +369,22 @@ cx_telem::UsbBusInfo UncheckedConvertPtr(crosapi::ProbeUsbBusInfoPtr input) {
   return result;
 }
 
+chromeos::api::os_telemetry::VpdInfo UncheckedConvertPtr(
+    crosapi::ProbeCachedVpdInfoPtr input,
+    bool has_serial_number_permission) {
+  cx_telem::VpdInfo result;
+
+  result.activate_date = std::move(input->first_power_date);
+  result.model_name = std::move(input->model_name);
+  result.sku_number = std::move(input->sku_number);
+
+  if (has_serial_number_permission) {
+    result.serial_number = std::move(input->serial_number);
+  }
+
+  return result;
+}
+
 }  // namespace unchecked
 
 cx_telem::CpuArchitectureEnum Convert(crosapi::ProbeCpuArchitectureEnum input) {
