@@ -175,7 +175,7 @@ class ScopedSetDMToken {
     SetDMTokenForTesting(dm_token);
   }
   ~ScopedSetDMToken() {
-    SetDMTokenForTesting(policy::DMToken::CreateEmptyTokenForTesting());
+    SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
   }
 };
 
@@ -354,8 +354,8 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledTest, Enabled) {
   ScopedSetDMToken scoped_dm_token(
-      GetTokenValid() ? policy::DMToken::CreateValidTokenForTesting(kDmToken)
-                      : policy::DMToken::CreateInvalidTokenForTesting());
+      GetTokenValid() ? policy::DMToken::CreateValidToken(kDmToken)
+                      : policy::DMToken::CreateInvalidToken());
   switch (GetPrefState()) {
     case NO_PREF:
       break;
@@ -405,8 +405,7 @@ using FileTransferAnalysisDelegateIsEnabledTestSameFileSystem = BaseTest;
 // Test for FileSystemURL that's not registered with a volume.
 TEST_F(FileTransferAnalysisDelegateIsEnabledTestSameFileSystem,
        DlpMalwareDisabledForSameFileSystem) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
                                       kBlockingScansForDlpAndMalware);
 
@@ -424,8 +423,7 @@ using FileTransferAnalysisDelegateIsEnabledTestMultiple = BaseTest;
 
 // Test using multiple source urls.
 TEST_F(FileTransferAnalysisDelegateIsEnabledTestMultiple, Test) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
 
   safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_TRANSFER,
                                       R"({
@@ -483,8 +481,7 @@ class FileTransferAnalysisDelegateIsEnabledParamTest
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        DlpAndMalwareDisabledForSameVolume) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
 
   VolumeInfo source_volume = GetParam();
 
@@ -503,8 +500,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        DlpDisabledByPatternInSource) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
 
   VolumeInfo source_volume = GetParam();
 
@@ -559,8 +555,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        DlpDisabledByPatternInDestination) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
 
   VolumeInfo dest_volume = GetParam();
 
@@ -615,8 +610,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        MalwareEnabledWithPatternInSource) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
 
   VolumeInfo source_volume = GetParam();
 
@@ -655,8 +649,7 @@ TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
 
 TEST_P(FileTransferAnalysisDelegateIsEnabledParamTest,
        MalwareEnabledWithPatternsInDestination) {
-  ScopedSetDMToken scoped_dm_token(
-      policy::DMToken::CreateValidTokenForTesting(kDmToken));
+  ScopedSetDMToken scoped_dm_token(policy::DMToken::CreateValidToken(kDmToken));
 
   VolumeInfo dest_volume = GetParam();
 
@@ -888,7 +881,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
 
   ScopedSetDMToken scoped_dm_token_{
-      policy::DMToken::CreateValidTokenForTesting(kDmToken)};
+      policy::DMToken::CreateValidToken(kDmToken)};
 
   // Paths in this map will be consider to have failed deep scan checks.
   // The actual failure response is given for each path.

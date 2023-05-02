@@ -145,7 +145,7 @@ class ConnectorsServiceProfileBrowserTest
     if (management_status_ != ManagementStatus::UNMANAGED) {
 #if BUILDFLAG(IS_CHROMEOS)
       policy::SetDMTokenForTesting(
-          policy::DMToken::CreateValidTokenForTesting(kFakeBrowserDMToken));
+          policy::DMToken::CreateValidToken(kFakeBrowserDMToken));
 #else
       browser_dm_token_storage_ =
           std::make_unique<policy::FakeBrowserDMTokenStorage>();

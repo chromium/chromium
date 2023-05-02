@@ -55,7 +55,7 @@ class EnterpriseConnectorsResultShouldAllowDataUseTest
     EnableFeatures();
 
     // Settings can't be returned if no DM token exists.
-    SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting(kDmToken));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
   }
 
   bool allowed() const { return !GetParam(); }

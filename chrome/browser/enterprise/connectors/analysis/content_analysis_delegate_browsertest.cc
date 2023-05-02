@@ -285,12 +285,10 @@ class ContentAnalysisDelegateBrowserTestBase
 
   void EnableUploadsScanningAndReporting() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting(kBrowserDMToken));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken(kBrowserDMToken));
 #else
     if (machine_scope_) {
-      SetDMTokenForTesting(
-          policy::DMToken::CreateValidTokenForTesting(kBrowserDMToken));
+      SetDMTokenForTesting(policy::DMToken::CreateValidToken(kBrowserDMToken));
     } else {
       safe_browsing::SetProfileDMToken(browser()->profile(), kProfileDMToken);
     }
@@ -1397,12 +1395,10 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
 
   void SetUpScanning(bool file_scan) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting(dm_token()));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken(dm_token()));
 #else
     if (machine_scope()) {
-      SetDMTokenForTesting(
-          policy::DMToken::CreateValidTokenForTesting(dm_token()));
+      SetDMTokenForTesting(policy::DMToken::CreateValidToken(dm_token()));
     } else {
       safe_browsing::SetProfileDMToken(browser()->profile(), dm_token());
     }

@@ -104,7 +104,7 @@ class ScopedSetDMToken {
     SetDMTokenForTesting(dm_token);
   }
   ~ScopedSetDMToken() {
-    SetDMTokenForTesting(policy::DMToken::CreateEmptyTokenForTesting());
+    SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
   }
 };
 
@@ -340,7 +340,7 @@ class FilesRequestHandlerTest : public BaseTest {
 
  private:
   ScopedSetDMToken scoped_dm_token_{
-      policy::DMToken::CreateValidTokenForTesting(kDmToken)};
+      policy::DMToken::CreateValidToken(kDmToken)};
   bool include_dlp_ = true;
   bool include_malware_ = true;
 

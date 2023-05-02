@@ -105,7 +105,7 @@ class ConnectorsServiceTest : public testing::Test {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
     policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("fake-token"));
+        policy::DMToken::CreateValidToken("fake-token"));
   }
 
  protected:
@@ -230,7 +230,7 @@ TEST_F(ConnectorsServiceTest, RealtimeURLCheck) {
   EXPECT_TRUE(maybe_dm_token.has_value());
   EXPECT_EQ("fake-token", maybe_dm_token.value());
 
-  policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyTokenForTesting());
+  policy::SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
 
   maybe_dm_token = ConnectorsServiceFactory::GetForBrowserContext(profile_)
                        ->GetDMTokenForRealTimeUrlCheck();
