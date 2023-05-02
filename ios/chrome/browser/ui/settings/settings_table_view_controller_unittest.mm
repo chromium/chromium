@@ -13,6 +13,7 @@
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync/base/features.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -109,7 +110,8 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(fake_identity_);
-    auth_service_->SignIn(fake_identity_);
+    auth_service_->SignIn(fake_identity_,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
     // Make sure there is no pre-existing policy present.
     [[NSUserDefaults standardUserDefaults]
@@ -205,7 +207,8 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
 // on sync during sign-in.
 TEST_F(SettingsTableViewControllerTest, SyncOn) {
   SetupSyncServiceEnabledExpectations();
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -233,7 +236,8 @@ TEST_F(SettingsTableViewControllerTest, SyncPasswordError) {
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -270,7 +274,8 @@ TEST_F(SettingsTableViewControllerTest, TurnsSyncOffAfterFirstSetup) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(false));
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -302,7 +307,8 @@ TEST_F(SettingsTableViewControllerTest,
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(true));
   ON_CALL(*sync_service_mock_, HasSyncConsent()).WillByDefault(Return(true));
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -337,7 +343,8 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
 TEST_F(SettingsTableViewControllerTest, SyncSetupNotComplete) {
   ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
       .WillByDefault(Return(false));
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -389,7 +396,8 @@ TEST_F(SettingsTableViewControllerTest, HoldAccountStorageErrorWhenEligible) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -417,7 +425,8 @@ TEST_F(SettingsTableViewControllerTest, ClearAccountStorageErrorWhenResolved) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -464,7 +473,8 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenIneligible) {
       .WillByDefault(
           Return(syncer::SyncService::UserActionableError::kNeedsPassphrase));
 
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();
@@ -492,7 +502,8 @@ TEST_F(SettingsTableViewControllerTest, DontHoldAccountErrorWhenNoError) {
   ON_CALL(*sync_service_mock_, GetUserActionableError())
       .WillByDefault(Return(syncer::SyncService::UserActionableError::kNone));
 
-  auth_service_->SignIn(fake_identity_);
+  auth_service_->SignIn(fake_identity_,
+                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   CreateController();
   CheckController();

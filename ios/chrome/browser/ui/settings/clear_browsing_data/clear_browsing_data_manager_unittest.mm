@@ -12,6 +12,7 @@
 #import "components/search_engines/template_url_data_util.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
@@ -202,7 +203,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
       syncer::SyncService::DISABLE_REASON_USER_CHOICE);
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   [manager_ loadModel:model_];
 
@@ -312,7 +314,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   [manager_ loadModel:model_];
 
@@ -342,7 +345,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   // Set DSE to one from "prepoulated list".
   const std::string kEngineP1Name = "prepopulated-1";
@@ -408,7 +412,8 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-      ->SignIn(fake_identity());
+      ->SignIn(fake_identity(),
+               signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
   // Set DSE to a be fully custom.
   const std::string kEngineC1Name = "custom-1";

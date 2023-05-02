@@ -11,6 +11,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/test/mock_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
@@ -121,7 +122,8 @@ void PassphraseTableViewControllerTest::SetUp() {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  auth_service->SignIn(account_manager_service->GetDefaultIdentity());
+  auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
+                       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 }
 
 void PassphraseTableViewControllerTest::TearDown() {
