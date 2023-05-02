@@ -102,19 +102,20 @@ def _CheckCurrentVersionIncreaseRule(input_api, output_api):
   """
   files_requiring_version_increase = []
   for f in input_api.AffectedFiles():
-    local_path = input_api.os_path.relpath(
-        f.AbsoluteLocalPath(),
-        input_api.PresubmitLocalPath()).replace('\\', '/')
-    for trigger_local_path in TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS:
-      if local_path.startswith(trigger_local_path):
-        files_requiring_version_increase.append(local_path)
+    if f.ChangedContents():
+      local_path = input_api.os_path.relpath(
+          f.AbsoluteLocalPath(),
+          input_api.PresubmitLocalPath()).replace('\\', '/')
+      for trigger_local_path in TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS:
+        if local_path.startswith(trigger_local_path):
+          files_requiring_version_increase.append(local_path)
 
   if not files_requiring_version_increase:
     return []
 
   if not _CheckVersionVariableChanged(input_api, CURRENT_VERSION_LOCAL_PATH,
                                       CURRENT_VERSION_VARIABLE):
-    return [output_api.PresubmitPromptWarning(
+    return [output_api.PresubmitError(
         '{} in {} needs to updated due to changes in:'.format(
             CURRENT_VERSION_VARIABLE, CURRENT_VERSION_LOCAL_PATH),
         items=files_requiring_version_increase)]
