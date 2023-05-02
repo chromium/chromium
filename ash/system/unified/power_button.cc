@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -38,12 +39,17 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 
@@ -53,6 +59,9 @@ namespace {
 // Rounded corner constants.
 static constexpr int kRoundedCornerRadius = 16;
 static constexpr int kNonRoundedCornerRadius = 4;
+
+// Size of the icon in the power button.
+constexpr gfx::Size kIconSize{20, 20};
 
 constexpr gfx::RoundedCornersF kBottomRightNonRoundedCorners(
     kRoundedCornerRadius,
@@ -160,6 +169,40 @@ class PowerButtonMenuDelegate : public ui::SimpleMenuModel {
   }
 
   gfx::FontList font_list_;
+};
+
+// The power button container which contains 2 icons: a power icon and an arrow
+// down icon.
+class PowerButtonContainer : public views::Button {
+ public:
+  explicit PowerButtonContainer(PressedCallback callback) : Button(callback) {
+    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+    layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+
+    auto* power_icon = AddChildView(std::make_unique<views::ImageView>());
+    power_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        kUnifiedMenuPowerIcon, cros_tokens::kCrosSysOnSurface));
+    power_icon->SetImageSize(kIconSize);
+    auto* arrow_icon = AddChildView(std::make_unique<views::ImageView>());
+    // TODO(b/278747569): Might need to use a small style arrow down icon.
+    arrow_icon->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kCaretDownIcon, cros_tokens::kCrosSysOnSurface));
+    arrow_icon->SetImageSize(kIconSize);
+
+    SetBorder(views::CreateEmptyBorder(gfx::Insets(6)));
+
+    // Paints this view to a layer so it will be on top of the
+    // `background_view_`
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+
+    SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
+    SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
+  }
+  PowerButtonContainer(const PowerButtonContainer&) = delete;
+  PowerButtonContainer& operator=(const PowerButtonContainer&) = delete;
+  ~PowerButtonContainer() override = default;
 };
 
 }  // namespace
@@ -324,14 +367,9 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
 
 PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
     : background_view_(AddChildView(std::make_unique<View>())),
-      button_content_(AddChildView(std::make_unique<IconButton>(
+      button_content_(AddChildView(std::make_unique<PowerButtonContainer>(
           base::BindRepeating(&PowerButton::OnButtonActivated,
-                              base::Unretained(this)),
-          IconButton::Type::kMediumFloating,
-          &kUnifiedMenuPowerIcon,
-          IDS_ASH_STATUS_TRAY_POWER_MENU,
-          /*is_togglable=*/true,
-          /*has_border=*/false))),
+                              base::Unretained(this))))),
       context_menu_(std::make_unique<MenuController>(/*button=*/this)),
       tray_controller_(tray_controller) {
   CHECK(tray_controller_);
@@ -349,21 +387,13 @@ PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
 
   set_context_menu_controller(context_menu_.get());
 
-  // Also paint the `IconButton` to a layer on top of the `background_view_`
-  button_content_->SetPaintToLayer();
-  button_content_->layer()->SetFillsBoundsOpaquely(false);
-
   // Installs the customized focus ring path generator for the button.
-  button_content_->SetInstallFocusRingOnFocus(true);
+  views::FocusRing::Install(button_content_);
   views::FocusRing::Get(button_content_)
       ->SetPathGenerator(
           std::make_unique<HighlightPathGenerator>(/*power_button=*/this));
-  button_content_->SetFocusPainter(nullptr);
-  button_content_->SetIconColorId(cros_tokens::kCrosSysOnSurface);
-  button_content_->SetIconToggledColorId(
-      cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  button_content_->SetBackgroundToggledColorId(
-      cros_tokens::kCrosSysSystemPrimaryContainer);
+  views::FocusRing::Get(button_content_)
+      ->SetColorId(cros_tokens::kCrosSysPrimary);
 }
 
 PowerButton::~PowerButton() = default;
@@ -394,7 +424,6 @@ void PowerButton::UpdateView() {
     focus_ring->InvalidateLayout();
     focus_ring->SchedulePaint();
   }
-  button_content_->SetToggled(IsMenuShowing());
 }
 
 void PowerButton::UpdateRoundedCorners() {

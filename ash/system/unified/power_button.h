@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/style/icon_button.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/view.h"
 
 namespace ui {
 class Event;
@@ -36,7 +36,7 @@ class ASH_EXPORT PowerButton : public views::View {
   // If the context mune is currently open.
   bool IsMenuShowing();
 
-  IconButton* button_content_for_testing() { return button_content_; }
+  views::View* button_content_for_testing() { return button_content_; }
 
  private:
   friend class PowerButtonTest;
@@ -58,7 +58,7 @@ class ASH_EXPORT PowerButton : public views::View {
   void UpdateRoundedCorners();
 
   // Shows the context menu by `MenuController`. This method passed in to the
-  // base `IconButton` as the `OnPressedCallback`.
+  // `Button` view as the `OnPressedCallback`.
   void OnButtonActivated(const ui::Event& event);
 
   // Getter of the `MenuItemView` for testing.
@@ -66,7 +66,7 @@ class ASH_EXPORT PowerButton : public views::View {
 
   // Owned by views hierarchy.
   raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
-  raw_ptr<IconButton, ExperimentalAsh> button_content_ = nullptr;
+  raw_ptr<views::View, ExperimentalAsh> button_content_ = nullptr;
 
   // The context menu, which will be set as the controller to show the power
   // button menu view.

@@ -97,15 +97,8 @@ class PowerButtonTest : public NoSessionAshTestBase {
 
   ui::Layer* GetBackgroundLayer() { return button_->background_view_->layer(); }
 
-  // Simulates mouse press event on the power button. The generator click
-  // does not work anymore since menu is a nested run loop.
-  void SimulatePowerButtonPress() {
-    ui::MouseEvent event(ui::ET_MOUSE_PRESSED,
-                         button_->GetBoundsInScreen().CenterPoint(),
-                         button_->GetBoundsInScreen().CenterPoint(),
-                         ui::EventTimeForNow(), 0, 0);
-    button_->button_content_->NotifyClick(event);
-  }
+  // Simulates mouse press event on the power button.
+  void SimulatePowerButtonPress() { LeftClickOn(button_->button_content_); }
 
   // Owned by view hierarchy.
   raw_ptr<PowerButton, ExperimentalAsh> button_ = nullptr;
