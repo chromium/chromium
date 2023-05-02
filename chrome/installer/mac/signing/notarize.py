@@ -314,10 +314,14 @@ def staple(path):
     # Known bad codes:
     # 65 - CloudKit query failed due to "(null)"
     # 68 - A server with the specified hostname could not be found.
-    _notary_service_retry(staple_command, (65, 68), 'staple')
+    _notary_service_retry(
+        staple_command, (65, 68), 'staple', sleep_before_retry=True)
 
 
-def _notary_service_retry(func, known_bad_returncodes, short_command_name):
+def _notary_service_retry(func,
+                          known_bad_returncodes,
+                          short_command_name,
+                          sleep_before_retry=False):
     """Calls the function |func| that runs a subprocess command, retrying it if
     the command exits uncleanly and the returncode is known to be bad (e.g.
     flaky).
@@ -329,6 +333,8 @@ def _notary_service_retry(func, known_bad_returncodes, short_command_name):
             ignored and |func| retried.
         short_command_name: A short descriptive string of |func| that will be
             logged when |func| is retried.
+        sleep_before_retry: If True, will wait before re-trying when a known
+            failure occurs.
 
     Returns:
         The result of |func|.
@@ -343,6 +349,8 @@ def _notary_service_retry(func, known_bad_returncodes, short_command_name):
                     e.returncode in known_bad_returncodes):
                 logger.warning('Retrying %s, exited %d, output: %s',
                                short_command_name, e.returncode, e.output)
+                if sleep_before_retry:
+                    time.sleep(30)
             else:
                 raise e
 

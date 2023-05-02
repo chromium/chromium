@@ -766,8 +766,9 @@ class TestStaple(unittest.TestCase):
             mock.call('/work/Foo.app')
         ])
 
+    @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch('signing.commands.run_command')
-    def test_fail_once_then_succeed(self, run_command):
+    def test_fail_once_then_succeed(self, run_command, **kwargs):
         run_command.side_effect = [
             subprocess.CalledProcessError(
                 65, 'stapler',
@@ -779,9 +780,11 @@ class TestStaple(unittest.TestCase):
             mock.call(
                 ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
         ])
+        self.assertEqual(1, kwargs['sleep'].call_count)
 
+    @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch('signing.commands.run_command')
-    def test_fail_twice_with_unexpected_code(self, run_command):
+    def test_fail_twice_with_unexpected_code(self, run_command, **kwargs):
         run_command.side_effect = [
             subprocess.CalledProcessError(
                 65, 'stapler',
@@ -797,9 +800,11 @@ class TestStaple(unittest.TestCase):
             mock.call(
                 ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
         ])
+        self.assertEqual(1, kwargs['sleep'].call_count)
 
+    @mock.patch.multiple('time', **{'sleep': mock.DEFAULT})
     @mock.patch('signing.commands.run_command')
-    def test_fail_three_times(self, run_command):
+    def test_fail_three_times(self, run_command, **kwargs):
         run_command.side_effect = [
             subprocess.CalledProcessError(
                 65, 'stapler',
@@ -819,3 +824,4 @@ class TestStaple(unittest.TestCase):
             mock.call(
                 ['xcrun', 'stapler', 'staple', '--verbose', '/tmp/file.dmg'])
         ])
+        self.assertEqual(2, kwargs['sleep'].call_count)
