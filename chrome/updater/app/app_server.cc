@@ -70,8 +70,8 @@ base::OnceClosure AppServer::ModeCheck() {
 
   if (this_version < active_version) {
     global_prefs = nullptr;
-    uninstall_self_ = true;
     if (IsInternalService()) {
+      uninstall_self_ = true;
       return base::BindOnce(&AppServer::ActiveDutyInternal, this,
                             MakeInactiveUpdateServiceInternal());
     }
