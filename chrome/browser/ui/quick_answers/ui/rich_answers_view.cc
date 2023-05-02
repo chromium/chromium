@@ -144,10 +144,6 @@ void RichAnswersView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
       l10n_util::GetStringUTF8(IDS_RICH_ANSWERS_VIEW_A11Y_NAME_TEXT));
 }
 
-ui::ImageModel RichAnswersView::GetIconImageModelForTesting() {
-  return vector_icon_ ? vector_icon_->GetImageModel() : ui::ImageModel();
-}
-
 void RichAnswersView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -186,7 +182,6 @@ void RichAnswersView::InitLayout() {
     }
   }
 
-  // Add icon that corresponds to the quick answer result type.
   AddResultTypeIcon();
 
   // Add util buttons in the top-right corner.
@@ -210,8 +205,8 @@ void RichAnswersView::InitWidget() {
 }
 
 void RichAnswersView::AddResultTypeIcon() {
-  // Add the icon representing the quick answers result type as well as
-  // a circle background behind the icon.
+  // Add the icon representing the quick answers result type as well
+  // as a circle background behind the icon.
   raw_ptr<views::FlexLayoutView> vector_icon_container =
       main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
