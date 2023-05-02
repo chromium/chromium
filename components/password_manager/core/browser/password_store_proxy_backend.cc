@@ -446,7 +446,8 @@ void PasswordStoreProxyBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
         base::BindOnce(&PasswordStoreBackend::GetAllLoginsAsync,
                        base::Unretained(built_in_backend_));
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<LoginsResultOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            LoginsResultOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("GetAllLoginsAsync"), std::move(callback));
   } else {
@@ -481,7 +482,8 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
         base::BindOnce(&PasswordStoreBackend::GetAutofillableLoginsAsync,
                        base::Unretained(built_in_backend_));
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<LoginsResultOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            LoginsResultOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("GetAutofillableLoginsAsync"), std::move(callback));
   } else {
@@ -532,7 +534,8 @@ void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
         base::Unretained(built_in_backend_), include_psl, forms);
 
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<LoginsResultOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            LoginsResultOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("FillMatchingLoginsAsync"), std::move(callback));
   } else {
@@ -570,7 +573,8 @@ void PasswordStoreProxyBackend::AddLoginAsync(
         base::BindOnce(&PasswordStoreBackend::AddLoginAsync,
                        base::Unretained(built_in_backend_), form);
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("AddLoginAsync"), std::move(callback));
   } else {
@@ -606,7 +610,8 @@ void PasswordStoreProxyBackend::UpdateLoginAsync(
         base::BindOnce(&PasswordStoreBackend::UpdateLoginAsync,
                        base::Unretained(built_in_backend_), form);
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("UpdateLoginAsync"), std::move(callback));
   } else {
@@ -641,7 +646,8 @@ void PasswordStoreProxyBackend::RemoveLoginAsync(
         base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
                        base::Unretained(built_in_backend_), form);
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("RemoveLoginAsync"), std::move(callback));
   } else {
@@ -684,7 +690,8 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
                        base::Unretained(built_in_backend_), url_filter,
                        delete_begin, delete_end, std::move(sync_completion));
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
   } else {
@@ -723,7 +730,8 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
         &PasswordStoreBackend::RemoveLoginsCreatedBetweenAsync,
         base::Unretained(built_in_backend_), delete_begin, delete_end);
     result_callback = base::BindOnce(
-        &PasswordStoreProxyBackend::MaybeRetryOperation<PasswordChangesOrError>,
+        &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
+            PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("RemoveLoginsCreatedBetweenAsync"), std::move(callback));
   } else {
@@ -801,7 +809,7 @@ void PasswordStoreProxyBackend::OnSyncServiceInitialized(
 }
 
 template <typename ResultT>
-void PasswordStoreProxyBackend::MaybeRetryOperation(
+void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
     base::OnceCallback<void(base::OnceCallback<void(ResultT)> callback)>
         retry_callback,
     const MethodName& method_name,
