@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
@@ -706,7 +707,8 @@ TEST_F(AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition,
 }
 
 TEST_F(AmbientAnimationPhotoProviderTest, RecordsPhotoOrientationMatch) {
-  static_resources_.set_ambient_theme(AmbientTheme::kFeelTheBreeze);
+  static_resources_.set_ui_settings(
+      AmbientUiSettings(AmbientTheme::kFeelTheBreeze));
 
   // 2 landscape 2 portrait
   AddImageToModel(gfx::test::CreateImageSkia(/*width=*/10, /*height=*/20));

@@ -1110,11 +1110,10 @@ void AmbientController::OnImagesFailed() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
-  AmbientTheme current_theme = GetCurrentUiSettings().theme();
   std::unique_ptr<AmbientContainerView> container_view;
   if (ambient_ui_launcher_) {
     container_view = std::make_unique<AmbientContainerView>(
-        current_theme, ambient_ui_launcher_->CreateView(),
+        GetCurrentUiSettings(), ambient_ui_launcher_->CreateView(),
         session_metrics_recorder_.get());
   } else {
     // TODO(b/274164306): Everything should use
@@ -1122,7 +1121,7 @@ std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     // are migrated to AmbientUiLauncher.
     container_view = std::make_unique<AmbientContainerView>(
         &delegate_, ambient_animation_progress_tracker_.get(),
-        AmbientAnimationStaticResources::Create(current_theme,
+        AmbientAnimationStaticResources::Create(GetCurrentUiSettings(),
                                                 /*serializable=*/true),
         session_metrics_recorder_.get(), frame_rate_controller_.get());
   }
@@ -1193,18 +1192,18 @@ void AmbientController::StartRefreshingImages() {
   // model/controller with the appropriate config each time before calling
   // StartScreenUpdate().
   DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
-  AmbientTheme current_theme = GetCurrentUiSettings().theme();
-  DVLOG(4) << "Loaded ambient theme " << ToString(current_theme);
+  AmbientUiSettings current_ui_settings = GetCurrentUiSettings();
+  DVLOG(4) << "Loaded ambient ui settings " << current_ui_settings.ToString();
 
   AmbientPhotoConfig photo_config;
   std::unique_ptr<AmbientTopicQueue::Delegate> topic_queue_delegate;
-  if (current_theme == AmbientTheme::kSlideshow) {
+  if (current_ui_settings.theme() == AmbientTheme::kSlideshow) {
     photo_config = CreateAmbientSlideshowPhotoConfig();
     topic_queue_delegate =
         std::make_unique<AmbientTopicQueueSlideshowDelegate>();
   } else {
     scoped_refptr<cc::SkottieWrapper> animation =
-        AmbientAnimationStaticResources::Create(current_theme,
+        AmbientAnimationStaticResources::Create(std::move(current_ui_settings),
                                                 /*serializable=*/false)
             ->GetSkottieWrapper();
     photo_config =
@@ -1243,8 +1242,8 @@ void AmbientController::MaybeStartScreenSaver() {
   // Add observer for assistant interaction model
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 
-  session_metrics_recorder_ = std::make_unique<AmbientSessionMetricsRecorder>(
-      GetCurrentUiSettings().theme());
+  session_metrics_recorder_ =
+      std::make_unique<AmbientSessionMetricsRecorder>(GetCurrentUiSettings());
   frame_rate_controller_ =
       std::make_unique<AmbientAnimationFrameRateController>(
           Shell::Get()->frame_throttling_controller());

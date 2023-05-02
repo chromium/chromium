@@ -4,6 +4,7 @@
 
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "base/logging.h"
 
 namespace ash {
@@ -18,8 +19,9 @@ namespace ash {
 
 // static
 std::unique_ptr<AmbientAnimationStaticResources>
-AmbientAnimationStaticResources::Create(AmbientTheme theme, bool serializable) {
-  if (theme == AmbientTheme::kSlideshow) {
+AmbientAnimationStaticResources::Create(AmbientUiSettings ui_settings,
+                                        bool serializable) {
+  if (ui_settings.theme() == AmbientTheme::kSlideshow) {
     return nullptr;
   }
 

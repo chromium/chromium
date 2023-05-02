@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/check.h"
@@ -90,7 +91,7 @@ void RecordAmbientModeActivation(AmbientUiMode ui_mode, bool tablet_mode) {
 
 void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
                                   bool tablet_mode,
-                                  AmbientTheme theme) {
+                                  const AmbientUiSettings& ui_settings) {
   base::UmaHistogramCustomTimes(
       /*name=*/GetHistogramName("Ash.AmbientMode.EngagementTime", tablet_mode),
       /*sample=*/time_delta,
@@ -99,7 +100,7 @@ void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
       /*buckets=*/kAmbientModeElapsedTimeHistogramBuckets);
 
   RecordEngagementTime(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(theme)}),
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", ui_settings.ToString()}),
       time_delta);
 }
 
@@ -113,24 +114,29 @@ void RecordAmbientModeSelectedNumberOfAlbums(int num_albums) {
                               num_albums);
 }
 
-void RecordAmbientModeAnimationSmoothness(int smoothness, AmbientTheme theme) {
+void RecordAmbientModeAnimationSmoothness(
+    int smoothness,
+    const AmbientUiSettings& ui_settings) {
   base::UmaHistogramPercentage(
-      base::StrCat(
-          {"Ash.AmbientMode.LottieAnimationSmoothness.", ToString(theme)}),
+      base::StrCat({"Ash.AmbientMode.LottieAnimationSmoothness.",
+                    ui_settings.ToString()}),
       smoothness);
 }
 
-void RecordAmbientModePhotoOrientationMatch(int percentage_match,
-                                            AmbientTheme theme) {
+void RecordAmbientModePhotoOrientationMatch(
+    int percentage_match,
+    const AmbientUiSettings& ui_settings) {
   base::UmaHistogramPercentage(
-      base::StrCat({"Ash.AmbientMode.PhotoOrientationMatch.", ToString(theme)}),
+      base::StrCat(
+          {"Ash.AmbientMode.PhotoOrientationMatch.", ui_settings.ToString()}),
       percentage_match);
 }
 
 void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
-                                  AmbientTheme theme) {
+                                  const AmbientUiSettings& ui_settings) {
   base::UmaHistogramCustomTimes(
-      /*name=*/base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(theme)}),
+      /*name=*/base::StrCat(
+          {"Ash.AmbientMode.StartupTime.", ui_settings.ToString()}),
       /*sample=*/startup_time,
       /*min=*/base::Seconds(0),
       /*max=*/kMetricsStartupTimeMax,
@@ -139,8 +145,8 @@ void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
 
 AmbientOrientationMetricsRecorder::AmbientOrientationMetricsRecorder(
     views::View* root_rendering_view,
-    AmbientTheme theme)
-    : theme_(ToString(theme)) {
+    const AmbientUiSettings& ui_settings)
+    : settings_(ui_settings.ToString()) {
   root_rendering_view_observer_.Observe(root_rendering_view);
   // Capture initial orientation with manual call.
   OnViewBoundsChanged(root_rendering_view);
@@ -151,13 +157,13 @@ AmbientOrientationMetricsRecorder::~AmbientOrientationMetricsRecorder() {
   if (!total_portrait_duration_.is_zero()) {
     RecordEngagementTime(
         base::StringPrintf("Ash.AmbientMode.EngagementTime.%s.Portrait",
-                           theme_.data()),
+                           settings_.data()),
         total_portrait_duration_);
   }
   if (!total_landscape_duration_.is_zero()) {
     RecordEngagementTime(
         base::StringPrintf("Ash.AmbientMode.EngagementTime.%s.Landscape",
-                           theme_.data()),
+                           settings_.data()),
         total_landscape_duration_);
   }
 }

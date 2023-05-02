@@ -88,17 +88,18 @@ constexpr int kTimeFontSizeDip = 32;
 constexpr SkColor kDarkModeShieldColor =
     SkColorSetA(gfx::kGoogleGrey900, SK_AlphaOPAQUE / 10);
 
-void LogCompositorThroughput(AmbientTheme theme, int smoothness) {
+void LogCompositorThroughput(const AmbientUiSettings& ui_settings,
+                             int smoothness) {
   // Use VLOG instead of DVLOG since this log is performance-related and
   // developers will almost certainly only care about this log on non-debug
   // builds.
   VLOG(1) << "Compositor throughput report: smoothness=" << smoothness;
-  ambient::RecordAmbientModeAnimationSmoothness(smoothness, theme);
+  ambient::RecordAmbientModeAnimationSmoothness(smoothness, ui_settings);
 }
 
 void OnCompositorThroughputReported(
     base::TimeTicks logging_start_time,
-    AmbientTheme theme,
+    const AmbientUiSettings& ui_settings,
     const cc::FrameSequenceMetrics::CustomReportData& data) {
   base::TimeDelta duration = base::TimeTicks::Now() - logging_start_time;
   float duration_sec = duration.InSecondsF();
@@ -109,7 +110,7 @@ void OnCompositorThroughputReported(
           << " actual_fps=" << data.frames_produced / duration_sec
           << " duration=" << duration;
   metrics_util::ForSmoothness(
-      base::BindRepeating(&LogCompositorThroughput, theme))
+      base::BindRepeating(&LogCompositorThroughput, ui_settings))
       .Run(data);
 }
 
@@ -348,7 +349,8 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   // gets cut off at the top when doing this, making it look strange. UX
   // decision is to just omit the tree shadow in portrait mode. If/when
   // portrait versions of the animation are made, this logic can be removed.
-  if (static_resources_->GetAmbientTheme() == AmbientTheme::kFeelTheBreeze) {
+  if (static_resources_->GetUiSettings().theme() ==
+      AmbientTheme::kFeelTheBreeze) {
     bool tree_shadow_toggled = animation_photo_provider_.ToggleStaticImageAsset(
         cc::HashSkottieResourceId(ambient::resources::kTreeShadowAssetId),
         /*enabled=*/content_bounds.width() >= content_bounds.height());
@@ -426,7 +428,7 @@ void AmbientAnimationView::RestartThroughputTracking() {
   throughput_tracker_->Start(
       base::BindOnce(&OnCompositorThroughputReported,
                      /*logging_start_time=*/base::TimeTicks::Now(),
-                     static_resources_->GetAmbientTheme()));
+                     static_resources_->GetUiSettings()));
 }
 
 void AmbientAnimationView::ApplyJitter() {

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "ash/public/cpp/ambient/common/ambient_settings.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -75,8 +76,8 @@ TEST(AmbientOrientationMetricsRecorderTest, RecordsEngagementTime) {
   base::HistogramTester histogram_tester;
   {
     views::View test_view;
-    AmbientOrientationMetricsRecorder recorder(&test_view,
-                                               AmbientTheme::kFeelTheBreeze);
+    AmbientOrientationMetricsRecorder recorder(
+        &test_view, AmbientUiSettings(AmbientTheme::kFeelTheBreeze));
     test_view.SetSize(gfx::Size(200, 100));
     // No change in size shouldn't count.
     test_view.SetSize(gfx::Size(200, 100));

@@ -5,8 +5,9 @@
 #ifndef ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
 #define ASH_AMBIENT_METRICS_AMBIENT_METRICS_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
-#include "ash/constants/ambient_theme.h"
 #include "ash/public/cpp/ambient/ambient_mode_photo_source.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_piece.h"
@@ -19,6 +20,7 @@
 namespace ash {
 
 struct AmbientSettings;
+class AmbientUiSettings;
 enum class AmbientUiMode;
 
 namespace ambient {
@@ -33,22 +35,26 @@ AmbientSettingsToPhotoSource(const AmbientSettings& settings);
 ASH_EXPORT void RecordAmbientModeActivation(AmbientUiMode ui_mode,
                                             bool tablet_mode);
 
-ASH_EXPORT void RecordAmbientModeTimeElapsed(base::TimeDelta time_delta,
-                                             bool tablet_mode,
-                                             AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModeTimeElapsed(
+    base::TimeDelta time_delta,
+    bool tablet_mode,
+    const AmbientUiSettings& ui_settings);
 
 ASH_EXPORT void RecordAmbientModeTotalNumberOfAlbums(int num_albums);
 
 ASH_EXPORT void RecordAmbientModeSelectedNumberOfAlbums(int num_albums);
 
-ASH_EXPORT void RecordAmbientModeAnimationSmoothness(int smoothness,
-                                                     AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModeAnimationSmoothness(
+    int smoothness,
+    const AmbientUiSettings& ui_settings);
 
-ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(int percentage_match,
-                                                       AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModePhotoOrientationMatch(
+    int percentage_match,
+    const AmbientUiSettings& ui_settings);
 
-ASH_EXPORT void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
-                                             AmbientTheme theme);
+ASH_EXPORT void RecordAmbientModeStartupTime(
+    base::TimeDelta startup_time,
+    const AmbientUiSettings& ui_settings);
 
 // Records metrics that track the total usage of each orientation in ambient
 // mode.
@@ -56,7 +62,7 @@ class ASH_EXPORT AmbientOrientationMetricsRecorder
     : public views::ViewObserver {
  public:
   AmbientOrientationMetricsRecorder(views::View* root_rendering_view,
-                                    AmbientTheme theme);
+                                    const AmbientUiSettings& ui_settings);
   AmbientOrientationMetricsRecorder(const AmbientOrientationMetricsRecorder&) =
       delete;
   AmbientOrientationMetricsRecorder& operator=(
@@ -67,7 +73,7 @@ class ASH_EXPORT AmbientOrientationMetricsRecorder
   void OnViewBoundsChanged(views::View* observed_view) override;
   void SaveCurrentOrientationDuration();
 
-  const base::StringPiece theme_;
+  const std::string settings_;
   base::ScopedObservation<views::View, ViewObserver>
       root_rendering_view_observer_{this};
   // Null until a non-empty view boundary is provided (i.e. the initial view

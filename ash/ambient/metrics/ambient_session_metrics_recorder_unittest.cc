@@ -5,8 +5,11 @@
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 
 #include <string>
+#include <utility>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/constants/ambient_theme.h"
+#include "ash/constants/ambient_video.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -28,15 +31,34 @@ namespace {
 using ::testing::Eq;
 }  // namespace
 
-class AmbientSessionMetricsRecorderTest : public AshTestBase {
+class AmbientSessionMetricsRecorderTest
+    : public AshTestBase,
+      public ::testing::WithParamInterface<AmbientUiSettings> {
+ protected:
+  AmbientSessionMetricsRecorderTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  void SetUp() override {
+    AshTestBase::SetUp();
+    // Simulate the screensaver being launched in all tests.
+    AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShown);
+  }
+
+  std::string GetMetricNameForTheme(base::StringPiece prefix) {
+    return base::StrCat({prefix, GetParam().ToString()});
+  }
+};
+
+class AmbientSessionMetricsRecorderLottieAnimationTest
+    : public AmbientSessionMetricsRecorderTest {
  protected:
   struct Harness {
     static constexpr gfx::Size kTestSize = gfx::Size(100, 100);
     static constexpr base::TimeDelta kTotalAnimationDuration =
         base::Seconds(10);
 
-    explicit Harness(AmbientTheme theme)
-        : recorder(theme),
+    explicit Harness(AmbientUiSettings ui_settings)
+        : recorder(std::move(ui_settings)),
           animation_1(cc::CreateSkottie(kTestSize,
                                         kTotalAnimationDuration.InSecondsF())),
           animation_2(cc::CreateSkottie(kTestSize,
@@ -50,32 +72,25 @@ class AmbientSessionMetricsRecorderTest : public AshTestBase {
     lottie::Animation animation_2;
     gfx::Canvas canvas;
   };
-
-  AmbientSessionMetricsRecorderTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  void SetUp() override {
-    AshTestBase::SetUp();
-    // Simulate the screensaver being launched in all tests.
-    AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShown);
-  }
 };
 
-class AmbientSessionMetricsRecorderTestForAllThemes
-    : public AmbientSessionMetricsRecorderTest,
-      public ::testing::WithParamInterface<AmbientTheme> {
- protected:
-  std::string GetMetricNameForTheme(base::StringPiece prefix) {
-    return base::StrCat({prefix, ToString(GetParam())});
-  }
-};
+INSTANTIATE_TEST_SUITE_P(
+    AllUiSettings,
+    AmbientSessionMetricsRecorderTest,
+    // Just one sample for each category of ui settings
+    // is needed.
+    testing::Values(AmbientUiSettings(AmbientTheme::kSlideshow),
+                    AmbientUiSettings(AmbientTheme::kFeelTheBreeze),
+                    AmbientUiSettings(AmbientTheme::kVideo,
+                                      AmbientVideo::kNewMexico)));
 
-INSTANTIATE_TEST_SUITE_P(AllAnimationThemes,
-                         AmbientSessionMetricsRecorderTestForAllThemes,
-                         testing::Values(AmbientTheme::kFeelTheBreeze,
-                                         AmbientTheme::kFloatOnBy));
+INSTANTIATE_TEST_SUITE_P(
+    AllLottieAnimations,
+    AmbientSessionMetricsRecorderLottieAnimationTest,
+    testing::Values(AmbientUiSettings(AmbientTheme::kFeelTheBreeze),
+                    AmbientUiSettings(AmbientTheme::kFloatOnBy)));
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsEngagementTime) {
+TEST_P(AmbientSessionMetricsRecorderTest, MetricsEngagementTime) {
   constexpr base::TimeDelta kExpectedEngagementTime = base::Minutes(5);
   base::HistogramTester histogram_tester;
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
@@ -89,7 +104,7 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsEngagementTime) {
       "Ash.AmbientMode.EngagementTime.ClamshellMode", kExpectedEngagementTime,
       1);
   histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", GetParam().ToString()}),
       kExpectedEngagementTime, 1);
 
   // Now do the same sequence in tablet mode.
@@ -103,11 +118,11 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsEngagementTime) {
   histogram_tester.ExpectTimeBucketCount(
       "Ash.AmbientMode.EngagementTime.TabletMode", kExpectedEngagementTime, 1);
   histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.EngagementTime.", ToString(GetParam())}),
+      base::StrCat({"Ash.AmbientMode.EngagementTime.", GetParam().ToString()}),
       kExpectedEngagementTime, 2);
 }
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsStartupTime) {
+TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTime) {
   constexpr base::TimeDelta kExpectedStartupTime = base::Seconds(5);
 
   base::HistogramTester histogram_tester;
@@ -119,12 +134,11 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, MetricsStartupTime) {
   task_environment()->FastForwardBy(base::Minutes(1));
   recorder.RegisterScreen(/*animation=*/nullptr);
   histogram_tester.ExpectTimeBucketCount(
-      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      base::StrCat({"Ash.AmbientMode.StartupTime.", GetParam().ToString()}),
       kExpectedStartupTime, 1);
 }
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
-       MetricsStartupTimeFailedToStart) {
+TEST_P(AmbientSessionMetricsRecorderTest, MetricsStartupTimeFailedToStart) {
   constexpr base::TimeDelta kFailedStartupTime = base::Minutes(1);
   base::HistogramTester histogram_tester;
   {
@@ -132,39 +146,31 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
     task_environment()->FastForwardBy(kFailedStartupTime);
   }
   histogram_tester.ExpectUniqueTimeSample(
-      base::StrCat({"Ash.AmbientMode.StartupTime.", ToString(GetParam())}),
+      base::StrCat({"Ash.AmbientMode.StartupTime.", GetParam().ToString()}),
       kFailedStartupTime, 1);
 }
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsScreenCount) {
+TEST_P(AmbientSessionMetricsRecorderTest, RecordsScreenCount) {
   base::HistogramTester histogram_tester;
   {
-    Harness harness(GetParam());
-    harness.recorder.RegisterScreen(&harness.animation_1);
-    harness.animation_1.Start();
-    harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
-                              Harness::kTestSize);
+    AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.RegisterScreen(/*animation=*/nullptr);
   }
   histogram_tester.ExpectUniqueSample(
       GetMetricNameForTheme("Ash.AmbientMode.ScreenCount."), /*sample=*/1,
       /*expected_bucket_count=*/1);
   {
-    Harness harness(GetParam());
-    harness.recorder.RegisterScreen(&harness.animation_1);
-    harness.recorder.RegisterScreen(&harness.animation_2);
-    harness.animation_1.Start();
-    harness.animation_1.Paint(&harness.canvas, task_environment()->NowTicks(),
-                              Harness::kTestSize);
-    harness.animation_2.Start();
-    harness.animation_2.Paint(&harness.canvas, task_environment()->NowTicks(),
-                              Harness::kTestSize);
+    AmbientSessionMetricsRecorder recorder(GetParam());
+    recorder.RegisterScreen(/*animation=*/nullptr);
+    recorder.RegisterScreen(/*animation=*/nullptr);
   }
   histogram_tester.ExpectBucketCount(
       GetMetricNameForTheme("Ash.AmbientMode.ScreenCount."), /*sample=*/2,
       /*expected_count=*/1);
 }
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsTimestampOffset) {
+TEST_P(AmbientSessionMetricsRecorderLottieAnimationTest,
+       RecordsTimestampOffset) {
   static constexpr base::TimeDelta kFrameInterval = base::Milliseconds(100);
   base::HistogramTester histogram_tester;
 
@@ -194,7 +200,7 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes, RecordsTimestampOffset) {
       kFrameInterval, 1);
 }
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
+TEST_P(AmbientSessionMetricsRecorderLottieAnimationTest,
        RecordsMeanTimestampOffsetWithDifferentCycleStartOffsets) {
   base::HistogramTester histogram_tester;
 
@@ -252,7 +258,7 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
       GetMetricNameForTheme("Ash.AmbientMode.MultiScreenOffset."), 6);
 }
 
-TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
+TEST_P(AmbientSessionMetricsRecorderLottieAnimationTest,
        DoesNotRecordMeanTimestampOffsetForSingleScreen) {
   static constexpr base::TimeDelta kFrameInterval = base::Milliseconds(100);
   base::HistogramTester histogram_tester;
@@ -267,20 +273,6 @@ TEST_P(AmbientSessionMetricsRecorderTestForAllThemes,
                             Harness::kTestSize);
   histogram_tester.ExpectTotalCount(
       "Ash.AmbientMode.MultiScreenOffset.FeelTheBreeze", 0);
-}
-
-TEST_F(AmbientSessionMetricsRecorderTest, HandlesNullAnimations) {
-  base::HistogramTester histogram_tester;
-  {
-    AmbientSessionMetricsRecorder recorder(AmbientTheme::kSlideshow);
-    recorder.RegisterScreen(nullptr);
-    recorder.RegisterScreen(nullptr);
-  }
-  histogram_tester.ExpectUniqueSample("Ash.AmbientMode.ScreenCount.SlideShow",
-                                      /*sample=*/2,
-                                      /*expected_bucket_count=*/1);
-  histogram_tester.ExpectTotalCount(
-      "Ash.AmbientMode.MultiScreenOffset.SlideShow", 0);
 }
 
 }  // namespace ash

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/constants/ambient_theme.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -23,7 +22,9 @@ class ImageSkia;
 
 namespace ash {
 
-// Loads static resources for a given AmbientTheme. "Static" resources
+class AmbientUiSettings;
+
+// Loads static resources for a given AmbientUiSettings. "Static" resources
 // are those that are fixed for the lifetime of the animation, as opposed to
 // dynamic ones that can change between animation cycles (photos from IMAX).
 // All resources are only loaded one time internally, so callers are free to
@@ -35,20 +36,21 @@ namespace ash {
 class ASH_EXPORT AmbientAnimationStaticResources {
  public:
   // Creates an AmbientAnimationStaticResources instance that loads resources
-  // for the given |theme|. Returns nullptr if |theme| is not supported.
+  // for the given |ui_settings|. Returns nullptr if |ui_settings| is not
+  // supported.
   //
   // If |serializable| is true, GetSkottieWrapper() will return an animation
   // that can be used for out-of-process rasterization in the graphics pipeline.
   // If false, resource creation is cheaper and uses less memory but cannot be
   // used for OOP rasterization.
   static std::unique_ptr<AmbientAnimationStaticResources> Create(
-      AmbientTheme theme,
+      AmbientUiSettings ui_settings,
       bool serializable);
 
   virtual ~AmbientAnimationStaticResources() = default;
 
-  // Returns the Lottie animation for this theme. The returned pointer is never
-  // null and always points to a valid |cc::SkottieWrapper| instance. This
+  // Returns the Lottie animation for these settings. The returned pointer is
+  // never null and always points to a valid |cc::SkottieWrapper| instance. This
   // method can never fail and is cheap to call multiple times (a new animation
   // is not re-created every time this is called).
   // TODO(esum): Add an argument where the caller specifies whether to load the
@@ -65,8 +67,8 @@ class ASH_EXPORT AmbientAnimationStaticResources {
   virtual gfx::ImageSkia GetStaticImageAsset(
       base::StringPiece asset_id) const = 0;
 
-  // Returns the AmbientTheme that the static resources belong to.
-  virtual AmbientTheme GetAmbientTheme() const = 0;
+  // Returns the AmbientUiSettings that the static resources belong to.
+  virtual const AmbientUiSettings& GetUiSettings() const = 0;
 };
 
 }  // namespace ash

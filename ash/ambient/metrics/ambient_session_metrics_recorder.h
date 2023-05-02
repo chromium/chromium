@@ -5,8 +5,8 @@
 #ifndef ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
 #define ASH_AMBIENT_METRICS_AMBIENT_SESSION_METRICS_RECORDER_H_
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ash_export.h"
-#include "ash/constants/ambient_theme.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -30,7 +30,7 @@ class ASH_EXPORT AmbientSessionMetricsRecorder
  public:
   // A custom `tick_clock` may be provided for testing purposes.
   explicit AmbientSessionMetricsRecorder(
-      AmbientTheme theme,
+      AmbientUiSettings ui_settings,
       const base::TickClock* tick_clock = nullptr);
   AmbientSessionMetricsRecorder(const AmbientSessionMetricsRecorder&) = delete;
   AmbientSessionMetricsRecorder& operator=(
@@ -61,7 +61,7 @@ class ASH_EXPORT AmbientSessionMetricsRecorder
       const lottie::Animation& animation_l,
       const lottie::Animation& animation_r) const;
 
-  const AmbientTheme theme_;
+  const AmbientUiSettings ui_settings_;
   const raw_ptr<const base::TickClock> clock_;
   const base::TimeTicks session_start_time_;
 

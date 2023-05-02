@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/metrics/ambient_session_metrics_recorder.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
@@ -36,9 +37,9 @@ AmbientContainerView::AmbientContainerView(
   CHECK(session_metrics_recorder);
   InitializeCommonSettings();
   View* main_rendering_view = nullptr;
-  AmbientTheme theme = animation_static_resources
-                           ? animation_static_resources->GetAmbientTheme()
-                           : AmbientTheme::kSlideshow;
+  AmbientUiSettings ui_settings =
+      animation_static_resources ? animation_static_resources->GetUiSettings()
+                                 : AmbientUiSettings();
   if (animation_static_resources) {
     main_rendering_view = AddChildView(std::make_unique<AmbientAnimationView>(
         delegate, progress_tracker, std::move(animation_static_resources),
@@ -49,11 +50,11 @@ AmbientContainerView::AmbientContainerView(
   }
   orientation_metrics_recorder_ =
       std::make_unique<ambient::AmbientOrientationMetricsRecorder>(
-          main_rendering_view, theme);
+          main_rendering_view, std::move(ui_settings));
 }
 
 AmbientContainerView::AmbientContainerView(
-    AmbientTheme theme,
+    AmbientUiSettings ui_settings,
     std::unique_ptr<views::View> main_rendering_view,
     AmbientSessionMetricsRecorder* session_metrics_recorder) {
   CHECK(main_rendering_view);
@@ -68,7 +69,7 @@ AmbientContainerView::AmbientContainerView(
   session_metrics_recorder->RegisterScreen(/*animation=*/nullptr);
   orientation_metrics_recorder_ =
       std::make_unique<ambient::AmbientOrientationMetricsRecorder>(
-          main_rendering_view.get(), theme);
+          main_rendering_view.get(), std::move(ui_settings));
   AddChildView(std::move(main_rendering_view));
 }
 
