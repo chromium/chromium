@@ -220,9 +220,9 @@ suite('CheckupSectionTest', function() {
     assertTrue(section.$.weakRow.hasAttribute('show-yellow-icon'));
 
     // Expect a proper rear icon state
-    assertFalse(section.$.compromisedRow.hasAttribute('hide-icon'));
-    assertTrue(section.$.reusedRow.hasAttribute('hide-icon'));
-    assertFalse(section.$.weakRow.hasAttribute('hide-icon'));
+    assertFalse(section.$.compromisedRow.hasAttribute('non-clickable'));
+    assertTrue(section.$.reusedRow.hasAttribute('non-clickable'));
+    assertFalse(section.$.weakRow.hasAttribute('non-clickable'));
   });
 
   test('Number of checked passwords', async function() {
