@@ -83,6 +83,9 @@ struct VIEWS_EXPORT MenuConfig {
   // Horizontal padding between components in a touchable menu item.
   int touchable_item_horizontal_padding = 16;
 
+  // Horizontal border padding in a menu item
+  int item_horizontal_border_padding = 0;
+
   // Padding between the label and submenu arrow.
   int label_to_arrow_padding = 8;
 
