@@ -18,4 +18,15 @@ unsigned InternalsWebAudio::audioHandlerCount(Internals& internals) {
   return InstanceCounters::CounterValue(InstanceCounters::kAudioHandlerCounter);
 }
 
+unsigned InternalsWebAudio::audioWorkletProcessorCount(Internals& internals) {
+#if DEBUG_AUDIONODE_REFERENCES
+  fprintf(
+      stderr, "InternalsWebAudio::audioWorkletProcessorCount = %u\n",
+      InstanceCounters::CounterValue(
+          InstanceCounters::kAudioWorkletProcessorCounter));
+#endif
+  return InstanceCounters::CounterValue(
+      InstanceCounters::kAudioWorkletProcessorCounter);
+}
+
 }  // namespace blink

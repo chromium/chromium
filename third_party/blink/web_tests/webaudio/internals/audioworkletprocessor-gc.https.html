@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+<title>Test GC of AudioWorkletProcessor</title>
+<script src="../../resources/gc.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async () => {
+  await asyncGC();
+  assert_equals(internals.audioHandlerCount(), 0,
+                'the initial handler count should be zero.');
+
+  const context = new AudioContext();
+  await context.audioWorklet.addModule('worklet-processors/gc-processor.js');
+
+  let node1 = new AudioWorkletNode(context, 'gc-processor');
+  let node2 = new AudioWorkletNode(context, 'gc-processor');
+
+  await new Promise(resolve => {
+    // Checking `node2` only is good enough.
+    node2.port.onmessage = (event) => {
+      if (event.data.status === 'created') {
+        resolve();
+        node2.port.onmessage = null;
+      }
+    }
+  });
+
+  assert_equals(internals.audioHandlerCount(), 3,
+                'the handler count should be 3.');
+  assert_equals(internals.audioWorkletProcessorCount(), 2,
+                'the worklet processor count should be 2.');
+
+  return new Promise(resolve => {
+    // Finish the life cycle of `node2` by terminating the matching processor.
+    node2.port.postMessage({command: 'finish'});
+
+    node2.port.onmessage = async (event) => {
+      if (event.data.status === 'finished') {
+        node2.port.onmessage = null;
+        node2.port.close();
+        node2.disconnect();
+        node2 = null;
+
+        // Perform GC and force clean up tasks of AudioContext.
+        await asyncGC();
+        await context.close();
+
+        // Trigger GC on AudioWorkletGlobalScope via `node1` and its processor.
+        node1.port.postMessage({command: 'gc'});
+
+        node1.port.onmessage = async (event) => {
+          if (event.data.status === 'collected') {
+            assert_equals(internals.audioHandlerCount(), 2,
+                          'the handler count after gc should be 2.');
+            assert_equals(internals.audioWorkletProcessorCount(), 1,
+                          'the worklet processor after gc count should be 1.');
+            resolve();
+          }
+        };
+      }
+    };
+  });
+}, 'Test GC of AudioWorkletProcessor');
+</script>
+</body>
+</html>

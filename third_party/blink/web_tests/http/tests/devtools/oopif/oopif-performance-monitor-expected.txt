@@ -5,6 +5,7 @@ Metrics reported:
 AdSubframes
 ArrayBufferContents
 AudioHandlers
+AudioWorkletProcessors
 ContextLifecycleStateObservers
 DetachedScriptStates
 DevToolsCommandDuration

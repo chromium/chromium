@@ -236,10 +236,6 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
   AudioWorkletProcessor* processor =
       V8AudioWorkletProcessor::ToImplWithTypeCheck(isolate, instance.V8Value());
 
-  if (processor) {
-    processor_instances_.push_back(processor);
-  }
-
   return processor;
 }
 
@@ -294,7 +290,6 @@ void AudioWorkletGlobalScope::SetObjectProxy(
 
 void AudioWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(processor_definition_map_);
-  visitor->Trace(processor_instances_);
   WorkletGlobalScope::Trace(visitor);
 }
 
