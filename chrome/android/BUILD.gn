@@ -1356,6 +1356,9 @@ if (current_toolchain == default_toolchain) {
     # From java_sources.gni.
     sources = chrome_test_java_sources
 
+    mergeable_android_manifests =
+        [ "javatests/AndroidManifest_ChromeTests.xml" ]
+
     deps = [
       ":base_module_java",
       ":browser_java_test_support",

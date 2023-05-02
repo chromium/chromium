@@ -132,6 +132,8 @@ android_library("test_support_java") {
   testonly = true
 
   sources = [ "java/src/org/chromium/components/browser_ui/photo_picker/TestImageDecoderService.java" ]
+  mergeable_android_manifests =
+      [ "java/AndroidManifest_TestImageDecoderService.xml" ]
 
   deps = [
     ":java",

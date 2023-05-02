@@ -25,44 +25,6 @@
             android:authorities="org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider"
             android:exported="true" />
 
-        <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest$DummyActivityForSpecialScheme"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="customtabtest" android:scheme="customtab" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabExternalNavigationTest$DummyActivityForHttp"
-            android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="customtabtest.com" android:scheme="http" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="FakeActivity" android:exported="true" >
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="externalappscheme" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$DummyKeyRetrievalActivity"
-            android:exported="true"/>
-
-        <activity android:name="org.chromium.chrome.browser.sync.SyncTestRule$DummyRecoverabilityDegradedFixActivity"
-            android:exported="true"/>
-
-        <activity android:name="org.chromium.chrome.browser.browserservices.TestTrustedWebActivityService"
-            android:exported="true"/>
-
         <activity android:name="org.chromium.test.broker.OnDeviceInstrumentationBroker"
             android:exported="true"/>
 
@@ -73,12 +35,6 @@
 
         <activity android:name="org.chromium.components.signin.test.util.FakeAccountManagerFacade$AddAccountActivityStub"
             android:exported="true"/>
-
-        <service
-            android:name="org.chromium.components.browser_ui.photo_picker.TestImageDecoderService"
-            android:exported="false"
-            android:isolatedProcess="true"
-            android:process=":decoder_service" />
 {% endblock %}
 
 {% block extra_application_attributes %}
