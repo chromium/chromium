@@ -99,8 +99,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     client_supports_window_bounds_ = enable;
   }
 
-  void set_bounds_is_dirty(bool dirty) { bounds_is_dirty_ = dirty; }
-
   // Activates the shell surface. Brings it to the foreground.
   void Activate();
   void RequestActivation();
@@ -359,9 +357,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Returns true if surface is currently being resized.
   bool IsResizing() const;
 
-  // Returns true if widget bounds should be updated.
-  bool ShouldUpdateWidgetBounds() const;
-
   // Updates the bounds of widget to match the current surface bounds.
   void UpdateWidgetBounds();
 
@@ -509,7 +504,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   gfx::SizeF pending_aspect_ratio_;
   bool pending_pip_ = false;
   bool in_extended_drag_ = false;
-  bool bounds_is_dirty_ = true;
   absl::optional<std::string> initial_workspace_;
   absl::optional<ui::ZOrderLevel> initial_z_order_;
 
