@@ -2110,6 +2110,7 @@ class DictationContextCheckingTest : public DictationTest {
         /*icon=*/DictationBubbleIconType::kMacroFail,
         /*text=*/message,
         /*hints=*/absl::optional<std::vector<std::u16string>>());
+    SendFinalResultAndWaitForEditableValue("delete all", "");
   }
 
  private:
@@ -2170,8 +2171,16 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, EmptyEditable) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectNoSelection) {
-  RunNoSelectionTest("unselect");
+IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, NoSelection) {
+  std::vector<std::string> commands{
+      "unselect",
+      "cut",
+      "copy",
+  };
+
+  for (const auto& command : commands) {
+    RunNoSelectionTest(command);
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
@@ -2185,10 +2194,6 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, UnselectSuccessful) {
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
 }
 
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutNoSelection) {
-  RunNoSelectionTest("cut");
-}
-
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
   std::string text = "Hello world";
   SendFinalResultAndWaitForEditableValue(text, text);
@@ -2198,10 +2203,6 @@ IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CutSuccessful) {
                     /*icon=*/DictationBubbleIconType::kMacroSuccess,
                     /*text=*/absl::optional<std::u16string>(),
                     /*hints=*/absl::optional<std::vector<std::u16string>>());
-}
-
-IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopyNoSelection) {
-  RunNoSelectionTest("copy");
 }
 
 IN_PROC_BROWSER_TEST_P(DictationContextCheckingTest, CopySuccessful) {
