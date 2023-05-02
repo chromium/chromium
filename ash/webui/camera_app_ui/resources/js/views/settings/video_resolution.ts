@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertExists} from '../../assert.js';
 import {CameraManager} from '../../device/index.js';
 import {
   SUPPORTED_CONSTANT_FPS,
@@ -105,7 +106,7 @@ export class VideoResolutionSettings extends BaseSettings {
         constFpsOptions.length > 1 && facing === Facing.EXTERNAL;
     const isFPSEnabled =
         expert.isEnabled(expert.ExpertOption.ENABLE_FPS_PICKER_FOR_BUILTIN);
-    let resolution = new Resolution();
+    let resolution: Resolution|null = null;
     for (const fps of SUPPORTED_CONSTANT_FPS) {
       const fpsButton =
           dom.getFrom(optionElement, `.fps-${fps}`, HTMLButtonElement);
@@ -129,8 +130,17 @@ export class VideoResolutionSettings extends BaseSettings {
               deviceId, option.resolutionLevel, fps, shouldReconfigure);
         });
       } else {
-        resolution = fpsOption?.resolutions[0] ?? new Resolution();
+        resolution = fpsOption?.resolutions[0] ?? null;
       }
+    }
+    // For cases that constant frame rate is not supported on the device
+    // (e.g. Betty or legacy devices migrated from camera HAL v1), use the
+    // resolution from the non-constant fps option.
+    if (resolution === null) {
+      const nonConstantFpsOption =
+          option.fpsOptions.find((fpsOption) => fpsOption.constFps === null);
+      resolution = nonConstantFpsOption?.resolutions[0] ?? null;
+      assert(resolution !== null);
     }
 
     const input = dom.getFrom(optionElement, 'input', HTMLInputElement);
@@ -145,7 +155,8 @@ export class VideoResolutionSettings extends BaseSettings {
         this.focusedDeviceId = deviceId;
         this.menuScrollTop = this.menu.scrollTop;
         if (expert.isEnabled(expert.ExpertOption.SHOW_ALL_RESOLUTIONS)) {
-          this.cameraManager.setPrefVideoResolution(deviceId, resolution);
+          this.cameraManager.setPrefVideoResolution(
+              deviceId, assertExists(resolution));
         } else {
           this.cameraManager.setPrefVideoResolutionLevel(
               deviceId, option.resolutionLevel);
