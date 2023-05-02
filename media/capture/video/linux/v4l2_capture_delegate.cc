@@ -166,9 +166,6 @@ bool IsBlockedControl(int control_id) {
     case V4L2_CID_TILT_RELATIVE:
     case V4L2_CID_PAN_RESET:
     case V4L2_CID_TILT_RESET:
-    case V4L2_CID_PAN_ABSOLUTE:
-    case V4L2_CID_TILT_ABSOLUTE:
-    case V4L2_CID_ZOOM_ABSOLUTE:
     case V4L2_CID_ZOOM_RELATIVE:
     case V4L2_CID_ZOOM_CONTINUOUS:
     case V4L2_CID_PAN_SPEED:
