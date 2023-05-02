@@ -325,8 +325,17 @@ ReturnToAppButton::ReturnToAppButton(
     icons_container_->layer()->SetFillsBoundsOpaquely(false);
   }
 
-  // TODO(b/253646076): Double check accessible name for this button.
-  SetAccessibleName(display_text);
+  // An empty `id` means that this view is not associated with any particular
+  // app and it is the summary row, so we will just use the `display_text` as
+  // accessible name in this case rather than the full string.
+  std::u16string return_to_app_accessible_name =
+      id.is_empty()
+          ? display_text
+          : l10n_util::GetStringFUTF16(
+                VIDEO_CONFERENCE_RETURN_TO_APP_ACCESSIBLE_NAME, display_text);
+
+  SetAccessibleName(GetPeripheralsAccessibleName() +
+                    return_to_app_accessible_name);
 
   // When we show the bubble for the first time, only the top row is visible.
   SetVisible(is_top_row);
@@ -384,6 +393,28 @@ void ReturnToAppButton::OnButtonClicked(
                /*animation_histogram_name=*/
                "Ash.VideoConference.SummaryIcons.FadeIn.AnimationSmoothness");
   }
+}
+
+std::u16string ReturnToAppButton::GetPeripheralsAccessibleName() {
+  std::u16string tooltip_text;
+  if (is_capturing_camera_) {
+    tooltip_text += l10n_util::GetStringFUTF16(
+        VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+        l10n_util::GetStringUTF16(VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_CAMERA));
+  }
+  if (is_capturing_microphone_) {
+    tooltip_text += l10n_util::GetStringFUTF16(
+        VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+        l10n_util::GetStringUTF16(
+            VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_MICROPHONE));
+  }
+  if (is_capturing_screen_) {
+    tooltip_text += l10n_util::GetStringFUTF16(
+        VIDEO_CONFERENCE_RETURN_TO_APP_PERIPHERALS_ACCESSIBLE_NAME,
+        l10n_util::GetStringUTF16(
+            VIDEO_CONFERENCE_TOGGLE_BUTTON_TYPE_SCREEN_SHARE));
+  }
+  return tooltip_text;
 }
 
 // -----------------------------------------------------------------------------

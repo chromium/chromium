@@ -91,6 +91,10 @@ class ASH_EXPORT ReturnToAppButton : public views::Button {
   void OnButtonClicked(const base::UnguessableToken& id,
                        crosapi::mojom::VideoConferenceAppType app_type);
 
+  // Get the text regarding the peripherals part of the return to app button
+  // accessible name.
+  std::u16string GetPeripheralsAccessibleName();
+
   // Indicates if the running app is using camera, microphone, or screen
   // sharing.
   const bool is_capturing_camera_;
