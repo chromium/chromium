@@ -1533,7 +1533,9 @@ body.files-ng .thumbnail-grid .thumbnail-item[lead] .thumbnail-bottom,
 body.files-ng .thumbnail-grid .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid .thumbnail-item[lead].directory
-    .thumbnail-bottom {
+    .thumbnail-bottom,
+.thumbnail-grid .thumbnail-item[selected] .thumbnail-bottom .icon-badge,
+.thumbnail-grid .thumbnail-item[lead] .thumbnail-bottom .icon-badge {
   background-color: var(--cros-highlight-color-hover);
 }
 
@@ -1542,7 +1544,9 @@ body.files-ng .thumbnail-grid:focus .thumbnail-item[lead] .thumbnail-bottom,
 body.files-ng .thumbnail-grid:focus .thumbnail-item[selected].directory
     .thumbnail-bottom,
 body.files-ng .thumbnail-grid:focus .thumbnail-item[lead].directory
-    .thumbnail-bottom {
+    .thumbnail-bottom,
+.thumbnail-grid:focus .thumbnail-item[selected] .thumbnail-bottom .icon-badge,
+.thumbnail-grid:focus .thumbnail-item[lead] .thumbnail-bottom .icon-badge {
   background-color: var(--cros-highlight-color);
 }
 
@@ -1664,14 +1668,27 @@ html[dir='rtl'] #default-tasks-list > li > .icon {
 body.files-ng #list-container list > li[selected],
 body.files-ng #list-container list > li:active,
 body.files-ng #list-container list > li.accepts,
-body.files-ng #list-container list > li[lead] {
+body.files-ng #list-container list > li[lead],
+body.files-ng #list-container list > li[selected] .icon-badge,
+body.files-ng #list-container list > li:active .icon-badge,
+body.files-ng #list-container list > li.accepts .icon-badge,
+body.files-ng #list-container list > li[lead] .icon-badge {
   background-color: var(--cros-highlight-color-hover);
+}
+
+body.files-ng #list-container list > li[selected],
+body.files-ng #list-container list > li:active,
+body.files-ng #list-container list > li.accepts,
+body.files-ng #list-container list > li[lead] {
   border-radius: 2px;
 }
 
 body.files-ng #list-container list:focus > li[selected],
 body.files-ng #list-container list:focus > li.accepts[selected],
-body.files-ng #list-container list:focus > li[lead] {
+body.files-ng #list-container list:focus > li[lead],
+body.files-ng #list-container list:focus > li[selected] .icon-badge,
+body.files-ng #list-container list:focus > li.accepts[selected] .icon-badge,
+body.files-ng #list-container list:focus > li[lead] .icon-badge {
   background-color: var(--cros-highlight-color);
 }
 

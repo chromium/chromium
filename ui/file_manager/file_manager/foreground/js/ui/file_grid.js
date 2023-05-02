@@ -825,6 +825,7 @@ export class FileGrid extends Grid {
     checkmark.className = 'detail-checkmark';
     detailIcon.appendChild(checkmark);
     bottom.appendChild(detailIcon);
+    bottom.appendChild(filelist.renderIconBadge(li.ownerDocument));
     bottom.appendChild(
         filelist.renderFileNameLabel(li.ownerDocument, entry, locationInfo));
     frame.appendChild(bottom);

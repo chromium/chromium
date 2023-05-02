@@ -455,6 +455,18 @@ filelist.renderFileTypeIcon = (doc, entry, locationInfo, opt_mimeType) => {
 };
 
 /**
+ * Renders a div beside the row icon that is used to surface badges for
+ * individual items in the grid and list view.
+ * @param {!Document} doc Owner document.
+ * @returns {!HTMLDivElement}
+ */
+filelist.renderIconBadge = (doc) => {
+  const divElement = /** @type {!HTMLDivElement} */ (doc.createElement('div'));
+  divElement.classList.add('icon-badge');
+  return divElement;
+};
+
+/**
  * Render filename label for grid and list view.
  * @param {!Document} doc Owner document.
  * @param {!Entry|!FilesAppEntry} entry The Entry object to render.
