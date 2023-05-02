@@ -1689,6 +1689,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.TrustedVaultJavascriptSetEncryptionKeysIsIncognito"
+    enum="BooleanIncognito" expires_after="2023-10-22">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records whether invocations to the Javascript API
+    chrome.setSyncEncryptionKeys(), when received via Mojo in the browser
+    process, corresponds to an incognito profile.
+  </summary>
+</histogram>
+
+<histogram name="Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs"
+    enum="BooleanValid" expires_after="2023-10-22">
+  <owner>mmoskvitin@google.com</owner>
+  <owner>mastiz@chromium.org</owner>
+  <component>Services&gt;Sync</component>
+  <summary>
+    Records invocations to the Javascript API chrome.setSyncEncryptionKeys() and
+    whether the passed arguments could be successfully parsed (which doesn't
+    imply the function actually succeeded).
+  </summary>
+</histogram>
+
 <histogram name="Sync.TrustedVaultKeyRetrievalTrigger"
     enum="TrustedVaultUserActionTrigger" expires_after="2023-10-15">
   <owner>mmoskvitin@google.com</owner>

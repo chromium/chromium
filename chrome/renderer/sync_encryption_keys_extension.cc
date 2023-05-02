@@ -51,6 +51,11 @@ std::vector<std::vector<uint8_t>> EncryptionKeysAsBytes(
   return encryption_keys_as_bytes;
 }
 
+void RecordCallToSetSyncEncryptionKeysToUma(bool valid_args) {
+  base::UmaHistogramBoolean(
+      "Sync.TrustedVaultJavascriptSetEncryptionKeysValidArgs", valid_args);
+}
+
 void RecordCallToAddTrustedSyncEncryptionRecoveryMethodToUma(bool valid_args) {
   base::UmaHistogramBoolean(
       "Sync.TrustedVaultJavascriptAddRecoveryMethodValidArgs", valid_args);
@@ -152,6 +157,8 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
 
   v8::Local<v8::Function> callback;
   if (!args->GetNext(&callback)) {
+    RecordCallToSetSyncEncryptionKeysToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No callback";
     args->ThrowError();
     return;
@@ -159,6 +166,8 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
 
   std::string gaia_id;
   if (!args->GetNext(&gaia_id)) {
+    RecordCallToSetSyncEncryptionKeysToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No account ID";
     args->ThrowError();
     return;
@@ -166,12 +175,16 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
 
   std::vector<v8::Local<v8::ArrayBuffer>> encryption_keys;
   if (!args->GetNext(&encryption_keys)) {
+    RecordCallToSetSyncEncryptionKeysToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "Not array of strings";
     args->ThrowError();
     return;
   }
 
   if (encryption_keys.empty()) {
+    RecordCallToSetSyncEncryptionKeysToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "Array of strings empty";
     args->ThrowError();
     return;
@@ -179,6 +192,8 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
 
   int last_key_version = 0;
   if (!args->GetNext(&last_key_version)) {
+    RecordCallToSetSyncEncryptionKeysToUma(
+        /*valid_args=*/false);
     DLOG(ERROR) << "No version provided";
     args->ThrowError();
     return;
@@ -191,6 +206,7 @@ void SyncEncryptionKeysExtension::SetSyncEncryptionKeys(gin::Arguments* args) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(&remote_);
   }
 
+  RecordCallToSetSyncEncryptionKeysToUma(/*valid_args=*/true);
   remote_->SetEncryptionKeys(
       gaia_id, EncryptionKeysAsBytes(encryption_keys), last_key_version,
       base::BindOnce(&SyncEncryptionKeysExtension::RunCompletionCallback,
