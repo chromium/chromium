@@ -562,10 +562,8 @@ var TESTS_FOR_CONFIG = {
   'isValidIban': ['isValidIban'],
 };
 
-chrome.test.getConfig(function(config) {
-  var testConfig = config.customArg;
-  var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
-  chrome.test.runTests(availableTests.filter(function(op) {
-    return testsToRun.includes(op.name);
-  }));
-});
+var testConfig = window.location.search.substring(1);
+var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
+chrome.test.runTests(availableTests.filter(function(op) {
+  return testsToRun.includes(op.name);
+}));

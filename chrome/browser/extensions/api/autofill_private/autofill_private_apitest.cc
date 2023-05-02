@@ -20,12 +20,9 @@ namespace extensions {
 
 namespace {
 
-using ContextType = ExtensionBrowserTest::ContextType;
-
-class AutofillPrivateApiTest : public ExtensionApiTest,
-                               public testing::WithParamInterface<ContextType> {
+class AutofillPrivateApiTest : public ExtensionApiTest {
  public:
-  AutofillPrivateApiTest() : ExtensionApiTest(GetParam()) {}
+  AutofillPrivateApiTest() = default;
   AutofillPrivateApiTest(const AutofillPrivateApiTest&) = delete;
   AutofillPrivateApiTest& operator=(const AutofillPrivateApiTest&) = delete;
   ~AutofillPrivateApiTest() override = default;
@@ -40,51 +37,45 @@ class AutofillPrivateApiTest : public ExtensionApiTest,
   }
 
  protected:
-  bool RunAutofillSubtest(const char* subtest) {
+  bool RunAutofillSubtest(const std::string& subtest) {
     autofill::WaitForPersonalDataManagerToBeLoaded(profile());
 
-    return RunExtensionTest("autofill_private", {.custom_arg = subtest},
+    const std::string extension_url = "main.html?" + subtest;
+    return RunExtensionTest("autofill_private",
+                            {.extension_url = extension_url.c_str()},
                             {.load_as_component = true});
   }
 };
-
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         AutofillPrivateApiTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         AutofillPrivateApiTest,
-                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace
 
 // TODO(hcarmona): Investigate converting these tests to unittests.
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, GetCountryList) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, GetCountryList) {
   EXPECT_TRUE(RunAutofillSubtest("getCountryList")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, GetAddressComponents) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, GetAddressComponents) {
   EXPECT_TRUE(RunAutofillSubtest("getAddressComponents")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, RemoveEntry) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, RemoveEntry) {
   EXPECT_TRUE(RunAutofillSubtest("removeEntry")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, ValidatePhoneNumbers) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, ValidatePhoneNumbers) {
   EXPECT_TRUE(RunAutofillSubtest("validatePhoneNumbers")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddAndUpdateAddress) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddress")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateCreditCard")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddNewIban_NoNickname) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddNewIban_NoNickname) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("addNewIbanNoNickname")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanAdded"));
@@ -92,7 +83,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddNewIban_NoNickname) {
             user_action_tester.GetActionCount("AutofillIbanAddedWithNickname"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddNewIban_WithNickname) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddNewIban_WithNickname) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("addNewIbanWithNickname")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanAdded"));
@@ -100,7 +91,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, AddNewIban_WithNickname) {
             user_action_tester.GetActionCount("AutofillIbanAddedWithNickname"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, noChangesToExistingIban) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, noChangesToExistingIban) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("noChangesToExistingIban")) << message_;
   EXPECT_EQ(0, user_action_tester.GetActionCount("AutofillIbanEdited"));
@@ -108,7 +99,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, noChangesToExistingIban) {
       0, user_action_tester.GetActionCount("AutofillIbanEditedWithNickname"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, updateExistingIbanNoNickname) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, updateExistingIbanNoNickname) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("updateExistingIbanNoNickname")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanEdited"));
@@ -116,7 +107,7 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, updateExistingIbanNoNickname) {
       0, user_action_tester.GetActionCount("AutofillIbanEditedWithNickname"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, updateExistingIbanWithNickname) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, updateExistingIbanWithNickname) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("updateExistingIbanWithNickname")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanEdited"));
@@ -124,13 +115,13 @@ IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, updateExistingIbanWithNickname) {
       1, user_action_tester.GetActionCount("AutofillIbanEditedWithNickname"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, removeExistingIban) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, removeExistingIban) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("removeExistingIban")) << message_;
   EXPECT_EQ(1, user_action_tester.GetActionCount("AutofillIbanDeleted"));
 }
 
-IN_PROC_BROWSER_TEST_P(AutofillPrivateApiTest, isValidIban) {
+IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, isValidIban) {
   base::UserActionTester user_action_tester;
   EXPECT_TRUE(RunAutofillSubtest("isValidIban")) << message_;
 }
