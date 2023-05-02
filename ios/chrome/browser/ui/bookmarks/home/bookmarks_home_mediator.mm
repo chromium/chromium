@@ -209,7 +209,7 @@ bool IsABookmarkNodeSectionForIdentifier(
     return;
   }
 
-  if (self.displayedNode == _profileBookmarkModel->root_node()) {
+  if (self.consumer.isDisplayingBookmarkRoot) {
     [self generateTableViewDataForRootNode];
     [self updateTableViewBackground];
     return;
@@ -352,7 +352,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // If the currently displayed node is the outermost root, check if we need to
   // show the spinner backgound. Otherwise, check if we need to show the empty
   // background.
-  if (self.displayedNode == _profileBookmarkModel->root_node()) {
+  if (self.consumer.isDisplayingBookmarkRoot) {
     if (_profileBookmarkModel->HasNoUserCreatedBookmarksOrFolders() &&
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
@@ -381,11 +381,10 @@ bool IsABookmarkNodeSectionForIdentifier(
 - (void)computePromoTableViewData {
   // We show promo cell only on the root view, that is when showing
   // the permanent nodes.
-  BOOL promoVisible =
-      ((self.displayedNode == _profileBookmarkModel->root_node()) &&
-       self.bookmarkPromoController.shouldShowSigninPromo &&
-       !self.currentlyShowingSearchResults) &&
-      !self.isSyncDisabledByAdministrator;
+  BOOL promoVisible = (self.consumer.isDisplayingBookmarkRoot &&
+                       self.bookmarkPromoController.shouldShowSigninPromo &&
+                       !self.currentlyShowingSearchResults) &&
+                      !self.isSyncDisabledByAdministrator;
 
   if (promoVisible == self.promoVisible) {
     return;
@@ -602,7 +601,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // Bookmarks") at the root node might be added after syncing.  So we need to
   // refresh here.
   [self.consumer refreshContents];
-  if (self.displayedNode != _profileBookmarkModel->root_node() &&
+  if (!self.consumer.isDisplayingBookmarkRoot &&
       !self.isSyncDisabledByAdministrator) {
     [self updateTableViewBackground];
   }
@@ -651,7 +650,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 }
 
 - (BOOL)hasBookmarksOrFolders {
-  if (self.displayedNode == _profileBookmarkModel->root_node()) {
+  if (self.consumer.isDisplayingBookmarkRoot) {
     // The root node always has its permanent nodes. If all the permanent nodes
     // are empty, we treat it as if the root itself is empty.
     const auto& childrenOfRootNode = self.displayedNode->children();

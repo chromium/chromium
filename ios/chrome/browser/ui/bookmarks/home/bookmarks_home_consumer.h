@@ -39,6 +39,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeBackgroundStyle) {
 @property(nonatomic, weak)
     UITableViewCell<BookmarkTableCellTitleEditing>* editingFolderCell;
 
+// Whether the displayed folder is the root node.
+@property(nonatomic, assign, readonly) BOOL isDisplayingBookmarkRoot;
+
 // Refreshes the UI.
 - (void)refreshContents;
 
