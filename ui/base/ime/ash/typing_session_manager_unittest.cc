@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
