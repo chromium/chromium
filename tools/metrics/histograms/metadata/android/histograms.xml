@@ -1005,13 +1005,6 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a download is opened.</summary>
 </histogram>
 
-<histogram name="Android.DownloadManager.List.View.Action"
-    enum="Android.DownloadManager.List.View.Actions" expires_after="2021-01-24">
-  <owner>dtrainor@chromium.org</owner>
-  <owner>clank-downloads@google.com</owner>
-  <summary>The count of Download Home list entry actions taken.</summary>
-</histogram>
-
 <histogram name="Android.DownloadManager.Menu.Action"
     enum="Android.DownloadManager.Menu.Actions" expires_after="2022-12-25">
   <owner>dtrainor@chromium.org</owner>

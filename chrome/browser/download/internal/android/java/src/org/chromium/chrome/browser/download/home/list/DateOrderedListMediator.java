@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator
 import org.chromium.chrome.browser.download.home.list.mutator.DateOrderedListMutator;
 import org.chromium.chrome.browser.download.home.list.mutator.ListMutationController;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
-import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ViewAction;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
@@ -321,39 +320,32 @@ class DateOrderedListMediator implements BackPressHandler {
     }
 
     private void onOpenItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.OPEN);
         OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_HOME);
         openParams.openInIncognito = OTRProfileID.isOffTheRecord(mUiConfig.otrProfileID);
         mProvider.openItem(openParams, item.id);
     }
 
     private void onPauseItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.PAUSE);
         mProvider.pauseDownload(item.id);
     }
 
     private void onResumeItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.RESUME);
         mProvider.resumeDownload(item.id, true /* hasUserGesture */);
     }
 
     private void onCancelItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.CANCEL);
         mProvider.cancelDownload(item.id);
     }
 
     private void onDeleteItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.MENU_DELETE);
         deleteItemsInternal(Collections.singletonList(item));
     }
 
     private void onShareItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.MENU_SHARE);
         shareItemsInternal(CollectionUtil.newHashSet(item));
     }
 
     private void onRenameItem(OfflineItem item) {
-        UmaUtils.recordItemAction(ViewAction.MENU_RENAME);
         mRenameController.rename(item.title, (newName, renameCallback) -> {
             mProvider.renameItem(item.id, newName, renameCallback);
         });

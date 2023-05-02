@@ -1957,18 +1957,6 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="DELETE_ALL"/>
 </enum>
 
-<enum name="Android.DownloadManager.List.View.Actions">
-  <int value="0" label="OPEN"/>
-  <int value="1" label="RESUME"/>
-  <int value="2" label="PAUSE"/>
-  <int value="3" label="CANCEL"/>
-  <int value="4" label="MENU_SHARE"/>
-  <int value="5" label="MENU_DELETE"/>
-  <int value="6" label="RETRY"/>
-  <int value="7" label="MENU_RENAME"/>
-  <int value="8" label="MENU_CHANGE"/>
-</enum>
-
 <enum name="Android.DownloadManager.Menu.Actions">
   <int value="0" label="CLOSE"/>
   <int value="1" label="MULTI_DELETE"/>
