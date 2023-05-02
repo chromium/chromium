@@ -700,6 +700,14 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                        handler:^(UIAlertAction* action) {
                                          [weakSelf checkLeakedPasswords];
                                        }]];
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Check weak passwords"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf checkWeakPasswords];
+                                       }]];
+
   [alertController
       addAction:[UIAlertAction actionWithTitle:@"Cancel"
                                          style:UIAlertActionStyleCancel
@@ -899,6 +907,22 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
     NSLog(@"Checking leaks for %@ credentials.", @(credentialsToCheck.count));
     [self.webView.configuration.leakCheckService
         checkCredentials:credentialsToCheck];
+  }];
+}
+
+- (void)checkWeakPasswords {
+  CWVAutofillDataManager* dataManager =
+      _webView.configuration.autofillDataManager;
+  [dataManager fetchPasswordsWithCompletionHandler:^(
+                   NSArray<CWVPassword*>* _Nonnull passwords) {
+    NSLog(@"Checking weak status of %@ passwords.", @(passwords.count));
+    for (CWVPassword* password in passwords) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        BOOL isWeak = [CWVWeakCheckUtils isPasswordWeak:password.password];
+        NSLog(@"Weak password status for %@ at %@ is %s", password.username,
+              password.site, isWeak ? "true" : "false");
+      });
+    }
   }];
 }
 
