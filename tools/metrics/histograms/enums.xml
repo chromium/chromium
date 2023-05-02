@@ -11758,8 +11758,8 @@ Called by update_bad_message_reasons.py.-->
 </enum>
 
 <enum name="BodyConsumerBaseFetchCheckPoint">
-  <int value="0" label="BodyCosumerBase Constructor"/>
-  <int value="1" label="BodyCosumerBase::DidFetchDataLoadFailed"/>
+  <int value="0" label="BodyConsumerBase Constructor"/>
+  <int value="1" label="BodyConsumerBase::DidFetchDataLoadFailed"/>
 </enum>
 
 <enum name="BookmarkAppNavigationResult">
