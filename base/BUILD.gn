@@ -3902,11 +3902,6 @@ test("base_unittests") {
       "posix/file_descriptor_shuffle_unittest.cc",
     ]
 
-    # FilePatchWatcherImpl is not implemented. See crbug.com/851641.
-    # TODO(crbug.com/1430566): Convert this subtraction to a condition where
-    # it is added.
-    sources -= [ "files/file_path_watcher_unittest.cc" ]
-
     deps += [
       ":test_interface_impl",
       ":test_interface_natural_impl",

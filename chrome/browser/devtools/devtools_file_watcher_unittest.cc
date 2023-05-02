@@ -14,6 +14,12 @@
 #include "chrome/browser/devtools/devtools_file_watcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_FUCHSIA)
+// FilePatchWatcherImpl is not implemented (see crbug.com/851641), so these
+// tests will fail. Disable all tests.
+#define DevToolsFileWatcherTest DISABLED_DevToolsFileWatcherTest
+#endif
+
 class DevToolsFileWatcherTest : public testing::Test {
  public:
   void Callback(const std::vector<std::string>& changed_paths,

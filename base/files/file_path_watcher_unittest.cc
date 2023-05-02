@@ -55,6 +55,12 @@ namespace {
 
 class TestDelegate;
 
+#if BUILDFLAG(IS_FUCHSIA)
+// FilePatchWatcherImpl is not implemented (see crbug.com/851641).
+// Disable all tests.
+#define FilePathWatcherTest DISABLED_FilePathWatcherTest
+#endif
+
 // Aggregates notifications from the test delegates and breaks the run loop
 // the test thread is waiting on once they all came in.
 class NotificationCollector
