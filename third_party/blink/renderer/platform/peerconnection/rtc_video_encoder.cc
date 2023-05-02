@@ -1772,7 +1772,8 @@ int32_t RTCVideoEncoder::InitEncode(
       /*h264_output_level=*/absl::nullopt, is_constrained_h264_, storage_type,
       vea_content_type, spatial_layers, inter_layer_pred);
 
-  if (!base::FeatureList::IsEnabled(features::kWebRtcInitializeOnFirstFrame)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebRtcInitializeEncoderOnFirstFrame)) {
     int32_t initialization_ret = InitializeEncoder(*vea_config_);
     vea_config_.reset();
     if (initialization_ret != WEBRTC_VIDEO_CODEC_OK) {

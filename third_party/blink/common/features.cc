@@ -1547,7 +1547,7 @@ BASE_FEATURE(kWebRtcEncoderAsyncEncode,
              "WebRtcEncoderAsyncEncode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebRtcInitializeOnFirstFrame,
+BASE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame,
              "WebRtcInitializeEncoderOnFirstFrame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 

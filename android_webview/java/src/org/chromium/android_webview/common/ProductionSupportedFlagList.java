@@ -313,7 +313,7 @@ public final class ProductionSupportedFlagList {
                     "Use the new CSS-based painting for spelling and grammar errors"),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_ENCODER_ASYNC_ENCODE,
                     "Make RTCVideoEncoder encode call asynchronous."),
-            Flag.baseFeature(BlinkFeatures.WEB_RTC_INITIALIZE_ON_FIRST_FRAME,
+            Flag.baseFeature(BlinkFeatures.WEB_RTC_INITIALIZE_ENCODER_ON_FIRST_FRAME,
                     "Initialize VideoEncodeAccelerator on the first encode."),
             Flag.baseFeature(BlinkFeatures.WEB_RTC_METRONOME,
                     "Inject a metronome into webrtc to allow task coalescing, "

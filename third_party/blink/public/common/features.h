@@ -812,7 +812,7 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClipboardUnsanitizedContent);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcEncoderAsyncEncode);
 
 // Initialize VideoEncodeAccelerator on the first encode.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcInitializeOnFirstFrame);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebRtcInitializeEncoderOnFirstFrame);
 
 // If enabled, the WebRTC_* threads in peerconnection module will use
 // kResourceEfficient thread type.
