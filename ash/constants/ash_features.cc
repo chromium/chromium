@@ -34,13 +34,6 @@ BASE_FEATURE(kAdaptiveCharging,
              "AdaptiveCharging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether adaptive charging feature is supported by the hardware. This is not
-// finch or user configurable but a hardware attribute controlled by ChromeOS
-// USE flag.
-BASE_FEATURE(kAdaptiveChargingHardwareSupport,
-             "AdaptiveChargingHardwareSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable the logic to show the notifications for Adaptive Charging features.
 // This is intended to be used by developers to test the UI aspect of the
 // feature.
