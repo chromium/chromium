@@ -44,29 +44,29 @@ found in the LICENSE file.
             android:id="@+id/credit_card_issuer_icon"
             android:layout_width="@dimen/virtual_card_enrollment_dialog_card_art_width"
             android:layout_height="@dimen/virtual_card_enrollment_dialog_card_art_height"
-            android:layout_alignTop="@id/virtual_card_text"
-            android:layout_alignBottom="@id/credit_card_identifier"
+            android:layout_alignTop="@id/credit_card_identifier"
+            android:layout_alignBottom="@id/virtual_card_text"
             android:layout_marginEnd="@dimen/virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end"
             tools:src="@drawable/infobar_autofill_cc"
             android:importantForAccessibility="no" />
 
         <TextView
-            android:id="@+id/virtual_card_text"
+            android:id="@+id/credit_card_identifier"
             style="@style/TextAppearance.TextLarge.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/credit_card_issuer_icon"
-            android:text="@string/autofill_virtual_card_enrollment_dialog_card_container_title"
-            tools:text="Virtual Card" />
+            tools:text="Visa ....1234" />
 
         <TextView
-            android:id="@+id/credit_card_identifier"
+            android:id="@+id/virtual_card_text"
             style="@style/TextAppearance.TextMedium.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/virtual_card_text"
+            android:layout_below="@id/credit_card_identifier"
             android:layout_toEndOf="@id/credit_card_issuer_icon"
-            tools:text="Linked with Mastercard 1111" />
+            android:text="@string/autofill_virtual_card_enrollment_dialog_card_container_title"
+            tools:text="Virtual card" />
     </RelativeLayout>
 
     <ScrollView
