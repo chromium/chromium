@@ -258,3 +258,27 @@ IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
   }
   EXPECT_EQ(4u, source_ids.size());
 }
+
+IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
+                       NavigateToSameUrlTwice) {
+  // Start with page1 and then navigate to page2.
+  ResetUKM();
+  NavigateTo(GetTestURL("/1.html"));
+  NavigateTo(GetTestURL("/1.html"));
+
+  // Wait for anchor elements to be added to the UKM before navigating back.
+  const auto ukm_source_id =
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  VerifyNthUKMEntry(
+      ukm_source_id,
+      ukm::builders::NavigationPredictorAnchorElementMetrics::kEntryName,
+      ukm::builders::NavigationPredictorAnchorElementMetrics::kAnchorIndexName,
+      0);
+
+  // Navigate back to page1 and check for user interactions in UKM records.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  VerifyNthUKMEntry(
+      ukm_source_id,
+      ukm::builders::NavigationPredictorUserInteractions::kEntryName,
+      ukm::builders::NavigationPredictorUserInteractions::kAnchorIndexName, 0);
+}

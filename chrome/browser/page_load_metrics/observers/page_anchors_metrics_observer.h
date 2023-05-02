@@ -52,9 +52,6 @@ class PageAnchorsMetricsObserver
       content::NavigationHandle* navigation_handle);
 
   void RecordDataToUkm();
-  void RecordPageLinkClickDataToUkm();
-  void RecordAnchorDataToUkm();
-  void RecordUserInteractionDataToUkm();
   void RecordAnchorElementMetricsDataToUkm();
 
   bool is_in_prerendered_page_ = false;

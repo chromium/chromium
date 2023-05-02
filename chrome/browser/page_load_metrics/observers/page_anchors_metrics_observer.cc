@@ -10,41 +10,6 @@
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
-void PageAnchorsMetricsObserver::RecordUserInteractionDataToUkm() {
-  if (!render_frame_host_) {
-    return;
-  }
-  NavigationPredictorMetricsDocumentData* data =
-      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
-          render_frame_host_);
-  CHECK(data);
-  data->SetNavigationStartTime(GetDelegate().GetNavigationStart());
-  data->RecordUserInteractionsData(ukm_source_id_);
-}
-
-void PageAnchorsMetricsObserver::RecordAnchorDataToUkm() {
-  if (!render_frame_host_) {
-    return;
-  }
-
-  NavigationPredictorMetricsDocumentData* data =
-      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
-          render_frame_host_);
-  CHECK(data);
-  data->RecordAnchorData(ukm_source_id_);
-}
-
-void PageAnchorsMetricsObserver::RecordPageLinkClickDataToUkm() {
-  if (!render_frame_host_) {
-    return;
-  }
-  NavigationPredictorMetricsDocumentData* data =
-      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
-          render_frame_host_);
-  CHECK(data);
-  data->RecordPageLinkClickData(ukm_source_id_);
-}
-
 void PageAnchorsMetricsObserver::RecordAnchorElementMetricsDataToUkm() {
   if (!render_frame_host_) {
     return;
@@ -60,9 +25,14 @@ void PageAnchorsMetricsObserver::RecordDataToUkm() {
   // `AnchorElementMetricsData` are already recorded to UKM as we receive them,
   // and we don't need to record them again here. The edge case scenario is
   // handled separately in `OnRestoreFromBackForwardCache`.
-  RecordPageLinkClickDataToUkm();
-  RecordAnchorDataToUkm();
-  RecordUserInteractionDataToUkm();
+  if (!render_frame_host_) {
+    return;
+  }
+  NavigationPredictorMetricsDocumentData* data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          render_frame_host_);
+  CHECK(data);
+  data->RecordDataToUkm(ukm_source_id_);
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -87,7 +57,6 @@ void PageAnchorsMetricsObserver::OnComplete(
   // Do not report Ukm while prerendering.
   if (is_in_prerendered_page_)
     return;
-
   RecordDataToUkm();
 }
 
@@ -113,6 +82,7 @@ void PageAnchorsMetricsObserver::UpdateRenderFrameHostAndSourceId(
           render_frame_host_);
   CHECK(data);
   data->SetUkmSourceId(ukm_source_id_);
+  data->SetNavigationStartTime(GetDelegate().GetNavigationStart());
 }
 
 void PageAnchorsMetricsObserver::DidActivatePrerenderedPage(

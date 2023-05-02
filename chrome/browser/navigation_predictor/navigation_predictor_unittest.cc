@@ -496,6 +496,10 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
     auto& data = GetNavigationPredictorMetricsDocumentData();
     data.RecordUserInteractionsData(ukm_source_id_);
   }
+  void RecordPreloadOnHoverMetrics() {
+    auto& data = GetNavigationPredictorMetricsDocumentData();
+    data.RecordPreloadOnHoverData(ukm_source_id_);
+  }
   std::unordered_map<
       int,
       NavigationPredictorMetricsDocumentData::UserInteractionsData>&
@@ -868,6 +872,10 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordPreloadingOnHover) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   using UkmEntry = ukm::builders::NavigationPredictorPreloadOnHover;
 
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+
   std::vector<blink::mojom::AnchorElementMetricsPtr> metrics;
   metrics.push_back(CreateMetricsPtr());
   metrics.push_back(CreateMetricsPtr());
@@ -875,17 +883,18 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordPreloadingOnHover) {
   AnchorId anchor_id_0(metrics[0]->anchor_id);
   AnchorId anchor_id_1(metrics[1]->anchor_id);
   GURL target_url = metrics[1]->target_url;
-  predictor_service()->ReportNewAnchorElements(std::move(metrics));
+  predictor_service->ReportNewAnchorElements(std::move(metrics));
 
   // Mouse moves over anchor_id_0, mouse down and then moves away.
   ReportAnchorElementPointerOver(
-      predictor_service(), anchor_id_0,
+      predictor_service.get(), anchor_id_0,
       /*navigation_start_to_pointer_over=*/base::Milliseconds(10));
   ReportAnchorElementPointerDown(
-      predictor_service(), anchor_id_0,
+      predictor_service.get(), anchor_id_0,
       /*navigation_start_to_pointer_down=*/base::Milliseconds(30));
-  ReportAnchorElementPointerOut(predictor_service(), anchor_id_0,
+  ReportAnchorElementPointerOut(predictor_service.get(), anchor_id_0,
                                 /*hover_dwell_time=*/base::Milliseconds(70));
+  predictor_service_host->RecordPreloadOnHoverMetrics();
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(1u, entries.size());
   auto get_metric = [](const auto& entries, auto anchor_id, auto name) {
@@ -903,14 +912,15 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordPreloadingOnHover) {
 
   // Mouse moves over anchor_id_1, mouse down and then click event happens.
   ReportAnchorElementPointerOver(
-      predictor_service(), anchor_id_1,
+      predictor_service.get(), anchor_id_1,
       /*navigation_start_to_pointer_over=*/base::Milliseconds(30));
   ReportAnchorElementPointerDown(
-      predictor_service(), anchor_id_1,
+      predictor_service.get(), anchor_id_1,
       /*navigation_start_to_pointer_down=*/base::Milliseconds(60));
   ReportAnchorElementClick(
-      predictor_service(), anchor_id_1, target_url,
+      predictor_service.get(), anchor_id_1, target_url,
       /*navigation_start_to_click=*/base::Milliseconds(90));
+  predictor_service_host->RecordPreloadOnHoverMetrics();
   entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(2u, entries.size());
   EXPECT_EQ(ukm::GetExponentialBucketMin(60, 1.3),
@@ -923,9 +933,9 @@ TEST_F(NavigationPredictorUserInteractionsTest, RecordPreloadingOnHover) {
   // Pointer down event followed by a pointer out event without any pointer over
   // event should not cause a crash (crbug/1423336).
   ReportAnchorElementPointerDown(
-      predictor_service(), anchor_id_0,
+      predictor_service.get(), anchor_id_0,
       /*navigation_start_to_pointer_down=*/base::Milliseconds(10));
-  ReportAnchorElementPointerOut(predictor_service(), anchor_id_0,
+  ReportAnchorElementPointerOut(predictor_service.get(), anchor_id_0,
                                 /*hover_dwell_time=*/base::Milliseconds(20));
 }
 

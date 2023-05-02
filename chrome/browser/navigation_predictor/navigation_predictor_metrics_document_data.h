@@ -90,6 +90,12 @@ class NavigationPredictorMetricsDocumentData
     absl::optional<base::TimeDelta> max_hover_dwell_time;
   };
 
+  struct PreloadOnHoverData {
+    bool taken = false;
+    absl::optional<base::TimeDelta> hover_dwell_time;
+    absl::optional<base::TimeDelta> pointer_down_duration;
+  };
+
   NavigationPredictorMetricsDocumentData(
       const NavigationPredictorMetricsDocumentData&) = delete;
   NavigationPredictorMetricsDocumentData& operator=(
@@ -126,6 +132,11 @@ class NavigationPredictorMetricsDocumentData
     return user_interactions_;
   }
 
+  void AddPreloadOnHoverData(PreloadOnHoverData data);
+  void RecordPreloadOnHoverData(ukm::SourceId ukm_source_id);
+
+  void RecordDataToUkm(ukm::SourceId ukm_source_id);
+
  private:
   friend class content::DocumentUserData<
       NavigationPredictorMetricsDocumentData>;
@@ -145,6 +156,7 @@ class NavigationPredictorMetricsDocumentData
   std::vector<PageLinkClickData> page_link_clicks_;
   std::map<int, AnchorElementMetricsData> anchor_element_metrics_;
   std::unordered_map<int, UserInteractionsData> user_interactions_;
+  std::vector<PreloadOnHoverData> preload_on_hover_;
   // The time between navigation start and the last time user clicked on a
   // link.
   absl::optional<base::TimeDelta> navigation_start_to_click_;

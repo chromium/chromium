@@ -17,13 +17,9 @@ NavigationPredictorMetricsDocumentData::NavigationPredictorMetricsDocumentData(
 NavigationPredictorMetricsDocumentData::
     ~NavigationPredictorMetricsDocumentData() {
   if (ukm_source_id_.has_value()) {
-    ukm::SourceId ukm_source_id = ukm_source_id_.value();
-    RecordUserInteractionsData(ukm_source_id);
-    RecordPageLinkClickData(ukm_source_id);
-    RecordAnchorData(ukm_source_id);
+    RecordDataToUkm(ukm_source_id_.value());
   }
 }
-
 DOCUMENT_USER_DATA_KEY_IMPL(NavigationPredictorMetricsDocumentData);
 
 NavigationPredictorMetricsDocumentData::AnchorsData::AnchorsData() = default;
@@ -226,4 +222,59 @@ void NavigationPredictorMetricsDocumentData::RecordUserInteractionsData(
   }
   // Clear the UserInteractionData for the next page load.
   ClearUserInteractionsData();
+}
+
+void NavigationPredictorMetricsDocumentData::AddPreloadOnHoverData(
+    PreloadOnHoverData data) {
+  preload_on_hover_.push_back(std::move(data));
+}
+
+void NavigationPredictorMetricsDocumentData::RecordPreloadOnHoverData(
+    ukm::SourceId ukm_source_id) {
+  if (!ukm_source_id_.has_value() || preload_on_hover_.empty()) {
+    return;
+  }
+  DCHECK(ukm_source_id == ukm_source_id_);
+
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+  for (const auto& on_hover_data : preload_on_hover_) {
+    ukm::builders::NavigationPredictorPreloadOnHover builder(
+        ukm_source_id_.value());
+
+    if (on_hover_data.taken) {
+      if (on_hover_data.hover_dwell_time.has_value()) {
+        builder.SetHoverTakenMs(ukm::GetExponentialBucketMin(
+            on_hover_data.hover_dwell_time.value().InMilliseconds(), 1.3));
+      }
+      if (on_hover_data.pointer_down_duration.has_value()) {
+        builder.SetMouseDownTakenMs(ukm::GetExponentialBucketMin(
+            on_hover_data.pointer_down_duration.value().InMilliseconds(), 1.3));
+      }
+
+    } else {
+      if (on_hover_data.hover_dwell_time.has_value()) {
+        builder.SetHoverNotTakenMs(ukm::GetExponentialBucketMin(
+            on_hover_data.hover_dwell_time.value().InMilliseconds(), 1.3));
+      }
+      if (on_hover_data.pointer_down_duration.has_value()) {
+        builder.SetMouseDownNotTakenMs(ukm::GetExponentialBucketMin(
+            on_hover_data.pointer_down_duration.value().InMilliseconds(), 1.3));
+      }
+    }
+    builder.Record(ukm_recorder);
+  }
+  // Clear the data for the next navigation.
+  preload_on_hover_.clear();
+}
+
+void NavigationPredictorMetricsDocumentData::RecordDataToUkm(
+    ukm::SourceId ukm_source_id) {
+  // `AnchorElementMetricsData` are already recorded to UKM as we receive them,
+  // and we don't need to record them again here. The edge case scenario is
+  // handled separately in
+  // `PageAnchorsMetricsObserver::OnRestoreFromBackForwardCache`.
+  RecordPageLinkClickData(ukm_source_id);
+  RecordAnchorData(ukm_source_id);
+  RecordUserInteractionsData(ukm_source_id);
+  RecordPreloadOnHoverData(ukm_source_id);
 }
