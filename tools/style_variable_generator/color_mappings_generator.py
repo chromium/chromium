@@ -77,7 +77,12 @@ class ColorMappingsStyleGenerator(CSSStyleGenerator):
         '''Returns the C++ ColorMappings representation of |c|'''
         assert (isinstance(c, Color))
 
-        if isinstance(c, ColorBlend):
+        if isinstance(c, ColorBlend) and c.blendPercentage:
+            return 'ui::GetResultingPaintColor(ui::SetAlpha(%s, 0x%X), %s)' % (
+                self._ColorMixerColor(c.blended_colors[0], mode),
+                math.floor(255 * (float(c.blendPercentage) / 100)),
+                self._ColorMixerColor(c.blended_colors[1], mode))
+        elif isinstance(c, ColorBlend):
             return 'ui::GetResultingPaintColor(%s, %s)' % (
                 self._ColorMixerColor(c.blended_colors[0], mode),
                 self._ColorMixerColor(c.blended_colors[1], mode))
