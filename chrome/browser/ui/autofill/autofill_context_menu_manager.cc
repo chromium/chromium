@@ -14,6 +14,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/user_education/scoped_new_badge_tracker.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -24,6 +25,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/favicon_size.h"
@@ -95,11 +97,13 @@ AutofillContextMenuManager::AutofillContextMenuManager(
     PersonalDataManager* personal_data_manager,
     RenderViewContextMenuBase* delegate,
     ui::SimpleMenuModel* menu_model,
-    Browser* browser)
+    Browser* browser,
+    std::unique_ptr<ScopedNewBadgeTracker> new_badge_tracker)
     : personal_data_manager_(personal_data_manager),
       menu_model_(menu_model),
       delegate_(delegate),
-      browser_(browser) {
+      browser_(browser),
+      new_badge_tracker_(std::move(new_badge_tracker)) {
   DCHECK(delegate_);
   params_ = delegate_->params();
 }
@@ -189,6 +193,13 @@ void AutofillContextMenuManager::AppendItems() {
         IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         ui::ImageModel::FromVectorIcon(vector_icons::kDogfoodIcon));
+    menu_model_->SetIsNewFeatureAt(
+        menu_model_->GetIndexOfCommandId(IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK)
+            .value(),
+        new_badge_tracker_->TryShowNewBadge(
+            feature_engagement::kIPHAutofillFeedbackNewBadgeFeature,
+            &features::kAutofillFeedback));
+
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
 }
@@ -230,6 +241,7 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
   if (!manager) {
     return;
   }
+  new_badge_tracker_->ActionPerformed("autofill_feedback_activated");
 
   chrome::ShowFeedbackPage(
       browser_, chrome::kFeedbackSourceAutofillContextMenu,

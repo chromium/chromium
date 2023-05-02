@@ -21,6 +21,9 @@ BASE_FEATURE(kIPHDummyFeature, "IPH_Dummy", base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
+BASE_FEATURE(kIPHAutofillFeedbackNewBadgeFeature,
+             "IPH_AutofillFeedbackNewBadge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHBatterySaverModeFeature,
              "IPH_BatterySaverMode",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -131,6 +131,11 @@ class ExtensionContextMenuVisibilityApiTest
   ExtensionContextMenuVisibilityApiTest& operator=(
       const ExtensionContextMenuVisibilityApiTest&) = delete;
 
+  void TearDownOnMainThread() override {
+    menu_.reset();
+    ExtensionContextMenuApiTest::TearDownOnMainThread();
+  }
+
   void SetUpTestExtension() {
     extension_ = LoadExtension(
         test_data_dir_.AppendASCII("context_menus/item_visibility/"));
