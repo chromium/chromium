@@ -816,10 +816,9 @@ message ClientDownloadRequest {
   // Population that the reporting user is part of.
   optional ChromeUserPopulation population = 24;
 
-  // True if the .zip or DMG, etc, was 100% successfully unpacked.
-  // This field is in the process of being deprecated and replaced with
-  // `archive_summary.valid`.
-  optional bool archive_valid = 26;
+  // This field has been deprecated and replaced with
+  // `archive_summary.parser_status`.
+  optional bool DEPRECATED_archive_valid = 26 [deprecated = true];
 
   // True if this ClientDownloadRequest is from a allowlisted domain.
   optional bool skipped_url_allowlist = 28;
@@ -866,12 +865,10 @@ message ClientDownloadRequest {
   // protection for Advanced Protection users.
   optional bool request_ap_verdicts = 67;
 
-  // For archives files the number of files and directories contained within the
-  // archive.
-  // These fields are in the process of being deprecated and replaced with
+  // These fields have been deprecated and replaced with
   // `archive_summary.file_count` or `archive_summary.directory_count`.
-  optional int32 archive_file_count = 68;
-  optional int32 archive_directory_count = 69;
+  optional int32 DEPRECATED_archive_file_count = 68 [deprecated = true];
+  optional int32 DEPRECATED_archive_directory_count = 69 [deprecated = true];
 
   // Only for display on chrome://safe-browsing. The actual token is sent in the
   // "Authorization: Bearer" header

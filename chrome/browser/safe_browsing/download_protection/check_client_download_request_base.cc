@@ -315,7 +315,8 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
            ClientDownloadRequest::RAR_COMPRESSED_EXECUTABLE ||
        client_download_request_->download_type() ==
            ClientDownloadRequest::SEVEN_ZIP_COMPRESSED_EXECUTABLE) &&
-      client_download_request_->archive_valid() &&
+      client_download_request_->archive_summary().parser_status() ==
+          ClientDownloadRequest::ArchiveSummary::VALID &&
       base::ranges::all_of(
           client_download_request_->archived_binary(),
           [](const ClientDownloadRequest::ArchivedBinary& archived_binary) {

@@ -866,8 +866,6 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
     dict.Set("length", static_cast<int>(cdr.length()));
   if (cdr.has_file_basename())
     dict.Set("file_basename", cdr.file_basename());
-  if (cdr.has_archive_valid())
-    dict.Set("archive_valid", cdr.archive_valid());
 
   if (!cdr.archived_binary().empty()) {
     base::Value::List archived_binaries;
@@ -905,12 +903,6 @@ std::string SerializeClientDownloadRequest(const ClientDownloadRequest& cdr) {
 
   if (cdr.has_request_ap_verdicts())
     dict.Set("request_ap_verdicts", cdr.request_ap_verdicts());
-
-  if (cdr.has_archive_file_count())
-    dict.Set("archive_file_count", cdr.archive_file_count());
-
-  if (cdr.has_archive_directory_count())
-    dict.Set("archive_directory_count", cdr.archive_directory_count());
 
   if (!cdr.access_token().empty())
     dict.Set("access_token", cdr.access_token());
