@@ -502,40 +502,6 @@
       },
     },
 
-    # TODO(crbug/1239300): Remove when persistent_shell experiment is over.
-    'chrome_persistent_shell_tests': {
-      'components_browsertests_persistent_shell': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'ci_only': True,
-        'test': 'components_browsertests',
-        'experiment_percentage': 100,
-      },
-      'content_unittests_persistent_shell': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'ci_only': True,
-        'test': 'content_unittests',
-        'experiment_percentage': 100,
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'webview_instrumentation_test_apk_persistent_shell': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'ci_only': True,
-        'test': 'webview_instrumentation_test_apk',
-        'experiment_percentage': 100,
-        'swarming': {
-          'shards': 10,
-        },
-      },
-    },
-
     'chrome_private_code_test_isolated_scripts': {
       'chrome_private_code_test': {},
     },
@@ -6763,7 +6729,6 @@
       'android_trichrome_smoke_tests': {},
       'android_smoke_tests': {},
       'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
-      'chrome_persistent_shell_tests': {}, # Remove when experiment is over.
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
       'linux_flavor_specific_chromium_gtests': {},
