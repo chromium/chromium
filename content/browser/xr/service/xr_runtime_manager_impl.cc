@@ -233,10 +233,12 @@ BrowserXRRuntimeImpl* XRRuntimeManagerImpl::GetImmersiveVrRuntime() {
     return cardboard;
   }
 #endif
+#if BUILDFLAG(ENABLE_GVR_SERVICES)
   auto* gvr = GetRuntime(device::mojom::XRDeviceId::GVR_DEVICE_ID);
   if (gvr) {
     return gvr;
   }
+#endif
 #endif
 
 #if BUILDFLAG(ENABLE_OPENXR)

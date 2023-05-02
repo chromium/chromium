@@ -73,7 +73,6 @@ android_library("java") {
     "//components/page_info/android:java",
     "//components/policy/android:policy_java",
     "//content/public/android:content_java",
-    "//device/vr:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_lifecycle_lifecycle_runtime_java",
     "//third_party/gvr-android-sdk:gvr_common_java",
@@ -81,6 +80,10 @@ android_library("java") {
     "//ui/android:ui_utils_java",
     "//url:gurl_java",
   ]
+
+  if (enable_gvr_services) {
+    deps += [ "//device/vr:java" ]
+  }
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.vr"

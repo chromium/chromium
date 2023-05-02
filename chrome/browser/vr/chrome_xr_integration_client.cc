@@ -26,8 +26,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
 #elif BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GVR_SERVICES)
 #include "chrome/browser/android/vr/gvr_install_helper.h"
 #include "device/vr/android/gvr/gvr_device_provider.h"
+#endif
 #if BUILDFLAG(ENABLE_ARCORE)
 #include "chrome/browser/android/vr/ar_jni_headers/ArCompositorDelegateProviderImpl_jni.h"
 #include "components/webxr/android/ar_compositor_delegate_provider.h"
@@ -133,7 +135,9 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
   }
 #endif  // ENABLE_CARDBOARD
   if (add_gvr_device_provider) {
+#if BUILDFLAG(ENABLE_GVR_SERVICES)
     providers.push_back(std::make_unique<device::GvrDeviceProvider>());
+#endif
   }
 #if BUILDFLAG(ENABLE_ARCORE)
   base::android::ScopedJavaLocalRef<jobject> j_ar_compositor_delegate_provider =

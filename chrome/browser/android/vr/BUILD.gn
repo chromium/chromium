@@ -12,45 +12,49 @@ assert(enable_vr)
 
 static_library("vr_android") {
   defines = []
-
   sources = [
-    "android_vsync_helper.cc",
-    "android_vsync_helper.h",
-    "browser_renderer_factory.cc",
-    "browser_renderer_factory.h",
-    "cardboard_input_delegate.cc",
-    "cardboard_input_delegate.h",
-    "gl_browser_interface.h",
-    "gvr_graphics_delegate.cc",
-    "gvr_graphics_delegate.h",
-    "gvr_input_delegate.cc",
-    "gvr_input_delegate.h",
-    "gvr_install_helper.cc",
-    "gvr_install_helper.h",
-    "gvr_scheduler_delegate.cc",
-    "gvr_scheduler_delegate.h",
-    "gvr_util.cc",
-    "gvr_util.h",
-    "metrics_util_android.cc",
-    "metrics_util_android.h",
-    "register_gvr_jni.cc",
-    "register_gvr_jni.h",
-    "register_jni.h",
-    "scoped_gpu_trace.cc",
-    "scoped_gpu_trace.h",
-    "vr_controller.cc",
-    "vr_controller.h",
-    "vr_gl_thread.cc",
-    "vr_gl_thread.h",
     "vr_module_provider.cc",
     "vr_module_provider.h",
-    "vr_shell.cc",
-    "vr_shell.h",
-    "vr_shell_delegate.cc",
-    "vr_shell_delegate.h",
-    "vrcore_install_helper.cc",
-    "vrcore_install_helper.h",
   ]
+
+  if (enable_gvr_services) {
+    sources += [
+      "android_vsync_helper.cc",
+      "android_vsync_helper.h",
+      "browser_renderer_factory.cc",
+      "browser_renderer_factory.h",
+      "cardboard_input_delegate.cc",
+      "cardboard_input_delegate.h",
+      "gl_browser_interface.h",
+      "gvr_graphics_delegate.cc",
+      "gvr_graphics_delegate.h",
+      "gvr_input_delegate.cc",
+      "gvr_input_delegate.h",
+      "gvr_install_helper.cc",
+      "gvr_install_helper.h",
+      "gvr_scheduler_delegate.cc",
+      "gvr_scheduler_delegate.h",
+      "gvr_util.cc",
+      "gvr_util.h",
+      "metrics_util_android.cc",
+      "metrics_util_android.h",
+      "register_gvr_jni.cc",
+      "register_gvr_jni.h",
+      "register_jni.h",
+      "scoped_gpu_trace.cc",
+      "scoped_gpu_trace.h",
+      "vr_controller.cc",
+      "vr_controller.h",
+      "vr_gl_thread.cc",
+      "vr_gl_thread.h",
+      "vr_shell.cc",
+      "vr_shell.h",
+      "vr_shell_delegate.cc",
+      "vr_shell_delegate.h",
+      "vrcore_install_helper.cc",
+      "vrcore_install_helper.h",
+    ]
+  }
 
   deps = [
     ":ui_factory",
@@ -85,7 +89,6 @@ static_library("vr_android") {
     "//services/device/public/mojom",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/viz/public/cpp/gpu",
-    "//third_party/gvr-android-sdk:gvr_shim",
     "//ui/android",
     "//ui/base",
     "//ui/display",
@@ -104,7 +107,10 @@ static_library("vr_android") {
 
   libs = [ "android" ]
 
-  configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
+  if (enable_gvr_services) {
+    deps += [ "//third_party/gvr-android-sdk:gvr_shim" ]
+    configs += [ "//third_party/gvr-android-sdk:libgvr_config" ]
+  }
 }
 
 # The VR UI module factory interface.
