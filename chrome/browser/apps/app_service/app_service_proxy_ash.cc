@@ -28,7 +28,7 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -54,13 +54,16 @@
 namespace apps {
 
 namespace {
-// Return DlpFilesController* if exists.
-policy::DlpFilesController* GetDlpFilesController() {
+
+// Returns DlpFilesControllerAsh* if exists.
+policy::DlpFilesControllerAsh* GetDlpFilesController() {
   // Primary profile restrictions are enforced across all profiles.
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  return rules_manager ? rules_manager->GetDlpFilesController() : nullptr;
+  return static_cast<policy::DlpFilesControllerAsh*>(
+      rules_manager ? rules_manager->GetDlpFilesController() : nullptr);
 }
+
 }  // namespace
 
 AppServiceProxyAsh::AppServiceProxyAsh(Profile* profile)
@@ -334,7 +337,7 @@ void AppServiceProxyAsh::LaunchAppWithIntent(const std::string& app_id,
       weak_ptr_factory_.GetWeakPtr(), app_id, event_flags, std::move(intent),
       std::move(launch_source), std::move(window_info), std::move(callback));
 
-  policy::DlpFilesController* files_controller = GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller = GetDlpFilesController();
   if (files_controller) {
     auto app_found = app_registry_cache_.ForOneApp(
         app_id, [&files_controller, &intent_copy,
@@ -854,7 +857,8 @@ IntentLaunchInfo AppServiceProxyAsh::CreateIntentLaunchInfo(
     const apps::AppUpdate& update) {
   IntentLaunchInfo entry =
       AppServiceProxyBase::CreateIntentLaunchInfo(intent, filter, update);
-  if (policy::DlpFilesController* files_controller = GetDlpFilesController()) {
+  if (policy::DlpFilesControllerAsh* files_controller =
+          GetDlpFilesController()) {
     entry.is_dlp_blocked = files_controller->IsLaunchBlocked(update, intent);
   }
   return entry;

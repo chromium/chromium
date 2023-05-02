@@ -38,7 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 
 namespace policy {
 namespace {
@@ -48,10 +48,10 @@ constexpr char kGaiaId[] = "12345";
 
 }  // namespace
 
-class MockController : public DlpFilesController {
+class MockController : public DlpFilesControllerAsh {
  public:
   explicit MockController(const DlpRulesManager& rules_manager)
-      : DlpFilesController(rules_manager) {}
+      : DlpFilesControllerAsh(rules_manager) {}
   MOCK_METHOD(void,
               RequestCopyAccess,
               (const storage::FileSystemURL&,

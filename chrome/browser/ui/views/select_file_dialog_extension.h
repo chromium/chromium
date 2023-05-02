@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/color/color_provider_source_observer.h"

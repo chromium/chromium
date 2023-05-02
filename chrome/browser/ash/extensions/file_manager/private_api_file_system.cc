@@ -60,7 +60,7 @@
 #include "chrome/browser/ash/file_manager/zip_io_task.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fileapi/recent_disk_source.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -902,8 +902,9 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
     return RespondNow(Error("File URL was invalid"));
   }
 
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
   files_controller->GetDisallowedTransfers(
       source_urls_, destination_url_, params->is_move,
       base::BindOnce(&FileManagerPrivateInternalGetDisallowedTransfersFunction::
@@ -983,8 +984,9 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
     source_urls_.push_back(file_system_url);
   }
 
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
 
   absl::optional<policy::DlpFileDestination> destination;
   content::WebContents* web_contents = GetSenderWebContents();
@@ -1011,7 +1013,7 @@ FileManagerPrivateInternalGetDlpMetadataFunction::Run() {
 }
 
 void FileManagerPrivateInternalGetDlpMetadataFunction::OnGetDlpMetadata(
-    std::vector<policy::DlpFilesController::DlpFileMetadata>
+    std::vector<policy::DlpFilesControllerAsh::DlpFileMetadata>
         dlp_metadata_list) {
   using extensions::api::file_manager_private::DlpMetadata;
   std::vector<DlpMetadata> converted_list;
@@ -1051,9 +1053,10 @@ FileManagerPrivateGetDlpRestrictionDetailsFunction::Run() {
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
-  const std::vector<policy::DlpFilesController::DlpFileRestrictionDetails>
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
+  const std::vector<policy::DlpFilesControllerAsh::DlpFileRestrictionDetails>
       dlp_restriction_details =
           files_controller->GetDlpRestrictionDetails(params->source_url);
 
@@ -1092,9 +1095,10 @@ FileManagerPrivateGetDlpBlockedComponentsFunction::Run() {
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-  policy::DlpFilesController* files_controller;
+  policy::DlpFilesControllerAsh* files_controller;
   if (!rules_manager || !rules_manager->IsFilesPolicyEnabled() ||
-      !(files_controller = rules_manager->GetDlpFilesController())) {
+      !(files_controller = static_cast<policy::DlpFilesControllerAsh*>(
+            rules_manager->GetDlpFilesController()))) {
     return RespondNow(WithArguments(base::Value::List()));
   }
 

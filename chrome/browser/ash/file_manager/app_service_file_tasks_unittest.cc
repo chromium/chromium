@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/common/pref_names.h"
@@ -950,10 +951,10 @@ TEST_F(AppServiceFileTasksTestEnabled, CrositiniTasksControlledByPolicy) {
 // Tests applying policies when listing tasks.
 class AppServiceFileTasksPolicyTest : public AppServiceFileTasksTestEnabled {
  protected:
-  class MockFilesController : public policy::DlpFilesController {
+  class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
     explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
-        : DlpFilesController(rules_manager) {}
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,

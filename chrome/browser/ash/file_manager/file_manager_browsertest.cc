@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -624,7 +624,7 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
         .WillByDefault(testing::Return(true));
 
     files_controller_ =
-        std::make_unique<policy::DlpFilesController>(*mock_rules_manager_);
+        std::make_unique<policy::DlpFilesControllerAsh>(*mock_rules_manager_);
     ON_CALL(*mock_rules_manager_, GetDlpFilesController)
         .WillByDefault(testing::Return(files_controller_.get()));
 
@@ -670,7 +670,7 @@ class DlpFilesAppBrowserTest : public FilesAppBrowserTest {
     std::move(callback).Run(response);
   }
 
-  std::unique_ptr<policy::DlpFilesController> files_controller_;
+  std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_;
 };
 
 IN_PROC_BROWSER_TEST_P(DlpFilesAppBrowserTest, Test) {

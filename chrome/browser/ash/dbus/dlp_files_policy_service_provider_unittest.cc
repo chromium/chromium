@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"

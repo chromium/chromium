@@ -15,7 +15,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"

@@ -68,7 +68,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #endif
@@ -1228,8 +1228,9 @@ bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   if (!rules_manager)
     return false;
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
   if (!files_controller)
     return false;
   const GURL authority_url = download::BaseFile::GetEffectiveAuthorityURL(

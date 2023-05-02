@@ -10,7 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -120,14 +120,15 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   DCHECK(rules_manager);
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
 
   // TODO(crbug.com/1360005): Add actual file path.
   bool restricted =
       files_controller
           ? files_controller->IsDlpPolicyMatched(
-                policy::DlpFilesController::FileDaemonInfo(
+                policy::DlpFilesControllerAsh::FileDaemonInfo(
                     request.file_metadata().inode(), base::FilePath(),
                     request.file_metadata().source_url()))
           : false;
@@ -161,7 +162,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     return;
   }
 
-  std::vector<policy::DlpFilesController::FileDaemonInfo> files_info;
+  std::vector<policy::DlpFilesControllerAsh::FileDaemonInfo> files_info;
   for (const auto& file : request.transferred_files()) {
     if (!file.has_inode() || !file.has_path() || !file.has_source_url()) {
       LOG(ERROR) << "Missing file path or file source url";
@@ -174,10 +175,11 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
   DCHECK(rules_manager);
-  policy::DlpFilesController* files_controller =
-      rules_manager->GetDlpFilesController();
+  policy::DlpFilesControllerAsh* files_controller =
+      static_cast<policy::DlpFilesControllerAsh*>(
+          rules_manager->GetDlpFilesController());
   if (!files_controller) {
-    std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+    std::vector<std::pair<policy::DlpFilesControllerAsh::FileDaemonInfo,
                           dlp::RestrictionLevel>>
         response_files;
     for (const auto& file : files_info) {
@@ -213,7 +215,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
 void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
     dbus::MethodCall* method_call,
     dbus::ExportedObject::ResponseSender response_sender,
-    const std::vector<std::pair<policy::DlpFilesController::FileDaemonInfo,
+    const std::vector<std::pair<policy::DlpFilesControllerAsh::FileDaemonInfo,
                                 dlp::RestrictionLevel>>& requested_files) {
   dlp::IsFilesTransferRestrictedResponse response_proto;
 

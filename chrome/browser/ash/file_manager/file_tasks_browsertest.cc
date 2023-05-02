@@ -43,7 +43,7 @@
 #include "chrome/browser/ash/file_system_provider/provider_interface.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -729,8 +729,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksPolicyBrowserTest, TasksMarkedAsBlocked) {
 
   ON_CALL(*rules_manager_, IsFilesPolicyEnabled)
       .WillByDefault(testing::Return(true));
-  std::unique_ptr<policy::DlpFilesController> files_controller_ =
-      std::make_unique<policy::DlpFilesController>(*rules_manager_);
+  std::unique_ptr<policy::DlpFilesControllerAsh> files_controller_ =
+      std::make_unique<policy::DlpFilesControllerAsh>(*rules_manager_);
   ON_CALL(*rules_manager_, GetDlpFilesController)
       .WillByDefault(testing::Return(files_controller_.get()));
 

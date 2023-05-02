@@ -8,12 +8,12 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"

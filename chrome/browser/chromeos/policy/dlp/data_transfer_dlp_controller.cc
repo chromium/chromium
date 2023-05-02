@@ -26,7 +26,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/file_manager/url_constants.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace policy {
@@ -358,7 +358,8 @@ void DataTransferDlpController::DropIfAllowed(
 
   if (drag_data->HasFile() && !IsFilesApp(data_dst)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* files_controller = dlp_rules_manager_->GetDlpFilesController();
+    auto* files_controller = static_cast<policy::DlpFilesControllerAsh*>(
+        dlp_rules_manager_->GetDlpFilesController());
     if (files_controller) {
       std::vector<ui::FileInfo> dropped_files;
       drag_data->GetFilenames(&dropped_files);

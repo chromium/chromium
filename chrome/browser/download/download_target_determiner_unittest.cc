@@ -71,7 +71,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
@@ -2844,10 +2844,10 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
         scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
             base::WrapUnique(user_manager_.get()))) {}
 
-  class MockFilesController : public policy::DlpFilesController {
+  class MockFilesController : public policy::DlpFilesControllerAsh {
    public:
     explicit MockFilesController(const policy::DlpRulesManager& rules_manager)
-        : DlpFilesController(rules_manager) {}
+        : DlpFilesControllerAsh(rules_manager) {}
     ~MockFilesController() override = default;
 
     MOCK_METHOD(bool,

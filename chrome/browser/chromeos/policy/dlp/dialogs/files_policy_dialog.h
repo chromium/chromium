@@ -7,10 +7,10 @@
 
 #include <string>
 
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace policy {

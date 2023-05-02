@@ -21,7 +21,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/ash/extensions/file_manager/logged_extension_function.h"
 #include "chrome/browser/ash/file_manager/trash_info_validator.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
@@ -58,7 +58,7 @@ struct HashAndFilePath {
 };
 
 namespace policy {
-class DlpFilesController;
+class DlpFilesControllerAsh;
 }  // namespace policy
 
 }  // namespace drive
@@ -348,7 +348,7 @@ class FileManagerPrivateInternalGetDlpMetadataFunction
 
  private:
   void OnGetDlpMetadata(
-      std::vector<policy::DlpFilesController::DlpFileMetadata> dlp_metadata);
+      std::vector<policy::DlpFilesControllerAsh::DlpFileMetadata> dlp_metadata);
 
   std::vector<storage::FileSystemURL> source_urls_;
 };

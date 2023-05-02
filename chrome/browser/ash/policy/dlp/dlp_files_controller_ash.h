@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_ASH_H_
+#define CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_ASH_H_
 
 #include <memory>
 #include <vector>
@@ -11,9 +11,9 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/file_access/scoped_file_access_copy.h"
@@ -39,26 +39,11 @@ namespace policy {
 class DlpWarnNotifier;
 class DlpFilesEventStorage;
 
-// DlpFilesController is responsible for deciding whether file transfers are
+// DlpFilesControllerAsh is responsible for deciding whether file transfers are
 // allowed according to the files sources saved in the DLP daemon and the rules
 // of the Data leak prevention policy set by the admin.
-class DlpFilesController {
+class DlpFilesControllerAsh : public DlpFilesController {
  public:
-  // Types of file actions. These actions are used when warning dialogs are
-  // shown because of files restrictions. This is used in UMA histograms, should
-  // not change order.
-  enum class FileAction {
-    kUnknown = 0,
-    kDownload = 1,
-    kTransfer = 2,
-    kUpload = 3,
-    kCopy = 4,
-    kMove = 5,
-    kOpen = 6,
-    kShare = 7,
-    kMaxValue = kShare
-  };
-
   // DlpFileMetadata keeps metadata about a file, such as whether it's managed
   // or not and the source URL, if it exists.
   struct DlpFileMetadata {
@@ -139,11 +124,11 @@ class DlpFilesController {
   using IsFilesTransferRestrictedCallback = base::OnceCallback<void(
       const std::vector<std::pair<FileDaemonInfo, ::dlp::RestrictionLevel>>&)>;
 
-  explicit DlpFilesController(const DlpRulesManager& rules_manager);
-  DlpFilesController(const DlpFilesController& other) = delete;
-  DlpFilesController& operator=(const DlpFilesController& other) = delete;
+  explicit DlpFilesControllerAsh(const DlpRulesManager& rules_manager);
+  DlpFilesControllerAsh(const DlpFilesControllerAsh& other) = delete;
+  DlpFilesControllerAsh& operator=(const DlpFilesControllerAsh& other) = delete;
 
-  virtual ~DlpFilesController();
+  ~DlpFilesControllerAsh() override;
 
   // Returns a sublist of |transferred_files| disallowed to be transferred to
   // |destination| in |result_callback|. |is_move| is true if it's a move
@@ -308,8 +293,6 @@ class DlpFilesController {
       CheckIfDlpAllowedCallback result_callback,
       std::vector<storage::FileSystemURL> dropped_files);
 
-  const raw_ref<const DlpRulesManager, ExperimentalAsh> rules_manager_;
-
   // Is used for creating and showing the warning dialog.
   std::unique_ptr<DlpWarnNotifier> warn_notifier_;
   // Pointer to the associated DlpWarnDialog widget.
@@ -320,9 +303,9 @@ class DlpFilesController {
   // approach.
   std::unique_ptr<DlpFilesEventStorage> event_storage_;
 
-  base::WeakPtrFactory<DlpFilesController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DlpFilesControllerAsh> weak_ptr_factory_{this};
 };
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_POLICY_DLP_DLP_FILES_CONTROLLER_ASH_H_

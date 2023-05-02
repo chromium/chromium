@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/login/login_policy_test_base.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
@@ -178,7 +178,8 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
     ON_CALL(*rules_manager_, GetReportingManager)
         .WillByDefault(::testing::Return(reporting_manager_.get()));
 
-    files_controller_ = std::make_unique<DlpFilesController>(*rules_manager_);
+    files_controller_ =
+        std::make_unique<DlpFilesControllerAsh>(*rules_manager_);
     ON_CALL(*rules_manager_, GetDlpFilesController)
         .WillByDefault(::testing::Return(files_controller_.get()));
 
@@ -223,7 +224,7 @@ class DataTransferDlpAshBrowserTest : public InProcessBrowserTest {
   std::vector<DlpPolicyEvent> events;
   FakeClipboardNotifier helper_;
   std::unique_ptr<FakeDlpController> dlp_controller_;
-  std::unique_ptr<DlpFilesController> files_controller_;
+  std::unique_ptr<DlpFilesControllerAsh> files_controller_;
 };
 
 // Flaky on MSan bots: http://crbug.com/1178328

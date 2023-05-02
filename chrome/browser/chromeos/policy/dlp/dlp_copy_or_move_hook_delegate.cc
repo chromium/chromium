@@ -17,7 +17,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "chrome/browser/ash/policy/dlp/dlp_files_controller.h"
+#include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "components/file_access/scoped_file_access.h"
@@ -68,8 +68,9 @@ void RequestCopyAccess(base::WeakPtr<DlpCopyOrMoveHookDelegate> hook_delegate,
     std::move(callback).Run(base::File::FILE_OK);
     return;
   }
-  DlpFilesController* dlp_files_controller =
-      dlp_rules_manager->GetDlpFilesController();
+  DlpFilesControllerAsh* dlp_files_controller =
+      static_cast<DlpFilesControllerAsh*>(
+          dlp_rules_manager->GetDlpFilesController());
   if (!dlp_files_controller) {
     std::move(callback).Run(base::File::FILE_OK);
     return;
