@@ -150,7 +150,6 @@ component("clipboard") {
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/base",
     "//net",
-    "//skia",
     "//ui/base:features",
     "//ui/gfx",
     "//ui/gfx/geometry",
@@ -159,6 +158,7 @@ component("clipboard") {
   public_deps = [
     ":clipboard_types",
     ":file_info",
+    "//skia",
     "//ui/base/data_transfer_policy",
   ]
 

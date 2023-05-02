@@ -358,26 +358,23 @@ void ClipboardIOS::WritePortableAndPlatformRepresentations(
 
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects) {
-    DispatchPortableRepresentation(object.first, object.second);
+    DispatchPortableRepresentation(object.second);
   }
 }
 
-void ClipboardIOS::WriteText(const char* text_data, size_t text_len) {
-  std::string text_str(text_data, text_len);
-  NSString* text = base::SysUTF8ToNSString(text_str);
-
-  NSDictionary<NSString*, id>* text_item =
-      @{ClipboardFormatType::PlainTextType().ToNSString() : text};
+void ClipboardIOS::WriteText(const std::string& text) {
+  NSDictionary<NSString*, id>* text_item = @{
+    ClipboardFormatType::PlainTextType().ToNSString() :
+        base::SysUTF8ToNSString(text)
+  };
   [GetPasteboard() addItems:@[ text_item ]];
 }
 
-void ClipboardIOS::WriteHTML(const char* markup_data,
-                             size_t markup_len,
-                             const char* url_data,
-                             size_t url_len) {
+void ClipboardIOS::WriteHTML(const std::string& markup,
+                             const std::string* source_url) {
   // We need to mark it as utf-8. (see crbug.com/11957)
   std::string html_fragment_str("<meta charset='utf-8'>");
-  html_fragment_str.append(markup_data, markup_len);
+  html_fragment_str += markup;
   NSString* html = base::SysUTF8ToNSString(html_fragment_str);
 
   NSDictionary<NSString*, id>* html_item =
@@ -385,24 +382,22 @@ void ClipboardIOS::WriteHTML(const char* markup_data,
   [GetPasteboard() addItems:@[ html_item ]];
 }
 
-void ClipboardIOS::WriteUnsanitizedHTML(const char* markup_data,
-                                        size_t markup_len,
-                                        const char* url_data,
-                                        size_t url_len) {
-  WriteHTML(markup_data, markup_len, url_data, url_len);
+void ClipboardIOS::WriteUnsanitizedHTML(const std::string& markup,
+                                        const std::string* source_url) {
+  WriteHTML(markup, source_url);
 }
 
-void ClipboardIOS::WriteSvg(const char* markup_data, size_t markup_len) {
-  std::string svg_str(markup_data, markup_len);
-  NSString* svg = base::SysUTF8ToNSString(svg_str);
-
-  NSDictionary<NSString*, id>* svg_item =
-      @{ClipboardFormatType::SvgType().ToNSString() : svg};
+void ClipboardIOS::WriteSvg(const std::string& markup) {
+  NSDictionary<NSString*, id>* svg_item = @{
+    ClipboardFormatType::SvgType().ToNSString() :
+        base::SysUTF8ToNSString(markup)
+  };
   [GetPasteboard() addItems:@[ svg_item ]];
 }
 
-void ClipboardIOS::WriteRTF(const char* rtf_data, size_t data_len) {
-  WriteData(ClipboardFormatType::RtfType(), rtf_data, data_len);
+void ClipboardIOS::WriteRTF(const std::string& rtf) {
+  WriteData(ClipboardFormatType::RtfType(),
+            base::as_bytes(base::make_span(rtf)));
 }
 
 void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
@@ -422,19 +417,11 @@ void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   [GetPasteboard() addItems:items];
 }
 
-void ClipboardIOS::WriteBookmark(const char* title_data,
-                                 size_t title_len,
-                                 const char* url_data,
-                                 size_t url_len) {
-  std::string title_str(title_data, title_len);
-  NSString* title = base::SysUTF8ToNSString(title_str);
-
-  std::string url_str(url_data, url_len);
-  NSString* url = base::SysUTF8ToNSString(url_str);
-
+void ClipboardIOS::WriteBookmark(const std::string& title,
+                                 const std::string& url) {
   NSDictionary<NSString*, id>* bookmarkItem = @{
-    ClipboardFormatType::UrlType().ToNSString() : url,
-    kUTTypeURLName : title
+    ClipboardFormatType::UrlType().ToNSString() : base::SysUTF8ToNSString(url),
+    kUTTypeURLName : base::SysUTF8ToNSString(title),
   };
 
   [GetPasteboard() addItems:@[ bookmarkItem ]];
@@ -468,10 +455,10 @@ void ClipboardIOS::WriteBitmap(const SkBitmap& bitmap) {
 }
 
 void ClipboardIOS::WriteData(const ClipboardFormatType& format,
-                             const char* data_data,
-                             size_t data_len) {
-  NSData* data = [NSData dataWithBytes:data_data length:data_len];
-  NSDictionary<NSString*, id>* data_item = @{format.ToNSString() : data};
+                             base::span<const uint8_t> data) {
+  NSDictionary<NSString*, id>* data_item = @{
+    format.ToNSString() : [NSData dataWithBytes:data.data() length:data.size()]
+  };
   [GetPasteboard() addItems:@[ data_item ]];
 }
 

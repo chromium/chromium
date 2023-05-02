@@ -397,61 +397,48 @@ void ClipboardMac::WritePortableAndPlatformRepresentations(
 
   DispatchPlatformRepresentations(std::move(platform_representations));
   for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
+    DispatchPortableRepresentation(object.second);
 }
 
-void ClipboardMac::WriteText(const char* text_data, size_t text_len) {
-  std::string text_str(text_data, text_len);
-  NSString* text = base::SysUTF8ToNSString(text_str);
-  [GetPasteboard() setString:text forType:NSPasteboardTypeString];
+void ClipboardMac::WriteText(const std::string& text) {
+  [GetPasteboard() setString:base::SysUTF8ToNSString(text)
+                     forType:NSPasteboardTypeString];
 }
 
-void ClipboardMac::WriteHTML(const char* markup_data,
-                             size_t markup_len,
-                             const char* url_data,
-                             size_t url_len) {
+void ClipboardMac::WriteHTML(const std::string& markup,
+                             const std::string* source_url) {
   // We need to mark it as utf-8. (see crbug.com/11957)
   std::string html_fragment_str("<meta charset='utf-8'>");
-  html_fragment_str.append(markup_data, markup_len);
+  html_fragment_str.append(markup);
   NSString* html_fragment = base::SysUTF8ToNSString(html_fragment_str);
 
-  // TODO(avi): url_data?
+  // TODO(avi): what about `source_url`?
   [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
 }
 
-void ClipboardMac::WriteUnsanitizedHTML(const char* markup_data,
-                                        size_t markup_len,
-                                        const char* url_data,
-                                        size_t url_len) {
-  WriteHTML(markup_data, markup_len, url_data, url_len);
+void ClipboardMac::WriteUnsanitizedHTML(const std::string& markup,
+                                        const std::string* source_url) {
+  WriteHTML(markup, source_url);
 }
 
-void ClipboardMac::WriteSvg(const char* markup_data, size_t markup_len) {
-  std::string svg_str(markup_data, markup_len);
-  NSString* svg = base::SysUTF8ToNSString(svg_str);
-  [GetPasteboard() setString:svg
+void ClipboardMac::WriteSvg(const std::string& markup) {
+  [GetPasteboard() setString:base::SysUTF8ToNSString(markup)
                      forType:ClipboardFormatType::SvgType().ToNSString()];
 }
 
-void ClipboardMac::WriteRTF(const char* rtf_data, size_t data_len) {
-  WriteData(ClipboardFormatType::RtfType(), rtf_data, data_len);
+void ClipboardMac::WriteRTF(const std::string& rtf) {
+  WriteData(ClipboardFormatType::RtfType(),
+            base::as_bytes(base::make_span(rtf)));
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
-void ClipboardMac::WriteBookmark(const char* title_data,
-                                 size_t title_len,
-                                 const char* url_data,
-                                 size_t url_len) {
-  std::string title_str(title_data, title_len);
-  NSString* title = base::SysUTF8ToNSString(title_str);
-  std::string url_str(url_data, url_len);
-  NSString* url = base::SysUTF8ToNSString(url_str);
-
-  NSArray<NSPasteboardItem*>* items =
-      clipboard_util::PasteboardItemsFromUrls(@[ url ], @[ title ]);
+void ClipboardMac::WriteBookmark(const std::string& title,
+                                 const std::string& url) {
+  NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
+      @[ base::SysUTF8ToNSString(url) ], @[ base::SysUTF8ToNSString(title) ]);
   clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);
 }
 
@@ -471,9 +458,8 @@ void ClipboardMac::WriteBitmap(const SkBitmap& bitmap) {
 }
 
 void ClipboardMac::WriteData(const ClipboardFormatType& format,
-                             const char* data_data,
-                             size_t data_len) {
-  [GetPasteboard() setData:[NSData dataWithBytes:data_data length:data_len]
+                             base::span<const uint8_t> data) {
+  [GetPasteboard() setData:[NSData dataWithBytes:data.data() length:data.size()]
                    forType:format.ToNSString()];
 }
 

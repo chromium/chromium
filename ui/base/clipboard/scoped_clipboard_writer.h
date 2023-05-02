@@ -118,8 +118,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // The type is set at construction, and can be changed before committing.
   const ClipboardBuffer buffer_;
 
-  SkBitmap bitmap_;
-
   bool confidential_ = false;
 
   // The source of the data written in ScopedClipboardWriter, nullptr means it's
