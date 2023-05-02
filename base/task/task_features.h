@@ -12,6 +12,12 @@
 
 namespace base {
 
+// Amount of threads that will be system-wide restricted from being used
+// by thread pools.
+BASE_EXPORT BASE_DECLARE_FEATURE(kThreadPoolCap);
+
+extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
+
 // Under this feature, a utility_thread_group will be created for
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);

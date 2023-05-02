@@ -19,6 +19,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
+#include "base/system/sys_info.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
 #include "base/task/task_features.h"
 #include "base/task/thread_pool/pooled_parallel_task_runner.h"
@@ -122,7 +123,7 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 
   // The max number of concurrent BEST_EFFORT tasks is |kMaxBestEffortTasks|,
   // unless the max number of foreground threads is lower.
-  const size_t max_best_effort_tasks =
+  size_t max_best_effort_tasks =
       std::min(kMaxBestEffortTasks, init_params.max_num_foreground_threads);
 
   // Start the service thread. On platforms that support it (POSIX except NaCL
@@ -179,20 +180,44 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
 #endif
   }
 
+  size_t foreground_threads = init_params.max_num_foreground_threads;
+  size_t utility_threads = init_params.max_num_utility_threads;
+  // Set the size of each ThreadGroup such that N cores are left available
+  // for other threads. N is the number of threads that the application is
+  // expected to need to be responsive (currently configurable via field trial).
+  // The size of each ThreadGroup can grow beyond the value set here when tasks
+  // enter ScopedBlockingCall.
+  if (base::FeatureList::IsEnabled(kThreadPoolCap)) {
+    int restricted_threads = kThreadPoolCapRestrictedCount.Get();
+    int max_allowed_workers_per_pool =
+        (base::SysInfo::NumberOfProcessors() - restricted_threads);
+    // Set a positive minimum amount of workers per pool.
+    max_allowed_workers_per_pool = std::max(2, max_allowed_workers_per_pool);
+    foreground_threads =
+        std::min(init_params.max_num_foreground_threads,
+                 static_cast<size_t>(max_allowed_workers_per_pool));
+    utility_threads =
+        std::min(init_params.max_num_utility_threads,
+                 static_cast<size_t>(max_allowed_workers_per_pool));
+    max_best_effort_tasks =
+        std::min(max_best_effort_tasks,
+                 static_cast<size_t>(max_allowed_workers_per_pool));
+  }
+
   // On platforms that can't use the background thread priority, best-effort
   // tasks run in foreground pools. A cap is set on the number of best-effort
   // tasks that can run in foreground pools to ensure that there is always
   // room for incoming foreground tasks and to minimize the performance impact
   // of best-effort tasks.
   static_cast<ThreadGroupImpl*>(foreground_thread_group_.get())
-      ->Start(init_params.max_num_foreground_threads, max_best_effort_tasks,
+      ->Start(foreground_threads, max_best_effort_tasks,
               init_params.suggested_reclaim_time, service_thread_task_runner,
               worker_thread_observer, worker_environment,
               g_synchronous_thread_start_for_testing);
 
   if (utility_thread_group_) {
     static_cast<ThreadGroupImpl*>(utility_thread_group_.get())
-        ->Start(init_params.max_num_utility_threads, max_best_effort_tasks,
+        ->Start(utility_threads, max_best_effort_tasks,
                 init_params.suggested_reclaim_time, service_thread_task_runner,
                 worker_thread_observer, worker_environment,
                 g_synchronous_thread_start_for_testing);
