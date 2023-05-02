@@ -5575,7 +5575,6 @@
     },
 
     'win_specific_chromium_gtests': {
-      'chrome_cleaner_unittests': {},
       'chrome_elf_unittests': {},
       'courgette_unittests': {},
       'delayloads_unittests': {},

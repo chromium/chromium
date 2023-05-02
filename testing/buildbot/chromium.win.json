@@ -508,24 +508,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "chrome_cleaner_unittests",
-        "test_id_prefix": "ninja://chrome/chrome_cleaner:chrome_cleaner_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "chrome_elf_unittests",
         "test_id_prefix": "ninja://chrome/chrome_elf:chrome_elf_unittests/"
       },
@@ -2663,23 +2645,6 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test": "chrome_cleaner_unittests",
-        "test_id_prefix": "ninja://chrome/chrome_cleaner:chrome_cleaner_unittests/"
-      },
-      {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-19045"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
         "test": "chrome_elf_unittests",
         "test_id_prefix": "ninja://chrome/chrome_elf:chrome_elf_unittests/"
       },
@@ -4563,24 +4528,6 @@
         },
         "test": "chrome_app_unittests",
         "test_id_prefix": "ninja://chrome/test:chrome_app_unittests/"
-      },
-      {
-        "isolate_profile_data": true,
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-11-22000"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "chrome_cleaner_unittests",
-        "test_id_prefix": "ninja://chrome/chrome_cleaner:chrome_cleaner_unittests/"
       },
       {
         "isolate_profile_data": true,

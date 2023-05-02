@@ -341,10 +341,6 @@
     "label": "//chrome/test:chrome_app_unittests",
     "type": "console_test_launcher",
   },
-  "chrome_cleaner_unittests": {
-    "label": "//chrome/chrome_cleaner:chrome_cleaner_unittests",
-    "type": "console_test_launcher",
-  },
   "chrome_elf_unittests": {
     "label": "//chrome/chrome_elf:chrome_elf_unittests",
     "type": "console_test_launcher",

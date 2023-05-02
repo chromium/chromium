@@ -432,11 +432,6 @@ targets.console_test_launcher(
 )
 
 targets.console_test_launcher(
-    name = "chrome_cleaner_unittests",
-    label = "//chrome/chrome_cleaner:chrome_cleaner_unittests",
-)
-
-targets.console_test_launcher(
     name = "chrome_elf_unittests",
     label = "//chrome/chrome_elf:chrome_elf_unittests",
 )
