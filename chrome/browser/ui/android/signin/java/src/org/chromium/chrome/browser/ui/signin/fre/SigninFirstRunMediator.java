@@ -305,7 +305,7 @@ public class SigninFirstRunMediator
         final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
         signinManager.signin(AccountUtils.createAccountFromName(mSelectedAccountName),
-                SigninAccessPoint.SIGNIN_PROMO, new SignInCallback() {
+                SigninAccessPoint.START_PAGE, new SignInCallback() {
                     @Override
                     public void onSignInComplete() {
                         if (mDestroyed) {
