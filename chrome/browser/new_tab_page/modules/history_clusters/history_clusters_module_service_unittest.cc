@@ -148,8 +148,10 @@ history::Cluster SampleCluster(int id,
                                    {"fruits", "red fruits", "healthy fruits"}) {
   history::ClusterVisit sample_srp_visit =
       SampleVisitForURL(GURL(kSampleSearchUrl), false);
+  sample_srp_visit.score = 1.0;
   history::ClusterVisit sample_non_srp_visit =
       SampleVisitForURL(GURL(kSampleNonSearchUrl), true, related_searches);
+  sample_non_srp_visit.score = 0.9;
 
   std::vector<history::ClusterVisit> visits;
   visits.insert(visits.end(), srp_visits, sample_srp_visit);
