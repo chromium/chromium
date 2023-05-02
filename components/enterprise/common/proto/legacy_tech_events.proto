@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_reporting;
+
+// LegacyTechEvent is sent whenever a chrome deprecated feature is encountered
+// on the client side chrome browser.
+//
+// Next ID: 8.
+message LegacyTechEvent {
+  // ID of the deprecated feature.
+  optional string feature_id = 1;
+
+  // The event upload time, in milliseconds since Epoch in UTC timezone (Java
+  // time).
+  optional int64 event_timestamp_millis = 2;
+
+  // This includes url + path but not the params. The params will be cut before
+  // data uploading.
+  optional string url = 3;
+
+  // The entity from the allowlist policy that has matched the url on the client
+  // side.
+  optional string allowlisted_url_match = 4;
+
+  // The js filename where the deprecated feature was encountered.
+  optional string filename = 5;
+  // The column where the legacy tech was encountered.
+  optional uint64 column = 6;
+  // The line where the legacy tech was encountered.
+  optional uint64 line = 7;
+}
