@@ -92,18 +92,29 @@ const double kHttpsAddThreshold = 40;
 // Maximum score of an HTTP origin to enable HFM on its hostname.
 const double kHttpAddThreshold = 5;
 
-bool ShouldEnforceHttpsFirstModeForUrl(content::WebContents* web_contents,
-                                       const GURL& url) {
+bool ShouldEnforceHttpsFirstModeForUrl(Profile* profile, const GURL& url) {
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
   GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
 
-  auto* engagement_svc = site_engagement::SiteEngagementService::Get(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(profile);
 
   double https_score = engagement_svc->GetScore(https_url);
   double http_score = engagement_svc->GetScore(http_url);
 
   return https_score > kHttpsAddThreshold && http_score < kHttpAddThreshold;
+}
+
+std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
+  Profile* profile = Profile::FromBrowserContext(context);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Explicitly check for ChromeOS sign-in profiles (which would cause
+  // double-counting of at-startup metrics for ChromeOS restarts) which are not
+  // covered by the `IsRegularProfile()` check.
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
+    return nullptr;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return std::make_unique<HttpsFirstModeService>(profile);
 }
 
 }  // namespace
@@ -167,18 +178,16 @@ void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
   }
 }
 
-void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(
-    content::WebContents* web_contents,
-    const GURL& url) {
-  if (ShouldEnforceHttpsFirstModeForUrl(web_contents, url)) {
+void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
+                                                            const GURL& url) {
+  if (ShouldEnforceHttpsFirstModeForUrl(profile, url)) {
     StatefulSSLHostStateDelegate* state =
         static_cast<StatefulSSLHostStateDelegate*>(
             profile_->GetSSLHostStateDelegate());
     // StatefulSSLHostStateDelegate can be null during tests.
     if (state) {
-      state->EnforceHttpsForHost(
-          url.host(),
-          web_contents->GetPrimaryMainFrame()->GetStoragePartition());
+      state->EnforceHttpsForHost(url.host(),
+                                 profile->GetDefaultStoragePartition());
     }
   }
   // TODO(crbug.com/1435222): Implement un-enforce HTTPS.
@@ -196,6 +205,12 @@ HttpsFirstModeServiceFactory* HttpsFirstModeServiceFactory::GetInstance() {
   return base::Singleton<HttpsFirstModeServiceFactory>::get();
 }
 
+// static
+BrowserContextKeyedServiceFactory::TestingFactory
+HttpsFirstModeServiceFactory::GetDefaultFactoryForTesting() {
+  return base::BindRepeating(&BuildService);
+}
+
 HttpsFirstModeServiceFactory::HttpsFirstModeServiceFactory()
     : ProfileKeyedServiceFactory(
           kHttpsFirstModeServiceName,
@@ -209,17 +224,7 @@ HttpsFirstModeServiceFactory::HttpsFirstModeServiceFactory()
 
 HttpsFirstModeServiceFactory::~HttpsFirstModeServiceFactory() = default;
 
-// BrowserContextKeyedServiceFactory:
 KeyedService* HttpsFirstModeServiceFactory::BuildServiceInstanceFor(
-    content::BrowserContext* browser_context) const {
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Explicitly check for ChromeOS sign-in profiles (which would cause
-  // double-counting of at-startup metrics for ChromeOS restarts) which are not
-  // covered by the `IsRegularProfile()` check.
-  if (ash::ProfileHelper::IsSigninProfile(profile)) {
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return new HttpsFirstModeService(profile);
+    content::BrowserContext* context) const {
+  return BuildService(context).release();
 }

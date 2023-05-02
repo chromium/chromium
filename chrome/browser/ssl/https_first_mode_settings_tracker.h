@@ -15,10 +15,6 @@
 
 class Profile;
 
-namespace content {
-class WebContents;
-}
-
 // A `KeyedService` that tracks changes to the HTTPS-First Mode pref for each
 // profile. This is currently used for:
 // - Recording pref state in metrics and registering the client for a synthetic
@@ -42,8 +38,7 @@ class HttpsFirstModeService
 
   // Check the Site Engagement scores of the hostname of `url` and enable
   // HFM on the hostname if the HTTPS score is high enough.
-  void MaybeEnableHttpsFirstModeForUrl(content::WebContents* web_contents,
-                                       const GURL& url);
+  void MaybeEnableHttpsFirstModeForUrl(Profile* profile, const GURL& url);
 
  private:
   void OnHttpsFirstModePrefChanged();
@@ -66,6 +61,10 @@ class HttpsFirstModeServiceFactory : public ProfileKeyedServiceFactory {
   HttpsFirstModeServiceFactory(const HttpsFirstModeServiceFactory&) = delete;
   HttpsFirstModeServiceFactory& operator=(const HttpsFirstModeServiceFactory&) =
       delete;
+
+  // Returns the default factory, useful in tests where it's null by default.
+  static BrowserContextKeyedServiceFactory::TestingFactory
+  GetDefaultFactoryForTesting();
 
  private:
   friend struct base::DefaultSingletonTraits<HttpsFirstModeServiceFactory>;
