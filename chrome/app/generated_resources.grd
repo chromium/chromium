@@ -14763,6 +14763,16 @@ Please help our engineers fix this problem. Tell us what happened right before y
           Never deactivate this site
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL" desc="In Title Case: Label below a chart showing the memory savings from Memory Saver mode.">
+          Memory Saved
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_HIGH_EFFICIENCY_DIALOG_SAVINGS_LABEL" desc="Label below a chart showing the memory savings from Memory Saver mode.">
+          Memory saved
+        </message>
+      </if>
     </if>
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
       Location

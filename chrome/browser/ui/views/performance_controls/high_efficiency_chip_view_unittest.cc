@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/performance_manager/public/features.h"
@@ -337,8 +338,9 @@ TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
 
   ClickPageActionChip();
 
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+  views::Label* label = GetDialogLabel<views::Label>(
+      HighEfficiencyResourceView::
+          kHighEfficiencyResourceViewMemorySavingsElementId);
   EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
                   kMemorySavingsKilobytes * 1024)) != std::string::npos);
 }
@@ -423,7 +425,7 @@ TEST_F(HighEfficiencyChipViewTest,
   EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
 }
 
-TEST_F(HighEfficiencyChipViewTest, ShowChipWithSavingsInGuestMode) {
+TEST_F(HighEfficiencyChipViewTest, ShowDialogWithSavingsInGuestMode) {
   TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
   EXPECT_TRUE(testprofile);
   testprofile->SetGuestSession(true);
@@ -432,18 +434,22 @@ TEST_F(HighEfficiencyChipViewTest, ShowChipWithSavingsInGuestMode) {
 
   ClickPageActionChip();
 
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+  views::Label* label = GetDialogLabel<views::Label>(
       HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
 
   EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
             std::string::npos);
 
-  EXPECT_NE(
-      label->GetText().find(ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
-      std::string::npos);
+  views::Label* memory_label = GetDialogLabel<views::Label>(
+      HighEfficiencyResourceView::
+          kHighEfficiencyResourceViewMemorySavingsElementId);
+
+  EXPECT_NE(memory_label->GetText().find(
+                ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
+            std::string::npos);
 }
 
-TEST_F(HighEfficiencyChipViewTest, ShowChipWithoutSavingsInGuestMode) {
+TEST_F(HighEfficiencyChipViewTest, ShowDialogWithoutSavingsInGuestMode) {
   // Add a new tab with small memory savings.
   AddNewTab(kSmallMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
@@ -469,10 +475,10 @@ TEST_F(HighEfficiencyChipViewTest, ShowChipWithoutSavingsInGuestMode) {
       std::string::npos);
 }
 
-class HighEfficiencyChipViewDiscardedTabTreatmentDisabledTest
+class HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest
     : public HighEfficiencyChipViewTest {
  public:
-  HighEfficiencyChipViewDiscardedTabTreatmentDisabledTest() = default;
+  HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest() = default;
 
   void SetUp() override {
     feature_list_.InitAndDisableFeature(
@@ -487,8 +493,9 @@ class HighEfficiencyChipViewDiscardedTabTreatmentDisabledTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// When kDiscardedTabTreatment is disabled, the chip should not expand.
-TEST_F(HighEfficiencyChipViewDiscardedTabTreatmentDisabledTest,
+// When kMemorySavingsReportingImprovements is disabled, the chip should not
+// expand.
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest,
        ShouldNotExpandWhenFeatureIsDisabled) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
   SetHighEfficiencyModeEnabled(true);
@@ -501,4 +508,17 @@ TEST_F(HighEfficiencyChipViewDiscardedTabTreatmentDisabledTest,
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_TRUE(view->GetVisible());
   EXPECT_FALSE(view->ShouldShowLabel());
+}
+
+// The memory savings should be rendered within the dialog.
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest,
+       ShouldRenderMemorySavingsInDialog) {
+  SetTabDiscardState(0, true);
+
+  ClickPageActionChip();
+
+  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
+      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
+  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
+                  kMemorySavingsKilobytes * 1024)) != std::string::npos);
 }

@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
@@ -107,12 +108,15 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   const bool is_forced_incognito =
       IncognitoModePrefs::GetAvailability(profile->GetPrefs()) ==
       policy::IncognitoModeAvailability::kForced;
+  const bool show_memory_savings_chart = base::FeatureList::IsEnabled(
+      performance_manager::features::kMemorySavingsReportingImprovements);
 
   // Show bubble without Performance Settings Page Link since guest users or
   // forced incognito users are not allowed to navigate to the performance
   // settings page
   if (is_guest || is_forced_incognito) {
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
+    if (memory_savings > kMemoryUsageThresholdInBytes &&
+        !show_memory_savings_chart) {
       AddBubbleBodyText(&dialog_model_builder,
                         IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS,
                         {memory_savings_text});
@@ -128,7 +132,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
                 &HighEfficiencyBubbleDelegate::OnSettingsClicked,
                 base::Unretained(bubble_delegate)));
 
-    if (memory_savings > kMemoryUsageThresholdInBytes) {
+    if (memory_savings > kMemoryUsageThresholdInBytes &&
+        !show_memory_savings_chart) {
       AddBubbleBodyText(&dialog_model_builder,
                         IDS_HIGH_EFFICIENCY_DIALOG_BODY_WITH_SAVINGS_AND_LINK,
                         {memory_savings_text, settings_link});
@@ -136,6 +141,13 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
       AddBubbleBodyText(&dialog_model_builder, IDS_HIGH_EFFICIENCY_DIALOG_BODY,
                         {settings_link});
     }
+  }
+
+  if (memory_savings > 0 && show_memory_savings_chart) {
+    dialog_model_builder.AddCustomField(
+        std::make_unique<views::BubbleDialogModelHost::CustomView>(
+            std::make_unique<HighEfficiencyResourceView>(memory_savings),
+            views::BubbleDialogModelHost::FieldType::kText));
   }
 
   if (base::FeatureList::IsEnabled(
