@@ -1171,6 +1171,8 @@
           'dimension_sets': [
             {
               'kvm': '1',
+              # TODO(crbug.com/1412588): Move all tests on the builder to Jammy.
+              'os': 'Ubuntu-22.04',
             },
           ],
         },

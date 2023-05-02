@@ -3586,7 +3586,7 @@
           "dimension_sets": [
             {
               "kvm": "1",
-              "os": "Ubuntu-18.04"
+              "os": "Ubuntu-22.04"
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
