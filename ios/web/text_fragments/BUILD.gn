@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("text_fragments") {
@@ -32,13 +33,31 @@ source_set("text_fragments") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-optimize_js("text_fragments_js") {
-  visibility = [ ":text_fragments" ]
-
-  primary_script = "resources/text_fragments.js"
+compile_ts("compile_text_fragments_js") {
+  allow_js = true
 
   sources = [
     "//third_party/text-fragments-polyfill/src/src/text-fragment-utils.js",
-    "resources/text_fragments.js",
+    "resources/text_fragments.ts",
+  ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}
+
+optimize_js("text_fragments_js") {
+  visibility = [ ":text_fragments" ]
+  _script = filter_include(get_target_outputs(":compile_text_fragments_js"),
+                           [ "*text_fragments.js" ])
+  primary_script = _script[0]
+
+  sources = _script
+
+  deps = [
+    ":compile_text_fragments_js",
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
