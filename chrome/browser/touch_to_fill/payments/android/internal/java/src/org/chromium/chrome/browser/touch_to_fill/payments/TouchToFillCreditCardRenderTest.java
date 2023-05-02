@@ -70,7 +70,7 @@ public class TouchToFillCreditCardRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(11)
+                    .setRevision(12)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -80,16 +80,16 @@ public class TouchToFillCreditCardRenderTest {
     private BottomSheetFocusHelper mBottomSheetFocusHelper;
 
     private static final CreditCard VISA =
-            createCreditCard("Visa", "4111111111111111", "5", AutofillTestHelper.nextYear(), true,
+            createCreditCard("Visa", "4111111111111111", "05", AutofillTestHelper.nextYear(), true,
                     "Visa", "• • • • 1111", R.drawable.visa_card, "visa");
     private static final CreditCard MASTER_CARD =
-            createCreditCard("MasterCard", "5555555555554444", "8", AutofillTestHelper.nextYear(),
+            createCreditCard("MasterCard", "5555555555554444", "08", AutofillTestHelper.nextYear(),
                     true, "Mastercard", "• • • • 4444", R.drawable.mc_card, "mastercard");
     private static final CreditCard SERVER_MASTER_CARD =
             createCreditCard("MasterCard", "5454545454545454", "11", AutofillTestHelper.nextYear(),
                     false, "MasterCard-GPay", "• • • • 5454", R.drawable.mc_card, "mastercard");
     private static final CreditCard DISCOVER =
-            createCreditCard("Discover", "6011111111111117", "9", AutofillTestHelper.nextYear(),
+            createCreditCard("Discover", "6011111111111117", "09", AutofillTestHelper.nextYear(),
                     true, "Discover", "• • • • 1117", R.drawable.discover_card, "discover");
     private static final CreditCard AMERICAN_EXPRESS = createCreditCard("American Express",
             "378282246310005", "10", AutofillTestHelper.nextYear(), true, "American Express",
