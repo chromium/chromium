@@ -2712,7 +2712,6 @@ enum HeaderBehaviour {
 
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState {
   // Initiates the new tab foreground animation, which is phone-specific.
-  DCHECK(webState);
   if ([self canShowTabStrip]) {
     if (self.foregroundTabWasAddedCompletionBlock) {
       // This callback is called before webState is activated. Dispatch the

@@ -22,6 +22,7 @@ class WebState;
 - (void)initiateNewTabBackgroundAnimation;
 
 // Tells the consumer to start an animation for a foreground tab.
+// Should be called with a non-null webState.
 // TODO(crbug.com/1417570): Remove webState from this call.
 - (void)initiateNewTabForegroundAnimationForWebState:(web::WebState*)webState;
 
