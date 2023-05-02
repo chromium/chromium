@@ -3356,6 +3356,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "enable-tls13-kyber",
+    "owners": [ "agl", "davidben" ],
+    "expiry_milestone": 123
+  },
+  {
     "name": "enable-touch-drag-drop",
     "owners": [ "mustaq", "input-dev" ],
     "expiry_milestone": 130

@@ -1044,6 +1044,10 @@ const char kEnableTLS13EarlyDataDescription[] =
     "during the handshake when resuming a connection to a compatible TLS 1.3 "
     "server.";
 
+const char kEnableTLS13KyberName[] = "TLS 1.3 hybridized Kyber support";
+const char kEnableTLS13KyberDescription[] =
+    "This option enables a combination of X25519 and Kyber in TLS 1.3.";
+
 const char kAccessibilityAcceleratorNotificationsTimeoutName[] =
     "Allows accelerator notifications for accessibility features to time out";
 const char kAccessibilityAcceleratorNotificationsTimeoutDescription[] =
