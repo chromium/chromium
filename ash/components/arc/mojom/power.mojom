@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 module arc.mojom;
 
@@ -59,7 +59,15 @@ enum WakefulnessMode {
   DOZING
 };
 
-// Next method ID: 8
+// Details about the current state of battery saver mode.
+// This struct is a subset of BatterySaverModeState in
+// system_api/dbus/power_manager/battery_saver.proto.
+struct BatterySaverModeState {
+  // The overall state of battery saver mode.
+  bool active;
+};
+
+// Next method ID: 9
 interface PowerHost {
   // Acquire and release wake locks on the host side.
   OnAcquireDisplayWakeLock@0(DisplayWakeLockType type);
@@ -81,10 +89,13 @@ interface PowerHost {
 
   // Notifies that ANR recovery failed and ANR crash has happened.
   [MinVersion=8] OnAnrRecoveryFailed@7(AnrType type);
+
+  // Gets the current state of ChromeOS battery saver mode.
+  [MinVersion=9] GetBatterySaverModeState@8() => (BatterySaverModeState state);
 };
 
 // Deprecated method IDs: 0
-// Next method ID: 9
+// Next method ID: 10
 interface PowerInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=4] Init@5(pending_remote<PowerHost> host_remote) => ();
@@ -115,4 +126,7 @@ interface PowerInstance {
   // Chrome in response to ARC CPU group is changed event. The destination
   // is ARC handler that resides in Android system server process.
   [MinVersion=7] OnCpuRestrictionChanged@8(CpuRestrictionState state);
+
+  // Notifies that the state of ChromeOS battery saver mode is changed.
+  [MinVersion=9] OnBatterySaverModeStateChanged@9(BatterySaverModeState state);
 };

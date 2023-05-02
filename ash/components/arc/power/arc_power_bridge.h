@@ -92,6 +92,8 @@ class ArcPowerBridge : public KeyedService,
   void ScreenBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
+  void BatterySaverModeStateChanged(
+      const power_manager::BatterySaverModeState& state) override;
 
   // DisplayConfigurator::Observer overrides.
   void OnPowerStateChanged(chromeos::DisplayPowerState power_state) override;
@@ -104,6 +106,8 @@ class ArcPowerBridge : public KeyedService,
   void OnWakefulnessChanged(mojom::WakefulnessMode mode) override;
   void OnPreAnr(mojom::AnrType type) override;
   void OnAnrRecoveryFailed(::arc::mojom::AnrType type) override;
+  void GetBatterySaverModeState(
+      GetBatterySaverModeStateCallback callback) override;
 
   void SetWakeLockProviderForTesting(
       mojo::Remote<device::mojom::WakeLockProvider> provider) {
@@ -134,6 +138,11 @@ class ArcPowerBridge : public KeyedService,
   // ResumeVm D-Bus call.
   void OnConciergeResumeVmResponse(
       absl::optional<vm_tools::concierge::ResumeVmResponse> reply);
+
+  // Called on PowerManagerClient::GetBatterySaverModeState() completion.
+  void OnBatterySaverModeStateReceived(
+      GetBatterySaverModeStateCallback callback,
+      absl::optional<power_manager::BatterySaverModeState> state);
 
   // Sends a PowerInstance::UpdateScreenBrightnessSettings mojo call to Android.
   void UpdateAndroidScreenBrightness(double percent);
