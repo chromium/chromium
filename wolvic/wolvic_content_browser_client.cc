@@ -24,6 +24,16 @@ WolvicContentBrowserClient::CreateBrowserMainParts(
   return std::unique_ptr<BrowserMainParts>(browser_main_parts_);
 }
 
+#if BUILDFLAG(ENABLE_VR)
+XrIntegrationClient* WolvicContentBrowserClient::GetXrIntegrationClient() {
+  if (!xr_integration_client_)
+    xr_integration_client_ =
+        std::make_unique<wolvic::WolvicXrIntegrationClient>(
+            base::PassKey<WolvicContentBrowserClient>());
+  return xr_integration_client_.get();
+}
+#endif
+
 WolvicBrowserContext* WolvicContentBrowserClient::browser_context() {
   return browser_main_parts_->browser_context();
 }

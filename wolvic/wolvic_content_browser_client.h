@@ -6,6 +6,7 @@
 #define WOLVIC_WOLVIC_CONTENT_BROWSER_CLIENT_H_
 
 #include "content/public/browser/content_browser_client.h"
+#include "wolvic/browser/vr/wolvic_xr_integration_client.h"
 
 namespace content {
 
@@ -31,11 +32,17 @@ class WolvicContentBrowserClient : public ContentBrowserClient {
   // ContentBrowserClient overrides.
   std::unique_ptr<BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;
+#if BUILDFLAG(ENABLE_VR)
+  XrIntegrationClient* GetXrIntegrationClient() override;
+#endif
 
   WolvicBrowserContext* browser_context();
 
  private:
   WolvicMainParts* browser_main_parts_;
+#if BUILDFLAG(ENABLE_VR)
+  std::unique_ptr<wolvic::WolvicXrIntegrationClient> xr_integration_client_;
+#endif
 };
 
 }  // namespace content
