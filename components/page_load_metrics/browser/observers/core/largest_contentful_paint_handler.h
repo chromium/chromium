@@ -173,6 +173,10 @@ class LargestContentfulPaintHandler {
       base::TimeTicks navigation_start);
   void OnSubFrameDeleted(int frame_tree_node_id);
 
+  const ContentfulPaintTimingInfo& GetImageContentfulPaintTimingInfo() const {
+    return main_frame_contentful_paint_.Image();
+  }
+
  private:
   void RecordSubFrameTimingInternal(
       const page_load_metrics::mojom::LargestContentfulPaintTiming&

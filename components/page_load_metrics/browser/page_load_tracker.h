@@ -560,6 +560,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
 
   uint32_t soft_navigation_count_ = 0;
 
+  absl::optional<base::TimeTicks> receive_headers_start_;
+
   const internal::PageLoadTrackerPageType page_type_;
 
   const base::WeakPtr<PageLoadTracker> parent_tracker_;

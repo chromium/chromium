@@ -39,6 +39,15 @@ const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
 const char kPageLoadPrerender2VisibilityAtActivation[] =
     "PageLoad.Internal.Prerender2.VisibilityAtActivation";
 const char kPageLoadTrackerPageType[] = "PageLoad.Internal.PageType";
+const char kImageLoadStartLessThanDocumentTTFB[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
+    "ImageLoadStartLessThanDocumentTTFB";
+const char kImageLoadEndLessThanLoadStart[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
+    "ImageLoadEndLessThanLoadStart";
+const char kImageLCPLessThanLoadEnd[] =
+    "PageLoad.PaintTiming.NavigationToLargestContentfulPaint."
+    "ImageLCPLessThanLoadEnd";
 
 }  // namespace internal
 
@@ -48,6 +57,32 @@ void RecordInternalError(InternalErrorLoadEvent event) {
 
 void RecordPageType(internal::PageLoadTrackerPageType type) {
   base::UmaHistogramEnumeration(internal::kPageLoadTrackerPageType, type);
+}
+
+void RecordLargestContentfulPaintImageLoadTiming(
+    const page_load_metrics::mojom::LargestContentfulPaintTiming&
+        largest_contentful_paint,
+    base::TimeDelta document_ttfb) {
+  if (largest_contentful_paint.largest_image_load_start.has_value()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        internal::kImageLoadStartLessThanDocumentTTFB,
+        largest_contentful_paint.largest_image_load_start < document_ttfb);
+  }
+
+  if (largest_contentful_paint.largest_image_load_start.has_value() &&
+      largest_contentful_paint.largest_image_load_end.has_value()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        internal::kImageLoadEndLessThanLoadStart,
+        largest_contentful_paint.largest_image_load_end <
+            largest_contentful_paint.largest_image_load_start);
+  }
+
+  if (largest_contentful_paint.largest_image_load_end.has_value() &&
+      largest_contentful_paint.largest_image_paint.has_value()) {
+    UMA_HISTOGRAM_BOOLEAN(internal::kImageLCPLessThanLoadEnd,
+                          largest_contentful_paint.largest_image_paint <
+                              largest_contentful_paint.largest_image_load_end);
+  }
 }
 
 // TODO(csharrison): Add a case for client side redirects, which is what JS
@@ -616,6 +651,8 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
 
 void PageLoadTracker::OnLoadedResource(
     const ExtraRequestCompleteInfo& extra_request_complete_info) {
+  receive_headers_start_ =
+      extra_request_complete_info.load_timing_info->receive_headers_start;
   for (const auto& observer : observers_) {
     observer->OnLoadedResource(extra_request_complete_info);
   }
@@ -843,6 +880,31 @@ void PageLoadTracker::OnTimingChanged() {
 
   const mojom::PaintTimingPtr& paint_timing =
       metrics_update_dispatcher_.timing().paint_timing;
+
+  // Record UMA if the LCP candidate changes.
+
+  // TODO(crbug.com/1431906): This is to track irregularities in the LCP timing
+  // values in the UKM recording. We would remove this code once we have
+  // identified all of the conditions where these irregularities happen.
+  bool largest_contentful_image_changed =
+      !largest_contentful_paint_handler_.GetImageContentfulPaintTimingInfo()
+           .Time()
+           .has_value() ||
+      (paint_timing->largest_contentful_paint->largest_image_paint
+           .has_value() &&
+       paint_timing->largest_contentful_paint->largest_image_paint.value() !=
+           largest_contentful_paint_handler_.GetImageContentfulPaintTimingInfo()
+               .Time()
+               .value());
+
+  if (largest_contentful_image_changed) {
+    if (receive_headers_start_.has_value() && !GetNavigationStart().is_null()) {
+      RecordLargestContentfulPaintImageLoadTiming(
+          *paint_timing->largest_contentful_paint,
+          receive_headers_start_.value() - GetNavigationStart());
+    }
+  }
+
   largest_contentful_paint_handler_.RecordMainFrameTiming(
       *paint_timing->largest_contentful_paint,
       paint_timing->first_input_or_scroll_notified_timestamp);
@@ -1239,6 +1301,7 @@ void PageLoadTracker::UpdateMetrics(
         input_timing_delta.Clone(), subresource_load_metrics,
         soft_navigation_count);
   }
+
   metrics_update_dispatcher_.UpdateMetrics(
       render_frame_host, std::move(timing), std::move(metadata),
       std::move(features), resources, std::move(render_data),

@@ -2925,6 +2925,42 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLCPLessThanLoadEnd"
+    enum="Boolean" expires_after="2024-04-24">
+  <owner>haoliuk@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the count of cases where an LCP image candidate has an LCP less than
+    its LoadEnd. This is counted once per LCP candidate in the
+    PageLoadTracker::OnTimingChanged() method when the LCP candiate changes.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadEndLessThanLoadStart"
+    enum="Boolean" expires_after="2024-04-24">
+  <owner>haoliuk@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the count of cases where an LCP image candidate has a LoadEnd less
+    than its LoadStart. This is counted once per LCP candidate in the
+    PageLoadTracker::OnTimingChanged() method when the LCP candiate changes.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint.ImageLoadStartLessThanDocumentTTFB"
+    enum="Boolean" expires_after="2024-04-24">
+  <owner>haoliuk@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records the count of cases where an LCP image candidate has a LoadStart less
+    than the document TTFB. This is counted once per LCP candidate in the
+    PageLoadTracker::OnTimingChanged() method when the LCP candiate changes.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2"
     units="ms" expires_after="2023-10-22">
   <owner>npm@chromium.org</owner>
