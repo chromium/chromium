@@ -62,8 +62,19 @@ void DeviceTrustConnectorService::Initialize() {
   OnPolicyUpdated();
 }
 
-bool DeviceTrustConnectorService::Watches(const GURL& url) const {
-  return matcher_ && !matcher_->MatchURL(url).empty();
+const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
+    const GURL& url) const {
+  std::set<DTCPolicyLevel> levels;
+
+  if (matcher_ && !matcher_->MatchURL(url).empty()) {
+    // TODO(b/279063343): This is temporary, later this service should insert
+    // the correct policy levels based on the scope of the policy matchers(i.e
+    // browser, user).
+    levels.insert(DTCPolicyLevel::kBrowser);
+    levels.insert(DTCPolicyLevel::kUser);
+  }
+
+  return levels;
 }
 
 void DeviceTrustConnectorService::OnConnectorEnabled() {

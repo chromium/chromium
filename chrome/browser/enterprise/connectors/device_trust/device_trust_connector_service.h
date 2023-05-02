@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_CONNECTOR_SERVICE_H_
 
 #include <memory>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -39,9 +41,9 @@ class DeviceTrustConnectorService : public KeyedService {
   // Returns whether the Device Trust connector is enabled or not.
   virtual bool IsConnectorEnabled() const;
 
-  // Returns whether the Device Trust connector watches navigations to the given
-  // `url` or not.
-  bool Watches(const GURL& url) const;
+  // Returns the policy levels at which the current `url` navigation is being
+  // watched for.
+  const std::set<DTCPolicyLevel> Watches(const GURL& url) const;
 
  protected:
   // Hook that can is called to notify that the policy changed and the connector
@@ -49,7 +51,8 @@ class DeviceTrustConnectorService : public KeyedService {
   virtual void OnConnectorEnabled();
 
  private:
-  // Called when the policy value changes in Prefs.
+  // Called when the ContextAwareAccessSignalsAllowlist policy value changes in
+  // Prefs.
   void OnPolicyUpdated();
 
   PrefChangeRegistrar pref_observer_;

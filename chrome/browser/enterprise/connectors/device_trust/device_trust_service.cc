@@ -85,8 +85,9 @@ void DeviceTrustService::BuildChallengeResponse(
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-bool DeviceTrustService::Watches(const GURL& url) const {
-  return connector_ && connector_->Watches(url);
+const std::set<DTCPolicyLevel> DeviceTrustService::Watches(
+    const GURL& url) const {
+  return connector_ ? connector_->Watches(url) : std::set<DTCPolicyLevel>();
 }
 
 void DeviceTrustService::ParseJsonChallenge(

@@ -130,8 +130,10 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   if (!device_trust_service_ || !device_trust_service_->IsEnabled())
     return PROCEED;
 
-  if (!device_trust_service_->Watches(url))
+  const std::set<DTCPolicyLevel> levels = device_trust_service_->Watches(url);
+  if (levels.empty()) {
     return PROCEED;
+  }
 
   // If we are starting an attestation flow.
   if (navigation_handle()->GetResponseHeaders() == nullptr) {

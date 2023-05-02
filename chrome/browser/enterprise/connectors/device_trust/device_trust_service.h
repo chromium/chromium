@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -56,9 +58,9 @@ class DeviceTrustService : public KeyedService {
   virtual void BuildChallengeResponse(const std::string& serialized_challenge,
                                       DeviceTrustCallback callback);
 
-  // Returns whether the Device Trust connector watches navigations to the given
-  // `url` or not.
-  virtual bool Watches(const GURL& url) const;
+  // Returns the policy levels at which the current `url` navigation is being
+  // watched for.
+  virtual const std::set<DTCPolicyLevel> Watches(const GURL& url) const;
 
   // Collects device trust signals and returns them via `callback`.
   void GetSignals(base::OnceCallback<void(base::Value::Dict)> callback);

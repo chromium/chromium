@@ -11,6 +11,15 @@
 
 namespace enterprise_connectors {
 
+// Represents the various policy levels for the Device Trust connector.
+enum class DTCPolicyLevel {
+  // For CBCM-managed browsers.
+  kBrowser = 0,
+
+  // For managed users logged-in to the profile.
+  kUser = 1,
+};
+
 // Various possible outcomes to the attestation step in the overarching Device
 // Trust connector attestation flow. These values are persisted to logs and
 // should not be renumbered. Please update the DTAttestationResult enum in

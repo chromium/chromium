@@ -51,6 +51,8 @@ class DeviceTrustConnectorServiceTest
 
     feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
                                        is_flag_enabled());
+    levels_.insert(DTCPolicyLevel::kBrowser);
+    levels_.insert(DTCPolicyLevel::kUser);
 
     if (is_policy_enabled()) {
       EnableServicePolicy();
@@ -87,6 +89,7 @@ class DeviceTrustConnectorServiceTest
 
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
+  std::set<DTCPolicyLevel> levels_;
 };
 
 TEST_P(DeviceTrustConnectorServiceTest, IsConnectorEnabled_Update) {
@@ -115,15 +118,16 @@ TEST_P(DeviceTrustConnectorServiceTest, Matches_Update) {
   GURL url2(kExampleUrl2);
   GURL url3(kExampleUrl3);
 
-  EXPECT_TRUE(service->Watches(url1));
-  EXPECT_TRUE(service->Watches(url2));
-  EXPECT_FALSE(service->Watches(url3));
+  EXPECT_EQ(levels_, service->Watches(url1));
+  EXPECT_EQ(levels_, service->Watches(url2));
+
+  EXPECT_EQ(std::set<DTCPolicyLevel>(), service->Watches(url3));
 
   UpdateServicePolicy();
 
-  EXPECT_TRUE(service->Watches(url1));
-  EXPECT_TRUE(service->Watches(url2));
-  EXPECT_TRUE(service->Watches(url3));
+  EXPECT_EQ(levels_, service->Watches(url1));
+  EXPECT_EQ(levels_, service->Watches(url2));
+  EXPECT_EQ(levels_, service->Watches(url3));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

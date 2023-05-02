@@ -21,7 +21,10 @@ class MockDeviceTrustService : public DeviceTrustService {
               BuildChallengeResponse,
               (const std::string&, DeviceTrustCallback),
               (override));
-  MOCK_METHOD(bool, Watches, (const GURL&), (const, override));
+  MOCK_METHOD(const std::set<DTCPolicyLevel>,
+              Watches,
+              (const GURL&),
+              (const, override));
 };
 
 }  // namespace test
