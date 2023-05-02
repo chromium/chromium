@@ -944,6 +944,46 @@ TEST_F(StorageKeyTest, ToNetSiteForCookies) {
   }
 }
 
+TEST_F(StorageKeyTest, ToPartialNetIsolationInfo) {
+  const auto kOrigin = url::Origin::Create(GURL("https://subdomain.foo.com"));
+  const auto kOtherOrigin =
+      url::Origin::Create(GURL("https://subdomain.bar.com"));
+  const auto nonce = base::UnguessableToken::Create();
+
+  {  // Same-site storage key
+    const auto storage_key =
+        StorageKey::Create(kOrigin, net::SchemefulSite(kOrigin),
+                           mojom::AncestorChainBit::kSameSite);
+
+    storage_key.ToPartialNetIsolationInfo().IsEqualForTesting(
+        net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                   kOrigin, kOrigin,
+                                   net::SiteForCookies::FromOrigin(kOrigin)));
+  }
+
+  {  // Cross-site storage key
+    const auto storage_key =
+        StorageKey::Create(kOrigin, net::SchemefulSite(kOtherOrigin),
+                           mojom::AncestorChainBit::kCrossSite);
+
+    storage_key.ToPartialNetIsolationInfo().IsEqualForTesting(
+        net::IsolationInfo::Create(
+            net::IsolationInfo::RequestType::kOther,
+            net::SchemefulSite(kOrigin).GetInternalOriginForTesting(),
+            kOtherOrigin, net::SiteForCookies()));
+  }
+
+  {  // Nonced key
+    const auto storage_key = StorageKey::CreateWithNonce(kOrigin, nonce);
+
+    storage_key.ToPartialNetIsolationInfo().IsEqualForTesting(
+        net::IsolationInfo::Create(
+            net::IsolationInfo::RequestType::kOther,
+            net::SchemefulSite(kOrigin).GetInternalOriginForTesting(), kOrigin,
+            net::SiteForCookies(), absl::nullopt, nonce));
+  }
+}
+
 TEST_F(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
   const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.com"));
   const url::Origin kOtherOrigin = url::Origin::Create(GURL("https://bar.com"));

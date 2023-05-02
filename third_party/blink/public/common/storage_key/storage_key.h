@@ -239,6 +239,23 @@ class BLINK_COMMON_EXPORT StorageKey {
   // info.)
   const net::SiteForCookies ToNetSiteForCookies() const;
 
+  // Return an instance of net::IsolationInfo. This is used for forms of storage
+  // like workers which have network access to ensure they only have access to
+  // network state in their partition.
+  //
+  // The IsolationInfo that this creates will not be exactly the same as the
+  // IsolationInfo of the context that created the worker. This is because
+  // StorageKey only stores the top-frame *site* whereas IsolationInfo normally
+  // uses top-frame *origin*. So we may lose the subdomain of the original
+  // context. Although this is imperfect, it is better than using first-party
+  // IsolationInfo for partitioned workers.
+  //
+  // For first-party contexts, the storage origin is used for the top-frame
+  // origin in the resulting IsolationInfo. This matches legacy behavior before
+  // storage partitioning, where the storage origin is always used as the
+  // top-frame origin.
+  const net::IsolationInfo ToPartialNetIsolationInfo() const;
+
   // Returns true if the registration key string is partitioned by top-level
   // site but storage partitioning is currently disabled, otherwise returns
   // false. Also returns false if the key string contains a serialized nonce.
