@@ -118,8 +118,6 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
   }
   tile->SetVisible(target_visibility);
 
-  tile->SetVectorIcon(kUnifiedMenuCastIcon);
-  tile->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST));
   const std::u16string tooltip =
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_TOOLTIP);
   tile->SetTooltipText(tooltip);
@@ -130,15 +128,14 @@ std::unique_ptr<FeatureTile> CastFeaturePodController::CreateTile(
     cast_config->RequestDeviceRefresh();
   }
 
+  UpdateFeatureTile();
+
   // Compact tile doesn't have a sub-label or drill-in button.
   if (compact) {
     return tile;
   }
 
   tile->CreateDecorativeDrillInButton(tooltip);
-
-  UpdateFeatureTile();
-
   return tile;
 }
 
@@ -199,8 +196,7 @@ void CastFeaturePodController::UpdateFeatureTile() {
   bool is_casting = cast_config->HasActiveRoute();
   tile_->SetToggled(is_casting);
   if (is_casting) {
-    // TODO(b/268575073): Use a new "cast connected" icon at 20px.
-    tile_->SetVectorIcon(kUnifiedMenuCastIcon);
+    tile_->SetVectorIcon(kQuickSettingsCastConnectedIcon);
 
     // Set the label to "Casting screen" or "Casting tab".
     SinkAndRoute sink_and_route = GetActiveSinkAndRoute();
@@ -214,8 +210,7 @@ void CastFeaturePodController::UpdateFeatureTile() {
     }
     return;
   }
-  // TODO(b/268575073): Use a new "cast not connected" icon.
-  tile_->SetVectorIcon(kUnifiedMenuCastIcon);
+  tile_->SetVectorIcon(kQuickSettingsCastIcon);
 
   // Set the label to "Cast screen".
   tile_->SetLabel(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST));

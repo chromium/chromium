@@ -107,6 +107,7 @@ void HoverHighlightView::AddIconAndLabel(const gfx::ImageSkia& image,
 
   std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView(
       /*use_wide_layout=*/features::IsQsRevampEnabled()));
+  icon_ = icon.get();
   icon->SetImage(image);
   icon->SetEnabled(GetEnabled());
 
@@ -119,6 +120,7 @@ void HoverHighlightView::AddIconAndLabel(const ui::ImageModel& image,
 
   std::unique_ptr<views::ImageView> icon(TrayPopupUtils::CreateMainImageView(
       /*use_wide_layout=*/features::IsQsRevampEnabled()));
+  icon_ = icon.get();
   icon->SetImage(image);
   icon->SetEnabled(GetEnabled());
 
@@ -218,6 +220,7 @@ void HoverHighlightView::SetAccessibilityState(
 
 void HoverHighlightView::Reset() {
   RemoveAllChildViews();
+  icon_ = nullptr;
   text_label_ = nullptr;
   sub_text_label_ = nullptr;
   left_view_ = nullptr;

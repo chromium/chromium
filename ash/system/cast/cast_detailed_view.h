@@ -21,6 +21,8 @@ class View;
 
 namespace ash {
 
+class HoverHighlightView;
+
 // This view displays a list of cast receivers that can be clicked on and casted
 // to. It is activated by clicking on the chevron inside of
 // |CastSelectDefaultView|.
@@ -39,7 +41,7 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   // CastConfigController::Observer:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
 
-  views::View* get_add_access_code_device_for_testing() {
+  HoverHighlightView* get_add_access_code_device_for_testing() {
     return add_access_code_device_;
   }
 
@@ -66,7 +68,8 @@ class ASH_EXPORT CastDetailedView : public TrayDetailedView,
   std::map<views::View*, std::string> view_to_sink_map_;
 
   // Special list item that, if clicked, launches the access code casting dialog
-  raw_ptr<views::View, ExperimentalAsh> add_access_code_device_ = nullptr;
+  raw_ptr<HoverHighlightView, ExperimentalAsh> add_access_code_device_ =
+      nullptr;
 
   // View shown when no cast devices are available (with QsRevamp).
   raw_ptr<views::View, ExperimentalAsh> zero_state_view_ = nullptr;

@@ -16,6 +16,7 @@
 
 namespace views {
 class Border;
+class ImageView;
 class Label;
 }  // namespace views
 
@@ -100,6 +101,7 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
 
   bool is_populated() const { return is_populated_; }
 
+  views::ImageView* icon() { return icon_; }
   views::Label* text_label() { return text_label_; }
   views::Label* sub_text_label() { return sub_text_label_; }
   views::View* left_view() { return left_view_; }
@@ -137,6 +139,7 @@ class ASH_EXPORT HoverHighlightView : public ActionableView {
   bool is_populated_ = false;
 
   const raw_ptr<ViewClickListener, ExperimentalAsh> listener_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> icon_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> text_label_ = nullptr;
   raw_ptr<views::Label, ExperimentalAsh> sub_text_label_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> left_view_ = nullptr;

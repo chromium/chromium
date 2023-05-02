@@ -15,6 +15,7 @@
 #include "ash/system/cast/cast_detailed_view.h"
 #include "ash/system/cast/unified_cast_detailed_view_controller.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"

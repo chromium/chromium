@@ -24,10 +24,13 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scroll_view.h"
@@ -118,8 +121,9 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
   }
 
   // QsRevamp places items in a rounded container.
+  const bool is_qs_revamp_enabled = features::IsQsRevampEnabled();
   views::View* item_container =
-      features::IsQsRevampEnabled()
+      is_qs_revamp_enabled
           ? scroll_content()->AddChildView(std::make_unique<RoundedContainer>())
           : scroll_content();
 
@@ -130,6 +134,14 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
         item_container, vector_icons::kKeyboardIcon,
         l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_CAST_ACCESS_CODE_CAST_CONNECT));
+    if (chromeos::features::IsJellyEnabled()) {
+      // `views::ImageView` does not support changing the color, so set the
+      // image with an updated `ui::ImageModel`.
+      add_access_code_device_->icon()->SetImage(ui::ImageModel::FromVectorIcon(
+          vector_icons::kKeyboardIcon, cros_tokens::kCrosSysPrimary));
+      add_access_code_device_->text_label()->SetEnabledColorId(
+          cros_tokens::kCrosSysPrimary);
+    }
   }
 
   // Add a view for each receiver.
@@ -143,16 +155,18 @@ void CastDetailedView::UpdateReceiverListFromCachedData() {
 
     // Add a stop casting button if this machine ("local source") is casting to
     // the device. See also CastNotificationController::OnDevicesUpdated().
-    if (features::IsQsRevampEnabled() && !route.id.empty() &&
-        route.is_local_source) {
+    if (is_qs_revamp_enabled && !route.id.empty() && route.is_local_source) {
       auto button = std::make_unique<PillButton>(
           base::BindRepeating(&CastDetailedView::StopCasting,
                               base::Unretained(this), route.id),
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_CAST_STOP_CASTING),
-          PillButton::kPrimaryWithoutIcon);
+          PillButton::kDefaultWithIconLeading, &kQuickSettingsCircleStopIcon);
+      button->SetBackgroundColorId(cros_tokens::kCrosSysErrorContainer);
+      button->SetIconColorId(cros_tokens::kCrosSysError);
+      button->SetButtonTextColorId(cros_tokens::kCrosSysError);
       container->AddRightView(
           button.release(),
-          views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 0, 8)));
+          views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, 0, 4)));
     }
   }
 
