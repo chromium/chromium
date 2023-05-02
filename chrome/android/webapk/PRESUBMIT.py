@@ -114,7 +114,7 @@ def _CheckCurrentVersionIncreaseRule(input_api, output_api):
 
   if not _CheckVersionVariableChanged(input_api, CURRENT_VERSION_LOCAL_PATH,
                                       CURRENT_VERSION_VARIABLE):
-    return [output_api.PresubmitError(
+    return [output_api.PresubmitPromptWarning(
         '{} in {} needs to updated due to changes in:'.format(
             CURRENT_VERSION_VARIABLE, CURRENT_VERSION_LOCAL_PATH),
         items=files_requiring_version_increase)]
