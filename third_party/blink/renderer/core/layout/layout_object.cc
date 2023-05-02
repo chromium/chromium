@@ -1204,9 +1204,9 @@ LayoutBlockFlow* LayoutObject::FragmentItemsContainer() const {
 
 LayoutBox* LayoutObject::ContainingNGBox() const {
   NOT_DESTROYED();
-  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled() && Parent() &&
-      Parent()->IsMedia())
+  if (Parent() && Parent()->IsMedia()) {
     return To<LayoutBox>(Parent());
+  }
   LayoutBlock* containing_block = ContainingBlock();
   if (!containing_block)
     return nullptr;

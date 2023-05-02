@@ -31,9 +31,9 @@ const NGLayoutResult* NGReplacedLayoutAlgorithm::Layout() {
           .block_size;
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
 
-  if (Node().IsMedia() &&
-      RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled())
+  if (Node().IsMedia()) {
     LayoutMediaChildren();
+  }
 
   return container_builder_.ToBoxFragment();
 }

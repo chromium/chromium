@@ -53,67 +53,6 @@ HTMLMediaElement* LayoutMedia::MediaElement() const {
   return To<HTMLMediaElement>(GetNode());
 }
 
-void LayoutMedia::UpdateLayout() {
-  NOT_DESTROYED();
-  LayoutSize old_size(ContentWidth(), ContentHeight());
-
-  LayoutImage::UpdateLayout();
-
-  // If LayoutMediaNGContainer flag is enabled, |NGReplacedLayoutAlgorithm::
-  // LayoutMediaChildren()| handles children layout.
-  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled())
-    return;
-
-  auto new_rect = PhysicalContentBoxRect().ToLayoutRect();
-
-// Iterate the children in reverse order so that the media controls are laid
-// out before the text track container. This is to ensure that the text
-// track rendering has an up-to-date position of the media controls for
-// overlap checking, see ComputeControlsRect() in vtt_cue_layout_algorithm.cc.
-#if DCHECK_IS_ON()
-  bool seen_text_track_container = false;
-  bool seen_interstitial = false;
-#endif
-  for (LayoutObject* child = children_.LastChild(); child;
-       child = child->PreviousSibling()) {
-#if DCHECK_IS_ON()
-    if (child->GetNode()->IsMediaControls()) {
-      DCHECK(!seen_text_track_container);
-      DCHECK(!seen_interstitial);
-    } else if (child->GetNode()->IsTextTrackContainer()) {
-      seen_text_track_container = true;
-      DCHECK(!seen_interstitial);
-    } else if (child->GetNode()->IsMediaRemotingInterstitial() ||
-               child->GetNode()->IsPictureInPictureInterstitial()) {
-      // Only one interstitial can be shown at a time.
-      seen_interstitial = true;
-    } else {
-      NOTREACHED();
-    }
-#endif
-
-    // TODO(mlamouri): we miss some layouts because needsLayout returns false in
-    // some cases where we want to change the width of the controls because the
-    // visible viewport has changed for example.
-    if (new_rect.Size() == old_size && !child->NeedsLayout())
-      continue;
-
-    LayoutUnit width = new_rect.Width();
-    if (child->GetNode()->IsMediaControls()) {
-      width = ComputePanelWidth(new_rect);
-    }
-
-    auto* layout_box = To<LayoutBox>(child);
-    layout_box->SetLocation(new_rect.Location());
-    layout_box->SetOverrideLogicalWidth(width);
-    layout_box->SetOverrideLogicalHeight(new_rect.Height());
-    // TODO(cbiesinger): Can this just be ForceLayout()?
-    layout_box->ForceLayoutWithPaintInvalidation();
-  }
-
-  ClearNeedsLayout();
-}
-
 bool LayoutMedia::IsChildAllowed(LayoutObject* child,
                                  const ComputedStyle& style) const {
   NOT_DESTROYED();
@@ -134,20 +73,16 @@ bool LayoutMedia::IsChildAllowed(LayoutObject* child,
   // check can be removed if ::-webkit-media-controls is made
   // internal.
   if (child->GetNode()->IsMediaControls()) {
-    if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled()) {
-      // LayoutObject::IsInline() doesn't work at this timing.
-      DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
-    }
+    // LayoutObject::IsInline() doesn't work at this timing.
+    DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
     return child->IsFlexibleBoxIncludingNG();
   }
 
   if (child->GetNode()->IsTextTrackContainer() ||
       child->GetNode()->IsMediaRemotingInterstitial() ||
       child->GetNode()->IsPictureInPictureInterstitial()) {
-    if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled()) {
-      // LayoutObject::IsInline() doesn't work at this timing.
-      DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
-    }
+    // LayoutObject::IsInline() doesn't work at this timing.
+    DCHECK(!child->GetNode()->GetComputedStyle()->IsDisplayInlineType());
     return true;
   }
 
@@ -248,9 +183,7 @@ LayoutUnit LayoutMedia::ComputePanelWidth(const LayoutRect& media_rect) const {
 }
 
 RecalcLayoutOverflowResult LayoutMedia::RecalcLayoutOverflow() {
-  if (RuntimeEnabledFeatures::LayoutMediaNGContainerEnabled())
-    return RecalcLayoutOverflowNG();
-  return LayoutImage::RecalcLayoutOverflow();
+  return RecalcLayoutOverflowNG();
 }
 
 }  // namespace blink

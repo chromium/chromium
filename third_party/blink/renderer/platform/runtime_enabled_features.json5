@@ -2046,14 +2046,6 @@
       status: "stable",
     },
     {
-      name: "LayoutMediaNGContainer",
-      status: "stable",
-    },
-    {
-      name: "LayoutMediaNoInlineChildren",
-      status: "stable",  // Since M112.
-    },
-    {
       name: "LayoutNewFormCentering",
       status: "stable",
     },
@@ -2072,7 +2064,7 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["LayoutMediaNGContainer", "RemoveConvertToLayerCoords"],
+      depends_on: ["RemoveConvertToLayerCoords"],
       status: "test",
     },
     {

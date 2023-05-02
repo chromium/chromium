@@ -584,8 +584,7 @@ static void AdjustStyleForDisplay(ComputedStyleBuilder& builder,
   }
 
   // Blockify the child boxes of media elements. crbug.com/1379779.
-  if (RuntimeEnabledFeatures::LayoutMediaNoInlineChildrenEnabled() &&
-      IsAtMediaUAShadowBoundary(element)) {
+  if (IsAtMediaUAShadowBoundary(element)) {
     builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
   }
 }

@@ -73,8 +73,6 @@ class LayoutMedia : public LayoutImage {
   LayoutUnit ComputePanelWidth(const LayoutRect& media_width) const;
 
  protected:
-  void UpdateLayout() override;
-
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
     return type == kLayoutObjectMedia || LayoutImage::IsOfType(type);
