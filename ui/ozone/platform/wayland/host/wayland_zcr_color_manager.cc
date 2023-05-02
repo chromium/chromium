@@ -50,6 +50,36 @@ void WaylandZcrColorManager::Instantiate(WaylandConnection* connection,
       color_manager.release(), connection);
   if (connection->wayland_output_manager())
     connection->wayland_output_manager()->InitializeAllColorManagementOutputs();
+
+  connection->zcr_color_manager_->PreloadCommonColorSpaces();
+}
+
+// Calling this function during Instantiate creates a copy of these colorspaces
+// ahead of time on the server so they're ready when first requested.
+// These are common video colorspaces you might come across browsing the web:
+// Youtube, meets calls, hdr video, etc.
+// Eventually the ZcrColorManager protocol needs to be extended to support
+// sending colorspaces immediately (b/280388004).
+void WaylandZcrColorManager::PreloadCommonColorSpaces() {
+  auto common_colorspaces = {
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                      gfx::ColorSpace::TransferID::PQ,
+                      gfx::ColorSpace::MatrixID::BT2020_NCL,
+                      gfx::ColorSpace::RangeID::LIMITED),
+      gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT2020,
+                      gfx::ColorSpace::TransferID::HLG,
+                      gfx::ColorSpace::MatrixID::BT2020_NCL,
+                      gfx::ColorSpace::RangeID::LIMITED),
+      gfx::ColorSpace::CreateJpeg(),
+      gfx::ColorSpace::CreateSRGB(),
+      gfx::ColorSpace::CreateREC601(),
+      gfx::ColorSpace::CreateREC709(),
+      gfx::ColorSpace::CreateDisplayP3D65(),
+      gfx::ColorSpace::CreateExtendedSRGB10Bit()};
+
+  for (auto& color_space : common_colorspaces) {
+    GetColorSpace(color_space);
+  }
 }
 
 WaylandZcrColorManager::WaylandZcrColorManager(

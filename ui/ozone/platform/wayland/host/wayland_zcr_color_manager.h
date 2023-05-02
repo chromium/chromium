@@ -58,6 +58,7 @@ class WaylandZcrColorManager
   void OnColorSpaceCreated(gfx::ColorSpace color_space,
                            scoped_refptr<WaylandZcrColorSpace> zcr_color_space,
                            absl::optional<uint32_t> error);
+  void PreloadCommonColorSpaces();
   wl::Object<zcr_color_space_creator_v1> CreateZcrColorSpaceCreator(
       const gfx::ColorSpace& color_space);
   // in flight
