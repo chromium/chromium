@@ -4,14 +4,18 @@
 
 #include "ash/webui/projector_app/untrusted_projector_page_handler_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/test/mock_projector_controller.h"
 #include "ash/webui/projector_app/mojom/untrusted_projector.mojom.h"
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "ash/webui/projector_app/test/mock_app_client.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -69,10 +73,20 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
   ~UntrustedProjectorPageHandlerImplUnitTest() override = default;
 
   void SetUp() override {
+    auto* registry = pref_service_.registry();
+    registry->RegisterBooleanPref(ash::prefs::kProjectorCreationFlowEnabled,
+                                  false);
+    registry->RegisterBooleanPref(
+        ash::prefs::kProjectorExcludeTranscriptDialogShown, false);
+    registry->RegisterIntegerPref(
+        ash::prefs::kProjectorGalleryOnboardingShowCount, 0);
+    registry->RegisterIntegerPref(
+        ash::prefs::kProjectorViewerOnboardingShowCount, 0);
+
     page_ = std::make_unique<MockUntrustedProjectorPageJs>();
     handler_impl_ = std::make_unique<UntrustedProjectorPageHandlerImpl>(
         page().page_handler().BindNewPipeAndPassReceiver(),
-        page().receiver().BindNewPipeAndPassRemote());
+        page().receiver().BindNewPipeAndPassRemote(), &pref_service_);
   }
 
   void TearDown() override {
@@ -85,6 +99,10 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
   UntrustedProjectorPageHandlerImpl& handler() { return *handler_impl_; }
   MockAppClient& mock_app_client() { return mock_app_client_; }
 
+ protected:
+  void TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor pref,
+                    base::Value value);
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
@@ -92,7 +110,22 @@ class UntrustedProjectorPageHandlerImplUnitTest : public testing::Test {
   MockAppClient mock_app_client_;
   std::unique_ptr<MockUntrustedProjectorPageJs> page_;
   std::unique_ptr<UntrustedProjectorPageHandlerImpl> handler_impl_;
+  TestingPrefServiceSimple pref_service_;
 };
+
+void UntrustedProjectorPageHandlerImplUnitTest::TestUserPref(
+    projector::mojom::PrefsThatProjectorCanAskFor pref,
+    base::Value value) {
+  base::test::TestFuture<void> set_pref_future;
+  page().page_handler()->SetUserPref(pref, value.Clone(),
+                                     set_pref_future.GetCallback());
+  set_pref_future.Get();
+
+  base::test::TestFuture<base::Value> get_pref_future;
+  page().page_handler()->GetUserPref(pref, get_pref_future.GetCallback());
+
+  EXPECT_EQ(get_pref_future.Get(), value);
+}
 
 TEST_F(UntrustedProjectorPageHandlerImplUnitTest, CanStartProjectorSession) {
   NewScreencastPrecondition precondition = NewScreencastPrecondition(
@@ -188,6 +221,23 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OnScreencastsStateChange) {
   EXPECT_CALL(page(), OnScreencastsStateChange(testing::_)).Times(1);
   handler().OnScreencastsPendingStatusChanged(PendingScreencastContainerSet());
   page().FlushReceiverForTesting();
+}
+
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, TestPrefs) {
+  TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor::
+                   kProjectorCreationFlowEnabled,
+               /*value=*/base::Value(true));
+
+  TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor::
+                   kProjectorExcludeTranscriptDialogShown,
+               /*value=*/base::Value(true));
+
+  TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor::
+                   kProjectorViewerOnboardingShowCount,
+               /*value=*/base::Value(3));
+  TestUserPref(projector::mojom::PrefsThatProjectorCanAskFor::
+                   kProjectorGalleryOnboardingShowCount,
+               /*value=*/base::Value(4));
 }
 
 }  // namespace ash

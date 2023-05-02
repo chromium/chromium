@@ -9,7 +9,6 @@
 
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -18,8 +17,6 @@
 namespace signin {
 struct AccessTokenInfo;
 }  // namespace signin
-
-class PrefService;
 
 namespace ash {
 
@@ -36,7 +33,7 @@ enum class ProjectorError {
 // Handles messages from the Projector WebUIs (i.e. chrome://projector).
 class ProjectorMessageHandler : public content::WebUIMessageHandler {
  public:
-  explicit ProjectorMessageHandler(PrefService* pref_service);
+  ProjectorMessageHandler();
   ProjectorMessageHandler(const ProjectorMessageHandler&) = delete;
   ProjectorMessageHandler& operator=(const ProjectorMessageHandler&) = delete;
   ~ProjectorMessageHandler() override;
@@ -77,12 +74,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::Value::List& args);
 
-  // Requested by the Projector SWA to get access to a particular user pref.
-  void GetUserPref(const base::Value::List& args);
-
-  // Requested by the Projector SWA to set the value of a user pref.
-  void SetUserPref(const base::Value::List& args);
-
   // Requested by the Projector SWA to open the Chrome feedback dialog.
   void OpenFeedbackDialog(const base::Value::List& args);
 
@@ -108,9 +99,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
 
   ProjectorOAuthTokenFetcher oauth_token_fetcher_;
   std::unique_ptr<ProjectorXhrSender> xhr_sender_;
-
-  // Primary user pref service.
-  const raw_ptr<PrefService, ExperimentalAsh> pref_service_;
 
   base::WeakPtrFactory<ProjectorMessageHandler> weak_ptr_factory_{this};
 };

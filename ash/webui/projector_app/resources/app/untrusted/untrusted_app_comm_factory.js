@@ -171,8 +171,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise<Object>}
    */
   getUserPref(userPref) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'getUserPref', [userPref]);
+    return browserProxy.getUserPref(userPref);
   },
 
   /**
@@ -184,8 +183,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise} Promise resolved when the request was handled.
    */
   setUserPref(userPref, value) {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'setUserPref', [userPref, value]);
+    return browserProxy.setUserPref(userPref, value);
   },
 
   /**

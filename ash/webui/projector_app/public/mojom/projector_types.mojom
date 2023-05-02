@@ -57,3 +57,10 @@ struct PendingScreencast {
     // successfully uploaded to avoid over commnucation with user.
     bool upload_failed;
 };
+
+enum PrefsThatProjectorCanAskFor {
+    kProjectorCreationFlowEnabled = 0,
+    kProjectorExcludeTranscriptDialogShown = 1,
+    kProjectorViewerOnboardingShowCount = 2,
+    kProjectorGalleryOnboardingShowCount = 3,
+};

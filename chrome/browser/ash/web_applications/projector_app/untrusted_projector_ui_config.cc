@@ -75,5 +75,6 @@ std::unique_ptr<content::WebUIController>
 UntrustedProjectorUIConfig::CreateWebUIController(content::WebUI* web_ui,
                                                   const GURL& url) {
   ChromeUntrustedProjectorUIDelegate delegate;
-  return std::make_unique<ash::UntrustedProjectorUI>(web_ui, &delegate);
+  return std::make_unique<ash::UntrustedProjectorUI>(
+      web_ui, &delegate, Profile::FromWebUI(web_ui)->GetPrefs());
 }

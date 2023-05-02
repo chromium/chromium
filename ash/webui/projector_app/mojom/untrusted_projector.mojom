@@ -4,6 +4,7 @@
 module ash.projector.mojom;
 
 import "ash/webui/projector_app/public/mojom/projector_types.mojom";
+import "mojo/public/mojom/base/values.mojom";
 
 // UntrustedProjectorPageHandler handles requests that come from the
 // javascript to the browser process.
@@ -25,6 +26,14 @@ interface UntrustedProjectorPageHandler {
   // Requested by the Projector SWA to fetch a list of screencasts pending to
   // upload or failed to upload.
   GetPendingScreencasts() => (array<PendingScreencast> pending_screencasts);
+
+  // Requested by the Projector SWA to get the value of a user pref.
+  GetUserPref(PrefsThatProjectorCanAskFor pref)
+    => (mojo_base.mojom.Value value);
+
+  // Requested by the Projector SWA to get the value of a user pref.
+  SetUserPref(PrefsThatProjectorCanAskFor pref, mojo_base.mojom.Value value)
+    => ();
 };
 
 // Implemented in Javascript to handle requests from the browser process.

@@ -88,8 +88,9 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
 
 UntrustedProjectorUI::UntrustedProjectorUI(
     content::WebUI* web_ui,
-    UntrustedProjectorUIDelegate* delegate)
-    : UntrustedWebUIController(web_ui) {
+    UntrustedProjectorUIDelegate* delegate,
+    PrefService* pref_service)
+    : UntrustedWebUIController(web_ui), pref_service_(pref_service) {
   CreateAndAddProjectorHTMLSource(web_ui, delegate);
 }
 
@@ -109,7 +110,7 @@ void UntrustedProjectorUI::Create(
         projector_handler,
     mojo::PendingRemote<projector::mojom::UntrustedProjectorPage> projector) {
   page_handler_ = std::make_unique<UntrustedProjectorPageHandlerImpl>(
-      std::move(projector_handler), std::move(projector));
+      std::move(projector_handler), std::move(projector), pref_service_);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(UntrustedProjectorUI)

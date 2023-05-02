@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -18,7 +17,6 @@
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/time/time.h"
-#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/web_ui.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -40,11 +38,6 @@ constexpr char kOAuthTokenInfo[] = "oauthTokenInfo";
 constexpr char kXhrSuccess[] = "success";
 constexpr char kXhrResponseBody[] = "response";
 constexpr char kXhrError[] = "error";
-
-// Used when a request is rejected.
-constexpr char kRejectedRequestMessage[] = "Request Rejected";
-constexpr char kRejectedRequestMessageKey[] = "message";
-constexpr char kRejectedRequestArgsKey[] = "requestArgs";
 
 // Projector Error Strings.
 constexpr char kNoneStr[] = "NONE";
@@ -78,81 +71,11 @@ std::string ProjectorErrorToString(ProjectorError mode) {
   }
 }
 
-bool IsUserPrefSupported(const std::string& pref) {
-  return pref == ash::prefs::kProjectorCreationFlowEnabled ||
-         pref == ash::prefs::kProjectorGalleryOnboardingShowCount ||
-         pref == ash::prefs::kProjectorViewerOnboardingShowCount ||
-         pref == ash::prefs::kProjectorExcludeTranscriptDialogShown;
-}
-
-bool IsValidOnboardingPref(const SetUserPrefArgs& args) {
-  return args.value.is_int() &&
-         (args.pref_name == ash::prefs::kProjectorGalleryOnboardingShowCount ||
-          args.pref_name == ash::prefs::kProjectorViewerOnboardingShowCount);
-}
-
-bool IsValidCreationFlowPref(const SetUserPrefArgs& args) {
-  return args.value.is_bool() &&
-         args.pref_name == ash::prefs::kProjectorCreationFlowEnabled;
-}
-
-bool IsValidExcludeTranscriptDialogShownPref(const SetUserPrefArgs& args) {
-  return args.value.is_bool() &&
-         args.pref_name == ash::prefs::kProjectorExcludeTranscriptDialogShown;
-}
-
-bool IsValidPrefValueArg(const SetUserPrefArgs& args) {
-  return IsValidCreationFlowPref(args) || IsValidOnboardingPref(args) ||
-         IsValidExcludeTranscriptDialogShownPref(args);
-}
-
-// Returns true if the request, `args`, contains a valid user preference string.
-// The `out` string is only valid if the function returns true.
-bool GetUserPrefName(const base::Value& args, std::string* out) {
-  if (!args.is_list())
-    return false;
-
-  const auto& args_list = args.GetList();
-
-  if (args_list.size() != 1 || !args_list[0].is_string())
-    return false;
-
-  *out = args_list[0].GetString();
-
-  return IsUserPrefSupported(*out);
-}
-
-// Returns true if the request, `args`, is valid and supported.
-// The `out` struct is only valid if the function returns true.
-bool GetSetUserPrefArgs(const base::Value& args, SetUserPrefArgs* out) {
-  if (!args.is_list())
-    return false;
-
-  const auto& args_list = args.GetList();
-
-  if (args_list.size() != 2 || !args_list[0].is_string()) {
-    return false;
-  }
-
-  out->pref_name = args_list[0].GetString();
-  out->value = args_list[1].Clone();
-  return IsValidPrefValueArg(*out);
-}
-
-base::Value::Dict CreateRejectMessageForArgs(const base::Value& value) {
-  base::Value::Dict rejected_response;
-  rejected_response.Set(kRejectedRequestMessageKey, kRejectedRequestMessage);
-  rejected_response.Set(kRejectedRequestArgsKey, value.Clone());
-  return rejected_response;
-}
-
 }  // namespace
 
-ProjectorMessageHandler::ProjectorMessageHandler(PrefService* pref_service)
-    : content::WebUIMessageHandler(),
-      xhr_sender_(std::make_unique<ProjectorXhrSender>(
-          ProjectorAppClient::Get()->GetUrlLoaderFactory())),
-      pref_service_(pref_service) {}
+ProjectorMessageHandler::ProjectorMessageHandler()
+    : xhr_sender_(std::make_unique<ProjectorXhrSender>(
+          ProjectorAppClient::Get()->GetUrlLoaderFactory())) {}
 
 ProjectorMessageHandler::~ProjectorMessageHandler() = default;
 
@@ -182,12 +105,6 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getUserPref", base::BindRepeating(&ProjectorMessageHandler::GetUserPref,
-                                         base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "setUserPref", base::BindRepeating(&ProjectorMessageHandler::SetUserPref,
-                                         base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "openFeedbackDialog",
       base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
@@ -315,30 +232,6 @@ void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
 void ProjectorMessageHandler::OnError(const base::Value::List& args) {
   // TODO(b/195113693): Get the SWA dialog associated with this WebUI and close
   // it.
-}
-
-void ProjectorMessageHandler::GetUserPref(const base::Value::List& args) {
-  AllowJavascript();
-
-  std::string user_pref;
-  if (!GetUserPrefName(args[1], &user_pref)) {
-    RejectJavascriptCallback(args[0], CreateRejectMessageForArgs(args[1]));
-    return;
-  }
-
-  ResolveJavascriptCallback(args[0], pref_service_->GetValue(user_pref));
-}
-
-void ProjectorMessageHandler::SetUserPref(const base::Value::List& args) {
-  AllowJavascript();
-  SetUserPrefArgs parsed_args;
-  if (!GetSetUserPrefArgs(args[1], &parsed_args)) {
-    RejectJavascriptCallback(args[0], CreateRejectMessageForArgs(args[1]));
-    return;
-  }
-
-  pref_service_->Set(parsed_args.pref_name, parsed_args.value);
-  ResolveJavascriptCallback(args[0], base::Value());
 }
 
 void ProjectorMessageHandler::OpenFeedbackDialog(

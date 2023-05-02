@@ -74,18 +74,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
           values[0], values[1], values[2], values[3], values[4], values[5],
           values[6]);
     });
-    this.registerMethod('getUserPref', (args) => {
-      if (!args || args.length != 1) {
-        return;
-      }
-      return this.browserProxy_.getUserPref(args[0]);
-    });
-    this.registerMethod('setUserPref', (args) => {
-      if (!args || args.length != 2) {
-        return;
-      }
-      return this.browserProxy_.setUserPref(args[0], args[1]);
-    });
     this.registerMethod('openFeedbackDialog', (args) => {
       return this.browserProxy_.openFeedbackDialog();
     });
