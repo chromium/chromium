@@ -541,16 +541,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return PhysicalVisualOverflowRect();
   }
 #endif
-  LayoutUnit LogicalLeftVisualOverflow() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? VisualOverflowRect().X()
-                                                : VisualOverflowRect().Y();
-  }
-  LayoutUnit LogicalRightVisualOverflow() const {
-    NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? VisualOverflowRect().MaxX()
-                                                : VisualOverflowRect().MaxY();
-  }
 
   LayoutRect SelfVisualOverflowRect() const {
     NOT_DESTROYED();
