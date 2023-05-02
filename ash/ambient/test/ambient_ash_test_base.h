@@ -11,7 +11,6 @@
 
 #include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_controller.h"
-#include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_animation_view.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
 #include "ash/ambient/ui/ambient_info_view.h"
@@ -41,6 +40,14 @@ class AmbientPhotoController;
 class AmbientUiSettings;
 class FakeAmbientBackendControllerImpl;
 class MediaStringView;
+
+namespace {
+
+// The default factor to multiply ambient timeouts by. Slightly greater than 1
+// to reduce flakiness by making sure the timeouts have expired.
+inline constexpr float kDefaultFastForwardFactor = 1.001;
+
+}  // namespace
 
 // The base class to test the Ambient Mode in Ash.
 class AmbientAshTestBase : public AshTestBase {
@@ -135,22 +142,26 @@ class AmbientAshTestBase : public AshTestBase {
   void SetPhotoTopicType(::ambient::TopicType topic_type);
 
   // Advance the task environment timer to expire the lock screen inactivity
-  // timer.
-  void FastForwardToLockScreenTimeout();
+  // timer, scaled by `factor`.
+  void FastForwardByLockScreenInactivityTimeout(
+      float factor = kDefaultFastForwardFactor);
 
-  // Advance the task environment timer to load the next photo.
-  void FastForwardToNextImage();
+  // Advance the task environment timer to load the next photo, scaled by
+  // `factor`.
+  void FastForwardByPhotoRefreshInterval(
+      float factor = kDefaultFastForwardFactor);
 
   // Advance the task environment timer a tiny amount. This is intended to
   // trigger any pending async operations.
   void FastForwardTiny();
 
   // Advance the task environment timer to load the weather info.
-  void FastForwardToRefreshWeather();
+  void FastForwardByWeatherRefreshInterval();
 
-  // Advance the task environment timer to ambient mode lock screen delay.
-  void FastForwardToBackgroundLockScreenTimeout();
-  void FastForwardHalfLockScreenDelay();
+  // Advance the task environment timer to ambient mode lock screen delay,
+  // scaled by `factor`.
+  void FastForwardByBackgroundLockScreenTimeout(
+      float factor = kDefaultFastForwardFactor);
 
   void SetPowerStateCharging();
   void SetPowerStateDischarging();

@@ -410,7 +410,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
 
   // Stop to refresh images.
   photo_controller()->StopScreenUpdate();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
 
   EXPECT_EQ(GetSavedCacheIndices().size(), 3u);
 
@@ -424,7 +424,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldNotDeleteImagesOnDisk) {
 TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenNoMoreTopics) {
   Init();
   FetchImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
   // Topics is empty. Will read from cache, which is empty.
   PhotoWithDetails image;
   photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
@@ -451,7 +451,7 @@ TEST_F(AmbientPhotoControllerTest,
        ShouldTry100TimesToReadCacheWhenNoMoreTopics) {
   Init();
   FetchImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
   // Topics is empty. Will read from cache, which is empty.
   PhotoWithDetails image;
   photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
@@ -508,7 +508,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDownloadingFailed) {
 TEST_F(AmbientPhotoControllerTest, ShouldPopulateDetailsWhenReadFromCache) {
   Init();
   FetchImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
   // Topics is empty. Will read from cache, which is empty.
   PhotoWithDetails image;
   photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(
@@ -552,7 +552,7 @@ TEST_F(AmbientPhotoControllerTest, ShouldReadCacheWhenImageDecodingFailed) {
 TEST_F(AmbientPhotoControllerTest, ShouldResumWhenHaveMoreTopics) {
   Init();
   FetchImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
   // Topics is empty. Will read from cache, which is empty.
   PhotoWithDetails image;
   photo_controller()->ambient_backend_model()->GetCurrentAndNextImages(

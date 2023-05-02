@@ -384,7 +384,7 @@ TEST_F(MediaStringViewTest, DoNotShowOnLockScreenIfPrefIsDisabled) {
   pref->SetBoolean(prefs::kLockScreenMediaControlsEnabled, false);
   // Simulates Ambient Mode shown on lock-screen.
   LockScreen();
-  FastForwardToLockScreenTimeout();
+  FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
 
   // Simulates active and playing media session.
@@ -412,8 +412,8 @@ TEST_F(MediaStringViewTest, ShouldHasDifferentTransform) {
   // consecutive updates, therefore we test with two updates.
   gfx::Transform transform1 =
       GetMediaStringView()->layer()->GetTargetTransform();
-  FastForwardToNextImage();
-  FastForwardToNextImage();
+  FastForwardByPhotoRefreshInterval();
+  FastForwardByPhotoRefreshInterval();
   gfx::Transform transform2 =
       GetMediaStringView()->layer()->GetTargetTransform();
   EXPECT_NE(transform1, transform2);

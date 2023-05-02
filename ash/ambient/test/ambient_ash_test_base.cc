@@ -62,9 +62,6 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace {
-constexpr float kFastForwardFactor = 1.001;
-}  // namespace
 
 class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
  public:
@@ -463,16 +460,17 @@ AmbientAnimationView* AmbientAshTestBase::GetAmbientAnimationView() {
       GetContainerView()->GetViewByID(kAmbientAnimationView));
 }
 
-void AmbientAshTestBase::FastForwardToLockScreenTimeout() {
-  task_environment()->FastForwardBy(kFastForwardFactor *
+void AmbientAshTestBase::FastForwardByLockScreenInactivityTimeout(
+    float factor) {
+  task_environment()->FastForwardBy(factor *
                                     ambient_controller()
                                         ->ambient_ui_model()
                                         ->lock_screen_inactivity_timeout());
 }
 
-void AmbientAshTestBase::FastForwardToNextImage() {
+void AmbientAshTestBase::FastForwardByPhotoRefreshInterval(float factor) {
   task_environment()->FastForwardBy(
-      kFastForwardFactor *
+      factor *
       ambient_controller()->ambient_ui_model()->photo_refresh_interval());
 }
 
@@ -482,15 +480,9 @@ void AmbientAshTestBase::FastForwardTiny() {
   task_environment()->FastForwardBy(base::Milliseconds(10));
 }
 
-void AmbientAshTestBase::FastForwardToBackgroundLockScreenTimeout() {
-  task_environment()->FastForwardBy(kFastForwardFactor *
-                                    ambient_controller()
-                                        ->ambient_ui_model()
-                                        ->background_lock_screen_timeout());
-}
-
-void AmbientAshTestBase::FastForwardHalfLockScreenDelay() {
-  task_environment()->FastForwardBy(0.5 * kFastForwardFactor *
+void AmbientAshTestBase::FastForwardByBackgroundLockScreenTimeout(
+    float factor) {
+  task_environment()->FastForwardBy(factor *
                                     ambient_controller()
                                         ->ambient_ui_model()
                                         ->background_lock_screen_timeout());
@@ -537,7 +529,7 @@ void AmbientAshTestBase::SetBatteryPercent(double percent) {
   ambient_controller()->OnPowerStatusChanged();
 }
 
-void AmbientAshTestBase::FastForwardToRefreshWeather() {
+void AmbientAshTestBase::FastForwardByWeatherRefreshInterval() {
   task_environment()->FastForwardBy(1.2 * kWeatherRefreshInterval);
 }
 
