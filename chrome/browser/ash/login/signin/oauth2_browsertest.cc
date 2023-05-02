@@ -861,10 +861,7 @@ class MergeSessionTest : public OAuth2Test,
 
   void JsExpectAsync(content::WebContents* web_contents,
                      const std::string& expression) {
-    content::DOMMessageQueue dom_message_queue(web_contents);
-    content::ExecuteScriptAsync(
-        web_contents,
-        "window.domAutomationController.send(!!(" + expression + "));");
+    content::ExecuteScriptAsync(web_contents, "!!(" + expression + ");");
   }
 
   void JsExpectOnBackgroundPageAsync(const std::string& extension_id,
@@ -883,12 +880,8 @@ class MergeSessionTest : public OAuth2Test,
   }
 
   void JsExpect(content::WebContents* contents, const std::string& expression) {
-    bool result;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        contents,
-        "window.domAutomationController.send(!!(" + expression + "));",
-        &result));
-    ASSERT_TRUE(result) << expression;
+    ASSERT_EQ(true, content::EvalJs(contents, "!!(" + expression + ");"))
+        << expression;
   }
 
   const GURL& GetBackGroundPageUrl(const std::string& extension_id) {
