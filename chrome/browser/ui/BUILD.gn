@@ -4147,8 +4147,6 @@ static_library("ui") {
       "webui/conflicts/conflicts_ui.h",
       "webui/sandbox/sandbox_handler.cc",
       "webui/sandbox/sandbox_handler.h",
-      "webui/settings/chrome_cleanup_handler_win.cc",
-      "webui/settings/chrome_cleanup_handler_win.h",
       "webui/settings/settings_utils_win.cc",
       "webui/version/version_handler_win.cc",
       "webui/version/version_handler_win.h",

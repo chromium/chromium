@@ -542,98 +542,6 @@ void AddGetTheMostOutOfChromeStrings(content::WebUIDataSource* html_source) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void AddChromeCleanupStrings(content::WebUIDataSource* html_source) {
-  const char16_t kUnwantedSoftwareProtectionWhitePaperUrl[] =
-      u"https://www.google.ca/chrome/browser/privacy/"
-      u"whitepaper.html#unwantedsoftware";
-
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"chromeCleanupPageTitle",
-       IDS_SETTINGS_RESET_CLEAN_UP_COMPUTER_PAGE_TITLE},
-      {"chromeCleanupDetailsFilesAndPrograms",
-       IDS_SETTINGS_RESET_CLEANUP_DETAILS_FILES_AND_PROGRAMS},
-      {"chromeCleanupDetailsRegistryEntries",
-       IDS_SETTINGS_RESET_CLEANUP_DETAILS_REGISTRY_ENTRIES},
-      {"chromeCleanupExplanationCleanupError",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_CLEANUP_ERROR},
-      {"chromeCleanupExplanationFindAndRemove",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_FIND_AND_REMOVE},
-      {"chromeCleanupExplanationNoInternet",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_NO_INTERNET_CONNECTION},
-      {"chromeCleanupExplanationPermissionsNeeded",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_PERMISSIONS_NEEDED},
-      {"chromeCleanupExplanationRemove",
-       // Note: removal explanation should be the same as used in the prompt
-       // dialog. Reusing the string to ensure they will not diverge.
-       IDS_CHROME_CLEANUP_PROMPT_EXPLANATION},
-      {"chromeCleanupExplanationRemoving",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_CURRENTLY_REMOVING},
-      {"chromeCleanupExplanationScanError",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_SCAN_ERROR},
-      {"chromeCleanupFindButtonLabel",
-       IDS_SETTINGS_RESET_CLEANUP_FIND_BUTTON_LABEL},
-      {"chromeCleanupLinkShowItems",
-       IDS_SETTINGS_RESET_CLEANUP_LINK_SHOW_FILES},
-      {"chromeCleanupRemoveButtonLabel",
-       IDS_SETTINGS_RESET_CLEANUP_REMOVE_BUTTON_LABEL},
-      {"chromeCleanupRestartButtonLabel",
-       IDS_SETTINGS_RESET_CLEANUP_RESTART_BUTTON_LABEL},
-      {"chromeCleanupTitleErrorCantRemove",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_ERROR_CANT_REMOVE},
-      {"chromeCleanupTitleErrorPermissions",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_ERROR_PERMISSIONS_NEEDED},
-      {"chromeCleanupTitleFindAndRemove",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_FIND_HARMFUL_SOFTWARE},
-      {"chromeCleanupTitleNoInternet",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_NO_INTERNET_CONNECTION},
-      {"chromeCleanupTitleNothingFound",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_NOTHING_FOUND},
-      {"chromeCleanupTitleRemove", IDS_SETTINGS_RESET_CLEANUP_TITLE_REMOVE},
-      {"chromeCleanupTitleRemoved", IDS_SETTINGS_RESET_CLEANUP_TITLE_DONE},
-      {"chromeCleanupTitleRemoving", IDS_SETTINGS_RESET_CLEANUP_TITLE_REMOVING},
-      {"chromeCleanupTitleRestart", IDS_SETTINGS_RESET_CLEANUP_TITLE_RESTART},
-      {"chromeCleanupTitleScanning", IDS_SETTINGS_RESET_CLEANUP_TITLE_SCANNING},
-      {"chromeCleanupTitleScanningFailed",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_ERROR_SCANNING_FAILED},
-      {"chromeCleanupTitleTryAgainButtonLabel",
-       IDS_SETTINGS_RESET_CLEANUP_TRY_AGAIN_BUTTON_LABEL},
-      {"chromeCleanupExplanationLogsPermissionPref",
-       IDS_SETTINGS_RESET_CLEANUP_LOGS_PERMISSION_PREF},
-      {"chromeCleanupTitleCleanupUnavailable",
-       IDS_SETTINGS_RESET_CLEANUP_TITLE_CLEANUP_UNAVAILABLE},
-      {"chromeCleanupExplanationCleanupUnavailable",
-       IDS_SETTINGS_RESET_CLEANUP_EXPLANATION_CLEANUP_UNAVAILABLE},
-  };
-
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-  const std::string cleanup_learn_more_url =
-      google_util::AppendGoogleLocaleParam(
-          GURL(chrome::kChromeCleanerLearnMoreURL),
-          g_browser_process->GetApplicationLocale())
-          .spec();
-  html_source->AddString("chromeCleanupLearnMoreUrl", cleanup_learn_more_url);
-
-  // The "powered by" footer contains an HTML fragment with the SVG logo of the
-  // partner. The logo is added directly to the DOM, rather than as an <img>
-  // src, to make sure that screen readers can find accessibility tags inside
-  // the SVG.
-  const std::string powered_by_element = base::StrCat(
-      {"<span id='powered-by-logo'>",
-       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-           IDR_CHROME_CLEANUP_PARTNER),
-       "</span>"});
-  const std::u16string powered_by_html =
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_RESET_CLEANUP_FOOTER_POWERED_BY,
-                                 base::UTF8ToUTF16(powered_by_element));
-  html_source->AddString("chromeCleanupPoweredByHtml", powered_by_html);
-
-  const std::u16string cleanup_details_explanation =
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXPLANATION,
-                                 kUnwantedSoftwareProtectionWhitePaperUrl);
-  html_source->AddString("chromeCleanupDetailsExplanation",
-                         cleanup_details_explanation);
-}
-
 void AddIncompatibleApplicationsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"incompatibleApplicationsResetCardTitle",
@@ -3567,7 +3475,6 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  AddChromeCleanupStrings(html_source);
   AddIncompatibleApplicationsStrings(html_source);
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 

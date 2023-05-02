@@ -46,11 +46,6 @@
             <include name="IDR_CROS_OOBE_PRODUCT_NAME" file="google_chrome/chromeos/oobe/project_simon/product_name.txt" type="BINDATA" />
             <include name="IDR_CROS_OOBE_WELCOME_BACKDROP" file="google_chrome/chromeos/oobe/project_simon/welcome_backdrop.svg" type="BINDATA" />
           </if>
-          <if expr="is_win">
-            <!-- External company logo, displayed in the Chrome Cleanup WebUI if
-                cleanup functionality is powered by an external company. -->
-            <include name="IDR_CHROME_CLEANUP_PARTNER" file="google_chrome/win/chrome_cleanup_powered_by_company.svg" type="BINDATA" />
-          </if>
           <!-- NOTE: product_logo_*.* files beyond what's listed above are
               referenced by installer code; don't remove them unless you know
               what you're doing! -->

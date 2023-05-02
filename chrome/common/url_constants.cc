@@ -508,9 +508,6 @@ const char kMacOsObsoleteURL[] =
 #endif
 
 #if BUILDFLAG(IS_WIN)
-const char kChromeCleanerLearnMoreURL[] =
-    "https://support.google.com/chrome/?p=chrome_cleanup_tool";
-
 const char kWindowsXPVistaDeprecationURL[] =
     "https://chrome.blogspot.com/2015/11/updates-to-chrome-platform-support.html";
 
