@@ -45,7 +45,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
-import java.util.function.BooleanSupplier;
 /**
  * Creates NativePage objects to show chrome-native:// URLs using the native Android view system.
  */
@@ -59,8 +58,6 @@ public class NativePageFactory {
     private final TabModelSelector mTabModelSelector;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final WindowAndroid mWindowAndroid;
-    private final Supplier<Long> mLastUserInteractionTimeSupplier;
-    private final BooleanSupplier mHadWarmStartSupplier;
     private final Supplier<Toolbar> mToolbarSupplier;
     private NewTabPageUma mNewTabPageUma;
 
@@ -74,10 +71,7 @@ public class NativePageFactory {
             @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull Supplier<Long> lastUserInteractionTimeSupplier,
-            @NonNull BooleanSupplier hadWarmStartSupplier,
-            @NonNull Supplier<Toolbar> toolbarSupplier) {
+            @NonNull WindowAndroid windowAndroid, @NonNull Supplier<Toolbar> toolbarSupplier) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -87,8 +81,6 @@ public class NativePageFactory {
         mTabModelSelector = tabModelSelector;
         mShareDelegateSupplier = shareDelegateSupplier;
         mWindowAndroid = windowAndroid;
-        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
-        mHadWarmStartSupplier = hadWarmStartSupplier;
         mToolbarSupplier = toolbarSupplier;
     }
 
@@ -104,8 +96,7 @@ public class NativePageFactory {
 
     private NewTabPageUma getNewTabPageUma() {
         if (mNewTabPageUma == null) {
-            mNewTabPageUma = new NewTabPageUma(mTabModelSelector, mLastUserInteractionTimeSupplier,
-                    mHadWarmStartSupplier.getAsBoolean(), mActivity::getIntent);
+            mNewTabPageUma = new NewTabPageUma(mTabModelSelector);
             mNewTabPageUma.monitorNTPCreation();
         }
         return mNewTabPageUma;

@@ -118,8 +118,8 @@ public class NativePageFactoryTest {
 
     @Before
     public void setUp() {
-        mNativePageFactory = new NativePageFactory(
-                null, null, null, null, null, null, null, null, null, null, null, null);
+        mNativePageFactory =
+                new NativePageFactory(null, null, null, null, null, null, null, null, null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
     }
 

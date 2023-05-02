@@ -2008,8 +2008,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     /* TabCreatorManager */ this, getTabModelSelectorSupplier(),
                     getCompositorViewHolderSupplier(), getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
-                    getLifecycleDispatcher(), getWindowAndroid(), this::getLastUserInteractionTime,
-                    this::hadWarmStart, getToolbarManager()::getToolbar);
+                    getLifecycleDispatcher(), getWindowAndroid(), getToolbarManager()::getToolbar);
         }
         return mTabDelegateFactory;
     }

@@ -1630,6 +1630,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.SearchAvailableLoadTime2.ColdStart" units="ms"
     expires_after="2022-02-20">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>fgorski@chromium.org</owner>
   <owner>ender@google.com</owner>
   <owner>yyushkina@chromium.org</owner>
@@ -1642,6 +1645,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.SearchAvailableLoadTime2.WarmStart" units="ms"
     expires_after="2021-10-10">
+  <obsolete>
+    Removed in April 2023.
+  </obsolete>
   <owner>fgorski@chromium.org</owner>
   <owner>ender@google.com</owner>
   <owner>yyushkina@chromium.org</owner>

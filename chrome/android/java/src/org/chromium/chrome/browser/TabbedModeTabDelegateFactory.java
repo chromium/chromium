@@ -39,8 +39,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.function.BooleanSupplier;
-
 /**
  * {@link TabDelegateFactory} class to be used in all {@link Tab} instances owned by a
  * {@link ChromeTabbedActivity}.
@@ -65,8 +63,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<Tab> mCurrentTabSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final WindowAndroid mWindowAndroid;
-    private final Supplier<Long> mLastUserInteractionTimeSupplier;
-    private final BooleanSupplier mHadWarmStartSupplier;
     private final Supplier<Toolbar> mToolbarSupplier;
 
     private NativePageFactory mNativePageFactory;
@@ -85,7 +81,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Supplier<SnackbarManager> snackbarManagerSupplier,
             BrowserControlsManager browserControlsManager, Supplier<Tab> currentTabSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher, WindowAndroid windowAndroid,
-            Supplier<Long> lastUserInteractionTimeSupplier, BooleanSupplier hadWarmStartSupplier,
             Supplier<Toolbar> toolbarSupplier) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
@@ -106,8 +101,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mCurrentTabSupplier = currentTabSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mWindowAndroid = windowAndroid;
-        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
-        mHadWarmStartSupplier = hadWarmStartSupplier;
         mToolbarSupplier = toolbarSupplier;
     }
 
@@ -148,8 +141,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             mNativePageFactory = new NativePageFactory(mActivity, mBottomSheetController,
                     mBrowserControlsManager, mCurrentTabSupplier, mSnackbarManagerSupplier,
                     mLifecycleDispatcher, mTabModelSelectorSupplier.get(), mShareDelegateSupplier,
-                    mWindowAndroid, mLastUserInteractionTimeSupplier, mHadWarmStartSupplier,
-                    mToolbarSupplier);
+                    mWindowAndroid, mToolbarSupplier);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab);
     }
