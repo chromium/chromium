@@ -210,8 +210,10 @@ void SyncServiceImpl::Initialize() {
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
       &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
       GetRegisteredDataTypes(),
-      base::BindRepeating(&SyncServiceImpl::UseTransportOnlyMode,
-                          base::Unretained(this)));
+      base::BindRepeating(
+          &SyncServiceImpl::
+              ShouldHonorBookmarksAndReadingListAccountStorageOptIn,
+          base::Unretained(this)));
 
   sync_prefs_.AddSyncPrefObserver(this);
 
@@ -1342,6 +1344,15 @@ bool SyncServiceImpl::UseTransportOnlyMode() const {
   // Note: When local Sync is enabled, then we want full-sync mode (not just
   // transport), even though Sync-the-feature is not considered enabled.
   return !IsSyncFeatureEnabled() && !IsLocalSyncEnabled();
+}
+
+bool SyncServiceImpl::ShouldHonorBookmarksAndReadingListAccountStorageOptIn()
+    const {
+  // The special bookmarks&readinglist account-storage opt-in should be honored
+  // only in transport mode (not in full-sync mode). As a special case, it
+  // should not be honored while the setup for Sync-the-feature is in progress,
+  // so that the user can properly select the types they want to sync.
+  return !IsSetupInProgress() && UseTransportOnlyMode();
 }
 
 ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {

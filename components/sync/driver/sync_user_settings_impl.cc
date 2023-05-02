@@ -60,13 +60,13 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
     SyncPrefs* prefs,
     const SyncTypePreferenceProvider* preference_provider,
     ModelTypeSet registered_model_types,
-    base::RepeatingCallback<bool()> use_transport_only_mode_callback)
+    base::RepeatingCallback<bool()> bookmarks_and_reading_list_opt_in_callback)
     : crypto_(crypto),
       prefs_(prefs),
       preference_provider_(preference_provider),
       registered_model_types_(registered_model_types),
-      use_transport_only_mode_callback_(
-          std::move(use_transport_only_mode_callback)) {
+      bookmarks_and_reading_list_opt_in_callback_(
+          std::move(bookmarks_and_reading_list_opt_in_callback)) {
   DCHECK(crypto_);
   DCHECK(prefs_);
 }
@@ -98,7 +98,7 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
   // opt-in.
   // TODO(crbug.com/1440628): Cleanup the temporary behaviour of an additional
   // opt in for Bookmarks and Reading Lists.
-  if (use_transport_only_mode_callback_.Run() &&
+  if (bookmarks_and_reading_list_opt_in_callback_.Run() &&
       !prefs_->IsOptedInForBookmarksAndReadingListAccountStorage()) {
     types.Remove(UserSelectableType::kBookmarks);
     types.Remove(UserSelectableType::kReadingList);
