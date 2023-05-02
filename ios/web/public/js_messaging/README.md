@@ -8,7 +8,10 @@ require JavaScript in order to interact with the webpage. Please use TypeScript
 for all new feature development.
 
 Slides covering JavaScriptFeature are available [here](https://docs.google.com/presentation/d/1HKdi7CGtNTGhMcCscpX_LVFZ8iLTtXjpSQ-980N7J38/edit?usp=sharing).
+Note that this presentation is somewhat outdated, but still provides a good
+overview.
 
+[TOC]
 ## Background
 
 It is important to first understand the following concepts in order to properly
@@ -16,24 +19,25 @@ design a feature using JavaScript.
 
 ### JavaScript vs TypeScript
 
-Sometimes the terms JavaScript and TypeScript are used interchangeably. Even
+Sometimes the terms "JavaScript" and "TypeScript" are used interchangeably. Even
 though feature developers write TypeScript, the TypeScript is compiled into
-plain JavaScript at compile time. New scripts should be written as TypeScript
-since it provides additional assurances of code correctness and type safety.
+plain JavaScript at compile time. All new scripts should be written as
+TypeScript which provides more assurances of code correctness and type safety
+than plain JavaScript.
 
 ### JavaScript Injection
 
 JavaScript is considered to be "injected" when it is added to every webpage by
 WebKit.
 
-JavaScript injection is configured at the BrowserState level. That is, it is
+JavaScript injection is configured at the `BrowserState` level. That is, it is
 injected unconditionally for every `WebState` associated with that
 `BrowserState`.
 
 This may mean that the JavaScript doesn’t do anything when it is injected, but
-instead add functions which are exposed (through `__gCrWeb`) for later use.
+instead adds functionality which is exposed (through `__gCrWeb`) for later use.
 
-Note: WebKit uses the terminology "WKUserScript" for this injected JavaScript.
+Note: WebKit uses the "WKUserScript" class to configure injected JavaScript.
 
 ### JavaScript Execution
 
@@ -43,7 +47,7 @@ contents of a file within the resource bundle. "Executed" JavaScript refers to
 all application JavaScript which is not "injected".
 
 This allows the native code to interact with and manipulate the contents of the
-webpage in response to feature logic.
+webpage in response to feature logic at runtime.
 
 ### Script Message Handlers
 
@@ -54,7 +58,7 @@ native code.
 
 A "content world"" can be thought of as a JavaScript namespace.
 
-A JavaScriptFeature instance can choose to inject its JavaScript into a
+A `JavaScriptFeature` instance can choose to inject its JavaScript into a
 particular world. All worlds have access to read and modify the same underlying
 webpage DOM, but can not interact with the JavaScript state in different
 worlds.
@@ -63,53 +67,55 @@ worlds.
 
 The "page content" world contains the webpage JavaScript. Application JavaScript
 injected here can interact with the JavaScript of the webpage and expose
-functions for the webpage JavaScript to call directly.
+functions for the webpage JavaScript to call directly. Only scripts acting as
+polyfills or which expect to be called by the scripts of the webpages should run
+in the page content world.
 
 #### Isolated Worlds
 
 Application JavaScript can choose to be injected into its own world, separate
 from the Page Content World. This is considered an "isolated" world. The
 webpage JavaScript can not interact with these scripts under normal
-circumstances. However, a web page that exploits a renderer bug in order to
+circumstances. (However, a web page that exploits a renderer bug in order to
 execute arbitrary code is also able to interact with scripts in isolated worlds,
-including the ability to manipulate and send messages from isolated worlds. 
-
-NOTE: Isolated worlds are supported on iOS 14 and later.
+including the ability to manipulate and send messages from isolated worlds so
+care should always be taken when processing messages sent from JavaScript.)
 
 ## web::JavaScriptFeature
 
 The `JavaScriptFeature` class encapsules all the above concepts to make it easy
 to build and configure a feature which needs to interact with the webpage.
 
-All injected JavaScript files are considered a "feature" as they need to specify
-which world they should be injected into. But, features can also expose much
-more functionality and store state as necessary.
+All injected JavaScript files are considered part of a "feature" as it needs to
+be specified which world they should be injected into.
 
 A feature may:
 
 *   unconditionally modify the DOM or perform an action with no native<->JS
     communication
     *   Ex: Perform an action based on an event listener
-*   simply add JavaScript functions to the world
-    *   Ex: `common.js` adds the `__gCrWeb.common` functions
+*   add JavaScript functions to the world
+    *   Ex: `common.js` adds the `__gCrWeb.common.*` functions
 *   expose native C++ functions which call injected JavaScript or executes other
     JavaScript
-*   add a script message handler and handle
+*   add a script message handler and handle messages received from the
+    JavaScript in the associated content world
 
 ### FeatureScript
 
-A `FeatureScript` represents a JavaScript file from the application bundle which
-is injected.
+A `FeatureScript` represents a single JavaScript file from the application
+bundle which is injected.
 
-The code within the file may run immediately, be tied to event listeners, or
-simply make functions available for later execution.
+Although the script runs immediately upon injection, the feature logic is
+generally run later triggered by event listeners or a function call from the
+native application.
 
 #### FeatureScript::InjectionTime
 
 The InjectionTime is when the script should be ran during the loading of the
 webpage's DOM.
 
-Scripts configured with `kDocumentStart` can create functions, but the DOM will
+Scripts configured with `kDocumentStart` can expose functions, but the DOM will
 not yet be available. Overrides of functions in the page content world which
 the webpage may call should be done at this time.
 
@@ -142,10 +148,9 @@ proper replacement value.
 
 `JavaScriptFeature` exposes protected `CallJavaScriptFunction` APIs. These are
 to be used within specialized `JavaScriptFeature` subclasses in order to call
-into injected JavaScript.
-
-This is necessary in order to ensure that the JavaScript execution occurs in the
-same content world which the feature scripts were injected into.
+into the JavaScript injected by the feature. This is necessary in order to
+ensure that the JavaScript execution occurs in the same content world which the
+feature scripts were injected into.
 
 JavaScript injected by a `JavaScriptFeature` should not be called outside of the
 specialized `JavaScriptFeature` subclass.
@@ -169,7 +174,7 @@ an exception while setting up the handler if a name is already registered.
 `JavaScriptFeature`s conceptually live at the `BrowserState` layer.
 
 Simple features which hold no state can live statically within the application
-and may be shared across the normal and incognito `BrowserState`s. 
+and may be shared across the normal and incognito `BrowserState`s.
 `base::NoDestructor` and a static `GetInstance()` method can be used for these
 features.
 
@@ -193,8 +198,7 @@ similar to other imports in native code. For example:
     import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 Note that the import uses the ".js" extension, even if the file is written as
-TypeScript with a ".ts" file extension because the type information only exists
-before compile time.
+TypeScript with a ".ts" file extension.
 
 Additionally, it is important to realize that import/export statements are also
 stripped away during compile time using [Rollup]. This may have unexpected side
@@ -242,7 +246,8 @@ and copied into the application bundle for use by a JavaScriptFeature instance.
 
 *   Adhere to the [TypeScript styleguide].
 *   Use [existing TypeScript] as reference.
-*   When possible, split your code into multiple files using ES6 export/import.
+*   Split your code into multiple files using export/import to improve code
+    organization and readability.
 
 [TypeScript styleguide]: https://google.github.io/styleguide/tsguide.html
 [existing TypeScript]: https://source.chromium.org/search?q=file:%5Eios%20file:%22.ts%22&sq=
@@ -306,25 +311,25 @@ void MyJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  base::Value::Dict message_body = std::move(script_message.body()->GetDict());
+  const base::Value::Dict& dict = message.body()->GetDict();
 
-  std::string* event_type = message_body.FindString("eventType");
+  const std::string* event_type = dict.FindString("eventType");
   if (!event_type || event_type->empty()) {
     return;
   }
 
-  std::string* text = message_body.FindString("text");
+  std::string* text = dict.FindString("text");
   if (!text || text->empty()) {
     return;
   }
 
-  // Now, you can *carefully* use `eventType` and `text` as non-empty strings.
+  // Now, you can *carefully* use `event_type` and `text` as non-empty strings.
 }
 ```
 
 ### Safely handle known-bad input
 
-When validating a message, don’t simply use `CHECK`. We do not want the input
+When validating a message, don’t  use `CHECK`. We do not want the input
 validation mechanism to become an easy way for malicious JavaScript to kill the
 browser process. It is usually better to ignore the bad input, or when possible,
 to immediately destroy and re-create the WKWebView that sent invalid input.
@@ -333,8 +338,8 @@ is not currently done on iOS; however, receiving an invalid input that purports
 to be from an isolated world is a strong indication of a compromised renderer.
 If there is no graceful way to handle a particular invalid message, a
 `CHECK`-induced crash is still better than allowing the browser process to
-become compromised. Importantly, a `DCHECK` is not appropriate in this situation,
-since it will not protect users on official builds.
+become compromised. Importantly, a `DCHECK` is not appropriate in this
+situation, since it will not protect users on official builds.
 
 ### Be aware of the subtleties of value types returned by WKWebView
 
@@ -352,12 +357,11 @@ While conversions between JavaScript types and Objective-C types are documented
 from WKWebView to `base::Value`, rather than directly working with
 WKWebView-provided values. This already happens when working with
 `web::ScriptMessage` in overrides of `JavaScriptFeature::ScriptMessageReceived`,
-and when using `WebStateImpl::ExecuteJavaScript`. Always use
-`WebFrame::CallJavaScriptFunction` rather than directly calling
-`[WKWebView evaluateJavaScript]`, to avoid having to manually handle conversion
-and to ensure that the message will only be sent to the expected webpage.
-Sending JavaScript to the WKWebView or web::WebState is not bound to any
-particular webpage or domain and may execute on a different page than expected
+and when receiving results from `WebFrame::CallJavaScriptFunction*` and
+`WebFrame::ExecuteJavaScript`. Using functions on the `WebFrame` to execute
+JavaScript ensures that the message will only be sent to the expected webpage.
+Sending JavaScript to the WKWebView directly is not bound to any particular
+webpage or domain and may execute on a different page than expected
 if a navigation occurs between the sending and execution of the message.
 However, messages sent to a WebFrame will be bound to that webpage and be
 dropped if the webpage goes away before the JavaScript is executed.
