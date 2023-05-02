@@ -2959,7 +2959,7 @@ are declared in tools/grit/grit_rule.gni.
         Retry <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph>
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW" desc="Text shown on the download bubble to allow users to never show the bubble at download completion">
-        Don't show when downloads are done
+        Don't show when downloads finish
       </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUPPRESS_PARTIAL_VIEW_SETTINGS_REMINDER" desc="Text shown on the download bubble to remind users they can customize whether the bubble appears from Chrome settings">
         You can change this anytime in <ph name="SETTINGS_LINK">$1<ex>settings</ex></ph>
