@@ -10,8 +10,10 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/browser/speech/tts_controller_impl.h"
@@ -21,6 +23,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -41,6 +44,7 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/painter.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
@@ -69,6 +73,12 @@ constexpr int kMaxRows = 3;
 // Google icon.
 constexpr int kGoogleIconSizeDip = 16;
 constexpr auto kGoogleIconInsets = gfx::Insets::TLBR(10, 10, 0, 10);
+
+// Result type icon.
+constexpr int kResultTypeIconContainerRadius = 18;
+constexpr int kResultTypeIconSizeDip = 12;
+constexpr auto kResultTypeIconContainerInsets = gfx::Insets::VH(8, 12);
+constexpr auto kResultTypeIconCircleInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 // Info icon.
 constexpr int kDogfoodIconSizeDip = 20;
@@ -492,6 +502,10 @@ void QuickAnswersView::ShowRetryView() {
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_DESC));
 }
 
+ui::ImageModel QuickAnswersView::GetIconImageModelForTesting() {
+  return vector_icon_ ? vector_icon_->GetImageModel() : ui::ImageModel();
+}
+
 void QuickAnswersView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -510,13 +524,20 @@ void QuickAnswersView::InitLayout() {
       .SetInteriorMargin(kMainViewInsets)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  // Add branding icon.
-  AddGoogleIcon();
+  if (chromeos::features::IsQuickAnswersRichCardEnabled()) {
+    // Add icon that corresponds to the quick answer result type.
+    AddResultTypeIcon();
+  } else {
+    // Add branding icon.
+    AddGoogleIcon();
+  }
 
   AddContentView();
 
-  // Add util buttons in the top-right corner.
-  AddFrameButtons();
+  if (!chromeos::features::IsQuickAnswersRichCardEnabled()) {
+    // Add util buttons in the top-right corner.
+    AddFrameButtons();
+  }
 }
 
 void QuickAnswersView::InitWidget() {
@@ -631,6 +652,35 @@ void QuickAnswersView::AddGoogleIcon() {
                                               gfx::kPlaceholderColor));
 }
 
+void QuickAnswersView::AddResultTypeIcon() {
+  // Use a container view for the icon and circle background to set
+  // the correct margins.
+  auto* vector_icon_container = main_view_->AddChildView(
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+          .SetInteriorMargin(kResultTypeIconContainerInsets)
+          .Build());
+
+  // Add a circle background behind the icon.
+  auto* vector_icon_circle = vector_icon_container->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  vector_icon_circle->SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysPrimary, kResultTypeIconContainerRadius));
+  vector_icon_circle->SetBorder(
+      views::CreateEmptyBorder(kResultTypeIconCircleInsets));
+
+  // Use the default result type icon until a valid quick answers result is
+  // received and the view is updated. In the `no result` case, this will be
+  // kept as the default icon.
+  vector_icon_ =
+      vector_icon_circle->AddChildView(std::make_unique<views::ImageView>());
+  vector_icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(GetResultTypeIcon(ResultType::kNoResult),
+                                     cros_tokens::kCrosSysSystemBaseElevated,
+                                     /*icon_size=*/kResultTypeIconSizeDip));
+}
+
 int QuickAnswersView::GetBoundsWidth() {
   return anchor_view_bounds_.width();
 }
@@ -686,6 +736,14 @@ void QuickAnswersView::UpdateQuickAnswerResult(
   if (report_query_view_) {
     base_view_->RemoveChildViewT(report_query_view_.get());
     report_query_view_ = nullptr;
+  }
+
+  // Update the icon representing the quick answers result type.
+  if (vector_icon_) {
+    vector_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        GetResultTypeIcon(quick_answer.result_type),
+        cros_tokens::kCrosSysSystemBaseElevated,
+        /*icon_size=*/kResultTypeIconSizeDip));
   }
 
   // Add title.

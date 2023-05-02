@@ -49,6 +49,8 @@ class RichAnswersView : public views::View {
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  ui::ImageModel GetIconImageModelForTesting();
+
  private:
   void InitLayout();
   void InitWidget();
