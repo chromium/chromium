@@ -1007,7 +1007,7 @@ class ComputedStyle : public ComputedStyleBase,
   bool ColumnRuleIsTransparent() const {
     return !ColumnRuleColor()
                 .Resolve(GetCurrentColor(), UsedColorScheme())
-                .Alpha();
+                .AlphaAsInteger();
   }
   bool ColumnRuleEquivalent(const ComputedStyle& other_style) const;
   bool HasColumnRule() const {

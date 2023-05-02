@@ -1177,8 +1177,9 @@ bool AXLayoutObject::IsDataTable() const {
       Color cell_color = computed_style->VisitedDependentColor(
           GetCSSPropertyBackgroundColor());
       if (has_cell_spacing && table_bg_color != cell_color &&
-          cell_color.Alpha() != 1)
+          cell_color.AlphaAsInteger() != 1) {
         background_difference_cell_count++;
+      }
 
       // If we've found 10 "good" cells, we don't need to keep searching.
       if (bordered_cell_count >= 10 || background_difference_cell_count >= 10)

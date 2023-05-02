@@ -140,16 +140,19 @@ NSAttributedString* AttributedSubstringFromRange(LocalFrame* frame,
     }
     attrs[NSFontAttributeName] = font;
 
-    if (style->VisitedDependentColor(GetCSSPropertyColor()).Alpha())
+    if (style->VisitedDependentColor(GetCSSPropertyColor()).AlphaAsInteger()) {
       attrs[NSForegroundColorAttributeName] =
           NsColor(style->VisitedDependentColor(GetCSSPropertyColor()));
-    else
+    } else {
       [attrs removeObjectForKey:NSForegroundColorAttributeName];
-    if (style->VisitedDependentColor(GetCSSPropertyBackgroundColor()).Alpha())
+    }
+    if (style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+            .AlphaAsInteger()) {
       attrs[NSBackgroundColorAttributeName] = NsColor(
           style->VisitedDependentColor(GetCSSPropertyBackgroundColor()));
-    else
+    } else {
       [attrs removeObjectForKey:NSBackgroundColorAttributeName];
+    }
 
     String characters = it.GetTextState().GetTextForTesting();
     characters.Ensure16Bit();

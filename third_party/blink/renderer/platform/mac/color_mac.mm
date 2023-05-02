@@ -65,11 +65,11 @@ NSColor* NsColor(const Color& color) {
         return cached_colors[i];
     }
 
-    NSColor* result =
-        [NSColor colorWithDeviceRed:static_cast<CGFloat>(color.Red()) / 255
-                              green:static_cast<CGFloat>(color.Green()) / 255
-                               blue:static_cast<CGFloat>(color.Blue()) / 255
-                              alpha:static_cast<CGFloat>(color.Alpha()) / 255];
+    NSColor* result = [NSColor
+        colorWithDeviceRed:static_cast<CGFloat>(color.Red()) / 255
+                     green:static_cast<CGFloat>(color.Green()) / 255
+                      blue:static_cast<CGFloat>(color.Blue()) / 255
+                     alpha:static_cast<CGFloat>(color.AlphaAsInteger()) / 255];
 
     static int cursor;
     cached_rgba_values[cursor] = c;

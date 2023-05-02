@@ -244,7 +244,7 @@ const ShapeOutsideInfo* ShapeOutsideInfoForNode(Node* node,
 
 String ToHEXA(const Color& color) {
   return String::Format("#%02X%02X%02X%02X", color.Red(), color.Green(),
-                        color.Blue(), color.Alpha());
+                        color.Blue(), color.AlphaAsInteger());
 }
 
 std::unique_ptr<protocol::ListValue> ToRGBAList(const Color& color) {

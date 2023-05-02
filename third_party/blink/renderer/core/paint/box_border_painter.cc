@@ -839,8 +839,8 @@ struct BoxBorderPainter::ComplexBorderInfo {
                 const BorderEdge& edge_a = border_painter.Edge(a);
                 const BorderEdge& edge_b = border_painter.Edge(b);
 
-                const unsigned alpha_a = edge_a.GetColor().Alpha();
-                const unsigned alpha_b = edge_b.GetColor().Alpha();
+                const unsigned alpha_a = edge_a.GetColor().AlphaAsInteger();
+                const unsigned alpha_b = edge_b.GetColor().AlphaAsInteger();
                 if (alpha_a != alpha_b)
                   return alpha_a < alpha_b;
 
@@ -873,7 +873,7 @@ struct BoxBorderPainter::ComplexBorderInfo {
     unsigned current_alpha = 0;
     for (BoxSide side : sorted_sides) {
       const BorderEdge& edge = border_painter.Edge(side);
-      const unsigned edge_alpha = edge.GetColor().Alpha();
+      const unsigned edge_alpha = edge.GetColor().AlphaAsInteger();
 
       DCHECK_GT(edge_alpha, 0u);
       DCHECK_GE(edge_alpha, current_alpha);
@@ -1077,7 +1077,7 @@ void BoxBorderPainter::ComputeBorderProperties() {
       continue;
     }
 
-    DCHECK_GT(edge.GetColor().Alpha(), 0);
+    DCHECK_GT(edge.GetColor().AlphaAsInteger(), 0);
 
     visible_edge_count_++;
     visible_edge_set_ |= EdgeFlagForSide(static_cast<BoxSide>(i));

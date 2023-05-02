@@ -111,8 +111,9 @@ void PaintRect(GraphicsContext& context,
                const PhysicalRect& rect,
                const Color color,
                const AutoDarkMode& auto_dark_mode) {
-  if (!color.Alpha())
+  if (!color.AlphaAsInteger()) {
     return;
+  }
   if (rect.size.IsEmpty())
     return;
   const gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(rect);
@@ -135,8 +136,9 @@ Color SelectionBackgroundColor(const Document& document,
                                Color text_color) {
   const Color color = HighlightPaintingUtils::HighlightBackgroundColor(
       document, style, node, absl::nullopt, kPseudoIdSelection);
-  if (!color.Alpha())
+  if (!color.AlphaAsInteger()) {
     return Color();
+  }
 
   // If the text color ends up being the same as the selection background,
   // invert the selection background.
@@ -232,7 +234,7 @@ bool HasNonTrivialSpellingGrammarStyles(const NGFragmentItem& fragment_item,
     if (HighlightPaintingUtils::ResolveColor(
             document, originating_style, pseudo_style.get(), pseudo,
             GetCSSPropertyBackgroundColor(), {})
-            .Alpha() > 0) {
+            .AlphaAsInteger() > 0) {
       return true;
     }
     // If the ‘text-shadow’ is not ‘none’.

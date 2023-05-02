@@ -19,7 +19,7 @@ CSSHWB::CSSHWB(const Color& input_color) {
   w_ = CSSUnitValue::Create(w * 100, CSSPrimitiveValue::UnitType::kPercentage);
   b_ = CSSUnitValue::Create(b * 100, CSSPrimitiveValue::UnitType::kPercentage);
 
-  double a = double(input_color.Alpha()) / 255;
+  double a = double(input_color.AlphaAsInteger()) / 255;
   alpha_ =
       CSSUnitValue::Create(a * 100, CSSPrimitiveValue::UnitType::kPercentage);
 }

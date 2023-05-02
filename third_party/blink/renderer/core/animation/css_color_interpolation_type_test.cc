@@ -54,7 +54,7 @@ TEST(CSSColorInterpolationTypeTest, RGBBounds) {
   ASSERT_EQ(255, rgba.Red());
   ASSERT_EQ(255, rgba.Green());
   ASSERT_EQ(255, rgba.Blue());
-  ASSERT_EQ(255, rgba.Alpha());
+  ASSERT_EQ(255, rgba.AlphaAsInteger());
 }
 
 TEST(CSSColorInterpolationTypeTest, RGBToOklab) {

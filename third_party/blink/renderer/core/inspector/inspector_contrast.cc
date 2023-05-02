@@ -58,7 +58,7 @@ void BlendWithColorsFromGradient(cssvalue::CSSGradientValue* gradient,
     colors.clear();
     for (auto stop_color : stop_colors) {
       found_non_transparent_color =
-          found_non_transparent_color || (stop_color.Alpha() != 0);
+          found_non_transparent_color || (stop_color.AlphaAsInteger() != 0);
       colors.push_back(existing_color.Blend(stop_color));
     }
   }
@@ -349,7 +349,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     }
 
     bool found_non_transparent_color = false;
-    if (background_color.Alpha() != 0) {
+    if (background_color.AlphaAsInteger() != 0) {
       found_non_transparent_color = true;
       if (background_color.HasAlpha()) {
         if (colors.empty()) {

@@ -2187,7 +2187,7 @@ StyleColor ComputedStyle::DecorationColorIncludingFallback(
         visited_link ? InternalVisitedTextStrokeColor() : TextStrokeColor();
     if (!text_stroke_style_color.IsCurrentColor() &&
         text_stroke_style_color.Resolve(blink::Color(), UsedColorScheme())
-            .Alpha()) {
+            .AlphaAsInteger()) {
       return text_stroke_style_color;
     }
   }
@@ -2202,7 +2202,7 @@ bool ComputedStyle::HasBackground() const {
   blink::Color color = GetCSSPropertyBackgroundColor().ColorIncludingFallback(
       false, *this,
       /*is_current_color=*/nullptr);
-  if (color.Alpha()) {
+  if (color.AlphaAsInteger()) {
     return true;
   }
   // When background color animation is running on the compositor thread, we

@@ -30,7 +30,7 @@ EBorderStyle BorderEdge::EffectiveStyle(EBorderStyle style, int width) {
 }
 
 bool BorderEdge::HasVisibleColorAndStyle() const {
-  return style_ > EBorderStyle::kHidden && color_.Alpha() > 0;
+  return style_ > EBorderStyle::kHidden && color_.AlphaAsInteger() > 0;
 }
 
 bool BorderEdge::ShouldRender() const {

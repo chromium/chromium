@@ -840,11 +840,11 @@ String Color::SerializeAsCSSColor() const {
         result.Append(", ");
         // See <alphavalue> section in
         // https://drafts.csswg.org/cssom/#serializing-css-values
-        float rounded = round(Alpha() * 100 / 255.0f) / 100;
-        if (round(rounded * 255) == Alpha()) {
+        float rounded = round(AlphaAsInteger() * 100 / 255.0f) / 100;
+        if (round(rounded * 255) == AlphaAsInteger()) {
           result.AppendNumber(rounded, 2);
         } else {
-          rounded = round(Alpha() * 1000 / 255.0f) / 1000;
+          rounded = round(AlphaAsInteger() * 1000 / 255.0f) / 1000;
           result.AppendNumber(rounded, 3);
         }
       }
@@ -951,8 +951,10 @@ String Color::NameForLayoutTreeAsText() const {
     // should use this representation here.
     return SerializeAsCSSColor();
   }
-  if (Alpha() < 0xFF)
-    return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(), Alpha());
+  if (AlphaAsInteger() < 0xFF) {
+    return String::Format("#%02X%02X%02X%02X", Red(), Green(), Blue(),
+                          AlphaAsInteger());
+  }
   return String::Format("#%02X%02X%02X", Red(), Green(), Blue());
 }
 
@@ -979,14 +981,15 @@ Color Color::Light() const {
   if (v == 0.0f) {
     // Lightened black with alpha.
     return Color(RedChannel(kLightenedBlack), GreenChannel(kLightenedBlack),
-                 BlueChannel(kLightenedBlack), Alpha());
+                 BlueChannel(kLightenedBlack), AlphaAsInteger());
   }
 
   float multiplier = std::min(1.0f, v + 0.33f) / v;
 
   return Color(static_cast<int>(multiplier * r * scale_factor),
                static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor), Alpha());
+               static_cast<int>(multiplier * b * scale_factor),
+               AlphaAsInteger());
 }
 
 Color Color::Dark() const {
@@ -1004,27 +1007,31 @@ Color Color::Dark() const {
 
   return Color(static_cast<int>(multiplier * r * scale_factor),
                static_cast<int>(multiplier * g * scale_factor),
-               static_cast<int>(multiplier * b * scale_factor), Alpha());
+               static_cast<int>(multiplier * b * scale_factor),
+               AlphaAsInteger());
 }
 
 Color Color::Blend(const Color& source) const {
   // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending.
-  if (!Alpha() || !source.HasAlpha())
+  if (!AlphaAsInteger() || !source.HasAlpha()) {
     return source;
+  }
 
-  if (!source.Alpha())
+  if (!source.AlphaAsInteger()) {
     return *this;
+  }
 
-  int d = 255 * (Alpha() + source.Alpha()) - Alpha() * source.Alpha();
+  int d = 255 * (AlphaAsInteger() + source.AlphaAsInteger()) -
+          AlphaAsInteger() * source.AlphaAsInteger();
   int a = d / 255;
-  int r = (Red() * Alpha() * (255 - source.Alpha()) +
-           255 * source.Alpha() * source.Red()) /
+  int r = (Red() * AlphaAsInteger() * (255 - source.AlphaAsInteger()) +
+           255 * source.AlphaAsInteger() * source.Red()) /
           d;
-  int g = (Green() * Alpha() * (255 - source.Alpha()) +
-           255 * source.Alpha() * source.Green()) /
+  int g = (Green() * AlphaAsInteger() * (255 - source.AlphaAsInteger()) +
+           255 * source.AlphaAsInteger() * source.Green()) /
           d;
-  int b = (Blue() * Alpha() * (255 - source.Alpha()) +
-           255 * source.Alpha() * source.Blue()) /
+  int b = (Blue() * AlphaAsInteger() * (255 - source.AlphaAsInteger()) +
+           255 * source.AlphaAsInteger() * source.Blue()) /
           d;
   return Color(r, g, b, a);
 }
@@ -1056,14 +1063,14 @@ void Color::GetRGBA(float& r, float& g, float& b, float& a) const {
   r = Red() / 255.0f;
   g = Green() / 255.0f;
   b = Blue() / 255.0f;
-  a = Alpha() / 255.0f;
+  a = AlphaAsInteger() / 255.0f;
 }
 
 void Color::GetRGBA(double& r, double& g, double& b, double& a) const {
   r = Red() / 255.0;
   g = Green() / 255.0;
   b = Blue() / 255.0;
-  a = Alpha() / 255.0;
+  a = AlphaAsInteger() / 255.0;
 }
 
 // Hue, max and min are returned in range of 0.0 to 1.0.
@@ -1129,7 +1136,7 @@ Color ColorFromPremultipliedARGB(RGBA32 pixel_color) {
 RGBA32 PremultipliedARGBFromColor(const Color& color) {
   unsigned pixel_color;
 
-  unsigned alpha = color.Alpha();
+  unsigned alpha = color.AlphaAsInteger();
   if (alpha < 255) {
     pixel_color = Color::FromRGBA((color.Red() * alpha + 254) / 255,
                                   (color.Green() * alpha + 254) / 255,
