@@ -102,7 +102,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
       !HonorificPrefixEnabled()) {
     return;
   }
-  bool success = name_->SetValueForTypeIfPossible(type, value, status);
+  bool success = name_->SetValueForType(type, value, status);
   DCHECK(success) << AutofillType::ServerFieldTypeToString(type);
 }
 
@@ -123,11 +123,11 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
-    bool token_equivalent =
-        AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL));
-    name_->SetValueForTypeIfPossible(
-        type.GetStorableType(), value, status,
-        /*invalidate_child_nodes=*/!token_equivalent);
+    // TODO(1440504): Move this logic to the data model.
+    AreStringTokenEquivalent(value, name_->GetValueForType(NAME_FULL))
+        ? name_->SetValueForType(type.GetStorableType(), value, status)
+        : name_->SetValueForTypeAndResetSubstructure(type.GetStorableType(),
+                                                     value, status);
     return true;
   }
   return FormGroup::SetInfoWithVerificationStatusImpl(type, value, app_locale,

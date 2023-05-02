@@ -97,16 +97,16 @@ void Address::SetRawInfoWithVerificationStatus(ServerFieldType type,
     const std::u16string current_value =
         structured_address_.GetValueForType(type);
     if (!current_value.empty()) {
-      bool token_equivalent = AreStringTokenEquivalent(
-          value, structured_address_.GetValueForType(type));
-      structured_address_.SetValueForTypeIfPossible(
-          ADDRESS_HOME_STREET_ADDRESS, value, status,
-          /*invalidate_child_nodes=*/!token_equivalent);
+      AreStringTokenEquivalent(value, structured_address_.GetValueForType(type))
+          ? structured_address_.SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
+                                                value, status)
+          : structured_address_.SetValueForTypeAndResetSubstructure(
+                ADDRESS_HOME_STREET_ADDRESS, value, status);
       return;
     }
   }
 
-  structured_address_.SetValueForTypeIfPossible(type, value, status);
+  structured_address_.SetValueForType(type, value, status);
 }
 
 void Address::GetMatchingTypes(const std::u16string& text,
@@ -186,7 +186,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                          : std::string();
     }
 
-    structured_address_.SetValueForTypeIfPossible(
+    structured_address_.SetValueForType(
         ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code), status);
     return !country_code.empty();
   }
@@ -202,7 +202,7 @@ bool Address::SetInfoWithVerificationStatusImpl(const AutofillType& type,
         CountryNames::GetInstance()->GetCountryCodeForLocalizedCountryName(
             value, locale);
 
-    structured_address_.SetValueForTypeIfPossible(
+    structured_address_.SetValueForType(
         ADDRESS_HOME_COUNTRY, base::UTF8ToUTF16(country_code), status);
     return !GetRawInfo(ADDRESS_HOME_COUNTRY).empty();
   }

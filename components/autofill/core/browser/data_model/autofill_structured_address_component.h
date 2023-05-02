@@ -193,24 +193,22 @@ class AddressComponent {
   // Sets the value corresponding to the storage type of this AddressComponent.
   virtual void SetValue(std::u16string value, VerificationStatus status);
 
+  // Wrapper function around
+  // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/false);
+  bool SetValueForType(const ServerFieldType& type,
+                       const std::u16string& value,
+                       const VerificationStatus& status);
+
+  // Wrapper function around
+  // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/true);
+  // TODO(1440504): Remove and merge with SetValueForType.
+  bool SetValueForTypeAndResetSubstructure(const ServerFieldType& type,
+                                           const std::u16string& value,
+                                           const VerificationStatus& status);
+
   // Sets the value to an empty string, marks it unassigned and sets the
   // verification status to |kNoStatus|.
   virtual void UnsetValue();
-
-  // The method sets the value of the current node if its |storage_type_| is
-  // |type| or if |ConvertAndGetTheValueForAdditionalFieldTypeName()| supports
-  // retrieving |type|. Otherwise, the call is delegated recursively to the
-  // node's children.
-  // Returns true if the |value_| and |verification_status_| were successfully
-  // set for this or an ancestor node with the storage type |type|. If
-  // |invalidate_child_nodes|, all child nodes of the assigned node are
-  // unassigned. If |invalidate_parent_nodes|, all ancestor nodes of the
-  // assigned node as unassigned.
-  bool SetValueForTypeIfPossible(ServerFieldType field_type,
-                                 const std::u16string& value,
-                                 const VerificationStatus& verification_status,
-                                 bool invalidate_child_nodes = false,
-                                 bool invalidate_parent_nodes = false);
 
   // Convenience method to get the value of |type|.
   // Returns an empty string if |type| is not supported.
@@ -220,18 +218,6 @@ class AddressComponent {
   // Returns |VerificationStatus::kNoStatus| if |type| is not supported.
   VerificationStatus GetVerificationStatusForType(
       ServerFieldType field_type) const;
-
-  // Get the value and status of a |type|,
-  // Returns false if the |type| is not supported by the structure.
-  // The method returns |value_| and |validation_status_| of the current node if
-  // its |storage_type_| is |type| or if
-  // |ConvertAndSetTheValueForAdditionalFieldTypeName()| supports setting
-  // |type|. Otherwise, the call is delegated recursively to the node's
-  // children. Returns false if the neither the node or one of its ancestors
-  // supports |type|.
-  bool GetValueAndStatusForTypeIfPossible(ServerFieldType field_type,
-                                          std::u16string* value,
-                                          VerificationStatus* status) const;
 
   // Returns true if the |value| and |verification_status| were successfully
   // unset for |type|.
@@ -322,14 +308,6 @@ class AddressComponent {
   // If |wipe_if_not|, the value is unset if invalid.
   bool IsValueForTypeValid(ServerFieldType field_type,
                            bool wipe_if_not = false);
-
-  // Recursively determines the validity status of a component value associated
-  // with |field_type_name|.  If |wipe_if_not|, the value is unset if invalid.
-  // Returns true if it is possible to determine the validity status of the
-  // value in this subcomponent.
-  bool GetIsValueForTypeValidIfPossible(ServerFieldType field_type,
-                                        bool* validity_status,
-                                        bool wipe_if_not = false);
 
   // While merging two structured addresses, if only one of them has their
   // country set, the other should assume the non-empty one while merging. This
@@ -499,6 +477,39 @@ class AddressComponent {
   int MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const;
 
  private:
+  // The method sets the value of the current node if its |storage_type_| is
+  // |type| or if |ConvertAndGetTheValueForAdditionalFieldTypeName()| supports
+  // retrieving |type|. Otherwise, the call is delegated recursively to the
+  // node's children.
+  // Returns true if the |value_| and |verification_status_| were successfully
+  // set for this or an ancestor node with the storage type |type|. If
+  // |invalidate_child_nodes|, all child nodes of the assigned node are
+  // unassigned. If |invalidate_parent_nodes|, all ancestor nodes of the
+  // assigned node as unassigned.
+  bool SetValueForTypeIfPossible(ServerFieldType field_type,
+                                 const std::u16string& value,
+                                 const VerificationStatus& verification_status,
+                                 bool invalidate_child_nodes);
+
+  // Get the value and status of a |type|,
+  // Returns false if the |type| is not supported by the structure.
+  // The method returns |value_| and |validation_status_| of the current node
+  // if its |storage_type_| is |type| or if
+  // |ConvertAndSetTheValueForAdditionalFieldTypeName()| supports setting
+  // |type|. Otherwise, the call is delegated recursively to the node's
+  // children. Returns false if the neither the node or one of its ancestors
+  // supports |type|.
+  bool GetValueAndStatusForTypeIfPossible(ServerFieldType field_type,
+                                          std::u16string* value,
+                                          VerificationStatus* status) const;
+
+  // Recursively determines the validity status of a component value associated
+  // with |field_type_name|.  If |wipe_if_not|, the value is unset if invalid.
+  // Returns true if it is possible to determine the validity status of the
+  // value in this subcomponent.
+  bool GetIsValueForTypeValidIfPossible(ServerFieldType field_type,
+                                        bool* validity_status,
+                                        bool wipe_if_not = false);
   // Function to be called by child nodes on construction to register
   // themselves as child nodes.
   void RegisterChildNode(AddressComponent* child);

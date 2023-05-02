@@ -121,8 +121,7 @@ NameLast::NameLast(AddressComponent* parent)
 NameLast::~NameLast() = default;
 
 void NameLast::ParseValueAndAssignSubcomponentsByFallbackMethod() {
-  SetValueForTypeIfPossible(NAME_LAST_SECOND, GetValue(),
-                            VerificationStatus::kParsed);
+  SetValueForType(NAME_LAST_SECOND, GetValue(), VerificationStatus::kParsed);
 }
 
 NameFull::NameFull() : NameFull(nullptr) {}

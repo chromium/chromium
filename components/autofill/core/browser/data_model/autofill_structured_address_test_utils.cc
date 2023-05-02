@@ -49,9 +49,9 @@ void SetTestValues(AddressComponent* component,
                    const AddressComponentTestValues& test_values,
                    bool finalize) {
   for (const auto& test_value : test_values) {
-    component->SetValueForTypeIfPossible(test_value.type,
-                                         base::UTF8ToUTF16(test_value.value),
-                                         test_value.status);
+    component->SetValueForType(test_value.type,
+                               base::UTF8ToUTF16(test_value.value),
+                               test_value.status);
   }
   if (finalize)
     component->CompleteFullTree();

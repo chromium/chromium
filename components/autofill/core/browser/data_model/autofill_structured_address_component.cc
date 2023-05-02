@@ -280,12 +280,26 @@ std::vector<ServerFieldType> AddressComponent::GetSubcomponentTypes() const {
   return subcomponent_types;
 }
 
+bool AddressComponent::SetValueForType(
+    const ServerFieldType& type,
+    const std::u16string& value,
+    const VerificationStatus& verification_status) {
+  return SetValueForTypeIfPossible(type, value, verification_status, false);
+}
+
+bool AddressComponent::SetValueForTypeAndResetSubstructure(
+    const ServerFieldType& type,
+    const std::u16string& value,
+    const VerificationStatus& verification_status) {
+  return SetValueForTypeIfPossible(type, value, verification_status,
+                                   /*invalidate_child_nodes=*/true);
+}
+
 bool AddressComponent::SetValueForTypeIfPossible(
     ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& verification_status,
-    bool invalidate_child_nodes,
-    bool invalidate_parent_nodes) {
+    bool invalidate_child_nodes) {
   bool value_set = false;
   // If the type is the storage type of the component, it can directly be
   // returned.
@@ -307,10 +321,7 @@ bool AddressComponent::SetValueForTypeIfPossible(
   // Finally, probe if the type is supported by one of the subcomponents.
   for (auto* subcomponent : subcomponents_) {
     if (subcomponent->SetValueForTypeIfPossible(
-            field_type, value, verification_status, invalidate_child_nodes,
-            invalidate_parent_nodes)) {
-      if (invalidate_parent_nodes)
-        UnsetValue();
+            field_type, value, verification_status, invalidate_child_nodes)) {
       return true;
     }
   }
@@ -456,9 +467,9 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
       if (field_type == GetStorageTypeName()) {
         continue;
       }
-      bool success = SetValueForTypeIfPossible(TypeNameToFieldType(field_type),
-                                               base::UTF8ToUTF16(field_value),
-                                               VerificationStatus::kParsed);
+      bool success = SetValueForType(TypeNameToFieldType(field_type),
+                                     base::UTF8ToUTF16(field_value),
+                                     VerificationStatus::kParsed);
       // Setting the value should always work unless the regular expression is
       // invalid.
       DCHECK(success);
@@ -490,8 +501,8 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
     if (token_iterator == space_separated_tokens.end())
       return;
     // Set the current token to the type and advance the token iterator.
-    bool success = SetValueForTypeIfPossible(
-        subcomponent_types[i], *token_iterator, VerificationStatus::kParsed);
+    bool success = SetValueForType(subcomponent_types[i], *token_iterator,
+                                   VerificationStatus::kParsed);
     // By design, setting the value should never fail.
     DCHECK(success);
     token_iterator++;
@@ -503,8 +514,8 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
       u" ");
   // By design, it should be possible to assign the value unless the regular
   // expression is wrong.
-  bool success = SetValueForTypeIfPossible(
-      subcomponent_types.back(), remaining_tokens, VerificationStatus::kParsed);
+  bool success = SetValueForType(subcomponent_types.back(), remaining_tokens,
+                                 VerificationStatus::kParsed);
   DCHECK(success);
 }
 
