@@ -275,6 +275,24 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   }
 }
 
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
+                       WriteOffsetAndSeekInSameWritable) {
+  // Performing a second write operation with a valid offset, after performing
+  // a seek operation occurs at the expected index (https://crbug.com/1427819).
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
+  EXPECT_EQ("abc1234h",
+            EvalJs(shell(),
+                   "(async () => {"
+                   "const w = await self.entry.createWritable();"
+                   "await w.write('abcdefgh');"
+                   "await w.seek(0);"
+                   "await w.write({type:'write',data:'123',position:3});"
+                   "await w.write('4');"
+                   "await w.close();"
+                   "return (await (await self.entry.getFile()).text());"
+                   "})()"));
+}
+
 // TODO(https://crbug.com/992089): Files are only quarantined on windows in
 // browsertests unfortunately. Change this when more platforms are enabled.
 #if BUILDFLAG(IS_WIN)

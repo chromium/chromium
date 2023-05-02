@@ -349,6 +349,7 @@ ScriptPromise FileSystemUnderlyingSink::WriteData(
     return ScriptPromise();
   }
 
+  offset_ = position;
   std::unique_ptr<mojo::DataPipeProducer::DataSource> data_source;
   switch (data->GetContentType()) {
     case V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString::ContentType::
