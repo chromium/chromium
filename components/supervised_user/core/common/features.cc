@@ -16,27 +16,12 @@ namespace supervised_user {
 // Enables refreshed version of the website filter interstitial that is shown to
 // Family Link users when they navigate to the blocked website.
 // This feature is a prerequisite for `kLocalWebApproval` feature.
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_IOS)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+//
+// TODO(b/276428131): clean up this feature once local approvals on Android is
+// fully launched.
 BASE_FEATURE(kWebFilterInterstitialRefresh,
              "WebFilterInterstitialRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#else  // Desktop
-BASE_FEATURE(kWebFilterInterstitialRefresh,
-             "WebFilterInterstitialRefresh",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 // Enables local parent approvals for the blocked website on the Family Link
 // user's device.
@@ -46,23 +31,11 @@ BASE_FEATURE(kWebFilterInterstitialRefresh,
 // The feature includes one experiment parameter: "preferred_button", which
 // determines which button is displayed as the preferred option in the
 // interstitial UI (i.e. dark blue button).#if BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_IOS)
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kLocalWebApprovals,
-             "LocalWebApprovals",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else  // Desktop
+#else
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
              base::FEATURE_DISABLED_BY_DEFAULT);
