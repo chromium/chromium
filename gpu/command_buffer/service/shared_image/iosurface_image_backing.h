@@ -286,6 +286,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,
       scoped_refptr<SharedContextState> context_state) override;
+  std::unique_ptr<SkiaGraphiteImageRepresentation> ProduceSkiaGraphite(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      scoped_refptr<SharedContextState> context_state) override;
   void SetPurgeable(bool purgeable) override;
   bool IsPurgeable() const override;
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;

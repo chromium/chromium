@@ -7,6 +7,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "components/viz/common/gpu/dawn_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
@@ -14,6 +15,7 @@
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
@@ -433,7 +435,11 @@ DawnIOSurfaceRepresentation::~DawnIOSurfaceRepresentation() {
 }
 
 WGPUTexture DawnIOSurfaceRepresentation::BeginAccess(WGPUTextureUsage usage) {
+  const std::string debug_label =
+      "IOSurface(" + CreateLabelForSharedImageUsage(usage) + ")";
+
   WGPUTextureDescriptor texture_descriptor = {};
+  texture_descriptor.label = debug_label.c_str();
   texture_descriptor.format = wgpu_format_;
   texture_descriptor.usage = usage;
   texture_descriptor.dimension = WGPUTextureDimension_2D;
@@ -867,6 +873,39 @@ IOSurfaceImageBacking::ProduceSkiaGanesh(
   return std::make_unique<SkiaIOSurfaceRepresentation>(
       manager, this, egl_state, std::move(context_state), promise_textures,
       tracker);
+}
+
+std::unique_ptr<SkiaGraphiteImageRepresentation>
+IOSurfaceImageBacking::ProduceSkiaGraphite(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    scoped_refptr<SharedContextState> context_state) {
+  CHECK(context_state);
+  CHECK(context_state->graphite_context());
+  if (context_state->gr_context_type() == GrContextType::kGraphiteDawn) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    WGPUDevice device =
+        context_state->dawn_context_provider()->GetDevice().Get();
+    auto backend_type = WGPUBackendType::WGPUBackendType_Metal;
+    auto dawn_representation = ProduceDawn(manager, tracker, device,
+                                           backend_type, /*view_formats=*/{});
+    if (!dawn_representation) {
+      LOG(ERROR) << "Could not create Dawn Representation";
+      return nullptr;
+    }
+    // Use GPU main recorder since this should only be called for
+    // fulfilling Graphite promise images on GPU main thread.
+    return SkiaGraphiteDawnImageRepresentation::Create(
+        std::move(dawn_representation), context_state,
+        context_state->gpu_main_graphite_recorder(), manager, this, tracker);
+#else
+    NOTREACHED();
+    return nullptr;
+#endif
+  }
+  // TODO(hitawala): Implement this for GrContextType::kGraphiteMetal.
+  NOTREACHED();
+  return nullptr;
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {
