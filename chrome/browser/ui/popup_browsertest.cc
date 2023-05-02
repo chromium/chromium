@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -18,10 +17,12 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
+#include "components/network_session_configurator/common/network_switches.h"
 #include "components/permissions/permission_request_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/display/display.h"
@@ -63,10 +64,14 @@ class PopupBrowserTest : public InProcessBrowserTest {
   }
 
   Browser* OpenPopup(Browser* browser, const std::string& script) const {
-    auto* contents = browser->tab_strip_model()->GetActiveWebContents();
-    content::ExecuteScriptAsync(contents, script);
+    return OpenPopup(browser->tab_strip_model()->GetActiveWebContents(),
+                     script);
+  }
+
+  Browser* OpenPopup(const content::ToRenderFrameHost& adapter,
+                     const std::string& script) const {
+    content::ExecuteScriptAsync(adapter, script);
     Browser* popup = ui_test_utils::WaitForBrowserToOpen();
-    EXPECT_NE(popup, browser);
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
     // The popup's bounds are initialized after the synchronous window.open().
     // Ideally, this might wait for browser->renderer window bounds init via:
@@ -81,20 +86,21 @@ class PopupBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// A helper class to wait for widget bounds changes beyond given thresholds.
-class WidgetBoundsChangeWaiter final : public views::WidgetObserver {
+// A helper class to wait for bounds changes beyond given thresholds.
+class BoundsChangeWaiter final : public views::WidgetObserver {
  public:
-  WidgetBoundsChangeWaiter(views::Widget* widget, int move_by, int resize_by)
-      : widget_(widget),
+  BoundsChangeWaiter(Browser* browser, int move_by, int resize_by)
+      : widget_(views::Widget::GetWidgetForNativeWindow(
+            browser->window()->GetNativeWindow())),
         move_by_(move_by),
         resize_by_(resize_by),
-        initial_bounds_(widget->GetWindowBoundsInScreen()) {
+        initial_bounds_(widget_->GetWindowBoundsInScreen()) {
     widget_->AddObserver(this);
   }
 
-  WidgetBoundsChangeWaiter(const WidgetBoundsChangeWaiter&) = delete;
-  WidgetBoundsChangeWaiter& operator=(const WidgetBoundsChangeWaiter&) = delete;
-  ~WidgetBoundsChangeWaiter() final { widget_->RemoveObserver(this); }
+  BoundsChangeWaiter(const BoundsChangeWaiter&) = delete;
+  BoundsChangeWaiter& operator=(const BoundsChangeWaiter&) = delete;
+  ~BoundsChangeWaiter() final { widget_->RemoveObserver(this); }
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
@@ -239,15 +245,13 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, MoveClampedToCurrentDisplay) {
     Browser* popup = OpenPopup(browser(), kOpenPopup);
     auto popup_bounds = popup->window()->GetBounds();
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
-    auto* widget = views::Widget::GetWidgetForNativeWindow(
-        popup->window()->GetNativeWindow());
     SCOPED_TRACE(testing::Message()
                  << " script: " << script
                  << " work_area: " << display.work_area().ToString()
                  << " popup-before: " << popup_bounds.ToString());
     content::ExecuteScriptAsync(popup_contents, script);
-    // Wait for a substantial move, widgets bounds change during init.
-    WidgetBoundsChangeWaiter(widget, /*move_by=*/40, /*resize_by=*/0).Wait();
+    // Wait for a substantial move, bounds change during init.
+    BoundsChangeWaiter(popup, /*move_by=*/40, /*resize_by=*/0).Wait();
     EXPECT_NE(popup_bounds.origin(), popup->window()->GetBounds().origin());
     EXPECT_EQ(popup_bounds.size(), popup->window()->GetBounds().size());
     EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
@@ -270,15 +274,13 @@ IN_PROC_BROWSER_TEST_F(PopupBrowserTest, ResizeClampedToCurrentDisplay) {
     Browser* popup = OpenPopup(browser(), kOpenPopup);
     auto popup_bounds = popup->window()->GetBounds();
     auto* popup_contents = popup->tab_strip_model()->GetActiveWebContents();
-    auto* widget = views::Widget::GetWidgetForNativeWindow(
-        popup->window()->GetNativeWindow());
     SCOPED_TRACE(testing::Message()
                  << " script: " << script
                  << " work_area: " << display.work_area().ToString()
                  << " popup-before: " << popup_bounds.ToString());
     content::ExecuteScriptAsync(popup_contents, script);
-    // Wait for a substantial resize, widgets bounds change during init.
-    WidgetBoundsChangeWaiter(widget, /*move_by=*/0, /*resize_by=*/100).Wait();
+    // Wait for a substantial resize, bounds change during init.
+    BoundsChangeWaiter(popup, /*move_by=*/0, /*resize_by=*/100).Wait();
     EXPECT_NE(popup_bounds.size(), popup->window()->GetBounds().size());
     EXPECT_TRUE(display.work_area().Contains(popup->window()->GetBounds()))
         << " popup-after: " << popup->window()->GetBounds().ToString();
@@ -317,6 +319,19 @@ class WindowManagementPopupBrowserTest
         {blink::features::kFullscreenPopupWindows}, {});
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PopupBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+
+  void SetUpOnMainThread() override {
+    content::SetupCrossSiteRedirector(embedded_test_server());
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/empty.html")));
+  }
+
   void TearDownOnMainThread() override {
 #if BUILDFLAG(IS_MAC)
     virtual_display_util_.reset();
@@ -346,13 +361,6 @@ class WindowManagementPopupBrowserTest
     // Do not auto-accept any other permission requests.
     permission_request_manager->set_auto_response_for_test(
         permissions::PermissionRequestManager::NONE);
-  }
-
-  // Initializes the embedded test server and navigates to an empty page.
-  void SetUpWebServer() {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/empty.html")));
   }
 
   // Waits until an element is fullscreen in the specified web contents.
@@ -419,52 +427,138 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WindowManagementPopupBrowserTest,
                          ::testing::Bool());
 
-// Tests that an about:blank popup can be moved across screens with permission.
-IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
-                       AboutBlankCrossScreenPlacement) {
+// Tests opening a popup on another screen.
+IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, OpenOnAnotherScreen) {
   if (!SetUpVirtualDisplays()) {
     GTEST_SKIP() << "Virtual displays not supported on this platform.";
   }
   AssertMinimumDisplayCount(2);
-  SetUpWebServer();
+  SetUpWindowManagement();
+  auto* screen = display::Screen::GetScreen();
+  for (const auto& opener_screen : screen->GetAllDisplays()) {
+    browser()->window()->SetBounds(opener_screen.work_area());
+    ASSERT_EQ(opener_screen, GetDisplayNearestBrowser(browser()));
+    for (const auto& target_screen : screen->GetAllDisplays()) {
+      for (const char* url : {".", "about:blank"}) {
+        const std::string open_script = content::JsReplace(
+            "open('$1', '', 'left=$2,top=$3,width=200,height=200')", url,
+            target_screen.work_area().x(), target_screen.work_area().y());
+        Browser* popup = OpenPopup(browser(), open_script);
+        auto popup_display = GetDisplayNearestBrowser(popup);
+        // The popup only opens on another screen with permission.
+        EXPECT_EQ(ShouldTestWindowManagement() ? target_screen : opener_screen,
+                  GetDisplayNearestBrowser(popup));
+        // The popup is constrained to the available bounds of its screen.
+        auto popup_bounds = popup->window()->GetBounds();
+        EXPECT_TRUE(popup_display.work_area().Contains(popup_bounds))
+            << " work_area: " << popup_display.work_area().ToString()
+            << " popup: " << popup_bounds.ToString();
+      }
+    }
+  }
+}
+
+// Tests opening a popup on the same screen, then moving it to another screen.
+IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, MoveToAnotherScreen) {
+  if (!SetUpVirtualDisplays()) {
+    GTEST_SKIP() << "Virtual displays not supported on this platform.";
+  }
+  AssertMinimumDisplayCount(2);
+  SetUpWindowManagement();
   auto* opener = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* screen = display::Screen::GetScreen();
+  for (const auto& opener_screen : screen->GetAllDisplays()) {
+    browser()->window()->SetBounds(opener_screen.work_area());
+    ASSERT_EQ(opener_screen, GetDisplayNearestBrowser(browser()));
+    const auto opener_screen_center = opener_screen.work_area().CenterPoint();
+    for (const auto& target_screen : screen->GetAllDisplays()) {
+      for (const char* url : {".", "about:blank"}) {
+        const std::string open_script = content::JsReplace(
+            "w = open('$1', '', 'left=$2,top=$3,width=200,height=200')", url,
+            opener_screen_center.x() - 100, opener_screen_center.y() - 100);
+        Browser* popup = OpenPopup(browser(), open_script);
+        EXPECT_EQ(opener_screen, GetDisplayNearestBrowser(popup));
 
-  // TODO(crbug.com/1119974): this test could be in content_browsertests
-  // and not browser_tests if permission controls were supported.
+        // Have the opener try to move the popup to the target screen.
+        const std::string move_script = content::JsReplace(
+            "w.moveTo($1, $2);", target_screen.work_area().x(),
+            target_screen.work_area().y());
+        content::ExecuteScriptAsync(opener, move_script);
+        BoundsChangeWaiter(popup, /*move_by=*/40, /*resize_by=*/0).Wait();
+        auto popup_display = GetDisplayNearestBrowser(popup);
 
+        // The popup only moves to another screen with permission.
+        EXPECT_EQ(ShouldTestWindowManagement() ? target_screen : opener_screen,
+                  popup_display);
+        // The popup is constrained to the available bounds of its screen.
+        auto popup_bounds = popup->window()->GetBounds();
+        EXPECT_TRUE(popup_display.work_area().Contains(popup_bounds))
+            << " work_area: " << popup_display.work_area().ToString()
+            << " popup: " << popup_bounds.ToString();
+      }
+    }
+  }
+}
+
+// Tests opening a popup on another screen from a cross-origin iframe.
+IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, CrossOriginIFrame) {
+  if (!SetUpVirtualDisplays()) {
+    GTEST_SKIP() << "Virtual displays not supported on this platform.";
+  }
+  AssertMinimumDisplayCount(2);
+  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
+  https_server.AddDefaultHandlers(GetChromeTestDataDir());
+  content::SetupCrossSiteRedirector(&https_server);
+  ASSERT_TRUE(https_server.Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server.GetURL("a.com", "/empty.html")));
   SetUpWindowManagement();
 
-  // Open an about:blank popup. It should start on the same screen as browser().
-  Browser* popup = OpenPopup(
-      browser(), "w = open('about:blank', '', 'width=200,height=200');");
-  const auto opener_display = GetDisplayNearestBrowser(browser());
-  auto original_popup_display = GetDisplayNearestBrowser(popup);
-  EXPECT_EQ(opener_display, original_popup_display);
-  const auto second_display = display::Screen::GetScreen()->GetAllDisplays()[1];
-  const std::string move_popup_to_the_second_screen_script = base::StringPrintf(
-      "w.moveTo(%d, %d);", second_display.work_area().x() + 100,
-      second_display.work_area().y() + 100);
-  // Have the opener try to move the popup to the second screen.
-  content::ExecuteScriptAsync(opener, move_popup_to_the_second_screen_script);
+  // Append cross-origin iframes with and without the permission policy.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const GURL src = https_server.GetURL("b.com", "/empty.html");
+  const std::string script = R"JS(
+    new Promise(resolve => {
+      let f = document.createElement('iframe');
+      f.src = $1;
+      f.allow = $2 ? 'window-management' : '';
+      f.addEventListener('load', () => resolve(true));
+      document.body.appendChild(f);
+    });
+  )JS";
+  EXPECT_EQ(true, EvalJs(web_contents, content::JsReplace(script, src, false)));
+  EXPECT_EQ(true, EvalJs(web_contents, content::JsReplace(script, src, true)));
 
-  // Wait for the substantial move, widgets may move during initialization.
-  auto* widget = views::Widget::GetWidgetForNativeWindow(
-      popup->window()->GetNativeWindow());
-  WidgetBoundsChangeWaiter(widget, /*move_by=*/40, /*resize_by=*/0).Wait();
-  auto new_popup_display = GetDisplayNearestBrowser(popup);
-  // The popup only moves to the second screen with permission.
-  EXPECT_EQ(ShouldTestWindowManagement(),
-            original_popup_display != new_popup_display);
-  EXPECT_EQ(ShouldTestWindowManagement(), second_display == new_popup_display);
-  // The popup is always constrained to the bounds of the target display.
-  auto popup_bounds = popup->window()->GetBounds();
-  EXPECT_TRUE(new_popup_display.work_area().Contains(popup_bounds))
-      << " work_area: " << new_popup_display.work_area().ToString()
-      << " popup: " << popup_bounds.ToString();
+  auto* screen = display::Screen::GetScreen();
+  for (const auto& opener_screen : screen->GetAllDisplays()) {
+    browser()->window()->SetBounds(opener_screen.work_area());
+    ASSERT_EQ(opener_screen, GetDisplayNearestBrowser(browser()));
+    for (const bool iframe_policy_granted : {true, false}) {
+      content::RenderFrameHost* cross_origin_iframe =
+          ChildFrameAt(web_contents, iframe_policy_granted ? 1 : 0);
+      ASSERT_TRUE(cross_origin_iframe);
+      ASSERT_NE(cross_origin_iframe->GetLastCommittedOrigin(),
+                web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+      for (const auto& target_screen : screen->GetAllDisplays()) {
+        for (const char* url : {".", "about:blank"}) {
+          const std::string open_script = content::JsReplace(
+              "w = open('$1', '', 'left=$2,top=$3,width=200,height=200')", url,
+              target_screen.work_area().x(), target_screen.work_area().y());
+          Browser* popup = OpenPopup(cross_origin_iframe, open_script);
+          // The popup only opens on another screen with permission.
+          EXPECT_EQ(ShouldTestWindowManagement() && iframe_policy_granted
+                        ? target_screen
+                        : opener_screen,
+                    GetDisplayNearestBrowser(popup));
+        }
+      }
+    }
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, BasicFullscreen) {
-  SetUpWebServer();
   SetUpWindowManagement();
   Browser* new_popup =
       OpenPopup(browser(), "open('/empty.html', '_blank', 'popup,fullscreen')");
@@ -500,7 +594,6 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, BasicFullscreen) {
 }
 
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, AboutBlankFullscreen) {
-  SetUpWebServer();
   SetUpWindowManagement();
   Browser* new_popup =
       OpenPopup(browser(), "open('about:blank', '_blank', 'popup,fullscreen')");
@@ -536,7 +629,6 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, AboutBlankFullscreen) {
 }
 
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, FullscreenWithBounds) {
-  SetUpWebServer();
   SetUpWindowManagement();
   Browser* new_popup =
       OpenPopup(browser(),
@@ -562,7 +654,6 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest, FullscreenWithBounds) {
 // Fullscreen should not work if the new window is not specified as a popup.
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
                        FullscreenRequiresPopupWindowFeature) {
-  SetUpWebServer();
   SetUpWindowManagement();
 
   // OpenPopup() cannot be used here since it waits for a new browser which
@@ -584,7 +675,6 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
 // result in a new window.
 IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
                        FullscreenRequiresNewWindow) {
-  SetUpWebServer();
   SetUpWindowManagement();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -610,7 +700,6 @@ IN_PROC_BROWSER_TEST_P(WindowManagementPopupBrowserTest,
   if (!SetUpVirtualDisplays()) {
     GTEST_SKIP() << "Virtual displays not supported on this platform.";
   }
-  SetUpWebServer();
   SetUpWindowManagement();
 
   // Falls back to opening a popup on the current screen in testing scenarios
