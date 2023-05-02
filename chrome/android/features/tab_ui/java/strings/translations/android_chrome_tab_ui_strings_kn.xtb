@@ -32,7 +32,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ಉತ್ಪನ್ನದ ಮೇಲೆ <ph name="PRICE_DROP" /> ದರ ಇಳಿಕೆ</translation>
 <translation id="3194464645767632461">ರೇಟಿಂಗ್</translation>
 <translation id="3291470810748040983">ತೆರೆದ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಿದ್ದಾಗ ನೀವು ಎಚ್ಚರಿಕೆಯನ್ನು ಪಡೆಯುತ್ತೀರಿ</translation>
-<translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡುವುದೇ?</translation>
+<translation id="3328308545011660196">ಸಲಹೆ: <ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="3652027618765638838"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="374923079891132274">ಶೀಟ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳುವ ಕುರಿತ ಪೂರ್ವವೀಕ್ಷಣೆಯ ಥಂಬ್‌ನೇಲ್.</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಕುಗ್ಗಿಸಿ.}one{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.}other{<ph name="TABS_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳ ಜೊತೆಗೆ <ph name="TITLE_OF_GROUP" /> ಟ್ಯಾಬ್ ಗುಂಪನ್ನು ಕುಗ್ಗಿಸಿ.}}</translation>
@@ -40,7 +40,7 @@
 <translation id="3940195383040445971">ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{ಟ್ಯಾಬ್ ಅನ್ನು ಗುಂಪು ಮಾಡಿ}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಗುಂಪು ಮಾಡಿ}}</translation>
 <translation id="3996880007329611795">ಸೂಚನೆ ಪಡೆಯಿರಿ</translation>
-<translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡುವುದೇ?</translation>
+<translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ಟ್ಯಾಬ್‌ಗಳು ಸಂಬಂಧಿಸಿರುವ ಹಾಗೆ ಕಾಣುತ್ತಿದೆ. ಅವುಗಳನ್ನು ಗುಂಪು ಮಾಡಬೇಕೆ?</translation>
 <translation id="4212246570487010370">ಬ್ರೌಸಿಂಗ್ ಮುಂದುವರಿಸಿ</translation>
 <translation id="4648718555153979859">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಇಲ್ಲಿ ಒಟ್ಟಿಗೆ ಗುಂಪುಗೂಡಿಸಲಾಗಿದೆ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ವಿಮರ್ಶೆ)}one{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}other{(<ph name="REVIEWS_COUNT_MANY" /> ವಿಮರ್ಶೆಗಳು)}}</translation>
