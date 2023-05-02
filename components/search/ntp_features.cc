@@ -224,7 +224,7 @@ BASE_FEATURE(kNtpRecipeTasksModule,
 // Controls whether the scrim is removed.
 BASE_FEATURE(kNtpRemoveScrim,
              "NtpRemoveScrim",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, SafeBrowsing module will be shown to a target user.
 BASE_FEATURE(kNtpSafeBrowsingModule,
