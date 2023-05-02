@@ -18,8 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
@@ -36,6 +40,8 @@ import java.util.Locale;
  * Local credit card settings.
  */
 public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
+    private static Callback<Fragment> sObserverForTest;
+
     protected Button mDoneButton;
     private TextInputLayout mNameLabel;
     private EditText mNameText;
@@ -85,6 +91,9 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
         addSpinnerAdapters();
         addCardDataToEditFields();
         initializeButtons(v);
+        if (sObserverForTest != null) {
+            sObserverForTest.onResult(this);
+        }
         return v;
     }
 
@@ -111,6 +120,11 @@ public class AutofillLocalCardEditor extends AutofillCreditCardEditor {
     @Override
     public void afterTextChanged(Editable s) {
         updateSaveButtonEnabled();
+    }
+
+    @VisibleForTesting
+    public static void setObserverForTest(Callback<Fragment> observerForTest) {
+        sObserverForTest = observerForTest;
     }
 
     void addSpinnerAdapters() {

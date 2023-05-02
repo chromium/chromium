@@ -36,8 +36,10 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.AndroidPaymentAppFactory;
 
@@ -191,7 +193,16 @@ public class AutofillPaymentMethodsFragment
                     ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
 
             if (card.getIsLocal()) {
-                card_pref.setFragment(AutofillLocalCardEditor.class.getName());
+                if (ChromeFeatureList.isEnabled(
+                            ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH)
+                        && PersonalDataManager.isAutofillPaymentMethodsMandatoryReauthEnabled()) {
+                    // When mandatory reauth is enabled, we require additional authentication before
+                    // user can view/edit local card.
+                    card_pref.setOnPreferenceClickListener(
+                            this::authenticateBeforeShowingLocalCardEditDialog);
+                } else {
+                    card_pref.setFragment(AutofillLocalCardEditor.class.getName());
+                }
             } else {
                 card_pref.setFragment(AutofillServerCardEditor.class.getName());
                 if (ChromeFeatureList.isEnabled(
@@ -302,6 +313,25 @@ public class AutofillPaymentMethodsFragment
         // fail), OnResume will reload the page with the pref value, which will switch
         // to the new value if biometric auth succeeded.
         return false;
+    }
+
+    /**
+     * Trigger additional authentication before user can view/edit local card. When authentication
+     * passes, we show local card edit dialog. Stays on this page if authentication fails/cancelled.
+     */
+    private boolean authenticateBeforeShowingLocalCardEditDialog(Preference preference) {
+        // mReauthenticatorBridge should be initiated already when determining whether to show the
+        // mandatory reauth toggle.
+        assert mReauthenticatorBridge != null;
+        mReauthenticatorBridge.reauthenticate(success -> {
+            if (success) {
+                // Manually trigger the local card edit dialog after user passes the authentication.
+                SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+                settingsLauncher.launchSettingsActivity(
+                        getActivity(), AutofillLocalCardEditor.class, preference.getExtras());
+            }
+        }, /*useLastValidAuth=*/false);
+        return true;
     }
 
     @Override
