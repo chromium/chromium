@@ -333,9 +333,8 @@ struct VideoCaptureFeedback {
   // camera capturer.
   bool require_mapped_frame;
 
-  // TODO(crbug.com/1440076): Mark as deprecated as the associated feature did
-  // not ship.
-  [MinVersion=1] array<gfx.mojom.Size>? mapped_sizes;
+  // DEPRECATED - DO NOT USE.  Only kept for backwards compatibility.
+  [MinVersion=1] array<gfx.mojom.Size>? DEPRECATED_mapped_sizes;
 
   // The frame that this feedback is associated with. Some consumers do not
   // break down their analysis on a per-frame basis; while some may expect to

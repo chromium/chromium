@@ -1950,8 +1950,6 @@ bool StructTraits<media::mojom::VideoCaptureFeedbackDataView,
   output->max_pixels = data.max_pixels();
   output->resource_utilization = data.resource_utilization();
   output->require_mapped_frame = data.require_mapped_frame();
-  if (!data.ReadMappedSizes(&(output->mapped_sizes)))
-    return false;
 
   // Only need to set the frame_id if it's valid; otherwise it is default
   // initialized to nullopt.

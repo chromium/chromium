@@ -38,7 +38,7 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
            max_pixels == other.max_pixels &&
            max_framerate_fps == other.max_framerate_fps &&
            require_mapped_frame == other.require_mapped_frame &&
-           mapped_sizes == other.mapped_sizes && frame_id == other.frame_id;
+           frame_id == other.frame_id;
   }
 
   bool operator!=(const VideoCaptureFeedback& other) const {
@@ -49,7 +49,6 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
   VideoCaptureFeedback& WithMaxFramerate(float max_framerate_fps);
   VideoCaptureFeedback& WithMaxPixels(int max_pixels);
   VideoCaptureFeedback& RequireMapped(bool require);
-  VideoCaptureFeedback& WithMappedSizes(std::vector<gfx::Size> sizes);
 
   // Combine constraints of two different sinks resulting in constraints fitting
   // both of them.
@@ -90,15 +89,10 @@ struct CAPTURE_EXPORT VideoCaptureFeedback {
   // Negative values should be ignored.
   int max_pixels = std::numeric_limits<int>::max();
 
-  // Indicates that a consumer wants a cpu readable frame.
-  // TODO(https://crbug.com/1191986): When |kWebRtcUseModernFrameAdapter| is
-  // shipped to 100%, |require_mapped_frame| can be removed in favor of checking
-  // if |mapped_sizes| is non-empty.
+  // Set by the consumer to request a CPU readable frame.  Currently, only
+  // supported for NV12 frames obtained from the Windows Media Foundation
+  // camera capturer.
   bool require_mapped_frame = false;
-
-  // Indicates that consumer(s) wants these sizes to be mappable for CPU access.
-  // Only reported when |kWebRtcUseModernFrameAdapter| is enabled.
-  std::vector<gfx::Size> mapped_sizes;
 
   // The frame id that this particular feedback is associated with, not all
   // callers may set or require this.

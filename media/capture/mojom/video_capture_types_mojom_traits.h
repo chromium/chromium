@@ -263,9 +263,10 @@ struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
     return feedback.require_mapped_frame;
   }
 
-  static const std::vector<gfx::Size>& mapped_sizes(
+  // Deprecated.
+  static std::vector<gfx::Size> DEPRECATED_mapped_sizes(
       const media::VideoCaptureFeedback& feedback) {
-    return feedback.mapped_sizes;
+    return std::vector<gfx::Size>();
   }
 
   static bool has_frame_id(const media::VideoCaptureFeedback& feedback) {
