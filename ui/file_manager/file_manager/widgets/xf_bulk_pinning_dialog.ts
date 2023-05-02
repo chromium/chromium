@@ -56,6 +56,14 @@ export class XfBulkPinningDialog extends XfBase {
     this.$dialog_.cancel();
   }
 
+  /**
+   * Called when the "View storage" link is clicked.
+   */
+  private onViewStorage(e: UIEvent) {
+    e.preventDefault();
+    chrome.fileManagerPrivate.openSettingsSubpage('storage');
+  }
+
   override render() {
     return html`
       <cr-dialog>
@@ -85,7 +93,9 @@ export class XfBulkPinningDialog extends XfBase {
           <div id="error-footer">
             ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
             &ensp;
-            <a href="_blank">${str('BULK_PINNING_VIEW_STORAGE')}</a>
+            <a href="_blank" @click="${this.onViewStorage}">
+              ${str('BULK_PINNING_VIEW_STORAGE')}
+            </a>
           </div>
           <div id="offline-footer">
             ${str('BULK_PINNING_OFFLINE')}

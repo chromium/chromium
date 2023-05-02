@@ -29,7 +29,7 @@ export class DriveBulkPinningBanner extends EducationalBanner {
         .addEventListener('click', (e) => {
           e.preventDefault();
           const dialog = document.querySelector('xf-bulk-pinning-dialog');
-          dialog.state = 'offline';
+          dialog.state = 'error';
           dialog.show();
         });
   }
