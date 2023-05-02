@@ -306,6 +306,9 @@
       <message name="IDS_EXTENSION_DISABLED_UPDATE_REQUIRED_BY_POLICY" desc="Error message when an extension doesn't meet minimum version required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to have a minimum version of <ph name="EXTENSION_VERSION">$2<ex>1.1.0</ex></ph>. It cannot be enabled until it has updated to that version (or higher).
       </message>
+      <message name="IDS_EXTENSION_DISABLED_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY" desc="Error message when an extension is no longer published and available on the Chrome Web Store as required by administrator policy." translateable="false">
+         (Placeholder, not used currently) The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to be available on the Chrome Web Store.
+      </message>
       <message name="IDS_EXTENSION_MANIFEST_VERSION_NOT_SUPPORTED" desc="Error message when an extension doesn't meet minimum manifest version required by administrator policy.">
         The administrator of this machine requires <ph name="EXTENSION_NAME">$1<ex>Google Talk</ex></ph> to have a minimum manifest version of 3.
       </message>

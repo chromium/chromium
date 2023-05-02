@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
@@ -166,6 +167,11 @@ struct CWSInfoService::FetchContext {
   // Indicates if the metadata retrieved is different from that currently saved.
   bool metadata_changed = false;
 };
+
+// static
+CWSInfoService* CWSInfoService::Get(Profile* profile) {
+  return CWSInfoServiceFactory::GetInstance()->GetForProfile(profile);
+}
 
 CWSInfoService::CWSInfoService(Profile* profile)
     : profile_(profile),
@@ -385,7 +391,7 @@ void CWSInfoService::OnResponseReceived(std::unique_ptr<std::string> response) {
     if (active_fetch_->metadata_changed) {
       // Notify observers if the metadata changed.
       for (auto& observer : observers_) {
-        observer.OnInfoChanged();
+        observer.OnCWSInfoChanged();
       }
     }
   }

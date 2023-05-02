@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -73,13 +74,20 @@ class CWSInfoServiceTest : public ::testing::Test,
     return "items/" + id + "/storeMetadata";
   }
 
+  static std::unique_ptr<KeyedService> BuildTestContextCWSService(
+      content::BrowserContext* context) {
+    return std::make_unique<CWSInfoService>(static_cast<Profile*>(context));
+  }
+
   // CWSInfoService::Observer:
-  void OnInfoChanged() override { info_change_notification_received_ = true; }
+  void OnCWSInfoChanged() override {
+    info_change_notification_received_ = true;
+  }
 
   content::BrowserTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<CWSInfoService> cws_info_service_;
+  raw_ptr<CWSInfoService> cws_info_service_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
   raw_ptr<ExtensionService> extension_service_ = nullptr;
@@ -97,9 +105,15 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   builder.SetPrefService(std::move(pref_service));
   builder.SetSharedURLLoaderFactory(
       test_url_loader_factory_.GetSafeWeakWrapper());
+  builder.AddTestingFactory(
+      CWSInfoServiceFactory::GetInstance(),
+      base::BindRepeating(&CWSInfoServiceTest::BuildTestContextCWSService));
   profile_ = builder.Build();
   extension_prefs_ = ExtensionPrefs::Get(profile_.get());
   extension_registry_ = ExtensionRegistry::Get(profile_.get());
+
+  // Create CWSInfoService instance.
+  cws_info_service_ = CWSInfoService::Get(profile_.get());
 
   // Create test extension service instance.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
@@ -108,9 +122,6 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   extension_service_ = test_extension_system->CreateExtensionService(
       &command_line, /*install_directory=*/base::FilePath(),
       /*autoupdate_enabled=*/false);
-
-  // Create CWSInfoService instance.
-  cws_info_service_ = std::make_unique<CWSInfoService>(profile_.get());
 }
 
 CWSInfoServiceTest::~CWSInfoServiceTest() = default;
