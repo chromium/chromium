@@ -61,7 +61,6 @@ class ExtensionWebUITest : public ExtensionApiTest {
     }
 
     // Run the test.
-    bool actual_result = false;
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), page_url));
     content::RenderFrameHost* webui = browser()
                                           ->tab_strip_model()
@@ -69,7 +68,7 @@ class ExtensionWebUITest : public ExtensionApiTest {
                                           ->GetPrimaryMainFrame();
     if (!webui)
       return testing::AssertionFailure() << "Failed to navigate to WebUI";
-    CHECK(content::ExecuteScriptAndExtractBool(webui, script, &actual_result));
+    bool actual_result = content::EvalJs(webui, script).ExtractBool();
     return (expected_result == actual_result)
                ? testing::AssertionSuccess()
                : (testing::AssertionFailure() << "Check console output");

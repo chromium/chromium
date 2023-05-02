@@ -301,11 +301,9 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
   };
 
   bool AppendIframe(const GURL& src) {
-    bool result;
-    CHECK(content::ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "actions.appendIframe('" + src.spec() + "');", &result));
-    return result;
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "actions.appendIframe('" + src.spec() + "');")
+        .ExtractBool();
   }
 
   Result CanConnectAndSendMessagesToMainFrame(const Extension* extension,
@@ -386,11 +384,10 @@ class ExternallyConnectableMessagingTest : public MessagingApiTest {
     }
     as_js_array += "]";
 
-    bool any_defined;
-    CHECK(content::ExecuteScriptAndExtractBool(
-        frame,
-        "assertions.areAnyRuntimePropertiesDefined(" + as_js_array + ")",
-        &any_defined));
+    bool any_defined =
+        content::EvalJs(frame, "assertions.areAnyRuntimePropertiesDefined(" +
+                                   as_js_array + ")")
+            .ExtractBool();
     return any_defined ?
         testing::AssertionSuccess() : testing::AssertionFailure();
   }
@@ -1035,11 +1032,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest, IllegalArguments) {
   // Regression test for crbug.com/472700.
   LoadChromiumConnectableExtension();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), chromium_org_url()));
-  bool result;
-  CHECK(content::ExecuteScriptAndExtractBool(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      "assertions.tryIllegalArguments()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(
+                      browser()->tab_strip_model()->GetActiveWebContents(),
+                      "assertions.tryIllegalArguments()"));
 }
 
 IN_PROC_BROWSER_TEST_F(ExternallyConnectableMessagingTest,

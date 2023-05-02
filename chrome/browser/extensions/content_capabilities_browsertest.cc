@@ -114,11 +114,9 @@ class ContentCapabilitiesTest : public extensions::ExtensionApiTest {
                                             const GURL& url,
                                             const char* code) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-    bool result = false;
-    if (!content::ExecuteScriptAndExtractBool(web_contents(), code, &result))
-      return testing::AssertionFailure() << "Could not execute test script.";
-    if (!result)
+    if (!content::EvalJs(web_contents(), code).ExtractBool()) {
       return testing::AssertionFailure();
+    }
     return testing::AssertionSuccess();
   }
 

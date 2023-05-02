@@ -169,10 +169,7 @@ class ExtensionContextMenuVisibilityApiTest
 
   void CallAPI(const Extension* extension, const std::string& script) {
     content::WebContents* background_page = GetBackgroundPage(extension->id());
-    bool error = false;
-    ASSERT_TRUE(
-        content::ExecuteScriptAndExtractBool(background_page, script, &error));
-    ASSERT_FALSE(error);
+    ASSERT_EQ(false, content::EvalJs(background_page, script));
   }
 
   // Verifies that the UI menu model has the given number of extension menu

@@ -160,10 +160,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   // First, verify that adding an iframe to the page from the main world will
   // fail. Add the frame. Its onload event fires even if it's blocked
   // (see https://crbug.com/365457), and reports back.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(web_contents(),
-                                                   "addIframe();", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "addIframe();"));
 
   // Use WasFrameWithScriptLoaded() to check whether the target frame really
   // loaded.
@@ -174,9 +171,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionCSPBypassTest, InjectIframe) {
   // Second, verify that adding an iframe to the page from the extension will
   // succeed. Click a button whose event handler runs in the extension's world
   // which bypasses CSP, and adds the iframe.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents(), "document.querySelector('#addIframeButton').click();",
-      &result));
+  EXPECT_EQ(true, content::EvalJs(
+                      web_contents(),
+                      "document.querySelector('#addIframeButton').click();",
+                      content::EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   frame = GetFrameByName("added-by-extension");
   ASSERT_TRUE(frame);
   EXPECT_TRUE(WasFrameWithScriptLoaded(frame));

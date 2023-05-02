@@ -7,8 +7,7 @@
 if (!chrome || !chrome.test || !chrome.test.onMessage) {
   console.error('chrome.test.onMessage is unavailable on ' +
                 document.location.href);
-  domAutomationController.send(false);
-  return;
+  return false;
 }
 
 chrome.test.listenOnce(chrome.test.onMessage, function(args) {
@@ -20,4 +19,4 @@ chrome.test.listenOnce(chrome.test.onMessage, function(args) {
   }
 });
 
-domAutomationController.send(true);
+return true;

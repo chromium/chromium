@@ -353,14 +353,11 @@ class CertificateProviderApiMockedExtensionTest
     ASSERT_TRUE(content::ExecuteScript(GetExtensionMainFrame(), function));
   }
 
-  // Calls |function| in the extension. |function| needs to return a bool. If
-  // that happens at the end of a callback, this will wait for the callback to
-  // complete.
+  // Calls |function| in the extension. |function| needs to return a bool or a
+  // Promise<bool>. If it returns a Promise<bool>, this waits for the promise to
+  // resolve.
   void ExecuteJavascriptAndWaitForCallback(const std::string& function) const {
-    bool success = false;
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(GetExtensionMainFrame(),
-                                                     function, &success));
-    ASSERT_TRUE(success);
+    ASSERT_EQ(true, content::EvalJs(GetExtensionMainFrame(), function));
   }
 
   const extensions::Extension* extension() const { return extension_; }
@@ -646,10 +643,8 @@ IN_PROC_BROWSER_TEST_F(CertificateProviderApiMockedExtensionTest,
                                                /*is_raw_data=*/false);
 
   // Replying to the signature request a second time must fail.
-  bool success = true;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      GetExtensionMainFrame(), "replyWithSignatureSecondTime();", &success));
-  ASSERT_FALSE(success);
+  ASSERT_EQ(false, content::EvalJs(GetExtensionMainFrame(),
+                                   "replyWithSignatureSecondTime();"));
 }
 
 // Tests an extension that provides certificates both proactively with

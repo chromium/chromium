@@ -243,10 +243,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenExtension) {
       OpenWindow(browser()->tab_strip_model()->GetActiveWebContents(),
                  start_url.Resolve("newtab.html"), true, true, &newtab));
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(newtab, "testExtensionApi()",
-                                                   &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(newtab, "testExtensionApi()"));
 }
 
 // Tests that if an extension page calls window.open to an invalid extension
@@ -291,10 +288,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WindowOpenNoPrivileges) {
                  false, true, &newtab));
 
   // Extension API should succeed.
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(newtab, "testExtensionApi()",
-                                                   &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(newtab, "testExtensionApi()"));
 }
 
 // Tests that calling window.open for an extension URL from a non-HTTP or HTTPS

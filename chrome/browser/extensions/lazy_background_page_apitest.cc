@@ -425,10 +425,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_WaitForRequest) {
   host_helper.RestrictToType(mojom::ViewType::kExtensionBackgroundPage);
 
   // Abort the request.
-  bool result = false;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(host->web_contents(),
-                                                   "abortRequest()", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(host->web_contents(), "abortRequest()"));
   host_helper.WaitForHostDestroyed();
 
   // Lazy Background Page has been shut down.

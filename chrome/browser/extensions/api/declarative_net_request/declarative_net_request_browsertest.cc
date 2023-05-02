@@ -5405,10 +5405,7 @@ class DeclarativeNetRequestResourceTypeBrowserTest
 
     auto execute_script = [](content::RenderFrameHost* frame,
                              const std::string& script) {
-      bool subresource_loaded = false;
-      EXPECT_TRUE(content::ExecuteScriptAndExtractBool(frame, script,
-                                                       &subresource_loaded));
-      return subresource_loaded;
+      return content::EvalJs(frame, script).ExtractBool();
     };
 
     for (const auto& test_case : test_cases) {
@@ -5422,10 +5419,8 @@ class DeclarativeNetRequestResourceTypeBrowserTest
       content::RenderFrameHost* frame = GetPrimaryMainFrame();
 
       // sub-frame.
-      EXPECT_EQ(
-          !(test_case.blocked_mask & kSubframe),
-          execute_script(
-              frame, "domAutomationController.send(!!window.frameLoaded);"));
+      EXPECT_EQ(!(test_case.blocked_mask & kSubframe),
+                execute_script(frame, "!!window.frameLoaded;"));
 
       // stylesheet
       EXPECT_EQ(!(test_case.blocked_mask & kStylesheet),
@@ -5538,51 +5533,49 @@ class DeclarativeNetRequestSubresourceWebBundlesBrowserTest
   bool TryLoadScript(const std::string& script_src) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    bool success = false;
     std::string script = base::StringPrintf(R"(
       (() => {
         const script = document.createElement('script');
-        script.addEventListener('load', () => {
-          window.domAutomationController.send(true);
+        return new Promise(resolve => {
+          script.addEventListener('load', () => {
+            resolve(true);
+          });
+          script.addEventListener('error', () => {
+            resolve(false);
+          });
+          script.src = '%s';
+          document.body.appendChild(script);
         });
-        script.addEventListener('error', () => {
-          window.domAutomationController.send(false);
-        });
-        script.src = '%s';
-        document.body.appendChild(script);
       })();
                                           )",
                                             script_src.c_str());
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
-                                            script, &success));
-    return success;
+    return EvalJs(web_contents->GetPrimaryMainFrame(), script).ExtractBool();
   }
 
   bool TryLoadBundle(const std::string& href, const std::string& resources) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    bool success = false;
     std::string script = base::StringPrintf(R"(
           (() => {
             const script = document.createElement('script');
             script.type = 'webbundle';
-            script.addEventListener('load', () => {
-              window.domAutomationController.send(true);
+            return new Promise(resolve => {
+              script.addEventListener('load', () => {
+                resolve(true);
+              });
+              script.addEventListener('error', () => {
+                resolve(false);
+              });
+              script.textContent = JSON.stringify({
+                source: '%s',
+                resources: ['%s'],
+              });
+              document.body.appendChild(script);
             });
-            script.addEventListener('error', () => {
-              window.domAutomationController.send(false);
-            });
-            script.textContent = JSON.stringify({
-              source: '%s',
-              resources: ['%s'],
-            });
-            document.body.appendChild(script);
           })();
         )",
                                             href.c_str(), resources.c_str());
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(web_contents->GetPrimaryMainFrame(),
-                                            script, &success));
-    return success;
+    return EvalJs(web_contents->GetPrimaryMainFrame(), script).ExtractBool();
   }
 
   // Registers a request handler for static content.

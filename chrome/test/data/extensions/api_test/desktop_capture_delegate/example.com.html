@@ -7,66 +7,69 @@ found in the LICENSE file.
 
 var extensionId = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
-function sendToBrowser(msg) {
-  domAutomationController.send(msg);
-}
-
 function onMediaStreamError(mediaStreamError) {
   console.log(mediaStreamError.message);
-  sendToBrowser(false);
+  return false;
 }
 
-function requestStreamId(callback) {
-  function onResponse(response) {
-    if (chrome.runtime.lastError) {
-      sendToBrowser(false);
-      return;
-    }
-    id = response["id"];
-    callback(id);
-  };
+function requestStreamId() {
+  return new Promise(resolve => {
+    function onResponse(response) {
+      if (chrome.runtime.lastError) {
+        throw new Error("Failure");
+      }
+      id = response["id"];
+      resolve(id);
+    };
 
-  chrome.runtime.sendMessage(
-      extensionId, ["getStream"], onResponse);
+    chrome.runtime.sendMessage(
+        extensionId, ["getStream"], onResponse);
+  });
 }
 
 function getStream() {
-  function onStreamId(id) {
+  return requestStreamId()
+  .then((id) => {
     if (!id) {
-      sendToBrowser(false);
-      return;
+      return false;
     }
-    navigator.webkitGetUserMedia({
-      audio:false,
-      video: { mandatory: { chromeMediaSource: "desktop",
-                            chromeMediaSourceId: id } }
-    }, sendToBrowser.bind(null, true), onMediaStreamError);
-  };
-  requestStreamId(onStreamId);
+    return new Promise((resolve, reject) => {
+      navigator.webkitGetUserMedia({
+        audio:false,
+        video: { mandatory: { chromeMediaSource: "desktop",
+                              chromeMediaSourceId: id } },
+      }, resolve, reject);
+    });
+  })
+  .then(() => true,  onMediaStreamError);
 }
 
 function getStreamWithInvalidId() {
-  function onStreamId(id) {
+  return requestStreamId()
+  .then((id) => {
     if (!id) {
-      sendToBrowser(false);
-      return;
+      return false;
     }
-    navigator.webkitGetUserMedia({
-      audio:false,
-      video: { mandatory: { chromeMediaSource: "desktop",
-                            chromeMediaSourceId: id + "x" } }
-    }, sendToBrowser.bind(null, false), sendToBrowser.bind(null, true));
-  };
-  requestStreamId(onStreamId);
+    return new Promise((resolve, reject) => {
+      navigator.webkitGetUserMedia({
+        audio:false,
+        video: { mandatory: { chromeMediaSource: "desktop",
+                              chromeMediaSourceId: id + "x" } }
+      }, resolve, reject);
+    });
+  })
+  .then(() => false, () => true);
 }
 
 function openPickerDialogAndReturn() {
-  chrome.runtime.sendMessage(
-      extensionId, ["getStreamNoWait"], function(message) {
-        // Once the picker is shown request to close the tab. The picker should
-        // be destroyed as result.
-        sendToBrowser(true);
-      });
+  return new Promise(resolve => {
+    chrome.runtime.sendMessage(
+        extensionId, ["getStreamNoWait"], function(message) {
+          // Once the picker is shown request to close the tab. The picker should
+          // be destroyed as result.
+          resolve(true);
+        });
+  });
 }
 
 </script>
