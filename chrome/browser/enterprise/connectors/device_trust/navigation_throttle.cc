@@ -182,13 +182,14 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
           base::BindOnce(
               [](base::WeakPtr<DeviceTrustNavigationThrottle> throttler,
                  const std::string& challenge,
+                 const std::set<DTCPolicyLevel>& levels,
                  DeviceTrustCallback resume_navigation_callback) {
                 if (throttler) {
                   throttler->device_trust_service_->BuildChallengeResponse(
-                      challenge, std::move(resume_navigation_callback));
+                      challenge, levels, std::move(resume_navigation_callback));
                 }
               },
-              weak_ptr_factory_.GetWeakPtr(), challenge,
+              weak_ptr_factory_.GetWeakPtr(), challenge, levels,
               std::move(resume_navigation_callback)));
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

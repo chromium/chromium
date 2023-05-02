@@ -100,6 +100,8 @@ class DeviceTrustServiceTest
     feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
                                        is_flag_enabled());
 
+    levels_.insert(DTCPolicyLevel::kBrowser);
+
     if (is_policy_enabled()) {
       EnableServicePolicy();
     } else {
@@ -150,7 +152,7 @@ class DeviceTrustServiceTest
 
     base::test::TestFuture<const DeviceTrustResponse&> future;
     device_trust_service->BuildChallengeResponse(
-        serialized_signed_challenge,
+        serialized_signed_challenge, levels_,
         /*callback=*/future.GetCallback());
 
     const DeviceTrustResponse& dt_response = future.Get();
@@ -168,6 +170,7 @@ class DeviceTrustServiceTest
   raw_ptr<MockSignalsService> mock_signals_service_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester_;
+  std::set<enterprise_connectors::DTCPolicyLevel> levels_;
 };
 
 // Tests that IsEnabled returns true only when the feature flag is enabled and
@@ -210,7 +213,7 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
 
   base::test::TestFuture<const DeviceTrustResponse&> future;
   device_trust_service->BuildChallengeResponse(
-      kJsonChallenge,
+      kJsonChallenge, levels_,
       /*callback=*/future.GetCallback());
 
   const DeviceTrustResponse& dt_response = future.Get();
@@ -252,7 +255,7 @@ TEST_P(DeviceTrustServiceTest, AttestationFailure) {
 
   base::test::TestFuture<const DeviceTrustResponse&> future;
   device_trust_service->BuildChallengeResponse(
-      kJsonChallenge,
+      kJsonChallenge, levels_,
       /*callback=*/future.GetCallback());
 
   const DeviceTrustResponse& dt_response = future.Get();

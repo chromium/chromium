@@ -52,10 +52,13 @@ class DeviceTrustService : public KeyedService {
   virtual bool IsEnabled() const;
 
   // Uses the challenge stored in `serialized_challenge` to generate a
-  // challenge-response containing device signals and a device identity
-  // signature to be used in an attestation flow. Returns the challenge response
-  // asynchronously via `callback`.
+  // challenge-response containing device signals and a device identity. This
+  // detail, along with the policy `levels` the connector is enabled for, will
+  // be used in the  attestation flow to build the challenge response respective
+  // to its policy level. Returns the challenge response asynchronously via
+  // `callback`.
   virtual void BuildChallengeResponse(const std::string& serialized_challenge,
+                                      const std::set<DTCPolicyLevel>& levels,
                                       DeviceTrustCallback callback);
 
   // Returns the policy levels at which the current `url` navigation is being
@@ -74,9 +77,11 @@ class DeviceTrustService : public KeyedService {
   DeviceTrustService();
 
  private:
-  void OnChallengeParsed(DeviceTrustCallback callback,
+  void OnChallengeParsed(const std::set<DTCPolicyLevel>& levels,
+                         DeviceTrustCallback callback,
                          const std::string& challenge);
   void OnSignalsCollected(const std::string& challenge,
+                          const std::set<DTCPolicyLevel>& levels,
                           DeviceTrustCallback callback,
                           base::Value::Dict signals);
   void OnAttestationResponseReceived(

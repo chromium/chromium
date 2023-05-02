@@ -78,11 +78,12 @@ bool DeviceTrustService::IsEnabled() const {
 
 void DeviceTrustService::BuildChallengeResponse(
     const std::string& serialized_challenge,
+    const std::set<DTCPolicyLevel>& levels,
     DeviceTrustCallback callback) {
   ParseJsonChallenge(
       serialized_challenge,
       base::BindOnce(&DeviceTrustService::OnChallengeParsed,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), levels, std::move(callback)));
 }
 
 const std::set<DTCPolicyLevel> DeviceTrustService::Watches(
@@ -97,8 +98,10 @@ void DeviceTrustService::ParseJsonChallenge(
                           base::BindOnce(&OnJsonParsed, std::move(callback)));
 }
 
-void DeviceTrustService::OnChallengeParsed(DeviceTrustCallback callback,
-                                           const std::string& challenge) {
+void DeviceTrustService::OnChallengeParsed(
+    const std::set<DTCPolicyLevel>& levels,
+    DeviceTrustCallback callback,
+    const std::string& challenge) {
   if (challenge.empty()) {
     // Failed to parse the challenge, fail early.
     std::move(callback).Run(
@@ -107,7 +110,7 @@ void DeviceTrustService::OnChallengeParsed(DeviceTrustCallback callback,
   }
 
   GetSignals(base::BindOnce(&DeviceTrustService::OnSignalsCollected,
-                            weak_factory_.GetWeakPtr(), challenge,
+                            weak_factory_.GetWeakPtr(), challenge, levels,
                             std::move(callback)));
 }
 
@@ -115,9 +118,11 @@ void DeviceTrustService::GetSignals(CollectSignalsCallback callback) {
   return signals_service_->CollectSignals(std::move(callback));
 }
 
-void DeviceTrustService::OnSignalsCollected(const std::string& challenge,
-                                            DeviceTrustCallback callback,
-                                            base::Value::Dict signals) {
+void DeviceTrustService::OnSignalsCollected(
+    const std::string& challenge,
+    const std::set<DTCPolicyLevel>& levels,
+    DeviceTrustCallback callback,
+    base::Value::Dict signals) {
   LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
