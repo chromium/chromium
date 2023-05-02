@@ -5140,6 +5140,7 @@ if (is_chromeos_lacros) {
       "//content/test/data/",
       "data/banners/",
       "data/extensions/",
+      "data/intent_picker/",
       "data/media/",
       "data/policy/test_certs/",
       "data/result_queue.js",
