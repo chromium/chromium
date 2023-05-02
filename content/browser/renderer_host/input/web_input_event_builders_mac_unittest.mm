@@ -9,6 +9,7 @@
 #include <stddef.h>
 
 #include "base/mac/mac_util.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
 #include "ui/events/event.h"
@@ -76,8 +77,8 @@ NSEvent* BuildFakeMouseEvent(CGEventType mouse_type,
                              float tilt_y = 0.0,
                              float tangential_pressure = 0.0,
                              NSUInteger button_number = 0) {
-  CGEventRef cg_event =
-      CGEventCreateMouseEvent(NULL, mouse_type, location, button);
+  base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+      /*source=*/nullptr, mouse_type, location, button));
   CGEventSetIntegerValueField(cg_event, kCGMouseEventSubtype, subtype);
   CGEventSetDoubleValueField(cg_event, kCGTabletEventRotation, rotation);
   CGEventSetDoubleValueField(cg_event, kCGMouseEventPressure, pressure);
@@ -88,7 +89,6 @@ NSEvent* BuildFakeMouseEvent(CGEventType mouse_type,
   CGEventSetIntegerValueField(cg_event, kCGMouseEventButtonNumber,
                               button_number);
   NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-  CFRelease(cg_event);
   return event;
 }
 

@@ -59,7 +59,7 @@ class LocalMouseInputMonitorMac : public LocalPointerInputMonitor {
 
 @interface LocalInputMonitorManager : NSObject {
  @private
-  CFRunLoopSourceRef _mouseRunLoopSource;
+  base::ScopedCFTypeRef<CFRunLoopSourceRef> _mouseRunLoopSource;
   base::ScopedCFTypeRef<CFMachPortRef> _mouseMachPort;
   raw_ptr<remoting::LocalMouseInputMonitorMac::EventHandler> _monitor;
 }
@@ -100,8 +100,8 @@ static CGEventRef LocalMouseMoved(CGEventTapProxy proxy,
         kCGSessionEventTap, kCGHeadInsertEventTap, kCGEventTapOptionListenOnly,
         1 << kCGEventMouseMoved, LocalMouseMoved, self));
     if (_mouseMachPort) {
-      _mouseRunLoopSource =
-          CFMachPortCreateRunLoopSource(nullptr, _mouseMachPort, 0);
+      _mouseRunLoopSource.reset(
+          CFMachPortCreateRunLoopSource(nullptr, _mouseMachPort, 0));
       CFRunLoopAddSource(CFRunLoopGetMain(), _mouseRunLoopSource,
                          kCFRunLoopCommonModes);
     } else {
@@ -122,9 +122,8 @@ static CGEventRef LocalMouseMoved(CGEventTapProxy proxy,
     CFMachPortInvalidate(_mouseMachPort);
     CFRunLoopRemoveSource(CFRunLoopGetMain(), _mouseRunLoopSource,
                           kCFRunLoopCommonModes);
-    CFRelease(_mouseRunLoopSource);
-    _mouseMachPort.reset(0);
-    _mouseRunLoopSource = nullptr;
+    _mouseMachPort.reset();
+    _mouseRunLoopSource.reset();
   }
 }
 

@@ -145,12 +145,10 @@ OSStatus CreateTrustPolicies(ScopedCFTypeRef<CFArrayRef>* policies) {
   if (!local_policies)
     return errSecAllocate;
 
-  SecPolicyRef ssl_policy = SecPolicyCreateBasicX509();
+  base::ScopedCFTypeRef<SecPolicyRef> ssl_policy(SecPolicyCreateBasicX509());
   CFArrayAppendValue(local_policies, ssl_policy);
-  CFRelease(ssl_policy);
-  ssl_policy = SecPolicyCreateSSL(true, nullptr);
+  ssl_policy.reset(SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
   CFArrayAppendValue(local_policies, ssl_policy);
-  CFRelease(ssl_policy);
 
   policies->reset(local_policies.release());
   return noErr;

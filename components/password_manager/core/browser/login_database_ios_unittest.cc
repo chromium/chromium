@@ -4,13 +4,16 @@
 
 #include "components/password_manager/core/browser/login_database.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <Security/Security.h>
 #include <stddef.h>
 
 #include <tuple>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -74,15 +77,14 @@ size_t LoginDatabaseIOSTest::GetKeychainSize() {
   CFDictionarySetValue(query, kSecAttrAccessible,
                        kSecAttrAccessibleWhenUnlocked);
 
-  CFTypeRef result;
-  OSStatus status = SecItemCopyMatching(query, &result);
-  if (status == errSecItemNotFound)
+  ScopedCFTypeRef<CFTypeRef> result;
+  OSStatus status = SecItemCopyMatching(query, result.InitializeInto());
+  if (status == errSecItemNotFound) {
     return 0;
-
+  }
   EXPECT_EQ(errSecSuccess, status);
-  size_t size = CFArrayGetCount((CFArrayRef)result);
-  CFRelease(result);
-  return size;
+
+  return CFArrayGetCount(base::mac::CFCast<CFArrayRef>(result));
 }
 
 TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
@@ -120,20 +122,15 @@ TEST_F(LoginDatabaseIOSTest, AddLogin) {
   ASSERT_FALSE(encrypted_password.empty());
   ASSERT_EQ(1U, GetKeychainSize());
 
-  CFStringRef cf_encrypted_password = CFStringCreateWithCString(
-      kCFAllocatorDefault, encrypted_password.c_str(), kCFStringEncodingUTF8);
-
   ScopedCFTypeRef<CFMutableDictionaryRef> query(
-      CFDictionaryCreateMutable(NULL, 4, &kCFTypeDictionaryKeyCallBacks,
+      CFDictionaryCreateMutable(nullptr, 4, &kCFTypeDictionaryKeyCallBacks,
                                 &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassGenericPassword);
   CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
-  CFDictionarySetValue(query, kSecAttrAccount, cf_encrypted_password);
+  CFDictionarySetValue(query, kSecAttrAccount,
+                       base::SysUTF8ToCFStringRef(encrypted_password));
 
-  CFTypeRef result;
-  EXPECT_EQ(errSecSuccess, SecItemCopyMatching(query, &result));
-  CFRelease(cf_encrypted_password);
-  CFRelease(result);
+  EXPECT_EQ(errSecSuccess, SecItemCopyMatching(query, nullptr));
 }
 
 TEST_F(LoginDatabaseIOSTest, UpdateLogin) {

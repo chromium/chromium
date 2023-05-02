@@ -73,14 +73,12 @@ NSEvent* MouseEventAtPoint(NSPoint point, NSEventType type,
     // appropriate buttonNumber field. NSEvent provides no way to create a
     // mouse event with a buttonNumber directly.
     CGPoint location = { point.x, point.y };
-    CGEventRef cg_event = CGEventCreateMouseEvent(NULL, kCGEventOtherMouseUp,
-                                                  location,
-                                                  kCGMouseButtonCenter);
+    base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateMouseEvent(
+        nullptr, kCGEventOtherMouseUp, location, kCGMouseButtonCenter));
     // Also specify the modifiers for the middle click case. This makes this
     // test resilient to external modifiers being pressed.
     CGEventSetFlags(cg_event, static_cast<CGEventFlags>(modifiers));
     NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-    CFRelease(cg_event);
     return event;
   }
   return [NSEvent mouseEventWithType:type

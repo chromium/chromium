@@ -241,16 +241,15 @@ void ProxyConfigServiceMac::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
   // Called on notifier thread.
 
-  CFStringRef proxies_key = SCDynamicStoreKeyCreateProxies(nullptr);
-  CFArrayRef key_array = CFArrayCreate(nullptr, (const void**)(&proxies_key), 1,
-                                       &kCFTypeArrayCallBacks);
+  base::ScopedCFTypeRef<CFStringRef> proxies_key(
+      SCDynamicStoreKeyCreateProxies(nullptr));
+  base::ScopedCFTypeRef<CFArrayRef> key_array(CFArrayCreate(
+      nullptr, (const void**)(&proxies_key), 1, &kCFTypeArrayCallBacks));
 
-  bool ret = SCDynamicStoreSetNotificationKeys(store, key_array, nullptr);
+  bool ret =
+      SCDynamicStoreSetNotificationKeys(store, key_array, /*patterns=*/nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
-
-  CFRelease(key_array);
-  CFRelease(proxies_key);
 }
 
 void ProxyConfigServiceMac::OnNetworkConfigChange(CFArrayRef changed_keys) {

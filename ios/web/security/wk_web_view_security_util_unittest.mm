@@ -153,8 +153,9 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   }];
 
   // Verify policies.
-  CFArrayRef policies = nullptr;
-  EXPECT_EQ(errSecSuccess, SecTrustCopyPolicies(server_trust.get(), &policies));
+  base::ScopedCFTypeRef<CFArrayRef> policies;
+  EXPECT_EQ(errSecSuccess, SecTrustCopyPolicies(server_trust.get(),
+                                                policies.InitializeInto()));
   EXPECT_EQ(1, CFArrayGetCount(policies));
   SecPolicyRef policy = (SecPolicyRef)CFArrayGetValueAtIndex(policies, 0);
   base::ScopedCFTypeRef<CFDictionaryRef> properties(
@@ -162,7 +163,6 @@ TEST_F(WKWebViewSecurityUtilTest, CreationServerTrust) {
   NSString* name = static_cast<NSString*>(
       CFDictionaryGetValue(properties.get(), kSecPolicyName));
   EXPECT_NSEQ(kTestHost, name);
-  CFRelease(policies);
 }
 
 // Tests CreateServerTrustFromChain with nil chain.

@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -151,15 +152,14 @@ class ChromeRenderWidgetHostViewMacHistorySwiperTest
 
   // Creates a mock scroll wheel event that is backed by a real CGEvent.
   id MockScrollWheelEvent(NSPoint delta, NSEventType type) {
-    CGEventRef cg_event =
-        CGEventCreateScrollWheelEvent(NULL, kCGScrollEventUnitLine, 2, 0, 0);
+    base::ScopedCFTypeRef<CGEventRef> cg_event(CGEventCreateScrollWheelEvent(
+        nullptr, kCGScrollEventUnitLine, 2, 0, 0));
     CGEventSetIntegerValueField(cg_event, kCGScrollWheelEventIsContinuous, 1);
     CGEventSetIntegerValueField(
         cg_event, kCGScrollWheelEventPointDeltaAxis2, delta.x);
     CGEventSetIntegerValueField(
         cg_event, kCGScrollWheelEventPointDeltaAxis1, delta.y);
     NSEvent* event = [NSEvent eventWithCGEvent:cg_event];
-    CFRelease(cg_event);
 
     id mock_event = [OCMockObject partialMockForObject:event];
     [[[mock_event stub] andReturnBool:NO] isDirectionInvertedFromDevice];
