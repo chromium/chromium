@@ -64,6 +64,7 @@ class SyncSetupService : public KeyedService {
 
   // Pauses sync allowing the user to configure what data to sync before
   // actually starting to sync data with the server.
+  // TODO(crbug.com/1438800): Rename to PrepareForSyncSetup().
   virtual void PrepareForFirstSyncSetup();
 
   // Sets the first setup complete flag. This method doesn't commit sync

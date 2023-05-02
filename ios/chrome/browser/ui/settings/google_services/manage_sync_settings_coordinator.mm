@@ -91,6 +91,13 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)start {
   DCHECK(self.baseNavigationController);
+  // Ensure that SyncService::IsSetupInProgress is true while the
+  // manage-sync-settings UI is open.
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  syncSetupService->PrepareForFirstSyncSetup();
+
   self.mediator = [[ManageSyncSettingsMediator alloc]
       initWithSyncService:self.syncService
           userPrefService:self.browser->GetBrowserState()->GetPrefs()];
@@ -121,13 +128,11 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [super stop];
   // This coordinator displays the main view and it is in charge to enable sync
   // or not when being closed.
-  // Sync changes should only be commited if the user is authenticated.
-  if (self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    syncSetupService->CommitSyncChanges();
-  }
+  SyncSetupService* syncSetupService =
+      SyncSetupServiceFactory::GetForBrowserState(
+          self.browser->GetBrowserState());
+  syncSetupService->CommitSyncChanges();
+
   _syncObserver.reset();
 }
 

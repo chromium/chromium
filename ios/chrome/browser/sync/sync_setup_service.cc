@@ -30,8 +30,7 @@ bool SyncSetupService::IsDataTypePreferred(
 
 void SyncSetupService::SetDataTypeEnabled(syncer::UserSelectableType datatype,
                                           bool enabled) {
-  if (!sync_blocker_)
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  CHECK(sync_blocker_);
 
   syncer::SyncUserSettings* user_settings = sync_service_->GetUserSettings();
   syncer::UserSelectableTypeSet selected_types =
@@ -84,8 +83,7 @@ bool SyncSetupService::IsSyncEverythingEnabled() const {
 }
 
 void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
-  if (!sync_blocker_)
-    sync_blocker_ = sync_service_->GetSetupInProgressHandle();
+  CHECK(sync_blocker_);
   sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
@@ -110,7 +108,7 @@ void SyncSetupService::PrepareForFirstSyncSetup() {
 
 void SyncSetupService::SetFirstSetupComplete(
     syncer::SyncFirstSetupCompleteSource source) {
-  DCHECK(sync_blocker_);
+  CHECK(sync_blocker_);
   // Turn on the sync setup completed flag only if the user did not turn sync
   // off.
   if (sync_service_->CanSyncFeatureStart()) {
