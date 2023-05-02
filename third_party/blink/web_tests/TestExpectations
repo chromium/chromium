@@ -1767,7 +1767,6 @@ crbug.com/803276 [ Win ] inspector-protocol/memory/sampling-native-snapshot.js [
 # Test failures revealed by crrev.com/c/4073931
 crbug.com/1395458 editing/selection/modify_move/move-by-word-visually-mac.html [ Failure ]
 crbug.com/1395460 fast/dom/viewport/viewport-scale-inert.html [ Failure ]
-crbug.com/1395461 fast/mediacapturefromelement/HTMLMediaElementCapture-EME-content.html [ Failure ]
 crbug.com/1395462 fast/spatial-navigation/snav-search-outside-of-focused-scroller.html [ Failure Timeout ]
 crbug.com/1395463 http/tests/security/cross-origin-window-properties-undefined.html [ Failure Timeout ]
 crbug.com/1395464 http/tests/security/vibration/vibrate-on-top-page-before-during-after-user-gesture.html [ Failure ]

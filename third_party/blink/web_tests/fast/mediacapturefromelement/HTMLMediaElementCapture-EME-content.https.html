@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script>
+
+// Run createStream() on a <video> source with protected content.
+
+promise_test(function() {
+  var video = document.createElement('video');
+
+  assert_equals(video.error, null);
+  assert_equals(video.mediaKeys, null);
+
+  // requestMediaKeySystemAccess() requires either audioCapabilities or
+  // videoCapabilities to be specified, so provide a simple config that
+  // should be supported everywhere.
+  const config = [{
+    initDataTypes: ['keyids'],
+    videoCapabilities: [{contentType: 'video/webm; codecs="vp9"'}],
+  }];
+
+  return navigator.requestMediaKeySystemAccess('org.w3.clearkey', config)
+      .then(function(access) {
+        return access.createMediaKeys();
+      })
+      .then(function(mediaKeys) {
+        return video.setMediaKeys(mediaKeys);
+      })
+      .then(function() {
+        video.src = '../../media/content/test-encrypted.webm';
+        assert_throws_dom('NotSupportedError', function() {
+          var stream = video.captureStream();
+        }, 'Cannot create a captureStream() out of a protected <video>');
+
+        // captureStream() will fail due to setMediaKeys() being called,
+        // so not checking what happens to the video stream.
+        return Promise.resolve(true);
+      });
+}, 'check <video> captureStream() fails on an encrypted/protected media');
+
+</script>
