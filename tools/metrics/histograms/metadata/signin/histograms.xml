@@ -102,6 +102,80 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Signin.AccountConsistencyPromoAction.{PromoEvent}"
+    enum="SigninAccessPoint" expires_after="2023-10-22">
+  <owner>bsazonov@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the action taken by user after receiving the header from Gaia in the
+    web sign-in flow. This histogram is another version of
+    |Signin.AccountConsistencyPromoAction|, where the original one logs the
+    promo events directly, and this histogram creates a variant for every promo
+    event, and logs its access points instead.
+  </summary>
+  <token key="PromoEvent">
+    <variant name="AddAccountCompleted"
+        summary="User has completed the account addition flow triggered from
+                 the bottom sheet."/>
+    <variant name="AddAccountCompletedWithNoDeviceAccount"
+        summary="User has added an account from a state without any on-device
+                 account."/>
+    <variant name="AddAccountStarted"
+        summary="User has tapped |Add account to device| from expanded
+                 account list."/>
+    <variant name="AddAccountStartedWithNoDeviceAccount"
+        summary="User has tapped |Sign In…| from the no-default-account
+                 promo, starting an add-account flow."/>
+    <variant name="AuthErrorShown"
+        summary="The auth error screen was shown to the user."/>
+    <variant name="DismissedBack"
+        summary="User has dismissed the promo by tapping back button."/>
+    <variant name="DismissedButton"
+        summary="User has dismissed the promo by tapping on the dismissal
+                 button in the bottom sheet."/>
+    <variant name="DismissedOther"
+        summary="User has dismissed the promo by other means."/>
+    <variant name="DismissedScrim"
+        summary="User has dismissed the promo by tapping on the scrim above
+                 the bottom sheet."/>
+    <variant name="DismissedSwipeDown"
+        summary="User has dismissed the promo by swiping down the bottom
+                 sheet."/>
+    <variant name="GenericErrorShown"
+        summary="The generic error screen was shown to the user."/>
+    <variant name="Shown" summary="The promo was shown to user."/>
+    <variant name="ShownWithNoDeviceAccount"
+        summary="The promo was shown to a user without an existing on-device
+                 account."/>
+    <variant name="SignedInWithAddedAccount"
+        summary="User has added an account and signed in with this account."/>
+    <variant name="SignedInWithDefaultAccount"
+        summary="User has selected the default account and signed in with it."/>
+    <variant name="SignedInWithNoDeviceAccount"
+        summary="User has signed in to Chrome, from a state without any
+                 on-device account."/>
+    <variant name="SignedInWithNonDefaultAccount"
+        summary="User has selected one of the non default accounts and signed
+                 in with it."/>
+    <variant name="SignInFailed"
+        summary="AuthenticationFlow failed to sign-in."/>
+    <variant name="SuppressedAlreadySignedIn"
+        summary="The web sign-in is not shown because the user is already
+                 signed in."/>
+    <variant name="SuppressedConsecutiveDismissals"
+        summary="The bottom sheet was suppressed as the user hit consecutive
+                 active dismissal limit."/>
+    <variant name="SuppressedNoAccounts"
+        summary="The promo was suppressed as there were no accounts on the
+                 device."/>
+    <variant name="SuppressedSigninNotAllowed"
+        summary="Promo is not shown due to sign-in being disallowed either by
+                 an enterprise policy or by |Allow Chrome sign-in| toggle."/>
+    <variant name="TimeoutErrorShown"
+        summary="The timeout error was shown to the user."/>
+  </token>
+</histogram>
+
 <histogram name="Signin.AccountFetcher.AccountAvatarFetchTime" units="ms"
     expires_after="2023-09-03">
   <owner>triploblastic@chromium.org</owner>
