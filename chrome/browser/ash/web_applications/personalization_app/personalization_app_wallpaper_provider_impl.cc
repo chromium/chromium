@@ -392,8 +392,8 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
   switch (info->type) {
     case ash::WallpaperType::kDaily:
     case ash::WallpaperType::kOnline: {
-      if (info->collection_id.empty() || !info->asset_id.has_value()) {
-        DVLOG(2) << "no collection_id or asset_id found";
+      if (info->collection_id.empty() || !info->unit_id.has_value()) {
+        DVLOG(2) << "no collection_id or unit_id found";
         // Older versions of ChromeOS do not store these information, need to
         // look up all collections and match URL.
         FetchCollections(base::BindOnce(
@@ -1009,12 +1009,13 @@ void PersonalizationAppWallpaperProviderImpl::FindImageMetadataInCollection(
   const backdrop::Image* backend_image = nullptr;
   if (success && !images.empty()) {
     for (const auto& proto_image : images) {
-      if (!proto_image.has_image_url() || !proto_image.has_asset_id())
+      if (!proto_image.has_image_url() || !proto_image.has_unit_id()) {
         break;
-      bool is_same_asset_id = info.asset_id.has_value() &&
-                              proto_image.asset_id() == info.asset_id.value();
+      }
+      bool is_same_unit_id = info.unit_id.has_value() &&
+                             proto_image.unit_id() == info.unit_id.value();
       bool is_same_url = info.location.rfind(proto_image.image_url(), 0) == 0;
-      if (is_same_asset_id || is_same_url) {
+      if (is_same_url || is_same_unit_id) {
         backend_image = &proto_image;
         break;
       }

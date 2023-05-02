@@ -35,12 +35,12 @@ class VariantMatches {
   // Filters |images| to only the entries that match |asset_id| and
   // |mode|.
   static absl::optional<VariantMatches> FromImages(
-      uint64_t asset_id,
+      const std::string& location,
       ScheduleCheckpoint checkpoint,
       const std::vector<backdrop::Image>& images) {
     // Find the exact image in the |images| collection.
     auto image_iter =
-        base::ranges::find(images, asset_id, &backdrop::Image::asset_id);
+        base::ranges::find(images, location, &backdrop::Image::image_url);
 
     if (image_iter == images.end())
       return absl::nullopt;
@@ -154,8 +154,8 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
     return;
   }
 
-  // For requests from existing WallpaperInfo, asset_id is always populated.
-  DCHECK(info.asset_id.has_value());
+  // For requests from existing WallpaperInfo, location is always populated.
+  DCHECK(!info.location.empty());
 
   bool daily = IsDaily(info);
   auto request = std::make_unique<OnlineWallpaperRequest>(
@@ -166,7 +166,7 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
       collection_id,
       base::BindOnce(
           &OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants,
-          weak_factory_.GetWeakPtr(), std::move(request), *info.asset_id,
+          weak_factory_.GetWeakPtr(), std::move(request), info.location,
           std::move(callback)));
 }
 
@@ -212,13 +212,13 @@ void OnlineWallpaperVariantInfoFetcher::OnSingleFetch(
       collection_id,
       base::BindOnce(
           &OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants,
-          weak_factory_.GetWeakPtr(), std::move(request), image.asset_id(),
+          weak_factory_.GetWeakPtr(), std::move(request), image.image_url(),
           std::move(callback)));
 }
 
 void OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants(
     std::unique_ptr<OnlineWallpaperRequest> request,
-    uint64_t asset_id,
+    const std::string& location,
     FetchParamsCallback callback,
     bool success,
     const std::vector<backdrop::Image>& images) {
@@ -229,7 +229,7 @@ void OnlineWallpaperVariantInfoFetcher::FindAndSetOnlineWallpaperVariants(
   }
 
   absl::optional<VariantMatches> matches =
-      VariantMatches::FromImages(asset_id, request->checkpoint, images);
+      VariantMatches::FromImages(location, request->checkpoint, images);
   if (!matches) {
     LOG(ERROR) << "No valid variants";
     std::move(callback).Run(absl::nullopt);

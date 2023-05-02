@@ -3213,14 +3213,6 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
     const AccountId& account_id,
     const WallpaperInfo& info) {
   DCHECK(IsOnlineWallpaper(info.type));
-  if (!info.asset_id.has_value()) {
-    // If a user has not changed their wallpaper since the addition of asset_id,
-    // we can have a WallpaperInfo without an asset_id from synced data.
-    // In this case, skip it. We don't have enough information to retrieve the
-    // wallpaper.
-    LOG(WARNING) << "Synced old online wallpaper info";
-    return;
-  }
 
   // Set |start_daily_refresh_timer| to false as this does not set a new
   // wallpaper, but updates the variant of the same wallpaper.

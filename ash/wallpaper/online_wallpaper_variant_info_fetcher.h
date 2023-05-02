@@ -91,10 +91,10 @@ class ASH_EXPORT OnlineWallpaperVariantInfoFetcher {
 
   // Finishes variants fetch by populating the remaining fields for
   // OnlineWallpaperParams in |callback|. Combines data from |request| with
-  // |images| and the matching variant in |images| for |asset_id|.
+  // |images| and the matching variant in |images| for |location|.
   void FindAndSetOnlineWallpaperVariants(
       std::unique_ptr<OnlineWallpaperRequest> request,
-      uint64_t asset_id,
+      const std::string& location,
       FetchParamsCallback callback,
       bool success,
       const std::vector<backdrop::Image>& images);

@@ -285,7 +285,7 @@ WallpaperInfo InfoWithType(WallpaperType type) {
                      base::Time::Now());
   if (IsOnlineWallpaper(type)) {
     // Daily and Online types require asset id and collection id.
-    info.asset_id = 1234;
+    info.unit_id = 1234;
     info.collection_id = "placeholder collection";
     info.location = "https://example.com/example.jpeg";
   }
@@ -3706,7 +3706,7 @@ TEST_F(WallpaperControllerTest,
 
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
-  synced_info.asset_id = kAssetId;
+  synced_info.unit_id = kUnitId;
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
@@ -3728,7 +3728,7 @@ TEST_F(WallpaperControllerTest, ActiveUserPrefServiceChanged_SyncDisabled) {
   CacheOnlineWallpaper(kDummyUrl);
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
-  synced_info.asset_id = kAssetId;
+  synced_info.unit_id = kUnitId;
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
 
@@ -3774,7 +3774,7 @@ TEST_F(WallpaperControllerTest,
   SimulateUserLogin(kAccountId1);
   WallpaperInfo synced_info = {kDummyUrl, WALLPAPER_LAYOUT_CENTER_CROPPED,
                                WallpaperType::kOnline, base::Time::Now()};
-  synced_info.asset_id = kAssetId;
+  synced_info.unit_id = kUnitId;
   synced_info.collection_id = TestWallpaperControllerClient::kDummyCollectionId;
   pref_manager_->SetSyncedWallpaperInfo(kAccountId1, synced_info);
   RunAllTasksUntilIdle();
@@ -3843,7 +3843,7 @@ TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaper) {
 
   WallpaperInfo info = {std::string(), WALLPAPER_LAYOUT_CENTER,
                         WallpaperType::kDaily, DayBeforeYesterdayish()};
-  info.asset_id = kAssetId;
+  info.unit_id = kUnitId;
   info.collection_id = expected;
   pref_manager_->SetUserWallpaperInfo(kAccountId1, info);
 
