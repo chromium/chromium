@@ -77,6 +77,9 @@ HelpAppUI::HelpAppUI(content::WebUI* web_ui,
 
   if (MaybeConfigureTestableDataSource(host_source)) {
     host_source->OverrideContentSecurityPolicy(
+        network::mojom::CSPDirectiveName::ScriptSrc,
+        "script-src chrome://resources chrome://webui-test 'self';");
+    host_source->OverrideContentSecurityPolicy(
         network::mojom::CSPDirectiveName::TrustedTypes,
         std::string("trusted-types test-harness;"));
   }

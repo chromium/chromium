@@ -80,6 +80,7 @@ async function GetTestHarness() {
  * object we get from `help_app_ui_browsertest.js`.
  */
 async function runHelpAppTest(name, guest = false) {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   const HelpAppUIBrowserTest = await GetTestHarness();
   try {
     if (guest) {
@@ -106,6 +107,7 @@ function runHelpAppTestInGuest(name) {
 
 // Ensure every test body has a `TEST_F` call in this file.
 TEST_F('HelpAppUIGtestBrowserTest', 'ConsistencyCheck', async () => {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   const HelpAppUIBrowserTest = await GetTestHarness();
   const bodies = {
     ...(/** @type {{testCaseBodies: Object}} */ (HelpAppUIGtestBrowserTest))

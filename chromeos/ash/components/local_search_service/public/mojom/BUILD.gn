@@ -14,6 +14,8 @@ mojom("mojom") {
     "types.mojom",
   ]
 
+  webui_module_path = "/"
+
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",

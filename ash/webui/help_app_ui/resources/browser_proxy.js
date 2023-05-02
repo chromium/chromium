@@ -1,35 +1,38 @@
 // Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './help_app_ui.mojom-lite.js';
-// The order here matters, types must be imported before index and search which
-// rely on it.
-import './types.mojom-lite.js';
-import './index.mojom-lite.js';
-import './search.mojom-lite.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
+import {PageHandlerFactory, PageHandlerRemote} from './help_app_ui.mojom-webui.js';
+import {Index, IndexRemote} from './index.mojom-webui.js';
 import {MessagePipe} from './message_pipe.js';
 import {Message} from './message_types.js';
+import {SearchConcept, SearchHandler, SearchHandlerRemote} from './search.mojom-webui.js';
+import {Content, ResponseStatus, Result} from './types.mojom-webui.js';
 
 const help_app = {
-  handler: new ash.helpApp.mojom.PageHandlerRemote(),
+  handler: new PageHandlerRemote(),
 };
 
 // Set up a page handler to talk to the browser process.
-ash.helpApp.mojom.PageHandlerFactory.getRemote().createPageHandler(
+PageHandlerFactory.getRemote().createPageHandler(
     help_app.handler.$.bindNewPipeAndPassReceiver());
 
 // Set up an index remote to talk to Local Search Service.
-/** @type {!ash.localSearchService.mojom.IndexRemote} */
-const indexRemote = ash.localSearchService.mojom.Index.getRemote();
+/** @type {!IndexRemote} */
+const indexRemote = Index.getRemote();
+
+// Expose `indexRemote` on `window`, because it is accessed by a CrOS Tast test.
+Object.assign(window, {indexRemote});
 
 /**
  * Talks to the search handler. Use for updating the content for launcher
  * search.
  *
- * @type {!ash.helpApp.mojom.SearchHandlerRemote}
+ * @type {!SearchHandlerRemote}
  */
-const searchHandlerRemote = ash.helpApp.mojom.SearchHandler.getRemote();
+const searchHandlerRemote = SearchHandler.getRemote();
 
 const GUEST_ORIGIN = 'chrome-untrusted://help-app';
 const MAX_STRING_LEN = 9999;
@@ -50,23 +53,23 @@ const isLauncherSearchEnabled =
 
 /**
  * @param {string|Object} url
- * @return {!url.mojom.Url}
+ * @return {!Url}
  */
 function toUrl(url) {
   // TODO(b/279132899): Figure out why `url` is an empty object when it should
   // have been an empty string.
   if (url === '' || typeof (url) !== 'string') {
-    return /** @type {!url.mojom.Url} */ ({url: ''});
+    return /** @type {!Url} */ ({url: ''});
   }
-  return /** @type {!url.mojom.Url} */ ({url});
+  return /** @type {!Url} */ ({url});
 }
 
 /**
  * @param {string} s
- * @return {!mojoBase.mojom.String16Spec}
+ * @return {!String16}
  */
 function toString16(s) {
-  return /** @type {!mojoBase.mojom.String16Spec} */ (
+  return /** @type {!String16} */ (
       {data: Array.from(truncate(s), c => c.charCodeAt())});
 }
 const TITLE_ID = 'title';
@@ -102,7 +105,7 @@ guestMessagePipe.registerHandler(
       const data_from_app =
           /** @type {!Array<!helpApp.SearchableItem>} */ (message);
       const data_to_send = data_from_app.map(searchable_item => {
-        /** @type {!Array<!ash.localSearchService.mojom.Content>} */
+        /** @type {!Array<!Content>} */
         const contents = [
           {
             id: TITLE_ID,
@@ -170,16 +173,13 @@ guestMessagePipe.registerHandler(
       // Record the search status in the trusted frame.
       chrome.metricsPrivate.recordEnumerationValue(
           'Discover.Search.SearchStatus', response.status,
-          ash.localSearchService.mojom.ResponseStatus.MAX_VALUE);
+          ResponseStatus.MAX_VALUE);
 
-      if (response.status !==
-              ash.localSearchService.mojom.ResponseStatus.kSuccess ||
-          !response.results) {
+      if (response.status !== ResponseStatus.kSuccess || !response.results) {
         return {results: null};
       }
       const search_results =
-          /** @type {!Array<!ash.localSearchService.mojom.Result>} */ (
-              response.results);
+          /** @type {!Array<!Result>} */ (response.results);
       // Sort results by decreasing score.
       search_results.sort((a, b) => b.score - a.score);
       /** @type {!Array<!helpApp.SearchResult>} */
@@ -264,7 +264,7 @@ guestMessagePipe.registerHandler(
 
       const dataFromApp =
           /** @type {!Array<!helpApp.LauncherSearchableItem>} */ (message);
-      /** @type {!Array<!ash.helpApp.mojom.SearchConcept>} */
+      /** @type {!Array<!SearchConcept>} */
       const dataToSend = dataFromApp.map(
           searchableItem => ({
             id: truncate(searchableItem.id),
