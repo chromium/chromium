@@ -226,7 +226,6 @@ class OopPixelTest : public testing::Test,
                          options.requires_clear, &max_op_size_limit);
     }
     ri->EndRasterCHROMIUM();
-    ri->OrderingBarrierCHROMIUM();
 
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
 
@@ -276,7 +275,6 @@ class OopPixelTest : public testing::Test,
     ri->WritePixels(mailbox, /*dst_x_offset=*/0, /*dst_y_offset=*/0,
                     /*dst_plane_index=*/0, /*texture_target=*/0,
                     SkPixmap(info, bitmap.getPixels(), info.minRowBytes()));
-    ri->OrderingBarrierCHROMIUM();
     EXPECT_EQ(ri->GetError(), static_cast<unsigned>(GL_NO_ERROR));
   }
 
@@ -860,7 +858,6 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   auto* sii = raster_context_provider_->SharedImageInterface();
   gpu::Mailbox src_mailbox = CreateMailboxSharedImage(
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888);
-  ri->OrderingBarrierCHROMIUM();
 
   UploadPixels(ri, src_mailbox, expected_bitmap.info(), expected_bitmap);
 
@@ -2307,7 +2304,6 @@ TEST_P(OopYUVToRGBPixelTest, ConvertYUVToRGB) {
                                     : nullptr,
                                 SkYUVAInfo::PlaneConfig::kY_U_V,
                                 SkYUVAInfo::Subsampling::k420, yuv_mailboxes);
-  ri->OrderingBarrierCHROMIUM();
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_mailbox, options.resource_size,
                       dest_color_space.ToSkColorSpace());
@@ -2387,7 +2383,6 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
                                 SkColorSpace::MakeSRGB().get(),
                                 SkYUVAInfo::PlaneConfig::kY_UV,
                                 SkYUVAInfo::Subsampling::k420, y_uv_mailboxes);
-  ri->OrderingBarrierCHROMIUM();
   SkBitmap actual_bitmap =
       ReadbackMailbox(ri, dest_mailbox, options.resource_size);
 
