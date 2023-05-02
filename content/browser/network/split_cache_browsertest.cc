@@ -198,22 +198,13 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
                               bool use_popup = false) {
     DCHECK(url.is_valid());
 
-    // Clear the in-memory cache held by the current process:
+    // Allocate a new process to prevent using the in-memory cache.
     // 1) Prevent the old page from entering the back-forward cache. Otherwise
     //    the old process will be kept alive, because it is still being used.
     // 2) Navigate to a WebUI URL, which uses a new process.
-    // 3) Clear the in-memory cache.
     DisableBFCacheForRFHForTesting(
         shell()->web_contents()->GetPrimaryMainFrame());
     EXPECT_TRUE(NavigateToURL(shell(), GetWebUIURL("blob-internals")));
-    base::RunLoop loop;
-    shell()
-        ->web_contents()
-        ->GetPrimaryMainFrame()
-        ->GetProcess()
-        ->GetRendererInterface()
-        ->PurgeResourceCache(loop.QuitClosure());
-    loop.Run();
 
     // In the case of a redirect, the observed URL will be different from
     // what NavigateToURL(...) expects.
@@ -241,6 +232,16 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
       }
     }
 
+    // `shell_to_observe` may still contain responses depending on process reuse
+    // policies. Clear the in-memory cache in `shell_to_observe` to make sure
+    // the following ResourceLoadObserver can observe network requests.
+    base::RunLoop loop;
+    shell_to_observe->web_contents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->GetRendererInterface()
+        ->PurgeResourceCache(loop.QuitClosure());
+    loop.Run();
     // Observe network requests.
     ResourceLoadObserver observer(shell_to_observe);
 
