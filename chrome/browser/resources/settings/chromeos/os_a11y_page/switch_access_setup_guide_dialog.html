@@ -28,6 +28,10 @@
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 183px;
+  }
+
+  .illustration,
+  .illustration-jelly {
     height: 173px;
     margin-top: 15px;
     padding: 16px;
@@ -36,35 +40,35 @@
 
   #intro .illustration {
      background-image:
-        url(chrome://os-settings/images/computer_and_bluetooth_switch.svg);
+        url(chrome://os-settings/images/switch_access_setup_guide_start_pairing.svg);
   }
 
-  #assignSwitch .illustration.select {
+  #assignSwitch[data-switch='select'] .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_assign_select.svg);
   }
 
-  #assignSwitch .illustration.next {
+  #assignSwitch[data-switch='next'] .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_assign_next.svg);
   }
 
-  #assignSwitch .illustration.previous {
+  #assignSwitch[data-switch='previous'] .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_assign_previous.svg);
   }
 
-  #chooseSwitchCount .illustration.one-switch {
+  #chooseSwitchCount[data-switch-count='1'] .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch.svg);
   }
 
-  #chooseSwitchCount .illustration.two-switches {
+  #chooseSwitchCount[data-switch-count='2'] .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches.svg);
   }
 
-  #chooseSwitchCount .illustration.three-switches {
+  #chooseSwitchCount[data-switch-count='3'] .illustration {
     background-image:
       url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches.svg);
   }
@@ -82,35 +86,35 @@
   @media(prefers-color-scheme: dark) {
     #intro .illustration {
        background-image:
-          url(chrome://os-settings/images/computer_and_bluetooth_switch_dark.svg);
+          url(chrome://os-settings/images/switch_access_setup_guide_start_pairing_dark.svg);
     }
 
-    #assignSwitch .illustration.select {
+    #assignSwitch[data-switch='select'] .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_assign_select_dark.svg);
     }
 
-    #assignSwitch .illustration.next {
+    #assignSwitch[data-switch='next'] .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_assign_next_dark.svg);
     }
 
-    #assignSwitch .illustration.previous {
+    #assignSwitch[data-switch='previous'] .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_assign_previous_dark.svg);
     }
 
-    #chooseSwitchCount .illustration.one-switch {
+    #chooseSwitchCount[data-switch-count='1'] .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch_dark.svg);
     }
 
-    #chooseSwitchCount .illustration.two-switches {
+    #chooseSwitchCount[data-switch-count='2'] .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches_dark.svg);
     }
 
-    #chooseSwitchCount .illustration.three-switches {
+    #chooseSwitchCount[data-switch-count='3'] .illustration {
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches_dark.svg);
     }
@@ -124,6 +128,39 @@
       background-image:
         url(chrome://os-settings/images/switch_access_setup_guide_closing_dark.svg);
     }
+  }
+
+  :host-context(body:not(.jelly-enabled)) .illustration-jelly {
+    display: none;
+  }
+
+  :host-context(body.jelly-enabled) .illustration {
+    display: none;
+  }
+
+  /* Hide all the multiple illustrations by default */
+  #assignSwitch .illustration-jelly,
+  #chooseSwitchCount .illustration-jelly {
+    display: none;
+  }
+
+  /* Show the correct illustration based on the active step */
+  :host-context(body.jelly-enabled)
+    #assignSwitch[data-switch='select'] #assignSelectIllo,
+  :host-context(body.jelly-enabled)
+    #assignSwitch[data-switch='next'] #assignNextIllo,
+  :host-context(body.jelly-enabled)
+    #assignSwitch[data-switch='previous'] #assignPreviousIllo {
+    display: unset;
+  }
+
+  :host-context(body.jelly-enabled)
+    #chooseSwitchCount[data-switch-count='1'] #oneSwitchIllo,
+  :host-context(body.jelly-enabled)
+    #chooseSwitchCount[data-switch-count='2'] #twoSwitchesIllo,
+  :host-context(body.jelly-enabled)
+    #chooseSwitchCount[data-switch-count='3'] #threeSwitchesIllo {
+    display: unset;
   }
 
   #buttonContainer {
@@ -166,20 +203,43 @@
       <div class="sa-setup-contents">
         $i18n{switchAccessSetupIntroBody}
       </div>
+
       <div class="illustration"></div>
+      <svg class="illustration-jelly" role="img" viewBox="0 0 217 216">
+        <use href="images/switch_access_setup_guide_start_pairing_jelly.svg#export"></use>
+      </svg>
     </div>
-    <div id="assignSwitch" class="flex" hidden>
+    <div id="assignSwitch" class="flex" hidden
+        data-switch$="[[switchToAssign_]]">
       <div class="sa-setup-contents"></div>
+
       <div class="illustration"></div>
+      <svg id="assignSelectIllo" class="illustration-jelly" role="img"
+          viewBox="0 0 216 216">
+        <use href="images/switch_access_setup_guide_assign_select_jelly.svg#export"></use>
+      </svg>
+      <svg id="assignNextIllo" class="illustration-jelly" role="img"
+          viewBox="0 0 216 216">
+        <use href="images/switch_access_setup_guide_assign_next_jelly.svg#export"></use>
+      </svg>
+      <svg id="assignPreviousIllo" class="illustration-jelly" role="img"
+          viewBox="0 0 216 216">
+        <use href="images/switch_access_setup_guide_assign_previous_jelly.svg#export"></use>
+      </svg>
     </div>
     <div id="autoScanEnabled" class="flex" hidden>
       <div class="sa-setup-contents">
         <p>$i18n{switchAccessSetupAutoScanEnabledExplanation}</p>
         <p>$i18n{switchAccessSetupAutoScanEnabledDirections}</p>
       </div>
+
       <div class="illustration"></div>
+      <svg class="illustration-jelly" role="img" viewBox="0 0 217 216">
+        <use href="images/switch_access_setup_guide_auto_scan_enabled_jelly.svg#export"></use>
+      </svg>
     </div>
-    <div id="chooseSwitchCount" class="flex" hidden>
+    <div id="chooseSwitchCount" class="flex" hidden
+        data-switch-count$="[[switchCount_]]">
       <div class="sa-setup-contents">
         <cr-radio-group id="switchCountGroup" selected="one-switch"
             on-selected-changed="onSwitchCountChanged_">
@@ -209,9 +269,20 @@
           </cr-radio-button>
         </cr-radio-button-group>
       </div>
-      <div class="illustration one-switch"
-           id="chooseSwitchCountIllustration">
-      </div>
+
+      <div class="illustration"></div>
+      <svg id="oneSwitchIllo" class="illustration-jelly" role="img"
+          viewBox="0 0 217 216">
+        <use href="images/switch_access_setup_guide_choose_one_switch_jelly.svg#export"></use>
+      </svg>
+      <svg id="twoSwitchesIllo" class="illustration-jelly" role="img"
+          viewBox="0 0 217 216">
+        <use href="images/switch_access_setup_guide_choose_two_switches_jelly.svg#export"></use>
+      </svg>
+      <svg id="threeSwitchesIllo" class="illustration-jelly" role="img"
+          viewBox="0 0 217 216">
+        <use href="images/switch_access_setup_guide_choose_three_switches_jelly.svg#export"></use>
+      </svg>
     </div>
     <div id="autoScanSpeed" hidden>
       <p>$i18n{switchAccessSetupAutoScanSpeedDescription}</p>
@@ -236,7 +307,11 @@
         <p id="closingInstructions"></p>
         <p>$i18n{switchAccessSetupClosingInfo}</p>
       </div>
+
       <div class="illustration"></div>
+      <svg class="illustration-jelly" role="img" viewBox="0 0 217 216">
+        <use href="images/switch_access_setup_guide_closing_jelly.svg#export"></use>
+      </svg>
     </div>
   </div>
   <div id="buttonContainer" slot="button-container">
