@@ -57,6 +57,14 @@ class NavigationPredictorTest : public ChromeRenderViewHostTestHarness {
     return predictor_service_.get();
   }
 
+  void RecordPropertyPageLinkClickDataToUkm() {
+    PageAnchorsMetricsObserver::PageLinkClickData* data =
+        PageAnchorsMetricsObserver::PageLinkClickData::
+            GetOrCreateForCurrentDocument(main_rfh());
+    data->RecordToUkm(main_rfh()->GetPageUkmSourceId());
+    base::RunLoop().RunUntilIdle();
+  }
+
  protected:
   void SetUp() override {
     // To avoid tsan data race test flakes, this needs to happen before
@@ -410,6 +418,7 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClick) {
       base::Milliseconds(navigation_start_to_click_ms);
   predictor_service()->ReportAnchorElementClick(std::move(click));
   base::RunLoop().RunUntilIdle();
+  RecordPropertyPageLinkClickDataToUkm();
 
   using UkmEntry = ukm::builders::NavigationPredictorPageLinkClick;
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
@@ -429,6 +438,7 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClick) {
   click->target_url = GURL("https://changed.com");
   predictor_service()->ReportAnchorElementClick(std::move(click));
   base::RunLoop().RunUntilIdle();
+  RecordPropertyPageLinkClickDataToUkm();
   entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   EXPECT_EQ(2u, entries.size());
   entry = entries[1];
@@ -454,6 +464,7 @@ TEST_F(NavigationPredictorTest, ReportAnchorElementClickMoreThan10Clicks) {
   using UkmEntry = ukm::builders::NavigationPredictorPageLinkClick;
   for (size_t i = 1; i <= 10; i++) {
     add_click();
+    RecordPropertyPageLinkClickDataToUkm();
     auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
     EXPECT_EQ(i, entries.size());
   }

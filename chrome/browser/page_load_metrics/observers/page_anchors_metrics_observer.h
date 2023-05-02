@@ -106,8 +106,6 @@ class PageAnchorsMetricsObserver
 
     int MedianLinkLocation();
 
-    void Clear();
-
     void RecordAnchorsData(ukm::SourceId ukm_source_id);
 
     size_t number_of_anchors_same_host_ = 0;
@@ -124,6 +122,30 @@ class PageAnchorsMetricsObserver
     friend class content::DocumentUserData<AnchorsData>;
     explicit AnchorsData(content::RenderFrameHost* render_frame_host);
     ukm::SourceId ukm_source_id_;
+    DOCUMENT_USER_DATA_KEY_DECL();
+  };
+
+  class PageLinkClickData
+      : public content::DocumentUserData<PageLinkClickData> {
+   public:
+    PageLinkClickData(const PageLinkClickData&) = delete;
+    ~PageLinkClickData() override;
+    PageLinkClickData& operator=(const PageLinkClickData&) = delete;
+
+    void Clear();
+    void RecordToUkm(ukm::SourceId ukm_source_id);
+
+    struct PageLinkClick {
+      int anchor_element_index_;
+      absl::optional<bool> href_unchanged_;
+      base::TimeDelta navigation_start_to_link_clicked_;
+    };
+
+    std::vector<PageLinkClick> page_link_clicks_;
+
+   private:
+    friend class content::DocumentUserData<PageLinkClickData>;
+    explicit PageLinkClickData(content::RenderFrameHost* render_frame_host);
     DOCUMENT_USER_DATA_KEY_DECL();
   };
 
@@ -156,6 +178,8 @@ class PageAnchorsMetricsObserver
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  void RecordDataToUkm();
+  void RecordPageLinkClickDataToUkm();
   void RecordAnchorDataToUkm();
   void RecordUserInteractionDataToUkm();
 

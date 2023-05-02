@@ -20,6 +20,16 @@ PageAnchorsMetricsObserver::AnchorsData::~AnchorsData() {
   RecordAnchorsData(ukm_source_id_);
 }
 
+int PageAnchorsMetricsObserver::AnchorsData::MedianLinkLocation() {
+  DCHECK(!link_locations_.empty());
+  sort(link_locations_.begin(), link_locations_.end());
+  size_t idx = link_locations_.size() / 2;
+  if (link_locations_.size() % 2 == 0) {
+    return (link_locations_[idx - 1] + link_locations_[idx]) * 50;
+  }
+  return link_locations_[link_locations_.size() / 2] * 100;
+}
+
 void PageAnchorsMetricsObserver::AnchorsData::RecordAnchorsData(
     ukm::SourceId ukm_source_id) {
   if (number_of_anchors_ == 0) {
@@ -38,30 +48,8 @@ void PageAnchorsMetricsObserver::AnchorsData::RecordAnchorsData(
   builder.SetViewport_Height(viewport_height_);
   builder.SetViewport_Width(viewport_width_);
   builder.Record(ukm::UkmRecorder::Get());
-  // Clear the AnchorsData for the next page load.
-  Clear();
-}
-
-int PageAnchorsMetricsObserver::AnchorsData::MedianLinkLocation() {
-  DCHECK(!link_locations_.empty());
-  sort(link_locations_.begin(), link_locations_.end());
-  size_t idx = link_locations_.size() / 2;
-  if (link_locations_.size() % 2 == 0) {
-    return (link_locations_[idx - 1] + link_locations_[idx]) * 50;
-  }
-  return link_locations_[link_locations_.size() / 2] * 100;
-}
-
-void PageAnchorsMetricsObserver::AnchorsData::Clear() {
-  number_of_anchors_same_host_ = 0;
-  number_of_anchors_contains_image_ = 0;
-  number_of_anchors_in_iframe_ = 0;
-  number_of_anchors_url_incremented_ = 0;
-  number_of_anchors_ = 0;
-  total_clickable_space_ = 0;
-  viewport_height_ = 0;
-  viewport_width_ = 0;
-  link_locations_.clear();
+  // `AnchorData` should persist and be logged again in case of BFCache
+  // navigation.
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::AnchorsData);
@@ -154,6 +142,42 @@ void PageAnchorsMetricsObserver::UserInteractionsData::Clear() {
 
 DOCUMENT_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::UserInteractionsData);
 
+PageAnchorsMetricsObserver::PageLinkClickData::PageLinkClickData(
+    content::RenderFrameHost* render_frame_host)
+    : DocumentUserData<PageLinkClickData>(render_frame_host) {
+  DCHECK(render_frame_host);
+}
+
+PageAnchorsMetricsObserver::PageLinkClickData::~PageLinkClickData() = default;
+
+void PageAnchorsMetricsObserver::PageLinkClickData::RecordToUkm(
+    ukm::SourceId ukm_source_id) {
+  if (page_link_clicks_.empty()) {
+    return;
+  }
+  auto* ukm_recorder = ukm::UkmRecorder::Get();
+
+  for (const auto& page_link_click : page_link_clicks_) {
+    ukm::builders::NavigationPredictorPageLinkClick builder(ukm_source_id);
+    builder.SetAnchorElementIndex(page_link_click.anchor_element_index_);
+    if (page_link_click.href_unchanged_.has_value()) {
+      builder.SetHrefUnchanged(page_link_click.href_unchanged_.value());
+    }
+    builder.SetNavigationStartToLinkClickedMs(ukm::GetExponentialBucketMin(
+        page_link_click.navigation_start_to_link_clicked_.InMilliseconds(),
+        1.3));
+    builder.Record(ukm_recorder);
+  }
+  // Clear the PageLinkClickData for the next page load.
+  Clear();
+}
+
+void PageAnchorsMetricsObserver::PageLinkClickData::Clear() {
+  page_link_clicks_.clear();
+}
+
+DOCUMENT_USER_DATA_KEY_IMPL(PageAnchorsMetricsObserver::PageLinkClickData);
+
 void PageAnchorsMetricsObserver::RecordUserInteractionDataToUkm() {
   if (!render_frame_host_) {
     return;
@@ -181,6 +205,23 @@ void PageAnchorsMetricsObserver::RecordAnchorDataToUkm() {
   data->RecordAnchorsData(ukm_source_id_);
 }
 
+void PageAnchorsMetricsObserver::RecordPageLinkClickDataToUkm() {
+  if (!render_frame_host_) {
+    return;
+  }
+  PageAnchorsMetricsObserver::PageLinkClickData* data =
+      PageAnchorsMetricsObserver::PageLinkClickData::
+          GetOrCreateForCurrentDocument(render_frame_host_);
+  DCHECK(data);
+  data->RecordToUkm(ukm_source_id_);
+}
+
+void PageAnchorsMetricsObserver::RecordDataToUkm() {
+  RecordPageLinkClickDataToUkm();
+  RecordAnchorDataToUkm();
+  RecordUserInteractionDataToUkm();
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PageAnchorsMetricsObserver::OnPrerenderStart(
     content::NavigationHandle* navigation_handle,
@@ -204,8 +245,7 @@ void PageAnchorsMetricsObserver::OnComplete(
   if (is_in_prerendered_page_)
     return;
 
-  RecordAnchorDataToUkm();
-  RecordUserInteractionDataToUkm();
+  RecordDataToUkm();
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
@@ -215,8 +255,7 @@ PageAnchorsMetricsObserver::FlushMetricsOnAppEnterBackground(
   if (is_in_prerendered_page_)
     return CONTINUE_OBSERVING;
 
-  RecordAnchorDataToUkm();
-  RecordUserInteractionDataToUkm();
+  RecordDataToUkm();
   return STOP_OBSERVING;
 }
 
@@ -252,8 +291,7 @@ void PageAnchorsMetricsObserver::OnRenderFrameDeleted(
   // Including the sub-frames.
   if (render_frame_host_ == rfh) {
     if (!is_in_prerendered_page_) {
-      RecordAnchorDataToUkm();
-      RecordUserInteractionDataToUkm();
+      RecordDataToUkm();
     }
     render_frame_host_ = nullptr;
   }
@@ -266,7 +304,6 @@ PageAnchorsMetricsObserver::OnEnterBackForwardCache(
     return CONTINUE_OBSERVING;
   }
 
-  RecordAnchorDataToUkm();
-  RecordUserInteractionDataToUkm();
+  RecordDataToUkm();
   return CONTINUE_OBSERVING;
 }

@@ -426,6 +426,10 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorBrowserTest, ClickAnchorElement) {
       "document.getElementById('google').click();"));
   base::RunLoop().RunUntilIdle();
 
+  // Navigate to another page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestURL("/1.html")));
+  base::RunLoop().RunUntilIdle();
+
   // Make sure the click has been logged.
   auto entries = test_ukm_recorder->GetMergedEntriesByName(
       ukm::builders::NavigationPredictorPageLinkClick::kEntryName);

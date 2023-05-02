@@ -104,10 +104,21 @@ int NavigationPredictor::GetLinearBucketForRatioArea(int value) const {
 
 PageAnchorsMetricsObserver::UserInteractionsData&
 NavigationPredictor::GetUserInteractionsData() const {
-  // Create the UserInteractionsData object for this WebContents if it doesn't
+  // Create the UserInteractionsData object for this document if it doesn't
   // already exist.
   PageAnchorsMetricsObserver::UserInteractionsData* data =
       PageAnchorsMetricsObserver::UserInteractionsData::
+          GetOrCreateForCurrentDocument(&render_frame_host());
+  DCHECK(data);
+  return *data;
+}
+
+PageAnchorsMetricsObserver::PageLinkClickData&
+NavigationPredictor::GetPageLinkClickData() const {
+  // Create the PageLinkClickData object for this document if it doesn't
+  // already exist.
+  PageAnchorsMetricsObserver::PageLinkClickData* data =
+      PageAnchorsMetricsObserver::PageLinkClickData::
           GetOrCreateForCurrentDocument(&render_frame_host());
   DCHECK(data);
   return *data;
@@ -247,11 +258,12 @@ void NavigationPredictor::ReportAnchorElementClick(
     }
   }
 
-  ukm::builders::NavigationPredictorPageLinkClick builder(ukm_source_id_);
-  builder.SetAnchorElementIndex(anchor_index);
+  PageAnchorsMetricsObserver::PageLinkClickData::PageLinkClick page_link_click;
+  page_link_click.anchor_element_index_ = anchor_index;
   auto it = anchors_.find(anchor_id);
   if (it != anchors_.end()) {
-    builder.SetHrefUnchanged(it->second->target_url == click->target_url);
+    page_link_click.href_unchanged_ =
+        (it->second->target_url == click->target_url);
   }
   navigation_start_to_click_ = click->navigation_start_to_click;
   auto& user_interactions_data = GetUserInteractionsData();
@@ -263,9 +275,10 @@ void NavigationPredictor::ReportAnchorElementClick(
   // navigation_start_to_click_ is set to click->navigation_start_to_click and
   // should always has a value.
   CHECK(navigation_start_to_click_.has_value());
-  builder.SetNavigationStartToLinkClickedMs(ukm::GetExponentialBucketMin(
-      navigation_start_to_click_.value().InMilliseconds(), 1.3));
-  builder.Record(ukm_recorder_);
+  page_link_click.navigation_start_to_link_clicked_ =
+      navigation_start_to_click_.value();
+  GetPageLinkClickData().page_link_clicks_.push_back(
+      std::move(page_link_click));
 }
 
 void NavigationPredictor::ReportAnchorElementsLeftViewport(

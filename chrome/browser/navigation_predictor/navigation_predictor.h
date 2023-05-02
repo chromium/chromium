@@ -94,6 +94,9 @@ class NavigationPredictor
   PageAnchorsMetricsObserver::UserInteractionsData& GetUserInteractionsData()
       const;
 
+  // Returns PageLinkClickData for the current page.
+  PageAnchorsMetricsObserver::PageLinkClickData& GetPageLinkClickData() const;
+
   // A count of clicks to prevent reporting more than 10 clicks to UKM.
   size_t clicked_count_ = 0;
 
