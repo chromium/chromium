@@ -88,17 +88,23 @@ class ASH_EXPORT ScreensaverImageDownloader {
 
   // Verifies that the download directory is present and writable, or attempts
   // to create it otherwise. The result of this operation is passed along to
-  // `StartDownloadJobInternal`.
+  // `OnVerifyDownloadDirectoryCompleted`.
   void StartDownloadJob(std::unique_ptr<Job> download_job);
 
-  // Triggers a new URL request to download an image, if `can_download_file` is
-  // true. Otherwise, it completes the job with an error result.
-  void StartDownloadJobInternal(std::unique_ptr<Job> download_job,
-                                bool can_download_file);
+  // Starts a new job if the download folder is present and writable.
+  // Otherwise, it completes the request with an error result.
+  void OnVerifyDownloadDirectoryCompleted(std::unique_ptr<Job> download_job,
+                                          bool can_download_to_dir);
 
-  // Moves the downloaded image to its desired path. To avoid reading errors,
-  // every image is initially downloaded to a temporary file. On network error,
-  // `callback` is invoked.
+  // Resolves the download request if the file is already cached, otherwise
+  // triggers a new URL request to download the file.
+  void OnCheckIsFileIsInCache(const base::FilePath& file_path,
+                              std::unique_ptr<Job> download_job,
+                              bool is_file_present);
+
+  // Moves the downloaded image to its desired path. To avoid reading
+  // errors, every image is initially downloaded to a temporary file. On
+  // network error, `callback` is invoked.
   void OnUrlDownloadedToTempFile(
       std::unique_ptr<network::SimpleURLLoader> simple_loader,
       std::unique_ptr<Job> download_job,

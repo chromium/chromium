@@ -85,7 +85,7 @@ int GetResponseCode(network::SimpleURLLoader* simple_loader) {
   return simple_loader->ResponseInfo()->headers->response_code();
 }
 
-bool CheckOrCreateDownloadDirectory(const base::FilePath& download_directory) {
+bool VerifyOrCreateDownloadDirectory(const base::FilePath& download_directory) {
   if (!base::DirectoryExists(download_directory) &&
       !base::CreateDirectory(download_directory)) {
     LOG(ERROR) << "Cannot create download directory";
@@ -140,18 +140,40 @@ void ScreensaverImageDownloader::StartDownloadJob(
   queue_state_ = QueueState::kDownloading;
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CheckOrCreateDownloadDirectory, download_directory_),
-      base::BindOnce(&ScreensaverImageDownloader::StartDownloadJobInternal,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(download_job)));
+      base::BindOnce(&VerifyOrCreateDownloadDirectory, download_directory_),
+      base::BindOnce(
+          &ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted,
+          weak_ptr_factory_.GetWeakPtr(), std::move(download_job)));
 }
 
-void ScreensaverImageDownloader::StartDownloadJobInternal(
+void ScreensaverImageDownloader::OnVerifyDownloadDirectoryCompleted(
     std::unique_ptr<Job> download_job,
     bool can_download_file) {
   if (!can_download_file) {
     FinishDownloadJob(std::move(download_job),
                       ScreensaverImageDownloadResult::kFileSystemWriteError,
                       absl::nullopt);
+    return;
+  }
+
+  // The download folder exists, check if the file is already in cache before
+  // attempting to download it.
+  const base::FilePath file_path =
+      download_directory_.AppendASCII(download_job->file_name);
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&base::PathExists, file_path),
+      base::BindOnce(&ScreensaverImageDownloader::OnCheckIsFileIsInCache,
+                     weak_ptr_factory_.GetWeakPtr(), file_path,
+                     std::move(download_job)));
+}
+
+void ScreensaverImageDownloader::OnCheckIsFileIsInCache(
+    const base::FilePath& file_path,
+    std::unique_ptr<Job> download_job,
+    bool is_file_present) {
+  if (is_file_present) {
+    FinishDownloadJob(std::move(download_job),
+                      ScreensaverImageDownloadResult::kSuccess, file_path);
     return;
   }
 

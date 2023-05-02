@@ -143,6 +143,56 @@ TEST_F(ScreensaverImageDownloaderTest, DownloadImagesTest) {
   }
 }
 
+TEST_F(ScreensaverImageDownloaderTest, ReuseFilesInCacheTest) {
+  // Track how many URL requests will be sent by the downloader
+  size_t urls_requested = 0;
+  url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ++urls_requested;
+        url_loader_factory()->AddResponse(kImageUrl1, kFileContents);
+      }));
+
+  // Test initial download.
+  {
+    std::unique_ptr<DownloadResultFuture> result_future =
+        QueueNewJobWithFuture(kImageUrl1, kImageFileName1);
+    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
+              result_future->Get<0>());
+    ASSERT_TRUE(result_future->Get<1>().has_value());
+    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName1), result_future->Get<1>());
+    EXPECT_EQ(1u, urls_requested);
+  }
+
+  // Attempting to download the same URL should not create a new network
+  // request.
+  {
+    std::unique_ptr<DownloadResultFuture> result_future =
+        QueueNewJobWithFuture(kImageUrl1, kImageFileName1);
+    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
+              result_future->Get<0>());
+    ASSERT_TRUE(result_future->Get<1>().has_value());
+    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName1), result_future->Get<1>());
+    EXPECT_EQ(1u, urls_requested);
+  }
+
+  url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ++urls_requested;
+        url_loader_factory()->AddResponse(kImageUrl2, kFileContents);
+      }));
+
+  // A different URL should create a new network request.
+  {
+    std::unique_ptr<DownloadResultFuture> result_future =
+        QueueNewJobWithFuture(kImageUrl2, kImageFileName2);
+    EXPECT_EQ(ScreensaverImageDownloadResult::kSuccess,
+              result_future->Get<0>());
+    ASSERT_TRUE(result_future->Get<1>().has_value());
+    EXPECT_EQ(temp_dir().AppendASCII(kImageFileName2), result_future->Get<1>());
+    EXPECT_EQ(2u, urls_requested);
+  }
+}
+
 TEST_F(ScreensaverImageDownloaderTest, VerifySerializedDownloadTest) {
   // Push two jobs and check the internal downloading queue
   std::unique_ptr<DownloadResultFuture> result_future1 =
