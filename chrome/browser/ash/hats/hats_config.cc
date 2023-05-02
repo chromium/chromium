@@ -206,4 +206,12 @@ const HatsConfig kHatsOsSettingsSearchSurvey = {
         kHatsOsSettingsSearchSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
 };
 
+// Borealis games survey -- Shown after a Steam game exits.
+const HatsConfig kHatsBorealisGamesSurvey = {
+    ::features::kHappinessTrackingBorealisGames,  // feature
+    base::Days(1),                                // new_device_threshold
+    prefs::kHatsBorealisGamesSurveyIsSelected,    // is_selected_pref_name
+    prefs::kHatsBorealisGamesSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+};
+
 }  // namespace ash

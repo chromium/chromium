@@ -620,6 +620,10 @@ BASE_FEATURE(kHappinessTrackingPrivacyHubBaseline,
 BASE_FEATURE(kHappinessTrackingOsSettingsSearch,
              "HappinessTrackingOsSettingsSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables the Happiness Tracking System for Borealis games survey.
+BASE_FEATURE(kHappinessTrackingBorealisGames,
+             "HappinessTrackingBorealisGames",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Hides the origin text from showing up briefly in WebApp windows.

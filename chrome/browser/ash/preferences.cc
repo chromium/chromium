@@ -577,6 +577,11 @@ void Preferences::RegisterProfilePrefs(
                               0);
   registry->RegisterBooleanPref(::prefs::kHatsOsSettingsSearchSurveyIsSelected,
                                 false);
+
+  // Borealis HaTS survey prefs for game satisfaction.
+  registry->RegisterInt64Pref(::prefs::kHatsBorealisGamesSurveyCycleEndTs, 0);
+  registry->RegisterBooleanPref(::prefs::kHatsBorealisGamesSurveyIsSelected,
+                                false);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

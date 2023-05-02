@@ -817,6 +817,16 @@ const char kHatsPrivacyHubBaselineIsSelected[] =
 const char kHatsPrivacyHubBaselineCycleEndTs[] =
     "hats_privacy_hub_baseline_end_timestamp";
 
+// A boolean pref. Indicated if the device is selected for the Borealis games
+// survey.
+const char kHatsBorealisGamesSurveyIsSelected[] =
+    "hats_borealis_games_is_selected";
+
+// An int64 pref. This is the timestamp, microseconds after epoch, that
+// indicated the end of the most recent Borealis games survey cycle.
+const char kHatsBorealisGamesSurveyCycleEndTs[] =
+    "hats_borealis_games_end_timestamp";
+
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.
 const char kPinUnlockFeatureNotificationShown[] =
