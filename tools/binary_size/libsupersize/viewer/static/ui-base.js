@@ -153,6 +153,19 @@ function uniquifyIterToString(it) {
 }
 
 /**
+ * Returns the extension of a file, given '/'-delimited path.
+ * @param {string} path
+ * @return {?string} The file extension, or null if none.
+ */
+function getFileExtension(path) {
+  const dirPos = path.lastIndexOf('/');
+  const dotPos = path.lastIndexOf('.');
+  if (dotPos <= dirPos)  // 'dir.with.dot/file_without_dot', 'no_path_no_ext'.
+    return null;
+  return (dotPos >= 0) ? path.slice(dotPos + 1) : null;
+}
+
+/**
  * Map wrapper with forcedGet() to assigns a value when key not found.
  * @template KEY_DATA_TYPE The data type of a key in the Map.
  * @template VALUE_DATA_TYPE The data type of a value in the Map.

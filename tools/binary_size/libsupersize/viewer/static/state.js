@@ -522,7 +522,9 @@ function _makeIconTemplateGetter() {
     group: getSymbolIcon('.groupicon'),  // Reuse.
     elf: getSymbolIcon('.fileicon'),     // Reuse.
     dex: getSymbolIcon('.dexicon'),      // Reuse.
+    arsc: getSymbolIcon('.arscicon'),    // Reuse.
     metrics: getMetricsIcon('.metricsicon'),
+    other: getSymbolIcon('.othericon'),  // Reuse.
   };
 
   /** @type {Map<string, {color:string, description:string}>} */

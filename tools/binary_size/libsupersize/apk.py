@@ -99,6 +99,7 @@ class _ResourceSourceMapper:
 def CreateArscSymbols(apk_spec):
   """Creates symbols for resources"""
   raw_symbols = []
+  metrics_by_file = {}
   with zipfile.ZipFile(apk_spec.apk_path) as src_zip:
     arsc_infos = [
         info for info in src_zip.infolist()
@@ -107,6 +108,7 @@ def CreateArscSymbols(apk_spec):
     if len(arsc_infos) != 0:
       assert len(arsc_infos) == 1
       filename = arsc_infos[0].filename
+      metrics = {}
       arsc_data = src_zip.read(arsc_infos[0])
       arsc_file = arsc_parser.ArscFile(arsc_data)
       source_path = posixpath.join(models.APK_PREFIX_PATH, filename)
@@ -128,6 +130,10 @@ def CreateArscSymbols(apk_spec):
                 source_path=sym_source_path,
                 full_name=f'{name} (placeholders)'))
             raw_symbols.append(placeholder_sym)
+
+          if isinstance(chunk, arsc_parser.ArscResTableTypeSpec):
+            metrics['COUNT/' + chunk.type_str] = chunk.entry_count
+
           overhead -= chunk.size
       if overhead > 0:
         raw_symbols.append(
@@ -135,11 +141,12 @@ def CreateArscSymbols(apk_spec):
                           overhead,
                           source_path=source_path,
                           full_name='Overhead: ARSC'))
+      metrics_by_file[filename] = metrics
 
   section_ranges = {}
   archive_util.ExtendSectionRange(section_ranges, models.SECTION_ARSC,
                                   sum(s.size for s in raw_symbols))
-  return section_ranges, raw_symbols
+  return section_ranges, raw_symbols, metrics_by_file
 
 
 def CreateMetadata(apk_spec, include_file_details, shorten_path):

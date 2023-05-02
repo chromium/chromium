@@ -400,8 +400,10 @@ def _CreateContainerSymbols(container_spec, apk_file_manager,
   # condition below skips these cases to prevent redundant symbol creation.
   if not native_spec and apk_spec:
     logging.info('Analyzing ARSC')
-    arsc_section_ranges, arsc_symbols = apk.CreateArscSymbols(apk_spec)
+    arsc_section_ranges, arsc_symbols, arsc_metrics_by_file = (
+        apk.CreateArscSymbols(apk_spec))
     add_syms(arsc_section_ranges, arsc_symbols)
+    metrics_by_file.update(arsc_metrics_by_file)
 
     other_section_ranges, other_symbols, apk_metadata = (
         apk.CreateApkOtherSymbols(apk_spec))
