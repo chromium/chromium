@@ -330,6 +330,8 @@ crbug.com/1417485 [ android android-nexus-5x passthrough ] conformance/reading/r
 # The "Slow" expectations in this section are expected to stick around, i.e.
 # they are not attributed to some known issue that needs resolving.
 
+crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################

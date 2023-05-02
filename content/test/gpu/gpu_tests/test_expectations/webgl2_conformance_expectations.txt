@@ -231,6 +231,8 @@ crbug.com/1345782 [ mac amd-0x67ef passthrough angle-opengl ] deqp/functional/gl
 # the default 15 second heartbeat timeout because of that.
 crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/functional/gles3/uniformapi/random.html [ Slow ]
 
+crbug.com/1441710 [ chromeos chromeos-board-kevin ] conformance/glsl/bugs/temp-expressions-should-not-crash.html [ Slow ]
+
 ###################
 # Failures/Flakes #
 ###################
