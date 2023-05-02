@@ -9055,12 +9055,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLacrosMergeIcuDataFileName,
      flag_descriptions::kLacrosMergeIcuDataFileDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(base::i18n::kLacrosMergeIcuDataFile)},
-
-    {"lacros-screen-coordinates-enabled",
-     flag_descriptions::kLacrosScreenCoordinatesEnabledName,
-     flag_descriptions::kLacrosScreenCoordinatesEnabledDescription,
-     kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kWaylandScreenCoordinatesEnabled)},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

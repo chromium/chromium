@@ -4786,13 +4786,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "lacros-screen-coordinates-enabled",
-    "owners": ["oshima", "skau", "lacros-team@google.com" ],
-    // Once screen coordinates is enabled by default on lacros, this flag can be removed.
-    // TODO(https://1261321).
-    "expiry_milestone": 115
-  },
-  {
     "name": "lacros-selection",
     "owners": [ "kimjae", "erikchen", "lacros-team@google.com" ],
     "expiry_milestone": 130

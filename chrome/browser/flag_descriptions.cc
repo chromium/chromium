@@ -6592,13 +6592,6 @@ const char kLacrosMergeIcuDataFileName[] =
     "Enable merging of icudtl.dat in Lacros";
 const char kLacrosMergeIcuDataFileDescription[] =
     "Enables sharing common areas of icudtl.dat between Ash and Lacros.";
-
-const char kLacrosScreenCoordinatesEnabledName[] =
-    "Enable screen coordinates system in lacros-chrome";
-const char kLacrosScreenCoordinatesEnabledDescription[] =
-    "Enabling this will allow lacros to control the window position in screen "
-    "coordinates. This is required for features such as the Javascript APIs "
-    "moveBy, moveTo or session restore.";
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS)

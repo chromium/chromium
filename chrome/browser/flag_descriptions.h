@@ -3778,9 +3778,6 @@ extern const char kLacrosAuraCaptureDescription[];
 
 extern const char kLacrosMergeIcuDataFileName[];
 extern const char kLacrosMergeIcuDataFileDescription[];
-
-extern const char kLacrosScreenCoordinatesEnabledName[];
-extern const char kLacrosScreenCoordinatesEnabledDescription[];
 #endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
