@@ -193,6 +193,25 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHPriceTrackingChipFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    // Show the promo only once.
+    config->trigger =
+        EventConfig("price_tracking_chip_iph_trigger", Comparator(EQUAL, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    // Set a dummy config for the used event to be consistent with the other
+    // IPH configurations. The used event is never recorded by the feature code
+    // because the trigger event is already reported the first time the chip is
+    // being used, which corresponds to a used event.
+    config->used =
+        EventConfig("price_tracking_chip_shown", Comparator(ANY, 0), 0, 360);
+    return config;
+  }
+
   if (kIPHPriceTrackingInSidePanelFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

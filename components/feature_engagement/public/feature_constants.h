@@ -40,6 +40,7 @@ BASE_DECLARE_FEATURE(kIPHPasswordsManagementBubbleDuringSigninFeature);
 BASE_DECLARE_FEATURE(kIPHPasswordsWebAppProfileSwitchFeature);
 BASE_DECLARE_FEATURE(kIPHPerformanceNewBadgeFeature);
 BASE_DECLARE_FEATURE(kIPHPowerBookmarksSidePanelFeature);
+BASE_DECLARE_FEATURE(kIPHPriceTrackingChipFeature);
 BASE_DECLARE_FEATURE(kIPHPriceTrackingPageActionIconLabelFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListDiscoveryFeature);
 BASE_DECLARE_FEATURE(kIPHReadingListEntryPointFeature);
