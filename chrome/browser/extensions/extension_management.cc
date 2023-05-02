@@ -308,8 +308,8 @@ bool ExtensionManagement::IsAllowedManifestVersion(
     case internal::GlobalSettings::ManifestV2Setting::kEnabledForForceInstalled:
       auto installation_mode =
           GetInstallationMode(extension_id, /*update_url=*/std::string());
-      return enabled_by_default ||
-             installation_mode == InstallationMode::INSTALLATION_FORCED ||
+      return manifest_version >= 3 ||
+             installation_mode == INSTALLATION_FORCED ||
              installation_mode == INSTALLATION_RECOMMENDED;
   }
 }
