@@ -124,7 +124,6 @@ class EventRouter : public KeyedService,
                                     const std::string& extension_id,
                                     events::HistogramValue histogram_value,
                                     const std::string& event_name,
-                                    int render_process_id,
                                     int worker_thread_id,
                                     int64_t service_worker_version_id,
                                     base::Value::List event_args,
@@ -367,17 +366,17 @@ class EventRouter : public KeyedService,
   };
 
   // TODO(gdk): Document this.
-  static void DispatchExtensionMessage(
-      content::RenderProcessHost* rph,
-      int worker_thread_id,
-      content::BrowserContext* browser_context,
-      const std::string& extension_id,
-      int event_id,
-      const std::string& event_name,
-      base::Value::List event_args,
-      UserGestureState user_gesture,
-      extensions::mojom::EventFilteringInfoPtr info);
+  void DispatchExtensionMessage(content::RenderProcessHost* rph,
+                                int worker_thread_id,
+                                content::BrowserContext* browser_context,
+                                const std::string& extension_id,
+                                int event_id,
+                                const std::string& event_name,
+                                base::Value::List event_args,
+                                UserGestureState user_gesture,
+                                extensions::mojom::EventFilteringInfoPtr info);
 
+  void ObserveProcess(content::RenderProcessHost* process);
   content::RenderProcessHost* GetRenderProcessHostForCurrentReceiver();
 
   // Gets off-the-record browser context if

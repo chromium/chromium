@@ -1727,9 +1727,8 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
       EventRouter::DispatchEventToSender(
           render_process, id.browser_context, listener->id.extension_id,
           listener->histogram_value, listener->id.sub_event_name,
-          listener->id.render_process_id, listener->id.worker_thread_id,
-          listener->id.service_worker_version_id, std::move(args_filtered),
-          mojom::EventFilteringInfo::New());
+          listener->id.worker_thread_id, listener->id.service_worker_version_id,
+          std::move(args_filtered), mojom::EventFilteringInfo::New());
     } else {
       DCHECK_EQ(-1, id.service_worker_version_id);
       // In the event of a lazy listener, we go through normal extension
