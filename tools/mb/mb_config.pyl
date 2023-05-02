@@ -162,7 +162,6 @@
       'linux-ash-chromium-generator-rel': 'chromeos_with_codecs_release_bot_reclient',
       'linux-cfm-rel': 'linux_cfm_release_bot_reclient',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot_reclient',
-      'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot',
       'linux-chromeos-rel': 'chromeos_with_codecs_with_lacros_release_bot_reclient',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-dbg': 'lacros_on_linux_debug_bot_reclient',
@@ -1335,7 +1334,7 @@
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
       'win-celab-try-rel': 'release_bot_minimal_symbols',
       'win-fieldtrial-rel': 'release_bot_minimal_symbols',
-      'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot',
+      'win-libfuzzer-asan-rel': 'libfuzzer_windows_asan_release_trybot_reclient',
       'win-perfetto-rel': 'perfetto_release_trybot',
       'win-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10-wpt-content-shell-fyi-rel': 'release_trybot',
@@ -3149,8 +3148,8 @@
       'libfuzzer', 'asan', 'release_bot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'minimal_symbols', 'mojo_fuzzer',
     ],
 
-    'libfuzzer_windows_asan_release_trybot': [
-      'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
+    'libfuzzer_windows_asan_release_trybot_reclient': [
+      'libfuzzer', 'asan', 'release_trybot_reclient', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer', 'skip_generate_fuzzer_owners', 'no_symbols',
     ],
 
     'linux_cfm_release_bot_reclient': [
