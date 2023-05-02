@@ -167,6 +167,10 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                     actionStarted = true;
                     break;
 
+                case REVIEWS:
+                    assert false : "Pending implementation";
+                    break;
+
                 case CALL:
                     // Don't call directly. Use `DIAL` instead to let the user decide.
                     // Note also that ACTION_CALL requires a dedicated permission.
@@ -211,6 +215,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                         break;
 
                     case CALL:
+                    case REVIEWS:
                     case WEBSITE:
                         // Give up. Don't add the `default` clause though, capture missed variants.
                         break;

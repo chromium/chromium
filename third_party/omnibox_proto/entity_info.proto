@@ -53,6 +53,13 @@ message EntityInfo {
 
 // Entity Suggestion Action descriptor.
 message ActionInfo {
+  enum ActionType {
+    DIRECTIONS = 2;
+    CALL = 3;
+    WEBSITE = 6;
+    REVIEWS = 20;
+  }
+
   // The text to display on the Action button.
   optional string displayed_text = 1;
 
@@ -71,11 +78,9 @@ message ActionInfo {
   // Action type.
   optional ActionType action_type = 8;
 
-  enum ActionType {
-    DIRECTIONS = 2;
-    CALL = 3;
-    WEBSITE = 6;
-  }
+  // If non-empty, the action must result in navigation to the SRP accompanied
+  // with these additional request parameters to help force a certain SRP.
+  map<string, string> search_parameters = 9;
 }
 
 // Entity Suggestion Category info.
