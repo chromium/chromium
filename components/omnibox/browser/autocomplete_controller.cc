@@ -172,26 +172,16 @@ bool ShouldPreserveDefault(bool sync_pass_done,
   // Don't preserve default in keyword mode to avoid e.g. the 'google.com'
   // suggestion being preserved and kicking the user out of keyword mode when
   // they type 'google.com  '.
-  static bool exclude_keyword_inputs =
-      OmniboxFieldTrial::
-          kAutocompleteStabilityPreserveDefaultExcludeKeywordInputs.Get();
-  if (exclude_keyword_inputs && input.prefer_keyword())
+  if (input.prefer_keyword())
     return false;
 
-  // Check if preservation is enabled for sync/async updates.
-  if (!sync_pass_done) {
-    static const int min_input_length =
-        OmniboxFieldTrial::
-            kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength
-                .Get();
-    return min_input_length >= 0 &&
-           input.text().length() >= static_cast<size_t>(min_input_length);
-  } else {
-    static bool for_async_updates =
-        OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultForAsyncUpdates
-            .Get();
-    return for_async_updates;
-  }
+  // Preserve for all async updates, but only for longer inputs for sync
+  // updates. This mitigates aggressive scoring search suggestions getting
+  // 'stuck' as the default when short inputs provide low confidence.
+  if (!sync_pass_done)
+    return input.text().length() >= 3;
+  else
+    return true;
 }
 
 // The feature is checked frequently, so cache it to avoid performance costs.
@@ -1014,14 +1004,6 @@ void AutocompleteController::UpdateResult(
     // If not all providers are done, merge the old and new matches before
     // sorting.
     result_.TransferOldMatches(input_, &old_matches_to_reuse);
-    static bool preserve_default_after_transfer =
-        OmniboxFieldTrial::kAutocompleteStabilityPreserveDefaultAfterTransfer
-            .Get();
-
-    if (!preserve_default_after_transfer) {
-      default_match_to_preserve.reset();
-    }
-
   } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
     // The async scoring model is only run once all the providers are done. Use
     // a WeakPtr since the model is not owned and `this` may no longer be alive.

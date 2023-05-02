@@ -27,7 +27,6 @@ BASE_DECLARE_FEATURE(kIgnoreIntermediateResults);
 BASE_DECLARE_FEATURE(kOmniboxDemoteByType);
 BASE_DECLARE_FEATURE(kPreferNonShortcutMatchesWhenDeduping);
 BASE_DECLARE_FEATURE(kPreferTailOverHistoryClusterSuggestions);
-BASE_DECLARE_FEATURE(kPreserveDefault);
 BASE_DECLARE_FEATURE(kSingleSortAndCullPass);
 BASE_DECLARE_FEATURE(kUpdateResultDebounce);
 

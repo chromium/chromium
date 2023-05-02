@@ -476,32 +476,6 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 // `FeatureParam`s
 
 // Autocomplete stability and related features.
-// If enabled and the input is in keyword mode, the default suggestion isn't
-// preserved.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultExcludeKeywordInputs;
-// When providers update their matches, the aggregated matches for the current
-// input are sorted, then merged with the matches from the previous input
-// (`TransferOldMatches()`), then resorted. If enabled, both sorts preserve the
-// default suggestion. Otherwise, only the first sort of the pre-merged matches
-// preserves the default.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultAfterTransfer;
-// The minimum input length for which to preserve the default suggestion during
-// sync updates. If 0, all sync updates preserve the default suggestion,
-// regardless of input length. If <0, no sync updates preserve the default
-// suggestion; i.e. control behavior.
-extern const base::FeatureParam<int>
-    kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength;
-// Whether to preserve the default suggestion during async updates. It doesn't
-// make too much sense to enable preservation for sync but not async
-// updates. True by default.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultForAsyncUpdates;
-// If enabled, transferred matches from the previous input are not allowed to
-// be default.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityPreventDefaultPreviousMatches;
 // Limit how frequently `AutocompleteController::UpdateResult()` will be
 // invoked. See the comments at `AutocompleteController::update_debouncer_`.
 extern const base::FeatureParam<bool>

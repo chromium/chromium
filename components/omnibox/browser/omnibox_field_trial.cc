@@ -804,31 +804,6 @@ namespace OmniboxFieldTrial {
 // Autocomplete stability.
 
 const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultExcludeKeywordInputs(
-        &omnibox::kPreserveDefault,
-        "AutocompleteStabilityPreserveDefaultExcludeKeywordInputs",
-        true);
-const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultAfterTransfer(
-        &omnibox::kPreserveDefault,
-        "AutocompleteStabilityPreserveDefaultAfterTransfer",
-        true);
-const base::FeatureParam<int>
-    kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength(
-        &omnibox::kPreserveDefault,
-        "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength",
-        3);
-const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultForAsyncUpdates(
-        &omnibox::kPreserveDefault,
-        "AutocompleteStabilityPreserveDefaultForAsyncUpdates",
-        true);
-const base::FeatureParam<bool>
-    kAutocompleteStabilityPreventDefaultPreviousMatches(
-        &omnibox::kPreserveDefault,
-        "AutocompleteStabilityPreventDefaultPreviousMatches",
-        true);
-const base::FeatureParam<bool>
     kAutocompleteStabilityUpdateResultDebounceFromLastRun(
         &omnibox::kUpdateResultDebounce,
         "AutocompleteStabilityUpdateResultDebounceFromLastRun",

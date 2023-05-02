@@ -4049,35 +4049,6 @@
             ]
         }
     ],
-    "DesktopOmniboxPostAutocompletionPreserveDefault": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "AutocompleteStabilityPreserveDefaultAfterTransfer": "true",
-                        "AutocompleteStabilityPreserveDefaultExcludeKeywordInputs": "true",
-                        "AutocompleteStabilityPreserveDefaultForAsyncUpdates": "true",
-                        "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength": "3",
-                        "AutocompleteStabilityPreventDefaultPreviousMatches": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxPreserveDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopOmniboxPostAutocompletionUpdateResultDebounce": [
         {
             "platforms": [
