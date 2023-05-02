@@ -360,7 +360,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return parent_;
   }
   bool IsDescendantOf(const LayoutObject*) const;
-  LayoutObject* NonCulledParent() const;
 
   LayoutObject* PreviousSibling() const {
     NOT_DESTROYED();

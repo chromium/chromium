@@ -832,18 +832,6 @@ bool LayoutObject::IsInListMarker() const {
   return Parent() && Parent()->IsListMarker();
 }
 
-LayoutObject* LayoutObject::NonCulledParent() const {
-  LayoutObject* parent = Parent();
-  for (; parent; parent = parent->Parent()) {
-    if (const auto* parent_inline_box = DynamicTo<LayoutInline>(parent)) {
-      if (!parent_inline_box->AlwaysCreateLineBoxesForLayoutInline())
-        continue;
-    }
-    return parent;
-  }
-  return nullptr;
-}
-
 LayoutObject* LayoutObject::NextInPreOrderAfterChildren() const {
   NOT_DESTROYED();
   LayoutObject* o = NextSibling();
