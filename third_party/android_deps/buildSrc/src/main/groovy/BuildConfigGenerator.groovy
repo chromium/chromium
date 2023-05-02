@@ -639,7 +639,8 @@ class BuildConfigGenerator extends DefaultTask {
         switch (dependencyId) {
             case 'androidx_annotation_annotation_jvm':
                 sb.append('  # https://crbug.com/989505\n')
-                sb.append('  jar_excluded_patterns = ["META-INF/proguard/*"]\n')
+                sb.append('  jar_excluded_patterns = [ "META-INF/proguard/*" ]\n')
+                sb.append('  proguard_configs = [ "androidx_annotations.flags" ]\n')
                 break
             case 'androidx_benchmark_benchmark_macro':
                 // Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
@@ -834,6 +835,8 @@ class BuildConfigGenerator extends DefaultTask {
             case 'androidx_preference_preference':
                 sb.append('''\
                 |  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"
+                |
+                |  proguard_configs = [ "androidx_preferences.flags" ]
                 |'''.stripMargin())
                 // Replace broad library -keep rules with a more limited set in
                 // chrome/android/java/proguard.flags instead.
