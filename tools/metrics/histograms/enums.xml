@@ -73401,6 +73401,26 @@ Called by update_net_trust_anchors.py.-->
   <int value="1" label="Disconnected"/>
 </enum>
 
+<enum name="NetworkCellularEntitlementCheck">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="In progress"/>
+  <int value="2" label="Failed to build payload"/>
+  <int value="3" label="Failed to parse IP address"/>
+  <int value="4" label="Unexpected request ID"/>
+  <int value="5" label="User not allowed to tether"/>
+  <int value="6" label="HTTP Syntax Error code returned by server"/>
+  <int value="7" label="Unrecognized user"/>
+  <int value="8" label="Internal Error code returned by server"/>
+  <int value="9" label="Unrecognized error code"/>
+  <int value="10" label="Unrecognized HTTP status code"/>
+  <int value="11" label="HTTP request error"/>
+  <int value="12" label="Illegal request while another is in progress"/>
+  <int value="13" label="Not allowed by MODB"/>
+  <int value="14" label="Not allowed because carrier is not known"/>
+  <int value="15" label="Cellular device has no IP address"/>
+  <int value="16" label="Cellular device doesn't exist"/>
+</enum>
+
 <enum name="NetworkCellularESimInstallResult">
   <int value="0" label="Success"/>
   <int value="1" label="Inhibit failed"/>

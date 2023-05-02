@@ -1978,6 +1978,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.Shill.Cellular.EntitlementCheck"
+    enum="NetworkCellularEntitlementCheck" expires_after="2024-05-01">
+  <owner>andrewlassalle@chromium.org</owner>
+  <owner>cros-network-metrics@google.com</owner>
+  <summary>
+    ChromeOS cellular network metric that tracks the entitlement check results
+    used for hotspot. This metric is triggered every time the user tries to
+    enable hotspot using cellular as the upstream technology.
+  </summary>
+</histogram>
+
 <histogram name="Network.Shill.Cellular.ExpiredLeaseLengthSeconds2"
     units="seconds" expires_after="2023-12-30">
   <owner>ejcaruso@chromium.org</owner>
