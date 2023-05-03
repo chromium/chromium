@@ -1060,9 +1060,12 @@ gfx::Size BrowserView::GetWebAppFrameToolbarPreferredSize() const {
 
 #if BUILDFLAG(IS_MAC)
 bool BrowserView::UsesImmersiveFullscreenMode() const {
+  const bool is_pwa =
+      base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs) &&
+      GetIsWebAppType();
+  const bool is_tabbed_window = GetSupportsTabStrip();
   return base::FeatureList::IsEnabled(features::kImmersiveFullscreen) &&
-         (!GetIsWebAppType() ||
-          base::FeatureList::IsEnabled(features::kImmersiveFullscreenPWAs));
+         (is_pwa || is_tabbed_window);
 }
 
 bool BrowserView::UsesImmersiveFullscreenTabbedMode() const {
