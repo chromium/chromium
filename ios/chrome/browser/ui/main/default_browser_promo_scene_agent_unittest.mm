@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/main/default_browser_promo_scene_agent.h"
 
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -103,7 +104,7 @@ class DefaultBrowserPromoSceneAgentTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
-        ->SignIn(identity);
+        ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   web::WebTaskEnvironment task_environment_;
