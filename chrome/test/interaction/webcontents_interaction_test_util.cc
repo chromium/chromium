@@ -90,10 +90,8 @@ void ExecuteScript(content::RenderFrameHost* host, const std::string& script) {
   }
 }
 
-// Our replacement for content::EvalJs() that uses the same underlying logic as
-// ExecuteScriptAndExtract*(), because EvalJs() is not compatible with Content
-// Security Policy of many internal pages we want to test :(
-// TODO(dfried): migrate when this is not a problem.
+// TODO(dfried): migrate to EvalJs, now that it supports Content Security
+// Policy.
 content::EvalJsResult EvalJsLocal(
     const content::ToRenderFrameHost& execution_target,
     const std::string& function) {

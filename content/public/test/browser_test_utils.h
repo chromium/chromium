@@ -554,9 +554,7 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 //
 // Appends |domAutomationController.send(...)| to the end of |script| and waits
 // until the response comes back (pumping the message loop while waiting).  The
-// |script| itself should not invoke domAutomationController.send(); if you want
-// to call domAutomationController.send(...) yourself and extract the result,
-// then use one of ExecuteScriptAndExtract... functions).
+// |script| itself should not invoke domAutomationController.send().
 //
 // Returns true on success (if the renderer responded back with the expected
 // value).  Returns false otherwise (e.g. if the script threw an exception
@@ -590,16 +588,6 @@ void ExecuteScriptAsync(const ToRenderFrameHost& adapter,
 // the renderer.
 void ExecuteScriptAsyncWithoutUserGesture(const ToRenderFrameHost& adapter,
                                           const std::string& script);
-
-// The following method executes the passed |script| in the specified frame and
-// sets |result| to the value passed to "window.domAutomationController.send" by
-// the executed script. It returns true on success, false if the script
-// execution failed or did not evaluate to the expected type.
-//
-// Deprecated: Use EvalJs().
-[[nodiscard]] bool ExecuteScriptAndExtractBool(const ToRenderFrameHost& adapter,
-                                               const std::string& script,
-                                               bool* result);
 
 // JsLiteralHelper is a helper class that determines what types are legal to
 // pass to StringifyJsLiteral. Legal types include int, string, StringPiece,
@@ -861,32 +849,9 @@ enum EvalJsOptions {
 // until the Promise resolves, which happens when the async function returns
 // the HTTP status code -- which is expected, in this case, to be 200.
 //
-// Quick migration guide for users of the classic ExecuteScriptAndExtract*():
-//  - If your page has a Content SecurityPolicy, don't migrate [yet]; CSP can
-//    interfere with the internal mechanism used here.
-//  - Get rid of the out-param. You call EvalJs no matter what your return
-//    type is.
 //  - If possible, pass the result of EvalJs() into the second argument of an
 //    EXPECT_EQ macro. This will trigger failure (and a nice message) if an
 //    error occurs.
-//  - Eliminate calls to domAutomationController.send() in |script|. In simple
-//    cases, |script| is just an expression you want the value of.
-//  - When a script previously installed a callback or event listener that
-//    invoked domAutomationController.send(x) asynchronously, there is a choice:
-//     * Preferred, but more rewriting: Use EvalJs with a Promise which
-//       resolves to the value you previously passed to send().
-//     * Less rewriting of |script|, but with some drawbacks: Use
-//       EXECUTE_SCRIPT_USE_MANUAL_REPLY in |options|. When specified, this
-//       means that |script| must continue to call
-//       domAutomationController.send(). Note that this option option disables
-//       some error-catching safeguards, but you still get the benefit of having
-//       an EvalJsResult that can be passed to EXPECT.
-//
-// Why prefer EvalJs over ExecuteScriptAndExtractBool()? Because:
-//
-//  - Can be used directly in EXPECT_EQ macros (no out- param pointers like
-//    ExecuteScriptAndExtractBool()) -- no temporary variable is required,
-//    usually resulting in fewer lines of code.
 //  - JS exceptions are reliably captured and will appear as C++ assertion
 //    failures.
 //  - JS stack traces arising from exceptions are annotated with the

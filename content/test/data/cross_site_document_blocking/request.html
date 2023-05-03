@@ -16,7 +16,7 @@ one of the blocklisted content types.</p>
 <script>
 var pathPrefix = "http://bar.com/site_isolation/";
 
-// To be called from the browsertest via ExecuteScriptAndExtractBool().
+// To be called from the browsertest via EvalJs().
 // |rangeHeader| is an optional parameter for specifying a range request header
 // value (e.g., "bytes=10-20").
 function sendRequest(resourceUrl, rangeHeader) {

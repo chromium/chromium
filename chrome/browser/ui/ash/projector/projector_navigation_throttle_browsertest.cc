@@ -398,8 +398,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleLocaleTest,
   EXPECT_EQ(tab->GetController().GetVisibleEntry()->GetPageType(),
             content::PAGE_TYPE_NORMAL);
 
-  // Verify the document language. We must use the deprecated
-  // ExecuteScriptAndExtract*() instead of EvalJs() due to CSP.
+  // Verify the document language.
   EXPECT_EQ(content::EvalJs(tab, "document.documentElement.lang"), locale());
 }
 
