@@ -32,34 +32,54 @@
 
 namespace updater {
 
-// Implements `IDispatch` for interface `T`, where `T` is a dual interface. The
-// IDispatch implementation relies on the typelib/typeinfo for interface `T`.
+namespace {
+
+template <typename TDualInterface, typename... TInterfaces>
+using WrlRuntimeDispatchClass = Microsoft::WRL::RuntimeClass<
+    Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+    IDispatch,
+    TDualInterface,
+    TInterfaces...>;
+
+}  // namespace
+
+// Implements `IDispatch` for interface `TDualInterface`, where `TDualInterface`
+// is a dual interface. The IDispatch implementation relies on the
+// typelib/typeinfo for interface `TDualInterface`.
 //
 // The REFIIDs `iid_user` and `iid_system` is to allow for distinct TypeLibs to
 // be registered and marshaled for user/system.
 //
-// Usage: derive your COM class that implements interface `T` from
-// `IDispatchImpl<T, iid_user, iid_system>`.
-template <typename T, REFIID iid_user, REFIID iid_system>
+// If the class needs to support multiple interfaces, the other interfaces can
+// be passed in via the `TInterfaces` template parameter. However, note
+// that:
+// * `IDispatchImpl` only implements the `IDispatch` methods for the
+//   `TDualInterface` interface.
+// * If the `TInterfaces` need marshaling support for user/system, override
+//   the `QueryInterface` method and use code similar to the corresponding
+//   `IDispatchImpl` implementation to support the additional interfaces.
+//
+// Usage: derive your COM class that implements interface `TDualInterface` from
+// `IDispatchImpl<TDualInterface, iid_user, iid_system, TInterfaces...>`.
+template <typename TDualInterface,
+          REFIID iid_user,
+          REFIID iid_system,
+          typename... TInterfaces>
 class IDispatchImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          T,
-          IDispatch> {
+    : public WrlRuntimeDispatchClass<TDualInterface, TInterfaces...> {
  public:
   IDispatchImpl() : hr_load_typelib_(InitializeTypeInfo()) {}
   IDispatchImpl(const IDispatchImpl&) = delete;
   IDispatchImpl& operator=(const IDispatchImpl&) = delete;
   ~IDispatchImpl() override = default;
 
+  // IUnknown override.
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
-    return Microsoft::WRL::RuntimeClass<
-        Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>, T,
-        IDispatch>::QueryInterface(riid == (IsSystemInstall() ? iid_system
-                                                              : iid_user)
-                                       ? __uuidof(T)
-                                       : riid,
-                                   object);
+    return WrlRuntimeDispatchClass<TDualInterface, TInterfaces...>::
+        QueryInterface(riid == (IsSystemInstall() ? iid_system : iid_user)
+                           ? __uuidof(TDualInterface)
+                           : riid,
+                       object);
   }
 
   // Overrides for IDispatch.
@@ -107,39 +127,41 @@ class IDispatchImpl
       return hr_load_typelib_;
     }
 
-    HRESULT hr = type_info_->Invoke(Microsoft::WRL::ComPtr<T>(this).Get(),
-                                    dispatch_id, flags, dispatch_parameters,
-                                    result, exception_info, arg_error_index);
+    HRESULT hr = type_info_->Invoke(
+        Microsoft::WRL::ComPtr<TDualInterface>(this).Get(), dispatch_id, flags,
+        dispatch_parameters, result, exception_info, arg_error_index);
 
     LOG_IF(ERROR, FAILED(hr)) << __func__ << " type_info_->Invoke failed, "
                               << dispatch_id << ", " << std::hex << hr;
     return hr;
   }
 
-  // Loads the typelib and typeinfo for interface `T`.
+  // Loads the typelib and typeinfo for interface `TDualInterface`.
   HRESULT InitializeTypeInfo() {
     base::FilePath typelib_path;
     if (!base::PathService::Get(base::DIR_EXE, &typelib_path)) {
       return E_UNEXPECTED;
     }
 
-    typelib_path = typelib_path.Append(GetExecutableRelativePath())
-                       .Append(GetComTypeLibResourceIndex(__uuidof(T)));
+    typelib_path =
+        typelib_path.Append(GetExecutableRelativePath())
+            .Append(GetComTypeLibResourceIndex(__uuidof(TDualInterface)));
 
     Microsoft::WRL::ComPtr<ITypeLib> type_lib;
     if (HRESULT hr = ::LoadTypeLib(typelib_path.value().c_str(), &type_lib);
         FAILED(hr)) {
       LOG(ERROR) << __func__ << " ::LoadTypeLib failed, " << typelib_path
-                 << ", " << std::hex << hr
-                 << ", IID: " << base::win::WStringFromGUID(__uuidof(T));
+                 << ", " << std::hex << hr << ", IID: "
+                 << base::win::WStringFromGUID(__uuidof(TDualInterface));
       return hr;
     }
 
-    if (HRESULT hr = type_lib->GetTypeInfoOfGuid(__uuidof(T), &type_info_);
+    if (HRESULT hr =
+            type_lib->GetTypeInfoOfGuid(__uuidof(TDualInterface), &type_info_);
         FAILED(hr)) {
       LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
-                 << ", " << std::hex << hr
-                 << ", IID: " << base::win::WStringFromGUID(__uuidof(T));
+                 << ", " << std::hex << hr << ", IID: "
+                 << base::win::WStringFromGUID(__uuidof(TDualInterface));
       return hr;
     }
 
@@ -283,24 +305,27 @@ class LegacyAppCommandWebImpl
   friend class LegacyAppCommandWebImplTest;
 };
 
-// This class implements the legacy Omaha3 IPolicyStatus interface, which
-// returns the current updater policies for external constants, group policy,
+// This class implements the legacy Omaha3 IPolicyStatus* interfaces, which
+// return the current updater policies for external constants, group policy,
 // and device management.
 //
 // This class is used by chrome://policy to show the current updater policies.
-class PolicyStatusImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IPolicyStatus,
-          IPolicyStatus2,
-          IPolicyStatus3,
-          IDispatch> {
+class PolicyStatusImpl : public IDispatchImpl<IPolicyStatus3,
+                                              __uuidof(IPolicyStatus3User),
+                                              __uuidof(IPolicyStatus3System),
+                                              IPolicyStatus,
+                                              IPolicyStatus2> {
  public:
   PolicyStatusImpl();
   PolicyStatusImpl(const PolicyStatusImpl&) = delete;
   PolicyStatusImpl& operator=(const PolicyStatusImpl&) = delete;
 
   HRESULT RuntimeClassInitialize();
+
+  // This `QueryInterface` override adds marshaling support for `IPolicyStatus`
+  // and `IPolicyStatus2`, using code similar to the corresponding
+  // `IDispatchImpl` implementation to support the additional interfaces.
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override;
 
   // IPolicyStatus/IPolicyStatus2/IPolicyStatus3. See
   // `updater_legacy_idl.template` for the description of the properties below.
@@ -354,25 +379,6 @@ class PolicyStatusImpl
   IFACEMETHODIMP get_forceInstallApps(VARIANT_BOOL is_machine,
                                       IPolicyStatusValue** value) override;
 
-  // Overrides for IDispatch.
-  IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override;
-  IFACEMETHODIMP GetTypeInfo(UINT type_info_index,
-                             LCID locale_id,
-                             ITypeInfo** type_info) override;
-  IFACEMETHODIMP GetIDsOfNames(REFIID iid,
-                               LPOLESTR* names_to_be_mapped,
-                               UINT count_of_names_to_be_mapped,
-                               LCID locale_id,
-                               DISPID* dispatch_ids) override;
-  IFACEMETHODIMP Invoke(DISPID dispatch_id,
-                        REFIID iid,
-                        LCID locale_id,
-                        WORD flags,
-                        DISPPARAMS* dispatch_parameters,
-                        VARIANT* result,
-                        EXCEPINFO* exception_info,
-                        UINT* arg_error_index) override;
-
  private:
   ~PolicyStatusImpl() override;
 
@@ -383,10 +389,9 @@ class PolicyStatusImpl
 // instance stores a single updater policy returned by the properties in
 // IPolicyStatus2 and IPolicyStatus3.
 class PolicyStatusValueImpl
-    : public Microsoft::WRL::RuntimeClass<
-          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
-          IPolicyStatusValue,
-          IDispatch> {
+    : public IDispatchImpl<IPolicyStatusValue,
+                           __uuidof(IPolicyStatusValueUser),
+                           __uuidof(IPolicyStatusValueSystem)> {
  public:
   PolicyStatusValueImpl();
   PolicyStatusValueImpl(const PolicyStatusValueImpl&) = delete;
@@ -409,25 +414,6 @@ class PolicyStatusValueImpl
   IFACEMETHODIMP get_hasConflict(VARIANT_BOOL* has_conflict) override;
   IFACEMETHODIMP get_conflictSource(BSTR* conflict_source) override;
   IFACEMETHODIMP get_conflictValue(BSTR* conflict_value) override;
-
-  // Overrides for IDispatch.
-  IFACEMETHODIMP GetTypeInfoCount(UINT* type_info_count) override;
-  IFACEMETHODIMP GetTypeInfo(UINT type_info_index,
-                             LCID locale_id,
-                             ITypeInfo** type_info) override;
-  IFACEMETHODIMP GetIDsOfNames(REFIID iid,
-                               LPOLESTR* names_to_be_mapped,
-                               UINT count_of_names_to_be_mapped,
-                               LCID locale_id,
-                               DISPID* dispatch_ids) override;
-  IFACEMETHODIMP Invoke(DISPID dispatch_id,
-                        REFIID iid,
-                        LCID locale_id,
-                        WORD flags,
-                        DISPPARAMS* dispatch_parameters,
-                        VARIANT* result,
-                        EXCEPINFO* exception_info,
-                        UINT* arg_error_index) override;
 
  private:
   ~PolicyStatusValueImpl() override;

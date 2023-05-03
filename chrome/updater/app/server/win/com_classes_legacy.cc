@@ -934,6 +934,21 @@ HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
   return S_OK;
 }
 
+STDMETHODIMP PolicyStatusImpl::QueryInterface(REFIID riid, void** object) {
+  return IDispatchImpl<IPolicyStatus3, __uuidof(IPolicyStatus3User),
+                       __uuidof(IPolicyStatus3System), IPolicyStatus,
+                       IPolicyStatus2>::
+      QueryInterface(
+          riid == (IsSystemInstall() ? __uuidof(IPolicyStatus2System)
+                                     : __uuidof(IPolicyStatus2User))
+              ? __uuidof(IPolicyStatus2)
+              : (riid == (IsSystemInstall() ? __uuidof(IPolicyStatusSystem)
+                                            : __uuidof(IPolicyStatusUser))
+                     ? __uuidof(IPolicyStatus)
+                     : riid),
+          object);
+}
+
 // IPolicyStatus.
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
   CHECK(minutes);
@@ -1362,38 +1377,6 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
              : E_FAIL;
 }
 
-// TODO(crbug.com/1344200): Implement the IDispatch methods.
-STDMETHODIMP PolicyStatusImpl::GetTypeInfoCount(UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusImpl::GetIDsOfNames(REFIID,
-                                             LPOLESTR*,
-                                             UINT,
-                                             LCID,
-                                             DISPID*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusImpl::Invoke(DISPID,
-                                      REFIID,
-                                      LCID,
-                                      WORD,
-                                      DISPPARAMS*,
-                                      VARIANT*,
-                                      EXCEPINFO*,
-                                      UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
 PolicyStatusValueImpl::PolicyStatusValueImpl() = default;
 PolicyStatusValueImpl::~PolicyStatusValueImpl() = default;
 
@@ -1464,38 +1447,6 @@ STDMETHODIMP PolicyStatusValueImpl::get_conflictValue(BSTR* conflict_value) {
 
   *conflict_value = base::win::ScopedBstr(conflict_value_).Release();
   return S_OK;
-}
-
-// TODO(crbug.com/1344200): Implement the IDispatch methods.
-STDMETHODIMP PolicyStatusValueImpl::GetTypeInfoCount(UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusValueImpl::GetTypeInfo(UINT, LCID, ITypeInfo**) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusValueImpl::GetIDsOfNames(REFIID,
-                                                  LPOLESTR*,
-                                                  UINT,
-                                                  LCID,
-                                                  DISPID*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
-}
-
-STDMETHODIMP PolicyStatusValueImpl::Invoke(DISPID,
-                                           REFIID,
-                                           LCID,
-                                           WORD,
-                                           DISPPARAMS*,
-                                           VARIANT*,
-                                           EXCEPINFO*,
-                                           UINT*) {
-  LOG(ERROR) << "Reached unimplemented COM method: " << __func__;
-  return E_NOTIMPL;
 }
 
 }  // namespace updater

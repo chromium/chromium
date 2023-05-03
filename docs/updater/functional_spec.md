@@ -602,19 +602,29 @@ for any policy value. When a policy value is configured in multiple providers,
 the service always returns the first active valid value.
 
 The policy searching order:
-#### Windows
+##### Windows
 * Policy dictionary defined in
  [External constants](#external-constants-overrides)(testing overrides)
 * Group Policy
 * Device Management policy
 * Policy from default value provider
 
-#### macOS
+##### macOS
 * Policy dictionary defined in
  [External constants](#external-constants-overrides)(testing overrides)
 * Device management policy
 * Policy from Managed Preferences
 * Policy from default value provider
+
+#### COM interfaces (Windows only)
+The updater exposes
+[IPolicyStatus3](https://source.chromium.org/chromium/chromium/src/+/main:chrome/updater/app/server/win/updater_legacy_idl.template;l=555?q=IPolicyStatus3&ss=chromium)
+and the corresponding `IDispatch` implementation to provide clients such as
+Chrome the ability to query the updater enterprise policies.
+
+A client can `CoCreateInstance` the `PolicyStatusUserClass` or the
+`PolicyStatusSystemClass` to get the corresponding policy status object and
+query it via the `IPolicyStatus3` methods.
 
 #### Deploying enterprise applications via updater policy
 For each application that needs to be deployed via the updater, the policy for

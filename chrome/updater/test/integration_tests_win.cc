@@ -1314,6 +1314,11 @@ void ExpectLegacyPolicyStatusSucceeds(UpdaterScope scope) {
       policy_status_server));
   Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
   ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
+  policy_status2.Reset();
+  ASSERT_HRESULT_SUCCEEDED(policy_status_server.CopyTo(
+      IsSystemInstall(scope) ? __uuidof(IPolicyStatus2System)
+                             : __uuidof(IPolicyStatus2User),
+      IID_PPV_ARGS_Helper(&policy_status2)));
 
   base::win::ScopedBstr updater_version;
   ASSERT_HRESULT_SUCCEEDED(
