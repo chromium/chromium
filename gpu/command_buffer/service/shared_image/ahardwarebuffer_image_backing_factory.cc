@@ -886,8 +886,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  auto si_format = viz::SharedImageFormat::SinglePlane(
-      viz::GetResourceFormat(buffer_format));
+  auto si_format = viz::GetSharedImageFormat(buffer_format);
   if (!ValidateUsage(usage, size, si_format)) {
     return nullptr;
   }

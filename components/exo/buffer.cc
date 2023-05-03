@@ -533,8 +533,8 @@ bool Buffer::ProduceTransferableResource(
         contents_texture->mailbox(), resource->mailbox_holder.sync_token,
         texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
-    resource->format = viz::SharedImageFormat::SinglePlane(
-        viz::GetResourceFormat(gpu_memory_buffer_->GetFormat()));
+    resource->format =
+        viz::GetSharedImageFormat(gpu_memory_buffer_->GetFormat());
     if (context_provider->ContextCapabilities().chromium_gpu_fence &&
         request_release_fence) {
       resource->synchronization_type =

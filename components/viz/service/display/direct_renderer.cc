@@ -792,8 +792,7 @@ DirectRenderer::CalculateRenderPassRequirements(
     requirements.size = surface_size_for_swap_buffers();
     requirements.generate_mipmap = false;
     requirements.color_space = reshape_color_space();
-    requirements.format = SharedImageFormat::SinglePlane(
-        GetResourceFormat(reshape_buffer_format()));
+    requirements.format = GetSharedImageFormat(reshape_buffer_format());
 
     // All root render pass backings allocated by the renderer needs to
     // eventually go into some composition tree. Other things that own/allocate

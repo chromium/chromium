@@ -69,8 +69,8 @@ VIZ_RESOURCE_FORMAT_EXPORT bool IsGpuMemoryBufferFormatSupported(
 // display compositor.
 VIZ_RESOURCE_FORMAT_EXPORT bool IsBitmapFormatSupported(ResourceFormat format);
 
-VIZ_RESOURCE_FORMAT_EXPORT ResourceFormat
-GetResourceFormat(gfx::BufferFormat format);
+VIZ_RESOURCE_FORMAT_EXPORT SharedImageFormat
+GetSharedImageFormat(gfx::BufferFormat format);
 
 #if BUILDFLAG(ENABLE_VULKAN)
 VIZ_RESOURCE_FORMAT_EXPORT bool HasVkFormat(ResourceFormat format);

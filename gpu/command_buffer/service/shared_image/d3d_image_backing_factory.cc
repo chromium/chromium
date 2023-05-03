@@ -502,8 +502,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  auto format = viz::SharedImageFormat::SinglePlane(
-      viz::GetResourceFormat(buffer_format));
+  auto format = viz::GetSharedImageFormat(buffer_format);
   return CreateSharedImageGMBs(mailbox, std::move(handle), format, plane, size,
                                color_space, surface_origin, alpha_type, usage);
 }
@@ -611,8 +610,7 @@ D3DImageBackingFactory::CreateSharedImageGMBs(
     // R/RG based on channels in plane.
     const gfx::Size plane_size = GetPlaneSize(plane, size);
     const viz::SharedImageFormat plane_format =
-        viz::SharedImageFormat::SinglePlane(
-            viz::GetResourceFormat(GetPlaneBufferFormat(plane, buffer_format)));
+        viz::GetSharedImageFormat(GetPlaneBufferFormat(plane, buffer_format));
     const size_t plane_index = plane == gfx::BufferPlane::UV ? 1 : 0;
     backing = D3DImageBacking::Create(
         mailbox, plane_format, plane_size, color_space, surface_origin,

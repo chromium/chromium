@@ -88,8 +88,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     DCHECK(buffer_format.has_value());
-    si_formats[0] = viz::SharedImageFormat::SinglePlane(
-        viz::GetResourceFormat(buffer_format.value()));
+    si_formats[0] = viz::GetSharedImageFormat(buffer_format.value());
     return VideoFrameResourceType::RGB;
   }
 

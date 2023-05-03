@@ -114,8 +114,7 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     std::string debug_label) {
-  auto resource_format = viz::GetResourceFormat(buffer_format);
-  auto si_format = viz::SharedImageFormat::SinglePlane(resource_format);
+  auto si_format = viz::GetSharedImageFormat(buffer_format);
   auto backing = std::make_unique<AngleVulkanImageBacking>(
       context_state_, mailbox, si_format, size, color_space, surface_origin,
       alpha_type, usage);

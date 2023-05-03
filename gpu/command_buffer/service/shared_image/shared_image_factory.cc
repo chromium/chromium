@@ -454,8 +454,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
                                            SkAlphaType alpha_type,
                                            uint32_t usage,
                                            std::string debug_label) {
-  auto si_format =
-      viz::SharedImageFormat::SinglePlane(viz::GetResourceFormat(format));
+  auto si_format = viz::GetSharedImageFormat(format);
   gfx::GpuMemoryBufferType gmb_type = handle.type;
 
   bool use_compound = false;
@@ -471,8 +470,8 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
       // For shared memory backed compound backings, we need to check if the
       // corresponding GPU backing can support the format and size for the given
       // plane rather than the original GMB format and size.
-      const auto plane_format = viz::SharedImageFormat::SinglePlane(
-          viz::GetResourceFormat(GetPlaneBufferFormat(plane, format)));
+      const auto plane_format =
+          viz::GetSharedImageFormat(GetPlaneBufferFormat(plane, format));
       const gfx::Size plane_size = GetPlaneSize(plane, size);
       factory =
           GetFactoryByUsage(usage | SHARED_IMAGE_USAGE_CPU_UPLOAD, plane_format,

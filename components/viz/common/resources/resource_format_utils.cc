@@ -518,45 +518,43 @@ bool IsBitmapFormatSupported(ResourceFormat format) {
   return false;
 }
 
-ResourceFormat GetResourceFormat(gfx::BufferFormat format) {
+SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGRA_8888:
-      return BGRA_8888;
+      return SinglePlaneFormat::kBGRA_8888;
     case gfx::BufferFormat::R_8:
-      return RED_8;
+      return SinglePlaneFormat::kR_8;
     case gfx::BufferFormat::R_16:
-      return R16_EXT;
+      return SinglePlaneFormat::kR_16;
     case gfx::BufferFormat::RG_1616:
-      return RG16_EXT;
+      return SinglePlaneFormat::kRG_1616;
     case gfx::BufferFormat::RGBA_4444:
-      return RGBA_4444;
+      return SinglePlaneFormat::kRGBA_4444;
     case gfx::BufferFormat::RGBA_8888:
-      return RGBA_8888;
+      return SinglePlaneFormat::kRGBA_8888;
     case gfx::BufferFormat::RGBA_F16:
-      return RGBA_F16;
+      return SinglePlaneFormat::kRGBA_F16;
     case gfx::BufferFormat::BGR_565:
-      return BGR_565;
+      return SinglePlaneFormat::kBGR_565;
     case gfx::BufferFormat::RG_88:
-      return RG_88;
+      return SinglePlaneFormat::kRG_88;
     case gfx::BufferFormat::RGBX_8888:
-      return RGBX_8888;
+      return SinglePlaneFormat::kRGBX_8888;
     case gfx::BufferFormat::BGRX_8888:
-      return BGRX_8888;
+      return SinglePlaneFormat::kBGRX_8888;
     case gfx::BufferFormat::RGBA_1010102:
-      return RGBA_1010102;
+      return SinglePlaneFormat::kRGBA_1010102;
     case gfx::BufferFormat::BGRA_1010102:
-      return BGRA_1010102;
+      return SinglePlaneFormat::kBGRA_1010102;
     case gfx::BufferFormat::YVU_420:
-      return YVU_420;
+      return LegacyMultiPlaneFormat::kYV12;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return YUV_420_BIPLANAR;
+      return LegacyMultiPlaneFormat::kNV12;
     case gfx::BufferFormat::YUVA_420_TRIPLANAR:
-      return YUVA_420_TRIPLANAR;
+      return LegacyMultiPlaneFormat::kNV12A;
     case gfx::BufferFormat::P010:
-      return P010;
+      return LegacyMultiPlaneFormat::kP010;
   }
-  NOTREACHED();
-  return RGBA_8888;
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
