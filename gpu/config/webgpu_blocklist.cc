@@ -57,6 +57,11 @@ bool IsWebGPUAdapterBlocklisted(const WGPUAdapterProperties& properties,
     return true;
   }
 
+  // TODO(dawn:1705): d3d11 is not full implemented yet.
+  if (properties.backendType == WGPUBackendType_D3D11) {
+    return true;
+  }
+
   auto U32ToHexString = [](uint32_t value) {
     std::ostringstream o;
     o << std::hex << value;
