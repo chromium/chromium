@@ -156,6 +156,9 @@
             android:exported="true">
         </activity>
 
+        <property android:name="android.adservices.AD_SERVICES_CONFIG"
+            android:resource="@xml/ad_services_config" />
+
         <uses-library android:name="android.test.runner" />
     </application>
 </manifest>
