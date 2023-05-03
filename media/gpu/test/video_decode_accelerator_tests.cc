@@ -4,6 +4,7 @@
 
 #include <limits>
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
@@ -591,10 +592,11 @@ int main(int argc, char** argv) {
   base::CommandLine::SwitchMap switches = cmd_line->GetSwitches();
   for (base::CommandLine::SwitchMap::const_iterator it = switches.begin();
        it != switches.end(); ++it) {
-    if (it->first.find("gtest_") == 0 ||               // Handled by GoogleTest
-        it->first == "ozone-platform" ||               // Handled by Chrome
-        it->first == "use-gl" ||                       // Handled by Chrome
-        it->first == "v" || it->first == "vmodule") {  // Handled by Chrome
+    if (it->first.find("gtest_") == 0 ||  // Handled by GoogleTest
+                                          // Options below are handled by Chrome
+        it->first == "ozone-platform" || it->first == "use-gl" ||
+        it->first == "v" || it->first == "vmodule" ||
+        it->first == "enable-features" || it->first == "disable-features") {
       continue;
     }
 
@@ -688,6 +690,17 @@ int main(int argc, char** argv) {
   // read by the cpu.  This prevents MD5 computation as that is done by the
   // cpu.
   cmd_line->AppendSwitch("disable-buffer-bw-compression");
+#endif
+
+#if BUILDFLAG(USE_V4L2_CODEC)
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  feature_list->InitializeFromCommandLine(
+      cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
+      cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatStatelessVideoDecoder);
+  }
 #endif
 
   // Set up our test environment.
