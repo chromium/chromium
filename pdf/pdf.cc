@@ -8,8 +8,10 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "pdf/pdf_engine.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -21,8 +23,11 @@ namespace {
 class ScopedSdkInitializer {
  public:
   explicit ScopedSdkInitializer(bool enable_v8) {
-    if (!IsSDKInitializedViaPlugin())
-      InitializeSDK(enable_v8, FontMappingMode::kNoMapping);
+    if (!IsSDKInitializedViaPlugin()) {
+      InitializeSDK(enable_v8,
+                    base::FeatureList::IsEnabled(features::kPdfUseSkiaRenderer),
+                    FontMappingMode::kNoMapping);
+    }
   }
 
   ScopedSdkInitializer(const ScopedSdkInitializer&) = delete;

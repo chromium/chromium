@@ -192,12 +192,13 @@ INSTANTIATE_TEST_SUITE_P(All, FormFillerTest, testing::Bool());
 #if defined(PDF_ENABLE_V8)
 class FormFillerJavaScriptTest : public FormFillerTest {
  public:
-  FormFillerJavaScriptTest() {
+  void SetUp() override {
     // Needed for setting up V8.
-    InitializeSDK(/*enable_v8=*/true, FontMappingMode::kNoMapping);
+    InitializeSDK(/*enable_v8=*/true, /*use_skia=*/GetParam(),
+                  FontMappingMode::kNoMapping);
   }
 
-  ~FormFillerJavaScriptTest() override { ShutdownSDK(); }
+  void TearDown() override { ShutdownSDK(); }
 };
 
 TEST_P(FormFillerJavaScriptTest, IsolateScoping) {

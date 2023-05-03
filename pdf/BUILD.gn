@@ -42,6 +42,7 @@ if (enable_pdf) {
     public = [ "pdf.h" ]
 
     deps = [
+      ":features",
       ":internal",
       "//base",
       "//build:chromeos_buildflags",
@@ -252,6 +253,7 @@ if (enable_pdf) {
       ":accessibility",
       ":buildflags",
       ":content_restriction",
+      ":features",
       ":internal",
       "//base",
       "//base:i18n",
