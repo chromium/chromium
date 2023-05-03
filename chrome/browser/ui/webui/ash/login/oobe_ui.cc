@@ -111,7 +111,6 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/wrong_hwid_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/user_image_source.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/test_files_request_filter.h"
 #include "chrome/browser/ui/webui/theme_source.h"
@@ -522,9 +521,6 @@ void OobeUI::ConfigureOobeDisplay() {
   content::URLDataSource::Add(
       profile,
       std::make_unique<AboutUIHTMLSource>(chrome::kChromeUITermsHost, profile));
-
-  // Set up the chrome://userimage/ source.
-  content::URLDataSource::Add(profile, std::make_unique<UserImageSource>());
 
   // TabHelper is required for OOBE webui to make webview working on it.
   content::WebContents* contents = web_ui()->GetWebContents();
