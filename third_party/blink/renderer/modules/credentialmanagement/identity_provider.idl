@@ -34,4 +34,9 @@
     static Promise<void> register(USVString configURL);
     [RuntimeEnabled=FedCmIdPRegistration, CallWith=ScriptState, ImplementedAs=unregisterIdentityProvider]
     static Promise<void> unregister(USVString configURL);
+
+    // Allows an IdP to return a token to the RP from the content area, as opposed to
+    // over HTTP with the id_assertion_endpoint.
+    [RuntimeEnabled=FedCmAuthz, CallWith=ScriptState]
+    static Promise<void> resolve(USVString token);
 };

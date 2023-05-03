@@ -27,6 +27,7 @@ class MODULES_EXPORT IdentityProvider : public ScriptWrappable {
   static void close(ScriptState*);
   static ScriptPromise registerIdentityProvider(ScriptState*, const String&);
   static ScriptPromise unregisterIdentityProvider(ScriptState*, const String&);
+  static ScriptPromise resolve(ScriptState*, const String&);
 };
 
 }  // namespace blink

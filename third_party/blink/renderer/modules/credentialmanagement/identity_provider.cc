@@ -202,4 +202,12 @@ ScriptPromise IdentityProvider::unregisterIdentityProvider(
   return promise;
 }
 
+ScriptPromise IdentityProvider::resolve(ScriptState* script_state,
+                                        const String& token) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  // TODO(crbug.com/1429083): send the request to the browser process.
+  return promise;
+}
+
 }  // namespace blink
