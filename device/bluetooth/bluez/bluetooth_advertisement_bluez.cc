@@ -9,10 +9,10 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/guid.h"
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
+#include "base/uuid.h"
 #include "dbus/bus.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
@@ -77,7 +77,7 @@ BluetoothAdvertisementBlueZ::BluetoothAdvertisementBlueZ(
   // Generate a new object path - make sure that we strip any -'s from the
   // generated GUID string since object paths can only contain alphanumeric
   // characters and _ characters.
-  std::string GuidString = base::GenerateGUID();
+  std::string GuidString = base::Uuid::GenerateRandomV4().AsLowercaseString();
   base::RemoveChars(GuidString, "-", &GuidString);
   dbus::ObjectPath advertisement_object_path =
       dbus::ObjectPath("/org/chromium/bluetooth_advertisement/" + GuidString);
