@@ -63,6 +63,7 @@ source_set("set_up_list") {
   sources = [
     "set_up_list.h",
     "set_up_list.mm",
+    "set_up_list_delegate.h",
     "set_up_list_item.h",
     "set_up_list_item.mm",
   ]
@@ -70,9 +71,11 @@ source_set("set_up_list") {
   deps = [
     ":features",
     ":set_up_list_item_type",
+    ":set_up_list_prefs",
     "//base",
     "//components/password_manager/core/browser",
     "//components/prefs:prefs",
+    "//components/prefs/ios",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/signin",
   ]
@@ -81,6 +84,20 @@ source_set("set_up_list") {
 source_set("set_up_list_item_type") {
   sources = [ "set_up_list_item_type.h" ]
   configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("set_up_list_prefs") {
+  sources = [
+    "set_up_list_prefs.h",
+    "set_up_list_prefs.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":set_up_list_item_type",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
 }
 
 source_set("unit_tests") {
@@ -94,6 +111,7 @@ source_set("unit_tests") {
   deps = [
     ":set_up_list",
     ":set_up_list_item_type",
+    ":set_up_list_prefs",
     "//base/test:test_support",
     "//components/password_manager/core/browser",
     "//components/prefs",

@@ -10,24 +10,37 @@
 class AuthenticationService;
 class PrefService;
 @class SetUpListItem;
+@protocol SetUpListDelegate;
 
 // Contains a list of items to display in the Set Up List UI on the NTP / Home.
 @interface SetUpList : NSObject
 
-// Initializes a SetUpList with the given `items`.
+// Builds a SetUpList instance, which includes a list of tasks the user hasn't
+// completed yet. (For example: set Chrome as Default Browser). `prefs` are
+// BrowserState prefs and are used to determine if CPE is enabled and
+// `localState` is used to store each SetUpListItem's state.
+// `authenticationService` is used to determine signed-in status.
++ (instancetype)buildFromPrefs:(PrefService*)prefs
+                    localState:(PrefService*)localState
+         authenticationService:(AuthenticationService*)authService;
+
+// Initializes a SetUpList with the given `items`. `localState` is used to
+// store the state of each item and to observe changes to that state.
 - (instancetype)initWithItems:(NSArray<SetUpListItem*>*)items
+                   localState:(PrefService*)localState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Builds a SetUpList instance, which includes a list of tasks the user hasn't
-// completed yet. (For example: set Chrome as Default Browser).
-+ (instancetype)buildFromPrefs:(PrefService*)prefs
-         authenticationService:(AuthenticationService*)authService;
+// Disconnects and cleans up this Set Up List.
+- (void)disconnect;
 
 // Contains the items or tasks that the user may want to complete as part of
 // setting up the app.
 @property(nonatomic, strong, readonly) NSArray<SetUpListItem*>* items;
+
+// Delegate to receive events from this Set Up List.
+@property(nonatomic, weak) id<SetUpListDelegate> delegate;
 
 @end
 
