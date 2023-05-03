@@ -783,4 +783,20 @@ suite('AppListTest', () => {
     assertTrue(openInWindow.checked);
     assertFalse(contextMenu.hidden);
   });
+
+  test('context menu opens on shift+f10 triggered on focused app', async () => {
+    document.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
+    assertEquals(
+        apps.appList[0]!.id, appListElement.shadowRoot!.activeElement?.id);
+
+    document.dispatchEvent(
+        new KeyboardEvent('keydown', {key: 'F10', shiftKey: true}));
+
+    const appItem = appListElement.shadowRoot!.querySelector('app-item');
+    assertTrue(!!appItem);
+
+    const contextMenu = appItem.shadowRoot!.querySelector('cr-action-menu');
+    assertTrue(!!contextMenu);
+    assertFalse(contextMenu.hidden);
+  });
 });
