@@ -31,19 +31,13 @@ void AutofillSnackbarControllerImpl::Show() {
   base::UmaHistogramBoolean("Autofill.Snackbar.VirtualCard.Shown", true);
 }
 
-void AutofillSnackbarControllerImpl::Dismiss() {
-  if (!autofill_snackbar_view_)
-    return;
-  autofill_snackbar_view_->Dismiss();
-}
-
 void AutofillSnackbarControllerImpl::SetViewForTesting(
     AutofillSnackbarView* view) {
   autofill_snackbar_view_ = view;
 }
 
 void AutofillSnackbarControllerImpl::OnActionClicked() {
-  ManualFillingControllerImpl::GetOrCreate(web_contents_)
+  ManualFillingControllerImpl::GetOrCreate(GetWebContents())
       ->ShowAccessorySheetTab(autofill::AccessoryTabType::CREDIT_CARDS);
   base::UmaHistogramBoolean("Autofill.Snackbar.VirtualCard.ActionClicked",
                             true);
@@ -65,6 +59,14 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
 
 content::WebContents* AutofillSnackbarControllerImpl::GetWebContents() const {
   return web_contents_;
+}
+
+void AutofillSnackbarControllerImpl::Dismiss() {
+  if (!autofill_snackbar_view_) {
+    return;
+  }
+
+  autofill_snackbar_view_->Dismiss();
 }
 
 }  // namespace autofill

@@ -28,7 +28,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   void Show();
   void SetViewForTesting(AutofillSnackbarView* view);
 
-  // AutofillSnackbarController implementation.
+  // AutofillSnackbarController:
   void OnActionClicked() override;
   void OnDismissed() override;
   std::u16string GetMessageText() const override;
@@ -41,6 +41,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   void Dismiss();
 
   raw_ptr<content::WebContents> web_contents_;
+
   raw_ptr<AutofillSnackbarView> autofill_snackbar_view_ = nullptr;
 };
 
