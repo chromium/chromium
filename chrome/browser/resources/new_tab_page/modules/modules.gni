@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("./cart/cart.gni")
-import("./cart_v2/cart_v2.gni")
 import("./drive/drive.gni")
 import("./drive_v2/drive_v2.gni")
 import("./feed/feed.gni")
@@ -38,11 +37,10 @@ modules_web_component_files =
       "modules/module_header.ts",
       "modules/modules.ts",
       "modules/module_wrapper.ts",
-    ] + cart_web_component_files + cart_v2_web_component_files +
-    drive_web_component_files + drive_v2_web_component_files +
-    feed_web_component_files + photos_web_component_files +
-    recipes_v2_web_component_files + recipes_web_component_files +
-    history_clusters_web_component_files +
+    ] + cart_web_component_files + drive_web_component_files +
+    drive_v2_web_component_files + feed_web_component_files +
+    photos_web_component_files + recipes_v2_web_component_files +
+    recipes_web_component_files + history_clusters_web_component_files +
     history_clusters_v2_web_component_files
 
 if (!is_official_build) {

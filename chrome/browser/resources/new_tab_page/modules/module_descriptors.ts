@@ -10,7 +10,6 @@ import {loadTimeData} from '../i18n_setup.js';
 import {NewTabPageProxy} from '../new_tab_page_proxy.js';
 
 import {chromeCartDescriptor} from './cart/module.js';
-import {chromeCartDescriptor as chromeCartV2Descriptor} from './cart_v2/module.js';
 import {driveDescriptor} from './drive/module.js';
 import {driveDescriptor as driveV2Descriptor} from './drive_v2/module.js';
 // <if expr="not is_official_build">
@@ -31,8 +30,7 @@ const modulesRedesignedEnabled: boolean =
 export const descriptors: ModuleDescriptor[] = [];
 descriptors.push(
     modulesRedesignedEnabled ? recipeTasksV2Descriptor : recipeTasksDescriptor);
-descriptors.push(
-    modulesRedesignedEnabled ? chromeCartV2Descriptor : chromeCartDescriptor);
+descriptors.push(chromeCartDescriptor);
 descriptors.push(
     modulesRedesignedEnabled ? driveV2Descriptor : driveDescriptor);
 descriptors.push(photosDescriptor);

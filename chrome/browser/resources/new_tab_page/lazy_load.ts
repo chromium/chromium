@@ -28,7 +28,6 @@ export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 export {DiscountConsentCard, DiscountConsentVariation} from './modules/cart/discount_consent_card.js';
 export {DiscountConsentDialog} from './modules/cart/discount_consent_dialog.js';
 export {chromeCartDescriptor, ChromeCartModuleElement} from './modules/cart/module.js';
-export {chromeCartDescriptor as chromeCartV2Descriptor, ChromeCartModuleElement as ChromeCartV2ModuleElement} from './modules/cart_v2/module.js';
 export {DriveProxy} from './modules/drive/drive_module_proxy.js';
 export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
 export {driveDescriptor as driveV2Descriptor, DriveModuleElement as DriveV2ModuleElement} from './modules/drive_v2/module.js';
