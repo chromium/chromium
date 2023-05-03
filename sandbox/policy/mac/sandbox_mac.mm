@@ -37,8 +37,11 @@
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
-namespace sandbox {
-namespace policy {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace sandbox::policy {
 
 base::FilePath GetCanonicalPath(const base::FilePath& path) {
   base::ScopedFD fd(HANDLE_EINTR(open(path.value().c_str(), O_RDONLY)));
@@ -132,5 +135,4 @@ bool CanCacheSandboxPolicy(sandbox::mojom::Sandbox sandbox_type) {
   }
 }
 
-}  // namespace policy
-}  // namespace sandbox
+}  // namespace sandbox::policy
