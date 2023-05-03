@@ -83,6 +83,7 @@ component("url") {
       ]
     } else if (is_ios) {
       sources += [ "url_idna_icu_alternatives_ios.mm" ]
+      configs += [ "//build/config/compiler:enable_arc" ]
     } else {
       assert(false,
              "ICU alternative is not implemented for platform: " + target_os)

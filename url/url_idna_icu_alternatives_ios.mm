@@ -12,6 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "url/url_canon_internal.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace url {
 
 // Only allow ASCII to avoid ICU dependency. Use NSString+IDN
