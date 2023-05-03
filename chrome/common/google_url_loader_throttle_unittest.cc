@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -148,6 +150,8 @@ class GoogleURLLoaderThrottleTest
     throttle_->set_delegate(delegate_.get());
   }
 
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableBoundSessionCrendentials};
   base::test::TaskEnvironment task_environment_;
   raw_ptr<FakeBoundSessionRequestThrottledListener> bound_session_listener_ =
       nullptr;

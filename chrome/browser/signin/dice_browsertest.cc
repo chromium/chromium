@@ -84,6 +84,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/public/base/signin_switches.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
@@ -718,8 +719,19 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, Signin) {
 }
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+class DiceBrowserTestWithBoundSessionCredentialsEnabled
+    : public DiceBrowserTest {
+ public:
+  DiceBrowserTestWithBoundSessionCredentialsEnabled() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kEnableBoundSessionCrendentials};
+};
+
 // Checks that signin on Gaia triggers the fetch for a refresh token.
-IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SigninWithTokenBinding) {
+IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
+                       SigninWithTokenBinding) {
   crypto::ScopedMockUnexportableKeyProvider mock_key_provider_;
 
   // Navigate to Gaia and sign in.

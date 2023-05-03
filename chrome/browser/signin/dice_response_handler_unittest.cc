@@ -32,6 +32,7 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
@@ -254,6 +255,8 @@ class DiceResponseHandlerTest : public testing::Test,
   GoogleServiceAuthError auth_error_;
   std::string auth_error_email_;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableBoundSessionCrendentials};
   StrictMock<
       base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
       mock_registration_token_helper_factory_;

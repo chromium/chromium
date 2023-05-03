@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/base/signin_switches.h"
 
 // static
 BoundSessionCookieRefreshServiceFactory*
@@ -49,6 +50,10 @@ BoundSessionCookieRefreshServiceFactory::
 std::unique_ptr<KeyedService>
 BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!switches::IsBoundSessionCredentialsEnabled()) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
   // The account consistency method should not change during the lifetime of a
   // profile. This service is needed when Dice is enabled.

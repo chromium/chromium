@@ -33,6 +33,18 @@ const char kClearTokenService[] = "clear-token-service";
 // Disables sending signin scoped device id to LSO with refresh token request.
 const char kDisableSigninScopedDeviceId[] = "disable-signin-scoped-device-id";
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+// Enable experimental binding session credentials to the device.
+BASE_FEATURE(kEnableBoundSessionCrendentials,
+             "EnableBoundSessionCrendentials",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBoundSessionCredentialsEnabled() {
+  return base::FeatureList::IsEnabled(
+      switches::kEnableBoundSessionCrendentials);
+}
+#endif
+
 // Enables fetching account capabilities and populating AccountInfo with the
 // fetch result.
 BASE_FEATURE(kEnableFetchingAccountCapabilities,

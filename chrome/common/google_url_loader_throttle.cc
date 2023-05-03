@@ -24,6 +24,7 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/common/bound_session_request_throttled_listener.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "net/cookies/cookie_util.h"
 #endif
 
@@ -108,7 +109,7 @@ void GoogleURLLoaderThrottle::WillStartRequest(
   }
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (request->SendsCookies() &&
+  if (switches::IsBoundSessionCredentialsEnabled() && request->SendsCookies() &&
       ShouldDeferRequestForBoundSession(request->url)) {
     CHECK(bound_session_request_throttled_listener_);
     *defer = true;
@@ -159,7 +160,8 @@ void GoogleURLLoaderThrottle::WillRedirectRequest(
   }
 #endif
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  if (ShouldDeferRequestForBoundSession(redirect_info->new_url)) {
+  if (switches::IsBoundSessionCredentialsEnabled() &&
+      ShouldDeferRequestForBoundSession(redirect_info->new_url)) {
     CHECK(bound_session_request_throttled_listener_);
     *defer = true;
     bound_session_request_throttled_listener_->OnRequestBlockedOnCookie(
@@ -198,6 +200,7 @@ void GoogleURLLoaderThrottle::WillProcessResponse(
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 bool GoogleURLLoaderThrottle::ShouldDeferRequestForBoundSession(
     const GURL& request_url) const {
+  CHECK(switches::IsBoundSessionCredentialsEnabled());
   const chrome::mojom::BoundSessionParamsPtr& bound_session_params =
       dynamic_params_->bound_session_params;
 

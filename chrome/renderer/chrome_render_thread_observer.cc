@@ -61,6 +61,7 @@
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_listener_renderer_impl.h"
+#include "components/signin/public/base/signin_switches.h"
 #endif
 
 using blink::WebCache;
@@ -163,6 +164,7 @@ ChromeRenderThreadObserver::CreateBoundSessionRequestThrottledListener() const {
     return nullptr;
   }
 
+  CHECK(switches::IsBoundSessionCredentialsEnabled());
   return std::make_unique<BoundSessionRequestThrottledListenerRendererImpl>(
       bound_session_request_throttled_in_renderer_manager_, io_task_runner_);
 }
@@ -202,6 +204,7 @@ void ChromeRenderThreadObserver::SetInitialConfiguration(
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   if (bound_session_request_throttled_listener) {
+    CHECK(switches::IsBoundSessionCredentialsEnabled());
     bound_session_request_throttled_in_renderer_manager_ =
         BoundSessionRequestThrottledInRendererManager::Create(
             std::move(bound_session_request_throttled_listener));
