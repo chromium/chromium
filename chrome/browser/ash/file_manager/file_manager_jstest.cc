@@ -158,6 +158,10 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTasks) {
   RunTestURL("foreground/js/file_tasks_unittest.js");
 }
 
+IN_PROC_BROWSER_TEST_F(FileManagerJsTest, GuestOsController) {
+  RunTestURL("foreground/js/guest_os_controller_unittest.js");
+}
+
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTransferController) {
   RunTestURL("foreground/js/file_transfer_controller_unittest.js");
 }
