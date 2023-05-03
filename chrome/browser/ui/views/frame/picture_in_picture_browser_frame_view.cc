@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/picture_in_picture_browser_frame_view.h"
+
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
@@ -308,6 +310,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   back_to_tab_button_ = button_container_view_->AddChildView(
       std::make_unique<BackToTabButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
+            frame_view->close_reason_ = CloseReason::kBackToTabButton;
             PictureInPictureWindowManager::GetInstance()->FocusInitiator();
             PictureInPictureWindowManager::GetInstance()
                 ->ExitPictureInPicture();
@@ -318,6 +321,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   close_image_button_ = button_container_view_->AddChildView(
       std::make_unique<CloseImageButton>(base::BindRepeating(
           [](PictureInPictureBrowserFrameView* frame_view) {
+            frame_view->close_reason_ = CloseReason::kCloseButton;
             PictureInPictureWindowManager::GetInstance()
                 ->ExitPictureInPicture();
           },
@@ -365,7 +369,10 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
 #endif
 }
 
-PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() = default;
+PictureInPictureBrowserFrameView::~PictureInPictureBrowserFrameView() {
+  base::UmaHistogramEnumeration("Media.DocumentPictureInPicture.CloseReason",
+                                close_reason_);
+}
 
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserNonClientFrameView implementations:

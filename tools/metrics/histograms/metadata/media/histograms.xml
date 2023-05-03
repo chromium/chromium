@@ -2074,6 +2074,18 @@ chromium-metrics-reviews@google.com.
   <summary>Video codec used in HTML5 media for a local file playback.</summary>
 </histogram>
 
+<histogram name="Media.DocumentPictureInPicture.CloseReason"
+    enum="DocumentPictureInPictureCloseReason" expires_after="2024-02-01">
+  <owner>steimel@chromium.org</owner>
+  <owner>liberato@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Records the reason why a document picture-in-picture window is closed (e.g.
+    the user clicking on the Back to Tab button). Recorded on destruction of the
+    picture-in-picture window.
+  </summary>
+</histogram>
+
 <histogram name="Media.DroppedFrameCount" units="units" expires_after="never">
 <!-- expires-never: Media pipeline health metric. -->
 

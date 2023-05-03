@@ -28054,6 +28054,12 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="3" label="Keyboard"/>
 </enum>
 
+<enum name="DocumentPictureInPictureCloseReason">
+  <int value="0" label="Other"/>
+  <int value="1" label="Back to Tab"/>
+  <int value="2" label="Close"/>
+</enum>
+
 <enum name="DocumentPolicyFeature">
 <!-- Generated from third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom.
 Called by update_document_policy_enum.py.-->
