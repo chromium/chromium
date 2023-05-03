@@ -93561,6 +93561,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Timeout"/>
 </enum>
 
+<enum name="ServiceWorkerExternalRequestResult">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Bad request ID"/>
+  <int value="2" label="Worker not running"/>
+  <int value="3" label="Worker not found"/>
+  <int value="4" label="Null context"/>
+</enum>
+
 <enum name="ServiceWorkerFetchEventResult">
   <int value="0" label="Should Fallback"/>
   <int value="1" label="Got Response"/>
