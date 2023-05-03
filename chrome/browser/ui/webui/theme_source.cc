@@ -301,7 +301,7 @@ void ThemeSource::SendColorsCss(
         // Also generate a r,g,b string for each color so apps can construct
         // colors with their own opacities in css.
         const std::string css_rgb_color_str =
-            color_utils::SkColorToRgbaString(color);
+            color_utils::SkColorToRgbString(color);
         const std::string css_id_to_rgb_color_mapping =
             base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
                                css_rgb_color_str.c_str());
