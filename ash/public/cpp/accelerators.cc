@@ -20,6 +20,9 @@ base::RepeatingClosure* GetVolumeAdjustmentCallback() {
 
 }  // namespace
 
+//  If you plan on adding a new accelerator and want it displayed in the
+//  Shortcuts app, please follow the instructions at:
+// `ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h`.
 const AcceleratorData kAcceleratorData[] = {
     {true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
     {false, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},

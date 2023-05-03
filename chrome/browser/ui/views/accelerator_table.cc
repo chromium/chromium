@@ -26,6 +26,10 @@
 
 namespace {
 
+// For ChromeOS only: If you plan on adding a new accelerator and want it
+// displayed in the Shortcuts app, please follow the instructions at:
+// `ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h`.
+
 // NOTE: Between each ifdef block, keep the list in the same
 // (mostly-alphabetical) order as the Windows accelerators in
 // ../../app/chrome_dll.rc.

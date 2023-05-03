@@ -18,6 +18,28 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
+// IMPORTANT -
+// If you plan on adding a new accelerator and want it to be displayed in the
+// Shortcuts app, please follow the instructions below:
+//    1.    Determine the correct category and subcategory the accelerator
+//          belongs to. You can view the categories at `accelerator_info.mojom`.
+//          Reach out to cros-peripherals@ if you are unsure about which
+//          category to use.
+//    2.    If you are adding a browser/ambient [1] accelerator, add a new
+//          enum to `NonConfigurableActions`. Then add an entry to
+//          `GetNonConfigurableActionsMap` in `accelerator_layout_table.cc`.
+//    3.    Add a new entry to `kAcceleratorLayouts` below. Please check that
+//          you are adding the accelerator to the correct category determined
+//          from step 1. The ordering of the accelerators is reflected in the
+//          app, so place the accelerator where it would most logically fit.
+//    4.    If the accelerator can be modified, ensure that the
+//          `kAcceleratorLayouts` entry has its `locked` field set to `false`.
+//
+//   [1]: An "ambient" accelerator is a non-modifiable miscellaneous accelerator
+//        that may contain a special set of instructions and/or does not
+//        necessarily belong as an ash accelerator. Please note that Browser
+//        shortcuts are considered "ambient".
+
 namespace ash {
 
 // non-ash accelerator action Id. Contains browser action ids and ambient action
