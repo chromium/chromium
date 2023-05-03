@@ -19,46 +19,7 @@
 #include "base/win/base_win_buildflags.h"
 #include "base/win/current_module.h"
 #include "base/win/scoped_handle.h"
-
-static void* LookupRecordReplaySymbol(const char* name) {
-  HMODULE module = GetModuleHandleA("windows-recordreplay.dll");
-  void* fnptr = module ? (void*)GetProcAddress(module, name) : nullptr;
-  return fnptr ? fnptr : reinterpret_cast<void*>(1);
-}
-
-static void RecordReplayBeginPassThroughEvents() {
-  static void* fnptr;
-  if (!fnptr) {
-    fnptr = LookupRecordReplaySymbol("RecordReplayBeginPassThroughEvents");
-  }
-  if (fnptr != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(fnptr)();
-  }
-}
-
-static void RecordReplayEndPassThroughEvents() {
-  static void* fnptr;
-  if (!fnptr) {
-    fnptr = LookupRecordReplaySymbol("RecordReplayEndPassThroughEvents");
-  }
-  if (fnptr != reinterpret_cast<void*>(1)) {
-    reinterpret_cast<void(*)()>(fnptr)();
-  }
-}
-
-namespace {
-
-struct RecordReplayAutoPassThroughEvents {
-  RecordReplayAutoPassThroughEvents() {
-    RecordReplayBeginPassThroughEvents();
-  }
-
-  ~RecordReplayAutoPassThroughEvents() {
-    RecordReplayEndPassThroughEvents();
-  }
-};
-
-} // anonymous namespace
+#include "base/record_replay_inline.h"
 
 extern "C" {
 __declspec(dllexport) void* GetHandleVerifier();
