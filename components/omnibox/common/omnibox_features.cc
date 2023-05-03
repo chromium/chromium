@@ -193,12 +193,12 @@ BASE_FEATURE(kClobberTriggersSRPZeroSuggest,
 // otherwise eligible to send the current page URL to the suggest server.
 BASE_FEATURE(kFocusTriggersContextualWebZeroSuggest,
              "OmniboxFocusTriggersContextualWebZeroSuggest",
-             enabled_by_default_android_only);
+             enabled_by_default_android_ios);
 
 // Enables on-focus zero-prefix suggestions on the SRP.
 BASE_FEATURE(kFocusTriggersSRPZeroSuggest,
              "OmniboxFocusTriggersSRPZeroSuggest",
-             enabled_by_default_android_only);
+             enabled_by_default_android_ios);
 
 // Enables local history zero-prefix suggestions in every context in which the
 // remote zero-prefix suggestions are enabled.
@@ -375,7 +375,7 @@ BASE_FEATURE(kSuggestionAnswersColorReverse,
 // with a carousel of tiles, instead of one URL per row.
 BASE_FEATURE(kMostVisitedTiles,
              "OmniboxMostVisitedTiles",
-             enabled_by_default_android_only);
+             enabled_by_default_android_ios);
 
 // If enabled, expands autocompletion to possibly (depending on params) include
 // suggestion titles and non-prefixes as opposed to be restricted to URL
