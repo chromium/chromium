@@ -150,4 +150,17 @@ static void JNI_CustomTabsConnection_TextFragmentLookup(
           std::move(cb));
 }
 
+static void JNI_CustomTabsConnection_TextFragmentFindScrollAndHighlight(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& session,
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    const base::android::JavaParamRef<jstring>& jtext_fragment) {
+  auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
+
+  TextFragmentLookupStateTracker::CreateForWebContents(web_contents);
+  TextFragmentLookupStateTracker::FromWebContents(web_contents)
+      ->FindScrollAndHighlight(
+          base::android::ConvertJavaStringToUTF8(jtext_fragment));
+}
+
 }  // namespace customtabs

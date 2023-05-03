@@ -1940,5 +1940,7 @@ public class CustomTabsConnection {
         void setClientDataHeader(WebContents webContents, String header);
         void textFragmentLookup(CustomTabsSessionToken session, WebContents webContents,
                 String stateKey, String[] textFragment);
+        void textFragmentFindScrollAndHighlight(
+                CustomTabsSessionToken session, WebContents webContents, String textFragment);
     }
 }

@@ -32,6 +32,8 @@ class TextFragmentLookupStateTracker
                           const std::vector<std::string>& text_directives,
                           OnResultCallback on_result_callback);
 
+  void FindScrollAndHighlight(const std::string& text_directive) const;
+
  private:
   friend class content::WebContentsUserData<TextFragmentLookupStateTracker>;
   FRIEND_TEST_ALL_PREFIXES(TextFragmentLookupStateTrackerTest,
