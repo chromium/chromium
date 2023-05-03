@@ -10,6 +10,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -226,6 +227,11 @@ void ImageService::OnConsentResult(mojom::ClientId client_id,
                                    const mojom::Options& options,
                                    ResultCallback callback,
                                    bool consent_is_enabled) {
+  base::UmaHistogramBoolean(kConsentSuccessHistogramName, consent_is_enabled);
+  base::UmaHistogramBoolean(std::string(kConsentSuccessHistogramName) + "." +
+                                ClientIdToString(client_id),
+                            consent_is_enabled);
+
   if (!consent_is_enabled) {
     return std::move(callback).Run(GURL());
   }
