@@ -154,6 +154,9 @@
     'arc_auth': {
       'filepath': 'chrome/browser/ash/arc/auth'
     },
+    'arc_fileapi': {
+      'filepath': 'chrome/browser/ash/arc/fileapi'
+    },
     'arc_ime': {
       'filepath': 'chrome/browser/ash/arc/input_method_manager/'\
                   '|components/arc/ime/'
@@ -2315,6 +2318,8 @@
     'arc': ['hidehiko+watch@chromium.org',
             'arc-reviews+chromium@google.com'],
     'arc_auth': ['khmel+watch@chromium.org'],
+    'arc_fileapi': ['alanding+watch@chromium.org',
+                    'djacobo+watch@chromium.org'],
     'arc_ime': ['yhanada+watch@chromium.org'],
     'arc_kiosk': ['poromov+watch@chromium.org'],
     'arc_mojom': ['hashimoto+watch@chromium.org'],
