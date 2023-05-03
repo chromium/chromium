@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
-#define CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
+#ifndef CHROME_UTILITY_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
+#define CHROME_UTILITY_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -19,4 +19,4 @@ void AnalyzeDocument(base::File office_file,
 }  // namespace document_analyzer
 }  // namespace safe_browsing
 
-#endif  // CHROME_COMMON_SAFE_BROWSING_DOCUMENT_ANALYZER_H_
+#endif  // CHROME_UTILITY_SAFE_BROWSING_DOCUMENT_ANALYZER_H_

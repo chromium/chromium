@@ -4,25 +4,6 @@
 
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-source_set("mac") {
-  sources = [
-    "dmg_analyzer.cc",
-    "dmg_analyzer.h",
-    "dmg_iterator.cc",
-    "dmg_iterator.h",
-  ]
-
-  deps = [
-    ":dmg_common",
-    "//base",
-    "//chrome/common/safe_browsing:archive_analyzer_results",
-    "//chrome/common/safe_browsing:binary_feature_extractor",
-    "//components/safe_browsing/content/common:file_type_policies",
-    "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common/proto:csd_proto",
-  ]
-}
-
 config("dmg_public_config") {
   libs = [ "bz2" ]
   frameworks = [ "CoreFoundation.framework" ]
@@ -31,6 +12,7 @@ config("dmg_public_config") {
 source_set("dmg_common") {
   visibility = [
     ":*",
+    "//chrome/utility/safe_browsing:*",
 
     # Unit tests directly use some of the utilities in this target.
     "//chrome/test:unit_tests",

@@ -6564,7 +6564,7 @@ test("unit_tests") {
       "//chrome/services/mac_notifications:unit_tests",
       "//chrome/services/mac_notifications/public/mojom",
       "//chrome/updater:browser_sources",
-      "//chrome/utility/safe_browsing/mac",
+      "//chrome/utility/safe_browsing",
       "//chrome/utility/safe_browsing/mac:dmg_common",
       "//components/power_metrics",
 

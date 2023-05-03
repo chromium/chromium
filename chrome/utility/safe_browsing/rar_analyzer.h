@@ -18,13 +18,13 @@
 // 5. Finally, |SafeArchiveAnalyzer::AnalyzeRarFile()| calls |AnalyzeRarFile()|
 //    defined in this file to actually inspect the file.
 
-#ifndef CHROME_COMMON_SAFE_BROWSING_RAR_ANALYZER_H_
-#define CHROME_COMMON_SAFE_BROWSING_RAR_ANALYZER_H_
+#ifndef CHROME_UTILITY_SAFE_BROWSING_RAR_ANALYZER_H_
+#define CHROME_UTILITY_SAFE_BROWSING_RAR_ANALYZER_H_
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/common/safe_browsing/archive_analyzer.h"
+#include "chrome/utility/safe_browsing/archive_analyzer.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "third_party/unrar/google/unrar_wrapper.h"
 
@@ -54,4 +54,4 @@ class RarAnalyzer : public ArchiveAnalyzer {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_COMMON_SAFE_BROWSING_RAR_ANALYZER_H_
+#endif  // CHROME_UTILITY_SAFE_BROWSING_RAR_ANALYZER_H_

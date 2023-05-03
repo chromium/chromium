@@ -7,8 +7,6 @@
 #include "base/functional/callback.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/common/safe_browsing/seven_zip_analyzer.h"
-#include "chrome/common/safe_browsing/zip_analyzer.h"
 
 namespace {
 // The maximum duration of analysis, in milliseconds.

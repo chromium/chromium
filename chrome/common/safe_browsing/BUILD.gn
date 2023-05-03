@@ -58,26 +58,6 @@ if (safe_browsing_mode == 1) {
     public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
   }
 
-  if (is_linux || is_win) {
-    source_set("document_analyzer") {
-      sources = [
-        "document_analyzer.cc",
-        "document_analyzer.h",
-      ]
-
-      deps = [
-        ":document_analyzer_results",
-        ":download_type_util",
-        "//base",
-        "//components/safe_browsing/content/common:file_type_policies",
-        "//components/safe_browsing/core/common",
-        "//third_party/maldoca:maldoca",
-      ]
-
-      public_deps = [ "//components/safe_browsing/core/common/proto:csd_proto" ]
-    }
-  }
-
   if (is_mac) {
     source_set("disk_image_type_sniffer_mac") {
       sources = [
@@ -138,19 +118,11 @@ source_set("safe_browsing") {
 
   if (safe_browsing_mode == 1) {
     sources = [
-      "archive_analyzer.cc",
-      "archive_analyzer.h",
       "ipc_protobuf_message_macros.h",
       "ipc_protobuf_message_null_macros.h",
       "protobuf_message_log_macros.h",
       "protobuf_message_read_macros.h",
       "protobuf_message_write_macros.h",
-      "rar_analyzer.cc",
-      "rar_analyzer.h",
-      "seven_zip_analyzer.cc",
-      "seven_zip_analyzer.h",
-      "zip_analyzer.cc",
-      "zip_analyzer.h",
     ]
 
     deps += [
@@ -164,17 +136,6 @@ source_set("safe_browsing") {
       "//third_party/lzma_sdk/google:seven_zip_reader",
       "//third_party/unrar:unrar",
     ]
-
-    if (is_linux) {
-      deps += [ ":document_analyzer" ]
-    }
-
-    if (is_mac) {
-      # TODO(crbug/1373671): Most of this target should be moved to
-      # //chrome/utility/safe_browsing and merged with this one.
-      allow_circular_includes_from = [ "//chrome/utility/safe_browsing/mac" ]
-      deps += [ "//chrome/utility/safe_browsing/mac" ]
-    }
 
     public_deps = [
       ":proto",

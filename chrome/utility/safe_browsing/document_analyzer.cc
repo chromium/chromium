@@ -5,7 +5,7 @@
 // This file contains the document analyzer analysis implementation for download
 // protection, which runs in a sandboxed utility process.
 
-#include "chrome/common/safe_browsing/document_analyzer.h"
+#include "chrome/utility/safe_browsing/document_analyzer.h"
 
 #include <string>
 

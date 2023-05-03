@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/safe_browsing/archive_analyzer.h"
+#include "chrome/utility/safe_browsing/archive_analyzer.h"
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/common/safe_browsing/rar_analyzer.h"
-#include "chrome/common/safe_browsing/seven_zip_analyzer.h"
-#include "chrome/common/safe_browsing/zip_analyzer.h"
+#include "chrome/utility/safe_browsing/rar_analyzer.h"
+#include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
+#include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "components/safe_browsing/content/common/proto/download_file_types.pb.h"
 #include "components/safe_browsing/core/common/features.h"
 

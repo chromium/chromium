@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
-#define CHROME_COMMON_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
+#ifndef CHROME_UTILITY_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
+#define CHROME_UTILITY_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
@@ -97,4 +97,4 @@ class ArchiveAnalyzer {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_COMMON_SAFE_BROWSING_ARCHIVE_ANALYZER_H_
+#endif  // CHROME_UTILITY_SAFE_BROWSING_ARCHIVE_ANALYZER_H_

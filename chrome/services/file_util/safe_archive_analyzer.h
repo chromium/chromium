@@ -6,10 +6,10 @@
 #define CHROME_SERVICES_FILE_UTIL_SAFE_ARCHIVE_ANALYZER_H_
 
 #include "chrome/common/safe_browsing/archive_analyzer_results.h"
-#include "chrome/common/safe_browsing/rar_analyzer.h"
-#include "chrome/common/safe_browsing/seven_zip_analyzer.h"
-#include "chrome/common/safe_browsing/zip_analyzer.h"
 #include "chrome/services/file_util/public/mojom/safe_archive_analyzer.mojom.h"
+#include "chrome/utility/safe_browsing/rar_analyzer.h"
+#include "chrome/utility/safe_browsing/seven_zip_analyzer.h"
+#include "chrome/utility/safe_browsing/zip_analyzer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 #if BUILDFLAG(IS_MAC)

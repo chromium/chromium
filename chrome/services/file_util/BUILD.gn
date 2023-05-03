@@ -40,7 +40,7 @@ source_set("file_util") {
   }
 
   if (is_mac) {
-    deps += [ "//chrome/utility/safe_browsing/mac" ]
+    deps += [ "//chrome/utility/safe_browsing" ]
   }
 
   if (safe_browsing_mode == 1) {
@@ -61,13 +61,13 @@ source_set("file_util") {
     deps += [
       "//chrome/common/safe_browsing",
       "//chrome/common/safe_browsing:archive_analyzer_results",
-      "//chrome/common/safe_browsing:safe_browsing",
+      "//chrome/utility/safe_browsing",
     ]
 
     if (is_linux || is_win) {
       deps += [
-        "//chrome/common/safe_browsing:document_analyzer",
         "//chrome/common/safe_browsing:document_analyzer_results",
+        "//chrome/utility/safe_browsing:document_analyzer",
       ]
     }
   }
