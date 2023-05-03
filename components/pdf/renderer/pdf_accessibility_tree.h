@@ -188,8 +188,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void AddPageContent(
-      ui::AXNodeData* page_node,
-      const gfx::RectF& page_bounds,
+      const chrome_pdf::AccessibilityPageInfo& page_info,
       uint32_t page_index,
       const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
@@ -247,7 +246,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   uint32_t selection_end_page_index_ = 0;
   uint32_t selection_end_char_index_ = 0;
   uint32_t page_count_ = 0;
-  ui::AXNodeData* doc_node_;
+  std::unique_ptr<ui::AXNodeData> doc_node_;
   std::vector<std::unique_ptr<ui::AXNodeData>> nodes_;
 
   // Map from the id of each static text AXNode and inline text box
@@ -268,16 +267,11 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource,
   bool did_get_a_text_run_ = false;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // The status node contains a notification message for the user. It will be
-  // owned by `nodes_` defined above.
-  ui::AXNodeData* ocr_status_node_ = nullptr;
+  // The status node contains a notification message for the user.
+  std::unique_ptr<ui::AXNodeData> ocr_status_node_;
   std::unique_ptr<PdfOcrService> ocr_service_;
   // The number of remaining OCR service requests.
   uint32_t num_remaining_ocr_requests_ = 0;
-  // Flag that will be switched on when UnserializeNodes() is called. This flag
-  // will be used to check if an initial AXTreeUpdate with `nodes_` has been
-  // unserialized into `tree_`.
-  bool did_unserialize_nodes_once_ = false;
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   base::WeakPtrFactory<PdfAccessibilityTree> weak_ptr_factory_{this};
