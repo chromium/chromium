@@ -2058,20 +2058,33 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
 // or equal to the number of visits marked as having images.
 const FeatureEntry::FeatureParam
     kNtpHistoryClustersModuleFakeData2Visits2Images[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "2,2"}};
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "1,2,2"}};
 const FeatureEntry::FeatureParam
     kNtpHistoryClustersModuleFakeData3Visits1Image[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "3,1"}};
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "1,3,1"}};
 const FeatureEntry::FeatureParam
     kNtpHistoryClustersModuleFakeData4Visits2Images[] = {
-        {ntp_features::kNtpHistoryClustersModuleDataParam, "4,2"}};
+        {ntp_features::kNtpHistoryClustersModuleDataParam, "1,4,2"}};
+const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2OneJourney[] = {
+    {ntp_features::kNtpHistoryClustersModuleDataParam, "1,2,2"}};
+const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2TwoJourneys[] = {
+    {ntp_features::kNtpHistoryClustersModuleDataParam, "2,2,2"}};
+const FeatureEntry::FeatureParam kNtpHistoryClustersModuleV2ThreeJourneys[] = {
+    {ntp_features::kNtpHistoryClustersModuleDataParam, "3,2,2"}};
 const FeatureEntry::FeatureVariation kNtpHistoryClustersModuleVariations[] = {
     {"- Fake Data - Layout 1", kNtpHistoryClustersModuleFakeData2Visits2Images,
      std::size(kNtpHistoryClustersModuleFakeData2Visits2Images), nullptr},
     {"- Fake Data - Layout 2", kNtpHistoryClustersModuleFakeData3Visits1Image,
      std::size(kNtpHistoryClustersModuleFakeData3Visits1Image), nullptr},
     {"- Fake Data - Layout 3", kNtpHistoryClustersModuleFakeData4Visits2Images,
-     std::size(kNtpHistoryClustersModuleFakeData4Visits2Images), nullptr}};
+     std::size(kNtpHistoryClustersModuleFakeData4Visits2Images), nullptr},
+    {"- v2 Fake Data - 1 Journey", kNtpHistoryClustersModuleV2OneJourney,
+     std::size(kNtpHistoryClustersModuleV2OneJourney), nullptr},
+    {"- v2 Fake Data - 2 Journeys", kNtpHistoryClustersModuleV2TwoJourneys,
+     std::size(kNtpHistoryClustersModuleV2TwoJourneys), nullptr},
+    {"- v2 Fake Data - 3 Journeys", kNtpHistoryClustersModuleV2ThreeJourneys,
+     std::size(kNtpHistoryClustersModuleV2ThreeJourneys), nullptr},
+};
 
 const FeatureEntry::FeatureParam
     kNtpChromeCartInHistoryClustersModuleFakeData0[] = {

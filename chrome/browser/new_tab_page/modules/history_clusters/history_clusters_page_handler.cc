@@ -157,26 +157,30 @@ void HistoryClustersPageHandler::GetClusters(GetClustersCallback callback) {
   if (!fake_data_param.empty()) {
     const std::vector<std::string> kFakeDataParams = base::SplitString(
         fake_data_param, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    if (kFakeDataParams.size() != 2) {
+    if (kFakeDataParams.size() != 3) {
       LOG(ERROR) << "Invalid history clusters fake data selection parameter "
                     "format.";
       std::move(callback).Run({});
       return;
     }
 
+    int num_clusters;
     int num_visits;
     int num_images;
-    if (!base::StringToInt(kFakeDataParams.at(0), &num_visits) ||
-        !base::StringToInt(kFakeDataParams.at(1), &num_images) ||
+    if (!base::StringToInt(kFakeDataParams.at(0), &num_clusters) ||
+        !base::StringToInt(kFakeDataParams.at(1), &num_visits) ||
+        !base::StringToInt(kFakeDataParams.at(2), &num_images) ||
         num_visits < num_images) {
       std::move(callback).Run({});
       return;
     }
 
     std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
-    clusters_mojom.push_back(history_clusters::ClusterToMojom(
-        TemplateURLServiceFactory::GetForProfile(profile_),
-        GenerateSampleCluster(num_visits, num_images)));
+    for (int i = 0; i < num_clusters; i++) {
+      clusters_mojom.push_back(history_clusters::ClusterToMojom(
+          TemplateURLServiceFactory::GetForProfile(profile_),
+          GenerateSampleCluster(num_visits, num_images)));
+    }
     std::move(callback).Run(std::move(clusters_mojom));
     return;
   }

@@ -33,13 +33,14 @@ class NewTabPageModulesInteractiveUiTest : public InteractiveBrowserTest {
     // account.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kSignedOutNtpModulesSwitch);
+    const unsigned long kNumClusters = 1;
     const unsigned long kNumVisits = 2;
     const unsigned long kNumVisitsWithImages = 2;
     features.InitWithFeaturesAndParameters(
         {
             {ntp_features::kNtpHistoryClustersModule,
              {{ntp_features::kNtpHistoryClustersModuleDataParam,
-               base::StringPrintf("%lu,%lu", kNumVisits,
+               base::StringPrintf("%lu,%lu,%lu", kNumClusters, kNumVisits,
                                   kNumVisitsWithImages)}}},
             {ntp_features::kNtpChromeCartInHistoryClusterModule,
              {{ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam,

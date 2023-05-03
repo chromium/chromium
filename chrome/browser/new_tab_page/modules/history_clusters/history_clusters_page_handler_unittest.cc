@@ -272,6 +272,7 @@ TEST_F(HistoryClustersPageHandlerTest, GetClusters) {
 }
 
 TEST_F(HistoryClustersPageHandlerTest, GetFakeCluster) {
+  const unsigned long kNumClusters = 1;
   const unsigned long kNumVisits = 2;
   const unsigned long kNumVisitsWithImages = 2;
   base::test::ScopedFeatureList features;
@@ -279,24 +280,25 @@ TEST_F(HistoryClustersPageHandlerTest, GetFakeCluster) {
       {
           {ntp_features::kNtpHistoryClustersModule,
            {{ntp_features::kNtpHistoryClustersModuleDataParam,
-             base::StringPrintf("%lu,%lu", kNumVisits, kNumVisitsWithImages)}}},
+             base::StringPrintf("%lu,%lu,%lu", kNumClusters, kNumVisits,
+                                kNumVisitsWithImages)}}},
       },
       {});
 
-  history_clusters::mojom::ClusterPtr cluster_mojom;
+  std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
   base::MockCallback<HistoryClustersPageHandler::GetClustersCallback> callback;
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
-          [&cluster_mojom](
+          [&clusters_mojom](
               std::vector<history_clusters::mojom::ClusterPtr> clusters_arg) {
-            cluster_mojom = std::move(clusters_arg.front());
+            clusters_mojom = std::move(clusters_arg);
           }));
   handler().GetClusters(callback.Get());
-  ASSERT_TRUE(cluster_mojom);
-  ASSERT_EQ(0u, cluster_mojom->id);
+  ASSERT_EQ(kNumClusters, clusters_mojom.size());
+  ASSERT_EQ(0u, clusters_mojom[0]->id);
   // The cluster visits should include an additional entry for the SRP visit.
-  ASSERT_EQ(kNumVisits + 1, cluster_mojom->visits.size());
+  ASSERT_EQ(kNumVisits + 1, clusters_mojom[0]->visits.size());
 }
 
 TEST_F(HistoryClustersPageHandlerTest,
