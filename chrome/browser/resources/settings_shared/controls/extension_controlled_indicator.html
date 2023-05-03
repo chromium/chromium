@@ -18,8 +18,6 @@
   iron-icon[icon='cr:open-in-new'] {
     fill: var(--text-color);
     height: var(--cr-icon-size);
-    margin-inline-end: -10px;
-    margin-inline-start: 6px;
     width: var(--cr-icon-size);
   }
 
@@ -39,7 +37,7 @@
 <span>[[getLabel_(extensionName)]]</span>
 <cr-button id="manage" on-click="onManageClick_">
   $i18n{manage}
-  <iron-icon icon="cr:open-in-new"></iron-icon>
+  <iron-icon icon="cr:open-in-new" slot="suffix-icon"></iron-icon>
 </cr-button>
 <template is="dom-if" if="[[extensionCanBeDisabled]]" restamp>
   <cr-button id="disable" on-click="onDisableClick_">$i18n{disable}</cr-button>
