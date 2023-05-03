@@ -149,12 +149,14 @@ void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme) {
   }
   prefer_dark_theme_ = prefer_dark_theme;
 
-  NativeTheme* web_theme = NativeTheme::GetInstanceForWeb();
-  web_theme->set_use_dark_colors(prefer_dark_theme_);
-  web_theme->set_preferred_color_scheme(
-      prefer_dark_theme_ ? NativeTheme::PreferredColorScheme::kDark
-                         : NativeTheme::PreferredColorScheme::kLight);
-  web_theme->NotifyOnNativeThemeUpdated();
+  for (NativeTheme* theme : {NativeTheme::GetInstanceForNativeUi(),
+                             NativeTheme::GetInstanceForWeb()}) {
+    theme->set_use_dark_colors(prefer_dark_theme_);
+    theme->set_preferred_color_scheme(
+        prefer_dark_theme_ ? NativeTheme::PreferredColorScheme::kDark
+                           : NativeTheme::PreferredColorScheme::kLight);
+    theme->NotifyOnNativeThemeUpdated();
+  }
 }
 
 }  // namespace ui
