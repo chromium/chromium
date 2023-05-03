@@ -14,6 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
+#include "content/public/test/browser_task_environment.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -163,7 +164,9 @@ struct TestEnvironment {
 
   void RunUntilIdle() { env.RunUntilIdle(); }
 
-  base::test::TaskEnvironment env;
+  // MediaInternals RenderProcessHost observation setup asserts being run on the
+  // UI thread.
+  BrowserTaskEnvironment env;
   base::UnguessableToken group;
   MockDeleterCallback deleter;
   StrictMock<MockAudioOutputStreamProviderClient> provider_client;

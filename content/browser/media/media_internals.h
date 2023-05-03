@@ -13,14 +13,15 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 #include "content/browser/media/media_internals_cdm_helper.h"
 #include "content/common/content_export.h"
 #include "content/common/media/media_log_records.mojom.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "media/audio/audio_logging.h"
 #include "media/base/media_log.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
@@ -45,7 +46,8 @@ namespace content {
 // TODO(crbug.com/812557): Remove inheritance from media::AudioLogFactory once
 // the creation of the AudioManager instance moves to the audio service.
 class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
-                                      public NotificationObserver {
+                                      public RenderProcessHostCreationObserver,
+                                      public RenderProcessHostObserver {
  public:
   // Called with the update string.
   using UpdateCallback = base::RepeatingCallback<void(const std::u16string&)>;
@@ -57,10 +59,13 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
 
   ~MediaInternals() override;
 
-  // NotificationObserver implementation.
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override;
+  // RenderProcessHostCreationObserver implementation.
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+
+  // RenderProcessHostObserver implementation.
+  void RenderProcessExited(RenderProcessHost* host,
+                           const ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // Called when a MediaEvent occurs.
   void OnMediaEvents(int render_process_id,
@@ -144,6 +149,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   // Saves |event| so that it can be sent later in SendHistoricalMediaEvents().
   void SaveEvent(int process_id, const media::MediaLogRecord& event);
 
+  // Erases saved events for |host|, if any.
+  void EraseSavedEvents(RenderProcessHost* host);
+
   // Caches |value| under |cache_key| so that future UpdateAudioLog() calls
   // will include the current data.  Calls JavaScript |function|(|value|) for
   // each registered UpdateCallback (if any).
@@ -172,7 +180,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
   // Must only be accessed on the IO thread.
   base::Value::List video_capture_capabilities_cached_data_;
 
-  NotificationRegistrar registrar_;
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      host_observation_{this};
 
   MediaInternalsAudioFocusHelper audio_focus_helper_;
 
@@ -180,9 +190,9 @@ class CONTENT_EXPORT MediaInternals : public media::AudioLogFactory,
 
   // All variables below must be accessed under |lock_|.
   base::Lock lock_;
-  bool can_update_;
+  bool can_update_ = false;
   base::Value::Dict audio_streams_cached_data_;
-  int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX];
+  int owner_ids_[media::AudioLogFactory::AUDIO_COMPONENT_MAX] = {};
 };
 
 }  // namespace content
