@@ -24,13 +24,13 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
 namespace drivefs::pinning {
 namespace {
 
@@ -206,6 +206,10 @@ class DriveFsPinManagerTest : public testing::Test {
     CHECK(temp_dir_.CreateUniqueTempDir());
     gcache_dir_ = temp_dir_.GetPath().Append("GCache");
   }
+
+  void SetUp() override { ash::UserDataAuthClient::InitializeFake(); }
+
+  void TearDown() override { ash::UserDataAuthClient::Shutdown(); }
 
   PinManager::SpaceGetter GetSpaceGetter() {
     return base::BindRepeating(&MockSpaceGetter::GetFreeSpace,
@@ -1890,6 +1894,31 @@ TEST_F(DriveFsPinManagerTest, NotEnoughSpace2) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kSyncing;
   manager.CheckFreeSpace();
+  run_loop.Run();
+
+  const Progress progress = manager.GetProgress();
+  EXPECT_EQ(progress.stage, Stage::kNotEnoughSpace);
+  EXPECT_EQ(progress.free_space, 200 << 20);
+  EXPECT_EQ(progress.required_space, 0);
+  EXPECT_EQ(progress.pinned_bytes, 0);
+  EXPECT_EQ(progress.pinned_files, 0);
+}
+
+// Tests what happens when PinManager cannot get enough free space that has been
+// emitted by the `LowDiskSpace` message sent via cryptohome UserDataAuth
+// service.
+TEST_F(DriveFsPinManagerTest, NotEnoughSpace3) {
+  CompletionCallback completion_callback;
+  RunLoop run_loop;
+
+  EXPECT_CALL(completion_callback, Run(Stage::kNotEnoughSpace))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  PinManager manager(temp_dir_.GetPath(), &drivefs_);
+  manager.SetCompletionCallback(completion_callback.Get());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
+  manager.progress_.stage = Stage::kSyncing;
+  ash::FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(200 << 20);
   run_loop.Run();
 
   const Progress progress = manager.GetProgress();

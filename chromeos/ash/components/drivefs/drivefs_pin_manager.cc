@@ -549,10 +549,15 @@ PinManager::PinManager(Path profile_path, mojom::DriveFs* const drivefs)
       drivefs_(drivefs),
       space_getter_(base::BindRepeating(&GetFreeSpace)) {
   DCHECK(drivefs_);
+  CHECK(ash::UserDataAuthClient::Get());
+  ash::UserDataAuthClient::Get()->AddObserver(this);
 }
 
 PinManager::~PinManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(ash::UserDataAuthClient::Get());
+  ash::UserDataAuthClient::Get()->RemoveObserver(this);
+
   DCHECK(!InProgress(progress_.stage))
       << "Pin manager is " << Quote(progress_.stage);
 
@@ -1248,6 +1253,11 @@ void PinManager::NotifyProgress() {
   for (Observer& observer : observers_) {
     observer.OnProgress(progress_);
   }
+}
+
+void PinManager::LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) {
+  LOG(ERROR) << "Got LowDiskSpace " << status.disk_free_bytes();
+  OnFreeSpaceRetrieved2(status.disk_free_bytes());
 }
 
 void PinManager::CheckStalledFiles() {
