@@ -225,6 +225,13 @@ void ConfigureAllowlistWithScopes() {
   cohort->add_canonical_index(0);  // google.com
   pattern->add_cohort_index(0);
 
+  // example·com.com is xn--examplecom-rra.com in punycode & fails spoof checks.
+  auto* idn_pattern = config_proto->add_allowed_pattern();  // Index 2
+  idn_pattern->set_pattern("xn--examplecom-rra.com/");
+  auto* idn_cohort = config_proto->add_cohort();  // Index 1
+  idn_cohort->add_allowed_index(2);
+  idn_pattern->add_cohort_index(1);
+
   lookalikes::SetSafetyTipsRemoteConfigProto(std::move(config_proto));
 }
 
@@ -707,23 +714,6 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 }
 
 // The navigated domain will fall back to punycode because it fails standard
-// ICU spoof checks in IDN spoof checker. If the feature flag to show
-// interstitials for punycode fallback is enabled, this will show a punycode
-// interstitial. Otherwise, the navigation won't be blocked.
-// but there won't be an interstitial because the domain
-// doesn't match a top domain.
-IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
-                       Punycode_NoSuggestedUrl_NoInterstitial) {
-  const GURL kNavigatedUrl = GetURL("ɴoτ-τoρ-ďoᛖaiɴ.com");
-
-  TestPunycodeInterstitialShown(browser(), kNavigatedUrl,
-                                NavigationSuggestionEvent::kFailedSpoofChecks);
-  CheckInterstitialUkm({kNavigatedUrl}, "MatchType",
-                       LookalikeUrlMatchType::kFailedSpoofChecks);
-  test_helper()->CheckSafetyTipUkmCount(0);
-}
-
-// The navigated domain will fall back to punycode because it fails standard
 // ICU spoof checks in the IDN spoof checker. However, no interstitial will be
 // shown as the domain name is single character.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
@@ -756,13 +746,25 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 // (latin middle dot) is configured to show a punycode interstitial.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        Punycode_NoSuggestedUrl_Interstitial) {
-  // Navigate to a domain that doesn't trigger target embedding:
   const GURL kNavigatedUrl = GetURL("example·com.com");
   TestPunycodeInterstitialShown(browser(), kNavigatedUrl,
                                 NavigationSuggestionEvent::kFailedSpoofChecks);
   CheckInterstitialUkm({kNavigatedUrl}, "MatchType",
                        LookalikeUrlMatchType::kFailedSpoofChecks);
   test_helper()->CheckSafetyTipUkmCount(0);
+}
+
+// The navigated domain will fall back to punycode because it fails spoof checks
+// in IDN spoof checker. The heuristic that changes this domain to punycode
+// (latin middle dot) is configured to show a punycode interstitial, but the
+// domain is allowlisted.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       Punycode_NoSuggestedUrl_Allowlisted) {
+  ConfigureAllowlistWithScopes();
+  const GURL kNavigatedUrl = GetURL("example·com.com");
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  test_helper()->CheckNoLookalikeUkm();
 }
 
 // The navigated domain will fall back to punycode because it fails spoof checks
