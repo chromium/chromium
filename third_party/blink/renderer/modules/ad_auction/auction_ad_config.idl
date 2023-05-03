@@ -57,5 +57,7 @@ dictionary AuctionAdConfig {
 
   sequence<AuctionAdConfig> componentAuctions;
   AbortSignal? signal;
-  boolean resolveToConfig;
+
+  // Really (boolean or Promise<boolean>)
+  any resolveToConfig;
 };
