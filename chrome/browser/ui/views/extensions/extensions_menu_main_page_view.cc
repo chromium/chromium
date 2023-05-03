@@ -16,8 +16,8 @@
 #include "chrome/browser/ui/extensions/extension_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -129,7 +129,7 @@ RequestsAccessSection::RequestsAccessSection() {
 
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
     Browser* browser,
-    ExtensionsMenuNavigationHandler* navigation_handler)
+    ExtensionsMenuHandler* navigation_handler)
     : browser_(browser), navigation_handler_(navigation_handler) {
   // This is set so that the extensions menu doesn't fall outside the monitor in
   // a maximized window in 1024x768. See https://crbug.com/1096630.
@@ -220,7 +220,7 @@ ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
                           base::BindRepeating(
-                              &ExtensionsMenuNavigationHandler::CloseBubble,
+                              &ExtensionsMenuHandler::CloseBubble,
                               base::Unretained(navigation_handler_))))),
           // Contents.
           views::Builder<views::Separator>(),
@@ -259,9 +259,8 @@ void ExtensionsMenuMainPageView::CreateAndInsertMenuItem(
       // TODO(crbug.com/1390952): Create callback that grants/withhelds site
       // access when toggling the site access toggle.
       base::RepeatingClosure(base::NullCallback()),
-      base::BindRepeating(
-          &ExtensionsMenuNavigationHandler::OpenSitePermissionsPage,
-          base::Unretained(navigation_handler_), extension_id));
+      base::BindRepeating(&ExtensionsMenuHandler::OpenSitePermissionsPage,
+                          base::Unretained(navigation_handler_), extension_id));
   item->Update(site_access_toggle_state, site_permissions_button_state,
                site_permissions_button_access);
   menu_items_->AddChildViewAt(std::move(item), index);

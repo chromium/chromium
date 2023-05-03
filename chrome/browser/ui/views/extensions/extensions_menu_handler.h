@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_NAVIGATION_HANDLER_H_
-#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_NAVIGATION_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_HANDLER_H_
+#define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_HANDLER_H_
 
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
 
 // An interface that provides callbacks to the extensions menu pages.
-class ExtensionsMenuNavigationHandler {
+class ExtensionsMenuHandler {
  public:
-  virtual ~ExtensionsMenuNavigationHandler() = default;
+  virtual ~ExtensionsMenuHandler() = default;
 
   // Creates and opens the main page in the menu, if it exists.
   virtual void OpenMainPage() = 0;
@@ -30,4 +30,4 @@ class ExtensionsMenuNavigationHandler {
       extensions::PermissionsManager::UserSiteAccess site_access) = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_NAVIGATION_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_HANDLER_H_

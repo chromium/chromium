@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/permissions_manager.h"
 #include "ui/views/view_observer.h"
@@ -25,7 +25,7 @@ class ExtensionsMenuSitePermissionsPageView;
 class ToolbarActionsModel;
 
 class ExtensionsMenuViewController
-    : public ExtensionsMenuNavigationHandler,
+    : public ExtensionsMenuHandler,
       public TabStripModelObserver,
       public ToolbarActionsModel::Observer,
       public extensions::PermissionsManager::Observer,
@@ -40,7 +40,7 @@ class ExtensionsMenuViewController
       const ExtensionsMenuViewController&) = delete;
   ~ExtensionsMenuViewController() override;
 
-  // ExtensionsMenuNavigationHandler:
+  // ExtensionsMenuHandler:
   void OpenMainPage() override;
   void OpenSitePermissionsPage(extensions::ExtensionId extension_id) override;
   void CloseBubble() override;

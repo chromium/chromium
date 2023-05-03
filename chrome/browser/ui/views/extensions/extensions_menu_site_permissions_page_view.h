@@ -22,7 +22,7 @@ class RadioButton;
 }  // namespace views
 
 class Browser;
-class ExtensionsMenuNavigationHandler;
+class ExtensionsMenuHandler;
 
 class ExtensionsMenuSitePermissionsPageView : public views::View {
  public:
@@ -31,7 +31,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   explicit ExtensionsMenuSitePermissionsPageView(
       Browser* browser,
       extensions::ExtensionId extension_id,
-      ExtensionsMenuNavigationHandler* navigation_handler);
+      ExtensionsMenuHandler* navigation_handler);
   ExtensionsMenuSitePermissionsPageView(
       const ExtensionsMenuSitePermissionsPageView&) = delete;
   const ExtensionsMenuSitePermissionsPageView& operator=(

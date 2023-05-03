@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_navigation_handler.h"
+#include "chrome/browser/ui/views/extensions/extensions_menu_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -132,7 +132,7 @@ int GetSiteAccessButtonIndex(PermissionsManager::UserSiteAccess site_access) {
 ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
     Browser* browser,
     extensions::ExtensionId extension_id,
-    ExtensionsMenuNavigationHandler* navigation_handler)
+    ExtensionsMenuHandler* navigation_handler)
     : browser_(browser), extension_id_(extension_id) {
   // TODO(crbug.com/1390952): Same stretch specification as
   // ExtensionsMenuMainPageView. Move to a shared file.
@@ -158,7 +158,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                     .SetGroup(kSiteAccessButtonsId)
                     .SetImageLabelSpacing(icon_label_spacing)
                     .SetCallback(base::BindRepeating(
-                        &ExtensionsMenuNavigationHandler::OnSiteAccessSelected,
+                        &ExtensionsMenuHandler::OnSiteAccessSelected,
                         base::Unretained(navigation_handler), extension_id,
                         site_access)),
                 views::Builder<views::Label>()
@@ -185,7 +185,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                   views::Builder<views::ImageButton>(
                       views::CreateVectorImageButtonWithNativeTheme(
                           base::BindRepeating(
-                              &ExtensionsMenuNavigationHandler::OpenMainPage,
+                              &ExtensionsMenuHandler::OpenMainPage,
                               base::Unretained(navigation_handler)),
                           vector_icons::kArrowBackIcon))
                       .SetTooltipText(
@@ -212,7 +212,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
                           base::BindRepeating(
-                              &ExtensionsMenuNavigationHandler::CloseBubble,
+                              &ExtensionsMenuHandler::CloseBubble,
                               base::Unretained(navigation_handler))))),
           // Content.
           views::Builder<views::BoxLayoutView>()

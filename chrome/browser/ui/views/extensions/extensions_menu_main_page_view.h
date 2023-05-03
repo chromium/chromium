@@ -22,7 +22,7 @@ class ToggleButton;
 }  // namespace views
 
 class Browser;
-class ExtensionsMenuNavigationHandler;
+class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
@@ -34,7 +34,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   explicit ExtensionsMenuMainPageView(
       Browser* browser,
-      ExtensionsMenuNavigationHandler* navigation_handler);
+      ExtensionsMenuHandler* navigation_handler);
   ~ExtensionsMenuMainPageView() override = default;
   ExtensionsMenuMainPageView(const ExtensionsMenuMainPageView&) = delete;
   const ExtensionsMenuMainPageView& operator=(
@@ -76,7 +76,7 @@ class ExtensionsMenuMainPageView : public views::View {
   content::WebContents* GetActiveWebContents() const;
 
   const raw_ptr<Browser> browser_;
-  const raw_ptr<ExtensionsMenuNavigationHandler> navigation_handler_;
+  const raw_ptr<ExtensionsMenuHandler> navigation_handler_;
 
   // Subheader section.
   raw_ptr<views::Label> subheader_subtitle_;
