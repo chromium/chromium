@@ -12,6 +12,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.RESUME_HOME_SURFACE_ON_MODE_CHANGE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_OPEN_START_AS_HOMEPAGE;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_ON_TABLET_SECONDS;
 import static org.chromium.chrome.features.start_surface.StartSurfaceConfiguration.START_SURFACE_RETURN_TIME_SECONDS;
@@ -20,6 +21,7 @@ import static org.chromium.chrome.features.start_surface.StartSurfaceConfigurati
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.Bundle;
 import android.text.format.DateUtils;
 
 import androidx.test.filters.SmallTest;
@@ -61,6 +63,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepageManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowHomepagePolicyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtilUnitTest.ShadowSysUtils;
+import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.test.util.browser.Features;
@@ -143,6 +146,8 @@ public class ReturnToChromeUtilUnitTest {
     private NewTabPage mNewTabPage;
     @Mock
     private HomeSurfaceTracker mHomeSurfaceTracker;
+    @Mock
+    private Bundle mSaveInstanceState;
     @Captor
     private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -585,17 +590,35 @@ public class ReturnToChromeUtilUnitTest {
         Assert.assertTrue(HomepageManager.isHomepageEnabled());
         Assert.assertTrue(IntentUtils.isMainIntentFromLauncher(intent));
         Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                false, intent, mTabModelSelector, mInactivityTracker));
+                false, intent, null, mTabModelSelector, mInactivityTracker));
         Assert.assertTrue(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                true, intent, mTabModelSelector, mInactivityTracker));
+                true, intent, null, mTabModelSelector, mInactivityTracker));
 
         // Tests the case when the total tab count > 0. Verifies that Start is only shown on
         // tablets.
         doReturn(1).when(mTabModelSelector).getTotalTabCount();
         Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                false, intent, mTabModelSelector, mInactivityTracker));
+                false, intent, null, mTabModelSelector, mInactivityTracker));
         Assert.assertTrue(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                true, intent, mTabModelSelector, mInactivityTracker));
+                true, intent, null, mTabModelSelector, mInactivityTracker));
+
+        // Sets the return time not arrive.
+        START_SURFACE_RETURN_TIME_SECONDS.setForTesting(-1);
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowTabSwitcher(-1, false));
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                false, intent, null, mTabModelSelector, mInactivityTracker));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                false, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
+        Assert.assertFalse(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                false, intent, null, mTabModelSelector, mInactivityTracker));
+        Assert.assertTrue(ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
+                true, intent, mSaveInstanceState, mTabModelSelector, mInactivityTracker));
     }
 
     @Test
@@ -709,6 +732,40 @@ public class ReturnToChromeUtilUnitTest {
         mTabModelObserverCaptor.getValue().willAddTab(mTab1, TabLaunchType.FROM_RESTORE);
         verify(mNewTabPage).showHomeSurfaceUi(eq(mTab1));
         verify(mHomeSurfaceTracker).updateHomeSurfaceAndTrackingTabs(eq(mNtpTab), eq(mTab1));
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldResumeHomeSurfaceOnFoldConfigurationChange() {
+        Assert.assertFalse(
+                ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(null));
+
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
+        doReturn(false)
+                .when(mSaveInstanceState)
+                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        Assert.assertFalse(ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
+                mSaveInstanceState));
+
+        doReturn(false)
+                .when(mSaveInstanceState)
+                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        Assert.assertFalse(ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
+                mSaveInstanceState));
+
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
+        doReturn(true)
+                .when(mSaveInstanceState)
+                .getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
+        Assert.assertTrue(ReturnToChromeUtil.shouldResumeHomeSurfaceOnFoldConfigurationChange(
+                mSaveInstanceState));
     }
 
     private Intent createMainIntentFromLauncher() {

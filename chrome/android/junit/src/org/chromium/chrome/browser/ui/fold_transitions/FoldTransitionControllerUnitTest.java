@@ -17,9 +17,11 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.DID_CHANGE_TABLET_MODE;
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.KEYBOARD_VISIBILITY_STATE;
+import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.RESUME_HOME_SURFACE_ON_MODE_CHANGE;
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.TAB_SWITCHER_VISIBILITY_STATE;
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.URL_BAR_EDIT_TEXT;
 import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.URL_BAR_FOCUS_STATE;
+import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.saveHomeSurfaceState;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -49,6 +51,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -77,6 +80,8 @@ public class FoldTransitionControllerUnitTest {
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock
     private Bundle mSavedInstanceState;
+    @Mock
+    private StartSurface mStartSurface;
 
     private FoldTransitionController mFoldTransitionController;
 
@@ -115,7 +120,8 @@ public class FoldTransitionControllerUnitTest {
         String text = "hello";
         doReturn(true).when(mToolbarManager).isUrlBarFocused();
         doReturn(text).when(mToolbarManager).getUrlBarTextWithoutAutocomplete();
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         verify(mSavedInstanceState).putBoolean(URL_BAR_FOCUS_STATE, true);
         verify(mSavedInstanceState).putString(URL_BAR_EDIT_TEXT, text);
@@ -124,7 +130,8 @@ public class FoldTransitionControllerUnitTest {
     @Test
     public void testSaveUiState_urlBarNotFocused() {
         doReturn(false).when(mToolbarManager).isUrlBarFocused();
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         verify(mSavedInstanceState, never()).putBoolean(URL_BAR_FOCUS_STATE, true);
         verify(mSavedInstanceState, never()).putString(eq(URL_BAR_EDIT_TEXT), anyString());
@@ -134,7 +141,8 @@ public class FoldTransitionControllerUnitTest {
     public void testSaveUiState_keyboardVisibleOnWebContentsFocus() {
         doReturn(true).when(mWebContents).isFocusedElementEditable();
         doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
         verify(mWebContents).isFocusedElementEditable();
@@ -148,7 +156,7 @@ public class FoldTransitionControllerUnitTest {
         doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
         InOrder inOrder = Mockito.inOrder(mSavedInstanceState);
         mFoldTransitionController.saveUiState(
-                mSavedInstanceState, /* didChangeTabletMode= */ false);
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         inOrder.verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
         Assert.assertTrue("|mKeyboardVisibleDuringFoldTransition| should be true.",
@@ -161,7 +169,8 @@ public class FoldTransitionControllerUnitTest {
         // Simulate a second invocation of Activity#onSaveInstanceState.
         doReturn(true).when(mWebContents).isFocusedElementEditable();
         doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         inOrder.verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
         Assert.assertFalse("|mKeyboardVisibleDuringFoldTransition| should be reset.",
@@ -181,7 +190,7 @@ public class FoldTransitionControllerUnitTest {
         doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
         InOrder inOrder = Mockito.inOrder(mSavedInstanceState);
         mFoldTransitionController.saveUiState(
-                mSavedInstanceState, /* didChangeTabletMode= */ false);
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         inOrder.verify(mSavedInstanceState).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
         Assert.assertTrue("|mKeyboardVisibleDuringFoldTransition| should be true.",
@@ -194,7 +203,8 @@ public class FoldTransitionControllerUnitTest {
         // Simulate a second invocation of Activity#onSaveInstanceState.
         doReturn(true).when(mWebContents).isFocusedElementEditable();
         doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
 
         inOrder.verify(mSavedInstanceState, never())
                 .putBoolean(eq(KEYBOARD_VISIBILITY_STATE), anyBoolean());
@@ -212,22 +222,48 @@ public class FoldTransitionControllerUnitTest {
     public void testSaveUiState_keyboardNotVisible() {
         doReturn(false).when(mWebContents).isFocusedElementEditable();
         doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(any(), any());
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(
+                mSavedInstanceState, /* didChangeTabletMode= */ true, /* isIncognito= */ false);
         verify(mSavedInstanceState, never()).putBoolean(KEYBOARD_VISIBILITY_STATE, true);
     }
 
     @Test
     public void testSaveUiState_tabSwitcherVisible() {
         doReturn(true).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true,
+                /* isIncognito= */ false);
         verify(mSavedInstanceState).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
     }
 
     @Test
     public void testSaveUiState_tabSwitcherNotVisible() {
         doReturn(false).when(mLayoutManager).isLayoutVisible(LayoutType.TAB_SWITCHER);
-        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true);
+        mFoldTransitionController.saveUiState(mSavedInstanceState, /* didChangeTabletMode= */ true,
+                /* isIncognito= */ false);
         verify(mSavedInstanceState, never()).putBoolean(TAB_SWITCHER_VISIBILITY_STATE, true);
+    }
+
+    @Test
+    public void testSaveHomeSurfaceState() {
+        saveHomeSurfaceState(null, mStartSurface, false);
+        saveHomeSurfaceState(mSavedInstanceState, null, false);
+        saveHomeSurfaceState(mSavedInstanceState, mStartSurface, false);
+        saveHomeSurfaceState(mSavedInstanceState, mStartSurface, true);
+        verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+        verify(mStartSurface, never()).isHomepageShown();
+
+        // Verifies that saved instance state should not contain RESUME_HOME_SURFACE_ON_MODE_CHANGE
+        // if Start surface isn't shown on phone.
+        doReturn(true).when(mSavedInstanceState).getBoolean(DID_CHANGE_TABLET_MODE);
+        doReturn(false).when(mStartSurface).isHomepageShown();
+        saveHomeSurfaceState(mSavedInstanceState, mStartSurface, false);
+        verify(mSavedInstanceState, never()).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
+
+        // Verifies that saved instance state will have RESUME_HOME_SURFACE_ON_MODE_CHANGE == true
+        // if Start surface is shown on phone.
+        doReturn(true).when(mStartSurface).isHomepageShown();
+        saveHomeSurfaceState(mSavedInstanceState, mStartSurface, false);
+        verify(mSavedInstanceState).putBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, true);
     }
 
     @Test
@@ -333,7 +369,7 @@ public class FoldTransitionControllerUnitTest {
         toolbarManagerSupplier.set(mToolbarManager);
         var layoutManagerSupplier = new ObservableSupplierImpl<LayoutManager>();
         layoutManagerSupplier.set(mLayoutManager);
-        mFoldTransitionController = new FoldTransitionController(
-                toolbarManagerSupplier, layoutManagerSupplier, mActivityTabProvider, mHandler);
+        mFoldTransitionController = new FoldTransitionController(toolbarManagerSupplier,
+                layoutManagerSupplier, mActivityTabProvider, new OneshotSupplierImpl<>(), mHandler);
     }
 }

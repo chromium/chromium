@@ -500,7 +500,7 @@ public class RootUiCoordinator
             }
         });
         mFoldTransitionController = new FoldTransitionController(mToolbarManagerOneshotSupplier,
-                mLayoutManagerSupplier, mActivityTabProvider, new Handler());
+                mLayoutManagerSupplier, mActivityTabProvider, mStartSurfaceSupplier, new Handler());
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -1600,7 +1600,9 @@ public class RootUiCoordinator
      *         otherwise.
      */
     public void onSaveInstanceState(Bundle outState, boolean isRecreatingForTabletModeChange) {
-        mFoldTransitionController.saveUiState(outState, isRecreatingForTabletModeChange);
+        assert mTabModelSelectorSupplier.hasValue();
+        mFoldTransitionController.saveUiState(outState, isRecreatingForTabletModeChange,
+                mTabModelSelectorSupplier.get().isIncognitoSelected());
     }
 
     /**

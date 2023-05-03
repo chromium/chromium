@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tasks;
 
+import static org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController.RESUME_HOME_SURFACE_ON_MODE_CHANGE;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 
@@ -52,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.ActiveTabState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.ui.fold_transitions.FoldTransitionController;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -511,12 +515,30 @@ public final class ReturnToChromeUtil {
      * enabled on Tablet.
      */
     public static boolean shouldShowNtpAsHomeSurfaceAtStartup(boolean isTablet, Intent intent,
-            TabModelSelector tabModelSelector, ChromeInactivityTracker inactivityTracker) {
+            Bundle bundle, TabModelSelector tabModelSelector,
+            ChromeInactivityTracker inactivityTracker) {
         // If "Start surface on tablet" isn't enabled, return false.
         if (!StartSurfaceConfiguration.isNtpAsHomeSurfaceEnabled(isTablet)) return false;
 
+        // If the current session is recreated due to a transition from the phone mode to the tablet
+        // mode on foldable, checks if the Start surface was shown on the phone mode before the
+        // transition.
+        if (shouldResumeHomeSurfaceOnFoldConfigurationChange(bundle)) return true;
+
         return shouldShowHomeSurfaceAtStartupImpl(
                 true /* isTablet */, intent, tabModelSelector, inactivityTracker);
+    }
+
+    /**
+     * Returns whether to show a Home surface on foldable when transiting from the phone mode to the
+     * tablet mode. Returns true if Start surface was showing on phone mode before the transition.
+     */
+    @VisibleForTesting
+    public static boolean shouldResumeHomeSurfaceOnFoldConfigurationChange(Bundle bundle) {
+        if (bundle == null) return false;
+
+        return bundle.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false)
+                && bundle.getBoolean(RESUME_HOME_SURFACE_ON_MODE_CHANGE, false);
     }
 
     /**

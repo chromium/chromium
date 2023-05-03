@@ -1195,7 +1195,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void setInitialOverviewState(boolean shouldShowOverviewPageOnStart) {
         if (isTablet()) {
             if (mFromResumption) {
-                setInitialOverviewState();
+                setInitialOverviewStateOnTablets();
             }
             return;
         }
@@ -1231,10 +1231,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     }
 
     /**
-     * Called on warm startup on Tablet to show a home surface instead of the last active Tab if the
-     * user has left Chrome for a while.
+     * Called on warm startup on tablets to show a home surface instead of the last active Tab if
+     * the user has left Chrome for a while.
      */
-    private void setInitialOverviewState() {
+    private void setInitialOverviewStateOnTablets() {
         ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
                 mTabModelSelector.isIncognitoSelected(), shouldShowNtpHomeSurfaceOnStartup(),
                 getCurrentTabModel(), getTabCreator(false), mHomeSurfaceTracker);
@@ -3103,8 +3103,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mTabModelSelector.isIncognitoSelected()) return false;
 
         assert mInactivityTracker != null;
-        return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(
-                isTablet(), getIntent(), mTabModelSelector, mInactivityTracker);
+        return ReturnToChromeUtil.shouldShowNtpAsHomeSurfaceAtStartup(isTablet(), getIntent(),
+                getSavedInstanceState(), mTabModelSelector, mInactivityTracker);
     }
 
     /**
