@@ -40,21 +40,29 @@ base::Value::List GetMoreOrigins() {
   return more_origins;
 }
 
+class MockPolicyObserver : public DeviceTrustConnectorService::PolicyObserver {
+ public:
+  MockPolicyObserver() {}
+  ~MockPolicyObserver() override = default;
+
+  // DeviceTrustConnectorService::PolicyObserver:
+  MOCK_METHOD(void, OnInlinePolicyEnabled, (DTCPolicyLevel), (override));
+  MOCK_METHOD(void, OnInlinePolicyDisabled, (DTCPolicyLevel), (override));
+};
+
 }  // namespace
 
-class DeviceTrustConnectorServiceTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+class DeviceTrustConnectorServiceTest : public testing::Test {
  protected:
-  void SetUp() override {
+  DeviceTrustConnectorServiceTest(bool feature_enabled = true,
+                                  bool has_policy_value = true) {
     RegisterDeviceTrustConnectorProfilePrefs(prefs_.registry());
-
     feature_list_.InitWithFeatureState(kDeviceTrustConnectorEnabled,
-                                       is_flag_enabled());
+                                       feature_enabled);
     levels_.insert(DTCPolicyLevel::kBrowser);
     levels_.insert(DTCPolicyLevel::kUser);
 
-    if (is_policy_enabled()) {
+    if (has_policy_value) {
       EnableServicePolicy();
     } else {
       DisableServicePolicy();
@@ -80,39 +88,13 @@ class DeviceTrustConnectorServiceTest
     return std::make_unique<DeviceTrustConnectorService>(&prefs_);
   }
 
-  bool is_attestation_flow_enabled() {
-    return is_flag_enabled() && is_policy_enabled();
-  }
-
-  bool is_flag_enabled() { return std::get<0>(GetParam()); }
-  bool is_policy_enabled() { return std::get<1>(GetParam()); }
-
   base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple prefs_;
   std::set<DTCPolicyLevel> levels_;
 };
 
-TEST_P(DeviceTrustConnectorServiceTest, IsConnectorEnabled_Update) {
+TEST_F(DeviceTrustConnectorServiceTest, Matches_Update) {
   auto service = CreateService();
-  service->Initialize();
-  EXPECT_EQ(is_attestation_flow_enabled(), service->IsConnectorEnabled());
-
-  if (!is_flag_enabled()) {
-    return;
-  }
-
-  UpdateServicePolicy();
-
-  EXPECT_TRUE(service->IsConnectorEnabled());
-}
-
-TEST_P(DeviceTrustConnectorServiceTest, Matches_Update) {
-  if (!is_attestation_flow_enabled()) {
-    return;
-  }
-
-  auto service = CreateService();
-  service->Initialize();
 
   GURL url1(kExampleUrl1);
   GURL url2(kExampleUrl2);
@@ -130,8 +112,61 @@ TEST_P(DeviceTrustConnectorServiceTest, Matches_Update) {
   EXPECT_EQ(levels_, service->Watches(url3));
 }
 
+TEST_F(DeviceTrustConnectorServiceTest, PolicyObserver_Notified) {
+  auto service = CreateService();
+  auto observer = std::make_unique<testing::StrictMock<MockPolicyObserver>>();
+  auto* observer_ptr = observer.get();
+
+  // The policy currently has values and adding the observer will get it invoked
+  // with an "enabled" notification.
+  EXPECT_CALL(*observer_ptr, OnInlinePolicyEnabled(DTCPolicyLevel::kBrowser));
+  EXPECT_CALL(*observer_ptr, OnInlinePolicyEnabled(DTCPolicyLevel::kUser));
+  service->AddObserver(std::move(observer));
+
+  // Updating the policy to new values will trigger an "enabled"
+  EXPECT_CALL(*observer_ptr, OnInlinePolicyEnabled(DTCPolicyLevel::kBrowser));
+  EXPECT_CALL(*observer_ptr, OnInlinePolicyEnabled(DTCPolicyLevel::kUser));
+  UpdateServicePolicy();
+
+  // Disabling the policy will trigger a "disabled" update.
+  EXPECT_CALL(*observer_ptr, OnInlinePolicyDisabled(DTCPolicyLevel::kBrowser));
+  EXPECT_CALL(*observer_ptr, OnInlinePolicyDisabled(DTCPolicyLevel::kUser));
+  DisableServicePolicy();
+}
+
+class DeviceTrustConnectorServiceFlagTest
+    : public DeviceTrustConnectorServiceTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  DeviceTrustConnectorServiceFlagTest()
+      : DeviceTrustConnectorServiceTest(is_flag_enabled(),
+                                        is_policy_enabled()) {}
+
+  bool is_attestation_flow_enabled() {
+    return is_flag_enabled() && is_policy_enabled();
+  }
+
+  bool is_flag_enabled() { return std::get<0>(GetParam()); }
+  bool is_policy_enabled() { return std::get<1>(GetParam()); }
+};
+
+// Parameterized test covering a matrix of enabled/disabled states depending on
+// both the feature flag and the policy values.
+TEST_P(DeviceTrustConnectorServiceFlagTest, IsConnectorEnabled_Update) {
+  auto service = CreateService();
+  EXPECT_EQ(is_attestation_flow_enabled(), service->IsConnectorEnabled());
+
+  if (!is_flag_enabled()) {
+    return;
+  }
+
+  UpdateServicePolicy();
+
+  EXPECT_TRUE(service->IsConnectorEnabled());
+}
+
 INSTANTIATE_TEST_SUITE_P(,
-                         DeviceTrustConnectorServiceTest,
+                         DeviceTrustConnectorServiceFlagTest,
                          testing::Combine(testing::Bool(), testing::Bool()));
 
 }  // namespace enterprise_connectors

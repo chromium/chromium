@@ -32,18 +32,8 @@ bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
 DeviceTrustConnectorService::DeviceTrustConnectorService(
     PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
-  DCHECK(profile_prefs_);
-}
+  CHECK(profile_prefs_);
 
-DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
-
-bool DeviceTrustConnectorService::IsConnectorEnabled() const {
-  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_)
-    return false;
-  return ConnectorPolicyHasValues(profile_prefs_);
-}
-
-void DeviceTrustConnectorService::Initialize() {
   if (!IsDeviceTrustConnectorFeatureEnabled()) {
     return;
   }
@@ -62,6 +52,15 @@ void DeviceTrustConnectorService::Initialize() {
   OnPolicyUpdated();
 }
 
+DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
+
+bool DeviceTrustConnectorService::IsConnectorEnabled() const {
+  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_) {
+    return false;
+  }
+  return ConnectorPolicyHasValues(profile_prefs_);
+}
+
 const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
     const GURL& url) const {
   std::set<DTCPolicyLevel> levels;
@@ -77,8 +76,14 @@ const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
   return levels;
 }
 
-void DeviceTrustConnectorService::OnConnectorEnabled() {
-  // No-op by default.
+void DeviceTrustConnectorService::AddObserver(
+    std::unique_ptr<PolicyObserver> observer) {
+  observers_.push_back(std::move(observer));
+
+  // TODO(b/277902094): Ideally the matchers should not be reinitialized when
+  // adding an observer, the current state (or prefs having values) should be
+  // used to trigger enabled/disabled updates.
+  OnPolicyUpdated();
 }
 
 void DeviceTrustConnectorService::OnPolicyUpdated() {
@@ -94,9 +99,23 @@ void DeviceTrustConnectorService::OnPolicyUpdated() {
   if (url_patterns && !url_patterns->empty()) {
     // Add the new endpoints to the conditions.
     url_matcher::util::AddAllowFilters(matcher_.get(), *url_patterns);
+    OnInlinePolicyEnabled(DTCPolicyLevel::kBrowser);
+    OnInlinePolicyEnabled(DTCPolicyLevel::kUser);
+  } else {
+    OnInlinePolicyDisabled(DTCPolicyLevel::kBrowser);
+    OnInlinePolicyDisabled(DTCPolicyLevel::kUser);
+  }
+}
 
-    // Call the hook which signals that the connector has been enabled.
-    OnConnectorEnabled();
+void DeviceTrustConnectorService::OnInlinePolicyEnabled(DTCPolicyLevel level) {
+  for (const auto& observer : observers_) {
+    observer->OnInlinePolicyEnabled(level);
+  }
+}
+
+void DeviceTrustConnectorService::OnInlinePolicyDisabled(DTCPolicyLevel level) {
+  for (const auto& observer : observers_) {
+    observer->OnInlinePolicyDisabled(level);
   }
 }
 

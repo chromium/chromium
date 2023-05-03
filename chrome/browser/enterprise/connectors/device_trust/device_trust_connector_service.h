@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
@@ -26,6 +27,18 @@ namespace enterprise_connectors {
 // connector (e.g. enabled or not).
 class DeviceTrustConnectorService : public KeyedService {
  public:
+  // Classes extending this class can be added as observers to Device Trust
+  // connector status changes.
+  class PolicyObserver {
+   public:
+    friend std::default_delete<PolicyObserver>;
+    virtual void OnInlinePolicyEnabled(DTCPolicyLevel level) {}
+    virtual void OnInlinePolicyDisabled(DTCPolicyLevel level) {}
+
+   protected:
+    virtual ~PolicyObserver() {}
+  };
+
   explicit DeviceTrustConnectorService(PrefService* profile_prefs);
 
   DeviceTrustConnectorService(const DeviceTrustConnectorService&) = delete;
@@ -34,10 +47,6 @@ class DeviceTrustConnectorService : public KeyedService {
 
   ~DeviceTrustConnectorService() override;
 
-  // Does one time initialization of the service.  This is called from the
-  // factory and client do not need to call it.
-  void Initialize();
-
   // Returns whether the Device Trust connector is enabled or not.
   virtual bool IsConnectorEnabled() const;
 
@@ -45,15 +54,17 @@ class DeviceTrustConnectorService : public KeyedService {
   // watched for.
   const std::set<DTCPolicyLevel> Watches(const GURL& url) const;
 
- protected:
-  // Hook that can is called to notify that the policy changed and the connector
-  // became, or is still, enabled.
-  virtual void OnConnectorEnabled();
+  // Adds `observer` to the list of owned policy observers.
+  void AddObserver(std::unique_ptr<PolicyObserver> observer);
 
  private:
   // Called when the ContextAwareAccessSignalsAllowlist policy value changes in
   // Prefs.
   void OnPolicyUpdated();
+
+  // Functions used to propagate an update to all observers.
+  void OnInlinePolicyEnabled(DTCPolicyLevel level);
+  void OnInlinePolicyDisabled(DTCPolicyLevel level);
 
   PrefChangeRegistrar pref_observer_;
 
@@ -61,6 +72,9 @@ class DeviceTrustConnectorService : public KeyedService {
 
   // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
   std::unique_ptr<url_matcher::URLMatcher> matcher_;
+
+  // Observers to notify whenever policy values change.
+  std::vector<std::unique_ptr<PolicyObserver>> observers_;
 
   base::WeakPtrFactory<DeviceTrustConnectorService> weak_factory_{this};
 };
