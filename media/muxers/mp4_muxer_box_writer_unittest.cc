@@ -34,31 +34,43 @@ class Mp4MuxerBoxWriterTest : public testing::Test {
 
   void Reset() { context_ = nullptr; }
 
+  void CreateContext(std::vector<uint8_t>& written_data) {
+    auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
+        [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
+            base::StringPiece mp4_data_string) {
+          // Callback is called per box output.
+
+          std::copy(mp4_data_string.begin(), mp4_data_string.end(),
+                    std::back_inserter(*written_data));
+          std::move(run_loop_quit).Run();
+        },
+        run_loop_.QuitClosure(), &written_data));
+
+    // Initialize.
+    CreateContext(std::move(tracker));
+  }
+
+  void FlushAndWait(Mp4BoxWriter* box_writer) {
+    // Flush at requested.
+    box_writer->WriteAndFlush();
+
+    // Wait for finishing flush of all boxes.
+    run_loop_.Run();
+  }
+
  private:
+  base::test::TaskEnvironment task_environment;
   mp4::writable_boxes::Movie mp4_moov_box_;
   std::unique_ptr<Mp4MuxerContext> context_;
-  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop_;
 };
 
 TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
-  // Tests `written_data` and `mvhd` box writer.
+  // Tests `moov/mvhd` box writer.
   base::RunLoop run_loop;
 
   std::vector<uint8_t> written_data;
-  auto tracker = std::make_unique<OutputPositionTracker>(base::BindRepeating(
-      [&](base::OnceClosure run_loop_quit, std::vector<uint8_t>* written_data,
-          base::StringPiece mp4_data_string) {
-        // Callback is called per box output.
-
-        std::copy(mp4_data_string.begin(), mp4_data_string.end(),
-                  std::back_inserter(*written_data));
-        std::move(run_loop_quit).Run();
-      },
-      run_loop.QuitClosure(), &written_data));
-
-  // Initialize.
-  CreateContext(std::move(tracker));
-  context()->SetVideoIndex(0);
+  CreateContext(written_data);
 
   // Populates the boxes during Mp4Muxer::OnEncodedVideo.
   mp4::writable_boxes::Movie mp4_moov_box;
@@ -72,14 +84,13 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
     mp4_moov_box.header.timescale = 0x7530;
     mp4_moov_box.header.duration = base::Seconds(0);
     mp4_moov_box.header.next_track_id = 2;
+
+    mp4_moov_box.extends.fourcc = mp4::FOURCC_MVEX;
   }
 
   // Flush at requested.
   Mp4MovieBoxWriter box_writer(*context(), mp4_moov_box);
-  box_writer.WriteAndFlush();
-
-  // Wait for finishing flush of all boxes.
-  run_loop.Run();
+  FlushAndWait(&box_writer);
 
   // Validation of the written boxes.
 
@@ -91,11 +102,11 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
   EXPECT_EQ(result, mp4::ParseResult::kOk);
   EXPECT_TRUE(reader);
   EXPECT_EQ(mp4::FOURCC_MOOV, reader->type());
+  EXPECT_TRUE(reader->ScanChildren());
 
   // `mvhd` test.
-  std::vector<mp4::MovieHeader> mvhd_boxs;
-  EXPECT_TRUE(reader->ReadAllChildrenAndCheckFourCC(&mvhd_boxs));
-  mp4::MovieHeader mvhd_box = mvhd_boxs[0];
+  mp4::MovieHeader mvhd_box;
+  EXPECT_TRUE(reader->ReadChild(&mvhd_box));
   EXPECT_EQ(mvhd_box.version, 1);
 
   base::Time time1904;
@@ -109,6 +120,82 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieAndHeader) {
   EXPECT_EQ(mvhd_box.timescale, 0x7530u);
   EXPECT_EQ(mvhd_box.duration, 0u);
   EXPECT_EQ(mvhd_box.next_track_id, 2u);
+
+  // Once Flush, it needs to reset the internal objects of context and buffer.
+  Reset();
+}
+
+TEST_F(Mp4MuxerBoxWriterTest, Mp4MovieExtends) {
+  // Tests `mvex/trex` box writer.
+  base::RunLoop run_loop;
+
+  std::vector<uint8_t> written_data;
+  CreateContext(written_data);
+
+  // Populates the boxes during Mp4Muxer::OnEncodedVideo.
+  mp4::writable_boxes::Movie mp4_moov_box;
+  mp4_moov_box.fourcc = mp4::FOURCC_MOOV;
+  mp4_moov_box.header.fourcc = mp4::FOURCC_MVHD;
+  mp4_moov_box.extends.fourcc = mp4::FOURCC_MVEX;
+
+  {
+    mp4::writable_boxes::TrackExtends video_extends;
+    video_extends.fourcc = mp4::FOURCC_TREX;
+    video_extends.track_id = 1u;
+    video_extends.default_sample_description_index = 1u;
+    video_extends.default_sample_duration = base::Seconds(0);
+    video_extends.default_sample_size = 1024u;
+    video_extends.default_sample_flags = 0x112u;
+    mp4_moov_box.extends.track_extends.push_back(std::move(video_extends));
+    context()->SetVideoIndex(0);
+  }
+
+  {
+    mp4::writable_boxes::TrackExtends audio_extends;
+    audio_extends.fourcc = mp4::FOURCC_TREX;
+    audio_extends.track_id = 2u;
+    audio_extends.default_sample_description_index = 1u;
+    audio_extends.default_sample_duration = base::Seconds(0);
+    audio_extends.default_sample_size = 989u;
+    audio_extends.default_sample_flags = 0x113;
+    mp4_moov_box.extends.track_extends.push_back(std::move(audio_extends));
+    context()->SetAudioIndex(1);
+  }
+
+  // Flush at requested.
+  Mp4MovieBoxWriter box_writer(*context(), mp4_moov_box);
+  FlushAndWait(&box_writer);
+
+  // Validation of the written boxes.
+
+  // `written_data` test.
+  std::unique_ptr<mp4::BoxReader> reader;
+  mp4::ParseResult result = mp4::BoxReader::ReadTopLevelBox(
+      written_data.data(), written_data.size(), nullptr, &reader);
+
+  EXPECT_EQ(result, mp4::ParseResult::kOk);
+  EXPECT_TRUE(reader);
+  EXPECT_EQ(mp4::FOURCC_MOOV, reader->type());
+  EXPECT_TRUE(reader->ScanChildren());
+
+  // `mvex` test.
+  mp4::MovieExtends mvex_box;
+  EXPECT_TRUE(reader->ReadChild(&mvex_box));
+
+  // mp4::MovieExtends mvex_box = mvex_boxes[0];
+  EXPECT_EQ(mvex_box.tracks.size(), 2u);
+
+  EXPECT_EQ(mvex_box.tracks[0].track_id, 1u);
+  EXPECT_EQ(mvex_box.tracks[0].default_sample_description_index, 1u);
+  EXPECT_EQ(mvex_box.tracks[0].default_sample_duration, 0u);
+  EXPECT_EQ(mvex_box.tracks[0].default_sample_size, 1024u);
+  EXPECT_EQ(mvex_box.tracks[0].default_sample_flags, 0x112u);
+
+  EXPECT_EQ(mvex_box.tracks[1].track_id, 2u);
+  EXPECT_EQ(mvex_box.tracks[1].default_sample_description_index, 1u);
+  EXPECT_EQ(mvex_box.tracks[1].default_sample_duration, 0u);
+  EXPECT_EQ(mvex_box.tracks[1].default_sample_size, 989u);
+  EXPECT_EQ(mvex_box.tracks[1].default_sample_flags, 0x113u);
 
   // Once Flush, it needs to reset the internal objects of context and buffer.
   Reset();

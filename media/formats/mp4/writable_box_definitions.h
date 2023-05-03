@@ -5,6 +5,8 @@
 #ifndef MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
 #define MEDIA_FORMATS_MP4_WRITABLE_BOX_DEFINITIONS_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/formats/mp4/fourccs.h"
@@ -24,7 +26,33 @@ struct FullBox : Box {
   uint32_t flags : 24;
 };
 
-// `mvhd` box.
+// Track Extends (`trex`) box.
+struct TrackExtends : FullBox {
+  uint32_t track_id;
+  uint32_t default_sample_description_index;
+  base::TimeDelta default_sample_duration;
+  uint32_t default_sample_size;
+
+  // The sample flags field in sample fragments is coded as a 32-bit value.
+  // bit(4) reserved=0;
+  // unsigned int(2) is_leading;
+  // unsigned int(2) sample_depends_on;
+  // unsigned int(2) sample_is_depended_on;
+  // unsigned int(2) sample_has_redundancy;
+  // bit(3) sample_padding_value;
+  // bit(1) sample_is_non_sync_sample;
+  // unsigned int(16) sample_degradation_priority;
+  uint32_t default_sample_flags;
+};
+
+// Movie Extends (`mvex`) box.
+struct MEDIA_EXPORT MovieExtends : Box {
+  MovieExtends();
+  ~MovieExtends();
+  std::vector<TrackExtends> track_extends;
+};
+
+// Movie Header (`mvhd`) box.
 struct MEDIA_EXPORT MovieHeader : FullBox {
   MovieHeader();
   ~MovieHeader();
@@ -40,9 +68,10 @@ struct MEDIA_EXPORT MovieHeader : FullBox {
   uint32_t next_track_id;
 };
 
-// `moov` box.
+// Movie (`moov`) box.
 struct Movie : Box {
   MovieHeader header;
+  MovieExtends extends;
 };
 
 }  // namespace media::mp4::writable_boxes

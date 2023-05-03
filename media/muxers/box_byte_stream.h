@@ -19,14 +19,15 @@ namespace media {
 // not thread safe.
 class MEDIA_EXPORT BoxByteStream {
  public:
-  // Constructs a `BoxByteStream` and prepares it for writing. `EndWrite()` must
+  // Constructs a `BoxByteStream` and prepares it for writing. `Flush()` must
   // be called prior to destruction even if nothing is written.
   BoxByteStream();
   ~BoxByteStream();
 
-  // Writes a uint32_t placeholder value that `EndWrite()` will fill in later.
+  // Writes a uint32_t placeholder value that `EndBox()` or `Flush()` will
+  // fill in later.
   // Only works if the current position is the start of a new box.
-  void WritePlaceholderSizeU32();
+  void StartBox();
 
   // Writes primitives types in big endian format. If `value` can be larger than
   // the the type being written, methods will `CHECK()` that `value` fits in the
@@ -39,10 +40,17 @@ class MEDIA_EXPORT BoxByteStream {
 
   // Ends a writing session. All pending placeholder values in `size_offsets_`
   // are filled in based on their distance from `position_`.
-  std::vector<uint8_t> EndWrite();
+  std::vector<uint8_t> Flush();
+
+  // Populate a uint32_t place holder offset value with the total size, which
+  // is a summation of the box itself with its children.
+  void EndBox();
 
   // TODO(crbug.com/1072056): Investigate if this is a reasonable starting size.
   static constexpr int kDefaultBufferLimit = 4096;
+
+  // Test helper method that returns internal size offset vector.
+  std::vector<size_t> GetSizeOffsetsForTesting() const { return size_offsets_; }
 
  private:
   // Expands the capacity of `buffer_` and reinitializes `writer_`.

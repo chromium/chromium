@@ -23,7 +23,7 @@ void Mp4BoxWriter::WriteAndFlush() {
   Write(writer);
 
   // Update the total size on respective boxes.
-  std::vector<uint8_t> buffer = writer.EndWrite();
+  std::vector<uint8_t> buffer = writer.Flush();
 
   // Write the entire boxes to the blob.
   context().GetOutputPositionTracker().WriteString(
@@ -44,7 +44,6 @@ void Mp4BoxWriter::AddChildBox(std::unique_ptr<Mp4BoxWriter> box_writer) {
 
 void Mp4BoxWriter::WriteBox(BoxByteStream& writer, mp4::FourCC fourcc) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  writer.WritePlaceholderSizeU32();
   writer.WriteU32(fourcc);
 }
 
@@ -54,7 +53,6 @@ void Mp4BoxWriter::WriteFullBox(BoxByteStream& writer,
                                 uint8_t version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  writer.WritePlaceholderSizeU32();
   writer.WriteU32(fourcc);
 
   writer.WriteU8(version);
