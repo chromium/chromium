@@ -211,13 +211,13 @@ SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
 void SafeBrowsingUrlCheckerImpl::CheckUrl(const GURL& url,
                                           const std::string& method,
                                           CheckUrlCallback callback) {
-  CheckUrlImpl(url, method, Notifier(std::move(callback)));
+  CheckUrlImplAndMaybeDeleteSelf(url, method, Notifier(std::move(callback)));
 }
 
 void SafeBrowsingUrlCheckerImpl::CheckUrl(const GURL& url,
                                           const std::string& method,
                                           NativeCheckUrlCallback callback) {
-  CheckUrlImpl(url, method, Notifier(std::move(callback)));
+  CheckUrlImplAndMaybeDeleteSelf(url, method, Notifier(std::move(callback)));
 }
 
 UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
@@ -242,9 +242,9 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   resource.threat_type = threat_type;
   resource.threat_metadata = metadata;
   resource.request_destination = request_destination_;
-  resource.callback =
-      base::BindRepeating(&SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete,
-                          weak_factory_.GetWeakPtr());
+  resource.callback = base::BindRepeating(
+      &SafeBrowsingUrlCheckerImpl::OnBlockingPageCompleteAndMaybeDeleteSelf,
+      weak_factory_.GetWeakPtr());
   resource.callback_sequence = base::SequencedTaskRunner::GetCurrentDefault();
   resource.render_process_id = render_process_id_;
   resource.render_frame_id = render_frame_id_;
@@ -259,7 +259,7 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   return resource;
 }
 
-void SafeBrowsingUrlCheckerImpl::OnUrlResult(
+void SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf(
     bool timed_out,
     absl::optional<std::unique_ptr<CompleteCheckResult>> result) {
   DCHECK_EQ(result.has_value(), !timed_out);
@@ -267,13 +267,14 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(
   if (timed_out) {
     // Any pending callbacks on this URL check should be skipped.
     weak_factory_.InvalidateWeakPtrs();
-    OnUrlResultInternal(urls_[next_index_].url,
-                        safe_browsing::SB_THREAT_TYPE_SAFE, ThreatMetadata(),
-                        /*is_from_url_real_time_check=*/false,
-                        /*rt_lookup_response=*/nullptr,
-                        /*timed_out=*/true);
+    OnUrlResultInternalAndMaybeDeleteSelf(urls_[next_index_].url,
+                                          safe_browsing::SB_THREAT_TYPE_SAFE,
+                                          ThreatMetadata(),
+                                          /*is_from_url_real_time_check=*/false,
+                                          /*rt_lookup_response=*/nullptr,
+                                          /*timed_out=*/true);
   } else {
-    OnUrlResultInternal(
+    OnUrlResultInternalAndMaybeDeleteSelf(
         result.value()->url, result.value()->threat_type,
         result.value()->metadata, result.value()->is_from_url_real_time_check,
         std::move(result.value()->url_real_time_lookup_response),
@@ -281,7 +282,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(
   }
 }
 
-void SafeBrowsingUrlCheckerImpl::OnUrlResultInternal(
+void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata,
@@ -346,7 +347,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternal(
     }
     // Let the navigation continue in case of delayed warnings.
     // No need to call ProcessUrls here, it'll return early.
-    RunNextCallback(true, false);
+    RunNextCallbackAndMaybeDeleteSelf(true, false);
     return;
   }
 
@@ -358,11 +359,11 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternal(
       url_checker_delegate_->NotifySuspiciousSiteDetected(web_contents_getter_);
     }
 
-    if (!RunNextCallback(true, false)) {
+    if (!RunNextCallbackAndMaybeDeleteSelf(true, false)) {
       return;
     }
 
-    ProcessUrls();
+    ProcessUrlsAndMaybeDeleteSelf();
     return;
   }
 
@@ -378,7 +379,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternal(
         "SB2Test.RequestDestination.UnsafePrefetchCanceled",
         request_destination_);
 
-    BlockAndProcessUrls(false);
+    BlockAndProcessUrlsAndMaybeDeleteSelf(false);
     return;
   }
 
@@ -415,9 +416,10 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternal(
   }
 }
 
-void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
-                                              const std::string& method,
-                                              Notifier notifier) {
+void SafeBrowsingUrlCheckerImpl::CheckUrlImplAndMaybeDeleteSelf(
+    const GURL& url,
+    const std::string& method,
+    Notifier notifier) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DVLOG(1) << "SafeBrowsingUrlCheckerImpl checks URL: " << url;
@@ -425,10 +427,10 @@ void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
                      /*did_perform_url_real_time_check=*/false,
                      /*did_check_url_real_time_allowlist=*/false);
 
-  ProcessUrls();
+  ProcessUrlsAndMaybeDeleteSelf();
 }
 
-void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
+void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(STATE_BLOCKED, state_);
   if (!base::FeatureList::IsEnabled(kDelayedWarnings)) {
@@ -446,7 +448,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
 
     const GURL& url = urls_[next_index_].url;
     if (url_checker_delegate_->IsUrlAllowlisted(url)) {
-      if (!RunNextCallback(true, false)) {
+      if (!RunNextCallbackAndMaybeDeleteSelf(true, false)) {
         return;
       }
 
@@ -459,7 +461,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
                                 request_destination_);
 
-      if (!RunNextCallback(true, false)) {
+      if (!RunNextCallbackAndMaybeDeleteSelf(true, false)) {
         return;
       }
 
@@ -477,7 +479,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
-          base::BindOnce(&SafeBrowsingUrlCheckerImpl::OnUrlResultInternal,
+          base::BindOnce(&SafeBrowsingUrlCheckerImpl::
+                             OnUrlResultInternalAndMaybeDeleteSelf,
                          weak_factory_.GetWeakPtr(), url, threat_type,
                          ThreatMetadata(),
                          /*is_from_url_real_time_check=*/false,
@@ -500,7 +503,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
                                       TRACE_ID_LOCAL(this), "url", url.spec());
 
-      if (!RunNextCallback(true, false)) {
+      if (!RunNextCallbackAndMaybeDeleteSelf(true, false)) {
         return;
       }
 
@@ -545,8 +548,9 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
         HashRealTimeMechanism::CanCheckUrl(url, request_destination_)) {
       return mechanism_experimenter_->RunChecks(
           next_index_,
-          base::BindOnce(&SafeBrowsingUrlCheckerImpl::OnUrlResult,
-                         weak_factory_.GetWeakPtr()),
+          base::BindOnce(
+              &SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf,
+              weak_factory_.GetWeakPtr()),
           url, url_checker_delegate_->GetThreatTypes(), request_destination_,
           database_manager_, can_check_db_,
           can_check_high_confidence_allowlist_,
@@ -570,12 +574,14 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
   lookup_mechanism_runner_ =
       std::make_unique<SafeBrowsingLookupMechanismRunner>(
           std::move(lookup_mechanism),
-          base::BindOnce(&SafeBrowsingUrlCheckerImpl::OnUrlResult,
-                         weak_factory_.GetWeakPtr()));
+          base::BindOnce(
+              &SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf,
+              weak_factory_.GetWeakPtr()));
   return lookup_mechanism_runner_->Run();
 }
 
-void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrls(bool showed_interstitial) {
+void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrlsAndMaybeDeleteSelf(
+    bool showed_interstitial) {
   DVLOG(1) << "SafeBrowsingUrlCheckerImpl blocks URL: "
            << urls_[next_index_].url;
   state_ = STATE_BLOCKED;
@@ -583,13 +589,13 @@ void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrls(bool showed_interstitial) {
   // If user decided to not proceed through a warning, mark all the remaining
   // redirects as "bad".
   while (next_index_ < urls_.size()) {
-    if (!RunNextCallback(false, showed_interstitial)) {
+    if (!RunNextCallbackAndMaybeDeleteSelf(false, showed_interstitial)) {
       return;
     }
   }
 }
 
-void SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete(
+void SafeBrowsingUrlCheckerImpl::OnBlockingPageCompleteAndMaybeDeleteSelf(
     bool proceed,
     bool showed_interstitial) {
   DCHECK(state_ == STATE_DISPLAYING_BLOCKING_PAGE ||
@@ -597,12 +603,12 @@ void SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete(
 
   if (proceed) {
     state_ = STATE_NONE;
-    if (!RunNextCallback(true, showed_interstitial)) {
+    if (!RunNextCallbackAndMaybeDeleteSelf(true, showed_interstitial)) {
       return;
     }
-    ProcessUrls();
+    ProcessUrlsAndMaybeDeleteSelf();
   } else {
-    BlockAndProcessUrls(showed_interstitial);
+    BlockAndProcessUrlsAndMaybeDeleteSelf(showed_interstitial);
   }
 }
 
@@ -622,8 +628,9 @@ SBThreatType SafeBrowsingUrlCheckerImpl::CheckWebUIUrls(const GURL& url) {
   return safe_browsing::SB_THREAT_TYPE_SAFE;
 }
 
-bool SafeBrowsingUrlCheckerImpl::RunNextCallback(bool proceed,
-                                                 bool showed_interstitial) {
+bool SafeBrowsingUrlCheckerImpl::RunNextCallbackAndMaybeDeleteSelf(
+    bool proceed,
+    bool showed_interstitial) {
   DCHECK_LT(next_index_, urls_.size());
   // OnCompleteCheck may delete *this*. Do not access internal members after
   // the call.

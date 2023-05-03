@@ -174,28 +174,31 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // complete. The |result| parameter will only be populated if |timed_out| is
   // false. This function eventually decides whether or not to show a blocking
   // page.
-  void OnUrlResult(bool timed_out,
-                   absl::optional<std::unique_ptr<CompleteCheckResult>> result);
+  void OnUrlResultAndMaybeDeleteSelf(
+      bool timed_out,
+      absl::optional<std::unique_ptr<CompleteCheckResult>> result);
 
   // Helper function to handle deciding whether or not to show a blocking page.
-  void OnUrlResultInternal(const GURL& url,
-                           SBThreatType threat_type,
-                           const ThreatMetadata& metadata,
-                           bool is_from_url_real_time_check,
-                           std::unique_ptr<RTLookupResponse> rt_lookup_response,
-                           bool timed_out);
+  void OnUrlResultInternalAndMaybeDeleteSelf(
+      const GURL& url,
+      SBThreatType threat_type,
+      const ThreatMetadata& metadata,
+      bool is_from_url_real_time_check,
+      std::unique_ptr<RTLookupResponse> rt_lookup_response,
+      bool timed_out);
 
-  void CheckUrlImpl(const GURL& url,
-                    const std::string& method,
-                    Notifier notifier);
-
-  // NOTE: this method runs callbacks which could destroy this object.
-  void ProcessUrls();
+  void CheckUrlImplAndMaybeDeleteSelf(const GURL& url,
+                                      const std::string& method,
+                                      Notifier notifier);
 
   // NOTE: this method runs callbacks which could destroy this object.
-  void BlockAndProcessUrls(bool showed_interstitial);
+  void ProcessUrlsAndMaybeDeleteSelf();
 
-  void OnBlockingPageComplete(bool proceed, bool showed_interstitial);
+  // NOTE: this method runs callbacks which could destroy this object.
+  void BlockAndProcessUrlsAndMaybeDeleteSelf(bool showed_interstitial);
+
+  void OnBlockingPageCompleteAndMaybeDeleteSelf(bool proceed,
+                                                bool showed_interstitial);
 
   // Helper method that checks whether |url|'s reputation can be checked using
   // real time lookups.
@@ -212,7 +215,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // Returns false if this object has been destroyed by the callback. In that
   // case none of the members of this object should be touched again.
-  bool RunNextCallback(bool proceed, bool showed_interstitial);
+  bool RunNextCallbackAndMaybeDeleteSelf(bool proceed,
+                                         bool showed_interstitial);
 
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,
