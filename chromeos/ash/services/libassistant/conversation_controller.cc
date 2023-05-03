@@ -530,6 +530,11 @@ void ConversationController::OnInteractionFinished(
   stop_interaction_closure_.reset();
 }
 
+void ConversationController::OnGrpcMessageForTesting(
+    const ::assistant::api::OnDeviceStateEventRequest& request) {
+  events_observer_->OnGrpcMessage(request);
+}
+
 void ConversationController::MaybeStopPreviousInteraction() {
   DVLOG(1) << __func__;
 

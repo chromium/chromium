@@ -19,6 +19,7 @@
 #include "chromeos/ash/services/libassistant/public/mojom/conversation_controller.mojom.h"
 #include "chromeos/ash/services/libassistant/public/mojom/notification_delegate.mojom.h"
 #include "chromeos/assistant/internal/action/assistant_action_observer.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -104,6 +105,9 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ConversationController
   chromeos::assistant::action::CrosActionModule* action_module() {
     return action_module_.get();
   }
+
+  void OnGrpcMessageForTesting(
+      const ::assistant::api::OnDeviceStateEventRequest& request);
 
  private:
   class GrpcEventsObserver;
