@@ -42,6 +42,7 @@
 //components/test/data/viz/blue_yellow_flipped_dither.png
 //components/test/data/viz/blue_yellow_partial_flipped.png
 //components/test/data/viz/blue_yellow_partial_flipped_dither.png
+//components/test/data/viz/blur_expands_bounds.png
 //components/test/data/viz/blur_filter_with_clip_skia_gl.png
 //components/test/data/viz/blur_filter_with_clip_skia_vk.png
 //components/test/data/viz/blur_filter_with_clip_sw.png

@@ -5232,6 +5232,73 @@ TEST_P(RendererPixelTest, RoundedCornerMultipleQads) {
       comparator));
 }
 
+TEST_P(RendererPixelTest, BlurExpandsBounds) {
+#if defined(MEMORY_SANITIZER)
+  // TODO(crbug.com/1441704): Re-enable this test.
+  // Skia Vulkan renderer had problems with this test when MSAN was enabled.
+  if (renderer_type() == RendererType::kSkiaVk) {
+    GTEST_SKIP();
+  }
+#endif  // defined(MEMORY_SANITIZER)
+
+  gfx::Rect viewport_rect(this->device_viewport_size_);
+
+  AggregatedRenderPassId root_pass_id{1};
+  auto root_pass = CreateTestRootRenderPass(root_pass_id, viewport_rect);
+
+  AggregatedRenderPassId child_pass_id{2};
+  gfx::Rect pass_rect(this->device_viewport_size_);
+  auto child_pass =
+      CreateTestRenderPass(child_pass_id, pass_rect, gfx::Transform());
+  // Add 60px blur to child pass.
+  child_pass->filters.Append(cc::FilterOperation::CreateBlurFilter(20.0f));
+
+  // Add blue and yellow rect to child render pass.
+  SharedQuadState* shared_state = CreateTestSharedQuadState(
+      gfx::Transform(), viewport_rect, child_pass.get(), gfx::MaskFilterInfo());
+  gfx::Rect blue_rect(0, 0, viewport_rect.width(), viewport_rect.height() / 2);
+  auto* blue = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  blue->SetNew(shared_state, blue_rect, blue_rect, SkColors::kBlue, false);
+  gfx::Rect yellow_rect(0, viewport_rect.height() / 2, viewport_rect.width(),
+                        viewport_rect.height() / 2);
+  auto* yellow = child_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  yellow->SetNew(shared_state, yellow_rect, yellow_rect, SkColors::kYellow,
+                 false);
+
+  // Transform child pass off the screen, but within the blur size.
+  gfx::Transform child_transform;
+  child_transform.Translate(viewport_rect.width() + 5, 0);
+  SharedQuadState* pass_shared_state = CreateTestSharedQuadState(
+      child_transform, pass_rect, root_pass.get(), gfx::MaskFilterInfo());
+
+  auto* render_pass_quad =
+      root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
+  render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
+                           child_pass_id, kInvalidResourceId, gfx::RectF(),
+                           gfx::Size(), gfx::Vector2dF(1.0f, 1.0f),
+                           gfx::PointF(), gfx::RectF(pass_rect), false, 1.0f);
+
+  // White background underneath
+  SharedQuadState* blank_state = CreateTestSharedQuadState(
+      gfx::Transform(), viewport_rect, root_pass.get(), gfx::MaskFilterInfo());
+  SolidColorDrawQuad* color_quad =
+      root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
+  color_quad->SetNew(blank_state, viewport_rect, viewport_rect,
+                     SkColors::kWhite, false);
+
+  AggregatedRenderPassList pass_list;
+  pass_list.push_back(std::move(child_pass));
+  pass_list.push_back(std::move(root_pass));
+
+  EXPECT_TRUE(this->RunPixelTest(
+      &pass_list, base::FilePath(FILE_PATH_LITERAL("blur_expands_bounds.png")),
+      // Allow 55/200 ~= 28% of pixels to be off by a small amount in each
+      // channel to permit some small difference between renderers.
+      cc::FuzzyPixelComparator()
+          .SetAbsErrorLimit(2.0f)
+          .SetErrorPixelsPercentageLimit(28.f)));
+}
+
 class RendererPixelTestWithOverdrawFeedback : public VizPixelTestWithParam {
  protected:
   void SetUp() override {
