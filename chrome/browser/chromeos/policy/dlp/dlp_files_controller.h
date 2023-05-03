@@ -30,14 +30,14 @@ class DlpFilesController {
     kMaxValue = kShare
   };
 
-  explicit DlpFilesController(const DlpRulesManager& rules_manager);
-
   DlpFilesController(const DlpFilesController& other) = delete;
   DlpFilesController& operator=(const DlpFilesController& other) = delete;
 
   virtual ~DlpFilesController();
 
  protected:
+  explicit DlpFilesController(const DlpRulesManager& rules_manager);
+
   const raw_ref<const DlpRulesManager, ExperimentalAsh> rules_manager_;
 };
 

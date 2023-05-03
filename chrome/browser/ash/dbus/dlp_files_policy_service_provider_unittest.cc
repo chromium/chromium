@@ -109,7 +109,7 @@ class DlpFilesPolicyServiceProviderTest
         .WillByDefault(testing::Return(true));
 
     files_controller_ =
-        std::make_unique<policy::DlpFilesController>(*mock_rules_manager_);
+        std::make_unique<policy::DlpFilesControllerAsh>(*mock_rules_manager_);
 
     return dlp_rules_manager;
   }

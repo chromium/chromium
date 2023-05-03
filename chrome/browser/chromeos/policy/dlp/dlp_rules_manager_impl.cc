@@ -747,7 +747,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
           request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       if (!files_controller_) {
-        files_controller_ = std::make_unique<DlpFilesController>(*this);
+        files_controller_ = std::make_unique<DlpFilesControllerAsh>(*this);
       }
 #endif
     } else if (chromeos::DlpClient::Get() &&
