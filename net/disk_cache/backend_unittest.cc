@@ -5491,3 +5491,52 @@ TEST_F(DiskCacheBackendTest, BlockfileMigrateNewEviction21) {
   SetNewEviction();
   BackendValidateMigrated();
 }
+
+// Disabled on android since this test requires cache creator to create
+// blockfile caches, and we don't use them on Android anyway.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(DiskCacheBackendTest, BlockfileEmptyIndex) {
+  // Regression case for https://crbug.com/1441330 --- blockfile DCHECKing
+  // on mmap error for files it uses.
+
+  // Create a cache.
+  TestBackendResultCompletionCallback cb;
+  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
+      net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
+      /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kNeverReset, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  ASSERT_THAT(rv.net_error, IsOk());
+  ASSERT_TRUE(rv.backend);
+  rv.backend.reset();
+
+  // Make sure it's done doing I/O stuff.
+  disk_cache::BackendImpl::FlushForTesting();
+
+  // Truncate the index to zero bytes.
+  base::File index(cache_path_.AppendASCII("index"),
+                   base::File::FLAG_OPEN | base::File::FLAG_WRITE);
+  ASSERT_TRUE(index.IsValid());
+  ASSERT_TRUE(index.SetLength(0));
+  index.Close();
+
+  // Open the backend again. Fails w/o error-recovery.
+  rv = disk_cache::CreateCacheBackend(
+      net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
+      /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kNeverReset, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  EXPECT_EQ(rv.net_error, net::ERR_FAILED);
+  EXPECT_FALSE(rv.backend);
+
+  // Now try again with the "delete and start over on error" flag people
+  // normally use.
+  rv = disk_cache::CreateCacheBackend(
+      net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
+      /*file_operations=*/nullptr, cache_path_, 0,
+      disk_cache::ResetHandling::kResetOnError, nullptr, cb.callback());
+  rv = cb.GetResult(std::move(rv));
+  ASSERT_THAT(rv.net_error, IsOk());
+  ASSERT_TRUE(rv.backend);
+}
+#endif
