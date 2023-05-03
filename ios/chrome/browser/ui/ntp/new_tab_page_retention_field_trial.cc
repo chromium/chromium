@@ -38,13 +38,6 @@ const int kCurrentTrialVersion = 1;
 // Returns a map of the group weights for each arm.
 std::map<variations::VariationID, int> GetGroupWeights() {
   std::map<variations::VariationID, int> weight_by_id = {
-      // Popular sites groups.
-      {field_trial_constants::kPopularSitesImprovedSuggestionsWithAppsEnabledID,
-       0},
-      {field_trial_constants::
-           kPopularSitesImprovedSuggestionsWithoutAppsEnabledID,
-       0},
-      {field_trial_constants::kPopularSitesImprovedSuggestionsControlID, 0},
       // Tile ablation groups
       {field_trial_constants::kTileAblationHideAllID, 0},
       {field_trial_constants::kTileAblationHideOnlyMVTID, 0},
@@ -58,19 +51,6 @@ std::map<variations::VariationID, int> GetGroupWeights() {
     case version_info::Channel::DEV:
       [[fallthrough]];
     case version_info::Channel::BETA:
-      // Popular sites groups.
-      weight_by_id[field_trial_constants::
-                       kPopularSitesImprovedSuggestionsWithAppsEnabledID] =
-          field_trial_constants::
-              kIOSPopularSitesImprovedSuggestionsPrestableWeight;
-      weight_by_id[field_trial_constants::
-                       kPopularSitesImprovedSuggestionsWithoutAppsEnabledID] =
-          field_trial_constants::
-              kIOSPopularSitesImprovedSuggestionsPrestableWeight;
-      weight_by_id
-          [field_trial_constants::kPopularSitesImprovedSuggestionsControlID] =
-              field_trial_constants::
-                  kIOSPopularSitesImprovedSuggestionsPrestableWeight;
       // Tile ablation groups.
       weight_by_id[field_trial_constants::kTileAblationHideAllID] =
           field_trial_constants::kTileAblationPrestableWeight;
@@ -80,19 +60,6 @@ std::map<variations::VariationID, int> GetGroupWeights() {
           field_trial_constants::kTileAblationPrestableWeight;
       break;
     case version_info::Channel::STABLE:
-      // Popular sites groups.
-      weight_by_id[field_trial_constants::
-                       kPopularSitesImprovedSuggestionsWithAppsEnabledID] =
-          field_trial_constants::
-              kIOSPopularSitesImprovedSuggestionsStableWeight;
-      weight_by_id[field_trial_constants::
-                       kPopularSitesImprovedSuggestionsWithoutAppsEnabledID] =
-          field_trial_constants::
-              kIOSPopularSitesImprovedSuggestionsStableWeight;
-      weight_by_id
-          [field_trial_constants::kPopularSitesImprovedSuggestionsControlID] =
-              field_trial_constants::
-                  kIOSPopularSitesImprovedSuggestionsStableWeight;
       // Tile ablation groups.
       weight_by_id[field_trial_constants::kTileAblationHideAllID] =
           field_trial_constants::kTileAblationStableWeight;
@@ -112,10 +79,7 @@ namespace new_tab_page_retention_field_trial {
 
 // Creates the trial config, initializes the trial that puts clients into
 // different groups, and returns the version number of the current trial. There
-// are 6 groups other than the default group:
-// - Popular sites, control group.
-// - Popular sites, including big apps group.
-// - Popular sites, excluding big apps group.
+// are 3 groups other than the default group:
 // - Tile ablation, control group.
 // - Tile ablation, hide all tiles group.
 // - Tile ablation, hide only MVT group.
@@ -125,66 +89,6 @@ void CreateNewTabPageFieldTrial(
     base::FeatureList* feature_list) {
   FirstRunFieldTrialConfig config(ntp_tiles::kNewTabPageRetention.name);
 
-  // Popular sites with popular apps group.
-  config.AddGroup(
-      base::StrCat({field_trial_constants::
-                        kIOSPopularSitesImprovedSuggestionsWithAppsEnabledGroup,
-                    field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
-      field_trial_constants::kPopularSitesImprovedSuggestionsWithAppsEnabledID,
-      weight_by_id[field_trial_constants::
-                       kPopularSitesImprovedSuggestionsWithAppsEnabledID]);
-  base::FieldTrialParams popular_sites_with_apps_params;
-  popular_sites_with_apps_params[ntp_tiles::kNewTabPageRetentionParam] = "1";
-  base::AssociateFieldTrialParams(
-      ntp_tiles::kNewTabPageRetention.name,
-      base::StrCat({field_trial_constants::
-                        kIOSPopularSitesImprovedSuggestionsWithAppsEnabledGroup,
-                    field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
-      popular_sites_with_apps_params);
-
-  // Popular sites without popular apps group.
-  config.AddGroup(
-      base::StrCat(
-          {field_trial_constants::
-               kIOSPopularSitesImprovedSuggestionsWithoutAppsEnabledGroup,
-           field_trial_constants::
-               kNewTabPageRetentionVersionSuffixImprovedTiles}),
-      field_trial_constants::
-          kPopularSitesImprovedSuggestionsWithoutAppsEnabledID,
-      weight_by_id[field_trial_constants::
-                       kPopularSitesImprovedSuggestionsWithoutAppsEnabledID]);
-  base::FieldTrialParams popular_sites_without_apps_params;
-  popular_sites_without_apps_params[ntp_tiles::kNewTabPageRetentionParam] = "2";
-  base::AssociateFieldTrialParams(
-      ntp_tiles::kNewTabPageRetention.name,
-      base::StrCat(
-          {field_trial_constants::
-               kIOSPopularSitesImprovedSuggestionsWithoutAppsEnabledGroup,
-           field_trial_constants::
-               kNewTabPageRetentionVersionSuffixImprovedTiles}),
-      popular_sites_without_apps_params);
-
-  // Popular sites control group.
-  config.AddGroup(
-      base::StrCat({field_trial_constants::
-                        kIOSPopularSitesImprovedSuggestionsControlGroup,
-                    field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
-      field_trial_constants::kPopularSitesImprovedSuggestionsControlID,
-      weight_by_id
-          [field_trial_constants::kPopularSitesImprovedSuggestionsControlID]);
-  base::FieldTrialParams popular_sites_control_param;
-  popular_sites_control_param[ntp_tiles::kNewTabPageRetentionParam] = "3";
-  base::AssociateFieldTrialParams(
-      ntp_tiles::kNewTabPageRetention.name,
-      base::StrCat({field_trial_constants::
-                        kIOSPopularSitesImprovedSuggestionsControlGroup,
-                    field_trial_constants::
-                        kNewTabPageRetentionVersionSuffixImprovedTiles}),
-      popular_sites_control_param);
-
   // Tile ablation group that hides all tiles.
   config.AddGroup(
       base::StrCat({field_trial_constants::kTileAblationHideAllGroup,
@@ -193,7 +97,7 @@ void CreateNewTabPageFieldTrial(
       field_trial_constants::kTileAblationHideAllID,
       weight_by_id[field_trial_constants::kTileAblationHideAllID]);
   base::FieldTrialParams tile_ablation_hide_all_params;
-  tile_ablation_hide_all_params[ntp_tiles::kNewTabPageRetentionParam] = "4";
+  tile_ablation_hide_all_params[ntp_tiles::kNewTabPageRetentionParam] = "1";
   base::AssociateFieldTrialParams(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::kTileAblationHideAllGroup,
@@ -209,7 +113,7 @@ void CreateNewTabPageFieldTrial(
       field_trial_constants::kTileAblationHideOnlyMVTID,
       weight_by_id[field_trial_constants::kTileAblationHideOnlyMVTID]);
   base::FieldTrialParams tile_ablation_hide_mvt_params;
-  tile_ablation_hide_mvt_params[ntp_tiles::kNewTabPageRetentionParam] = "5";
+  tile_ablation_hide_mvt_params[ntp_tiles::kNewTabPageRetentionParam] = "2";
   base::AssociateFieldTrialParams(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::kTileAblationHideOnlyMVTGroup,
@@ -225,7 +129,7 @@ void CreateNewTabPageFieldTrial(
       field_trial_constants::kTileAblationControlID,
       weight_by_id[field_trial_constants::kTileAblationControlID]);
   base::FieldTrialParams tile_ablation_control_params;
-  tile_ablation_control_params[ntp_tiles::kNewTabPageRetentionParam] = "6";
+  tile_ablation_control_params[ntp_tiles::kNewTabPageRetentionParam] = "3";
   base::AssociateFieldTrialParams(
       ntp_tiles::kNewTabPageRetention.name,
       base::StrCat({field_trial_constants::kTileAblationControlGroup,
@@ -245,11 +149,6 @@ void CreateNewTabPageFieldTrial(
   const std::string& group_name = trial->group_name();
 
   if (group_name ==
-          base::StrCat({field_trial_constants::
-                            kIOSPopularSitesImprovedSuggestionsControlGroup,
-                        field_trial_constants::
-                            kNewTabPageRetentionVersionSuffixImprovedTiles}) ||
-      group_name ==
           base::StrCat({field_trial_constants::kTileAblationControlGroup,
                         field_trial_constants::
                             kNewTabPageRetentionVersionSuffixTileAblation}) ||

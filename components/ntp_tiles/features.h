@@ -11,22 +11,14 @@ namespace ntp_tiles {
 
 // Experiment groups for the new tab page retention experiments.
 enum class NewTabPageRetentionExperimentBehavior {
-  // Default popular sites.
+  // Default.
   kDefault = 0,
-  // Sites with popular, native iOS apps are included in the default popular
-  // sites suggestions.
-  kPopularSitesIncludePopularApps = 1,
-  // Sites with popular, native iOS apps are excluded from the default popular
-  // sites suggestions.
-  kPopularSitesExcludePopularApps = 2,
-  // Control population for popular apps experiment.
-  kPopularSitesControl = 3,
   // Hides all NTP tiles for new users.
-  kTileAblationHideAll = 4,
+  kTileAblationHideAll = 1,
   // Hides most visited tiles for new users.
-  kTileAblationHideMVTOnly = 5,
+  kTileAblationHideMVTOnly = 2,
   // Control group for tile ablation.
-  kTileAblationControl = 6,
+  kTileAblationControl = 3,
 };
 
 // Name of the field trial to configure PopularSites.
