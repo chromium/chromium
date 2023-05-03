@@ -2476,10 +2476,10 @@
           Select curated artwork and images
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO" desc="Label for the radio button to choose the video topic source. The radio button allows the user to set which video ti play for ambient mode.">
-          Aurora
+          Dawn to dark
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_VIDEO_DESCRIPTION" desc="Description for the radio button to choose the topic source from video animation. The radio button allows the user to set which video to play for ambient mode.">
-          Select Chromebook Plus exclusive artwork
+          Select Chromebook exclusive artwork
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW" desc="A11y label for the selected topic source row in ambient mode.">
           <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> <ph name="TOPIC_SOURCE_DESC">$2<ex>Select your memories</ex></ph> selected, press Enter to select <ph name="TOPIC_SOURCE">$1<ex>Google Photos</ex></ph> albums
@@ -2539,7 +2539,7 @@
           Float on by
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_VIDEO_LABEL" desc="Label for the ambient mode float on by animation.">
-          Aurora (Plus exclusive)
+          Dawn to dark
         </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage in the personalization hub when ambient mode is disabled.">
           Turn on the toggle to select the screen saver options
@@ -2673,16 +2673,16 @@
           Confirm
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_CLOUDS_ALBUM_TITLE" desc="Title for the clouds video in the ambient section of the hub.">
-          Dawn to dark - Cloud Flow
+          Cloud Flow
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_NEW_MEXICO_ALBUM_TITLE" desc="Title for the new mexico video in the ambient section of the hub.">
-          Dawn to dark - Earth Flow
+          Earth Flow
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_VIDEO_ALBUM_DESCRIPTION" desc="Common description all videos in the ambient section of the hub.">
-          Chromebook Plus exclusive
+          Chromebook exclusive
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_TITLE" desc="Title for the Time of Day promo banner.">
-          Exclusive Chromebook Plus assets now available
+          Exclusive Chromebook assets now available
         </message>
         <message name="IDS_PERSONALIZATION_APP_TIME_OF_DAY_BANNER_DESCRIPTION" desc="Description shown in the Time of Day promo banner.">
           You now have access to new <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE">&lt;a href="chrome://personalization/wallpaper"&gt;</ph>wallpapers<ph name="END_LINK_WALLPAPER_SUBPAGE">&lt;/a&gt;</ph> and <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE">&lt;a href="chrome://personalization/ambient"&gt;</ph>screen saver<ph name="END_LINK_SCREENSAVER_SUBPAGE">&lt;/a&gt;</ph>
