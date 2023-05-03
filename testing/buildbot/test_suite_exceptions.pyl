@@ -1185,8 +1185,6 @@
           'dimension_sets': [
             {
               'kvm': '1',
-              # TODO(crbug.com/1412588): Move all tests on the builder to Jammy.
-              'os': 'Ubuntu-22.04',
             },
           ],
         },
@@ -1212,6 +1210,12 @@
       'linux-lacros-tester-rel': {
         'swarming': {
           'shards': 20,
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1412588): Move all tests on the builder to Jammy.
+              'os': 'Ubuntu-22.04',
+            },
+          ],
         },
       },
       'linux-rel-cft': {
