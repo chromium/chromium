@@ -47,7 +47,7 @@ jobs:
         run: echo "chrome_binary=$(npx @puppeteer/browsers install chrome@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
       - name: Run WPT tests
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
-        timeout-minutes: 30
+        timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
         run: >
           xvfb-run --auto-servernum
@@ -58,7 +58,7 @@ jobs:
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headless' }}
-        timeout-minutes: 30
+        timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
         env:

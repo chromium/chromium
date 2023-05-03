@@ -46,6 +46,7 @@ jobs:
       - name: Install Chrome
         run: echo "chrome_binary=$(npx @puppeteer/browsers install chrome@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
       - name: Run WPT tests
+        timeout-minutes: 60
         run: ./runWPT.sh webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ env.chrome_binary }}
