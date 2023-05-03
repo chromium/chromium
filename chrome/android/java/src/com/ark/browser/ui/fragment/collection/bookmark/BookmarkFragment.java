@@ -111,8 +111,6 @@ public class BookmarkFragment extends CollectionChildFragment
         super.onCreate(savedInstanceState);
         bookmarkModel = new BookmarkModel();
         bookmarkModel.addDeleteObserver(this);
-        bookmarkModel.addObserver(observer);
-        bookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
 
         mLargeIconBridge = new LargeIconBridge(Profile.getLastUsedRegularProfile().getOriginalProfile());
         ActivityManager activityManager = ((ActivityManager) ContextUtils
@@ -176,7 +174,9 @@ public class BookmarkFragment extends CollectionChildFragment
                 .build();
         mRecycler.showLoading();
 
+        bookmarkModel.loadEmptyPartnerBookmarkShimForTesting();
         bookmarkModel.finishLoadingBookmarkModel(() -> {
+            bookmarkModel.addObserver(observer);
             postOnLazyInit(() -> addScrollChild(bookmarkModel.getDefaultFolder(), "我的书签"));
         });
     }

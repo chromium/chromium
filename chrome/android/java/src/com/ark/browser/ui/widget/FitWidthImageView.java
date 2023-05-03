@@ -29,7 +29,7 @@ public class FitWidthImageView extends View {
 
     public FitWidthImageView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        mRadio = 1f / (1f + ScreenUtils.dp2px(context, 42) / ScreenUtils.getStatusBarHeight(context));
+        mRadio = 1f / (1f + (ScreenUtils.dp2px(context, 42) + ScreenUtils.getNavBarHeight(context)) / ScreenUtils.getStatusBarHeight(context));
     }
 
     public void setImageBitmap(Bitmap bitmap) {

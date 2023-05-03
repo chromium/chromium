@@ -2,12 +2,17 @@ package com.ark.browser;
 
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import com.ark.browser.ui.fragment.wallpaper.WallpaperManager;
 import com.ark.browser.ui.widget.CheckBoxItem;
 import com.ark.browser.ui.widget.DrawableTintTextView;
 import com.ark.browser.ui.widget.ShadowLayout;
+import com.ark.browser.utils.ThreadPool;
+import com.bumptech.glide.Glide;
 import com.zpj.progressbar.ZProgressBar;
 import com.zpj.skin.SkinEngine;
 import com.zpj.skin.applicator.SkinViewApplicator;
@@ -24,6 +29,12 @@ public class ArkBrowserApplicationImpl extends ChromeApplicationImpl {
 
     @Override
     public void onCreate() {
+        ThreadPool.executeIO(() -> {
+            String path = WallpaperManager.getWallpaperPath();
+            if (!TextUtils.isEmpty(path)) {
+                Glide.with(getApplication()).load(path).preload();
+            }
+        });
         super.onCreate();
 
         SkinEngine.registerSkinApplicator(CheckBoxItem.class, new CheckLayoutApplicator());

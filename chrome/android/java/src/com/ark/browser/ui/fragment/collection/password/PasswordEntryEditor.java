@@ -106,22 +106,6 @@ public class PasswordEntryEditor extends BaseSwipeBackFragment {
         return fragment;
     }
 
-    public void show(Context context) {
-        Activity activity = ContextUtils.getActivity(context);
-        if (activity instanceof SupportActivity) {
-            ((SupportActivity)activity).start(this);
-        } else {
-            if (!(activity instanceof FragmentActivity)) {
-                throw new RuntimeException("the context is not a FragmentActivity object!");
-            }
-
-            FragmentManager manager = ((FragmentActivity)activity).getSupportFragmentManager();
-            FragmentTransaction ft = manager.beginTransaction();
-            ft.add(this, "tag");
-            ft.commit();
-        }
-    }
-
     public void setRemoveRunnable(Runnable runnable) {
         mRemoveRunnable = runnable;
     }

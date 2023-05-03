@@ -126,5 +126,8 @@
 
     </FrameLayout>
 
+    <com.ark.browser.ui.widget.NavigationBarView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

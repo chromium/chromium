@@ -25,7 +25,6 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
     private static final Class<ArkTabGestureStateListener> USER_DATA_KEY =
             ArkTabGestureStateListener.class;
 
-    private final ArkTabImpl mTab;
     private GestureStateListener mGestureListener;
 
     /**
@@ -43,7 +42,6 @@ public final class ArkTabGestureStateListener extends ArkTabWebContentsUserData 
 
     private ArkTabGestureStateListener(ArkTabImpl tab) {
         super(tab);
-        mTab = tab;
     }
 
     @Override

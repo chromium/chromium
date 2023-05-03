@@ -16,9 +16,12 @@ import org.chromium.ui.base.WindowAndroid;
  * active for the Tab.
  */
 public abstract class ArkTabWebContentsUserData implements UserData {
+
+    protected final ArkTabImpl mTab;
     private ArkWebContents mWebContents;
 
-    public ArkTabWebContentsUserData(Tab tab) {
+    public ArkTabWebContentsUserData(ArkTabImpl tab) {
+        mTab = tab;
         tab.addObserver(new EmptyTabObserver() {
             @Override
             public void onContentChanged(Tab tab) {

@@ -2,6 +2,7 @@ package com.ark.browser.ui.fragment.base;
 
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,11 +15,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.ark.browser.ArkBrowserActivity;
 import com.ark.browser.core.ArkWindowAndroid;
 import com.zpj.fragmentation.SimpleFragment;
+import com.zpj.fragmentation.SupportActivity;
 import com.zpj.fragmentation.swipeback.SwipeBackLayout;
+import com.zpj.utils.ContextUtils;
 import com.zpj.widget.toolbar.ZToolBar;
 
 import org.chromium.chrome.R;
@@ -180,6 +186,21 @@ public abstract class BaseFragment extends SimpleFragment {
         if (toolbar != null && toolbar.getCenterSubTextView() != null) {
             toolbar.getCenterSubTextView().setText(title);
         }
+    }
+
+    public BaseFragment show(Context context) {
+        Activity activity = ContextUtils.getActivity(context);
+        if (activity instanceof SupportActivity) {
+            ((SupportActivity) activity).start(this);
+        } else if (activity instanceof FragmentActivity) {
+            FragmentManager manager = ((FragmentActivity) activity).getSupportFragmentManager();
+            FragmentTransaction ft = manager.beginTransaction();
+            ft.add(this, "tag");
+            ft.commit();
+        } else {
+            throw new RuntimeException("the context is not a FragmentActivity object!");
+        }
+        return this;
     }
 
 }

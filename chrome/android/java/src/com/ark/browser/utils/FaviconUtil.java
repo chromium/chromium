@@ -6,11 +6,13 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.LruCache;
 
 import com.ark.browser.ui.drawable.CircleDrawable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.url.GURL;
@@ -34,6 +36,13 @@ public class FaviconUtil {
     private int mIconSize;
     private int mTextSize = FAVICON_TEXT_SIZE_DP;
 //    private int mBackgroundColor = FAVICON_BACKGROUND_COLOR;
+
+    private final static LruCache<String, Bitmap> BITMAP_CACHE = new LruCache<String, Bitmap>((int) Runtime.getRuntime().maxMemory() / 10) {
+        @Override
+        protected int sizeOf(String key, Bitmap value) {
+            return value.getByteCount();
+        }
+    };
 
     private FaviconUtil(Context context, String url) {
 //        mUrl = Uri.parse(url).toString();
@@ -73,18 +82,35 @@ public class FaviconUtil {
 //            callback(null);
 //            return;
 //        }
-        boolean result = mFaviconHelper.getLocalFaviconImageForURL(
-                Profile.getLastUsedRegularProfile(),
-                mUrl,
-                mIconSize,
-                new FaviconHelper.FaviconImageCallback() {
-                    @Override
-                    public void onFaviconAvailable(Bitmap image, GURL iconUrl) {
-                        callback(image);
+        if (ProfileManager.isInitialized()) {
+            boolean result = mFaviconHelper.getLocalFaviconImageForURL(
+                    Profile.getLastUsedRegularProfile(),
+                    mUrl,
+                    mIconSize,
+                    new FaviconHelper.FaviconImageCallback() {
+                        @Override
+                        public void onFaviconAvailable(Bitmap image, GURL iconUrl) {
+                            callback(image);
+                        }
+                    });
+            if (!result) {
+                callback(null);
+            }
+        } else {
+            ProfileManager.addObserver(new ProfileManager.Observer() {
+                @Override
+                public void onProfileAdded(Profile profile) {
+                    if (ProfileManager.isInitialized()) {
+                        ProfileManager.removeObserver(this);
+                        start();
                     }
-                });
-        if (!result) {
-            callback(null);
+                }
+
+                @Override
+                public void onProfileDestroyed(Profile profile) {
+
+                }
+            });
         }
     }
 
@@ -95,7 +121,6 @@ public class FaviconUtil {
     }
 
     private Drawable getDefaultFavicon(Bitmap bitmap) {
-        Resources resources = mContext.getResources();
         if (bitmap == null) {
             // Invalid favicon, produce a generic one.
             return getDefaultFavicon();
@@ -105,14 +130,21 @@ public class FaviconUtil {
     }
 
     public Drawable getDefaultFavicon() {
+        GURL url = new GURL(mUrl);
+        String host = url.getHost();
+        Bitmap bitmap = BITMAP_CACHE.get(host);
         Resources resources = mContext.getResources();
-        float density = resources.getDisplayMetrics().density;
+        if (bitmap == null) {
+            float density = resources.getDisplayMetrics().density;
 //        int faviconSizeDp = Math.round(mIconSize / density);
-        int faviconSizeDp = mIconSize;
-        RoundedIconGenerator faviconGenerator = new RoundedIconGenerator(resources,
-                faviconSizeDp, faviconSizeDp, faviconSizeDp / 2,
-                getRandomColor(), (int) (mTextSize * density));
-        Bitmap bitmap = faviconGenerator.generateIconForUrl(mUrl);
+            int faviconSizeDp = mIconSize;
+            RoundedIconGenerator faviconGenerator = new RoundedIconGenerator(resources,
+                    faviconSizeDp, faviconSizeDp, faviconSizeDp / 2,
+                    getRandomColor(), (int) (mTextSize * density));
+            bitmap = faviconGenerator.generateIconForUrl(host);
+            BITMAP_CACHE.put(host, bitmap);
+        }
+
         return new BitmapDrawable(resources, bitmap);
     }
 

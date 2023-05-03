@@ -232,52 +232,6 @@ public class TabSwitcherLayout extends FrameLayout {
 //        onTabManagerInitialized();
     }
 
-    private void updateItem(View view, ITab iTab, Runnable runnable) {
-        TextView tvTitle = view.findViewById(R.id.tv_title);
-        ImageView ivIcon = view.findViewById(R.id.iv_icon);
-        ImageButton btnLock = view.findViewById(R.id.btn_lock);
-        ImageButton btnMore = view.findViewById(R.id.btn_more);
-        btnLock.setImageResource(iTab.getTabInfo().isLocked() ? R.drawable.ic_lock_24dp : R.drawable.ic_lock_open_24dp);
-        btnLock.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                iTab.getTabInfo().setLocked(!iTab.getTabInfo().isLocked());
-                btnLock.setImageResource(iTab.getTabInfo().isLocked() ? R.drawable.ic_lock_24dp : R.drawable.ic_lock_open_24dp);
-            }
-        });
-        btnMore.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                TabActionDialog.newInstance(iTab.getId()).show(v);
-            }
-        });
-        CardView cardView = view.findViewById(R.id.card_view);
-
-//        ImageView ivThumbnail = view.findViewById(R.id.iv_thumbnail);
-        FitWidthImageView ivThumbnail = view.findViewById(R.id.iv_thumbnail);
-        PageInfo pageInfo = iTab.getCurrentPageInfo();
-        if (pageInfo != null) {
-            // TODO
-//            cardView.setCardBackgroundColor(pageInfo.getThemeColor());
-            cardView.setCardBackgroundColor(Color.WHITE);
-            tvTitle.setText(pageInfo.getTitle());
-//            Tab tab = PageCacheManager.getInstance().findPage(pageInfo);
-//            if (tab == null || tab.getFavicon() == null) {
-//                ivIcon.setImageResource(R.drawable.default_favicon_white);
-//            } else {
-//                ivIcon.setImageBitmap(tab.getFavicon());
-//            }
-            FaviconUtil.with(view.getContext(), pageInfo.getUrl())
-                    .setCallback(ivIcon::setImageDrawable)
-                    .start();
-            PageSnapshotManager.getInstance().loadSnapshot(ivThumbnail, pageInfo);
-        } else {
-            cardView.setCardBackgroundColor(Color.WHITE);
-            ivThumbnail.setImageBitmap(null);
-        }
-
-    }
-
     public void onRestore() {
         mLoadingLayout.setAlpha(0f);
         mSwitcher.notifyDataSetChanged();

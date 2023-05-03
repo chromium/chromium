@@ -65,7 +65,7 @@ public class SearchEngineSelectDialog extends BottomSelectDialogFragment<Templat
         }
     }
 
-    public int getSearchEngineLogoRes(TemplateUrl templateUrl) {
+    public static int getSearchEngineLogoRes(TemplateUrl templateUrl) {
         switch (templateUrl.getKeyword()) {
             case "google.com":
                 return R.drawable.ic_browser_engine_google_logo;

@@ -19,7 +19,12 @@ import com.android.launcher3.database.SQLite;
 import com.android.launcher3.model.FavoriteItem;
 import com.android.launcher3.popup.OptionItem;
 import com.android.launcher3.popup.OptionsPopupView;
+import com.ark.browser.ui.fragment.collection.CollectionFragment;
+import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
+import com.ark.browser.ui.fragment.download.DownloadFragment;
+import com.ark.browser.ui.fragment.manager.ManagerFragment;
 import com.ark.browser.ui.fragment.search.SearchFragment;
+import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
 import com.zpj.utils.Callback;
 
@@ -45,16 +50,32 @@ public class ArkLauncherLayout extends LauncherLayout {
             @Override
             public void onClickAppShortcut(View v, ItemInfoWithIcon itemInfo) {
                 Toast.makeText(context, "title=" + itemInfo.title + " url=" + itemInfo.url, Toast.LENGTH_SHORT).show();
+                if (HomepageUtils.isDeepLink(itemInfo.url)) {
+                    switch (itemInfo.url) {
+                        case HomepageUtils.DEEPLINK_MANAGER:
+                            new ManagerFragment().show(context);
+                            break;
+                        case HomepageUtils.DEEPLINK_COLLECTIONS:
+                            CollectionFragment.newInstance(0).show(context);
+                            break;
+                        case HomepageUtils.DEEPLINK_BROWSER:
+                            new MainMenuDialog().show(context);
+                            break;
+                        case HomepageUtils.DEEPLINK_DOWNLOADS:
+                            DownloadFragment.newInstance(true).show(context);
+                            break;
+                        case HomepageUtils.DEEPLINK_SETTINGS:
+                            new SettingsFragment().show(context);
+                            break;
+                    }
+                } else {
+
+                }
             }
 
             @Override
             public void onClickTabCard(View v, TabItemInfo itemInfo) {
                 Toast.makeText(context, "title=" + itemInfo.title + " url=" + itemInfo.url, Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onClickToSearch(View v) {
-                new SearchFragment().show(context);
             }
         });
 
@@ -110,41 +131,7 @@ public class ArkLauncherLayout extends LauncherLayout {
             }
         });
 
-        setItemLoader(new LauncherLayout.ItemLoader() {
-            @Override
-            public void onFirstRun() {
-                SQLite.with(FavoriteItemTable.class).delete();
-                for (ItemInfo info : HomepageUtils.initHomeNav()) {
-                    FavoriteItem.from(info).insert();
-                }
-            }
-
-            @Override
-            public void loadIcon(ItemInfo itemInfo, Callback<Bitmap> callback) {
-                Resources resources = getResources();
-                int resId = R.mipmap.app_icon;
-                if (HomepageUtils.isDeepLink(itemInfo.url)) {
-                    switch (itemInfo.url) {
-                        case HomepageUtils.DEEPLINK_MANAGER:
-                            resId = R.drawable.icon_browser_manager;
-                            break;
-                        case HomepageUtils.DEEPLINK_COLLECTIONS:
-                            resId = R.drawable.icon_collections;
-                            break;
-                        case HomepageUtils.DEEPLINK_BROWSER:
-                            resId = R.drawable.icon_browser;
-                            break;
-                        case HomepageUtils.DEEPLINK_DOWNLOADS:
-                            resId = R.drawable.icon_download_manager;
-                            break;
-                        case HomepageUtils.DEEPLINK_SETTINGS:
-                            resId = R.drawable.icon_settings;
-                            break;
-                    }
-                }
-                callback.onCallback(BitmapFactory.decodeResource(resources, resId));
-            }
-        });
+        setItemLoader(new HomepageItemLoader());
 
     }
 

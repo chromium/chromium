@@ -155,11 +155,13 @@ public class TabGroupImpl implements ITabGroup {
                     File tabFile = ArkTabDao.getTabFile(id);
                     ArkLogger.e(TAG, "from tabInfo tabFile=" + tabFile);
                     TabInfo tabInfo = TabInfo.from(tabFile);
+                    tabInfo.setId(id);
                     tabInfo.setGroupId(getId());
                     ArkLogger.e(TAG, "from tabInfo=" + tabInfo);
                     mTabList.add(new TabImpl(tabInfo));
                 }
             } catch (Exception e) {
+                ArkLogger.e(this, "init failed!", e);
                 e.printStackTrace();
             }
         }

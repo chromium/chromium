@@ -179,12 +179,15 @@ public class TabInfo {
         return manager;
     }
 
-    public static TabInfo from(File tabFile) throws IOException {
+    public static TabInfo from(File tabFile) {
         try (DataInputStream stream = ArkTabDao.readFile(tabFile)) {
             if (stream == null) {
                 throw new IOException("tab file stream is null!");
             }
             return from(stream);
+        } catch (Exception e) {
+            ArkLogger.e(TabInfo.class, "read info failed!", e);
+            return new TabInfo();
         }
     }
 

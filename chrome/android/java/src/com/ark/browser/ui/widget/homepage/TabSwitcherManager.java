@@ -15,6 +15,7 @@ import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.ui.fragment.search.SearchFragment;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
@@ -79,17 +80,19 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         mLauncherLayout.init(savedInstanceState);
         mLauncherLayout.setSlideListener(new LauncherLayout.SlideListener() {
             @Override
-            public void onSlideStart(int i) {
+            public void onSlideStart(int direction) {
 //                if (!isInTabSwitcher()) {
 //                    goToTabSwitcher();
 //                }
-                if (isInLauncher()) {
+                if (direction == 1) {
+                    new SearchFragment().show(mLauncherLayout.getContext());
+                } else if (isInLauncher()) {
                     mSwitcher.open();
                 }
             }
 
             @Override
-            public void onSlideVertical(float v, int i) {
+            public void onSlideVertical(float dy, int direction) {
 
             }
 

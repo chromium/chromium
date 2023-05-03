@@ -52,6 +52,7 @@ import com.zpj.recyclerview.manager.MultiLayoutManager;
 import com.zpj.statemanager.State;
 import com.zpj.toast.ZToast;
 import com.zpj.utils.KeyboardUtils;
+import com.zpj.utils.ScreenUtils;
 import com.zpj.widget.toolbar.ZSearchBar;
 
 import org.chromium.base.Log;
@@ -122,6 +123,7 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
             add(bookmarkMultiData);
             add(stickHeader2);
             add(gridHeaderMultiData);
+            add(new NavigationBarMultiData());
         }
     };
 
@@ -314,6 +316,40 @@ public class SearchFragment extends BaseDialogFragment<SearchFragment>
         public boolean loadData() {
             return false;
         }
+    }
+
+    public static class NavigationBarMultiData extends SingleTypeMultiData<Void> {
+
+        private static final ViewGroup.LayoutParams LAYOUT_PARAMS
+                = new ViewGroup.LayoutParams(MATCH_PARENT, ScreenUtils.getNavBarHeight());
+
+        public NavigationBarMultiData() {
+            super(new VerticalLayouter());
+            setState(State.STATE_CONTENT);
+            hasMore = false;
+        }
+
+        @Override
+        public int getCount() {
+            return 1;
+        }
+
+        @Override
+        public int getLayoutId() {
+            return R.layout.item_text;
+        }
+
+        @Override
+        public boolean loadData() {
+            return false;
+        }
+
+        @Override
+        public void onBindViewHolder(EasyViewHolder holder, List<Void> list, int position, List<Object> payloads) {
+            holder.setLayoutParams(R.id.tv_title, LAYOUT_PARAMS);
+            holder.setInVisible(R.id.tv_title);
+        }
+
     }
 
 //    private class FavoriteItemMultiData extends SingleTypeMultiData<FavoriteItem> {

@@ -55,9 +55,7 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
     /** Used for logging. */
     private static final String TAG = "TabWebContentsObs";
 
-    private final ArkTabImpl mTab;
     private final ObserverList<Callback> mInitObservers = new ObserverList<>();
-    private final Handler mHandler = new Handler();
     private WebContentsObserver mObserver;
     private GURL mLastUrl;
 
@@ -77,7 +75,6 @@ public class ArkTabWebContentsObserver extends ArkTabWebContentsUserData {
 
     private ArkTabWebContentsObserver(ArkTabImpl tab) {
         super(tab);
-        mTab = tab;
     }
 
     /**
