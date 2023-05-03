@@ -9,6 +9,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import android.graphics.Rect;
+import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.test.espresso.Espresso;
@@ -215,6 +217,46 @@ public class BottomSheetControllerTest {
             mTestSupport.handleBackPress();
             mTestSupport.endAllAnimations();
         });
+        assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
+                mSheetController.getSheetState());
+    }
+
+    /**
+     * Test that BottomSheet hide animation when user navigates page back cannot
+     * be reversed via a gesture.
+     */
+    @Test
+    @MediumTest
+    @Feature({"BottomSheetController"})
+    public void testGestureCannotMoveSheetDuringHideAnimation() {
+        Rect visibleViewportRect = new Rect();
+        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(visibleViewportRect);
+
+        MotionEvent initialEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE,
+                visibleViewportRect.left, visibleViewportRect.bottom, 0);
+        MotionEvent currentEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_MOVE,
+                visibleViewportRect.left, visibleViewportRect.bottom - 1, 0);
+
+        requestContentInSheet(mNonPeekableContent, true);
+        expandSheet();
+        assertEquals("The bottom sheet should be expanded.", SheetState.HALF,
+                mSheetController.getSheetState());
+
+        // Check that gesture can be processed when sheet is expanded.
+        assertTrue("Gesture should move sheet",
+                mTestSupport.shouldGestureMoveSheet(initialEvent, currentEvent));
+
+        assertEquals("Back press event should be consumed", Boolean.TRUE, getBackPressState());
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mTestSupport.handleBackPress(); });
+
+        // Check that gesture is not processed during a hide animation.
+        assertFalse("Gesture should not move sheet",
+                mTestSupport.shouldGestureMoveSheet(initialEvent, currentEvent));
+
+        // Check that the animation is still in progress.
+        assertTrue(mSheetController.isSheetOpen());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> { mTestSupport.endAllAnimations(); });
         assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
                 mSheetController.getSheetState());
     }

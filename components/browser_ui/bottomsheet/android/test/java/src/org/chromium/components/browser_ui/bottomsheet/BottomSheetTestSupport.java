@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import android.view.MotionEvent;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -73,6 +75,11 @@ public class BottomSheetTestSupport {
     /** @see {@link BottomSheet#showContent(BottomSheetContent)}} */
     public void showContent(BottomSheetContent content) {
         getBottomSheet().showContent(content);
+    }
+
+    /** @see {@link BottomSheet#shouldGestureMoveSheet()} */
+    public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
+        return getBottomSheet().shouldGestureMoveSheet(initialEvent, currentEvent);
     }
 
     /**

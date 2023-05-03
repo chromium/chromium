@@ -197,7 +197,7 @@ class BottomSheet extends FrameLayout
         // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
         // affect it.
         if (getCurrentOffsetPx() < getSheetHeightForState(SheetState.PEEK)
-                || getOffsetFromBrowserControls() > 0) {
+                || getOffsetFromBrowserControls() > 0 || isHiding()) {
             return false;
         }
 
