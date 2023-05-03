@@ -55,10 +55,6 @@ group("deployment_resources") {
   }
 
   if (test_isolate_uses_emulator) {
-    data += [
-      "//third_party/fuchsia-sdk/sdk/bin/device_launcher.version",
-      "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/fvdl",
-    ]
     if (test_host_cpu == "x64") {
       data += [
         "//third_party/fuchsia-sdk/sdk/tools/${test_host_cpu}/aemu_internal",
