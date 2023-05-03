@@ -39,8 +39,6 @@ namespace ash::quick_start {
 using message_helper::BuildEncodedResponseData;
 
 namespace {
-constexpr char kTestMessagePayloadKey[] = "bootstrapOptions";
-constexpr char kTestMessagePayloadValue[] = "testValue";
 
 const char kAccountRequirementKey[] = "accountRequirement";
 const char kFlowTypeKey[] = "flowType";
@@ -132,13 +130,6 @@ class ConnectionTest : public testing::Test {
   void VerifyAssertionInfo(absl::optional<FidoAssertionInfo> assertion_info) {
     ran_assertion_response_callback_ = true;
     assertion_info_ = assertion_info;
-  }
-
-  void SendPayloadAndReadResponse(
-      const base::Value::Dict& message_payload,
-      base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)> callback) {
-    connection_->SendPayloadAndReadResponse(message_payload,
-                                            std::move(callback));
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -366,36 +357,6 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate) {
   std::string shared_secret_base64;
   base::Base64Encode(shared_secret_str, &shared_secret_base64);
   EXPECT_EQ(*parsed_payload.FindString("shared_secret"), shared_secret_base64);
-}
-
-TEST_F(ConnectionTest, SendPayloadAndReadResponse) {
-  base::Value::Dict message_payload;
-  message_payload.Set(kTestMessagePayloadKey, kTestMessagePayloadValue);
-  fake_nearby_connection_->AppendReadableData(
-      std::vector<uint8_t>(std::begin(kTestBytes), std::end(kTestBytes)));
-
-  base::RunLoop run_loop;
-  SendPayloadAndReadResponse(
-      message_payload,
-      base::BindLambdaForTesting(
-          [&run_loop](absl::optional<std::vector<uint8_t>> response) {
-            EXPECT_EQ(response.value(),
-                      std::vector<uint8_t>(std::begin(kTestBytes),
-                                           std::end(kTestBytes)));
-            run_loop.Quit();
-          }));
-
-  std::vector<uint8_t> written_payload =
-      fake_nearby_connection_->GetWrittenData();
-  std::string written_payload_string(written_payload.begin(),
-                                     written_payload.end());
-  absl::optional<base::Value> parsed_json =
-      base::JSONReader::Read(written_payload_string);
-  ASSERT_TRUE(parsed_json);
-  ASSERT_TRUE(parsed_json->is_dict());
-  base::Value::Dict& parsed_json_dict = parsed_json.value().GetDict();
-  EXPECT_EQ(*parsed_json_dict.FindString(kTestMessagePayloadKey),
-            kTestMessagePayloadValue);
 }
 
 TEST_F(ConnectionTest, TestClose) {

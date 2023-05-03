@@ -240,14 +240,6 @@ void Connection::SendPayload(const base::Value::Dict& message_payload) {
   nearby_connection_->Write(request_payload);
 }
 
-void Connection::SendPayloadAndReadResponse(
-    const base::Value::Dict& message_payload,
-    PayloadResponseCallback callback) {
-  CHECK(connection_state_ == State::kOpen);
-  SendPayload(message_payload);
-  nearby_connection_->Read(std::move(callback));
-}
-
 void Connection::OnConnectionClosed(
     TargetDeviceConnectionBroker::ConnectionClosedReason reason) {
   connection_state_ = Connection::State::kClosed;

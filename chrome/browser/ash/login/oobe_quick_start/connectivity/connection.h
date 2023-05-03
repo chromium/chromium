@@ -150,9 +150,6 @@ class Connection
   // Connections.
   void SendPayload(const base::Value::Dict& message_payload);
 
-  void SendPayloadAndReadResponse(const base::Value::Dict& message_payload,
-                                  PayloadResponseCallback callback);
-
   void OnConnectionClosed(
       TargetDeviceConnectionBroker::ConnectionClosedReason reason);
 
