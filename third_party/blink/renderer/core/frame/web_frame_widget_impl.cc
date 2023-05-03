@@ -659,10 +659,11 @@ void WebFrameWidgetImpl::GetStringAtPoint(const gfx::Point& point_in_local_root,
                                           GetStringAtPointCallback callback) {
   gfx::Point baseline_point;
   ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  CFAttributedStringRef string = SubstringUtil::AttributedWordAtPoint(
-      this, point_in_local_root, baseline_point);
+  base::ScopedCFTypeRef<CFAttributedStringRef> string =
+      SubstringUtil::AttributedWordAtPoint(this, point_in_local_root,
+                                           baseline_point);
   if (string) {
-    attributed_string = ui::mojom::blink::AttributedString::From(string);
+    attributed_string = ui::mojom::blink::AttributedString::From(string.get());
   }
 
   std::move(callback).Run(std::move(attributed_string), baseline_point);

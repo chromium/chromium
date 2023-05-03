@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
 
-#include "base/memory/scoped_policy.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"

@@ -1580,6 +1580,10 @@ component("platform") {
     }
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "audio/mac/fft_frame_mac.cc",
@@ -1607,7 +1611,6 @@ component("platform") {
   if (is_ios) {
     sources += [ "fonts/ios/font_cache_ios.mm" ]
   }
-
   if (is_linux || is_chromeos) {
     sources += [
       "fonts/linux/font_cache_linux.cc",
@@ -2226,6 +2229,10 @@ source_set("blink_platform_unittests_sources") {
     "widget/input/prediction/filter_factory_unittests.cc",
     "widget/input/scroll_predictor_unittest.cc",
   ]
+
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
 
   if (is_android) {
     sources += [ "fonts/android/font_cache_android_test.cc" ]

@@ -42,6 +42,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ui_base_features.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace blink {
 
 static inline String LanguageFromLocale(const String& locale) {
@@ -55,9 +59,9 @@ static inline String LanguageFromLocale(const String& locale) {
 
 static NSLocale* DetermineLocale(const String& locale) {
   if (!WebTestSupport::IsRunningWebTest()) {
-    NSLocale* current_locale = [NSLocale currentLocale];
+    NSLocale* current_locale = NSLocale.currentLocale;
     String current_locale_language =
-        LanguageFromLocale(String([current_locale localeIdentifier]));
+        LanguageFromLocale(String(current_locale.localeIdentifier));
     String locale_language = LanguageFromLocale(locale);
     if (DeprecatedEqualIgnoringCase(current_locale_language, locale_language))
       return current_locale;
@@ -71,36 +75,36 @@ std::unique_ptr<Locale> Locale::Create(const String& locale) {
   return LocaleMac::Create(DetermineLocale(locale));
 }
 
-static base::scoped_nsobject<NSDateFormatter> CreateDateTimeFormatter(
+static NSDateFormatter* CreateDateTimeFormatter(
     NSLocale* locale,
     NSCalendar* calendar,
     NSDateFormatterStyle date_style,
     NSDateFormatterStyle time_style) {
   NSDateFormatter* formatter = [[NSDateFormatter alloc] init];
-  [formatter setLocale:locale];
-  [formatter setDateStyle:date_style];
-  [formatter setTimeStyle:time_style];
-  [formatter setTimeZone:[NSTimeZone timeZoneWithAbbreviation:@"UTC"]];
-  [formatter setCalendar:calendar];
-  return base::scoped_nsobject<NSDateFormatter>(formatter);
+  formatter.locale = locale;
+  formatter.dateStyle = date_style;
+  formatter.timeStyle = time_style;
+  formatter.timeZone = [NSTimeZone timeZoneWithAbbreviation:@"UTC"];
+  formatter.calendar = calendar;
+  return formatter;
 }
 
 LocaleMac::LocaleMac(NSLocale* locale)
-    : locale_([locale retain]),
+    : locale_(locale),
       gregorian_calendar_([[NSCalendar alloc]
           initWithCalendarIdentifier:NSCalendarIdentifierGregorian]),
       did_initialize_number_data_(false) {
-  NSArray* available_languages = [NSLocale ISOLanguageCodes];
+  NSArray* available_languages = NSLocale.ISOLanguageCodes;
   // NSLocale returns a lower case NSLocaleLanguageCode so we don't have care
   // about case.
   NSString* language = [locale_ objectForKey:NSLocaleLanguageCode];
-  if ([available_languages indexOfObject:language] == NSNotFound)
-    locale_.reset(
-        [[NSLocale alloc] initWithLocaleIdentifier:DefaultLanguage()]);
+  if ([available_languages indexOfObject:language] == NSNotFound) {
+    locale_ = [[NSLocale alloc] initWithLocaleIdentifier:DefaultLanguage()];
+  }
   [gregorian_calendar_ setLocale:locale_];
 }
 
-LocaleMac::~LocaleMac() {}
+LocaleMac::~LocaleMac() = default;
 
 std::unique_ptr<LocaleMac> LocaleMac::Create(const String& locale_identifier) {
   NSLocale* locale = [NSLocale localeWithLocaleIdentifier:locale_identifier];
@@ -111,7 +115,7 @@ std::unique_ptr<LocaleMac> LocaleMac::Create(NSLocale* locale) {
   return base::WrapUnique(new LocaleMac(locale));
 }
 
-base::scoped_nsobject<NSDateFormatter> LocaleMac::ShortDateFormatter() {
+NSDateFormatter* LocaleMac::ShortDateFormatter() {
   return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterShortStyle,
                                  NSDateFormatterNoStyle);
@@ -121,8 +125,8 @@ const Vector<String>& LocaleMac::MonthLabels() {
   if (!month_labels_.empty())
     return month_labels_;
   month_labels_.reserve(12);
-  NSArray* array = [ShortDateFormatter() monthSymbols];
-  if ([array count] == 12) {
+  NSArray* array = ShortDateFormatter().monthSymbols;
+  if (array.count == 12) {
     for (unsigned i = 0; i < 12; ++i)
       month_labels_.push_back(String(array[i]));
     return month_labels_;
@@ -136,8 +140,8 @@ const Vector<String>& LocaleMac::WeekDayShortLabels() {
   if (!week_day_short_labels_.empty())
     return week_day_short_labels_;
   week_day_short_labels_.reserve(7);
-  NSArray* array = [ShortDateFormatter() veryShortWeekdaySymbols];
-  if ([array count] == 7) {
+  NSArray* array = ShortDateFormatter().veryShortWeekdaySymbols;
+  if (array.count == 7) {
     for (unsigned i = 0; i < 7; ++i)
       week_day_short_labels_.push_back(String(array[i]));
     return week_day_short_labels_;
@@ -153,37 +157,35 @@ unsigned LocaleMac::FirstDayOfWeek() {
   // The document for NSCalendar - firstWeekday doesn't have an explanation of
   // firstWeekday value. We can guess it by the document of NSDateComponents -
   // weekDay, so it can be 1 through 7 and 1 is Sunday.
-  return static_cast<unsigned>([gregorian_calendar_ firstWeekday] - 1);
+  return static_cast<unsigned>(gregorian_calendar_.firstWeekday - 1);
 }
 
 bool LocaleMac::IsRTL() {
   return NSLocaleLanguageDirectionRightToLeft ==
          [NSLocale characterDirectionForLanguage:
                        [NSLocale canonicalLanguageIdentifierFromString:
-                                     [locale_ localeIdentifier]]];
+                                     locale_.localeIdentifier]];
 }
 
-base::scoped_nsobject<NSDateFormatter> LocaleMac::TimeFormatter() {
+NSDateFormatter* LocaleMac::TimeFormatter() {
   return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterNoStyle,
                                  NSDateFormatterMediumStyle);
 }
 
-base::scoped_nsobject<NSDateFormatter> LocaleMac::ShortTimeFormatter() {
+NSDateFormatter* LocaleMac::ShortTimeFormatter() {
   return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterNoStyle,
                                  NSDateFormatterShortStyle);
 }
 
-base::scoped_nsobject<NSDateFormatter>
-LocaleMac::DateTimeFormatterWithSeconds() {
+NSDateFormatter* LocaleMac::DateTimeFormatterWithSeconds() {
   return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterShortStyle,
                                  NSDateFormatterMediumStyle);
 }
 
-base::scoped_nsobject<NSDateFormatter>
-LocaleMac::DateTimeFormatterWithoutSeconds() {
+NSDateFormatter* LocaleMac::DateTimeFormatterWithoutSeconds() {
   return CreateDateTimeFormatter(locale_, gregorian_calendar_,
                                  NSDateFormatterShortStyle,
                                  NSDateFormatterShortStyle);
@@ -192,7 +194,7 @@ LocaleMac::DateTimeFormatterWithoutSeconds() {
 String LocaleMac::DateFormat() {
   if (!date_format_.IsNull())
     return date_format_;
-  date_format_ = [ShortDateFormatter() dateFormat];
+  date_format_ = ShortDateFormatter().dateFormat;
   return date_format_;
 }
 
@@ -219,21 +221,21 @@ String LocaleMac::ShortMonthFormat() {
 String LocaleMac::TimeFormat() {
   if (!time_format_with_seconds_.IsNull())
     return time_format_with_seconds_;
-  time_format_with_seconds_ = [TimeFormatter() dateFormat];
+  time_format_with_seconds_ = TimeFormatter().dateFormat;
   return time_format_with_seconds_;
 }
 
 String LocaleMac::ShortTimeFormat() {
   if (!time_format_without_seconds_.IsNull())
     return time_format_without_seconds_;
-  time_format_without_seconds_ = [ShortTimeFormatter() dateFormat];
+  time_format_without_seconds_ = ShortTimeFormatter().dateFormat;
   return time_format_without_seconds_;
 }
 
 String LocaleMac::DateTimeFormatWithSeconds() {
   if (!date_time_format_with_seconds_.IsNull())
     return date_time_format_with_seconds_;
-  date_time_format_with_seconds_ = [DateTimeFormatterWithSeconds() dateFormat];
+  date_time_format_with_seconds_ = DateTimeFormatterWithSeconds().dateFormat;
   return date_time_format_with_seconds_;
 }
 
@@ -241,7 +243,7 @@ String LocaleMac::DateTimeFormatWithoutSeconds() {
   if (!date_time_format_without_seconds_.IsNull())
     return date_time_format_without_seconds_;
   date_time_format_without_seconds_ =
-      [DateTimeFormatterWithoutSeconds() dateFormat];
+      DateTimeFormatterWithoutSeconds().dateFormat;
   return date_time_format_without_seconds_;
 }
 
@@ -249,8 +251,8 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
   if (!short_month_labels_.empty())
     return short_month_labels_;
   short_month_labels_.reserve(12);
-  NSArray* array = [ShortDateFormatter() shortMonthSymbols];
-  if ([array count] == 12) {
+  NSArray* array = ShortDateFormatter().shortMonthSymbols;
+  if (array.count == 12) {
     for (unsigned i = 0; i < 12; ++i)
       short_month_labels_.push_back(array[i]);
     return short_month_labels_;
@@ -263,8 +265,8 @@ const Vector<String>& LocaleMac::ShortMonthLabels() {
 const Vector<String>& LocaleMac::StandAloneMonthLabels() {
   if (!stand_alone_month_labels_.empty())
     return stand_alone_month_labels_;
-  NSArray* array = [ShortDateFormatter() standaloneMonthSymbols];
-  if ([array count] == 12) {
+  NSArray* array = ShortDateFormatter().standaloneMonthSymbols;
+  if (array.count == 12) {
     stand_alone_month_labels_.reserve(12);
     for (unsigned i = 0; i < 12; ++i)
       stand_alone_month_labels_.push_back(array[i]);
@@ -277,8 +279,8 @@ const Vector<String>& LocaleMac::StandAloneMonthLabels() {
 const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
   if (!short_stand_alone_month_labels_.empty())
     return short_stand_alone_month_labels_;
-  NSArray* array = [ShortDateFormatter() shortStandaloneMonthSymbols];
-  if ([array count] == 12) {
+  NSArray* array = ShortDateFormatter().shortStandaloneMonthSymbols;
+  if (array.count == 12) {
     short_stand_alone_month_labels_.reserve(12);
     for (unsigned i = 0; i < 12; ++i)
       short_stand_alone_month_labels_.push_back(array[i]);
@@ -292,9 +294,9 @@ const Vector<String>& LocaleMac::TimeAMPMLabels() {
   if (!time_ampm_labels_.empty())
     return time_ampm_labels_;
   time_ampm_labels_.reserve(2);
-  base::scoped_nsobject<NSDateFormatter> formatter(ShortTimeFormatter());
-  time_ampm_labels_.push_back([formatter AMSymbol]);
-  time_ampm_labels_.push_back([formatter PMSymbol]);
+  NSDateFormatter* formatter = ShortTimeFormatter();
+  time_ampm_labels_.push_back(formatter.AMSymbol);
+  time_ampm_labels_.push_back(formatter.PMSymbol);
   return time_ampm_labels_;
 }
 
@@ -303,14 +305,12 @@ void LocaleMac::InitializeLocaleData() {
     return;
   did_initialize_number_data_ = true;
 
-  base::scoped_nsobject<NSNumberFormatter> formatter(
-      [[NSNumberFormatter alloc] init]);
-  [formatter setLocale:locale_];
-  [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
-  [formatter setUsesGroupingSeparator:NO];
+  NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+  formatter.locale = locale_;
+  formatter.numberStyle = NSNumberFormatterDecimalStyle;
+  formatter.usesGroupingSeparator = NO;
 
-  base::scoped_nsobject<NSNumber> sample_number(
-      [[NSNumber alloc] initWithDouble:9876543210]);
+  NSNumber* sample_number = @9876543210;
   String nine_to_zero([formatter stringFromNumber:sample_number]);
   if (nine_to_zero.length() != 10)
     return;
@@ -323,10 +323,10 @@ void LocaleMac::InitializeLocaleData() {
   symbols.push_back([formatter groupingSeparator]);
   DCHECK(symbols.size() == kDecimalSymbolsSize);
 
-  String positive_prefix([formatter positivePrefix]);
-  String positive_suffix([formatter positiveSuffix]);
-  String negative_prefix([formatter negativePrefix]);
-  String negative_suffix([formatter negativeSuffix]);
+  String positive_prefix(formatter.positivePrefix);
+  String positive_suffix(formatter.positiveSuffix);
+  String negative_prefix(formatter.negativePrefix);
+  String negative_suffix(formatter.negativeSuffix);
   SetLocaleData(symbols, positive_prefix, positive_suffix, negative_prefix,
                 negative_suffix);
 }

@@ -28,8 +28,9 @@
 
 #import <AppKit/AppKit.h>
 
-#include "base/mac/scoped_nsobject.h"
-#import "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace blink {
 
@@ -40,25 +41,27 @@ NSColor* NsColor(const Color& color) {
   if (color == Color::kTransparent) {
     // Need this to avoid returning nil because cachedRGBAValues will default
     // to 0.
-    DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, clear_color,
-                        ([[NSColor colorWithDeviceRed:0 green:0 blue:0
-                                                alpha:0] retain]));
+    static NSColor* clear_color = [NSColor colorWithDeviceRed:0
+                                                        green:0
+                                                         blue:0
+                                                        alpha:0];
     return clear_color;
   } else if (color == Color::kBlack) {
-    DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, black_color,
-                        ([[NSColor colorWithDeviceRed:0 green:0 blue:0
-                                                alpha:1] retain]));
+    static NSColor* black_color = [NSColor colorWithDeviceRed:0
+                                                        green:0
+                                                         blue:0
+                                                        alpha:1];
     return black_color;
   } else if (color == Color::kWhite) {
-    DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, white_color,
-                        ([[NSColor colorWithDeviceRed:1 green:1 blue:1
-                                                alpha:1] retain]));
+    static NSColor* white_color = [NSColor colorWithDeviceRed:1
+                                                        green:1
+                                                         blue:1
+                                                        alpha:1];
     return white_color;
   } else {
     const int kCacheSize = 32;
     static unsigned cached_rgba_values[kCacheSize];
-    static base::scoped_nsobject<NSColor>* cached_colors(
-        new base::scoped_nsobject<NSColor>[kCacheSize]);
+    static NSColor* cached_colors[kCacheSize];
 
     for (int i = 0; i != kCacheSize; ++i) {
       if (cached_rgba_values[i] == c)
@@ -73,9 +76,10 @@ NSColor* NsColor(const Color& color) {
 
     static int cursor;
     cached_rgba_values[cursor] = c;
-    cached_colors[cursor].reset([result retain]);
-    if (++cursor == kCacheSize)
+    cached_colors[cursor] = result;
+    if (++cursor == kCacheSize) {
       cursor = 0;
+    }
     return result;
   }
 }

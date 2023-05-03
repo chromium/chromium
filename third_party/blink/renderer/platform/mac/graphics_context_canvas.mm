@@ -12,13 +12,16 @@
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace blink {
 
 GraphicsContextCanvas::GraphicsContextCanvas(cc::PaintCanvas* canvas,
                                              const SkIRect& paint_rect,
                                              SkScalar bitmap_scale_factor)
     : canvas_(canvas),
-      cg_context_(0),
       bitmap_scale_factor_(bitmap_scale_factor),
       paint_rect_(paint_rect) {
   // Callers should just avoid painting at all when this is the case.
@@ -42,12 +45,11 @@ void GraphicsContextCanvas::ReleaseIfNeeded() {
                      0);
   canvas_->restore();
 
-  CGContextRelease(cg_context_);
-  cg_context_ = 0;
+  cg_context_.reset();
 }
 
 CGContextRef GraphicsContextCanvas::CgContext() {
-  ReleaseIfNeeded();  // This flushes any prior bitmap use
+  ReleaseIfNeeded();  // This flushes any prior bitmap use.
 
   // Allocate an offscreen and draw into that, relying on the
   // compositing step to apply skia's clip.
@@ -58,14 +60,15 @@ CGContextRef GraphicsContextCanvas::CgContext() {
       SkScalarCeilToInt(bitmap_scale_factor_ * paint_rect_.width()),
       SkScalarCeilToInt(bitmap_scale_factor_ * paint_rect_.height()));
   DCHECK(result);
-  if (!result)
-    return 0;
+  if (!result) {
+    return nullptr;
+  }
   offscreen_.eraseColor(0);
   int display_height = offscreen_.height();
-  cg_context_ = CGBitmapContextCreate(
+  cg_context_.reset(CGBitmapContextCreate(
       offscreen_.getPixels(), offscreen_.width(), offscreen_.height(), 8,
       offscreen_.rowBytes(), color_space,
-      uint32_t{kCGBitmapByteOrder32Host} | kCGImageAlphaPremultipliedFirst);
+      uint32_t{kCGBitmapByteOrder32Host} | kCGImageAlphaPremultipliedFirst));
   DCHECK(cg_context_);
 
   SkMatrix matrix = canvas_->getLocalToDevice().asM33();
@@ -76,7 +79,7 @@ CGContextRef GraphicsContextCanvas::CgContext() {
 
   CGContextConcatCTM(cg_context_, skia::SkMatrixToCGAffineTransform(matrix));
 
-  return cg_context_;
+  return cg_context_.get();
 }
 
 }  // namespace blink

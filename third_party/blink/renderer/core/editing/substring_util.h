@@ -35,6 +35,7 @@
 
 #include <cstddef>
 
+#include "base/mac/scoped_cftyperef.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -51,27 +52,27 @@ class SubstringUtil {
   // Given a point inside a `WebFrameWidgetImpl`, determines the word underneath
   // that point and returns:
   //
-  // - an autoreleased `CFAttributedStringRef` of that word and
+  // - a `CFAttributedStringRef` of that word and
   // - the left baseline point of that word in `baseline_point`
   //
   // Returns nil on failure.
-  CORE_EXPORT static CFAttributedStringRef AttributedWordAtPoint(
-      WebFrameWidgetImpl*,
-      gfx::Point,
-      gfx::Point& baseline_point);
+  CORE_EXPORT static base::ScopedCFTypeRef<CFAttributedStringRef>
+  AttributedWordAtPoint(WebFrameWidgetImpl*,
+                        gfx::Point,
+                        gfx::Point& baseline_point);
 
   // Given a range of a `LocalFrame`, determines the substring specified by that
   // range and returns:
   //
-  // - an autoreleased `CFAttributedStringRef` of that substring and
+  // - a `CFAttributedStringRef` of that substring and
   // - the left baseline point of that substring in `baseline_point`
   //
   // Returns nil on failure.
-  CORE_EXPORT static CFAttributedStringRef AttributedSubstringInRange(
-      LocalFrame*,
-      wtf_size_t location,
-      wtf_size_t length,
-      gfx::Point& baseline_point);
+  CORE_EXPORT static base::ScopedCFTypeRef<CFAttributedStringRef>
+  AttributedSubstringInRange(LocalFrame*,
+                             wtf_size_t location,
+                             wtf_size_t length,
+                             gfx::Point& baseline_point);
 };
 
 }  // namespace blink

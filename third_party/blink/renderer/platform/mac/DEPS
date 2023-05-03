@@ -7,7 +7,6 @@ include_rules = [
 
     # Dependencies.
     "+base/mac/scoped_cftyperef.h",
-    "+base/mac/scoped_nsobject.h",
     "+cc/paint",
     "+third_party/blink/renderer/platform/animation/timing_function.h",
     "+third_party/blink/renderer/platform/geometry",

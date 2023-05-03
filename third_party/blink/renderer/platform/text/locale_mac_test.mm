@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/text/locale_mac.h"
 
 #include <memory>
+
 #include "base/mac/mac_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -33,6 +34,10 @@
 #include "third_party/blink/renderer/platform/text/date_components.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace blink {
 
