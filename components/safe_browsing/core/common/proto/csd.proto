@@ -982,6 +982,10 @@ message ClientDownloadRequest {
     optional int32 version = 1;
   }
   optional TailoredInfo tailored_info = 86;
+
+  // Fields 87-89 are reserved for server-side use and are never sent by the
+  // client.
+  reserved 87 to 89;
 }
 
 message ReferrerChainOptions {
