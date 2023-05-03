@@ -577,6 +577,9 @@ def main():
   parser.add_argument('--with-android', type=gn_arg, nargs='?', const=True,
                       help='build the Android ASan runtime (linux only)',
                       default=sys.platform.startswith('linux'))
+  parser.add_argument('--pic',
+                      action='store_true',
+                      help='Uses PIC when building LLVM')
   parser.add_argument('--with-fuchsia',
                       type=gn_arg,
                       nargs='?',
@@ -687,6 +690,9 @@ def main():
   if args.bolt:
     projects += ';bolt'
 
+  pic_default = sys.platform == 'win32'
+  pic_mode = 'ON' if args.pic or pic_default else 'OFF'
+
   base_cmake_args = [
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
@@ -694,8 +700,7 @@ def main():
       '-DLLVM_ENABLE_PROJECTS=' + projects,
       '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
       '-DLLVM_TARGETS_TO_BUILD=' + targets,
-      # PIC needed for Rust build (links LLVM into shared object)
-      '-DLLVM_ENABLE_PIC=ON',
+      f'-DLLVM_ENABLE_PIC={pic_mode}',
       '-DLLVM_ENABLE_UNWIND_TABLES=OFF',
       '-DLLVM_ENABLE_TERMINFO=OFF',
       '-DLLVM_ENABLE_Z3_SOLVER=OFF',

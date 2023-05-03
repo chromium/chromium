@@ -541,6 +541,8 @@ def BuildLLVMLibraries(skip_build, build_mac_arm, gcc_toolchain):
         os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
         '--disable-asserts',
         '--no-tools',
+        # PIC needed for Rust build (links LLVM into shared object)
+        '--pic',
         '--with-ml-inliner-model=',
     ]
     if sys.platform.startswith('linux'):
