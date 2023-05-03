@@ -1392,7 +1392,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   // When policies are set to values that enable the feature without a usable DM
   // token, nothing to report.
-  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidTokenForTesting());
+  policy::SetDMTokenForTesting(policy::DMToken::CreateInvalidToken());
   safe_browsing::SetAnalysisConnector(profile_no_domain->GetPrefs(),
                                       enterprise_connectors::FILE_ATTACHED,
                                       "[{\"service_provider\":\"google\"}]");
@@ -1426,8 +1426,7 @@ TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {
 
   // When policies are set to values that enable the feature with a usable DM
   // token, report them.
-  policy::SetDMTokenForTesting(
-      policy::DMToken::CreateValidTokenForTesting("fake-token"));
+  policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("fake-token"));
 
   info = handler_.GetThreatProtectionInfo(profile_no_domain.get());
 #if BUILDFLAG(IS_CHROMEOS)
