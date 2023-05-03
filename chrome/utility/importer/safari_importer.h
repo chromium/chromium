@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
-#include <set>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -17,14 +15,9 @@
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 
-class GURL;
 struct ImportedBookmarkEntry;
 
-namespace sql {
-class Database;
-}
-
-// Importer for Safari on OS X.
+// Importer for Safari on macOS.
 class SafariImporter : public Importer {
  public:
   // |library_dir| is the full path to the ~/Library directory,
@@ -43,32 +36,15 @@ class SafariImporter : public Importer {
   FRIEND_TEST_ALL_PREFIXES(SafariImporterTest, BookmarkImport);
   FRIEND_TEST_ALL_PREFIXES(SafariImporterTest,
                            BookmarkImportWithEmptyBookmarksMenu);
-  FRIEND_TEST_ALL_PREFIXES(SafariImporterTest, FaviconImport);
   FRIEND_TEST_ALL_PREFIXES(SafariImporterTest, HistoryImport);
 
   ~SafariImporter() override;
-
-  // Multiple URLs can share the same favicon; this is a map
-  // of URLs -> IconIDs that we load as a temporary step before
-  // actually loading the icons.
-  using FaviconMap = std::map<int64_t, std::set<GURL>>;
 
   void ImportBookmarks();
 
   // Parse Safari's stored bookmarks.
   void ParseBookmarks(const std::u16string& toolbar_name,
                       std::vector<ImportedBookmarkEntry>* bookmarks);
-
-  // Opens the favicon database file.
-  bool OpenDatabase(sql::Database* db);
-
-  // Loads the urls associated with the favicons into favicon_map;
-  void ImportFaviconURLs(sql::Database* db, FaviconMap* favicon_map);
-
-  // Loads and reencodes the individual favicons.
-  void LoadFaviconData(sql::Database* db,
-                       const FaviconMap& favicon_map,
-                       favicon_base::FaviconUsageDataList* favicons);
 
   base::FilePath library_dir_;
 };

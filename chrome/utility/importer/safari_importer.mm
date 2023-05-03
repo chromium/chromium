@@ -6,7 +6,6 @@
 
 #include "chrome/utility/importer/safari_importer.h"
 
-#include <map>
 #include <string>
 #include <vector>
 
@@ -19,11 +18,13 @@
 #include "chrome/common/importer/importer_bridge.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/utility/importer/favicon_reencode.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/data_url.h"
-#include "sql/statement.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -172,79 +173,6 @@ void SafariImporter::ImportBookmarks() {
         bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP_FROM_SAFARI);
     bridge_->AddBookmarks(bookmarks, first_folder_name);
   }
-
-  // Import favicons.
-  sql::Database db;
-  if (!OpenDatabase(&db))
-    return;
-
-  FaviconMap favicon_map;
-  ImportFaviconURLs(&db, &favicon_map);
-  // Write favicons into profile.
-  if (!favicon_map.empty() && !cancelled()) {
-    favicon_base::FaviconUsageDataList favicons;
-    LoadFaviconData(&db, favicon_map, &favicons);
-    bridge_->SetFavicons(favicons);
-  }
-}
-
-bool SafariImporter::OpenDatabase(sql::Database* db) {
-  // Construct ~/Library/Safari/WebpageIcons.db path.
-  NSString* library_dir = base::SysUTF8ToNSString(library_dir_.value());
-  NSString* safari_dir = [library_dir
-      stringByAppendingPathComponent:@"Safari"];
-  NSString* favicons_db_path = [safari_dir
-      stringByAppendingPathComponent:@"WebpageIcons.db"];
-
-  const char* db_path = [favicons_db_path fileSystemRepresentation];
-  return db->Open(base::FilePath(db_path));
-}
-
-void SafariImporter::ImportFaviconURLs(sql::Database* db,
-                                       FaviconMap* favicon_map) {
-  const char query[] = "SELECT iconID, url FROM PageURL;";
-  sql::Statement s(db->GetUniqueStatement(query));
-
-  while (s.Step() && !cancelled()) {
-    int64_t icon_id = s.ColumnInt64(0);
-    GURL url = GURL(s.ColumnString(1));
-    (*favicon_map)[icon_id].insert(url);
-  }
-}
-
-void SafariImporter::LoadFaviconData(
-    sql::Database* db,
-    const FaviconMap& favicon_map,
-    favicon_base::FaviconUsageDataList* favicons) {
-  const char query[] = "SELECT i.url, d.data "
-                       "FROM IconInfo i JOIN IconData d "
-                       "ON i.iconID = d.iconID "
-                       "WHERE i.iconID = ?;";
-  sql::Statement s(db->GetUniqueStatement(query));
-
-  for (FaviconMap::const_iterator i = favicon_map.begin();
-       i != favicon_map.end(); ++i) {
-    s.Reset(true);
-    s.BindInt64(0, i->first);
-    if (s.Step()) {
-      favicon_base::FaviconUsageData usage;
-
-      usage.favicon_url = GURL(s.ColumnString(0));
-      if (!usage.favicon_url.is_valid())
-        continue;  // Don't bother importing favicons with invalid URLs.
-
-      std::vector<unsigned char> data;
-      s.ColumnBlobAsVector(1, &data);
-      if (data.empty())
-        continue;  // Data definitely invalid.
-
-      if (!importer::ReencodeFavicon(&data[0], data.size(), &usage.png_data))
-        continue;  // Unable to decode.
-
-      usage.urls = i->second;
-      favicons->push_back(usage);
-    }
-  }
 }
 
 void SafariImporter::ParseBookmarks(
@@ -253,17 +181,17 @@ void SafariImporter::ParseBookmarks(
   DCHECK(bookmarks);
 
   // Construct ~/Library/Safari/Bookmarks.plist path
-  NSString* library_dir = base::SysUTF8ToNSString(library_dir_.value());
-  NSString* safari_dir = [library_dir
-      stringByAppendingPathComponent:@"Safari"];
-  NSString* bookmarks_plist = [safari_dir
-    stringByAppendingPathComponent:@"Bookmarks.plist"];
+  NSURL* library_dir = base::mac::FilePathToNSURL(library_dir_);
+  NSURL* safari_dir = [library_dir URLByAppendingPathComponent:@"Safari"];
+  NSURL* bookmarks_plist =
+      [safari_dir URLByAppendingPathComponent:@"Bookmarks.plist"];
 
   // Load the plist file.
-  NSDictionary* bookmarks_dict = [NSDictionary
-      dictionaryWithContentsOfFile:bookmarks_plist];
-  if (!bookmarks_dict)
+  NSDictionary* bookmarks_dict =
+      [NSDictionary dictionaryWithContentsOfURL:bookmarks_plist error:nil];
+  if (!bookmarks_dict) {
     return;
+  }
 
   // Recursively read in bookmarks.
   std::vector<std::u16string> parent_path_elements;
