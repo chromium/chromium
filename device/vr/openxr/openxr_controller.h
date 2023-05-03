@@ -14,13 +14,14 @@
 #include "base/memory/raw_ptr.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_path_helper.h"
-#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
+
+class OpenXrExtensionHelper;
 
 class OpenXrController {
  public:

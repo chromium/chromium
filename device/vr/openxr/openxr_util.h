@@ -5,19 +5,10 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_UTIL_H_
 #define DEVICE_VR_OPENXR_OPENXR_UTIL_H_
 
-#include <vector>
-
 #include "base/logging.h"
-#include "base/types/id_type.h"
-#include "device/vr/openxr/openxr_defs.h"
-#include "device/vr/openxr/openxr_extension_helper.h"
-#include "device/vr/openxr/openxr_platform.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
-
-using AnchorId = base::IdTypeU64<class AnchorTag>;
-constexpr AnchorId kInvalidAnchorId;
 
 namespace device {
 // These macros aren't common in Chromium and generally discouraged, so define
@@ -56,18 +47,6 @@ XrPosef PoseIdentity();
 gfx::Transform XrPoseToGfxTransform(const XrPosef& pose);
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
 bool IsPoseValid(XrSpaceLocationFlags locationFlags);
-
-XrResult GetSystem(XrInstance instance, XrSystemId* system);
-
-std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
-                                                           XrSystemId system);
-
-// Insert an extension struct into the next chain of an xrStruct
-template <typename XrStruct, typename XrExtension>
-void InsertExtensionStruct(XrStruct& xrStruct, XrExtension& xrExtension) {
-  xrExtension.next = xrStruct.next;
-  xrStruct.next = &xrExtension;
-}
 
 }  // namespace device
 

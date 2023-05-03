@@ -8,9 +8,11 @@
 #include "base/scoped_generic.h"
 #include "device/vr/openxr/openxr_extension_handle.h"
 #include "device/vr/openxr/openxr_scene_plane.h"
-#include "device/vr/openxr/openxr_util.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+class OpenXrExtensionHelper;
 
 // C++ wrapper for XrSceneMSFT
 class OpenXrScene {

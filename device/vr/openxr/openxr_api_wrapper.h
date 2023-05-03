@@ -15,7 +15,6 @@
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
-#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
@@ -40,6 +39,7 @@ class ContextProvider;
 
 namespace device {
 
+class OpenXrExtensionHelper;
 class OpenXRInputHelper;
 class VRTestHook;
 class ServiceTestHook;
@@ -82,6 +82,12 @@ class OpenXrApiWrapper {
   bool IsInitialized() const;
 
   static std::unique_ptr<OpenXrApiWrapper> Create(XrInstance instance);
+
+  static XrResult GetSystem(XrInstance instance, XrSystemId* system);
+
+  static std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(
+      XrInstance instance,
+      XrSystemId system);
 
   static VRTestHook* GetTestHook();
 

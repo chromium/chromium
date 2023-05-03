@@ -16,6 +16,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_input_helper.h"
 #include "device/vr/openxr/openxr_util.h"
@@ -25,6 +26,7 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 #include "ui/gfx/geometry/angle_conversions.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/quaternion.h"
@@ -127,6 +129,37 @@ std::unique_ptr<OpenXrApiWrapper> OpenXrApiWrapper::Create(
   }
 
   return openxr;
+}
+
+// static
+XrResult OpenXrApiWrapper::GetSystem(XrInstance instance, XrSystemId* system) {
+  XrSystemGetInfo system_info = {XR_TYPE_SYSTEM_GET_INFO};
+  system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
+  return xrGetSystem(instance, &system_info, system);
+}
+
+// static
+std::vector<XrEnvironmentBlendMode> OpenXrApiWrapper::GetSupportedBlendModes(
+    XrInstance instance,
+    XrSystemId system) {
+  // Query the list of supported environment blend modes for the current system.
+  uint32_t blend_mode_count;
+  const XrViewConfigurationType kSupportedViewConfiguration =
+      XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+  if (XR_FAILED(xrEnumerateEnvironmentBlendModes(instance, system,
+                                                 kSupportedViewConfiguration, 0,
+                                                 &blend_mode_count, nullptr))) {
+    return {};  // empty vector
+  }
+
+  std::vector<XrEnvironmentBlendMode> environment_blend_modes(blend_mode_count);
+  if (XR_FAILED(xrEnumerateEnvironmentBlendModes(
+          instance, system, kSupportedViewConfiguration, blend_mode_count,
+          &blend_mode_count, environment_blend_modes.data()))) {
+    return {};  // empty vector
+  }
+
+  return environment_blend_modes;
 }
 
 #if BUILDFLAG(IS_WIN)

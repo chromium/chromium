@@ -9,12 +9,14 @@
 #include "base/numerics/checked_math.h"
 #include "base/numerics/math_constants.h"
 #include "device/vr/openxr/openxr_scene_observer.h"
-#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/util/hit_test_subscription_data.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+class OpenXrExtensionHelper;
 
 class OpenXRSceneUnderstandingManager {
  public:

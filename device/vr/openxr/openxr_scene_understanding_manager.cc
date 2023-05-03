@@ -3,10 +3,14 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
+
 #include <chrono>
+
 #include "base/containers/contains.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace {
 // - UpdateInterval is the idle time between triggering a scene-compute query

@@ -15,7 +15,6 @@
 #include "device/vr/openxr/openxr_anchor_manager.h"
 #include "device/vr/openxr/openxr_graphics_binding.h"
 #include "device/vr/openxr/openxr_platform_helper.h"
-#include "device/vr/openxr/openxr_util.h"
 #include "device/vr/windows/compositor_base.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

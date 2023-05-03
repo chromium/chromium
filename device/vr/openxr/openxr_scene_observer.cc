@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_scene_observer.h"
-#include "device/vr/openxr/openxr_util.h"
+
+#include "device/vr/openxr/openxr_extension_helper.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 

@@ -51,30 +51,4 @@ bool IsPoseValid(XrSpaceLocationFlags locationFlags) {
   return (locationFlags & PoseValidFlags) == PoseValidFlags;
 }
 
-XrResult GetSystem(XrInstance instance, XrSystemId* system) {
-  XrSystemGetInfo system_info = {XR_TYPE_SYSTEM_GET_INFO};
-  system_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
-  return xrGetSystem(instance, &system_info, system);
-}
-
-std::vector<XrEnvironmentBlendMode> GetSupportedBlendModes(XrInstance instance,
-                                                           XrSystemId system) {
-  // Query the list of supported environment blend modes for the current system.
-  uint32_t blend_mode_count;
-  const XrViewConfigurationType kSupportedViewConfiguration =
-      XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-  if (XR_FAILED(xrEnumerateEnvironmentBlendModes(instance, system,
-                                                 kSupportedViewConfiguration, 0,
-                                                 &blend_mode_count, nullptr)))
-    return {};  // empty vector
-
-  std::vector<XrEnvironmentBlendMode> environment_blend_modes(blend_mode_count);
-  if (XR_FAILED(xrEnumerateEnvironmentBlendModes(
-          instance, system, kSupportedViewConfiguration, blend_mode_count,
-          &blend_mode_count, environment_blend_modes.data())))
-    return {};  // empty vector
-
-  return environment_blend_modes;
-}
-
 }  // namespace device

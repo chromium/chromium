@@ -4,7 +4,9 @@
 #ifndef DEVICE_VR_OPENXR_OPENXR_SCENE_BOUNDS_H_
 #define DEVICE_VR_OPENXR_OPENXR_SCENE_BOUNDS_H_
 
-#include "device/vr/openxr/openxr_util.h"
+#include <vector>
+
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 

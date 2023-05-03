@@ -3,9 +3,22 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_scene.h"
+
 #include "base/check_op.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
+#include "device/vr/openxr/openxr_util.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
+
+namespace {
+// Insert an extension struct into the next chain of an xrStruct
+template <typename XrStruct, typename XrExtension>
+void InsertExtensionStruct(XrStruct& xrStruct, XrExtension& xrExtension) {
+  xrExtension.next = xrStruct.next;
+  xrStruct.next = &xrExtension;
+}
+}  // anonymous namespace
 
 OpenXrScene::OpenXrScene(const device::OpenXrExtensionHelper& extensions,
                          XrSceneObserverMSFT scene_observer)

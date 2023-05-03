@@ -7,7 +7,10 @@
 #include <tuple>
 
 #include "device/vr/openxr/openxr_api_wrapper.h"
+#include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/mojom/pose.h"
+#include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 

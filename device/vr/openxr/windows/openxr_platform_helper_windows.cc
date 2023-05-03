@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
-#include "device/vr/openxr/openxr_util.h"
+#include "device/vr/openxr/openxr_api_wrapper.h"
 #include "device/vr/openxr/windows/openxr_graphics_binding_d3d11.h"
 #include "device/vr/openxr/windows/openxr_instance_wrapper.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
@@ -48,7 +48,8 @@ void OpenXrPlatformHelper::GetRequiredExtensions(
   if (IsRunningInWin32AppContainer()) {
     // Add the win32 app container compatible extension to our list of
     // extensions. If this runtime does not support execution in an app
-    // container environment, one of xrCreateInstance or xrGetSystem will fail.
+    // container environment, one of xrCreateInstance or
+    // xrOpenXrApiWrapper::GetSystem will fail.
     extensions.push_back(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
   }
 }
@@ -92,12 +93,13 @@ device::mojom::XRDeviceData OpenXrPlatformHelperWindows::GetXRDeviceData() {
 
 bool OpenXrPlatformHelperWindows::IsArBlendModeSupported() {
   XrSystemId system;
-  if (XR_FAILED(GetSystem(GetOrCreateXrInstance(), &system))) {
+  if (XR_FAILED(
+          OpenXrApiWrapper::GetSystem(GetOrCreateXrInstance(), &system))) {
     return false;
   }
 
   std::vector<XrEnvironmentBlendMode> environment_blend_modes =
-      GetSupportedBlendModes(GetOrCreateXrInstance(), system);
+      OpenXrApiWrapper::GetSupportedBlendModes(GetOrCreateXrInstance(), system);
 
   return base::Contains(environment_blend_modes,
                         XR_ENVIRONMENT_BLEND_MODE_ADDITIVE) ||
@@ -116,7 +118,7 @@ bool OpenXrPlatformHelperWindows::TryGetLuid(LUID* luid) {
   }
 
   XrSystemId system;
-  if (XR_FAILED(GetSystem(instance, &system))) {
+  if (XR_FAILED(OpenXrApiWrapper::GetSystem(instance, &system))) {
     return false;
   }
 
@@ -147,7 +149,7 @@ bool OpenXrPlatformHelperWindows::IsHardwareAvailable() {
   }
 
   XrSystemId system;
-  return XR_SUCCEEDED(GetSystem(instance, &system));
+  return XR_SUCCEEDED(OpenXrApiWrapper::GetSystem(instance, &system));
 }
 
 bool OpenXrPlatformHelperWindows::IsApiAvailable() {
