@@ -344,7 +344,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir temp_dir_;
   base::ScopedTempDir non_watchable_dir_;
-  raw_ptr<ash::disks::MockDiskMountManager, ExperimentalAsh>
+  raw_ptr<ash::disks::MockDiskMountManager, DanglingUntriaged | ExperimentalAsh>
       disk_mount_manager_mock_ = nullptr;
   DiskMountManager::Disks volumes_;
   DiskMountManager::MountPoints mount_points_;

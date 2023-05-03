@@ -248,7 +248,8 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // The key most recently pressed.
   ui::KeyboardCode last_key_pressed_ = ui::VKEY_UNKNOWN;
 
-  const raw_ptr<SearchBoxViewDelegate, ExperimentalAsh> delegate_;
+  const raw_ptr<SearchBoxViewDelegate, DanglingUntriaged | ExperimentalAsh>
+      delegate_;
   const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
 
   // The layer that will draw the focus ring if needed. Could be a nullptr if
@@ -274,7 +275,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
 
   // Owned by SearchResultPageView (for fullscreen launcher) or
   // ProductivityLauncherSearchPage (for bubble launcher).
-  raw_ptr<ResultSelectionController, ExperimentalAsh>
+  raw_ptr<ResultSelectionController, DanglingUntriaged | ExperimentalAsh>
       result_selection_controller_ = nullptr;
 
   // The timestamp taken when the search box model's query is updated by the

@@ -91,7 +91,8 @@ class ASH_EXPORT RecentAppsView : public AppListModelObserver,
   const raw_ptr<AppListKeyboardController, DanglingUntriaged | ExperimentalAsh>
       keyboard_controller_;
   const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
-  raw_ptr<const AppListConfig, ExperimentalAsh> app_list_config_ = nullptr;
+  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
+      app_list_config_ = nullptr;
   raw_ptr<views::BoxLayout, ExperimentalAsh> layout_ = nullptr;
   raw_ptr<AppListModel, ExperimentalAsh> model_ = nullptr;
   raw_ptr<SearchModel, ExperimentalAsh> search_model_ = nullptr;

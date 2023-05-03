@@ -214,7 +214,8 @@ class AppsContainerView::ContinueContainer : public views::View {
   const raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;
   raw_ptr<ContinueSectionView, ExperimentalAsh> continue_section_ = nullptr;
   raw_ptr<RecentAppsView, ExperimentalAsh> recent_apps_ = nullptr;
-  raw_ptr<views::Separator, ExperimentalAsh> separator_ = nullptr;
+  raw_ptr<views::Separator, DanglingUntriaged | ExperimentalAsh> separator_ =
+      nullptr;
 };
 
 const int AppsContainerView::kHorizontalMargin = 24;

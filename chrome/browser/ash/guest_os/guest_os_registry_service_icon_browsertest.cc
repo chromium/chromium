@@ -131,7 +131,8 @@ class GuestOsRegistryServiceIconTest : public InProcessBrowserTest {
   }
 
  protected:
-  raw_ptr<ash::FakeCiceroneClient, ExperimentalAsh> fake_cicerone_client_;
+  raw_ptr<ash::FakeCiceroneClient, DanglingUntriaged | ExperimentalAsh>
+      fake_cicerone_client_;
   static constexpr char kSvgData[] =
       "<svg width='20px' height='20px' viewBox='0 0 24 24' "
       "fill='rgb(95,99,104)' "

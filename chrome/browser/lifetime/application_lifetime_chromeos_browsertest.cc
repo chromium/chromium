@@ -75,7 +75,7 @@ class ApplicationLifetimeTest : public InProcessBrowserTest,
   }
 
   absl::optional<base::RunLoop> quits_on_browser_closing_;
-  raw_ptr<ash::FakeUpdateEngineClient, ExperimentalAsh>
+  raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged | ExperimentalAsh>
       fake_update_engine_client_ = nullptr;
 };
 

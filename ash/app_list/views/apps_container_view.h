@@ -337,8 +337,10 @@ class ASH_EXPORT AppsContainerView
   raw_ptr<AppListToastContainerView, ExperimentalAsh> toast_container_ =
       nullptr;
   raw_ptr<PagedAppsGridView, ExperimentalAsh> apps_grid_view_ = nullptr;
-  raw_ptr<AppListFolderView, ExperimentalAsh> app_list_folder_view_ = nullptr;
-  raw_ptr<PageSwitcher, ExperimentalAsh> page_switcher_ = nullptr;
+  raw_ptr<AppListFolderView, DanglingUntriaged | ExperimentalAsh>
+      app_list_folder_view_ = nullptr;
+  raw_ptr<PageSwitcher, DanglingUntriaged | ExperimentalAsh> page_switcher_ =
+      nullptr;
   raw_ptr<FolderBackgroundView, ExperimentalAsh> folder_background_view_ =
       nullptr;
 

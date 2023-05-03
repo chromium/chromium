@@ -5723,9 +5723,9 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
   }
 
   // The first profile.
-  raw_ptr<Profile, ExperimentalAsh> profile_1_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_1_;
   // The second profile.
-  raw_ptr<Profile, ExperimentalAsh> profile_2_;
+  raw_ptr<Profile, DanglingUntriaged | ExperimentalAsh> profile_2_;
 
   // The NSSCertDatabase for |profile_1_|.
   net::NSSCertDatabase* profile_1_cert_db_;

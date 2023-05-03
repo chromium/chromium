@@ -54,7 +54,7 @@ class NetworkPortalDetectorMixin : public InProcessBrowserTestMixin {
       const std::string& network_type,
       NetworkPortalDetector::CaptivePortalStatus status);
 
-  raw_ptr<NetworkPortalDetectorTestImpl, ExperimentalAsh>
+  raw_ptr<NetworkPortalDetectorTestImpl, DanglingUntriaged | ExperimentalAsh>
       network_portal_detector_ = nullptr;
   std::string default_network_guid_;
 };

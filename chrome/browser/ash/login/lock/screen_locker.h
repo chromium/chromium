@@ -289,7 +289,7 @@ class ScreenLocker
   session_manager::UnlockType TransformUnlockType();
 
   // Delegate used to talk to the view.
-  raw_ptr<Delegate, ExperimentalAsh> delegate_ = nullptr;
+  raw_ptr<Delegate, DanglingUntriaged | ExperimentalAsh> delegate_ = nullptr;
 
   // Users that can unlock the device.
   user_manager::UserList users_;

@@ -72,7 +72,8 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
   void NotifyWithFakeSequence(bool abort);
 
   raw_ptr<aura::Window, ExperimentalAsh> window_;
-  raw_ptr<ui::LayerAnimationObserver, ExperimentalAsh> observer_ = nullptr;
+  raw_ptr<ui::LayerAnimationObserver, DanglingUntriaged | ExperimentalAsh>
+      observer_ = nullptr;
   AnimationCallback animation_callback_;
 
   std::unique_ptr<ui::Layer> copied_layer_;

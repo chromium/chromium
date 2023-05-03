@@ -105,7 +105,9 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void CloseWidgetWithReason(views::Widget::ClosedReason closed_reason);
 
   // Owns this class.
-  raw_ptr<::sharesheet::SharesheetServiceDelegator, ExperimentalAsh> delegator_;
+  raw_ptr<::sharesheet::SharesheetServiceDelegator,
+          DanglingUntriaged | ExperimentalAsh>
+      delegator_;
   std::u16string active_target_;
   apps::IntentPtr intent_;
   ::sharesheet::DeliveredCallback delivered_callback_;

@@ -98,7 +98,8 @@ class EnrollmentIdUploadManager : public DeviceSettingsService::Observer {
 
   const raw_ptr<DeviceSettingsService, ExperimentalAsh>
       device_settings_service_;
-  const raw_ptr<policy::CloudPolicyClient, ExperimentalAsh> policy_client_;
+  const raw_ptr<policy::CloudPolicyClient, DanglingUntriaged | ExperimentalAsh>
+      policy_client_;
   const raw_ptr<EnrollmentCertificateUploader, ExperimentalAsh>
       certificate_uploader_;
   int num_retries_;

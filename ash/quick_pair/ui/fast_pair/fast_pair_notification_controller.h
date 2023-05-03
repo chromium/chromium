@@ -98,7 +98,8 @@ class FastPairNotificationController {
   // pairing/saving to their account.
   base::OneShotTimer expire_notification_timer_;
 
-  raw_ptr<message_center::MessageCenter, ExperimentalAsh> message_center_;
+  raw_ptr<message_center::MessageCenter, DanglingUntriaged | ExperimentalAsh>
+      message_center_;
 
   base::WeakPtrFactory<FastPairNotificationController> weak_ptr_factory_{this};
 };

@@ -69,7 +69,7 @@ class SplitViewDividerView : public views::View,
   raw_ptr<SplitViewController, ExperimentalAsh> split_view_controller_;
   raw_ptr<SplitViewDividerHandlerView, ExperimentalAsh> divider_handler_view_ =
       nullptr;
-  raw_ptr<SplitViewDivider, ExperimentalAsh> divider_;
+  raw_ptr<SplitViewDivider, DanglingUntriaged | ExperimentalAsh> divider_;
 
   // A vertical 3-dot button that shows on the split view divider when
   // `ShouldAutomaticallyGroupOnWindowsSnappedInClamshell()` is true.

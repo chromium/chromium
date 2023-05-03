@@ -163,7 +163,8 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   std::unique_ptr<views::Widget> backdrop_;
 
   // aura::Window for |backdrop_|.
-  raw_ptr<aura::Window, ExperimentalAsh> backdrop_window_ = nullptr;
+  raw_ptr<aura::Window, DanglingUntriaged | ExperimentalAsh> backdrop_window_ =
+      nullptr;
 
   // The window for which a backdrop has been installed.
   raw_ptr<aura::Window, ExperimentalAsh> window_having_backdrop_ = nullptr;

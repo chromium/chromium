@@ -131,7 +131,7 @@ class AppLaunchSplashScreenHandler
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
-  raw_ptr<ErrorScreen, ExperimentalAsh> error_screen_;
+  raw_ptr<ErrorScreen, DanglingUntriaged | ExperimentalAsh> error_screen_;
 
   // Whether network configure UI is being shown.
   bool network_config_shown_ = false;

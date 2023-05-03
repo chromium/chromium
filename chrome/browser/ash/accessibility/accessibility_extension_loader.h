@@ -56,7 +56,8 @@ class AccessibilityExtensionLoader {
   const base::FilePath::CharType* guest_manifest_filename_;
   base::RepeatingClosure unload_callback_;
 
-  raw_ptr<content::BrowserContext, ExperimentalAsh> browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext, DanglingUntriaged | ExperimentalAsh>
+      browser_context_ = nullptr;
   bool loaded_ = false;
 
   // Whether this extension was reset for kiosk mode.

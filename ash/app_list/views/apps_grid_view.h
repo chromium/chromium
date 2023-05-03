@@ -974,7 +974,8 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // The `AppListConfig` currently used for sizing app list item views within
   // the grid.
-  raw_ptr<const AppListConfig, ExperimentalAsh> app_list_config_ = nullptr;
+  raw_ptr<const AppListConfig, DanglingUntriaged | ExperimentalAsh>
+      app_list_config_ = nullptr;
 
   // The max number of columns the grid can have.
   int max_cols_ = 0;

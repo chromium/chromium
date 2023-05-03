@@ -526,7 +526,8 @@ class WizardController : public OobeUI::Observer {
   static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
-  raw_ptr<BaseScreen, ExperimentalAsh> current_screen_ = nullptr;
+  raw_ptr<BaseScreen, DanglingUntriaged | ExperimentalAsh> current_screen_ =
+      nullptr;
 
   // True if full OOBE flow should be shown.
   bool is_out_of_box_ = false;

@@ -294,8 +294,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   raw_ptr<PhoneHubTray, DanglingUntriaged | ExperimentalAsh> phone_hub_tray_ =
       nullptr;
   raw_ptr<EcheTray, DanglingUntriaged | ExperimentalAsh> eche_tray_ = nullptr;
-  raw_ptr<VideoConferenceTray, ExperimentalAsh> video_conference_tray_ =
-      nullptr;
+  raw_ptr<VideoConferenceTray, DanglingUntriaged | ExperimentalAsh>
+      video_conference_tray_ = nullptr;
   raw_ptr<StopRecordingButtonTray, DanglingUntriaged | ExperimentalAsh>
       stop_recording_button_tray_ = nullptr;
   raw_ptr<ProjectorAnnotationTray, DanglingUntriaged | ExperimentalAsh>

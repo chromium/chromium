@@ -65,10 +65,11 @@ class LookupKeyUploader : public CloudPolicyStore::Observer {
   void SetClock(base::Clock* clock) { clock_ = clock; }
 
   raw_ptr<DeviceCloudPolicyStoreAsh, ExperimentalAsh> policy_store_;
-  raw_ptr<PrefService, ExperimentalAsh> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> prefs_;
   raw_ptr<ash::attestation::EnrollmentCertificateUploader, ExperimentalAsh>
       certificate_uploader_;
-  raw_ptr<ash::CryptohomeMiscClient, ExperimentalAsh> cryptohome_misc_client_;
+  raw_ptr<ash::CryptohomeMiscClient, DanglingUntriaged | ExperimentalAsh>
+      cryptohome_misc_client_;
 
   // Whether we need to upload the lookup key right now. By default, it is set
   // to true. Later, it is set to false after first successful upload or finding
