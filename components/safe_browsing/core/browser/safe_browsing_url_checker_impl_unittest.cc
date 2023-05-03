@@ -431,6 +431,8 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
   std::unique_ptr<SafeBrowsingUrlCheckerImpl> CreateSafeBrowsingUrlChecker(
       bool url_real_time_lookup_enabled,
       bool can_check_safe_browsing_db,
+      network::mojom::RequestDestination request_destination =
+          network::mojom::RequestDestination::kDocument,
       bool is_lookup_mechanism_experiment_enabled = false) {
     base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
         mock_web_contents_getter;
@@ -448,8 +450,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
           base::TimeTicks::Now());
     }
     return std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        net::HttpRequestHeaders(), /*load_flags=*/0,
-        network::mojom::RequestDestination::kDocument,
+        net::HttpRequestHeaders(), /*load_flags=*/0, request_destination,
         /*has_user_gesture=*/false, url_checker_delegate_,
         mock_web_contents_getter.Get(), UnsafeResource::kNoRenderProcessId,
         UnsafeResource::kNoRenderFrameId, UnsafeResource::kNoFrameTreeNodeId,
@@ -832,6 +833,28 @@ TEST_F(SafeBrowsingUrlCheckerTest,
 }
 
 TEST_F(SafeBrowsingUrlCheckerTest,
+       CheckUrl_UrlRealTimeEnabledSafeBrowsingDisabled_Subresource) {
+  auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
+      /*url_real_time_lookup_enabled=*/true,
+      /*can_check_safe_browsing_db=*/false,
+      /*request_destination=*/network::mojom::RequestDestination::kScript);
+
+  GURL url("https://example.test/");
+
+  base::MockCallback<SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback>
+      callback;
+  EXPECT_CALL(callback, Run(_, /*proceed=*/true, /*showed_interstitial=*/false,
+                            /*did_perform_url_real_time_check=*/false,
+                            /*did_check_url_real_time_allowlist=*/false));
+  EXPECT_CALL(*url_checker_delegate_,
+              StartDisplayingBlockingPageHelper(_, _, _, _, _))
+      .Times(0);
+  safe_browsing_url_checker->CheckUrl(url, "GET", callback.Get());
+
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(SafeBrowsingUrlCheckerTest,
        CheckUrl_UrlRealTimeEnabledRedirectUrlsSafe) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
@@ -975,6 +998,7 @@ TEST_F(SafeBrowsingUrlCheckerTest, CheckUrl_SafeUrl_LookupMechanismExperiment) {
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/false,
       /*can_check_safe_browsing_db=*/true,
+      /*request_destination=*/network::mojom::RequestDestination::kDocument,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
@@ -1012,6 +1036,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
+      /*request_destination=*/network::mojom::RequestDestination::kDocument,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
@@ -1054,6 +1079,7 @@ TEST_F(
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
+      /*request_destination=*/network::mojom::RequestDestination::kDocument,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
@@ -1096,6 +1122,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
+      /*request_destination=*/network::mojom::RequestDestination::kDocument,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   GURL url("https://example.test/");
@@ -1148,6 +1175,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
   auto safe_browsing_url_checker = CreateSafeBrowsingUrlChecker(
       /*url_real_time_lookup_enabled=*/true,
       /*can_check_safe_browsing_db=*/true,
+      /*request_destination=*/network::mojom::RequestDestination::kDocument,
       /*is_lookup_mechanism_experiment_enabled=*/true);
 
   std::set<MechanismExperimentHashDatabaseCache> cache_selections = {

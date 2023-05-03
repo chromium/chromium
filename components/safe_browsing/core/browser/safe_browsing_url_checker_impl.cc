@@ -552,8 +552,7 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
               &SafeBrowsingUrlCheckerImpl::OnUrlResultAndMaybeDeleteSelf,
               weak_factory_.GetWeakPtr()),
           url, url_checker_delegate_->GetThreatTypes(), request_destination_,
-          database_manager_, can_check_db_,
-          can_check_high_confidence_allowlist_,
+          database_manager_, can_check_high_confidence_allowlist_,
           url_lookup_service_metric_suffix_, last_committed_url_,
           url_lookup_service_on_ui_, webui_delegate_,
           hash_realtime_service_on_ui_);
@@ -566,10 +565,15 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
           ui_task_runner_, url_lookup_service_on_ui_, webui_delegate_,
           MechanismExperimentHashDatabaseCache::kNoExperiment);
     }
+  } else if (!can_check_db_) {
+    return SafeBrowsingLookupMechanism::StartCheckResult(
+        /*is_safe_synchronously=*/true,
+        /*did_check_url_real_time_allowlist=*/false,
+        /*matched_high_confidence_allowlist=*/absl::nullopt);
   } else {
     lookup_mechanism = std::make_unique<HashDatabaseMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
-        can_check_db_, MechanismExperimentHashDatabaseCache::kNoExperiment);
+        MechanismExperimentHashDatabaseCache::kNoExperiment);
   }
   lookup_mechanism_runner_ =
       std::make_unique<SafeBrowsingLookupMechanismRunner>(

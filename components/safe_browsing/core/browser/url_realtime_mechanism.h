@@ -136,6 +136,11 @@ class UrlRealTimeMechanism : public SafeBrowsingLookupMechanism {
   // sufficient since real time check only happens on main frame url.
   int url_web_ui_token_ = -1;
 
+  // Whether safe browsing database can be checked. It is set to false when
+  // enterprise real time URL lookup is enabled and safe browsing is disabled
+  // for this profile.
+  bool can_check_db_;
+
   // Whether the high confidence allowlist can be checked. It is set to
   // false when enterprise real time URL lookup is enabled.
   bool can_check_high_confidence_allowlist_;

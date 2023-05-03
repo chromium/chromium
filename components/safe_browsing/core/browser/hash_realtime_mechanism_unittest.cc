@@ -212,14 +212,12 @@ class HashRealTimeMechanismTest : public PlatformTest {
   }
 
   std::unique_ptr<HashRealTimeMechanism> CreateHashRealTimeMechanism(
-      GURL& url,
-      bool can_check_db) {
+      GURL& url) {
     base::MockCallback<base::RepeatingCallback<content::WebContents*()>>
         mock_web_contents_getter;
     return std::make_unique<HashRealTimeMechanism>(
         url, SBThreatTypeSet({safe_browsing::SB_THREAT_TYPE_URL_PHISHING}),
-        database_manager_, can_check_db,
-        base::SequencedTaskRunner::GetCurrentDefault(),
+        database_manager_, base::SequencedTaskRunner::GetCurrentDefault(),
         hash_rt_service_->GetWeakPtr(),
         MechanismExperimentHashDatabaseCache::kNoExperiment);
   }
@@ -301,25 +299,9 @@ TEST_F(HashRealTimeMechanismTest, CanCheckUrl_HashRealTime) {
   EXPECT_FALSE(can_check_url("https://e./path"));
 }
 
-TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_CantCheckDb) {
-  GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/false);
-  base::MockCallback<SafeBrowsingLookupMechanism::CompleteCheckResultCallback>
-      callback;
-  auto result = mechanism->StartCheck(callback.Get());
-  EXPECT_CALL(callback, Run(testing::_)).Times(0);
-  EXPECT_EQ(result.did_check_url_real_time_allowlist, false);
-  EXPECT_EQ(result.is_safe_synchronously, true);
-  EXPECT_EQ(result.matched_high_confidence_allowlist, false);
-
-  task_environment_.RunUntilIdle();
-  CheckHashRealTimeMetrics(/*expected_local_match_result=*/absl::nullopt,
-                           /*expected_is_service_found=*/absl::nullopt);
-}
-
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                          /*delayed_callback=*/false);
   database_manager_->SetAllowlistResultForUrl(url, true);
@@ -342,7 +324,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchSafe) {
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
   database_manager_->SetAllowlistResultForUrl(url, true);
@@ -365,7 +347,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_AllowlistMatchUnsafe) {
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_SAFE,
                                         SB_THREAT_TYPE_SAFE,
                                         /*should_fail_lookup=*/false);
@@ -390,7 +372,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_SafeLookup) {
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                         SB_THREAT_TYPE_URL_UNWANTED,
                                         /*should_fail_lookup=*/false);
@@ -416,7 +398,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsafeLookup) {
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_.reset();
   database_manager_->SetThreatTypeForUrl(url, SB_THREAT_TYPE_URL_PHISHING,
                                          /*delayed_callback=*/false);
@@ -440,7 +422,7 @@ TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_MissingService) {
 
 TEST_F(HashRealTimeMechanismTest, CheckUrl_HashRealTime_UnsuccessfulLookup) {
   GURL url("https://example.test/");
-  auto mechanism = CreateHashRealTimeMechanism(url, /*can_check_db=*/true);
+  auto mechanism = CreateHashRealTimeMechanism(url);
   hash_rt_service_->SetThreatTypeForUrl(url, absl::nullopt,
                                         SB_THREAT_TYPE_URL_MALWARE,
                                         /*should_fail_lookup=*/true);

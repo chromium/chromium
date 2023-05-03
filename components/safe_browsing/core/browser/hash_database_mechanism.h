@@ -20,7 +20,6 @@ class HashDatabaseMechanism : public SafeBrowsingLookupMechanism,
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      bool can_check_db,
       MechanismExperimentHashDatabaseCache experiment_cache_selection);
 
   HashDatabaseMechanism(const HashDatabaseMechanism&) = delete;
@@ -29,16 +28,14 @@ class HashDatabaseMechanism : public SafeBrowsingLookupMechanism,
 
  private:
   // SafeBrowsingLookupMechanism implementation:
+  // Calls |CheckBrowseUrl| on the database manager and sets
+  // is_async_database_manager_check_in_progress_ if the check is asynchronous.
   StartCheckResult StartCheckInternal() override;
 
   // SafeBrowsingDatabaseManager::Client implementation:
   void OnCheckBrowseUrlResult(const GURL& url,
                               SBThreatType threat_type,
                               const ThreatMetadata& metadata) override;
-
-  // Calls |CheckBrowseUrl| on the database manager and sets
-  // is_async_database_manager_check_in_progress_ if the check is asynchronous.
-  bool CallCheckBrowseUrl();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

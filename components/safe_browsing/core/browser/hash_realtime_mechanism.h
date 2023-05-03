@@ -22,7 +22,6 @@ class HashRealTimeMechanism : public SafeBrowsingLookupMechanism {
       const GURL& url,
       const SBThreatTypeSet& threat_types,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      bool can_check_db,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       base::WeakPtr<HashRealTimeService> lookup_service_on_ui,
       MechanismExperimentHashDatabaseCache experiment_cache_selection);

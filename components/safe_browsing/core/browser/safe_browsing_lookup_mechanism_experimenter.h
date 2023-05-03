@@ -59,7 +59,6 @@ class SafeBrowsingLookupMechanismExperimenter
       const SBThreatTypeSet& threat_types,
       network::mojom::RequestDestination request_destination,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
-      bool can_check_db,
       bool can_check_high_confidence_allowlist,
       std::string url_lookup_service_metric_suffix,
       const GURL& last_committed_url,

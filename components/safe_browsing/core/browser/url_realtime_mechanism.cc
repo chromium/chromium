@@ -55,9 +55,9 @@ UrlRealTimeMechanism::UrlRealTimeMechanism(
     : SafeBrowsingLookupMechanism(url,
                                   threat_types,
                                   database_manager,
-                                  can_check_db,
                                   experiment_cache_selection),
       request_destination_(request_destination),
+      can_check_db_(can_check_db),
       can_check_high_confidence_allowlist_(can_check_high_confidence_allowlist),
       url_lookup_service_metric_suffix_(url_lookup_service_metric_suffix),
       last_committed_url_(last_committed_url),
@@ -278,14 +278,18 @@ void UrlRealTimeMechanism::PerformHashBasedCheck(
     const GURL& url,
     bool real_time_request_failed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  hash_database_mechanism_ = std::make_unique<HashDatabaseMechanism>(
-      url, threat_types_, database_manager_, can_check_db_,
-      experiment_cache_selection_);
-  auto result = hash_database_mechanism_->StartCheck(
-      base::BindOnce(&UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
-                     weak_factory_.GetWeakPtr(), real_time_request_failed));
-  if (result.is_safe_synchronously) {
+  bool is_safe_synchronously = false;
+  if (can_check_db_) {
+    hash_database_mechanism_ = std::make_unique<HashDatabaseMechanism>(
+        url, threat_types_, database_manager_, experiment_cache_selection_);
+    is_safe_synchronously =
+        hash_database_mechanism_
+            ->StartCheck(base::BindOnce(
+                &UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResult,
+                weak_factory_.GetWeakPtr(), real_time_request_failed))
+            .is_safe_synchronously;
+  }
+  if (is_safe_synchronously || !can_check_db_) {
     // No match found in the database, so conclude this is safe.
     OnHashDatabaseCompleteCheckResultInternal(
         SB_THREAT_TYPE_SAFE, ThreatMetadata(), real_time_request_failed);
