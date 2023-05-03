@@ -158,6 +158,12 @@ class DownloadToolbarButtonView : public ToolbarButton,
   // the bottom right corner of this view's bounds.
   raw_ptr<views::ImageView> badge_image_view_ = nullptr;
 
+  // Maps number of in-progress downloads to the corresponding tooltip text, to
+  // avoid having to create the strings repeatedly. The entry for 0 is the
+  // default tooltip ("Downloads"), the entries for larger numbers are the
+  // tooltips for N in-progress downloads ("N downloads in progress").
+  std::map<int, std::u16string> tooltip_texts_;
+
   // Override for the icon color. Used for PWAs, which don't have full
   // ThemeProvider color support.
   absl::optional<SkColor> icon_color_;

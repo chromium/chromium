@@ -136,7 +136,8 @@ DownloadToolbarButtonView::DownloadToolbarButtonView(BrowserView* browser_view)
                      : kDownloadToolbarButtonIcon,
                  kDownloadToolbarButtonIcon);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
+  tooltip_texts_[0] = l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON);
+  SetTooltipText(tooltip_texts_.at(0));
   SetVisible(false);
   SetProperty(views::kElementIdentifierKey, kDownloadToolbarButtonElementId);
 
@@ -365,15 +366,16 @@ void DownloadToolbarButtonView::UpdateIcon() {
                     GetColorProvider()->GetColor(kColorToolbar)));
 
   // Update the toolbar button's tooltip.
-  if (progress_download_count == 0) {
-    // "Downloads".
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_DOWNLOAD_ICON));
-  } else {
+  std::u16string& tooltip_for_progress_count =
+      tooltip_texts_[progress_download_count];
+  if (tooltip_for_progress_count.empty()) {
+    // We already initialized the text for 0 downloads in the constructor.
+    CHECK_GT(progress_download_count, 0);
     // "1 download in progress" or "N downloads in progress".
-    SetTooltipText(l10n_util::GetPluralStringFUTF16(
-        IDS_DOWNLOAD_BUBBLE_TOOLTIP_IN_PROGRESS_COUNT,
-        progress_download_count));
+    tooltip_for_progress_count = l10n_util::GetPluralStringFUTF16(
+        IDS_DOWNLOAD_BUBBLE_TOOLTIP_IN_PROGRESS_COUNT, progress_download_count);
   }
+  SetTooltipText(tooltip_texts_.at(progress_download_count));
 }
 
 void DownloadToolbarButtonView::Layout() {
