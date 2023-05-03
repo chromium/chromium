@@ -5,6 +5,7 @@
 /**
  * @fileoverview Script that runs on the background page.
  */
+import {ContentScriptBridge} from '../common/content_script_bridge.js';
 import {QueueMode, TtsSpeechProperties} from '../common/tts_types.js';
 
 import {ChromeVox} from './chromevox.js';
@@ -15,6 +16,8 @@ import {InjectedScriptLoader} from './injected_script_loader.js';
  */
 export class ChromeVoxBackground {
   constructor() {
+    this.addBridgeListener();
+
     this.injectContentScriptForGoogleDocs_();
   }
 
@@ -63,8 +66,27 @@ export class ChromeVoxBackground {
         new TtsSpeechProperties(msg['properties']));
   }
 
+  /**
+   * Listen for connections from our content script bridges, and dispatch the
+   * messages to the proper destination.
+   */
+  addBridgeListener() {
+    ContentScriptBridge.addMessageListener((msg, port) => {
+      if (msg['target'] !== 'TTS') {
+        return;
+      }
+
+      try {
+        this.onTtsMessage(msg);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+  }
+
   /** Initializes classic background object. */
   static init() {
+    ContentScriptBridge.init();
     const background = new ChromeVoxBackground();
   }
 }
