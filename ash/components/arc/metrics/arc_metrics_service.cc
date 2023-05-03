@@ -505,12 +505,9 @@ void ArcMetricsService::OnArcStartTimeRetrieved(
   for (const auto& event : events) {
     VLOG(2) << "Report boot progress event:" << event->event << "@"
             << event->uptimeMillis;
-    const std::string name = "Arc." + event->event + suffix;
     const base::TimeTicks uptime =
         base::Milliseconds(event->uptimeMillis) + base::TimeTicks();
     const base::TimeDelta elapsed_time = uptime - arc_start_time.value();
-    base::UmaHistogramCustomTimes(name, elapsed_time, kUmaMinTime, kUmaMaxTime,
-                                  kUmaNumBuckets);
     if (event->event.compare(kBootProgressEnableScreen) == 0) {
       base::UmaHistogramCustomTimes("Arc.AndroidBootTime" + suffix,
                                     elapsed_time, kUmaMinTime, kUmaMaxTime,
