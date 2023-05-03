@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/dbus/missive/fake_missive_client.h"
 #include "components/reporting/proto/synced/interface.pb.h"
@@ -26,6 +27,7 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "google_apis/google_api_keys.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -39,6 +41,27 @@ using reporting::Status;
 namespace {
 
 MissiveClient* g_instance = nullptr;
+
+// Returns `false` if the api_key is empty or known to be used for testing
+// purposes, or by devices that are running unofficial builds.
+bool IsApiKeyAccepted(base::StringPiece api_key) {
+  static constexpr const char* kBlockListedKeys[] = {
+      "dummykey", "dummytoken",
+      // More keys or key fragments can be added.
+  };
+  if (api_key.empty()) {
+    LOG(ERROR) << "API Key is empty";
+    return false;
+  }
+  const std::string lowercase_api_key = base::ToLowerASCII(api_key);
+  for (const auto* key : kBlockListedKeys) {
+    if (lowercase_api_key.find(key) != std::string::npos) {
+      LOG(ERROR) << "API Key is block-listed: " << api_key;
+      return false;
+    }
+  }
+  return true;
+}
 
 class MissiveClientImpl : public MissiveClient {
  public:
@@ -66,6 +89,12 @@ class MissiveClientImpl : public MissiveClient {
                      base::OnceCallback<void(reporting::Status)>
                          completion_callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+    if (is_disabled()) {
+      std::move(completion_callback)
+          .Run(reporting::Status(reporting::error::FAILED_PRECONDITION,
+                                 "Reporting disabled, unsupported API Key"));
+      return;
+    }
     auto delegate = std::make_unique<EnqueueRecordDelegate>(
         priority, std::move(record), this, std::move(completion_callback));
     client_.MaybeMakeCall(std::move(delegate));
@@ -75,6 +104,12 @@ class MissiveClientImpl : public MissiveClient {
              base::OnceCallback<void(reporting::Status)> completion_callback)
       override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+    if (is_disabled()) {
+      std::move(completion_callback)
+          .Run(reporting::Status(reporting::error::FAILED_PRECONDITION,
+                                 "Reporting disabled, unsupported API Key"));
+      return;
+    }
     auto delegate = std::make_unique<FlushDelegate>(
         priority, this, std::move(completion_callback));
     client_.MaybeMakeCall(std::move(delegate));
@@ -83,6 +118,9 @@ class MissiveClientImpl : public MissiveClient {
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+    if (is_disabled()) {
+      return;
+    }
     auto delegate =
         std::make_unique<UpdateEncryptionKeyDelegate>(encryption_info, this);
     client_.MaybeMakeCall(std::move(delegate));
@@ -91,6 +129,9 @@ class MissiveClientImpl : public MissiveClient {
   void ReportSuccess(const reporting::SequenceInformation& sequence_information,
                      bool force_confirm) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+    if (is_disabled()) {
+      return;
+    }
     auto delegate = std::make_unique<ReportSuccessDelegate>(
         sequence_information, force_confirm, this);
     client_.MaybeMakeCall(std::move(delegate));
@@ -296,11 +337,14 @@ class MissiveClientImpl : public MissiveClient {
   void OwnerChanged(const std::string& old_owner,
                     const std::string& new_owner) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
-    client_.SetAvailability(/*is_available=*/!new_owner.empty());
+    ServerAvailable(/*service_is_available=*/!new_owner.empty());
   }
 
   void ServerAvailable(bool service_is_available) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+    if (is_disabled_ && IsApiKeyAccepted(google_apis::GetAPIKey())) {
+      is_disabled_ = false;
+    }
     client_.SetAvailability(/*is_available=*/service_is_available);
   }
 
@@ -322,6 +366,11 @@ MissiveClient::MissiveClient() {
 MissiveClient::~MissiveClient() {
   DCHECK_EQ(this, g_instance);
   g_instance = nullptr;
+}
+
+bool MissiveClient::is_disabled() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(origin_checker_);
+  return is_disabled_;
 }
 
 scoped_refptr<base::SequencedTaskRunner> MissiveClient::origin_task_runner()
