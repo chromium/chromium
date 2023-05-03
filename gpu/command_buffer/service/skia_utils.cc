@@ -53,6 +53,10 @@ void CleanupAfterSkiaFlush(void* context) {
   delete flush_context;
 }
 
+void CleanupAfterGraphiteRecording(void* context, skgpu::CallbackResult) {
+  CleanupAfterSkiaFlush(context);
+}
+
 template <class T>
 void DeleteSkObject(SharedContextState* context_state, sk_sp<T> sk_object) {
   DCHECK(sk_object && sk_object->unique());
@@ -194,14 +198,31 @@ void AddCleanupTaskForSkiaFlush(base::OnceClosure task,
                                 GrFlushInfo* flush_info) {
   FlushCleanupContext* context;
   if (!flush_info->fFinishedProc) {
-    DCHECK(!flush_info->fFinishedContext);
+    CHECK(!flush_info->fFinishedContext);
     flush_info->fFinishedProc = &CleanupAfterSkiaFlush;
     context = new FlushCleanupContext();
     flush_info->fFinishedContext = context;
   } else {
-    DCHECK_EQ(flush_info->fFinishedProc, &CleanupAfterSkiaFlush);
-    DCHECK(flush_info->fFinishedContext);
+    CHECK_EQ(flush_info->fFinishedProc, &CleanupAfterSkiaFlush);
+    CHECK(flush_info->fFinishedContext);
     context = static_cast<FlushCleanupContext*>(flush_info->fFinishedContext);
+  }
+  context->cleanup_tasks.push_back(std::move(task));
+}
+
+void AddCleanupTaskForGraphiteRecording(
+    base::OnceClosure task,
+    skgpu::graphite::InsertRecordingInfo* info) {
+  FlushCleanupContext* context;
+  if (!info->fFinishedProc) {
+    CHECK(!info->fFinishedContext);
+    info->fFinishedProc = &CleanupAfterGraphiteRecording;
+    context = new FlushCleanupContext();
+    info->fFinishedContext = context;
+  } else {
+    CHECK_EQ(info->fFinishedProc, &CleanupAfterGraphiteRecording);
+    CHECK(info->fFinishedContext);
+    context = static_cast<FlushCleanupContext*>(info->fFinishedContext);
   }
   context->cleanup_tasks.push_back(std::move(task));
 }

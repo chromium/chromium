@@ -30,7 +30,7 @@ class SkSurface;
 
 namespace base {
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace gfx {
 class Rect;
@@ -43,9 +43,14 @@ class MemoryTracker;
 class MemoryTypeTracker;
 }  // namespace gpu
 
+namespace skgpu::graphite {
+class Context;
+class Recording;
+}  // namespace skgpu::graphite
+
 namespace ui {
 class LatencyTracker;
-}
+}  // namespace ui
 
 namespace viz {
 
@@ -68,6 +73,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
     // This can be null.
     SkSurface* sk_surface() const { return sk_surface_; }
     SkCanvas* GetCanvas();
+
+    // Ganesh
     GrSemaphoresSubmitted Flush(VulkanContextProvider* vulkan_context_provider,
                                 std::vector<GrBackendSemaphore> end_semaphores,
                                 base::OnceClosure on_finished);
@@ -75,6 +82,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
               const GrBackendSemaphore wait_semaphores[],
               bool delete_semaphores_after_wait);
     bool Draw(sk_sp<const SkDeferredDisplayList> ddl);
+
+    // Graphite
+    bool Draw(std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+              base::OnceClosure on_finished);
 
     std::vector<GrBackendSemaphore> TakeEndPaintSemaphores() {
       std::vector<GrBackendSemaphore> semaphores;
@@ -97,6 +108,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
                                    gfx::GpuFenceHandle release_fence)>;
   SkiaOutputDevice(
       GrDirectContext* gr_context,
+      skgpu::graphite::Context* graphite_context,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
 
@@ -227,6 +239,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
                     bool delete_semaphores_after_wait);
   virtual bool Draw(SkSurface* sk_surface,
                     sk_sp<const SkDeferredDisplayList> ddl);
+  virtual bool Draw(
+      SkSurface* sk_surface,
+      std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
+      base::OnceClosure on_finished);
 
   // Helper method for SwapBuffers() and PostSubBuffer(). It should be called
   // at the beginning of SwapBuffers() and PostSubBuffer() implementations
@@ -242,7 +258,9 @@ class VIZ_SERVICE_EXPORT SkiaOutputDevice {
       std::vector<gpu::Mailbox> released_overlays = {},
       const gpu::Mailbox& primary_plane_mailbox = gpu::Mailbox());
 
+  // TODO(crbug.com/1442268): Reset device on context loss to fix dangling ptr.
   const raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_;
+  const raw_ptr<skgpu::graphite::Context> graphite_context_;
 
   OutputSurface::Capabilities capabilities_;
 

@@ -21,6 +21,7 @@ SkiaOutputDeviceVulkanSecondaryCB::SkiaOutputDeviceVulkanSecondaryCB(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_provider->GetGrContext(),
+                       /*graphite_context=*/nullptr,
                        memory_tracker,
                        std::move(did_swap_buffer_complete_callback)),
       context_provider_(context_provider) {

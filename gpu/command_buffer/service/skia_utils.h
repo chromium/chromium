@@ -78,6 +78,11 @@ GPU_GLES2_EXPORT bool GetGrBackendTexture(
 GPU_GLES2_EXPORT void AddCleanupTaskForSkiaFlush(base::OnceClosure task,
                                                  GrFlushInfo* flush_info);
 
+// Adds a task to be executed when the recording in |info| finishes on the GPU.
+GPU_GLES2_EXPORT void AddCleanupTaskForGraphiteRecording(
+    base::OnceClosure task,
+    skgpu::graphite::InsertRecordingInfo* info);
+
 // Helper which associates cleanup callbacks with a Skia GrFlushInfo's callback.
 // Is a no-op if |context_provider| is null.
 GPU_GLES2_EXPORT void AddVulkanCleanupTaskForSkiaFlush(

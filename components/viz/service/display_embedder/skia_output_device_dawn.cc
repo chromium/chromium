@@ -34,7 +34,8 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     gfx::SurfaceOrigin origin,
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
-    : SkiaOutputDevice(context_provider->GetGrContext(),
+    : SkiaOutputDevice(/*gr_context=*/nullptr,
+                       context_provider->GetGraphiteContext(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       context_provider_(context_provider) {

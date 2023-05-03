@@ -26,6 +26,7 @@ SkiaOutputDeviceOffscreen::SkiaOutputDeviceOffscreen(
     gpu::MemoryTracker* memory_tracker,
     DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
     : SkiaOutputDevice(context_state->gr_context(),
+                       context_state->graphite_context(),
                        memory_tracker,
                        did_swap_buffer_complete_callback),
       context_state_(context_state),
