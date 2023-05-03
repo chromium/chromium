@@ -5,14 +5,15 @@
 #ifndef SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_MAC_H_
 #define SERVICES_SHAPE_DETECTION_BARCODE_DETECTION_IMPL_MAC_H_
 
-#include <os/availability.h>
-
 #include <vector>
 
-#include "base/mac/scoped_nsobject.h"
 #include "services/shape_detection/public/mojom/barcodedetection.mojom.h"
 #include "services/shape_detection/public/mojom/barcodedetection_provider.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class CIDetector;
 
@@ -39,7 +40,7 @@ class BarcodeDetectionImplMac
   GetSupportedSymbologies();
 
  private:
-  base::scoped_nsobject<CIDetector> detector_;
+  CIDetector* __strong detector_;
 };
 
 }  // namespace shape_detection

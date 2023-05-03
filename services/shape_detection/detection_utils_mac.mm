@@ -19,31 +19,33 @@
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace shape_detection {
 
-base::scoped_nsobject<CIImage> CreateCIImageFromSkBitmap(
-    const SkBitmap& bitmap) {
+CIImage* CIImageFromSkBitmap(const SkBitmap& bitmap) {
   base::CheckedNumeric<uint32_t> num_pixels =
       base::CheckedNumeric<uint32_t>(bitmap.width()) * bitmap.height();
   base::CheckedNumeric<uint32_t> num_bytes = num_pixels * 4;
   if (!num_bytes.IsValid()) {
     DLOG(ERROR) << "Data overflow";
-    return base::scoped_nsobject<CIImage>();
+    return nil;
   }
 
   // First convert SkBitmap to CGImageRef.
   base::ScopedCFTypeRef<CGImageRef> cg_image(
-      SkCreateCGImageRefWithColorspace(bitmap, NULL));
+      SkCreateCGImageRefWithColorspace(bitmap, nullptr));
   if (!cg_image) {
     DLOG(ERROR) << "Failed to create CGImageRef";
-    return base::scoped_nsobject<CIImage>();
+    return nil;
   }
 
-  base::scoped_nsobject<CIImage> ci_image(
-      [[CIImage alloc] initWithCGImage:cg_image]);
+  CIImage* ci_image = [[CIImage alloc] initWithCGImage:cg_image];
   if (!ci_image) {
     DLOG(ERROR) << "Failed to create CIImage";
-    return base::scoped_nsobject<CIImage>();
+    return nil;
   }
   return ci_image;
 }
@@ -82,12 +84,12 @@ VisionAPIAsyncRequestMac::VisionAPIAsyncRequestMac(
     task_runner->PostTask(FROM_HERE, base::BindOnce(callback_, request, error));
   };
 
-  request_.reset([[request_class alloc] initWithCompletionHandler:handler]);
+  request_ = [[request_class alloc] initWithCompletionHandler:handler];
 
   // Pass symbology hints to request. Only valid for VNDetectBarcodesRequest.
   if ([symbology_hints count] > 0) {
     VNDetectBarcodesRequest* barcode_request =
-        base::mac::ObjCCastStrict<VNDetectBarcodesRequest>(request_.get());
+        base::mac::ObjCCastStrict<VNDetectBarcodesRequest>(request_);
     barcode_request.symbologies = symbology_hints;
   }
 }
@@ -97,14 +99,14 @@ VisionAPIAsyncRequestMac::~VisionAPIAsyncRequestMac() = default;
 // Processes asynchronously an image analysis request and returns results with
 // |callback_| when the asynchronous request completes.
 bool VisionAPIAsyncRequestMac::PerformRequest(const SkBitmap& bitmap) {
-  base::scoped_nsobject<CIImage> ci_image = CreateCIImageFromSkBitmap(bitmap);
+  CIImage* ci_image = CIImageFromSkBitmap(bitmap);
   if (!ci_image) {
     DLOG(ERROR) << "Failed to create image from SkBitmap";
     return false;
   }
 
-  base::scoped_nsobject<VNImageRequestHandler> image_handler(
-      [[VNImageRequestHandler alloc] initWithCIImage:ci_image options:@{}]);
+  VNImageRequestHandler* image_handler =
+      [[VNImageRequestHandler alloc] initWithCIImage:ci_image options:@{}];
   if (!image_handler) {
     DLOG(ERROR) << "Failed to create image request handler";
     return false;
@@ -113,9 +115,10 @@ bool VisionAPIAsyncRequestMac::PerformRequest(const SkBitmap& bitmap) {
   dispatch_async(
       dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSError* ns_error = nil;
-        if ([image_handler performRequests:@[ request_ ] error:&ns_error])
+        if ([image_handler performRequests:@[ request_ ] error:&ns_error]) {
           return;
-        DLOG(ERROR) << base::SysNSStringToUTF8([ns_error localizedDescription]);
+        }
+        DLOG(ERROR) << base::SysNSStringToUTF8(ns_error.localizedDescription);
       });
   return true;
 }

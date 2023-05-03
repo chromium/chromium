@@ -70,6 +70,7 @@ source_set("lib") {
       "barcode_detection_provider_mac.h",
       "barcode_detection_provider_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   } else if (is_android) {
     # No C++ sources needed, barcode detection is provided by Java.
   } else if (use_barhopper) {
@@ -154,6 +155,7 @@ source_set("tests") {
       "CoreGraphics.framework",
       "QuartzCore.framework",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (is_win) {
     sources += [

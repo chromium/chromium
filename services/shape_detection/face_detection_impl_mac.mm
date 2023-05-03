@@ -7,6 +7,10 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "services/shape_detection/detection_utils_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace shape_detection {
 
 FaceDetectionImplMac::FaceDetectionImplMac(
@@ -16,16 +20,16 @@ FaceDetectionImplMac::FaceDetectionImplMac(
   // The CIDetectorMaxFeatureCount option introduced in Mac OS SDK 10.12 can
   // only be used with Rectangle Detectors.
   NSDictionary* const detector_options = @{CIDetectorAccuracy : accuracy};
-  detector_.reset([[CIDetector detectorOfType:CIDetectorTypeFace
-                                      context:nil
-                                      options:detector_options] retain]);
+  detector_ = [CIDetector detectorOfType:CIDetectorTypeFace
+                                 context:nil
+                                 options:detector_options];
 }
 
-FaceDetectionImplMac::~FaceDetectionImplMac() {}
+FaceDetectionImplMac::~FaceDetectionImplMac() = default;
 
 void FaceDetectionImplMac::Detect(const SkBitmap& bitmap,
                                   DetectCallback callback) {
-  base::scoped_nsobject<CIImage> ci_image = CreateCIImageFromSkBitmap(bitmap);
+  CIImage* ci_image = CIImageFromSkBitmap(bitmap);
   if (!ci_image) {
     std::move(callback).Run({});
     return;
