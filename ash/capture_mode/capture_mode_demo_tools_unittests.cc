@@ -55,7 +55,6 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -253,9 +252,9 @@ TEST_F(CaptureModeDemoToolsTest, ConsiderKeyEvent) {
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
-  views::ToggleButton* toggle_button = CaptureModeSettingsTestApi()
-                                           .GetDemoToolsMenuToggleButton()
-                                           ->toggle_button();
+  Switch* toggle_button = CaptureModeSettingsTestApi()
+                              .GetDemoToolsMenuToggleButton()
+                              ->toggle_button();
 
   // The toggle button will be disabled by default, toggle the toggle button to
   // enable the demo tools feature.
@@ -308,9 +307,9 @@ TEST_F(CaptureModeDemoToolsTest, EntryPointTest) {
   auto* event_generator = GetEventGenerator();
   ClickOnView(GetSettingsButton(), event_generator);
   EXPECT_TRUE(GetCaptureModeSettingsWidget());
-  views::ToggleButton* toggle_button = CaptureModeSettingsTestApi()
-                                           .GetDemoToolsMenuToggleButton()
-                                           ->toggle_button();
+  Switch* toggle_button = CaptureModeSettingsTestApi()
+                              .GetDemoToolsMenuToggleButton()
+                              ->toggle_button();
 
   // The toggle button will be disabled by default.
   EXPECT_FALSE(toggle_button->GetIsOn());
@@ -382,9 +381,9 @@ TEST_F(CaptureModeDemoToolsTest, EntryPointFocusCyclerTest) {
   SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/4);
   EXPECT_EQ(FocusGroup::kSettingsMenu, session_test_api.GetCurrentFocusGroup());
 
-  views::ToggleButton* toggle_button = CaptureModeSettingsTestApi()
-                                           .GetDemoToolsMenuToggleButton()
-                                           ->toggle_button();
+  Switch* toggle_button = CaptureModeSettingsTestApi()
+                              .GetDemoToolsMenuToggleButton()
+                              ->toggle_button();
 
   // The demo tools toggle button will be disabled by default.
   EXPECT_FALSE(toggle_button->GetIsOn());
