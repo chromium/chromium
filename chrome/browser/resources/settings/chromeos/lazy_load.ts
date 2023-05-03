@@ -136,8 +136,10 @@ export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_su
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
+export {SettingsInputMethodOptionsPageElement} from './os_languages_page/input_method_options_page.js';
 export {LanguagesBrowserProxyImpl} from './os_languages_page/languages_browser_proxy.js';
 export {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './os_languages_page/languages_metrics_proxy.js';
+export {LanguageState} from './os_languages_page/languages_types.js';
 export {OsSettingsClearPersonalizedDataDialogElement} from './os_languages_page/os_japanese_clear_ime_data_dialog.js';
 export {OsSettingsSmartInputsPageElement} from './os_languages_page/smart_inputs_page.js';
 export {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from './os_people_page/account_manager_browser_proxy.js';

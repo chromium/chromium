@@ -331,7 +331,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'hotspot_summary_item_tests.js',
    {enabled: ['ash::features::kHotspot']},
  ],
- ['InputMethodOptionPage', 'input_method_options_page_test.js'],
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
@@ -504,6 +503,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['OsFilesPageGoogleDrivePage', 'os_files_page/google_drive_page_test.js'],
  ['OsFilesPageOfficePage', 'os_files_page/office_page_test.js'],
  ['OsFilesPageSmbSharesPage', 'os_files_page/smb_shares_page_test.js'],
+ [
+   'OsLanguagesPageInputMethodOptionsPage',
+   'os_languages_page/input_method_options_page_test.js'
+ ],
  [
    'OsLanguagesPageOsClearPersonalizationDataPage',
    'os_languages_page/os_clear_personalization_data_page_test.js'

@@ -90,7 +90,7 @@ type AutocorrectOptionMapKey = keyof typeof AUTOCORRECT_OPTION_MAP_OVERRIDE;
 const SettingsInputMethodOptionsPageElementBase =
     RouteObserverMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
 
-class SettingsInputMethodOptionsPageElement extends
+export class SettingsInputMethodOptionsPageElement extends
     SettingsInputMethodOptionsPageElementBase {
   static get is() {
     return 'settings-input-method-options-page' as const;
