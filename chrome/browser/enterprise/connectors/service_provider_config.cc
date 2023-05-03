@@ -56,20 +56,10 @@ constexpr AnalysisConfig kLocalTestUserAnalysisConfig = {
     .user_specific = true,
 };
 
-constexpr AnalysisConfig kLocalTestSystemAnalysisConfig = {
-    .local_path = "path_system",
-    .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
-    .user_specific = false,
-};
-
-constexpr std::array<const char*, 1> kBrcmChrmCasSubjectNames = {
-    {"Broadcom Inc"}};
-
 constexpr AnalysisConfig kBrcmChrmCasAnalysisConfig = {
     .local_path = "brcm_chrm_cas",
     .supported_tags = base::span<const SupportedTag>(kBrcmChrmCasSupportedTags),
     .user_specific = false,
-    .subject_names = base::span<const char* const>(kBrcmChrmCasSubjectNames),
 };
 
 constexpr ReportingConfig kGoogleReportingConfig = {
@@ -98,17 +88,20 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
                   .analysis = &kLocalTestUserAnalysisConfig,
               },
           },
+          // Temporary code(b/268532118): Once DM server no longer sends
+          // this value as a service_provider name, this block can be
+          // removed.
           {
               "local_system_agent",
               {
                   .display_name = "Test system agent",
-                  .analysis = &kLocalTestSystemAnalysisConfig,
+                  .analysis = &kBrcmChrmCasAnalysisConfig,
               },
           },
           {
               "brcm_chrm_cas",
               {
-                  .display_name = "brcm_chrm_cas",
+                  .display_name = "Broadcom Inc",
                   .analysis = &kBrcmChrmCasAnalysisConfig,
               },
           },
