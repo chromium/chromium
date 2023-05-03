@@ -391,8 +391,7 @@ class DownloadProtectionServiceTestBase
                             base::BindRepeating(&BuildRealtimeReportingClient));
     client_ = std::make_unique<policy::MockCloudPolicyClient>();
 
-    SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
     ASSERT_TRUE(testing_profile_manager_.SetUp());
 

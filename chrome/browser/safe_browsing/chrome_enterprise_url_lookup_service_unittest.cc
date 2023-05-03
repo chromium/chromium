@@ -238,7 +238,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
   ReferrerChain returned_referrer_chain;
   EXPECT_CALL(*referrer_chain_provider_,
               IdentifyReferrerChainByPendingEventURL(_, _, _))
@@ -277,7 +277,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestCanCheckSafeBrowsingHighConfidenceAllowlist_BypassAllowlistFeature) {
   test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
-  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+  SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
 
   // Can check allowlist if SafeBrowsingEnterpriseRealTimeUrlCheckMode is
   // disabled.
