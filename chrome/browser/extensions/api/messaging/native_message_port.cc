@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/serialization_format.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
 
@@ -115,11 +116,31 @@ void NativeMessagePort::DispatchOnMessage(const Message& message) {
 void NativeMessagePort::PostMessageFromNativeHost(const std::string& message) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (weak_channel_delegate_) {
-    // Native messaging always uses JSON since a native host doesn't understand
-    // structured cloning serialization.
+    data_decoder::DataDecoder::ParseJsonIsolated(
+        message,
+        base::BindOnce(&NativeMessagePort::PostMessageFromNativeHostCallback,
+                       weak_factory_.GetWeakPtr(), message));
+  }
+}
+
+void NativeMessagePort::PostMessageFromNativeHostCallback(
+    const std::string& message,
+    data_decoder::DataDecoder::ValueOrError result) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!weak_channel_delegate_) {
+    return;
+  }
+
+  if (result.has_value()) {
+    // Native messaging always uses JSON since a native host doesn't
+    // understand structured cloning serialization.
     weak_channel_delegate_->PostMessage(
         port_id_,
-        Message(message, SerializationFormat::kJson, false /* user_gesture */));
+        Message(message, SerializationFormat::kJson, /*user_gesture=*/false));
+  } else {
+    // Close the channel and report an error.
+    weak_channel_delegate_->CloseChannel(
+        port_id_, "The native host sent invalid JSON; message ignored.");
   }
 }
 

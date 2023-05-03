@@ -45,6 +45,7 @@ class NativeMessageEchoHost : public NativeMessageHost {
 
  private:
   void ProcessEcho(const base::Value::Dict& request);
+  void SendInvalidResponse();
 
   // Counter used to ensure message uniqueness for testing.
   int message_number_ = 0;
