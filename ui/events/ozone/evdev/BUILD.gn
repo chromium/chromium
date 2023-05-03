@@ -282,6 +282,7 @@ source_set("unittests") {
     "//build:chromeos_buildflags",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/re2:re2",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",

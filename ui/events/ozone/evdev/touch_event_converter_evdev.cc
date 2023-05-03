@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -735,6 +736,39 @@ void TouchEventConverterEvdev::UpdateRadiusFromTouchWithOrientation(
 
 int TouchEventConverterEvdev::NextTrackingId() {
   return next_tracking_id_++ & kMaxTrackingId;
+}
+
+std::ostream& TouchEventConverterEvdev::DescribeForLog(std::ostream& os) const {
+  os << "class=ui::TouchEventConverterEvdev id=" << input_device_.id
+     << std::endl
+     << " has_mt=" << has_mt_ << std::endl
+     << " has_pen=" << has_pen_ << std::endl
+     << " quirk_left_mouse_button=" << quirk_left_mouse_button_ << std::endl
+     << " pressure_min=" << pressure_min_ << std::endl
+     << " pressure_max=" << pressure_max_ << std::endl
+     << " orientation_min=" << orientation_min_ << std::endl
+     << " orientation_max=" << orientation_max_ << std::endl
+     << " tilt_x_min=" << tilt_x_min_ << std::endl
+     << " tilt_x_range=" << tilt_x_range_ << std::endl
+     << " tilt_y_min=" << tilt_y_min_ << std::endl
+     << " tilt_y_range=" << tilt_y_range_ << std::endl
+     << " x_res=" << x_res_ << std::endl
+     << " y_res=" << y_res_ << std::endl
+     << " x_min_tuxels=" << x_min_tuxels_ << std::endl
+     << " x_num_tuxels=" << x_num_tuxels_ << std::endl
+     << " y_min_tuxels=" << y_min_tuxels_ << std::endl
+     << " y_num_tuxels=" << y_num_tuxels_ << std::endl
+     << " x_scale=" << x_scale_ << std::endl
+     << " y_scale=" << y_scale_ << std::endl
+     << " rotated_x_scale=" << rotated_x_scale_ << std::endl
+     << " rotated_y_scale=" << rotated_y_scale_ << std::endl
+     << " touch_points=" << touch_points_ << std::endl
+     << " major_max=" << major_max_ << std::endl
+     << " touch_logging_enabled=" << touch_logging_enabled_ << std::endl
+     << " palm_on_touch_major_max=" << palm_on_touch_major_max_ << std::endl
+     << " palm_on_tool_type_palm=" << palm_on_tool_type_palm_ << std::endl
+     << "base ";
+  return EventConverterEvdev::DescribeForLog(os);
 }
 
 const char TouchEventConverterEvdev::kHoldCountAtReleaseEventName[] =
