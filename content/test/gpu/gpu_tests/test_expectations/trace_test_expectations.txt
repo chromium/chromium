@@ -207,6 +207,9 @@ crbug.com/1409457 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_VP9_Y
 crbug.com/1402261 [ win intel ] OverlayModeTraceTest_DirectComposition_Video_* [ RetryOnFailure ]
 crbug.com/1402261 [ win amd ] OverlayModeTraceTest_DirectComposition_Video_* [ Failure ]
 
+crbug.com/1442337 [ chromeos chromeos-board-kevin ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_OneCopy [ Failure ]
+crbug.com/1442337 [ chromeos chromeos-board-kevin ] WebGLCanvasCaptureTraceTest_VideoStreamFromWebGLCanvas_TwoCopy_Accelerated [ Failure ]
+
 
 
 #######################################################################
