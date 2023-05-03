@@ -241,6 +241,9 @@ const char kTrackPricesOnTabsEnabled[] = "track_prices_on_tabs.enabled";
 const char kLensCameraAssistedSearchPolicyAllowed[] =
     "ios.lens_camera_assited_search_policy.allowed";
 
+// A boolean specifying whether Web Inspector support is enabled.
+const char kWebInspectorEnabled[] = "ios.web_inspector_enabled";
+
 // An integer set to one of the NetworkPredictionSetting enum values indicating
 // network prediction settings.
 const char kNetworkPredictionSetting[] =

@@ -404,16 +404,16 @@ bool ChromeWebClient::EnableLongPressUIContextMenu() const {
   return true;
 }
 
-bool ChromeWebClient::EnableWebInspector() const {
-  switch (GetChannel()) {
-    case version_info::Channel::UNKNOWN:
-    case version_info::Channel::CANARY:
-    case version_info::Channel::DEV:
-      return true;
-    case version_info::Channel::BETA:
-    case version_info::Channel::STABLE:
-      return false;
+bool ChromeWebClient::EnableWebInspector(
+    web::BrowserState* browser_state) const {
+  if (!web::features::IsWebInspectorSupportEnabled()) {
+    return false;
   }
+
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
+  return chrome_browser_state->GetPrefs()->GetBoolean(
+      prefs::kWebInspectorEnabled);
 }
 
 web::UserAgentType ChromeWebClient::GetDefaultUserAgent(

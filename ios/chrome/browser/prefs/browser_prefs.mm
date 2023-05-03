@@ -374,6 +374,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterDictionaryPref(kPrefPromoObject);
 
+  // Register pref storing whether Web Inspector support is enabled.
+  registry->RegisterBooleanPref(prefs::kWebInspectorEnabled, false);
+
   // Register prerender network prediction preferences.
   registry->RegisterIntegerPref(
       prefs::kNetworkPredictionSetting,

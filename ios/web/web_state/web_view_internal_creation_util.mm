@@ -74,8 +74,7 @@ WKWebView* BuildWKWebView(CGRect frame,
   web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
 
   if (@available(iOS 16.4, *)) {
-    if (base::FeatureList::IsEnabled(features::kEnableWebInspector) &&
-        web::GetWebClient()->EnableWebInspector()) {
+    if (web::GetWebClient()->EnableWebInspector(browser_state)) {
       web_view.inspectable = YES;
     }
   }
