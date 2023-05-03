@@ -1894,7 +1894,7 @@ ci.builder(
 
 ci.builder(
     name = "Win x64 Builder (reclient compare)",
-    description_html = "verify artifacts. should be removed after the migration. crbug.com/1260232",
+    description_html = "Verifies whether local and remote build artifacts are identical.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -1923,37 +1923,8 @@ ci.builder(
 )
 
 fyi_mac_builder(
-    name = "Mac Builder (reclient)",
-    description_html = "experiment reclient on mac. should be removed after the migration. crbug.com/1244441",
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "use_clang_coverage",
-                "reclient_test",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        build_gs_bucket = "chromium-fyi-archive",
-    ),
-    builderless = True,
-    cores = None,  # crbug.com/1245114
-    console_view_entry = consoles.console_view_entry(
-        category = "mac",
-        short_name = "re",
-    ),
-    reclient_instance = reclient.instance.TEST_TRUSTED,
-    reclient_jobs = None,
-)
-
-fyi_mac_builder(
     name = "Mac Builder (reclient compare)",
-    description_html = "verify artifacts. should be removed after the migration. crbug.com/1260232",
+    description_html = "Verifies whether local and remote build artifacts are identical.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2159,10 +2130,9 @@ ci.builder(
     reclient_rewrapper_env = {"RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"},
 )
 
-# TODO(crbug.com/1235218): remove after the migration.
 ci.builder(
     name = "chromeos-amd64-generic-rel (reclient compare)",
-    description_html = "verify artifacts. should be removed after the migration. crbug.com/1235218",
+    description_html = "Verifies whether local and remote build artifacts are identical.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
