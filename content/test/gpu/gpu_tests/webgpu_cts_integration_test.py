@@ -35,6 +35,7 @@ ASAN_MULTIPLIER = 4
 BACKEND_VALIDATION_MULTIPLIER = 6
 FIRST_LOAD_TEST_STARTED_MULTIPLER = 3
 
+MESSAGE_TIMEOUT_CONNECTION_ACK = 5
 # In most cases, this should be very fast, but the first test run after a page
 # load can be slow.
 MESSAGE_TIMEOUT_TEST_STARTED = 10
@@ -45,6 +46,7 @@ HTML_FILENAME = os.path.join('webgpu-cts', 'test_page.html')
 
 JAVASCRIPT_DURATION = 'javascript_duration'
 MAY_EXONERATE = 'may_exonerate'
+MESSAGE_TYPE_CONNECTION_ACK = 'CONNECTION_ACK'
 MESSAGE_TYPE_TEST_STARTED = 'TEST_STARTED'
 MESSAGE_TYPE_TEST_HEARTBEAT = 'TEST_HEARTBEAT'
 MESSAGE_TYPE_TEST_STATUS = 'TEST_STATUS'
@@ -493,6 +495,15 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'window.setupWebsocket("%s")' %
         WebGpuCtsIntegrationTest.websocket_server.server_port)
     WebGpuCtsIntegrationTest.websocket_server.WaitForConnection()
+    try:
+      response = WebGpuCtsIntegrationTest.websocket_server.Receive(
+          MESSAGE_TIMEOUT_CONNECTION_ACK)
+      assert json.loads(response)['type'] == MESSAGE_TYPE_CONNECTION_ACK
+    except websocket_server.WebsocketReceiveMessageTimeoutError:
+      # for now, ignore any timeouts because the test page doesn't send
+      # CONNECTION_ACK yet
+      pass
+
     WebGpuCtsIntegrationTest._page_loaded = True
     return True
 
