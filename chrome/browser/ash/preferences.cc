@@ -579,6 +579,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterInt64Pref(::prefs::kHatsBorealisGamesSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(::prefs::kHatsBorealisGamesSurveyIsSelected,
                                 false);
+
+  registry->RegisterBooleanPref(prefs::kShowDisplaySizeScreenEnabled, true);
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {

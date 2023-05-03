@@ -1097,6 +1097,7 @@ policies:
   1096: DeviceLoginScreenGeolocationAccessLevel
   1097: DeviceReportNetworkEvents
   1098: SafeBrowsingExtensionProtectionAllowed
+  1099: ShowDisplaySizeScreenEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess

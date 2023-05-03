@@ -1031,6 +1031,11 @@ const char kTouchscreenEnabled[] = "events.touch_screen.enabled";
 const char kShowTouchpadScrollScreenEnabled[] =
     "ash.touchpad_scroll_screen_oobe_enabled";
 
+// Boolean value indicating that the Display size screen should be
+// shown to the user during the first sign-in.
+const char kShowDisplaySizeScreenEnabled[] =
+    "ash.display_size_screen_oobe_enabled";
+
 // Integer prefs indicating the minimum and maximum lengths of the lock screen
 // pin.
 const char kPinUnlockMaximumLength[] = "pin_unlock_maximum_length";

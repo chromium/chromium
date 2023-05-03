@@ -1421,6 +1421,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserAvatarCustomizationSelectorsEnabled,
     ash::user_image::prefs::kUserAvatarCustomizationSelectorsEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kShowDisplaySizeScreenEnabled,
+    ash::prefs::kShowDisplaySizeScreenEnabled,
+    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)
