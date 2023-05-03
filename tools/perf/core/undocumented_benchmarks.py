@@ -16,7 +16,6 @@ UNDOCUMENTED_BENCHMARKS = {
     'startup.mobile',
     'system_health.webview_startup',
     'tab_switching.typical_25',
-    'tracing.tracing_with_background_memory_infra',
     'tracing_perftests',
     'v8.runtime_stats.top_25',
     'views_perftests',

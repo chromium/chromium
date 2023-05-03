@@ -4528,42 +4528,6 @@
         "name": "tab_switching.typical_25/multitab:misc:typical24"
     },
     {
-        "duration": "16.0",
-        "name": "tracing.tracing_with_background_memory_infra/Facebook"
-    },
-    {
-        "duration": "20.0",
-        "name": "tracing.tracing_with_background_memory_infra/Wikipedia"
-    },
-    {
-        "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.amazon.com"
-    },
-    {
-        "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.ask.com/"
-    },
-    {
-        "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.bing.com/"
-    },
-    {
-        "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.yahoo.com/"
-    },
-    {
-        "duration": "17.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.youtube.com"
-    },
-    {
-        "duration": "18.0",
-        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/#hl=en&q=barack+obama"
-    },
-    {
-        "duration": "17.0",
-        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/calendar/"
-    },
-    {
         "duration": "53.0",
         "name": "v8.browsing_desktop-future/browse:media:googleplaystore:2021"
     },

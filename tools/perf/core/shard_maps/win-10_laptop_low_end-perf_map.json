@@ -299,10 +299,6 @@
             "tab_switching.typical_25": {
                 "abridged": false
             },
-            "tracing.tracing_with_background_memory_infra": {
-                "end": 3,
-                "abridged": false
-            },
             "speedometer2": {
                 "abridged": false
             }
@@ -310,10 +306,6 @@
     },
     "16": {
         "benchmarks": {
-            "tracing.tracing_with_background_memory_infra": {
-                "begin": 3,
-                "abridged": false
-            },
             "v8.browsing_desktop": {
                 "abridged": false
             },

@@ -4412,42 +4412,6 @@
         "name": "system_health.memory_mobile/long_running:tools:gmail-foreground"
     },
     {
-        "duration": "8.0",
-        "name": "tracing.tracing_with_background_memory_infra/Facebook"
-    },
-    {
-        "duration": "8.0",
-        "name": "tracing.tracing_with_background_memory_infra/Wikipedia"
-    },
-    {
-        "duration": "7.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.amazon.com"
-    },
-    {
-        "duration": "7.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.ask.com/"
-    },
-    {
-        "duration": "7.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.bing.com/"
-    },
-    {
-        "duration": "7.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.yahoo.com/"
-    },
-    {
-        "duration": "9.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.youtube.com"
-    },
-    {
-        "duration": "8.0",
-        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/#hl=en&q=barack+obama"
-    },
-    {
-        "duration": "9.0",
-        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/calendar/"
-    },
-    {
         "duration": "72.0",
         "name": "v8.browsing_mobile-future/browse:chrome:newtab:2019"
     },

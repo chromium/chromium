@@ -4229,42 +4229,6 @@
     },
     {
         "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/Facebook"
-    },
-    {
-        "duration": "12.0",
-        "name": "tracing.tracing_with_background_memory_infra/Wikipedia"
-    },
-    {
-        "duration": "11.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.amazon.com"
-    },
-    {
-        "duration": "11.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.ask.com/"
-    },
-    {
-        "duration": "11.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.bing.com/"
-    },
-    {
-        "duration": "12.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.yahoo.com/"
-    },
-    {
-        "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/http://www.youtube.com"
-    },
-    {
-        "duration": "13.0",
-        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/#hl=en&q=barack+obama"
-    },
-    {
-        "duration": "14.0",
-        "name": "tracing.tracing_with_background_memory_infra/https://www.google.com/calendar/"
-    },
-    {
-        "duration": "13.0",
         "name": "v8.browsing_mobile/browse:chrome:newtab:2019"
     },
     {

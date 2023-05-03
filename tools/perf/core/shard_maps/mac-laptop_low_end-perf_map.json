@@ -350,9 +350,6 @@
             "tab_switching.typical_25": {
                 "abridged": false
             },
-            "tracing.tracing_with_background_memory_infra": {
-                "abridged": false
-            },
             "v8.browsing_desktop": {
                 "end": 24,
                 "abridged": false

@@ -491,7 +491,6 @@ benchmarks/system_health_load_tests_smoke_test.py
 benchmarks/system_health_smoke_test.py
 benchmarks/system_health_unittest.py
 benchmarks/tab_switching.py
-benchmarks/tracing.py
 benchmarks/v8.py
 benchmarks/v8_browsing.py
 benchmarks/v8_helper.py

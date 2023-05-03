@@ -276,19 +276,11 @@
             },
             "system_health.webview_startup": {
                 "abridged": false
-            },
-            "tracing.tracing_with_background_memory_infra": {
-                "end": 1,
-                "abridged": false
             }
         }
     },
     "20": {
         "benchmarks": {
-            "tracing.tracing_with_background_memory_infra": {
-                "begin": 1,
-                "abridged": false
-            },
             "v8.browsing_mobile": {
                 "abridged": false
             },

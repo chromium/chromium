@@ -452,9 +452,6 @@
     },
     "39": {
         "benchmarks": {
-            "tracing.tracing_with_background_memory_infra": {
-                "abridged": false
-            },
             "v8.browsing_mobile": {
                 "end": 20,
                 "abridged": false

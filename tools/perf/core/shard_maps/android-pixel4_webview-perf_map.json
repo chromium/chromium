@@ -325,9 +325,6 @@
             "system_health.webview_startup": {
                 "abridged": false
             },
-            "tracing.tracing_with_background_memory_infra": {
-                "abridged": false
-            },
             "v8.browsing_mobile": {
                 "end": 2,
                 "abridged": false
