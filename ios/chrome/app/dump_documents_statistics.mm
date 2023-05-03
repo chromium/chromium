@@ -7,7 +7,9 @@
 #import "base/files/file.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
+#import "base/files/file_util.h"
 #import "base/json/json_writer.h"
+#import "base/mac/backup_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
@@ -67,6 +69,9 @@ base::Value::Dict CollectFileStatistics(base::FilePath root) {
   statistics.Set("accessed", TimeToLocalString(info.last_accessed));
   statistics.Set("created", TimeToLocalString(info.creation_time));
   statistics.Set("modified", TimeToLocalString(info.last_modified));
+
+  statistics.Set("excludedFromBackups", base::mac::GetBackupExclusion(root));
+
   return statistics;
 }
 
@@ -78,6 +83,10 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
 
   auto json = base::WriteJson(statistics);
   if (json) {
+    if (!base::PathExists(statistics_dir)) {
+      base::CreateDirectory(statistics_dir);
+    }
+
     std::string file_name = base::StringPrintf(
         "%s.json", TimeToLocalString(base::Time::Now()).c_str());
 
@@ -98,31 +107,18 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
 
 // Dumps statistics in JSON format for the user's entire Document directory.
 void DumpSandboxFileStatistics() {
-  NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-                                                       NSUserDomainMask, YES);
-  NSError* error = nil;
-  NSString* document_directory = [paths objectAtIndex:0];
-  NSString* file_stats_directory =
-      [document_directory stringByAppendingPathComponent:@"sandboxFileStats"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:file_stats_directory]) {
-    [[NSFileManager defaultManager] createDirectoryAtPath:file_stats_directory
-                              withIntermediateDirectories:NO
-                                               attributes:nil
-                                                    error:&error];
-    if (error) {
-      return;
-    }
-  }
+  base::FilePath documents_path = base::mac::GetUserDocumentPath();
+  base::FilePath file_stats_directory =
+      base::mac::GetUserDocumentPath().Append("sandboxFileStats");
 
-  base::FilePath root(base::SysNSStringToUTF8(document_directory));
+  // Go up one directory from documents to include all surrounding directories.
+  base::FilePath root = documents_path.DirName();
 
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(
-          &WriteSandboxStatisticsToFile, root,
-          base::FilePath(base::SysNSStringToUTF8(file_stats_directory))));
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                             base::BindOnce(&WriteSandboxStatisticsToFile, root,
+                                            file_stats_directory));
 }
 
 }  // namespace documents_statistics
