@@ -404,6 +404,10 @@
   "chrome_public_wpt": {
     "label": "//chrome/android:chrome_public_wpt",
     "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
   },
   "chrome_sandbox": {
     "label": "//sandbox/linux:chrome_sandbox",
@@ -462,14 +466,26 @@
   "wpt_tests_isolate": {
     "label": "//:wpt_tests_isolate",
     "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
   },
   "wpt_tests_isolate_content_shell": {
     "label": "//:wpt_tests_isolate_content_shell",
     "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
   },
   "wpt_tests_ios": {
     "label": "//ios/chrome/test/wpt:wpt_tests_ios",
     "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
   },
   "chrome/browser/media/router": {
     "label": "//chrome/browser/media/router:router",
@@ -1571,6 +1587,10 @@
   "system_webview_wpt": {
     "label": "//android_webview/test:system_webview_wpt",
     "type": "generated_script",
+    "args": [
+      "--results-directory",
+      "${ISOLATED_OUTDIR}",
+    ],
   },
   "telemetry_gpu_integration_test": {
     "label": "//chrome/test:telemetry_gpu_integration_test",

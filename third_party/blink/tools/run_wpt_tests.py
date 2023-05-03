@@ -680,6 +680,8 @@ class WPTAdapter:
     def add_output_arguments(self, parser):
         group = parser.add_argument_group(
             'Output Logging', 'Options for controlling logging behavior.')
+        group.add_argument('--results-directory',
+                           help='Location of test results'),
         # For the overridden '--log-*' options, the value will be `None` if no
         # report should be logged, or the empty string if a default filename
         # should be derived.
