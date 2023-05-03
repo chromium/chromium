@@ -279,7 +279,14 @@ int SpdyProxyClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 void SpdyProxyClientSocket::RunWriteCallback(int result) {
   CHECK(write_callback_);
+
+  base::WeakPtr<SpdyProxyClientSocket> weak_ptr = weak_factory_.GetWeakPtr();
   std::move(write_callback_).Run(result);
+  if (!weak_ptr) {
+    // `this` was already destroyed while running `write_callback_`. Must
+    // return immediately without touching any field member.
+    return;
+  }
 
   if (end_stream_state_ == EndStreamState::kEndStreamReceived) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
