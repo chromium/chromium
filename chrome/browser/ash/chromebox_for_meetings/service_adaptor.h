@@ -34,7 +34,9 @@ class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
 
     // Called when attempting to Bind a mojom using using a message pipe of the
     // given types PendingReceiver.
-    virtual void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) = 0;
+    virtual void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe,
+                               const absl::optional<std::string>&
+                                   receiver_identifier = absl::nullopt) = 0;
 
    protected:
     Delegate() = default;
@@ -52,20 +54,26 @@ class ServiceAdaptor : public chromeos::cfm::mojom::CfmServiceAdaptor {
   virtual void BindServiceAdaptor();
 
   template <typename Interface>
-  void GetService(mojo::Remote<Interface>& remote,
-                  GetServiceCallback callback) {
+  void GetService(
+      mojo::Remote<Interface>& remote,
+      GetServiceCallback callback,
+      const absl::optional<std::string>& receiver_identifier = absl::nullopt) {
     GetService(Interface::Name_,
                std::move(remote.BindNewPipeAndPassReceiver()).PassPipe(),
-               std::move(callback));
+               std::move(callback), std::move(receiver_identifier));
   }
 
-  virtual void GetService(std::string interface_name,
-                          mojo::ScopedMessagePipeHandle receiver_pipe,
-                          GetServiceCallback callback);
+  virtual void GetService(
+      std::string interface_name,
+      mojo::ScopedMessagePipeHandle receiver_pipe,
+      GetServiceCallback callback,
+      const absl::optional<std::string>& receiver_identifier = absl::nullopt);
 
  protected:
   // Forward |mojom::CfmServiceAdaptor| implementation
-  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
+  void OnBindService(
+      mojo::ScopedMessagePipeHandle receiver_pipe,
+      const absl::optional<std::string>& receiver_identifier) override;
 
   // Called when the Service Adaptor has successfully connected to the
   // |mojom::CfmServiceContext|

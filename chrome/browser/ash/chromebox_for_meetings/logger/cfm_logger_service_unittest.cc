@@ -138,7 +138,7 @@ class CfmLoggerServiceTest : public testing::Test {
 
     mojo::Remote<mojom::MeetDevicesLogger> logger_remote;
     logger_adaptor->OnBindService(
-        logger_remote.BindNewPipeAndPassReceiver().PassPipe());
+        logger_remote.BindNewPipeAndPassReceiver().PassPipe(), absl::nullopt);
     EXPECT_TRUE(logger_remote.is_connected());
 
     return logger_remote;

@@ -65,7 +65,8 @@ bool NetworkSettingsService::ServiceRequestReceived(
 }
 
 void NetworkSettingsService::OnBindService(
-    mojo::ScopedMessagePipeHandle receiver_pipe) {
+    mojo::ScopedMessagePipeHandle receiver_pipe,
+    const absl::optional<std::string>&) {
   receivers_.Add(this, mojo::PendingReceiver<mojom::CfmNetworkSettings>(
                            std::move(receiver_pipe)));
 }

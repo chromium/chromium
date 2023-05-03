@@ -14,11 +14,6 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
-#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -26,7 +21,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "xu_camera_service.h"
+
+#include "chromeos/ash/components/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/cpp/service_connection.h"
+#include "chromeos/ash/services/chromebox_for_meetings/public/mojom/xu_camera.mojom.h"
 
 namespace ash::cfm {
 namespace {
@@ -139,7 +139,8 @@ class XuCameraServiceTest : public ::testing::Test {
     EXPECT_TRUE(adaptor_remote_.is_connected());
 
     adaptor_remote_->OnBindService(
-        xu_camera_remote_.BindNewPipeAndPassReceiver().PassPipe());
+        xu_camera_remote_.BindNewPipeAndPassReceiver().PassPipe(),
+        absl::nullopt);
     EXPECT_TRUE(xu_camera_remote_.is_connected());
 
     return xu_camera_remote_;

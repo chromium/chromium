@@ -41,7 +41,8 @@ class DiagnosticsService : public CfmObserver,
   void OnAdaptorDisconnect() override;
 
   // Forward |ServiceAdaptorDelegate| implementation
-  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe) override;
+  void OnBindService(mojo::ScopedMessagePipeHandle receiver_pipe,
+                     const absl::optional<std::string>&) override;
 
  private:
   DiagnosticsService();
