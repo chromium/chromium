@@ -22,7 +22,7 @@ namespace password_manager {
 
 struct PasswordForm;
 
-// The susbset of autocomplete flags related to passwords.
+// The subset of autocomplete flags related to passwords.
 enum class AutocompleteFlag {
   kNone,
   kUsername,
