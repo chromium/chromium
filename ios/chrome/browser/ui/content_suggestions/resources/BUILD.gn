@@ -22,6 +22,10 @@ imageset("content_suggestions_offline") {
   ]
 }
 
+colorset("fake_omnibox_placeholder_color") {
+  sources = [ "fake_omnibox_placeholder_color.colorset/Contents.json" ]
+}
+
 imageset("ntp_search_icon") {
   sources = [
     "ntp_search_icon.imageset/Contents.json",

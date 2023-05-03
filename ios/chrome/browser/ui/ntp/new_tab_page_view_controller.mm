@@ -138,7 +138,10 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 
 @end
 
-@implementation NewTabPageViewController
+@implementation NewTabPageViewController {
+  // Background gradient when Modular Home is enabled.
+  GradientView* _backgroundGradientView;
+}
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
@@ -184,7 +187,20 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
               action:@selector(handleSingleTapInView:)];
   singleTapRecognizer.delegate = self;
   [self.view addGestureRecognizer:singleTapRecognizer];
-  self.view.backgroundColor = ntp_home::NTPBackgroundColor();
+  if (IsMagicStackEnabled()) {
+    _backgroundGradientView = [[GradientView alloc]
+        initWithTopColor:[UIColor colorNamed:kSecondaryBackgroundColor]
+             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
+    _backgroundGradientView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_backgroundGradientView];
+    AddSameConstraints(_backgroundGradientView, self.view);
+    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+              self.traitCollection.userInterfaceStyle];
+    self.view.backgroundColor =
+        [UIColor colorNamed:@"ntp_background_light_mode_only_color"];
+  } else {
+    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
+  }
 
   [self registerNotifications];
 
@@ -343,6 +359,15 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
                           [self updateFeedInsetsForMinimumHeight];
                         }
                       }];
+}
+
+- (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
+              withTransitionCoordinator:
+                  (id<UIViewControllerTransitionCoordinator>)coordinator {
+  if (IsMagicStackEnabled()) {
+    [self updateModularHomeBackgroundColorForUserInterfaceStyle:
+              newCollection.userInterfaceStyle];
+  }
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
@@ -1349,6 +1374,11 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
   CGPoint adjustedOffset = self.collectionView.contentOffset;
   adjustedOffset.y += self.additionalOffset;
   return adjustedOffset;
+}
+
+- (void)updateModularHomeBackgroundColorForUserInterfaceStyle:
+    (UIUserInterfaceStyle)style {
+  _backgroundGradientView.hidden = style == UIUserInterfaceStyleLight;
 }
 
 #pragma mark - Helpers

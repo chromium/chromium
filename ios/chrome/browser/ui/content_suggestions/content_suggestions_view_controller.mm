@@ -114,7 +114,11 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
   self.dragDropHandler.dropDelegate = self;
   [self.view addInteraction:[[UIDropInteraction alloc]
                                 initWithDelegate:self.dragDropHandler]];
-  self.view.backgroundColor = ntp_home::NTPBackgroundColor();
+  if (IsMagicStackEnabled()) {
+    self.view.backgroundColor = [UIColor clearColor];
+  } else {
+    self.view.backgroundColor = ntp_home::NTPBackgroundColor();
+  }
   self.view.accessibilityIdentifier = kContentSuggestionsCollectionIdentifier;
 
   self.verticalStackView = [[UIStackView alloc] init];

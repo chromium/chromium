@@ -212,6 +212,7 @@ source_set("content_suggestions_ui_util") {
   ]
   deps = [
     ":content_suggestions_constant",
+    "resources:fake_omnibox_placeholder_color",
     "//base",
     "//base:i18n",
     "//components/strings",
@@ -220,6 +221,7 @@ source_set("content_suggestions_ui_util") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/ntp",

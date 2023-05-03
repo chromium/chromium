@@ -38,7 +38,7 @@ const float kContentBottomInset = 10.0f;
     UILabel* title = [[UILabel alloc] init];
     title.text = [self titleString];
     title.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    title.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    title.textColor = [UIColor colorNamed:kTextPrimaryColor];
     title.accessibilityTraits |= UIAccessibilityTraitHeader;
     title.accessibilityIdentifier = [self titleString];
 
