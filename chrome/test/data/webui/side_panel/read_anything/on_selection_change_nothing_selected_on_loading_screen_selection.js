@@ -9,6 +9,7 @@
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
+(function() {
 chrome.readAnything.onConnected = function() {};
 
 const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
@@ -27,6 +28,9 @@ const selection = readAnythingApp.getSelection();
 selection.removeAllRanges();
 selection.addRange(range);
 
-setTimeout(() => {
-  domAutomationController.send(!selectionChanged);
-}, 1000);
+return new Promise(resolve => {
+  setTimeout(() => {
+    resolve(!selectionChanged);
+  }, 1000);
+});
+})();

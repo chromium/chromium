@@ -8,6 +8,7 @@
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
+(function() {
 chrome.readAnything.onConnected = function() {};
 
 const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
@@ -47,4 +48,5 @@ assertFontName('"Comic Sans MS"');
 chrome.readAnything.setThemeForTesting('Times New Roman', 18.0, 0, 0, 1, 0);
 assertFontName('"Times New Roman"');
 
-domAutomationController.send(result);
+return result;
+})();

@@ -43,11 +43,10 @@ class ReadAnythingAppTest : public InProcessBrowserTest {
         return testing::AssertionFailure() << "Couldn't find " << path.value();
       }
       base::ReadFileToString(path, &script);
-      script = "(function(){'use strict';" + script + "}());";
+      script = "'use strict';" + script;
     }
 
     // Run the test.
-    bool result = false;
     EXPECT_TRUE(ui_test_utils::NavigateToURL(
         browser(), GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL)));
     content::RenderFrameHost* webui = browser()
@@ -58,7 +57,7 @@ class ReadAnythingAppTest : public InProcessBrowserTest {
       return testing::AssertionFailure() << "Failed to navigate to WebUI";
     }
 
-    EXPECT_TRUE(content::ExecuteScriptAndExtractBool(webui, script, &result));
+    bool result = content::EvalJs(webui, script).ExtractBool();
     return result ? testing::AssertionSuccess()
                   : (testing::AssertionFailure() << "Check console output");
   }

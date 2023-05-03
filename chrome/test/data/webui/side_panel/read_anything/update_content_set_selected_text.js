@@ -8,6 +8,7 @@
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
+(function() {
 chrome.readAnything.onConnected = function() {};
 
 const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
@@ -93,15 +94,17 @@ assertContainerInnerHTML(expected);
 // 'on-selection-change-for-test' with the parameters to onSelectionChange
 // stored in details. Here, we check the values of the parameters of
 // onSelectionChange.
-readAnythingApp.addEventListener(
-    'on-selection-change-for-test', function(onSelectionChangeEvent) {
-      assertEquals(onSelectionChangeEvent.detail.anchorNodeId, 2);
-      assertEquals(onSelectionChangeEvent.detail.anchorOffset, 1);
-      assertEquals(onSelectionChangeEvent.detail.focusNodeId, 4);
-      assertEquals(onSelectionChangeEvent.detail.focusOffset, 2);
+const resultPromise = new Promise(resolve => {
+  readAnythingApp.addEventListener(
+      'on-selection-change-for-test', function(onSelectionChangeEvent) {
+        assertEquals(onSelectionChangeEvent.detail.anchorNodeId, 2);
+        assertEquals(onSelectionChangeEvent.detail.anchorOffset, 1);
+        assertEquals(onSelectionChangeEvent.detail.focusNodeId, 4);
+        assertEquals(onSelectionChangeEvent.detail.focusOffset, 2);
 
-      domAutomationController.send(result);
-    });
+        resolve(result);
+      });
+});
 
 // Create a selection of "elloWorldFr". The anchor node has id 2 and the
 // focus node has id 4.
@@ -112,3 +115,6 @@ range.setEnd(outerDiv.lastChild, 2);
 const selection = readAnythingApp.getSelection();
 selection.removeAllRanges();
 selection.addRange(range);
+
+return resultPromise;
+})();

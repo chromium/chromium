@@ -8,6 +8,7 @@
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
+(function() {
 chrome.readAnything.onConnected = function() {};
 
 const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
@@ -128,4 +129,5 @@ assertEquals(selection.focusNode.textContent, 'Friend');
 assertEquals(selection.anchorOffset, 1);
 assertEquals(selection.focusOffset, 2);
 
-domAutomationController.send(result);
+return result;
+})();
