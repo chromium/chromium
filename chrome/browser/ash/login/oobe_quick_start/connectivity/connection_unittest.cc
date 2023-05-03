@@ -108,6 +108,8 @@ class ConnectionTest : public testing::Test {
     fake_quick_start_decoder_ = std::make_unique<FakeQuickStartDecoder>();
     connection_ = std::make_unique<Connection>(
         nearby_connection, session_context_,
+        mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+            fake_quick_start_decoder_->GetRemote()),
         std::make_unique<ConstantNonceGenerator>(),
         /*on_connection_closed=*/base::DoNothing(),
         /*on_connection_authenticated=*/
@@ -118,9 +120,6 @@ class ConnectionTest : public testing::Test {
               ran_connection_authenticated_callback_ = true;
               authenticated_connection_ = authenticated_connection;
             }));
-    connection_->decoder_ =
-        mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
-            fake_quick_start_decoder_->GetRemote());
   }
 
   void MarkConnectionAuthenticated() {
@@ -405,6 +404,8 @@ TEST_F(ConnectionTest, TestClose) {
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
           fake_nearby_connection_.get(), session_context_,
+          mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+              fake_quick_start_decoder_->GetRemote()),
           std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());
@@ -427,6 +428,8 @@ TEST_F(ConnectionTest, TestDisconnectsWithoutCloseIssueUnknownError) {
   std::unique_ptr<Connection> connection_under_test =
       std::make_unique<Connection>(
           fake_nearby_connection_.get(), session_context_,
+          mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+              fake_quick_start_decoder_->GetRemote()),
           std::make_unique<ConstantNonceGenerator>(),
           /*on_connection_closed=*/future.GetCallback(),
           /*on_connection_authenticated=*/base::DoNothing());

@@ -294,10 +294,12 @@ class FakeConnection : public Connection {
     std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
         Connection::SessionContext session_context,
+        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated) override {
       auto connection = std::make_unique<FakeConnection>(
-          nearby_connection, session_context, std::move(on_connection_closed),
+          nearby_connection, session_context, std::move(quick_start_decoder),
+          std::move(on_connection_closed),
           std::move(on_connection_authenticated));
       instance_ = connection->weak_ptr_factory_.GetWeakPtr();
       return std::move(connection);
@@ -306,12 +308,15 @@ class FakeConnection : public Connection {
     base::WeakPtr<FakeConnection> instance_;
   };
 
-  FakeConnection(NearbyConnection* nearby_connection,
-                 Connection::SessionContext session_context,
-                 ConnectionClosedCallback on_connection_closed,
-                 ConnectionAuthenticatedCallback on_connection_authenticated)
+  FakeConnection(
+      NearbyConnection* nearby_connection,
+      Connection::SessionContext session_context,
+      mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
+      ConnectionClosedCallback on_connection_closed,
+      ConnectionAuthenticatedCallback on_connection_authenticated)
       : Connection(nearby_connection,
                    session_context,
+                   std::move(quick_start_decoder),
                    std::make_unique<Connection::NonceGenerator>(),
                    std::move(on_connection_closed),
                    std::move(on_connection_authenticated)) {}

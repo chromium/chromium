@@ -63,6 +63,7 @@ class Connection
     virtual std::unique_ptr<Connection> Create(
         NearbyConnection* nearby_connection,
         Connection::SessionContext session_context,
+        mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
         ConnectionClosedCallback on_connection_closed,
         ConnectionAuthenticatedCallback on_connection_authenticated);
   };
@@ -79,6 +80,7 @@ class Connection
 
   Connection(NearbyConnection* nearby_connection,
              SessionContext session_context,
+             mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
              std::unique_ptr<NonceGenerator> nonce_generator,
              ConnectionClosedCallback on_connection_closed,
              ConnectionAuthenticatedCallback on_connection_authenticated);

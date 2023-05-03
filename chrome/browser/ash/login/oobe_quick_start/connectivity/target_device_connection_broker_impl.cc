@@ -498,6 +498,7 @@ void TargetDeviceConnectionBrokerImpl::OnIncomingConnectionAccepted(
   // TODO(b/234655072): Handle Connection Closed in the Connection Broker
   connection_ = connection_factory_->Create(
       nearby_connection, BuildConnectionSessionContext(),
+      std::move(quick_start_decoder_),
       base::BindOnce(&TargetDeviceConnectionBrokerImpl::OnConnectionClosed,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(

@@ -104,7 +104,10 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
       .secondary_shared_secret = kSecondarySharedSecret};
   connection_factory_ = std::make_unique<Connection::Factory>();
   connection_ = connection_factory_->Create(
-      nearby_connection, session_context, base::DoNothing(),
+      nearby_connection, session_context,
+      mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
+          fake_quick_start_decoder_->GetRemote()),
+      base::DoNothing(),
       base::BindOnce(
           &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));

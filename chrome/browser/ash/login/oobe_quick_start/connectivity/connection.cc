@@ -30,12 +30,14 @@ Connection::Factory::~Factory() = default;
 std::unique_ptr<Connection> Connection::Factory::Create(
     NearbyConnection* nearby_connection,
     Connection::SessionContext session_context,
+    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated) {
   auto nonce_generator = std::make_unique<NonceGenerator>();
   return std::make_unique<Connection>(
-      nearby_connection, session_context, std::move(nonce_generator),
-      std::move(on_connection_closed), std::move(on_connection_authenticated));
+      nearby_connection, session_context, std::move(quick_start_decoder),
+      std::move(nonce_generator), std::move(on_connection_closed),
+      std::move(on_connection_authenticated));
 }
 
 Connection::Nonce Connection::NonceGenerator::Generate() {
@@ -47,6 +49,7 @@ Connection::Nonce Connection::NonceGenerator::Generate() {
 Connection::Connection(
     NearbyConnection* nearby_connection,
     Connection::SessionContext session_context,
+    mojo::SharedRemote<mojom::QuickStartDecoder> quick_start_decoder,
     std::unique_ptr<NonceGenerator> nonce_generator,
     ConnectionClosedCallback on_connection_closed,
     ConnectionAuthenticatedCallback on_connection_authenticated)
@@ -56,7 +59,8 @@ Connection::Connection(
       secondary_shared_secret_(session_context.secondary_shared_secret),
       nonce_generator_(std::move(nonce_generator)),
       on_connection_closed_(std::move(on_connection_closed)),
-      on_connection_authenticated_(std::move(on_connection_authenticated)) {
+      on_connection_authenticated_(std::move(on_connection_authenticated)),
+      decoder_(std::move(quick_start_decoder)) {
   // Since we aren't expecting any disconnections, treat any drops of the
   // connection as an unknown error.
   nearby_connection->SetDisconnectionListener(base::BindOnce(
