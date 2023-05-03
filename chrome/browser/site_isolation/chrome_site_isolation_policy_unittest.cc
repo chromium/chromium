@@ -89,7 +89,8 @@ TEST_F(ChromeSiteIsolationPolicyTest, NoIsolationBelowMemoryThreshold) {
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 
-TEST_F(ChromeSiteIsolationPolicyTest, IsolationAboveMemoryThreshold) {
+// Disabled since it's flaky. https://crbug.com/1406992
+TEST_F(ChromeSiteIsolationPolicyTest, DISABLED_IsolationAboveMemoryThreshold) {
   if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
 
@@ -97,7 +98,9 @@ TEST_F(ChromeSiteIsolationPolicyTest, IsolationAboveMemoryThreshold) {
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 
-TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {
+// Disabled since it's flaky. https://crbug.com/1406992
+TEST_F(ChromeSiteIsolationPolicyTest,
+       DISABLED_IsolatedOriginsContainChromeOrigins) {
   if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
 
