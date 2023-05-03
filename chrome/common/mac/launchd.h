@@ -42,17 +42,6 @@ class Launchd {
   // Remove a launchd process from launchd.
   virtual bool RemoveJob(const std::string& label);
 
-  // Used by a process controlled by launchd to restart itself.
-  // |session_type| can be "Aqua", "LoginWindow", "Background", "StandardIO" or
-  // "System".
-  // RestartLaunchdJob starts up a separate process to tell launchd to
-  // send this process a SIGTERM. This call will return, but a SIGTERM will be
-  // received shortly.
-  virtual bool RestartJob(Domain domain,
-                          Type type,
-                          CFStringRef name,
-                          CFStringRef session_type);
-
   // Read a launchd plist from disk.
   // |name| should not have an extension.
   virtual CFMutableDictionaryRef CreatePlistFromFile(Domain domain,
@@ -64,15 +53,6 @@ class Launchd {
                                 Type type,
                                 CFStringRef name,
                                 CFDictionaryRef dict);
-
-  // Return true if and only if a launchd plist exists.
-  // |name| should not have an extension.
-  virtual bool PlistExists(Domain domain, Type type, CFStringRef name);
-
-  // Delete a launchd plist.
-  // |name| should not have an extension.
-  // Returns false on error. Returns true if the plist does not exist.
-  virtual bool DeletePlist(Domain domain, Type type, CFStringRef name);
 
   // TODO(dmaclach): remove this once http://crbug.com/76925 is fixed.
   // Scaffolding for doing unittests with our singleton.
@@ -86,6 +66,10 @@ class Launchd {
       Launchd::SetInstance(NULL);
     }
   };
+
+  static NSURL* GetPlistURL(Launchd::Domain domain,
+                            Launchd::Type type,
+                            CFStringRef name);
 
  protected:
   Launchd() { }

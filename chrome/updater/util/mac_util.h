@@ -5,8 +5,9 @@
 #ifndef CHROME_UPDATER_UTIL_MAC_UTIL_H_
 #define CHROME_UPDATER_UTIL_MAC_UTIL_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "base/mac/scoped_cftyperef.h"
-#include "chrome/common/mac/launchd.h"
 #include "chrome/updater/updater_scope.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -37,12 +38,17 @@ base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope);
 
 // Removes the Launchd job with the given 'name'.
 bool RemoveJobFromLaunchd(UpdaterScope scope,
-                          Launchd::Domain domain,
-                          Launchd::Type type,
                           base::ScopedCFTypeRef<CFStringRef> name);
 
 // Recursively remove quarantine attributes on the path.
 bool RemoveQuarantineAttributes(const base::FilePath& path);
+
+// Ensure that the LaunchAgents/LaunchDaemons directory contains the specified
+// plist, with the specified contents. If not, the plist will be overwritten and
+// the item reloaded. May block.
+bool EnsureLaunchItemPresence(UpdaterScope scope,
+                              base::ScopedCFTypeRef<CFStringRef> name,
+                              base::ScopedCFTypeRef<CFDictionaryRef> contents);
 
 }  // namespace updater
 

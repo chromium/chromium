@@ -189,6 +189,8 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/keystone.h",
         "mac/setup/keystone.mm",
         "mac/setup/setup.mm",
+        "mac/setup/wake_task.h",
+        "mac/setup/wake_task.mm",
         "net/network_fetcher_mac.mm",
         "policy/mac/managed_preference_policy_manager.h",
         "policy/mac/managed_preference_policy_manager.mm",
@@ -197,8 +199,6 @@ if (is_win || is_mac || is_linux) {
         "setup_mac.mm",
         "update_service_internal_impl_qualifying_mac.cc",
         "update_usage_stats_task_mac.mm",
-        "util/launchd_util.cc",
-        "util/launchd_util.h",
       ]
 
       deps += [
@@ -860,6 +860,7 @@ if (is_win || is_mac || is_linux) {
         "mac/setup/keystone_unittest.cc",
         "mac/setup/ks_tickets_unittest.mm",
         "mac/setup/setup_unittest.mm",
+        "mac/setup/wake_task_unittest.mm",
         "policy/mac/managed_preference_policy_manager_impl_unittest.mm",
         "policy/mac/managed_preference_policy_manager_unittest.cc",
         "test/integration_tests_mac.mm",

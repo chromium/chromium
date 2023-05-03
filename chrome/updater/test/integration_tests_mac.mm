@@ -34,7 +34,6 @@
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/util/launchd_util.h"
 #import "chrome/updater/util/mac_util.h"
 #include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/util.h"
@@ -111,15 +110,14 @@ void EnterTestMode(const GURL& update_url,
 void Clean(UpdaterScope scope) {
   CleanProcesses();
 
-  Launchd::Domain launchd_domain = LaunchdDomain(scope);
-  Launchd::Type launchd_type = LaunchdType(scope);
-
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
-  EXPECT_TRUE(Launchd::GetInstance()->DeletePlist(
-      launchd_domain, launchd_type, updater::CopyWakeLaunchdName(scope)));
+  EXPECT_TRUE(base::DeleteFile(base::mac::NSStringToFilePath(
+      Launchd::GetPlistURL(LaunchdDomain(scope), LaunchdType(scope),
+                           updater::CopyWakeLaunchdName(scope))
+          .path)));
 
   path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
@@ -132,8 +130,7 @@ void Clean(UpdaterScope scope) {
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
 
   @autoreleasepool {
-    RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
-                         CopyWakeLaunchdName(scope));
+    RemoveJobFromLaunchd(scope, CopyWakeLaunchdName(scope));
   }
 
   // Also clean up any other versions of the updater that are around.
@@ -161,8 +158,10 @@ void ExpectClean(UpdaterScope scope) {
   Launchd::Type launchd_type = LaunchdType(scope);
 
   // Files must not exist on the file system.
-  EXPECT_FALSE(Launchd::GetInstance()->PlistExists(
-      launchd_domain, launchd_type, updater::CopyWakeLaunchdName(scope)));
+  EXPECT_FALSE(base::PathExists(base::mac::NSStringToFilePath(
+      Launchd::GetPlistURL(launchd_domain, launchd_type,
+                           updater::CopyWakeLaunchdName(scope))
+          .path)));
 
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
@@ -196,8 +195,8 @@ void ExpectClean(UpdaterScope scope) {
 }
 
 void ExpectInstalled(UpdaterScope scope) {
-  Launchd::Domain launchd_domain = LaunchdDomain(scope);
-  Launchd::Type launchd_type = LaunchdType(scope);
+  const Launchd::Domain launchd_domain = LaunchdDomain(scope);
+  const Launchd::Type launchd_type = LaunchdType(scope);
 
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   ASSERT_TRUE(keystone_path);
@@ -209,8 +208,10 @@ void ExpectInstalled(UpdaterScope scope) {
     EXPECT_TRUE(base::PathExists(*path)) << path;
   }
 
-  EXPECT_TRUE(Launchd::GetInstance()->PlistExists(launchd_domain, launchd_type,
-                                                  CopyWakeLaunchdName(scope)));
+  EXPECT_TRUE(base::PathExists(base::mac::NSStringToFilePath(
+      Launchd::GetPlistURL(launchd_domain, launchd_type,
+                           updater::CopyWakeLaunchdName(scope))
+          .path)));
 }
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {

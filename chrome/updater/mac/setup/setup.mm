@@ -33,11 +33,11 @@
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
 #include "chrome/updater/mac/setup/keystone.h"
+#include "chrome/updater/mac/setup/wake_task.h"
 #include "chrome/updater/setup.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
-#include "chrome/updater/util/launchd_util.h"
 #import "chrome/updater/util/mac_util.h"
 #import "chrome/updater/util/posix_util.h"
 #include "chrome/updater/util/util.h"
@@ -47,57 +47,6 @@
 namespace updater {
 namespace {
 
-#pragma mark Helpers
-Launchd::Domain LaunchdDomain(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      return Launchd::Domain::Local;
-    case UpdaterScope::kUser:
-      return Launchd::Domain::User;
-  }
-}
-
-Launchd::Type ServiceLaunchdType(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      return Launchd::Type::Daemon;
-    case UpdaterScope::kUser:
-      return Launchd::Type::Agent;
-  }
-}
-
-CFStringRef CFSessionType(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      return CFSTR("System");
-    case UpdaterScope::kUser:
-      return CFSTR("Aqua");
-  }
-}
-
-NSString* NSStringSessionType(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      return @"System";
-    case UpdaterScope::kUser:
-      return @"Aqua";
-  }
-}
-
-base::scoped_nsobject<NSString> GetWakeLaunchdLabel(UpdaterScope scope) {
-  return base::scoped_nsobject<NSString>(
-      base::mac::CFToNSCast(CopyWakeLaunchdName(scope).release()));
-}
-
-absl::optional<base::FilePath> GetWakeTaskTarget(UpdaterScope scope) {
-  absl::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
-  if (!install_dir) {
-    return absl::nullopt;
-  }
-  return install_dir->Append("Current").Append(GetExecutableRelativePath());
-}
-
-#pragma mark Setup
 bool CopyBundle(UpdaterScope scope) {
   absl::optional<base::FilePath> base_install_dir = GetInstallDirectory(scope);
   absl::optional<base::FilePath> versioned_install_dir =
@@ -144,79 +93,15 @@ bool CopyBundle(UpdaterScope scope) {
   return true;
 }
 
-NSString* MakeProgramArgument(const char* argument) {
-  return base::SysUTF8ToNSString(base::StrCat({"--", argument}));
-}
-
-NSString* MakeProgramArgumentWithValue(const char* argument,
-                                       const char* value) {
-  return base::SysUTF8ToNSString(base::StrCat({"--", argument, "=", value}));
-}
-
-base::ScopedCFTypeRef<CFDictionaryRef> CreateWakeLaunchdPlist(
-    UpdaterScope scope,
-    const base::FilePath& updater_path) {
-  // See the man page for launchd.plist.
-  NSMutableArray<NSString*>* program_arguments =
-      [NSMutableArray<NSString*> array];
-  [program_arguments addObjectsFromArray:@[
-    base::SysUTF8ToNSString(updater_path.value()),
-    MakeProgramArgument(kWakeAllSwitch),
-    MakeProgramArgument(kEnableLoggingSwitch),
-    MakeProgramArgumentWithValue(kLoggingModuleSwitch,
-                                 kLoggingModuleSwitchValue)
-  ]];
-  if (IsSystemInstall(scope))
-    [program_arguments addObject:MakeProgramArgument(kSystemSwitch)];
-
-  NSDictionary<NSString*, id>* launchd_plist = @{
-    @LAUNCH_JOBKEY_LABEL : GetWakeLaunchdLabel(scope),
-    @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
-    @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
-    @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-    @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : NSStringSessionType(scope),
-    @"AssociatedBundleIdentifiers" : @MAC_BUNDLE_IDENTIFIER_STRING
-  };
-
-  return base::ScopedCFTypeRef<CFDictionaryRef>(
-      base::mac::CFCast<CFDictionaryRef>(launchd_plist),
-      base::scoped_policy::RETAIN);
-}
-
-bool CreateWakeLaunchdJobPlist(UpdaterScope scope,
-                               const base::FilePath& updater_path) {
-  // We're creating directories and writing a file.
+bool CreateWakeLaunchdJobPlist(UpdaterScope scope) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
-  base::ScopedCFTypeRef<CFDictionaryRef> plist(
-      CreateWakeLaunchdPlist(scope, updater_path));
-  return Launchd::GetInstance()->WritePlistToFile(
-      LaunchdDomain(scope), ServiceLaunchdType(scope),
-      CopyWakeLaunchdName(scope), plist);
-}
-
-bool StartUpdateWakeVersionedLaunchdJob(UpdaterScope scope) {
-  return Launchd::GetInstance()->RestartJob(
-      LaunchdDomain(scope), ServiceLaunchdType(scope),
-      CopyWakeLaunchdName(scope), CFSessionType(scope));
-}
-
-bool RemoveServiceJobFromLaunchd(UpdaterScope scope,
-                                 base::ScopedCFTypeRef<CFStringRef> name) {
-  return RemoveJobFromLaunchd(scope, LaunchdDomain(scope),
-                              ServiceLaunchdType(scope), name);
-}
-
-bool RemoveUpdateWakeJobFromLaunchd(UpdaterScope scope) {
-  return RemoveServiceJobFromLaunchd(scope, CopyWakeLaunchdName(scope));
-}
-
-bool DeleteInstallFolder(UpdaterScope scope) {
-  return DeleteFolder(GetInstallDirectory(scope));
-}
-
-bool DeleteDataFolder(UpdaterScope scope) {
-  return DeleteFolder(GetInstallDirectory(scope));
+  absl::optional<base::ScopedCFTypeRef<CFDictionaryRef>> plist =
+      CreateWakeLaunchdPlist(scope);
+  if (!plist) {
+    return false;
+  }
+  return EnsureLaunchItemPresence(scope, CopyWakeLaunchdName(scope), *plist);
 }
 
 void CleanAfterInstallFailure(UpdaterScope scope) {
@@ -249,17 +134,8 @@ int DoSetup(UpdaterScope scope) {
     }
   }
 
-  // If there is no --wake-all task, install one now.
-  if (!Launchd::GetInstance()->PlistExists(LaunchdDomain(scope),
-                                           ServiceLaunchdType(scope),
-                                           CopyWakeLaunchdName(scope))) {
-    absl::optional<base::FilePath> path = GetWakeTaskTarget(scope);
-    if (!path || !CreateWakeLaunchdJobPlist(scope, *path)) {
-      return kErrorFailedToCreateWakeLaunchdJobPlist;
-    }
-    if (!StartUpdateWakeVersionedLaunchdJob(scope)) {
-      return kErrorFailedToStartLaunchdWakeJob;
-    }
+  if (!CreateWakeLaunchdJobPlist(scope)) {
+    return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
 
   return kErrorOk;
@@ -309,13 +185,9 @@ int PromoteCandidate(UpdaterScope scope) {
     }
   }
 
-  absl::optional<base::FilePath> wake_path = GetWakeTaskTarget(scope);
-  if (!wake_path || !CreateWakeLaunchdJobPlist(scope, *wake_path)) {
+  if (!CreateWakeLaunchdJobPlist(scope)) {
     return kErrorFailedToCreateWakeLaunchdJobPlist;
   }
-
-  if (!StartUpdateWakeVersionedLaunchdJob(scope))
-    return kErrorFailedToStartLaunchdWakeJob;
 
   if (!InstallKeystone(scope))
     return kErrorFailedToInstallLegacyUpdater;
@@ -336,20 +208,18 @@ int Uninstall(UpdaterScope scope) {
           << " : " << __func__;
   int exit = UninstallCandidate(scope);
 
-  if (!RemoveUpdateWakeJobFromLaunchd(scope))
+  if (!RemoveJobFromLaunchd(scope, CopyWakeLaunchdName(scope))) {
     exit = kErrorFailedToRemoveWakeJobFromLaunchd;
-
-  if (!DeleteInstallFolder(scope))
-    exit = kErrorFailedToDeleteFolder;
+  }
 
   base::ThreadPool::PostTask(FROM_HERE,
                              {base::MayBlock(), base::WithBaseSyncPrimitives()},
                              base::BindOnce(&UninstallKeystone, scope));
 
-  // Deleting the data folder is best-effort. Current running processes such as
-  // the crash handler process may still write to the updater log file, thus
+  // Deleting the install folder is best-effort. Current running processes such
+  // as the crash handler process may still write to the updater log file, thus
   // it is not always possible to delete the data folder.
-  DeleteDataFolder(scope);
+  DeleteFolder(GetInstallDirectory(scope));
 
   return exit;
 }
