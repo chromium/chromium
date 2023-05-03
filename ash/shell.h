@@ -53,6 +53,7 @@ namespace display {
 class DisplayChangeObserver;
 class DisplayConfigurator;
 class DisplayManager;
+class DisplayPortObserver;
 }  // namespace display
 
 namespace gfx {
@@ -1094,6 +1095,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplayColorManager> display_color_manager_;
   std::unique_ptr<DisplayErrorObserver> display_error_observer_;
   std::unique_ptr<ProjectingObserver> projecting_observer_;
+  std::unique_ptr<display::DisplayPortObserver> display_port_observer_;
 
   // Listens for output changes and updates the display manager.
   std::unique_ptr<display::DisplayChangeObserver> display_change_observer_;
