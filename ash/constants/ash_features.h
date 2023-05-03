@@ -219,7 +219,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchpadsInDiagnosticsApp);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnableTouchscreensInDiagnosticsApp);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEnableViewPpd);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kEnforceAshExtensionKeeplist);
 // TODO(b/271104781): Temporary flag while feature is being implemented. Remove
@@ -946,7 +945,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVideoConferenceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcBackgroundReplaceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcPortraitRelightEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsVcControlsUiFakeEffectsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsViewPpdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsWallpaperFastRefreshEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsWallpaperGooglePhotosSharedAlbumsEnabled();

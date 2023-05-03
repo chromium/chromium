@@ -3286,9 +3286,6 @@ extern const char kEnableOAuthIppDescription[];
 extern const char kEnableVariableRefreshRateName[];
 extern const char kEnableVariableRefreshRateDescription[];
 
-extern const char kEnableViewPpdName[];
-extern const char kEnableViewPpdDescription[];
-
 extern const char kEnforceAshExtensionKeeplistName[];
 extern const char kEnforceAshExtensionKeeplistDescription[];
 

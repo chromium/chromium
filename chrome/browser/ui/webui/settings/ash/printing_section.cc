@@ -290,7 +290,6 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString(
       "printingCUPSPrintPpdLearnMoreUrl",
       GetHelpUrlWithBoard(chrome::kCupsPrintPPDLearnMoreURL));
-  html_source->AddBoolean("isViewPpdEnabled", features::IsViewPpdEnabled());
   html_source->AddBoolean("isPrinterSettingsRevampEnabled",
                           features::IsPrinterSettingsRevampEnabled());
   html_source->AddBoolean("isPrinterSettingsPrinterStatusEnabled",
