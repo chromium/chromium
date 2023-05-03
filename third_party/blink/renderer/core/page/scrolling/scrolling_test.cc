@@ -22,8 +22,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "base/guid.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/input/main_thread_scrolling_reason.h"
@@ -1430,9 +1430,9 @@ TEST_P(ScrollingTest, ElementRegionCaptureData) {
       GetFrame()->GetDocument()->getElementById("content");
 
   const RegionCaptureCropId scrollable_id(
-      GUIDToToken(base::GUID::GenerateRandomV4()));
+      GUIDToToken(base::Uuid::GenerateRandomV4()));
   const RegionCaptureCropId content_id(
-      GUIDToToken(base::GUID::GenerateRandomV4()));
+      GUIDToToken(base::Uuid::GenerateRandomV4()));
 
   scrollable_element->SetRegionCaptureCropId(
       std::make_unique<RegionCaptureCropId>(scrollable_id));
