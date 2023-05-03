@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -214,9 +213,7 @@ std::string GetButtonIdForSyncConfirmationDialogAction(
     case SyncConfirmationDialogAction::kConfirm:
       return "confirmButton";
     case SyncConfirmationDialogAction::kCancel:
-      return base::FeatureList::IsEnabled(switches::kTangibleSync)
-                 ? "notNowButton"
-                 : "cancelButton";
+      return "notNowButton";
   }
 }
 

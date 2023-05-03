@@ -10764,15 +10764,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
 
       <!--  Sync Confirmation section of the tab modal signin flow -->
-      <message name="IDS_SYNC_CONFIRMATION_TITLE" desc="Title of the sync confirmation dialog in the tab modal signin flow when Dice is enabled">
-        Turn on sync?
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE" desc="Title in the information about sync on the sync confirmation dialog when Unity is enabled">
-        Sync your bookmarks, passwords, history, and more on all your devices
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC" desc="Description in the information about sync on the sync confirmation dialog when Unity is enabled">
-        Google may use your history to personalize Search and other Google services
-      </message>
       <message name="IDS_SYNC_CONFIRMATION_SETTINGS_INFO" desc="Information about customizing Sync settings in the sync confirmation dialog when Unity is enabled">
         You can always choose what to sync in settings.
       </message>
@@ -10845,9 +10836,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <!--  Sync Confirmation section of the Signin Intercept first run experience flow -->
       <message name="IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT" desc="This string appears as a heading on a pop-up dialog that shows up after users create a new profile. It welcomes users. The tone should be friendly and inviting.">
         Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>
-      </message>
-      <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_SIGNIN_INTERCEPT" desc="Information about sync on the sync confirmation dialog in the Signin Intercept flow. The second string is an exact copy of IDS_SYNC_CONFIRMATION_SYNC_INFO_DESC with a period at the end.">
-        Turn on sync to get your bookmarks, passwords, history, and more on this device and anywhere else you're syncing. Google may use your history to personalize Search and other Google services.
       </message>
       <if expr="not use_titlecase">
         <message name="IDS_SYNC_CONFIRMATION_TURN_ON_SYNC_BUTTON_LABEL" desc="This string appears as a button on a dialog that asks users if they want to turn on sync. When the user taps this button, they are opting in to the sync feature. 'Sync' is short for 'synchronization'.">

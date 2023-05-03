@@ -62,20 +62,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
-      isSigninInterceptFre_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isSigninInterceptFre');
-        },
-      },
-
-      isTangibleSync_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isTangibleSync');
-        },
-      },
-
       showEnterpriseBadge_: {
         type: Boolean,
         value: false,
@@ -88,15 +74,9 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
         },
       },
 
-      tangibleSyncStyleClass: {
-        type: String,
-        computed: 'getTangibleSyncStyleClass_(isTangibleSync_, isModalDialog_)',
-      },
-
       /**
-       * Whether to show the new UI for Browser Sync Settings and
-       * which include sublabel and Apps toggle shared between
-       * Ash and Lacros.
+       * Whether to show the new UI for Browser Sync Settings and which include
+       * sublabel and Apps toggle shared between Ash and Lacros.
        */
       useClickableSyncInfoDesc_: {
         type: Boolean,
@@ -110,8 +90,6 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   private accountImageSrc_: string;
   private anyButtonClicked_: boolean;
   private isModalDialog_: boolean;
-  private isSigninInterceptFre_: boolean;
-  private isTangibleSync_: boolean;
   private showEnterpriseBadge_: boolean;
   private syncBenefitsList_: SyncBenefit[];
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
@@ -195,28 +173,23 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     this.syncConfirmationBrowserProxy_.openDeviceSyncSettings();
   }
 
-  private getSigninInterceptDesignClass_(): string {
-    return this.isSigninInterceptFre_ ? 'signin-intercept-design' : '';
-  }
-
+  /**
+   * Returns the name of class to apply on some tags to enable animations.
+   * May be empty if no animations should be added.
+   */
   private getAnimationClass_() {
     return !this.isModalDialog_ ? 'fade-in' : '';
   }
 
-  private isModalDialogWithoutTangibleSync_(): boolean {
-    return this.isModalDialog_ && !this.isTangibleSync_;
-  }
-
-  private isWindowVersionWithoutTangibleSync_(): boolean {
-    return !this.isModalDialog_ && !this.isTangibleSync_;
-  }
-
-  private getTangibleSyncStyleClass_() {
-    if (!this.isTangibleSync_) {
-      return '';
-    }
-    return this.isModalDialog_ ? 'tangible-sync-style dialog' :
-                                 'tangible-sync-style';
+  /**
+   * Returns either "dialog" or an empty string.
+   *
+   * The returned value is intended to be added as a class on the root tags of
+   * the element. Some styles from `tangible_sync_style_shared.css` rely on the
+   * presence of this "dialog" class.
+   */
+  private getMaybeDialogClass_() {
+    return this.isModalDialog_ ? 'dialog' : '';
   }
 }
 

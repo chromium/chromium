@@ -36,103 +36,25 @@ class SigninBrowserTest extends PolymerTest {
  * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
-var LegacySyncDefaultModalTest = class extends SigninBrowserTest {
+var SyncConfirmationDefaultModalTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://sync-confirmation/test_loader.html?module=' +
         'signin/sync_confirmation_test.js';
   }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['switches::kTangibleSync']};
-  }
 };
 
-TEST_F('LegacySyncDefaultModalTest', 'Dialog', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for the Signin Intercept modal dialog version of
- * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var LegacySyncSigninInterceptModalTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return `chrome://sync-confirmation/test_loader.html?module=` +
-        `signin/sync_confirmation_test.js&style=` +
-        `${SyncConfirmationStyle.SIGNIN_INTERCEPT_MODAL}`;
-  }
-
-  /** @override */
-  get featureList() {
-    return {
-      enabled: ['kSyncPromoAfterSigninIntercept'],
-      disabled: ['switches::kTangibleSync']
-    };
-  }
-};
-
-TEST_F('LegacySyncSigninInterceptModalTest', 'Dialog', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for the window version of
- * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var LegacySyncWindowTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return `chrome://sync-confirmation/test_loader.html?module=` +
-        `signin/sync_confirmation_test.js&style=` +
-        `${SyncConfirmationStyle.WINDOW}`;
-  }
-
-  /** @override */
-  get featureList() {
-    return {disabled: ['switches::kTangibleSync']};
-  }
-};
-
-TEST_F('LegacySyncWindowTest', 'Window', function() {
-  mocha.run();
-});
-
-/**
- * Test fixture for the default modal dialog version of
- * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html
- * with Tangible Sync enabled.
- * This has to be declared as a variable for TEST_F to find it correctly.
- */
-var TangibleSyncDefaultModalTest = class extends SigninBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://sync-confirmation/test_loader.html?module=' +
-        'signin/sync_confirmation_test.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['switches::kTangibleSync']};
-  }
-};
-
-TEST_F('TangibleSyncDefaultModalTest', 'Dialog', function() {
+TEST_F('SyncConfirmationDefaultModalTest', 'Dialog', function() {
   mocha.run();
 });
 
 GEN('#if BUILDFLAG(ENABLE_DICE_SUPPORT)');
 /**
  * Test fixture for the Signin Intercept modal dialog version of
- * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html
- * with Tangible Sync enabled.
+ * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
-var TangibleSyncSigninInterceptModalTest = class extends SigninBrowserTest {
+var SyncConfirmationInterceptModalTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return `chrome://sync-confirmation/test_loader.html?module=` +
@@ -142,38 +64,30 @@ var TangibleSyncSigninInterceptModalTest = class extends SigninBrowserTest {
 
   /** @override */
   get featureList() {
-    return {
-      enabled: ['kSyncPromoAfterSigninIntercept', 'switches::kTangibleSync']
-    };
+    return {enabled: ['kSyncPromoAfterSigninIntercept']};
   }
 };
 
-TEST_F('TangibleSyncSigninInterceptModalTest', 'Dialog', function() {
+TEST_F('SyncConfirmationInterceptModalTest', 'Dialog', function() {
   mocha.run();
 });
 GEN('#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)');
 
 /**
  * Test fixture for the window version of
- * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html
- * with Tangible Sync enabled.
+ * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
-var TangibleSyncWindowTest = class extends SigninBrowserTest {
+var SyncConfirmationWindowTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
     return `chrome://sync-confirmation/test_loader.html?module=` +
         `signin/sync_confirmation_test.js&style=` +
         `${SyncConfirmationStyle.WINDOW}`;
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['switches::kTangibleSync']};
-  }
 };
 
-TEST_F('TangibleSyncWindowTest', 'Window', function() {
+TEST_F('SyncConfirmationWindowTest', 'Window', function() {
   mocha.run();
 });
 
