@@ -22,7 +22,6 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/buildflags.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/views_features.h"
@@ -139,6 +138,23 @@ std::u16string DialogDelegate::GetDialogButtonLabel(
   return GetDialogButtons() & ui::DIALOG_BUTTON_OK
              ? l10n_util::GetStringUTF16(IDS_APP_CANCEL)
              : l10n_util::GetStringUTF16(IDS_APP_CLOSE);
+}
+
+MdTextButton::Style DialogDelegate::GetDialogButtonStyle(
+    ui::DialogButton button) const {
+  absl::optional<MdTextButton::Style> style = GetParams().button_styles[button];
+  if (style.has_value()) {
+    return *style;
+  }
+
+  return GetIsDefault(button) ? MdTextButton::Style::kProminent
+                              : MdTextButton::Style::kDefault;
+}
+
+bool DialogDelegate::GetIsDefault(ui::DialogButton button) const {
+  return GetDefaultDialogButton() == button &&
+         (button != ui::DIALOG_BUTTON_CANCEL ||
+          PlatformStyle::kDialogDefaultButtonCanBeCancel);
 }
 
 bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
@@ -271,13 +287,13 @@ BubbleFrameView* DialogDelegate::GetBubbleFrameView() const {
   return view ? static_cast<BubbleFrameView*>(view->frame_view()) : nullptr;
 }
 
-views::LabelButton* DialogDelegate::GetOkButton() const {
+views::MdTextButton* DialogDelegate::GetOkButton() const {
   DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->ok_button() : nullptr;
 }
 
-views::LabelButton* DialogDelegate::GetCancelButton() const {
+views::MdTextButton* DialogDelegate::GetCancelButton() const {
   DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->cancel_button() : nullptr;
@@ -350,6 +366,15 @@ void DialogDelegate::SetButtonLabel(ui::DialogButton button,
   if (params_.button_labels[button] == label)
     return;
   params_.button_labels[button] = label;
+  DialogModelChanged();
+}
+
+void DialogDelegate::SetButtonStyle(ui::DialogButton button,
+                                    absl::optional<MdTextButton::Style> style) {
+  if (params_.button_styles[button] == style) {
+    return;
+  }
+  params_.button_styles[button] = style;
   DialogModelChanged();
 }
 

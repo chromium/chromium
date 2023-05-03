@@ -22,7 +22,6 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/table_layout.h"
@@ -260,7 +259,7 @@ void DialogClientView::UpdateDialogButtons() {
   InvalidateLayout();
 }
 
-void DialogClientView::UpdateDialogButton(LabelButton** member,
+void DialogClientView::UpdateDialogButton(MdTextButton** member,
                                           ui::DialogButton type) {
   DialogDelegate* const delegate = GetDialogDelegate();
   if (!(delegate->GetDialogButtons() & type)) {
@@ -270,16 +269,16 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
     return;
   }
 
-  const bool is_default = delegate->GetDefaultDialogButton() == type &&
-                          (type != ui::DIALOG_BUTTON_CANCEL ||
-                           PlatformStyle::kDialogDefaultButtonCanBeCancel);
+  const bool is_default = delegate->GetIsDefault(type);
   const std::u16string title = delegate->GetDialogButtonLabel(type);
+  const MdTextButton::Style style = delegate->GetDialogButtonStyle(type);
 
   if (*member) {
-    LabelButton* button = *member;
+    MdTextButton* button = *member;
     button->SetEnabled(delegate->IsDialogButtonEnabled(type));
     button->SetIsDefault(is_default);
     button->SetText(title);
+    button->SetStyle(style);
     return;
   }
 
@@ -293,6 +292,7 @@ void DialogClientView::UpdateDialogButton(LabelButton** member,
               .SetCallback(base::BindRepeating(&DialogClientView::ButtonPressed,
                                                base::Unretained(this), type))
               .SetText(title)
+              .SetStyle(style)
               .SetProminent(is_default)
               .SetIsDefault(is_default)
               .SetEnabled(delegate->IsDialogButtonEnabled(type))

@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -26,7 +27,6 @@ namespace views {
 class BubbleFrameView;
 class DialogClientView;
 class DialogObserver;
-class LabelButton;
 
 ///////////////////////////////////////////////////////////////////////////////
 //
@@ -69,6 +69,10 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
     // Prefer to use this field (via SetButtonLabel) rather than override
     // GetDialogButtonLabel - see https://crbug.com/1011446
     std::u16string button_labels[ui::DIALOG_BUTTON_LAST + 1];
+
+    // Styles of each button on this dialog. If empty a style will be derived.
+    absl::optional<MdTextButton::Style>
+        button_styles[ui::DIALOG_BUTTON_LAST + 1];
 
     // A bitmask of buttons (from ui::DialogButton) that are enabled in this
     // dialog. It's legal for a button to be marked enabled that isn't present
@@ -125,6 +129,12 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 
   // Returns the label of the specified dialog button.
   std::u16string GetDialogButtonLabel(ui::DialogButton button) const;
+
+  // Returns the style of the specific dialog button.
+  MdTextButton::Style GetDialogButtonStyle(ui::DialogButton button) const;
+
+  // Returns true if `button` should be the default button.
+  bool GetIsDefault(ui::DialogButton button) const;
 
   // Returns whether the specified dialog button is enabled.
   virtual bool IsDialogButtonEnabled(ui::DialogButton button) const;
@@ -187,8 +197,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
 
   // Helpers for accessing parts of the DialogClientView without needing to know
   // about DialogClientView. Do not call these before OnWidgetInitialized().
-  views::LabelButton* GetOkButton() const;
-  views::LabelButton* GetCancelButton() const;
+  views::MdTextButton* GetOkButton() const;
+  views::MdTextButton* GetCancelButton() const;
   views::View* GetExtraView() const;
 
   // Helper for accessing the footnote view. Unlike the three methods just
@@ -233,6 +243,8 @@ class VIEWS_EXPORT DialogDelegate : public WidgetDelegate {
   void SetDefaultButton(int button);
   void SetButtons(int buttons);
   void SetButtonLabel(ui::DialogButton button, std::u16string label);
+  void SetButtonStyle(ui::DialogButton button,
+                      absl::optional<MdTextButton::Style> style);
   void SetButtonEnabled(ui::DialogButton button, bool enabled);
 
   // Called when the user presses the dialog's "OK" button or presses the dialog
