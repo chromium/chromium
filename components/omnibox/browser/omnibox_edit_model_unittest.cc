@@ -948,13 +948,11 @@ TEST_F(OmniboxEditModelPopupTest, PopupStepSelectionWithActions) {
     matches.push_back(match);
   }
   // The second match has a normal action.
-  matches[1].actions.push_back(
-      base::MakeRefCounted<OmniboxAction>(OmniboxAction::LabelStrings(), GURL(),
-                                          /*takes_over_match=*/false));
+  matches[1].actions.push_back(base::MakeRefCounted<OmniboxAction>(
+      OmniboxAction::LabelStrings(), GURL()));
   // The fourth match has an action that takes over the match.
-  matches[3].actions.push_back(
-      base::MakeRefCounted<OmniboxAction>(OmniboxAction::LabelStrings(), GURL(),
-                                          /*takes_over_match=*/true));
+  matches[3].takeover_action = base::MakeRefCounted<OmniboxAction>(
+      OmniboxAction::LabelStrings(), GURL());
 
   auto* result = &model()->autocomplete_controller()->result_;
   result->AppendMatches(matches);

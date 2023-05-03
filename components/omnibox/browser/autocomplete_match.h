@@ -582,11 +582,8 @@ struct AutocompleteMatch {
   // Serialise this object into a trace.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-  // Matches with actions usually have just one. Even with more, one of them
-  // is usually first and most significant; an action that takes over the
-  // whole match, for example. This method returns the foremost action, if it
-  // exists, and nullptr otherwise.
-  OmniboxAction* GetPrimaryAction() const;
+  // Returns the action at `index`, or nullptr if `index` is out of bounds.
+  OmniboxAction* GetActionAt(size_t index) const;
 
   // Returns if `predicate` returns true for the match or one of its duplicates.
   template <typename UnaryPredicate>
@@ -785,8 +782,13 @@ struct AutocompleteMatch {
   // Set in matches originating from keyword results.
   bool from_keyword = false;
 
-  // Contains one or more actions relevant to this match.
+  // The visible actions relevant to this match.
   std::vector<scoped_refptr<OmniboxAction>> actions;
+
+  // An optional invisible action that takes over the match navigation. That is:
+  // if provided, when the user selects the match, the navigation is ignored and
+  // this action is executed instead.
+  scoped_refptr<OmniboxAction> takeover_action;
 
   // True if this match is from a previous result.
   bool from_previous = false;

@@ -182,7 +182,7 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->keyword = base::UTF16ToUTF8(input.keyword);
     result->duplicates = static_cast<int32_t>(input.duplicate_matches.size());
     result->from_previous = input.from_previous;
-    const auto* pedal = OmniboxPedal::FromAction(input.GetPrimaryAction());
+    const auto* pedal = OmniboxPedal::FromAction(input.GetActionAt(0u));
     result->pedal_id =
         pedal == nullptr ? 0 : static_cast<int32_t>(pedal->PedalId());
     result->additional_info =

@@ -54,8 +54,7 @@ namespace {
 class FakeOmniboxAction : public OmniboxAction {
  public:
   explicit FakeOmniboxAction(OmniboxActionId id)
-      : OmniboxAction(LabelStrings(u"", u"", u"", u""), GURL{}, false),
-        id_(id) {}
+      : OmniboxAction(LabelStrings(u"", u"", u"", u""), GURL{}), id_(id) {}
   OmniboxActionId ActionId() const override { return id_; }
 
  private:

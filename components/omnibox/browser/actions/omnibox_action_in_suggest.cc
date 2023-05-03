@@ -65,8 +65,7 @@ OmniboxActionInSuggest::OmniboxActionInSuggest(omnibox::ActionInfo action_info)
               l10n_util::GetStringUTF16(
                   IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX),
               l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST)),
-          {},
-          false),
+          {}),
       action_info_{std::move(action_info)} {}
 
 OmniboxActionInSuggest::~OmniboxActionInSuggest() = default;

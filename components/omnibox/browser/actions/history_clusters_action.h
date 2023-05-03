@@ -46,9 +46,9 @@ GURL GetFullJourneysUrlForQuery(const std::string& query);
 // Made public for testing.
 class HistoryClustersAction : public OmniboxAction {
  public:
-  HistoryClustersAction(const std::string& query,
-                        const history::ClusterKeywordData& matched_keyword_data,
-                        bool takes_over_match);
+  HistoryClustersAction(
+      const std::string& query,
+      const history::ClusterKeywordData& matched_keyword_data);
 
   void RecordActionShown(size_t position, bool executed) const override;
   void Execute(ExecutionContext& context) const override;

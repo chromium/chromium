@@ -286,6 +286,7 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       keyword(match.keyword),
       from_keyword(match.from_keyword),
       actions(match.actions),
+      takeover_action(match.takeover_action),
       from_previous(match.from_previous),
       search_terms_args(
           match.search_terms_args
@@ -344,6 +345,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   keyword = std::move(match.keyword);
   from_keyword = std::move(match.from_keyword);
   actions = std::move(match.actions);
+  takeover_action = std::move(match.takeover_action);
   from_previous = std::move(match.from_previous);
   search_terms_args = std::move(match.search_terms_args);
   post_content = std::move(match.post_content);
@@ -410,6 +412,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   keyword = match.keyword;
   from_keyword = match.from_keyword;
   actions = match.actions;
+  takeover_action = match.takeover_action;
   from_previous = match.from_previous;
   search_terms_args.reset(
       match.search_terms_args
@@ -1323,10 +1326,11 @@ void AutocompleteMatch::UpgradeMatchWithPropertiesFrom(
 
   from_previous = from_previous && duplicate_match.from_previous;
 
-  // Take the `actions` so that they will be presented instead of buried.
+  // Absorb the `actions` and `takeover_action` so they won't be buried.
   if (actions.empty() && !duplicate_match.actions.empty() &&
       IsActionCompatible()) {
     actions = std::move(duplicate_match.actions);
+    takeover_action = std::move(duplicate_match.takeover_action);
   }
 
   // Prefer fresh suggestion text over potentially stale shortcut text for
@@ -1718,8 +1722,8 @@ void AutocompleteMatch::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("keyword", keyword);
 }
 
-OmniboxAction* AutocompleteMatch::GetPrimaryAction() const {
-  return actions.empty() ? nullptr : actions[0].get();
+OmniboxAction* AutocompleteMatch::GetActionAt(size_t index) const {
+  return index >= actions.size() ? nullptr : actions[index].get();
 }
 
 #if DCHECK_IS_ON()

@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerPedalIconTest, PedalVectorIcons) {
 
   const scoped_refptr<OmniboxAction> history_clusters_action =
       base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-          "test", history::ClusterKeywordData(), /*takes_over_match=*/false);
+          "test", history::ClusterKeywordData());
   const gfx::VectorIcon& vector_icon = history_clusters_action->GetVectorIcon();
   const std::string& svg_name =
       RealboxHandler::PedalVectorIconToResourceName(vector_icon);

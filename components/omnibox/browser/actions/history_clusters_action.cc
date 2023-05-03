@@ -98,16 +98,14 @@ GURL GetFullJourneysUrlForQuery(const std::string& query) {
 
 HistoryClustersAction::HistoryClustersAction(
     const std::string& query,
-    const history::ClusterKeywordData& matched_keyword_data,
-    bool takes_over_match)
+    const history::ClusterKeywordData& matched_keyword_data)
     : OmniboxAction(
           OmniboxAction::LabelStrings(
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_HINT,
               IDS_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUGGESTION_CONTENTS,
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH_SUFFIX,
               IDS_ACC_OMNIBOX_ACTION_HISTORY_CLUSTERS_SEARCH),
-          GetFullJourneysUrlForQuery(query),
-          takes_over_match),
+          GetFullJourneysUrlForQuery(query)),
       matched_keyword_data_(matched_keyword_data),
       query_(query) {}
 
@@ -207,14 +205,11 @@ void AttachHistoryClustersActions(
   if (result.empty())
     return;
 
-  // If there's any visible action in `result`, don't add a history cluster
-  // action to avoid over-crowding.
+  // If there's any action in `result`, don't add a history cluster action to
+  // avoid over-crowding.
   if (!GetConfig().omnibox_action_with_pedals &&
-      base::ranges::any_of(result, [](const auto& match) {
-        return base::ranges::any_of(match.actions, [](const auto& action) {
-          return !action->TakesOverMatch();
-        });
-      })) {
+      base::ranges::any_of(
+          result, [](const auto& match) { return !match.actions.empty(); })) {
     return;
   }
 
@@ -249,8 +244,7 @@ void AttachHistoryClustersActions(
           service->DoesQueryMatchAnyCluster(query);
       if (matched_keyword_data) {
         match.actions.push_back(base::MakeRefCounted<HistoryClustersAction>(
-            query, std::move(matched_keyword_data.value()),
-            /*takes_over_match=*/false));
+            query, std::move(matched_keyword_data.value())));
       }
     }
 

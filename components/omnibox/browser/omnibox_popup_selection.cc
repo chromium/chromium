@@ -99,9 +99,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
       if (action_index >= match.actions.size()) {
         return false;
       }
-      // If the action takes over the whole match, don't have a separate Action
-      // control in the tab order (or rendered).
-      return !match.actions[action_index]->TakesOverMatch();
+      return true;
     }
     case FOCUSED_BUTTON_REMOVE_SUGGESTION:
       return match.SupportsDeletion();

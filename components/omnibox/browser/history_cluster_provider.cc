@@ -53,10 +53,9 @@ void HistoryClusterProvider::CompleteHistoryClustersMatch(
   // the traditional History/Journeys WebUI. As a side effect, it will also
   // record the action-centric metrics.
   DCHECK(match->actions.empty());
-  match->actions.push_back(
+  match->takeover_action =
       base::MakeRefCounted<history_clusters::HistoryClustersAction>(
-          matching_text, std::move(matched_keyword_data),
-          /*takes_over_match=*/true));
+          matching_text, std::move(matched_keyword_data));
 }
 
 void HistoryClusterProvider::Start(const AutocompleteInput& input,

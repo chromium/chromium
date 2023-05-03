@@ -216,7 +216,7 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
           base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
         return l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_SUFFIX);
       }
-      const OmniboxAction* action = match.GetPrimaryAction();
+      const OmniboxAction* action = match.GetActionAt(0u);
       if (action) {
         return action->GetLabelStrings().accessibility_suffix;
       }
@@ -323,11 +323,8 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
           std::u16string(), kTabIconResourceName);
     }
 
-    // Omit actions that takeover the whole match, because the C++ handler
-    // remaps the navigation to execute the action. (Doesn't happen in the JS.)
-    const OmniboxAction* action = match.GetPrimaryAction();
-    if (action && !action->TakesOverMatch() &&
-        base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
+    const OmniboxAction* action = match.GetActionAt(0u);
+    if (action && base::FeatureList::IsEnabled(omnibox::kNtpRealboxPedals)) {
       const OmniboxAction::LabelStrings& label_strings =
           action->GetLabelStrings();
       mojom_match->action = omnibox::mojom::Action::New(
@@ -834,7 +831,7 @@ void RealboxHandler::ExecuteAction(uint8_t line,
   // actions over tab switch, but the omnibox shows tab switch button first.
   // This disparity can be eliminated once realbox supports multiple
   // actions on a button row.
-  const bool has_action = match->GetPrimaryAction() != nullptr;
+  const bool has_action = match->GetActionAt(0u) != nullptr;
   DCHECK(has_action || match->has_tab_match.value_or(false));
   OmniboxPopupSelection selection(
       line, has_action

@@ -177,14 +177,23 @@ void RecordActionShownForAllActions(
     const AutocompleteResult& result,
     OmniboxPopupSelection executed_selection =
         OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch)) {
-  // Record the presence of any actions in the result set.
+  // Record the presence of all actions in the result set.
   for (size_t line_index = 0; line_index < result.size(); ++line_index) {
     const AutocompleteMatch& match = result.match_at(line_index);
+    // Record the presence of the takeover action on this line, if any.
+    if (match.takeover_action) {
+      match.takeover_action->RecordActionShown(
+          line_index,
+          /*executed=*/line_index == executed_selection.line &&
+              executed_selection.state == OmniboxPopupSelection::NORMAL);
+    }
     for (size_t action_index = 0; action_index < match.actions.size();
          ++action_index) {
       match.actions[action_index]->RecordActionShown(
-          line_index, line_index == executed_selection.line &&
-                          action_index == executed_selection.action_index);
+          line_index, /*executed=*/line_index == executed_selection.line &&
+                          action_index == executed_selection.action_index &&
+                          executed_selection.state ==
+                              OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
     }
   }
 }
@@ -2035,7 +2044,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
                                 OmniboxPopupSelection::FOCUSED_BUTTON_ACTION)
               .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message =
-            match.GetPrimaryAction()->GetLabelStrings().accessibility_suffix;
+            match.GetActionAt(0u)->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
       if (OmniboxPopupSelection(
@@ -2067,7 +2076,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       // When pedal button is focused, the autocomplete suggestion isn't
       // read because it's not relevant to the button's action.
-      return match.GetPrimaryAction()->GetLabelStrings().accessibility_hint;
+      return match.GetActionAt(0u)->GetLabelStrings().accessibility_hint;
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
       additional_message_id = IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
       break;
@@ -2244,16 +2253,10 @@ bool OmniboxEditModel::ExecuteTakeoverAction(
     return false;
   }
   const AutocompleteMatch& match = result().match_at(match_index);
-  for (size_t action_index = 0; action_index < match.actions.size();
-       ++action_index) {
-    if (match.actions[action_index]->TakesOverMatch()) {
-      OmniboxPopupSelection selection(
-          match_index, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION,
-          action_index);
-      ExecuteAction(selection, disposition, match_selection_timestamp);
-      // A match can have at most one takeover match.
-      return true;
-    }
+  if (match.takeover_action) {
+    OmniboxPopupSelection selection(match_index);
+    ExecuteAction(selection, disposition, match_selection_timestamp);
+    return true;
   }
   return false;
 }
@@ -2269,8 +2272,14 @@ void OmniboxEditModel::ExecuteAction(
                      edit_model_delegate_->AsWeakPtr()),
       match_selection_timestamp, disposition);
   const AutocompleteMatch& match = result().match_at(selection.line);
-  DCHECK_LT(selection.action_index, match.actions.size());
-  match.actions[selection.action_index]->Execute(context);
+  // Execute the takeover action on the selected line, if any. Otherwise execute
+  // the visible action on the selected line and the given index.
+  if (match.takeover_action) {
+    match.takeover_action->Execute(context);
+  } else {
+    DCHECK_LT(selection.action_index, match.actions.size());
+    match.actions[selection.action_index]->Execute(context);
+  }
 
   if (view_) {
     // This block resets omnibox to unedited state and closes popup, which
