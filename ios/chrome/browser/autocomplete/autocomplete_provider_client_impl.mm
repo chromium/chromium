@@ -185,6 +185,12 @@ AutocompleteProviderClientImpl::GetAutocompleteScoringModelService() const {
   return nullptr;
 }
 
+OnDeviceTailModelService*
+AutocompleteProviderClientImpl::GetOnDeviceTailModelService() const {
+  // TODO(crbug.com/1372112): implement the service factory for iOS.
+  return nullptr;
+}
+
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
   return browser_state_->GetPrefs()->GetString(
       language::prefs::kAcceptLanguages);

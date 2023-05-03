@@ -28,6 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 class AutocompleteScoringModelService;
+class OnDeviceTailModelService;
 
 struct AutocompleteMatch;
 
@@ -114,6 +115,10 @@ class MockAutocompleteProviderClient
 
   AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const override {
+    return nullptr;
+  }
+
+  OnDeviceTailModelService* GetOnDeviceTailModelService() const override {
     return nullptr;
   }
 

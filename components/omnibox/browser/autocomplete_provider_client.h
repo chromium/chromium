@@ -32,6 +32,7 @@ class ShortcutsBackend;
 class TabMatcher;
 class ZeroSuggestCacheService;
 class AutocompleteScoringModelService;
+class OnDeviceTailModelService;
 
 namespace bookmarks {
 class BookmarkModel;
@@ -100,6 +101,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
       const = 0;
   virtual AutocompleteScoringModelService* GetAutocompleteScoringModelService()
       const = 0;
+  virtual OnDeviceTailModelService* GetOnDeviceTailModelService() const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP
   // request.
