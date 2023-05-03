@@ -36,7 +36,10 @@ WGPUPipelineLayout AsDawnType(
 // types that recursively use them. A return value of false means that the
 // conversion failed and a TypeError was recorded in the ExceptionState.
 bool ConvertToDawn(const V8GPUColor* in, WGPUColor* out, ExceptionState&);
-bool ConvertToDawn(const V8GPUExtent3D* in, WGPUExtent3D* out, ExceptionState&);
+bool ConvertToDawn(const V8GPUExtent3D* in,
+                   WGPUExtent3D* out,
+                   GPUDevice* device,
+                   ExceptionState&);
 bool ConvertToDawn(const V8GPUOrigin3D* in, WGPUOrigin3D* out, ExceptionState&);
 bool ConvertToDawn(const V8GPUOrigin2D* in, WGPUOrigin2D* out, ExceptionState&);
 bool ConvertToDawn(const GPUImageCopyTexture* in,

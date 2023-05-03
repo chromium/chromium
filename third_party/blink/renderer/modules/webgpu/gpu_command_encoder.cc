@@ -285,7 +285,7 @@ void GPUCommandEncoder::copyBufferToTexture(GPUImageCopyBuffer* source,
                                             ExceptionState& exception_state) {
   WGPUExtent3D dawn_copy_size;
   WGPUImageCopyTexture dawn_destination;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;
   }
@@ -308,7 +308,7 @@ void GPUCommandEncoder::copyTextureToBuffer(GPUImageCopyTexture* source,
                                             ExceptionState& exception_state) {
   WGPUExtent3D dawn_copy_size;
   WGPUImageCopyTexture dawn_source;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(source, &dawn_source, exception_state)) {
     return;
   }
@@ -332,7 +332,7 @@ void GPUCommandEncoder::copyTextureToTexture(GPUImageCopyTexture* source,
   WGPUExtent3D dawn_copy_size;
   WGPUImageCopyTexture dawn_source;
   WGPUImageCopyTexture dawn_destination;
-  if (!ConvertToDawn(copy_size, &dawn_copy_size, exception_state) ||
+  if (!ConvertToDawn(copy_size, &dawn_copy_size, device_, exception_state) ||
       !ConvertToDawn(source, &dawn_source, exception_state) ||
       !ConvertToDawn(destination, &dawn_destination, exception_state)) {
     return;

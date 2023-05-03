@@ -8,4 +8,8 @@ dictionary GPUExtent3DDict {
     required GPUIntegerCoordinate width;
     GPUIntegerCoordinate height = 1;
     GPUIntegerCoordinate depthOrArrayLayers = 1;
+
+    // Not part of the GPUExtent3DDict IDL. Included to aid in catching a
+    // common mistake of attempting to use depth instead of depthOrArrayLayers.
+    any depth;
 };

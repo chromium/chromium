@@ -27,11 +27,13 @@ bool ConvertToDawn(const GPUTextureDescriptor* in,
                    WGPUTextureDescriptor* out,
                    std::string* label,
                    std::unique_ptr<WGPUTextureFormat[]>* view_formats,
+                   GPUDevice* device,
                    ExceptionState& exception_state) {
   DCHECK(in);
   DCHECK(out);
   DCHECK(label);
   DCHECK(view_formats);
+  DCHECK(device);
 
   *out = {};
   out->usage = static_cast<WGPUTextureUsage>(in->usage());
@@ -49,7 +51,7 @@ bool ConvertToDawn(const GPUTextureDescriptor* in,
   out->viewFormatCount = in->viewFormats().size();
   out->viewFormats = view_formats->get();
 
-  return ConvertToDawn(in->size(), &out->size, exception_state);
+  return ConvertToDawn(in->size(), &out->size, device, exception_state);
 }
 
 WGPUTextureViewDescriptor AsDawnType(
@@ -99,7 +101,7 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   WGPUTextureDescriptor dawn_desc;
   std::string label;
   std::unique_ptr<WGPUTextureFormat[]> view_formats;
-  if (!ConvertToDawn(webgpu_desc, &dawn_desc, &label, &view_formats,
+  if (!ConvertToDawn(webgpu_desc, &dawn_desc, &label, &view_formats, device,
                      exception_state)) {
     return nullptr;
   }

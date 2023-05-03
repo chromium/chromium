@@ -213,7 +213,7 @@ void GPUDevice::AddConsoleWarning(const String& message) {
 
 void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
   size_t index = static_cast<size_t>(type);
-  if (!singleton_warning_fired_[index]) {
+  if (UNLIKELY(!singleton_warning_fired_[index])) {
     singleton_warning_fired_[index] = true;
 
     std::string message;
@@ -224,6 +224,12 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
             "preferred by this device (\"" +
             std::string(FromDawnEnum(GPU::preferred_canvas_format())) +
             "\"). This requires an extra copy, which may impact performance.";
+        break;
+      case GPUSingletonWarning::kDepthKey:
+        message =
+            "The key \"depth\" was included in a GPUExtent3D dictionary, which "
+            "has no effect. It is likely that \"depthOrArrayLayers\" was "
+            "intended instead.";
         break;
       case GPUSingletonWarning::kCount:
         NOTREACHED();

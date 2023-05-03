@@ -63,6 +63,7 @@ class V8GPUErrorFilter;
 // regular warning is not raised.
 enum class GPUSingletonWarning {
   kNonPreferredFormat,
+  kDepthKey,
   kCount,  // Must be last
 };
 
