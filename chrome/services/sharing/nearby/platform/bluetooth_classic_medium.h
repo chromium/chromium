@@ -44,6 +44,8 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
   std::unique_ptr<api::BluetoothServerSocket> ListenForService(
       const std::string& service_name,
       const std::string& service_uuid) override;
+  std::unique_ptr<api::BluetoothPairing> CreatePairing(
+      api::BluetoothDevice& remote_device) override;
   BluetoothDevice* GetRemoteDevice(const std::string& mac_address) override;
   void AddObserver(Observer* observer) override {
     // TODO(b/269521993): Implement.

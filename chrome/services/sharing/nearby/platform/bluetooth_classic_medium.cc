@@ -170,6 +170,13 @@ BluetoothClassicMedium::ListenForService(const std::string& service_name,
   return nullptr;
 }
 
+std::unique_ptr<api::BluetoothPairing>
+BluetoothClassicMedium::CreatePairing(api::BluetoothDevice& remote_device) {
+  // TODO(b/280656073): Add Chromium implementation for BluetoothPairing.
+  NOTIMPLEMENTED();
+  return nullptr;
+}
+
 BluetoothDevice* BluetoothClassicMedium::GetRemoteDevice(
     const std::string& mac_address) {
   auto it = discovered_bluetooth_devices_map_.find(mac_address);
