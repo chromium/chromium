@@ -235,8 +235,7 @@ TEST_P(ShellTest, ShellDestruction) {
 using RemoteShellTest = test::WaylandServerTest;
 
 // Calling SetPined w/o commit should not crash (crbug.com/979128).
-// TODO(crbug.com/1432923): Re-enable this test
-TEST_F(RemoteShellTest, DISABLED_DestroyRootSurfaceBeforeCommit) {
+TEST_F(RemoteShellTest, DestroyRootSurfaceBeforeCommit) {
   test::ResourceKey surface_key;
 
   PostToClientAndWait([&](test::TestClient* client) {

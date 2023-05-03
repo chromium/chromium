@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include <poll.h>
+
 #include <wayland-client-core.h>
 
 #include "base/check.h"
@@ -66,8 +68,23 @@ void TestWaylandClientThread::RunAndWait(base::OnceClosure closure) {
 }
 
 void TestWaylandClientThread::OnFileCanReadWithoutBlocking(int fd) {
-  while (wl_display_prepare_read(client_->display()) != 0)
-    wl_display_dispatch_pending(client_->display());
+  if (wl_display_prepare_read(client_->display()) != 0) {
+    return;
+  }
+  // Disconnect can be seen as a read event, and wl_display_prepare_read_queue()
+  // is used to prevent read from other thread and does not actually check the
+  // `fd`'s state.  Make sure that `fd` has indeed has data to read.
+  struct pollfd fds;
+  fds.fd = fd;
+  fds.events = POLLIN;
+  fds.revents = 0;
+
+  auto ret = poll(&fds, 1, -1);
+
+  if (ret != POLLIN) {
+    wl_display_cancel_read(client_->display());
+    return;
+  }
 
   wl_display_read_events(client_->display());
   wl_display_dispatch_pending(client_->display());
