@@ -144,6 +144,10 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     kWeblayerWebViewCompatMode,
 
+    // Temporary keys for crbug.com/1430313:
+    "db_init_error-diagnostics",
+    "db_init_error-path",
+
     nullptr};
 // clang-format on
 

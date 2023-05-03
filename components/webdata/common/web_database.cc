@@ -9,6 +9,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "sql/transaction.h"
@@ -30,23 +31,27 @@ BASE_FEATURE(kWebDatabaseDumpWithoutCrashingOnInitProblems,
              "WebDatabaseDumpWithoutCrashingOnInitProblems",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-std::string GetDiagnostics(const sql::Database& db) {
+std::string GetDiagnostics(const sql::Database& db,
+                           const base::Location& location) {
   if (!db.is_open()) {
     return "Database is not open";
   }
-  return base::StringPrintf("ErrorCode: %d, LastErrorno: %d, Error: %s",
-                            db.GetErrorCode(), db.GetLastErrno(),
-                            db.GetErrorMessage());
+  return base::StringPrintf(
+      "ErrorCode: %d, LastErrorno: %d, Error: %s, location: %s",
+      db.GetErrorCode(), db.GetLastErrno(), db.GetErrorMessage(),
+      location.ToString().c_str());
 }
 
 // TODO(crbug.com/1430313): Remove when bug is fixed.
-NOINLINE void LogDiagnostics(sql::Database& db) {
+NOINLINE void LogDiagnostics(
+    sql::Database& db,
+    const base::Location& location = base::Location::Current()) {
   if (!base::FeatureList::IsEnabled(
           kWebDatabaseDumpWithoutCrashingOnInitProblems)) {
     return;
   }
   SCOPED_CRASH_KEY_STRING1024("db_init_error", "diagnostics",
-                              GetDiagnostics(db));
+                              GetDiagnostics(db, location));
   base::debug::DumpWithoutCrashing();
 }
 
@@ -114,6 +119,9 @@ sql::Database* WebDatabase::GetSQLConnection() {
 }
 
 sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
+  // TODO(crbug.com/1430313): Remove when bug is fixed.
+  SCOPED_CRASH_KEY_STRING64("db_init_error", "path",
+                            db_name.BaseName().AsUTF8Unsafe());
   db_.set_histogram_tag("Web");
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
