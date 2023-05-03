@@ -309,8 +309,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "flash",
     ),
-    # TODO(crbug.com/1260195): Enable the notifies once recipe fully works
-    notifies = [],
+    notifies = ["clank-engprod"],
     properties = {
         "flash_criteria": [
             # Used by ci/Android Release (Nexus 5X)
@@ -320,7 +319,6 @@ ci.builder(
                 "device_type": "bullhead",
                 "device_os": "N2G48C",
                 "max_uid_threshold": 18000,
-                "dry_run": True,
             },
             # Used by ci/android-pie-arm64-rel
             # This is mirrored by the CQ builder android-arm64-rel
@@ -336,7 +334,7 @@ ci.builder(
                 "pool": "chromium.tests",
                 "device_type": "sailfish",
                 "device_os": "PQ3A.190801.002",
-                "max_uid_threshold": 19500,
+                "max_uid_threshold": 18000,
             },
             # Used by GPU team
             {
@@ -344,7 +342,6 @@ ci.builder(
                 "device_type": "oriole",
                 "device_os": "TP1A.220624.021",
                 "max_uid_threshold": 18000,
-                "dry_run": True,
             },
         ],
     },
