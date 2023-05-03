@@ -163,6 +163,8 @@ source_set("chromeos") {
     "reporting/metric_reporting_manager_delegate_base.h",
     "reporting/network/network_bandwidth_sampler.cc",
     "reporting/network/network_bandwidth_sampler.h",
+    "reporting/user_reporting_settings.cc",
+    "reporting/user_reporting_settings.h",
     "smart_reader/smart_reader_client_impl.cc",
     "smart_reader/smart_reader_client_impl.h",
     "tablet_mode/chrome_content_browser_client_tablet_mode_part.cc",
@@ -465,6 +467,7 @@ source_set("unit_tests") {
     "policy/dlp/dlp_rules_manager_impl_unittest.cc",
     "policy/dlp/dlp_scoped_file_access_delegate_unittest.cc",
     "reporting/network/network_bandwidth_sampler_unittest.cc",
+    "reporting/user_reporting_settings_unittest.cc",
 
     # TODO(zturner): Enable this on Windows. See
     # BrowserWithTestWindowTest::SetUp() for a comment explaining why this is
