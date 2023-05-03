@@ -170,7 +170,7 @@ std::unique_ptr<FakeDisplaySnapshot> Builder::Build() {
       physical_size, type_, base_connector_id_, path_topology_,
       is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
       has_content_protection_key_, has_color_correction_matrix_,
-      color_correction_in_linear_space_, name_, std::move(modes_),
+      color_correction_in_linear_space_, name_, sys_path_, std::move(modes_),
       current_mode_, native_mode_, product_code_, maximum_cursor_size_,
       color_space_, bits_per_channel_, hdr_static_metadata_,
       variable_refresh_rate_state_, vsync_rate_min_, DrmFormatsAndModifiers());
@@ -268,6 +268,11 @@ Builder& Builder::SetColorCorrectionInLinearSpace(bool val) {
 
 Builder& Builder::SetName(const std::string& name) {
   name_ = name;
+  return *this;
+}
+
+Builder& Builder::SetSysPath(const base::FilePath& sys_path) {
+  sys_path_ = sys_path;
   return *this;
 }
 
@@ -375,6 +380,7 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
     bool has_color_correction_matrix,
     bool color_correction_in_linear_space,
     std::string display_name,
+    const base::FilePath& sys_path,
     DisplayModeList modes,
     const DisplayMode* current_mode,
     const DisplayMode* native_mode,
@@ -405,7 +411,7 @@ FakeDisplaySnapshot::FakeDisplaySnapshot(
                       bits_per_channel,
                       hdr_static_metadata,
                       display_name,
-                      base::FilePath(),
+                      sys_path,
                       std::move(modes),
                       display::PanelOrientation::kNormal,
                       std::vector<uint8_t>(),

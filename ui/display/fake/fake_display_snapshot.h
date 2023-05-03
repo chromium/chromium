@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/display/fake/fake_display_export.h"
 #include "ui/display/types/display_constants.h"
@@ -69,6 +70,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     Builder& SetHasColorCorrectionMatrix(bool val);
     Builder& SetColorCorrectionInLinearSpace(bool val);
     Builder& SetName(const std::string& name);
+    Builder& SetSysPath(const base::FilePath& sys_path);
     Builder& SetProductCode(int64_t product_code);
     Builder& SetMaximumCursorSize(const gfx::Size& maximum_cursor_size);
     // Sets physical_size so that the screen has the specified DPI using the
@@ -112,6 +114,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     bool has_color_correction_matrix_ = false;
     bool color_correction_in_linear_space_ = false;
     std::string name_;
+    base::FilePath sys_path_;
     int64_t product_code_ = DisplaySnapshot::kInvalidProductCode;
     gfx::Size maximum_cursor_size_ = gfx::Size(64, 64);
     DisplayModeList modes_;
@@ -140,6 +143,7 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
                       bool has_color_correction_matrix,
                       bool color_correction_in_linear_space,
                       std::string display_name,
+                      const base::FilePath& sys_path,
                       DisplayModeList modes,
                       const DisplayMode* current_mode,
                       const DisplayMode* native_mode,
