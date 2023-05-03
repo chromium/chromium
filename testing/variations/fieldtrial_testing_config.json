@@ -6726,6 +6726,45 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_ACR_6_20230503",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "FeedUnseenRefreshThresholdInSeconds": "21600"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh",
+                        "FeedDisableHotStartRefresh"
+                    ]
+                },
+                {
+                    "name": "Enabled_ACR_12_20230503",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "FeedUnseenRefreshThresholdInSeconds": "43200"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh",
+                        "FeedDisableHotStartRefresh"
+                    ]
+                },
+                {
+                    "name": "Enabled_ACR_24_20230503",
+                    "params": {
+                        "EnableFeedAppCloseForegroundRefresh": "true",
+                        "FeedUnseenRefreshThresholdInSeconds": "86400"
+                    },
+                    "enable_features": [
+                        "EnableFeedInvisibleForegroundRefresh",
+                        "FeedDisableHotStartRefresh"
+                    ]
+                },
+                {
+                    "name": "Disabled_Hot_Start_Refresh_Only",
+                    "enable_features": [
+                        "FeedDisableHotStartRefresh"
+                    ]
+                },
+                {
                     "name": "Enabled_app_close_foreground_20230405",
                     "params": {
                         "EnableFeedAppCloseBackgroundRefresh": "false",
