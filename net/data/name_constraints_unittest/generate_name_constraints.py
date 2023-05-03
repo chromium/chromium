@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -17,7 +17,7 @@ import generate_names
 
 
 def generate(s, out_fn):
-  conf_tempfile = tempfile.NamedTemporaryFile()
+  conf_tempfile = tempfile.NamedTemporaryFile(mode='wt', encoding='utf-8')
   conf_tempfile.write(str(s))
   conf_tempfile.flush()
   der_tmpfile = tempfile.NamedTemporaryFile()
@@ -27,12 +27,12 @@ def generate(s, out_fn):
                         stdout=description_tmpfile)
   conf_tempfile.close()
 
-  output_file = open(out_fn, 'w')
+  output_file = open(out_fn, 'wb')
   description_tmpfile.seek(0)
   output_file.write(description_tmpfile.read())
-  output_file.write('-----BEGIN %s-----\n' % s.token())
-  output_file.write(base64.encodestring(der_tmpfile.read()))
-  output_file.write('-----END %s-----\n' % s.token())
+  output_file.write(b'-----BEGIN %b-----\n' % s.token())
+  output_file.write(base64.encodebytes(der_tmpfile.read()))
+  output_file.write(b'-----END %b-----\n' % s.token())
   output_file.close()
 
 
@@ -41,7 +41,7 @@ class SubjectAltNameGenerator:
     self.names = []
 
   def token(self):
-    return "SUBJECT ALTERNATIVE NAME"
+    return b"SUBJECT ALTERNATIVE NAME"
 
   def add_name(self, general_name):
     self.names.append(general_name)
@@ -69,7 +69,7 @@ class NameConstraintsGenerator:
     self.force_excluded_sequence = force_excluded_sequence
 
   def token(self):
-    return "NAME CONSTRAINTS"
+    return b"NAME CONSTRAINTS"
 
   def union_from(self, c):
     self.permitted.extend(c.permitted)
@@ -109,7 +109,7 @@ class NameConstraintsGenerator:
 
 
 def other_name():
-  i = random.randint(0, sys.maxint)
+  i = random.randint(0, sys.maxsize)
   s = 'otherName = IMPLICIT:0,SEQUENCE:otherNameSequence%i\n' % i
   s += '[otherNameSequence%i]\n' % i
   s += 'type_id = OID:1.2.3.4.5\n'
@@ -126,7 +126,7 @@ def dns_name(name):
 
 
 def x400_address():
-  i = random.randint(0, sys.maxint)
+  i = random.randint(0, sys.maxsize)
   s = 'x400Address = IMPLICIT:3,SEQUENCE:x400AddressSequence%i\n' % i
   s += '[x400AddressSequence%i]\n' % i
   s += 'builtinstandardattributes = SEQUENCE:BuiltInStandardAttributes%i\n' % i
@@ -141,7 +141,7 @@ def directory_name(name):
 
 
 def edi_party_name():
-  i = random.randint(0, sys.maxint)
+  i = random.randint(0, sys.maxsize)
   s = 'ediPartyName = IMPLICIT:5,SEQUENCE:ediPartyNameSequence%i\n' % i
   s += '[ediPartyNameSequence%i]\n' % i
   s += 'partyName = IMPLICIT:1,UTF8:foo\n'
@@ -163,11 +163,10 @@ def ip_address(addr, enforce_length=True):
 
 def ip_address_range(addr, netmask, enforce_length=True):
   if enforce_length:
-    assert len(addr) == len(netmask)
     assert len(addr) in (4,16)
   addr_str = ""
   netmask_str = ""
-  for addr_byte, mask_byte in map(None, addr, netmask):
+  for addr_byte, mask_byte in zip(addr, netmask, strict=True):
     assert (addr_byte & ~mask_byte) == 0
     addr_str += '%02X'%(addr_byte)
     netmask_str += '%02X'%(mask_byte)
@@ -331,8 +330,8 @@ def main():
   n_jp.add_rdn().add_attr('countryName', 'PRINTABLESTRING', 'JP')
   generate(n_jp, "name-jp.pem")
   n_jp_tokyo = copy.deepcopy(n_jp)
-  n_jp_tokyo.add_rdn().add_attr(
-      'stateOrProvinceName', 'UTF8', '\xe6\x9d\xb1\xe4\xba\xac', 'FORMAT:UTF8')
+  n_jp_tokyo.add_rdn().add_attr('stateOrProvinceName', 'UTF8', '\u6771\u4eac',
+                                'FORMAT:UTF8')
   generate(n_jp_tokyo, "name-jp-tokyo.pem")
 
   n_us_az_foodotcom = copy.deepcopy(n_us_az)
