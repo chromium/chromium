@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/power/adaptive_charging_controller.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/buttons.h"
@@ -24,6 +25,7 @@
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/user/login_status.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -81,6 +83,11 @@ QsBatteryInfoViewBase::QsBatteryInfoViewBase(
                  kPaddingReduction) {
   PowerStatus::Get()->AddObserver(this);
   SetImageLabelSpacing(kImageLabelSpacing);
+  if (chromeos::features::IsJellyEnabled()) {
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label());
+    return;
+  }
   SetUseDefaultLabelFont();
 }
 
