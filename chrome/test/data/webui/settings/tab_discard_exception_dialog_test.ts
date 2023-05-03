@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement} from 'chrome://settings/settings.js';
+import {HighEfficiencyModeExceptionListAction, MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionEditDialogElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -13,7 +13,8 @@ import {TestPerformanceBrowserProxy} from './test_performance_browser_proxy.js';
 import {TestPerformanceMetricsProxy} from './test_performance_metrics_proxy.js';
 
 suite('TabDiscardExceptionsDialog', function() {
-  let dialog: TabDiscardExceptionDialogElement;
+  let dialog: TabDiscardExceptionAddDialogElement|
+      TabDiscardExceptionEditDialogElement;
   let performanceBrowserProxy: TestPerformanceBrowserProxy;
   let performanceMetricsProxy: TestPerformanceMetricsProxy;
 
@@ -32,9 +33,7 @@ suite('TabDiscardExceptionsDialog', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
   });
 
-  function setupDialog(rule: string) {
-    dialog = document.createElement('tab-discard-exception-dialog');
-    dialog.ruleToEdit = rule;
+  function setupDialog() {
     dialog.set('prefs', {
       performance_tuning: {
         tab_discarding: {
@@ -50,11 +49,14 @@ suite('TabDiscardExceptionsDialog', function() {
   }
 
   function setupAddDialog() {
-    setupDialog('');
+    dialog = document.createElement('tab-discard-exception-add-dialog');
+    setupDialog();
   }
 
   function setupEditDialog() {
-    setupDialog(EXISTING_RULE);
+    dialog = document.createElement('tab-discard-exception-edit-dialog');
+    dialog.setRuleToEditForTesting(EXISTING_RULE);
+    setupDialog();
   }
 
   async function assertUserInputValidated(rule: string) {
@@ -152,8 +154,11 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertCancel();
   });
 
-  async function assertSubmit(expectedRules: string[]) {
+  async function assertSubmit(
+      expectedRules: string[], validationResult = true) {
+    performanceBrowserProxy.setValidationResult(validationResult);
     dialog.$.actionButton.click();
+    await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
     await flushTasks();
 
     assertFalse(
@@ -177,6 +182,13 @@ suite('TabDiscardExceptionsDialog', function() {
     await assertSubmit([EXISTING_RULE]);
   });
 
+  test('testTabDiscardExceptionsAddDialogSubmitInvalid', async function() {
+    setupAddDialog();
+    await assertUserInputValidated(INVALID_RULE);
+    dialog.$.actionButton.disabled = false;
+    await assertSubmit([EXISTING_RULE], false);
+  });
+
   test('testTabDiscardExceptionsEditDialogSubmit', async function() {
     setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
@@ -192,5 +204,12 @@ suite('TabDiscardExceptionsDialog', function() {
     setupEditDialog();
     await assertUserInputValidated(VALID_RULE);
     await assertSubmit([VALID_RULE]);
+  });
+
+  test('testTabDiscardExceptionsEditDialogSubmitInvalid', async function() {
+    setupEditDialog();
+    await assertUserInputValidated(INVALID_RULE);
+    dialog.$.actionButton.disabled = false;
+    await assertSubmit([EXISTING_RULE], false);
   });
 });

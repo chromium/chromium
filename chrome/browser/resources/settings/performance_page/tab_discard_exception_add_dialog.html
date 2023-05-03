@@ -1,0 +1,22 @@
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">$i18n{addSiteTitle}</div>
+  <div slot="body">
+    <cr-input id="input" label="$i18n{addSite}"
+        placeholder="example.com" value="{{rule}}"
+        on-input="validate" error-message="[[errorMessage]]"
+        invalid="[[inputInvalid]]" spellcheck="false" autofocus
+        aria-label$="$i18n{addSiteTitle}">
+    </cr-input>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" class="cancel-button"
+        on-click="onCancelClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="actionButton" class="action-button" on-click="onSubmitClick_"
+        disabled$="[[submitDisabled]]"
+        aria-label$="$i18n{tabDiscardingExceptionsAddButtonAriaLabel}">
+      $i18n{add}
+    </cr-button>
+  </div>
+</cr-dialog>

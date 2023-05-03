@@ -1,11 +1,11 @@
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
-  <div slot="title">[[title_]]</div>
+  <div slot="title">$i18n{editSiteTitle}</div>
   <div slot="body">
     <cr-input id="input" label="$i18n{addSite}"
-        placeholder="example.com" value="{{rule_}}"
-        on-input="validate_" error-message="[[errorMessage_]]"
-        invalid="[[inputInvalid_]]" spellcheck="false" autofocus
-        aria-label$="[[title_]]">
+        placeholder="example.com" value="{{rule}}"
+        on-input="validate" error-message="[[errorMessage]]"
+        invalid="[[inputInvalid]]" spellcheck="false" autofocus
+        aria-label$="$i18n{editSiteTitle}">
     </cr-input>
   </div>
   <div slot="button-container">
@@ -14,9 +14,9 @@
       $i18n{cancel}
     </cr-button>
     <cr-button id="actionButton" class="action-button" on-click="onSubmitClick_"
-        disabled$="[[submitDisabled_]]"
-        aria-label$="[[submitButtonAriaLabel_]]">
-      [[submitButtonText_]]
+        disabled$="[[submitDisabled]]"
+        aria-label$="$i18n{tabDiscardingExceptionsSaveButtonAriaLabel}">
+      $i18n{save}
     </cr-button>
   </div>
 </cr-dialog>

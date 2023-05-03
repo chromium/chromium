@@ -6,7 +6,7 @@ import 'chrome://settings/settings.js';
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
-import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
+import {HIGH_EFFICIENCY_MODE_PREF, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceBrowserProxyImpl, PerformanceMetricsProxyImpl, SettingsPerformancePageElement, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionAddDialogElement, TabDiscardExceptionEditDialogElement, TabDiscardExceptionEntryElement, TabDiscardExceptionListElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -201,29 +201,37 @@ suite('PerformancePage', function() {
     assertExceptionListEquals([]);
   });
 
-  function getDialog(): TabDiscardExceptionDialogElement|null {
+  function getAddDialog(): TabDiscardExceptionAddDialogElement|null {
     return tabDiscardExceptionsList.shadowRoot!.querySelector(
-        'tab-discard-exception-dialog');
+        'tab-discard-exception-add-dialog');
+  }
+
+  function getEditDialog(): TabDiscardExceptionEditDialogElement|null {
+    return tabDiscardExceptionsList.shadowRoot!.querySelector(
+        'tab-discard-exception-edit-dialog');
   }
 
   async function inputDialog(
-      dialog: TabDiscardExceptionDialogElement, input: string) {
+      dialog: TabDiscardExceptionAddDialogElement|
+      TabDiscardExceptionEditDialogElement,
+      input: string) {
     const inputEvent = eventToPromise('input', dialog.$.input);
     dialog.$.input.value = input;
     dialog.$.input.dispatchEvent(new CustomEvent('input'));
     await inputEvent;
     dialog.$.actionButton.click();
+    await performanceBrowserProxy.whenCalled('validateTabDiscardExceptionRule');
   }
 
   test('testTabDiscardExceptionsListAdd', async function() {
     setupExceptionListEntries(['foo']);
-    let addDialog = getDialog();
+    let addDialog = getAddDialog();
     assertFalse(!!addDialog);
 
     tabDiscardExceptionsList.$.addButton.click();
     flush();
 
-    addDialog = getDialog();
+    addDialog = getAddDialog();
     assertTrue(!!addDialog);
     assertTrue(addDialog.$.dialog.open);
     assertEquals('', addDialog.$.input.value);
@@ -234,14 +242,14 @@ suite('PerformancePage', function() {
   test('testTabDiscardExceptionsListEdit', async function() {
     setupExceptionListEntries(['foo', 'bar']);
     const entry = getExceptionListEntry(1);
-    let editDialog = getDialog();
+    let editDialog = getEditDialog();
     assertFalse(!!editDialog);
 
     clickMoreActionsButton(entry);
     clickEditMenuItem();
     flush();
 
-    editDialog = getDialog();
+    editDialog = getEditDialog();
     assertTrue(!!editDialog);
     assertTrue(editDialog.$.dialog.open);
     assertEquals(entry.entry.site, editDialog.$.input.value);
@@ -255,7 +263,7 @@ suite('PerformancePage', function() {
     tabDiscardExceptionsList.$.addButton.click();
     flush();
 
-    const dialog = getDialog();
+    const dialog = getAddDialog();
     assertTrue(!!dialog);
     assertEquals('', dialog.$.input.value);
   });
@@ -280,7 +288,7 @@ suite('PerformancePage', function() {
     flush();
 
     const newRule = `rule${TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE + 1}`;
-    const addDialog = getDialog();
+    const addDialog = getAddDialog();
     assertTrue(!!addDialog);
     await inputDialog(addDialog, newRule);
     assertTrue(tabDiscardExceptionsList.$.collapse.opened);
@@ -297,7 +305,7 @@ suite('PerformancePage', function() {
     clickMoreActionsButton(entry);
     clickEditMenuItem();
     flush();
-    const editDialog = getDialog();
+    const editDialog = getEditDialog();
     assertTrue(!!editDialog);
     assertEquals(entry.entry.site, editDialog.$.input.value);
     await inputDialog(editDialog, 'foo');

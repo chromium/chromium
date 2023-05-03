@@ -69,9 +69,11 @@ export {BATTERY_SAVER_MODE_PREF, SettingsBatteryPageElement} from './performance
 export {PerformanceBrowserProxy, PerformanceBrowserProxyImpl} from './performance_page/performance_browser_proxy.js';
 export {BatterySaverModeState, HighEfficiencyModeExceptionListAction, HighEfficiencyModeState, PerformanceMetricsProxy, PerformanceMetricsProxyImpl} from './performance_page/performance_metrics_proxy.js';
 export {HIGH_EFFICIENCY_MODE_PREF, SettingsPerformancePageElement} from './performance_page/performance_page.js';
-export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF, TabDiscardExceptionDialogElement} from './performance_page/tab_discard_exception_dialog.js';
+export {TabDiscardExceptionAddDialogElement} from './performance_page/tab_discard_exception_add_dialog.js';
+export {TabDiscardExceptionEditDialogElement} from './performance_page/tab_discard_exception_edit_dialog.js';
 export {TabDiscardExceptionEntryElement} from './performance_page/tab_discard_exception_entry.js';
 export {TAB_DISCARD_EXCEPTIONS_OVERFLOW_SIZE, TabDiscardExceptionListElement} from './performance_page/tab_discard_exception_list.js';
+export {MAX_TAB_DISCARD_EXCEPTION_RULE_LENGTH, TAB_DISCARD_EXCEPTIONS_MANAGED_PREF, TAB_DISCARD_EXCEPTIONS_PREF} from './performance_page/tab_discard_exception_validation_mixin.js';
 export {PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from './privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 export {SettingsPrivacyPageElement} from './privacy_page/privacy_page.js';
 export {CanonicalTopic, FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxBrowserProxyImpl, PrivacySandboxInterest, TopicsState} from './privacy_page/privacy_sandbox/privacy_sandbox_browser_proxy.js';
