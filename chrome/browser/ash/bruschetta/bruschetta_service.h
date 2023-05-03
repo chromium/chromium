@@ -98,9 +98,13 @@ class BruschettaService : public KeyedService,
   void OnRemoveVm(base::OnceCallback<void(bool)> callback,
                   guest_os::GuestId guest_id,
                   guest_os::GuestOsRemover::Result result);
-  void OnUninstallDlc(base::OnceCallback<void(bool)> callback,
-                      guest_os::GuestId guest_id,
-                      const std::string& result);
+  void OnUninstallToolsDlc(base::OnceCallback<void(bool)> callback,
+                           guest_os::GuestId guest_id,
+                           const std::string& result);
+  void OnUninstallAllDlcs(base::OnceCallback<void(bool)> callback,
+                          guest_os::GuestId guest_id,
+                          const std::string& tools_result,
+                          const std::string& firmware_result);
 
   base::flat_map<std::string, VmRegistration> runnable_vms_;
   base::flat_map<std::string, RunningVmPolicy> running_vms_;

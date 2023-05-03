@@ -300,20 +300,38 @@ void BruschettaService::OnRemoveVm(base::OnceCallback<void(bool)> callback,
     return;
   }
   ash::DlcserviceClient::Get()->Uninstall(
-      kToolsDlc, base::BindOnce(&BruschettaService::OnUninstallDlc,
+      kToolsDlc, base::BindOnce(&BruschettaService::OnUninstallToolsDlc,
                                 weak_ptr_factory_.GetWeakPtr(),
                                 std::move(callback), std::move(guest_id)));
 }
 
-void BruschettaService::OnUninstallDlc(base::OnceCallback<void(bool)> callback,
-                                       guest_os::GuestId guest_id,
-                                       const std::string& result) {
-  if (result != dlcservice::kErrorNone &&
-      result != dlcservice::kErrorInvalidDlc) {
-    LOG(ERROR) << "Error removing DLC. Error: " << result;
+void BruschettaService::OnUninstallToolsDlc(
+    base::OnceCallback<void(bool)> callback,
+    guest_os::GuestId guest_id,
+    const std::string& result) {
+  ash::DlcserviceClient::Get()->Uninstall(
+      kUefiDlc,
+      base::BindOnce(&BruschettaService::OnUninstallAllDlcs,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(guest_id), result));
+}
+
+void BruschettaService::OnUninstallAllDlcs(
+    base::OnceCallback<void(bool)> callback,
+    guest_os::GuestId guest_id,
+    const std::string& tools_result,
+    const std::string& firmware_result) {
+  if ((tools_result != dlcservice::kErrorNone &&
+       tools_result != dlcservice::kErrorInvalidDlc) ||
+      (firmware_result != dlcservice::kErrorNone &&
+       firmware_result != dlcservice::kErrorInvalidDlc)) {
+    LOG(ERROR) << "Error removing bruschetta DLCs";
+    LOG(ERROR) << kToolsDlc << ": " << tools_result;
+    LOG(ERROR) << kUefiDlc << ": " << firmware_result;
     std::move(callback).Run(false);
     return;
   }
+
   profile_->GetPrefs()->SetBoolean(bruschetta::prefs::kBruschettaInstalled,
                                    false);
 
