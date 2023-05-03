@@ -52,6 +52,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     <owner>chromeos-launcher@google.com</owner>
   </variant>
   <variant name="DiagnosticsUi" summary="CROS Diagnostics Application">
+    <owner>zhangwenyu@google.com</owner>
     <owner>jimmyxgong@chromium.org</owner>
     <owner>zentaro@chromium.org</owner>
     <owner>cros-peripherals@google.com</owner>
@@ -994,6 +995,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 <histogram
     name="ChromeOS.DiagnosticsUi.Error.CrosHealthdProbeError.{ProbeErrorSourceStruct}"
     enum="CrosDiagnosticsCrosHealthdProbeError" expires_after="2023-06-15">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -1012,8 +1014,8 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.Error.{ErrorSource}"
     enum="CrosDiagnosticsDataError" expires_after="2023-06-15">
-  <owner>ashleydp@google.com</owner>
   <owner>zhangwenyu@google.com</owner>
+  <owner>ashleydp@google.com</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -1030,6 +1032,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
     units="CrosDiagnosticsNavigationView" expires_after="2023-08-08">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1041,6 +1044,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.KeyboardTesterRoutineDuration"
     units="ms" expires_after="2024-02-12">
+  <owner>zhangwenyu@google.com</owner>
   <owner>dpad@chromium.org</owner>
   <owner>michaelcheco@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1053,6 +1057,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
     expires_after="2024-02-12">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1065,6 +1070,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
     expires_after="2023-10-22">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1077,6 +1083,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
     expires_after="2023-10-22">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1090,6 +1097,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.{NavigationView}.OpenDuration"
     units="ms" expires_after="2024-02-12">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
@@ -1111,6 +1119,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
     enum="CrosDiagnosticsRoutineResult" expires_after="2023-06-15">
+  <owner>zhangwenyu@google.com</owner>
   <owner>ashleydp@google.com</owner>
   <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
