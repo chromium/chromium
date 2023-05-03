@@ -40,6 +40,8 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
                                    kImmersiveTopContainerBoundsInScreen,
                                    nullptr)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsGameKey, false)
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsShowingInOverviewKey, false)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldHaveHighlightBorderOverlay, false)

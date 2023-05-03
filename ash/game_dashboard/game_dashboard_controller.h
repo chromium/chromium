@@ -34,9 +34,6 @@ class ASH_EXPORT GameDashboardController : public aura::EnvObserver,
   // Returns the singleton instance owned by `Shell`.
   static GameDashboardController* Get();
 
-  // Returns true if the given window supports the game dashboard.
-  static bool IsGame(aura::Window* window);
-
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* new_window) override;
 

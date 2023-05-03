@@ -538,7 +538,7 @@ bool CanToggleGameDashboard() {
     return false;
   }
   aura::Window* window = GetTargetWindow();
-  return window && GameDashboardController::IsGame(window);
+  return window && chromeos::wm::IsGameWindow(window);
 }
 
 bool CanToggleMultitaskMenu() {

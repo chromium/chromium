@@ -93,6 +93,10 @@ COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<gfx::Rect*>* const
     kImmersiveTopContainerBoundsInScreen;
 
+// A property key to indicate if the window is a game.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kIsGameKey;
+
 // If true, the window is currently showing in overview mode.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kIsShowingInOverviewKey;

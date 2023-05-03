@@ -14,6 +14,8 @@
 #include "ash/test/ash_test_base.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/wm/window_util.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
@@ -40,7 +42,7 @@ class IsGameWindowPropertyObserver : public aura::WindowObserver {
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override {
-    if (key != ash::kIsGameKey) {
+    if (key != chromeos::kIsGameKey) {
       return;
     }
     received_on_property_change = true;
@@ -97,7 +99,7 @@ class GameDashboardControllerTest : public AshTestBase {
     EXPECT_TRUE(observer->received_on_property_change);
 
     EXPECT_EQ(expected_is_game, IsObservingWindow(window.get()));
-    EXPECT_EQ(expected_is_game, GameDashboardController::IsGame(window.get()));
+    EXPECT_EQ(expected_is_game, chromeos::wm::IsGameWindow(window.get()));
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -105,12 +107,12 @@ class GameDashboardControllerTest : public AshTestBase {
 
 // Tests
 // -----------------------------------------------------------------------
-// Verifies a window is a game if ash::kIsGameKey is set to true.
+// Verifies a window is a game if chromeos::kIsGameKey is set to true.
 TEST_F(GameDashboardControllerTest, IsGame) {
   auto owned_window = CreateAppWindow();
-  EXPECT_FALSE(GameDashboardController::IsGame(owned_window.get()));
-  owned_window->SetProperty(kIsGameKey, true);
-  EXPECT_TRUE(GameDashboardController::IsGame(owned_window.get()));
+  EXPECT_FALSE(chromeos::wm::IsGameWindow(owned_window.get()));
+  owned_window->SetProperty(chromeos::kIsGameKey, true);
+  EXPECT_TRUE(chromeos::wm::IsGameWindow(owned_window.get()));
 }
 
 // Verifies a non-normal window type is not a game and not being observed.
@@ -121,7 +123,7 @@ TEST_F(GameDashboardControllerTest, IsGameWindowProperty_NonNormalWindowType) {
       std::make_unique<IsGameWindowPropertyObserver>(non_normal_window.get());
   EXPECT_FALSE(observer->received_on_property_change);
   EXPECT_FALSE(IsObservingWindow(non_normal_window.get()));
-  EXPECT_FALSE(GameDashboardController::IsGame(non_normal_window.get()));
+  EXPECT_FALSE(chromeos::wm::IsGameWindow(non_normal_window.get()));
 }
 
 TEST_F(GameDashboardControllerTest, IsGameWindowProperty_GameArcWindow) {
