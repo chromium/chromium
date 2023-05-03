@@ -48,10 +48,8 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
  protected:
   void RunJSTest(const std::string& js) const {
     auto* const tab = browser()->tab_strip_model()->GetActiveWebContents();
-    bool result = false;
 
-    ASSERT_TRUE(content::ExecuteScriptAndExtractBool(tab, js, &result));
-    ASSERT_TRUE(result);
+    ASSERT_EQ(true, content::EvalJs(tab, js));
   }
 
   void RunJSTestAndEnsureTrapHandlerRan(const std::string& js) const {
@@ -70,13 +68,9 @@ class WasmTrapHandlerBrowserTest : public InProcessBrowserTest {
 
   // Calls %IsWasmTrapHandlerEnabled and returns the result.
   bool IsTrapHandlerEnabled() const {
-    bool is_trap_handler_enabled = false;
-    const char* script =
-        "domAutomationController.send(%IsWasmTrapHandlerEnabled())";
+    const char* script = "%IsWasmTrapHandlerEnabled()";
     auto* const tab = browser()->tab_strip_model()->GetActiveWebContents();
-    CHECK(content::ExecuteScriptAndExtractBool(tab, script,
-                                               &is_trap_handler_enabled));
-    return is_trap_handler_enabled;
+    return content::EvalJs(tab, script).ExtractBool();
   }
 
  private:
