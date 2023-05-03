@@ -240,7 +240,7 @@ void SavedTabGroupModel::UpdateTabInGroup(const base::Uuid& group_id,
   saved_tab_groups_[group_index.value()].UpdateTab(tab);
 
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(group_id);
+    observer.SavedTabGroupUpdatedLocally(group_id, tab.saved_tab_guid());
   }
 }
 
@@ -271,7 +271,7 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
   // to pass a group_id and an optional tab_id.
   if (!update_tab_positions) {
     for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedFromSync(group_id);
+      observer.SavedTabGroupUpdatedFromSync(group_id, copy_tab_id);
     }
   } else {
     for (auto& observer : observers_) {
@@ -351,7 +351,7 @@ std::unique_ptr<sync_pb::SavedTabGroupSpecifics> SavedTabGroupModel::MergeTab(
 
   for (auto& observer : observers_) {
     observer.SavedTabGroupUpdatedFromSync(group_guid,
-                                          merged_tab.saved_group_guid());
+                                          merged_tab.saved_tab_guid());
   }
 
   return merged_tab.ToSpecifics();
