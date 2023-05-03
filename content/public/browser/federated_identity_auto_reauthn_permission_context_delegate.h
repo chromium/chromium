@@ -12,6 +12,8 @@ namespace url {
 class Origin;
 }
 
+class GURL;
+
 namespace content {
 
 // Delegate interface for the FedCM implementation to query whether the FedCM
@@ -43,6 +45,15 @@ class CONTENT_EXPORT FederatedIdentityAutoReauthnPermissionContextDelegate {
   // the permission under embargo for the passed-in |relying_party_embedder|.
   virtual void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) = 0;
+
+  // Updates the "RequiresUserMediation" bit for the site. It's set to true when
+  // `navigator.credentials.preventSilentAccess` is called and set to false
+  // after a successful authentication flow by FedCM.
+  virtual void SetRequiresUserMediation(const GURL& rp_url,
+                                        bool requires_user_mediation) = 0;
+
+  // Returns if the site requires user mediation for re-authentication.
+  virtual bool RequiresUserMediation(const GURL& rp_url) = 0;
 };
 
 }  // namespace content

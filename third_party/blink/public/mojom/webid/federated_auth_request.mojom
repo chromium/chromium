@@ -153,7 +153,8 @@ interface FederatedAuthRequest {
   //   A null URL is returned if the token request failed or did not occur due
   //   to an error earlier in the flow.
   // - Raw content of the token.
-  RequestToken(array<IdentityProviderGetParameters> idp_get_params, CredentialMediationRequirement requirement) =>
+  RequestToken(array<IdentityProviderGetParameters> idp_get_params,
+      CredentialMediationRequirement requirement) =>
       (RequestTokenStatus status,
       url.mojom.Url? selected_identity_provider_config_url,
       string? token);
@@ -181,4 +182,12 @@ interface FederatedAuthRequest {
 
   // Closes the modal dialog view, if any.
   CloseModalDialogView();
+
+  // Require user mediation with navigator.credentials.preventSilentAccess() as
+  // defined in https://w3c.github.io/webappsec-credential-management/#user-mediation
+  // TODO(https://crbug.com/1441075): There's `PreventSilentAccess` in
+  // credential_manager.mojom but that's specific to PasswordManager and it's
+  // hard to reuse it as-is. We should unify the implementation for different
+  // CredentialTypes and avoid the duplication eventually.
+  PreventSilentAccess() => ();
 };

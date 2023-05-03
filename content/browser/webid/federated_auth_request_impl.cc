@@ -248,7 +248,7 @@ base::TimeDelta GetRandomRejectionTime() {
   return kMaxRejectionTime * base::RandDouble();
 }
 
-std::string FormatUrlForDisplay(const GURL& url) {
+std::string FormatUrlWithDomain(const GURL& url, bool for_display) {
   // We do not use url_formatter::FormatUrlForSecurityDisplay() directly because
   // our UI intentionally shows only the eTLD+1, as it makes for a shorter text
   // that is also clearer to users. The identity provider's well-known file is
@@ -260,13 +260,17 @@ std::string FormatUrlForDisplay(const GURL& url) {
           : net::registry_controlled_domains::GetDomainAndRegistry(
                 url,
                 net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
-      GURL(url.scheme() + "://" + formatted_url_str),
-      url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+  if (for_display) {
+    return base::UTF16ToUTF8(url_formatter::FormatUrlForSecurityDisplay(
+        GURL(url.scheme() + "://" + formatted_url_str),
+        url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+  }
+  return GURL(url.scheme() + "://" + formatted_url_str).spec();
 }
 
 std::string FormatOriginForDisplay(const url::Origin& origin) {
-  return FormatUrlForDisplay(origin.GetURL());
+  return FormatUrlWithDomain(origin.GetURL(),
+                             /*for_display=*/true);
 }
 
 bool ShouldSuppressIdpSigninFailureDialog(
@@ -991,7 +995,8 @@ void FederatedAuthRequestImpl::OnFetchDataForIdpSucceeded(
 
   bool request_permission = ShouldRequestPermission(idp_info->provider->scope);
 
-  const std::string idp_for_display = FormatUrlForDisplay(idp_config_url);
+  const std::string idp_for_display =
+      FormatUrlWithDomain(idp_config_url, /*for_display=*/true);
   idp_info->data = IdentityProviderData(
       idp_for_display, accounts, idp_info->metadata,
       ClientMetadata{client_metadata.terms_of_service_url,
@@ -1112,6 +1117,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
           "Only one auto re-authn request can be made every 10 minutes.");
     }
     auto_reauthn &= !is_auto_reauthn_embargoed;
+    auto_reauthn &= !RequiresUserMediation();
   }
 
   const IdentityProviderData* auto_reauthn_idp = nullptr;
@@ -1644,6 +1650,8 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       permission_delegate_->GrantActiveSession(
           origin(), url::Origin::Create(idp->config_url), account_id_);
 
+      SetRequiresUserMediation(false);
+
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
           token_response_time_ - select_account_time_,
           token_response_time_ - start_time_);
@@ -2010,8 +2018,6 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
     return false;
   }
 
-  // TODO(crbug.com/1440188): Replace it with the existing auto sign-in
-  // settings.
   bool has_auto_reauthn_content_setting =
       auto_reauthn_permission_delegate_->HasAutoReauthnContentSetting();
 
@@ -2025,7 +2031,32 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
           absl::nullopt);
 
   return !has_auto_reauthn_content_setting || is_auto_reauthn_embargoed ||
-         !has_sharing_permission_for_any_account;
+         !has_sharing_permission_for_any_account || RequiresUserMediation();
+}
+
+bool FederatedAuthRequestImpl::RequiresUserMediation() {
+  std::string site = FormatUrlWithDomain(origin().GetURL(),
+                                         /*for_display=*/false);
+  return auto_reauthn_permission_delegate_->RequiresUserMediation(GURL(site));
+}
+
+void FederatedAuthRequestImpl::SetRequiresUserMediation(
+    bool requires_user_mediation) {
+  // Get the domain and set RequiresUserMediation to the given value on it.
+  // Include the scheme to make sure that for example that http://domain and
+  // https://domain are not treated as the same.
+  std::string site = FormatUrlWithDomain(origin().GetURL(),
+                                         /*for_display=*/false);
+  auto_reauthn_permission_delegate_->SetRequiresUserMediation(
+      GURL(site), requires_user_mediation);
+}
+
+void FederatedAuthRequestImpl::PreventSilentAccess(
+    PreventSilentAccessCallback callback) {
+  SetRequiresUserMediation(true);
+
+  // Send acknowledge response back.
+  std::move(callback).Run();
 }
 
 }  // namespace content

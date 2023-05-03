@@ -41,6 +41,9 @@ class FederatedIdentityAutoReauthnPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) override;
+  void SetRequiresUserMediation(const GURL& rp_url,
+                                bool requires_user_mediation) override;
+  bool RequiresUserMediation(const GURL& rp_url) override;
 
  private:
   const raw_ptr<HostContentSettingsMap> host_content_settings_map_;

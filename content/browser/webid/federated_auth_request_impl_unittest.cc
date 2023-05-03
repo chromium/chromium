@@ -1727,7 +1727,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
 }
 
 // Test that auto re-authn with multiple accounts and a single returning user
-// sets the sign-in mode to kExplicit if `autoReauthn` is not specified.
+// sets the sign-in mode to kExplicit if `mediation: required` is specified.
 TEST_F(FederatedAuthRequestImplTest,
        AutoReauthnForSingleReturningUserWithoutSettingAutoReauthn) {
   base::test::ScopedFeatureList list;
@@ -1744,6 +1744,45 @@ TEST_F(FederatedAuthRequestImplTest,
   MockConfiguration configuration = kConfigurationValid;
   configuration.mediation_requirement = MediationRequirement::kRequired;
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that auto re-authn with multiple accounts and a single returning user
+// sets the sign-in mode to kExplicit if `RequiresUserMediation` is set
+TEST_F(FederatedAuthRequestImplTest,
+       AutoReauthnForSingleReturningUserWithRequiresUserMediation) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull),
+                           Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend that auto re-authn is not disabled in settings.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnContentSetting())
+      .WillOnce(Return(true));
+
+  // Pretend that auto re-authn is not in embargo state.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  // Pretend that re-authn requires user mediation.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              RequiresUserMediation(GURL(kRpUrl)))
+      .WillOnce(Return(true));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
 
   ASSERT_EQ(displayed_accounts().size(), 1u);
   EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
@@ -1940,6 +1979,40 @@ TEST_F(FederatedAuthRequestImplTest,
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(true));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kError},
+      /*selected_idp_config_url=*/absl::nullopt};
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.mediation_requirement = MediationRequirement::kSilent;
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+}
+
+// Test that no network request is sent if `mediation: silent` is used and user
+// mediation is required, e.g. `preventSilentAccess` has been invoked
+TEST_F(FederatedAuthRequestImplTest,
+       AutoReauthnMediationSilentFailWithRequiresUserMediation) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
+
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              HasAutoReauthnContentSetting())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              RequiresUserMediation(GURL(kRpUrl)))
       .WillOnce(Return(true));
 
   RequestExpectations expectations = {

@@ -1335,9 +1335,9 @@ ScriptPromise CredentialsContainer::get(ScriptState* script_state,
   }
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
-    // TODO(yigu): Ideally the logic should be handled in CredentialManager
-    // via Get. However currently it's only for password management and we
-    // should refactor the logic to make it generic.
+    // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
+    // CredentialManager via Get. However currently it's only for password
+    // management and we should refactor the logic to make it generic.
     if (!RuntimeEnabledFeatures::FedCmEnabled(context)) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, "FedCM is not supported"));
@@ -1871,6 +1871,14 @@ ScriptPromise CredentialsContainer::preventSilentAccess(
   auto* credential_manager =
       CredentialManagerProxy::From(script_state)->CredentialManager();
   credential_manager->PreventSilentAccess(
+      WTF::BindOnce(&OnPreventSilentAccessComplete,
+                    std::make_unique<ScopedPromiseResolver>(resolver)));
+
+  // TODO(https://crbug.com/1441075): Unify the implementation for
+  // different CredentialTypes and avoid the duplication eventually.
+  auto* auth_request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  auth_request->PreventSilentAccess(
       WTF::BindOnce(&OnPreventSilentAccessComplete,
                     std::make_unique<ScopedPromiseResolver>(resolver)));
 

@@ -84,6 +84,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void UnregisterIdP(const ::GURL& idp, UnregisterIdPCallback) override;
   void CloseModalDialogView() override;
 
+  void PreventSilentAccess(PreventSilentAccessCallback callback) override;
+
   // FederatedIdentityPermissionContextDelegate::IdpSigninStatusObserver:
   void OnIdpSigninStatusChanged(const url::Origin& idp_config_origin,
                                 bool idp_signin_status) override;
@@ -302,6 +304,11 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Check if auto re-authn is available so we can skip fetching accounts if the
   // auto re-authn flow is guaranteed to fail.
   bool ShouldFailBeforeFetchingAccounts(const GURL& config_url);
+
+  // Check if the site requires user mediation due to a previous
+  // `preventSilentAccess` call.
+  bool RequiresUserMediation();
+  void SetRequiresUserMediation(bool requires_user_mediation);
 
   void CreateIdentityRegistry(const url::Origin& idp_origin,
                               content::WebContents* web_contents);

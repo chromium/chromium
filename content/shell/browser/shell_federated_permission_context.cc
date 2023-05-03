@@ -55,6 +55,21 @@ bool ShellFederatedPermissionContext::IsAutoReauthnEmbargoed(
   return false;
 }
 
+void ShellFederatedPermissionContext::SetRequiresUserMediation(
+    const GURL& rp_url,
+    bool requires_user_mediation) {
+  if (requires_user_mediation) {
+    require_user_mediation_sites_.insert(rp_url);
+  } else {
+    require_user_mediation_sites_.erase(rp_url);
+  }
+}
+
+bool ShellFederatedPermissionContext::RequiresUserMediation(
+    const GURL& rp_url) {
+  return require_user_mediation_sites_.contains(rp_url);
+}
+
 base::Time ShellFederatedPermissionContext::GetAutoReauthnEmbargoStartTime(
     const url::Origin& relying_party_embedder) {
   return base::Time();

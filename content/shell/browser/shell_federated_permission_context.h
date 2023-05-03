@@ -48,6 +48,9 @@ class ShellFederatedPermissionContext
       const url::Origin& relying_party_embedder) override;
   void RecordDisplayAndEmbargo(
       const url::Origin& relying_party_embedder) override;
+  void SetRequiresUserMediation(const GURL& rp_url,
+                                bool requires_user_mediation) override;
+  bool RequiresUserMediation(const GURL& rp_url) override;
 
   // FederatedIdentityPermissionContextDelegate
   void AddIdpSigninStatusObserver(IdpSigninStatusObserver* observer) override;
@@ -104,6 +107,9 @@ class ShellFederatedPermissionContext
 
   // A set of embargoed origins.
   std::set<url::Origin> embargoed_origins_;
+
+  // A set of urls that require user mediation.
+  std::set<GURL> require_user_mediation_sites_;
 };
 
 }  // namespace content
