@@ -45,6 +45,7 @@ void RegistryHandler(void* data,
   BIND(wl_seat, seat)
   BIND(wp_presentation, presentation)
   BIND(zaura_shell, aura_shell)
+  BIND(zaura_output_manager, aura_output_manager)
   BIND(zwp_linux_dmabuf_v1, linux_dmabuf)
   BIND(wl_subcompositor, subcompositor)
   BIND(zcr_color_manager_v1, color_manager)

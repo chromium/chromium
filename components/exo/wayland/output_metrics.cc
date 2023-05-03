@@ -93,6 +93,8 @@ OutputMetrics::OutputMetrics(const display::Display& display)
   physical_size_mm =
       ScaleToRoundedSize(physical_size_px, kInchInMm / info.device_dpi());
 
+  physical_overscan_insets = info.GetOverscanInsetsInPixel();
+
   // Use panel_rotation otherwise some X apps will refuse to take events from
   // outside the "visible" region.
   panel_transform = OutputTransform(display.panel_rotation());
