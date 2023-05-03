@@ -785,9 +785,17 @@ void ServiceWorkerTaskQueue::StopObserving(
     content::ServiceWorkerContext* service_worker_context) {
   auto iter_pair =
       observing_worker_contexts_.equal_range(service_worker_context);
-  DCHECK(iter_pair.first != observing_worker_contexts_.end());
-  if (std::distance(iter_pair.first, iter_pair.second) == 1)
+  // ServiceWorkerContext not found if the iterators are equal.
+  if (iter_pair.first == iter_pair.second) {
+    return;
+  }
+  // If the distance is 1, it means there is just one instance of the observing
+  // ServiceWorkerContext remaining so we also remove the
+  // ServiceWorkerContextObserver (this) from the observing
+  // ServiceWorkerContext.
+  if (std::distance(iter_pair.first, iter_pair.second) == 1) {
     service_worker_context->RemoveObserver(this);
+  }
   observing_worker_contexts_.erase(iter_pair.first);
 }
 
