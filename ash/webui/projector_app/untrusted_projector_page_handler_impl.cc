@@ -51,10 +51,10 @@ std::string GetPrefName(projector::mojom::PrefsThatProjectorCanAskFor pref) {
       return ash::prefs::kProjectorExcludeTranscriptDialogShown;
     case projector::mojom::PrefsThatProjectorCanAskFor::
         kProjectorViewerOnboardingShowCount:
-      return ash::prefs::kProjectorGalleryOnboardingShowCount;
+      return ash::prefs::kProjectorViewerOnboardingShowCount;
     case projector::mojom::PrefsThatProjectorCanAskFor::
         kProjectorGalleryOnboardingShowCount:
-      return ash::prefs::kProjectorViewerOnboardingShowCount;
+      return ash::prefs::kProjectorGalleryOnboardingShowCount;
   }
 
   NOTREACHED_NORETURN();
