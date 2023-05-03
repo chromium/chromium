@@ -332,14 +332,13 @@ public class TabContentManager {
      * Call to get a thumbnail for a given tab through a {@link Callback}. If there is
      * no up-to-date thumbnail on disk for the given tab, callback returns null.
      * @param tabId The ID of the tab to get the thumbnail for.
-     * @param thumbnailSize Desired size of thumbnail received by callback. Use default values if
-     *         null.
+     * @param thumbnailSize Desired size of thumbnail received by callback.
      * @param callback The callback to send the {@link Bitmap} with. Can be called up to twice when
      *                 {@code forceUpdate}; otherwise always called exactly once.
      * @param forceUpdate Whether to obtain the thumbnail from the live content.
      * @param writeBack When {@code forceUpdate}, whether to write the thumbnail to cache.
      */
-    public void getTabThumbnailWithCallback(@NonNull int tabId, @Nullable Size thumbnailSize,
+    public void getTabThumbnailWithCallback(@NonNull int tabId, @NonNull Size thumbnailSize,
             @NonNull Callback<Bitmap> callback, boolean forceUpdate, boolean writeBack) {
         if (!mSnapshotsEnabled) return;
 
@@ -388,11 +387,10 @@ public class TabContentManager {
     }
 
     @VisibleForTesting
-    public static Bitmap getJpegForTab(int tabId, @Nullable Size thumbnailSize) {
+    public static Bitmap getJpegForTab(int tabId, @NonNull Size thumbnailSize) {
         File file = getTabThumbnailFileJpeg(tabId);
         if (!file.isFile()) return null;
-        if (thumbnailSize == null || thumbnailSize.getWidth() <= 0
-                || thumbnailSize.getHeight() <= 0) {
+        if (thumbnailSize.getWidth() <= 0 || thumbnailSize.getHeight() <= 0) {
             return BitmapFactory.decodeFile(file.getPath());
         }
         return resizeJpeg(file.getPath(), thumbnailSize);
@@ -433,7 +431,7 @@ public class TabContentManager {
     }
 
     private void getTabThumbnailFromDisk(
-            @NonNull int tabId, @Nullable Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+            @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
         // Try JPEG thumbnail first before using the more costly
         // TabContentManagerJni.get().getEtc1TabThumbnail.
         TraceEvent.startAsync("GetTabThumbnailFromDisk", tabId);

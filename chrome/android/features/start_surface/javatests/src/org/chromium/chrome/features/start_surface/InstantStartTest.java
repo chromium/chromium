@@ -22,6 +22,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
+import android.util.Size;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -177,7 +178,7 @@ public class InstantStartTest {
         final Bitmap thumbnailBitmap =
                 StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(tabId);
         tabContentManager.getTabThumbnailWithCallback(
-                tabId, null, thumbnailFetchListener, false, false);
+                tabId, new Size(0, 0), thumbnailFetchListener, false, false);
         CriteriaHelper.pollInstrumentationThread(
                 () -> Criteria.checkThat(mThumbnailFetchCount, greaterThan(0)));
 

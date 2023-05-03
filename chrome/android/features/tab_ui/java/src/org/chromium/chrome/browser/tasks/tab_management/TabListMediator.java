@@ -327,6 +327,7 @@ class TabListMediator {
     private final TabListFaviconProvider mTabListFaviconProvider;
     private final PriceWelcomeMessageController mPriceWelcomeMessageController;
 
+    private Size mDefaultGridCardSize;
     private String mComponentName;
     private ThumbnailProvider mThumbnailProvider;
     private boolean mActionsOnAllRelatedTabs;
@@ -773,6 +774,13 @@ class TabListMediator {
                     .OnLongPressTabItemEventListener onLongPressTabItemEventListener) {
         mTabGridItemTouchHelperCallback.setOnLongPressTabItemEventListener(
                 onLongPressTabItemEventListener);
+    }
+
+    /**
+     * @param size The default size to use for any new Tab cards.
+     */
+    void setDefaultGridCardSize(Size size) {
+        mDefaultGridCardSize = size;
     }
 
     private void selectTab(int oldIndex, int newIndex) {
@@ -1693,6 +1701,10 @@ class TabListMediator {
 
         updateFaviconForTab(pseudoTab, null, null);
 
+        if (mThumbnailProvider != null && mDefaultGridCardSize != null) {
+            tabInfo.set(TabProperties.GRID_CARD_SIZE,
+                    new Size(mDefaultGridCardSize.getWidth(), mDefaultGridCardSize.getHeight()));
+        }
         if (mThumbnailProvider != null && mVisible) {
             boolean isSelectable = mUiType == UiType.SELECTABLE;
             ThumbnailFetcher callback = new ThumbnailFetcher(mThumbnailProvider, pseudoTab.getId(),

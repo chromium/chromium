@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardPropert
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -156,11 +155,6 @@ public class TabListCoordinator
             mAdapter.registerType(UiType.CLOSABLE, parent -> {
                 ViewGroup group = (ViewGroup) LayoutInflater.from(context).inflate(
                         R.layout.closable_tab_grid_card_item, parentView, false);
-                if (mMode == TabListMode.CAROUSEL) {
-                    group.getLayoutParams().width = context.getResources().getDimensionPixelSize(
-                            R.dimen.tab_carousel_card_width);
-                }
-
                 group.setClickable(true);
                 return group;
             }, TabGridViewBinder::bindClosableTab);
@@ -240,6 +234,10 @@ public class TabListCoordinator
                 ViewGroup.LayoutParams layoutParams = mRecyclerView.getLayoutParams();
                 layoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 mRecyclerView.setLayoutParams(layoutParams);
+                final int cardWidthPx = context.getResources().getDimensionPixelSize(
+                        R.dimen.tab_carousel_card_width);
+                final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
+                mMediator.setDefaultGridCardSize(new Size(cardWidthPx, cardHeightPx));
             }
 
             mRecyclerView.setAdapter(mAdapter);
@@ -266,10 +264,8 @@ public class TabListCoordinator
 
         if (mMode == TabListMode.GRID) {
             mGlobalLayoutListener = this::updateThumbnailLocation;
-            if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
-                mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
-                        oldBottom) -> updateGridCardLayout(right - left);
-            }
+            mListLayoutListener = (view, left, top, right, bottom, oldLeft, oldTop, oldRight,
+                    oldBottom) -> updateGridCardLayout(right - left);
         } else if (mMode == TabListMode.STRIP) {
             mTabStripSnapshotter =
                     new TabStripSnapshotter(onModelTokenChange, mModel, mRecyclerView);
@@ -407,8 +403,11 @@ public class TabListCoordinator
                 mContext.getResources().getConfiguration().orientation,
                 mContext.getResources().getConfiguration().screenWidthDp);
         // Determine grid card width and account for margins on left and right.
-        final int cardWidthPx = (viewWidth / layoutManager.getSpanCount());
+        final int cardWidthPx =
+                ((viewWidth - mRecyclerView.getPaddingStart() - mRecyclerView.getPaddingEnd())
+                        / layoutManager.getSpanCount());
         final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
+        mMediator.setDefaultGridCardSize(new Size(cardWidthPx, cardHeightPx));
         for (int i = 0; i < mModel.size(); i++) {
             PropertyModel tabPropertyModel = mModel.get(i).model;
             // Other GTS items might intentionally have different dimensions. For example, the

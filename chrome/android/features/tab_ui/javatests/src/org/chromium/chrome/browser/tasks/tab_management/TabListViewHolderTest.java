@@ -437,6 +437,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @UiThreadTest
     public void testThumbnail() {
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         assertThat("Thumbnail should be set to place holder drawable.", thumbnail.getDrawable(),
@@ -451,6 +452,25 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         Assert.assertEquals(2, mThumbnailFetchedCount.get());
     }
 
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testThumbnailGridCardSize() {
+        mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
+        ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
+        assertThat("Thumbnail should be set to place holder drawable.", thumbnail.getDrawable(),
+                instanceOf(ColorDrawable.class));
+
+        mShouldReturnBitmap = true;
+        mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
+        assertThat("Thumbnail should still be set to place holder drawable.",
+                thumbnail.getDrawable(), instanceOf(ColorDrawable.class));
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
+        mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
+        assertThat(thumbnail.getDrawable(), instanceOf(BitmapDrawable.class));
+        Assert.assertEquals(2, mThumbnailFetchedCount.get());
+    }
+
     @SuppressWarnings("UnusedAssignment") // Intentionally set to null for garbage collection.
     @Test
     @MediumTest
@@ -458,6 +478,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testThumbnailGCAfterNullBitmap() {
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertThat(thumbnail.getDrawable(), instanceOf(BitmapDrawable.class));
         Bitmap bitmap = ((BitmapDrawable) thumbnail.getDrawable()).getBitmap();
@@ -479,6 +500,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testThumbnailGCAfterNewBitmap() {
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertThat(thumbnail.getDrawable(), instanceOf(BitmapDrawable.class));
         Bitmap bitmap = ((BitmapDrawable) thumbnail.getDrawable()).getBitmap();
@@ -499,6 +521,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testResetThumbnailGC() {
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertThat(thumbnail.getDrawable(), instanceOf(BitmapDrawable.class));
         Bitmap bitmap = ((BitmapDrawable) thumbnail.getDrawable()).getBitmap();
@@ -518,6 +541,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testHiddenGC() {
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertThat(thumbnail.getDrawable(), instanceOf(BitmapDrawable.class));
         Bitmap bitmap = ((BitmapDrawable) thumbnail.getDrawable()).getBitmap();
@@ -539,6 +563,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testHiddenThenShow() {
         ImageView thumbnail = mTabGridView.findViewById(R.id.tab_thumbnail);
         mShouldReturnBitmap = true;
+        mGridModel.set(TabProperties.GRID_CARD_SIZE, new Size(100, 500));
         mGridModel.set(TabProperties.THUMBNAIL_FETCHER, mMockThumbnailProvider);
         assertThat(thumbnail.getDrawable(), instanceOf(BitmapDrawable.class));
         Assert.assertEquals(1, mThumbnailFetchedCount.get());

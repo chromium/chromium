@@ -28,6 +28,7 @@ import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.wa
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.drawable.BitmapDrawable;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
@@ -570,6 +572,33 @@ public class TabUiTestHelper {
         for (int i = 0; i < tabModel.getCount(); i++) {
             checkThumbnailsExist(tabModel.getTabAt(i));
         }
+    }
+
+    public static void waitForThumbnailsToFetch(RecyclerView recyclerView) {
+        assertTrue(recyclerView instanceof TabListRecyclerView);
+        CriteriaHelper.pollUiThread(() -> {
+            boolean allFetched = true;
+            int i = 0;
+            LinearLayoutManager layoutManager =
+                    (LinearLayoutManager) recyclerView.getLayoutManager();
+            for (i = layoutManager.findFirstVisibleItemPosition();
+                    i <= layoutManager.findLastVisibleItemPosition(); i++) {
+                View v = layoutManager.findViewByPosition(i);
+                TabGridThumbnailView thumbnail = v.findViewById(R.id.tab_thumbnail);
+
+                // Some items may not be cards or may not have thumbnails.
+                if (thumbnail == null) continue;
+
+                if (thumbnail.isPlaceHolder()
+                        || !(thumbnail.getDrawable() instanceof BitmapDrawable)
+                        || ((BitmapDrawable) thumbnail.getDrawable()).getBitmap() == null) {
+                    allFetched = false;
+                    break;
+                }
+            }
+            Criteria.checkThat("The thumbnail for card at position " + i + " is missing.",
+                    allFetched, is(true));
+        });
     }
 
     public static void checkThumbnailsExist(Tab tab) {
