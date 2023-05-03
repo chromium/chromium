@@ -435,34 +435,33 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
 
   GURL origin("https://www.example.com/");
   std::string source;
-  std::string display_name;
   ContentSetting content_setting;
 
   // Built in Chrome default.
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, kContentType, &source, &display_name);
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
   EXPECT_EQ(CONTENT_SETTING_ASK, content_setting);
 
   // User-set global default.
   map->SetDefaultContentSetting(kContentType, CONTENT_SETTING_ALLOW);
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, kContentType, &source, &display_name);
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kDefault), source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
   // User-set pattern.
   AddSetting(map, "https://*", CONTENT_SETTING_BLOCK);
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, kContentType, &source, &display_name);
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPreference), source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
 
   // User-set origin setting.
   map->SetContentSettingDefaultScope(origin, origin, kContentType,
                                      CONTENT_SETTING_ALLOW);
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, kContentType, &source, &display_name);
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPreference), source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
@@ -476,8 +475,8 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   content_settings::TestUtils::OverrideProvider(
       map, std::move(extension_provider),
       HostContentSettingsMap::CUSTOM_EXTENSION_PROVIDER);
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, kContentType, &source, &display_name);
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kExtension), source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);
 
@@ -490,15 +489,15 @@ TEST_F(SiteSettingsHelperTest, ContentSettingSource) {
   policy_provider->set_read_only(true);
   content_settings::TestUtils::OverrideProvider(
       map, std::move(policy_provider), HostContentSettingsMap::POLICY_PROVIDER);
-  content_setting = GetContentSettingForOrigin(
-      &profile, map, origin, kContentType, &source, &display_name);
+  content_setting =
+      GetContentSettingForOrigin(&profile, map, origin, kContentType, &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kPolicy), source);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, content_setting);
 
   // Insecure origins.
   content_setting = GetContentSettingForOrigin(
       &profile, map, GURL("http://www.insecure_http_site.com/"), kContentType,
-      &source, &display_name);
+      &source);
   EXPECT_EQ(SiteSettingSourceToString(SiteSettingSource::kInsecureOrigin),
             source);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, content_setting);

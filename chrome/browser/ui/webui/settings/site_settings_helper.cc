@@ -630,19 +630,26 @@ base::Value::Dict GetExceptionForPage(
   return exception;
 }
 
-std::string GetDisplayNameForGURL(Profile* profile,
+UrlIdentity GetUrlIdentityForGURL(Profile* profile,
                                   const GURL& url,
                                   bool hostname_only) {
   auto origin = url::Origin::Create(url);
   if (origin.opaque()) {
-    return url.spec();
+    return {.type = UrlIdentity::Type::kDefault,
+            .name = base::UTF8ToUTF16(url.spec())};
   }
 
-  auto url_identity = UrlIdentity::CreateFromUrl(
+  return UrlIdentity::CreateFromUrl(
       profile, origin.GetURL(), kUrlIdentityAllowedTypes,
       hostname_only ? kUrlIdentityOptionsHostOnly
                     : kUrlIdentityOptionsOmitHttps);
-  return base::UTF16ToUTF8(url_identity.name);
+}
+
+std::string GetDisplayNameForGURL(Profile* profile,
+                                  const GURL& url,
+                                  bool hostname_only) {
+  return base::UTF16ToUTF8(
+      GetUrlIdentityForGURL(profile, url, hostname_only).name);
 }
 
 void GetExceptionsForContentType(ContentSettingsType type,
@@ -804,8 +811,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
                                           const HostContentSettingsMap* map,
                                           const GURL& origin,
                                           ContentSettingsType content_type,
-                                          std::string* source_string,
-                                          std::string* display_name) {
+                                          std::string* source_string) {
   // TODO(patricialor): In future, PermissionManager should know about all
   // content settings, not just the permissions, plus all the possible sources,
   // and the calls to HostContentSettingsMap should be removed.
@@ -842,8 +848,6 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   // Retrieve the source of the content setting.
   *source_string = SiteSettingSourceToString(
       CalculateSiteSettingSource(profile, content_type, origin, info, result));
-  *display_name =
-      GetDisplayNameForGURL(profile, origin, /*hostname_only=*/false);
 
   if (info.metadata.session_model == content_settings::SessionModel::OneTime) {
     DCHECK(
@@ -1025,25 +1029,6 @@ base::Value::List GetChooserExceptionListFromProfile(
   }
 
   return exceptions;
-}
-
-absl::optional<std::string> GetExtensionDisplayName(Profile* profile,
-                                                    GURL url) {
-  if (!url.SchemeIs(extensions::kExtensionScheme)) {
-    return {};
-  }
-  auto* extension_registry = extensions::ExtensionRegistry::Get(profile);
-  if (!extension_registry) {
-    return {};
-  }
-  // For the extension scheme, the pattern must be a valid URL.
-  DCHECK(url.is_valid());
-  const extensions::Extension* extension = extension_registry->GetExtensionById(
-      url.host(), extensions::ExtensionRegistry::EVERYTHING);
-  if (!extension) {
-    return {};
-  }
-  return extension->name();
 }
 
 }  // namespace site_settings

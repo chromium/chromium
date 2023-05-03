@@ -50,6 +50,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/settings/recent_site_settings_helper.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
@@ -1547,9 +1548,9 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     HostContentSettingsMap* map =
         HostContentSettingsMapFactory::GetForProfile(profile_);
 
-    std::string source_string, display_name;
+    std::string source_string;
     ContentSetting content_setting = site_settings::GetContentSettingForOrigin(
-        profile_, map, origin_url, content_type, &source_string, &display_name);
+        profile_, map, origin_url, content_type, &source_string);
     std::string content_setting_string =
         content_settings::ContentSettingToString(content_setting);
 
@@ -1558,18 +1559,23 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     raw_site_exception.Set(site_settings::kIncognito,
                            profile_->IsOffTheRecord());
     raw_site_exception.Set(site_settings::kOrigin, origin);
-    absl::optional<std::string> extension_name =
-        site_settings::GetExtensionDisplayName(profile_, origin_url);
-    if (extension_name.has_value()) {
-      raw_site_exception.Set(site_settings::kExtensionNameWithId,
-                             l10n_util::GetStringFUTF8(
-                                 IDS_SETTINGS_EXTENSION_DISPLAY_NAME,
-                                 base::UTF8ToUTF16(extension_name.value()),
-                                 base::UTF8ToUTF16(origin_url.host_piece())));
-    }
-    raw_site_exception.Set(site_settings::kDisplayName, display_name);
     raw_site_exception.Set(site_settings::kSetting, content_setting_string);
     raw_site_exception.Set(site_settings::kSource, source_string);
+
+    UrlIdentity identity = site_settings::GetUrlIdentityForGURL(
+        profile_, origin_url, /*hostname_only=*/false);
+    std::string display_name;
+    if (identity.type == UrlIdentity::Type::kChromeExtension ||
+        identity.type == UrlIdentity::Type::kIsolatedWebApp) {
+      // Append " (ID: <id>)" to extensions and IWA names as the user could have
+      // multiple extensions/IWAs installed with the same name.
+      display_name = l10n_util::GetStringFUTF8(
+          IDS_SETTINGS_EXTENSION_OR_APP_DISPLAY_NAME, identity.name,
+          base::UTF8ToUTF16(origin_url.host_piece()));
+    } else {
+      display_name = base::UTF16ToUTF8(identity.name);
+    }
+    raw_site_exception.Set(site_settings::kDisplayName, display_name);
 
     exceptions.Append(std::move(raw_site_exception));
   }

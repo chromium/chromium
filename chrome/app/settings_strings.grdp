@@ -4536,7 +4536,7 @@
   <message name="IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE_DESC" desc="The description of an option in Chrome's privacy settings for managing phones that can be used for signing into websites. A 'security key' is typically a USB peripherial used to secure sign-ins. In this case a phone can be used as a security key.">
     Control which phones you use as security keys
   </message>
-  <message name="IDS_SETTINGS_EXTENSION_DISPLAY_NAME" desc="The title of a page containing site settings for an extension. The display name contains a human-readable extension name followed by the extension ID.">
-    <ph name="EXTENSION_NAME">$1<ex>Google Docs Offline</ex></ph> (ID: <ph name="EXTENSION_ID">$2<ex>ghbmnnjooekpmoecnnnilnnbdlolhkhi</ex></ph>)
+  <message name="IDS_SETTINGS_EXTENSION_OR_APP_DISPLAY_NAME" desc="The title of a page containing site settings for an extension or Isolated Web App (IWA). The display name contains a human-readable extension/IWA name followed by the extension/IWA ID.">
+    <ph name="EXTENSION_OR_APP_NAME">$1<ex>Google Docs Offline</ex></ph> (ID: <ph name="EXTENSION_OR_APP_ID">$2<ex>ghbmnnjooekpmoecnnnilnnbdlolhkhi</ex></ph>)
   </message>
 </grit-part>

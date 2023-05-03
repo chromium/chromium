@@ -81,7 +81,6 @@ export interface RawSiteException {
   isEmbargoed: boolean;
   origin: string;
   displayName: string;
-  extensionNameWithId?: string;
   type: string;
   setting: ContentSetting;
   source: SiteSettingSource;

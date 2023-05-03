@@ -2086,8 +2086,7 @@ TEST_F(SiteSettingsHandlerTest, ExceptionHelpers) {
 }
 
 TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
-  // When the extension is loaded, the displayName is the extension's name, and
-  // there is extensionNameWithId field.
+  // When the extension is loaded, displayName is the extension's name and id.
   auto extension = LoadExtension(kExtensionName);
   auto extension_url = extension->url().spec();
   {
@@ -2100,28 +2099,14 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
       get_origin_permissions_args.Append(std::move(category_list));
     }
     handler()->HandleGetOriginPermissions(get_origin_permissions_args);
-    ValidateOrigin(extension_url, extension_url, kExtensionName,
+    std::string expected_display_name =
+        base::StringPrintf("Test Extension (ID: %s)", extension->id().c_str());
+    ValidateOrigin(extension_url, extension_url, expected_display_name,
                    CONTENT_SETTING_ASK,
                    site_settings::SiteSettingSource::kDefault, 1U);
-    // Validates the extensionNameWithId field.
-    {
-      const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-      EXPECT_EQ("cr.webUIResponse", data.function_name());
-      ASSERT_TRUE(data.arg3()->is_list());
-      EXPECT_EQ(1U, data.arg3()->GetList().size());
-      const base::Value& exception = data.arg3()->GetList()[0];
-      ASSERT_TRUE(exception.is_dict());
-      const std::string* extension_name_with_id =
-          exception.GetDict().FindString(site_settings::kExtensionNameWithId);
-      ASSERT_TRUE(extension_name_with_id);
-      ASSERT_EQ(base::StringPrintf("Test Extension (ID: %s)",
-                                   extension->id().c_str()),
-                *extension_name_with_id);
-    }
   }
 
-  // When the extension is unloaded, the displayName is the extension's origin,
-  // and there is no extensionNameWithId field.
+  // When the extension is unloaded, the displayName is the extension's origin.
   UnloadExtension(extension->id());
   {
     base::Value::List get_origin_permissions_args;
@@ -2137,17 +2122,6 @@ TEST_F(SiteSettingsHandlerTest, ExtensionDisplayName) {
         extension_url, extension_url,
         base::StringPrintf("chrome-extension://%s", extension->id().c_str()),
         CONTENT_SETTING_ASK, site_settings::SiteSettingSource::kDefault, 2U);
-    // Validates there is no extensionNameWithId field.
-    {
-      const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
-      EXPECT_EQ("cr.webUIResponse", data.function_name());
-      ASSERT_TRUE(data.arg3()->is_list());
-      EXPECT_EQ(1U, data.arg3()->GetList().size());
-      const base::Value::Dict& exception = data.arg3()->GetList()[0].GetDict();
-      const std::string* extension_name_with_id =
-          exception.FindString(site_settings::kExtensionNameWithId);
-      ASSERT_FALSE(extension_name_with_id);
-    }
   }
 }
 

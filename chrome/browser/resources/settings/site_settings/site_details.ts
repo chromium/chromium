@@ -283,15 +283,6 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
           // exception.
           assert(exceptionList.length > 0);
           this.pageTitle = exceptionList[0].displayName;
-
-          // If the origin is an extension origin, use the extension name if
-          // available.
-          if (exceptionList[0].extensionNameWithId !== undefined) {
-            const url = this.toUrl(exceptionList[0].origin);
-            if (url !== null && url.protocol === 'chrome-extension:') {
-              this.pageTitle = exceptionList[0].extensionNameWithId;
-            }
-          }
         });
   }
 
