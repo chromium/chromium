@@ -177,20 +177,6 @@ public class NfcTagHandler {
     }
 
     /**
-     * Checks if NFC tag is connected.
-     */
-    public boolean isConnected() {
-        return mTech.isConnected();
-    }
-
-    /**
-     * Closes connection.
-     */
-    public void close() throws IOException {
-        mTech.close();
-    }
-
-    /**
      * Writes NdefMessage to NFC tag.
      */
     public void write(NdefMessage message)

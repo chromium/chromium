@@ -712,12 +712,5 @@ public class NfcImpl implements Nfc {
         processPendingWatchOperations();
         processPendingPushOperation();
         processPendingMakeReadOnlyOperation();
-        if (mTagHandler != null && mTagHandler.isConnected()) {
-            try {
-                mTagHandler.close();
-            } catch (IOException e) {
-                Log.w(TAG, "Cannot close NFC tag connection.");
-            }
-        }
     }
 }

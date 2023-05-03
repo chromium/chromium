@@ -162,14 +162,12 @@ public class NFCTest {
                         (Bundle) isNull());
         doNothing().when(mNfcAdapter).disableReaderMode(any(Activity.class));
         // Tag handler overrides used to mock connected tag.
-        doReturn(true).when(mNfcTagHandler).isConnected();
         doReturn(false).when(mNfcTagHandler).isTagOutOfRange();
         try {
             doNothing().when(mNfcTagHandler).connect();
             doNothing().when(mNfcTagHandler).write(any(android.nfc.NdefMessage.class));
             doReturn(true).when(mNfcTagHandler).makeReadOnly();
             doReturn(createNdefMessageWithRecordId(DUMMY_RECORD_ID)).when(mNfcTagHandler).read();
-            doNothing().when(mNfcTagHandler).close();
         } catch (IOException | FormatException e) {
         }
         NfcBlocklist.overrideNfcBlocklistForTests(null /* serverProvidedValues */);
