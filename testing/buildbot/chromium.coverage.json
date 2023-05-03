@@ -24675,6 +24675,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
+          "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -29728,6 +29729,7 @@
           "-v",
           "--stable-jobs",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu",
+          "--use-webgpu-power-preference=default-high-performance",
           "--jobs=4"
         ],
         "isolate_name": "telemetry_gpu_integration_test",

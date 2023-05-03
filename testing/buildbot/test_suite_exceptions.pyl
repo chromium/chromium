@@ -4425,6 +4425,12 @@
       'Dawn Android arm Release (Pixel 4)',
     ],
     'modifications': {
+      'Dawn Mac x64 DEPS Release (AMD)': {
+        'ci_only': True,
+      },
+      'Dawn Mac x64 Release (AMD)': {
+        'ci_only': True,
+      },
       # These tests must run with a GPU.
       'linux-code-coverage': {
         'swarming': {
@@ -4494,6 +4500,16 @@
       'Dawn Linux x64 Release (Intel UHD 630)': {
         'ci_only': True,
       },
+      'Dawn Mac x64 DEPS Release (AMD)': {
+        'ci_only': True,
+      },
+      'Dawn Mac x64 Release (AMD)': {
+        'ci_only': True,
+      },
+    },
+  },
+  'webgpu_swiftshader_web_platform_cts_tests': {
+    'modifications': {
       'Dawn Mac x64 DEPS Release (AMD)': {
         'ci_only': True,
       },
