@@ -5238,6 +5238,14 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('Nexus 5', hints['model'])
     self.assertEqual('6.0', hints['platformVersion'])
     self.assertEqual(False, hints['wow64'])
+    major_version = driver.capabilities['browserVersion'].split('.')[0]
+    expected_ua = ''.join(('Mozilla/5.0 ',
+                           '(Linux; Android 6.0; Nexus 5 Build/MRA58N) ',
+                           'AppleWebKit/537.36 (KHTML, like Gecko) ',
+                           f'Chrome/{major_version}.0.0.0 ',
+                           'Mobile Safari/537.36'))
+    actual_ua = driver.ExecuteScript('return navigator.userAgent')
+    self.assertEqual(expected_ua, actual_ua)
 
 
 class ChromeDriverLogTest(ChromeDriverBaseTest):

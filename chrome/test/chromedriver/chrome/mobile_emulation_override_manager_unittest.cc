@@ -184,6 +184,30 @@ TEST(MobileEmulationOverrideManager, SendsClientHintsExplicitUA) {
       AssertClientHintsCommand(client.commands_[2], client_hints, "Custom UA"));
 }
 
+TEST(MobileEmulationOverrideManager, SendsClientHintsTemplatedUA) {
+  RecorderDevToolsClient client;
+  MobileDevice mobile_device;
+  mobile_device.device_metrics = DeviceMetrics{};
+  ClientHints client_hints;
+  client_hints.architecture = "CustomArch";
+  client_hints.bitness = "CustomBitness";
+  client_hints.mobile = mobile_device.device_metrics->mobile;
+  client_hints.model = "CustomModel";
+  client_hints.platform = "CustomPlatform";
+  client_hints.platform_version = "100500";
+  client_hints.wow64 = true;
+  mobile_device.client_hints = client_hints;
+  mobile_device.user_agent = "Custom UA/%s XYZ";
+  MobileEmulationOverrideManager manager(&client, std::move(mobile_device),
+                                         112);
+  ASSERT_EQ(0u, client.commands_.size());
+  ASSERT_EQ(kOk, manager.OnConnected(&client).code());
+
+  ASSERT_EQ(3u, client.commands_.size());
+  ASSERT_NO_FATAL_FAILURE(AssertClientHintsCommand(
+      client.commands_[2], client_hints, "Custom UA/112.0.0.0 XYZ"));
+}
+
 TEST(MobileEmulationOverrideManager, SendsClientHintsInferredMobileUA) {
   RecorderDevToolsClient client;
   MobileDevice mobile_device;

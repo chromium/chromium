@@ -697,7 +697,7 @@ TEST(ParseCapabilities, MobileEmulationDeviceName) {
   ASSERT_TRUE(base::MatchPattern(
       capabilities.mobile_device->user_agent.value(),
       "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
-      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/*.*.*.* Mobile "
+      "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Mobile "
       "Safari/537.36"));
 
   ASSERT_EQ(360, capabilities.mobile_device->device_metrics->width);

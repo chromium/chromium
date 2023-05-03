@@ -106,7 +106,7 @@ def main():
         titles.append(' '.join(words))
     for title in titles:
       mobile_emulation = {
-        'userAgent': device['user-agent'].replace('%s', version),
+        'userAgent': device['user-agent'],
         'deviceMetrics': {
           'width': device['screen']['vertical']['width'],
           'height': device['screen']['vertical']['height'],
