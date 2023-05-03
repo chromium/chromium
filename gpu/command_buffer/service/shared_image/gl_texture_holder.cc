@@ -6,7 +6,6 @@
 
 #include "base/bits.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_repack_utils.h"
 #include "gpu/command_buffer/service/skia_utils.h"
@@ -54,33 +53,35 @@ constexpr int ComputeBestAlignment(size_t bytes_per_pixel, size_t stride) {
 }  // anonymous namespace
 
 // static
-viz::ResourceFormat GLTextureHolder::GetPlaneFormat(
+viz::SharedImageFormat GLTextureHolder::GetPlaneFormat(
     viz::SharedImageFormat format,
     int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
   if (format.is_single_plane()) {
-    return format.resource_format();
+    return format;
   }
 
   if (format == viz::MultiPlaneFormat::kNV12) {
-    return plane_index == 0 ? viz::ResourceFormat::RED_8
-                            : viz::ResourceFormat::RG_88;
+    return plane_index == 0 ? viz::SinglePlaneFormat::kR_8
+                            : viz::SinglePlaneFormat::kRG_88;
   } else if (format == viz::MultiPlaneFormat::kYV12) {
-    return viz::ResourceFormat::RED_8;
+    return viz::SinglePlaneFormat::kR_8;
   }
 
   NOTREACHED();
-  return viz::ResourceFormat::RGBA_8888;
+  return viz::SinglePlaneFormat::kRGBA_8888;
 }
 
-GLTextureHolder::GLTextureHolder(viz::ResourceFormat format,
+GLTextureHolder::GLTextureHolder(viz::SharedImageFormat format,
                                  const gfx::Size& size,
                                  bool is_passthrough,
                                  gl::ProgressReporter* progress_reporter)
     : format_(format),
       size_(size),
       is_passthrough_(is_passthrough),
-      progress_reporter_(progress_reporter) {}
+      progress_reporter_(progress_reporter) {
+  CHECK(format_.is_single_plane());
+}
 
 // TODO(kylechar): When `texture_` is removed with validating command decoder
 // move constructor/assignment can be defaulted.
@@ -140,8 +141,7 @@ void GLTextureHolder::Initialize(
       is_passthrough_ ? nullptr : &texture_);
 
   if (is_passthrough_) {
-    passthrough_texture_->SetEstimatedSize(
-        viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size_, format_));
+    passthrough_texture_->SetEstimatedSize(format_.EstimatedSizeInBytes(size_));
   } else {
     // TODO(piman): We pretend the texture was created in an ES2 context, so
     // that it can be used in other ES2 contexts, and so we have to pass
@@ -251,14 +251,15 @@ bool GLTextureHolder::UploadFromMemory(const SkPixmap& pixmap) {
   DCHECK_EQ(src_stride % gl_unpack_alignment, 0u);
 
   std::vector<uint8_t> repacked_data;
-  if (format_ == viz::BGRX_8888 || format_ == viz::RGBX_8888) {
+  if (format_ == viz::SinglePlaneFormat::kBGRX_8888 ||
+      format_ == viz::SinglePlaneFormat::kRGBX_8888) {
     DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
     DCHECK_EQ(gl_unpack_alignment, 4);
 
     // BGRX and RGBX data is uploaded as GL_RGB. Repack from 4 to 3 bytes per
     // pixel.
-    repacked_data =
-        RepackPixelDataAsRgb(size_, pixmap, format_ == viz::BGRX_8888);
+    repacked_data = RepackPixelDataAsRgb(
+        size_, pixmap, format_ == viz::SinglePlaneFormat::kBGRX_8888);
     src_stride =
         base::bits::AlignUp<size_t>(size_.width() * 3, gl_unpack_alignment);
     src_total_bytes = repacked_data.size();
@@ -315,13 +316,15 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
   GLenum gl_format = format_desc_.data_format;
   GLenum gl_type = format_desc_.data_type;
 
-  if (format_ == viz::BGRX_8888 || format_ == viz::RGBX_8888) {
+  if (format_ == viz::SinglePlaneFormat::kBGRX_8888 ||
+      format_ == viz::SinglePlaneFormat::kRGBX_8888) {
     DCHECK_EQ(gl_format, static_cast<GLenum>(GL_RGB));
     DCHECK_EQ(gl_type, static_cast<GLenum>(GL_UNSIGNED_BYTE));
 
     // Always readback RGBX/BGRX as RGBA/BGRA instead of RGB to avoid needing a
     // temporary buffer.
-    gl_format = format_ == viz::BGRX_8888 ? GL_BGRA_EXT : GL_RGBA;
+    gl_format =
+        format_ == viz::SinglePlaneFormat::kBGRX_8888 ? GL_BGRA_EXT : GL_RGBA;
   }
 
   gl::GLApi* api = gl::g_current_gl_context;
@@ -349,7 +352,8 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
 
     if (gl_format != static_cast<GLenum>(preferred_format) ||
         gl_type != static_cast<GLenum>(preferred_type)) {
-      if (format_ == viz::BGRA_8888 || format_ == viz::BGRX_8888) {
+      if (format_ == viz::SinglePlaneFormat::kBGRA_8888 ||
+          format_ == viz::SinglePlaneFormat::kBGRX_8888) {
         DCHECK_EQ(gl_format, static_cast<GLenum>(GL_BGRA_EXT));
         DCHECK_EQ(gl_type, static_cast<GLenum>(GL_UNSIGNED_BYTE));
 
@@ -357,7 +361,7 @@ bool GLTextureHolder::ReadbackToMemory(const SkPixmap& pixmap) {
         gl_format = GL_RGBA;
         needs_rb_swizzle = true;
       } else {
-        DLOG(ERROR) << viz::SharedImageFormat::SinglePlane(format_).ToString()
+        DLOG(ERROR) << format_.ToString()
                     << " is not supported by glReadPixels()";
         return false;
       }

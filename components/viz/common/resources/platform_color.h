@@ -41,16 +41,6 @@ class PlatformColor {
       const gpu::Capabilities& caps) {
     return BestSupportedFormat(caps.render_buffer_format_bgra8888);
   }
-
-  // Versions of the above that return ResourceFormat.
-  static ResourceFormat BestSupportedTextureResourceFormat(
-      const gpu::Capabilities& caps) {
-    return BestSupportedTextureFormat(caps).resource_format();
-  }
-  static ResourceFormat BestSupportedRenderBufferResourceFormat(
-      const gpu::Capabilities& caps) {
-    return BestSupportedRenderBufferFormat(caps).resource_format();
-  }
 };
 
 }  // namespace viz
