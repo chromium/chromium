@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 
 using base::TimeTicks;
 
@@ -206,6 +208,62 @@ void CleanupExtraFiles(const base::FilePath& store_path,
       base::DeleteFile(name);
   }
 }
+
+// A ZeroCopyOutputStream that writes to a file using base::File. Any errors
+// during serialization close the file.
+class BaseFileOutputStream
+    : public google::protobuf::io::CopyingOutputStreamAdaptor {
+ public:
+  // Creates and opens `output_file`, overwriting any previous contents.
+  explicit BaseFileOutputStream(const base::FilePath& output_file)
+      : CopyingOutputStreamAdaptor(&stream_), stream_(output_file) {}
+  BaseFileOutputStream(const BaseFileOutputStream&) = delete;
+  BaseFileOutputStream& operator=(const BaseFileOutputStream&) = delete;
+
+  // Closes the file, if it was still open.
+  ~BaseFileOutputStream() override = default;
+
+  // Returns `base::File::FILE_OK` if no error and the file is still open; else
+  // the error that led to closure of the file.
+  base::File::Error GetError() const { return stream_.GetError(); }
+
+ private:
+  class CopyingBaseFileOutputStream
+      : public google::protobuf::io::CopyingOutputStream {
+   public:
+    explicit CopyingBaseFileOutputStream(const base::FilePath& output_file)
+        : file_(output_file,
+                base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
+                    base::File::FLAG_WIN_EXCLUSIVE_READ |
+                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                    base::File::FLAG_WIN_SHARE_DELETE) {}
+    CopyingBaseFileOutputStream(const CopyingBaseFileOutputStream&) = delete;
+    CopyingBaseFileOutputStream& operator=(const CopyingBaseFileOutputStream&) =
+        delete;
+    ~CopyingBaseFileOutputStream() override = default;
+
+    base::File::Error GetError() const { return file_.error_details(); }
+
+    // CopyingOutputStream:
+    bool Write(const void* buffer, int size) override {
+      if (!file_.IsValid()) {
+        return false;
+      }
+      int bytes_written =
+          file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size);
+      if (bytes_written == size) {
+        return true;
+      }
+      file_ = base::File(base::File::GetLastFileError());
+      return false;
+    }
+
+   private:
+    base::File file_;
+  };
+
+  CopyingBaseFileOutputStream stream_;
+};
 
 }  // namespace
 
@@ -831,19 +889,21 @@ StoreWriteResult V4Store::WriteToDisk(V4StoreFileFormat* file_format) {
 
   file_format->set_magic_number(kFileMagic);
   file_format->set_version_number(kFileVersion);
-  std::string file_format_string;
-  file_format->SerializeToString(&file_format_string);
-  size_t written = base::WriteFile(new_filename, file_format_string.data(),
-                                   file_format_string.size());
-
-  if (file_format_string.size() != written)
-    return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+  int64_t written = 0;
+  {
+    BaseFileOutputStream output_stream(new_filename);
+    if (!file_format->SerializeToZeroCopyStream(&output_stream) ||
+        !output_stream.Flush()) {
+      return UNEXPECTED_BYTES_WRITTEN_FAILURE;
+    }
+    written = output_stream.ByteCount();
+  }
 
   if (!base::Move(new_filename, store_path_))
     return UNABLE_TO_RENAME_FAILURE;
 
   // Update |file_size_| now because we wrote the file correctly.
-  file_size_ = static_cast<int64_t>(written);
+  file_size_ = written;
   for (const auto& hash_file : file_format->hash_files())
     file_size_ += hash_file.file_size();
 
