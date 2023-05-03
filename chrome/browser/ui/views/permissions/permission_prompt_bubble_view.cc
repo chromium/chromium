@@ -260,6 +260,12 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(block_message_id));
 
+    if (features::IsChromeRefresh2023()) {
+      allow_once_button->SetStyle(views::MdTextButton::Style::kTonal);
+      allow_always_button->SetStyle(views::MdTextButton::Style::kTonal);
+      block_button->SetStyle(views::MdTextButton::Style::kTonal);
+    }
+
     buttons_container->AddChildView(std::move(allow_once_button));
     buttons_container->AddChildView(std::move(allow_always_button));
     buttons_container->AddChildView(std::move(block_button));
