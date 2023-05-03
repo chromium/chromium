@@ -80,13 +80,6 @@ const char kTerminaKernelVersion[] =
 const char kCrostiniCorruptionHistogram[] = "Crostini.FilesystemCorruption";
 constexpr auto kLongTime = base::Days(10);
 
-void ExpectCrostiniResult(base::OnceClosure closure,
-                          CrostiniResult expected_result,
-                          CrostiniResult result) {
-  EXPECT_EQ(expected_result, result);
-  std::move(closure).Run();
-}
-
 class TestRestartObserver : public CrostiniManager::RestartObserver {
  public:
   void OnStageStarted(mojom::InstallerState stage) override {
@@ -199,7 +192,6 @@ class CrostiniManagerTest : public testing::Test {
 
     scoped_feature_list_.InitWithFeatures(
         {features::kCrostini, ash::features::kCrostiniMultiContainer}, {});
-    run_loop_ = std::make_unique<base::RunLoop>();
     profile_ = std::make_unique<TestingProfile>();
     crostini_manager_ = CrostiniManager::GetForProfile(profile_.get());
 
@@ -235,14 +227,12 @@ class CrostiniManagerTest : public testing::Test {
     scoped_user_manager_.reset();
     crostini_manager_->Shutdown();
     profile_.reset();
-    run_loop_.reset();
     ash::DlcserviceClient::Shutdown();
     browser_part_.ShutdownCrosComponentManager();
     component_manager_.reset();
   }
 
  protected:
-  base::RunLoop* run_loop() { return run_loop_.get(); }
   Profile* profile() { return profile_.get(); }
   CrostiniManager* crostini_manager() { return crostini_manager_; }
   const guest_os::GuestId& container_id() { return container_id_; }
@@ -257,8 +247,6 @@ class CrostiniManagerTest : public testing::Test {
   raw_ptr<ash::FakeAnomalyDetectorClient, ExperimentalAsh>
       fake_anomaly_detector_client_;
 
-  std::unique_ptr<base::RunLoop>
-      run_loop_;  // run_loop_ must be created on the UI thread.
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<CrostiniManager, ExperimentalAsh> crostini_manager_;
   const guest_os::GuestId container_id_ =
@@ -2320,13 +2308,12 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerFailure) {
   ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
       prefs::kCrostiniAnsiblePlaybookFilePath);
 
-  RestartCrostiniWithOptions(
-      DefaultContainerId(), std::move(ansible_restart),
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
-      this);
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostiniWithOptions(DefaultContainerId(), std::move(ansible_restart),
+                             result_future.GetCallback(), this);
 
-  run_loop()->Run();
+  EXPECT_EQ(CrostiniResult::CONTAINER_CONFIGURATION_FAILED,
+            result_future.Get());
 }
 
 TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
@@ -2342,12 +2329,11 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
   ansible_restart.ansible_playbook = profile_->GetPrefs()->GetFilePath(
       prefs::kCrostiniAnsiblePlaybookFilePath);
 
-  RestartCrostiniWithOptions(
-      DefaultContainerId(), std::move(ansible_restart),
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::SUCCESS),
-      this);
-  run_loop()->Run();
+  TestFuture<CrostiniResult> result_future;
+  RestartCrostiniWithOptions(DefaultContainerId(), std::move(ansible_restart),
+                             result_future.GetCallback(), this);
+
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
 }
 
 class CrostiniManagerUpgradeContainerTest
@@ -2365,7 +2351,6 @@ class CrostiniManagerUpgradeContainerTest
 
   void TearDown() override {
     crostini_manager()->RemoveUpgradeContainerProgressObserver(this);
-    progress_run_loop_.reset();
     CrostiniManagerTest::TearDown();
   }
 
@@ -2405,12 +2390,11 @@ class CrostiniManagerUpgradeContainerTest
 };
 
 TEST_F(CrostiniManagerUpgradeContainerTest, UpgradeContainerSuccess) {
-  crostini_manager()->UpgradeContainer(
-      container_id_, ContainerVersion::BUSTER,
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::SUCCESS));
+  TestFuture<CrostiniResult> result_future;
+  crostini_manager()->UpgradeContainer(container_id_, ContainerVersion::BUSTER,
+                                       result_future.GetCallback());
 
-  run_loop()->Run();
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
 
   progress_signal_.set_status(
       vm_tools::cicerone::UpgradeContainerProgressSignal::SUCCEEDED);
@@ -2420,23 +2404,21 @@ TEST_F(CrostiniManagerUpgradeContainerTest, UpgradeContainerSuccess) {
 }
 
 TEST_F(CrostiniManagerUpgradeContainerTest, CancelUpgradeContainerSuccess) {
-  crostini_manager()->UpgradeContainer(
-      container_id_, ContainerVersion::BUSTER,
-      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::SUCCESS));
+  TestFuture<CrostiniResult> result_future;
+  crostini_manager()->UpgradeContainer(container_id_, ContainerVersion::BUSTER,
+                                       result_future.GetCallback());
 
   progress_signal_.set_status(
       vm_tools::cicerone::UpgradeContainerProgressSignal::IN_PROGRESS);
 
   SendProgressSignal();
-  run_loop()->Run();
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future.Get());
 
-  base::RunLoop run_loop2;
-  crostini_manager()->CancelUpgradeContainer(
-      container_id_,
-      base::BindOnce(&ExpectCrostiniResult, run_loop2.QuitClosure(),
-                     CrostiniResult::SUCCESS));
-  run_loop2.Run();
+  TestFuture<CrostiniResult> result_future2;
+  crostini_manager()->CancelUpgradeContainer(container_id_,
+                                             result_future2.GetCallback());
+
+  EXPECT_EQ(CrostiniResult::SUCCESS, result_future2.Get());
 }
 
 }  // namespace crostini
