@@ -96,12 +96,6 @@ class EnrollmentScreenView
   // Shows error that enrollment is not allowed during trial run.
   virtual void ShowEnrollmentDuringTrialNotAllowedError() = 0;
 
-  // Shows the Active Directory domain joining screen.
-  virtual void ShowActiveDirectoryScreen(const std::string& domain_join_config,
-                                         const std::string& machine_name,
-                                         const std::string& username,
-                                         authpolicy::ErrorType error) = 0;
-
   // Shows the device attribute prompt screen.
   virtual void ShowAttributePromptScreen(const std::string& asset_id,
                                          const std::string& location) = 0;

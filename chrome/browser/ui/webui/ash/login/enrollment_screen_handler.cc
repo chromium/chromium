@@ -47,7 +47,6 @@ namespace {
 
 // Enrollment step names.
 const char kEnrollmentStepSignin[] = "signin";
-const char kEnrollmentStepAdJoin[] = "ad-join";
 const char kEnrollmentStepSuccess[] = "success";
 const char kEnrollmentStepWorking[] = "working";
 const char kEnrollmentStepTPMChecking[] = "tpm-checking";
@@ -57,9 +56,6 @@ const char kEnrollmentStepTPMChecking[] = "tpm-checking";
 const char kEnrollmentModeUIForced[] = "forced";
 const char kEnrollmentModeUIManual[] = "manual";
 const char kEnrollmentModeUIRecovery[] = "recovery";
-
-constexpr char kActiveDirectoryJoinHistogram[] =
-    "Enterprise.ActiveDirectoryJoin";
 
 constexpr char kOAUTHCodeCookie[] = "oauth_code";
 
@@ -244,98 +240,6 @@ void EnrollmentScreenHandler::ShowUserError(const std::string& email) {
             IDS_ENTERPRISE_ENROLLMENT_CONSUMER_ACCOUNT_WITH_PACKAGED_LICENSE_ACCOUNT_CHECK,
             base::ASCIIToUTF16(email)),
         true);
-  }
-}
-
-void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
-    const std::string& domain_join_config,
-    const std::string& machine_name,
-    const std::string& username,
-    authpolicy::ErrorType error) {
-  if (active_directory_join_type_ == ActiveDirectoryDomainJoinType::COUNT) {
-    active_directory_join_type_ =
-        ActiveDirectoryDomainJoinType::WITHOUT_CONFIGURATION;
-  }
-
-  if (!domain_join_config.empty()) {
-    active_directory_domain_join_config_ = domain_join_config;
-    active_directory_join_type_ =
-        ActiveDirectoryDomainJoinType::NOT_USING_CONFIGURATION;
-  }
-  switch (error) {
-    case authpolicy::ERROR_NONE: {
-      CallExternalAPI("setAdJoinParams", std::string() /* machineName */,
-                      std::string() /* userName */,
-                      static_cast<int>(ActiveDirectoryErrorState::NONE),
-                      !active_directory_domain_join_config_
-                           .empty() /* show_unlock_password */);
-      ShowStep(kEnrollmentStepAdJoin);
-      return;
-    }
-    case authpolicy::ERROR_NETWORK_PROBLEM:
-      // Could be a network problem, but could also be a misspelled domain name.
-      ShowError(IDS_AD_AUTH_NETWORK_ERROR, true);
-      return;
-    case authpolicy::ERROR_PARSE_UPN_FAILED:
-    case authpolicy::ERROR_BAD_USER_NAME:
-      CallExternalAPI("setAdJoinParams", machine_name, username,
-                      static_cast<int>(ActiveDirectoryErrorState::BAD_USERNAME),
-                      false /* show_unlock_password */);
-      ShowStep(kEnrollmentStepAdJoin);
-      return;
-    case authpolicy::ERROR_BAD_PASSWORD:
-      CallExternalAPI(
-          "setAdJoinParams", machine_name, username,
-          static_cast<int>(ActiveDirectoryErrorState::BAD_AUTH_PASSWORD),
-          false /* show_unlock_password */);
-      ShowStep(kEnrollmentStepAdJoin);
-      return;
-    case authpolicy::ERROR_MACHINE_NAME_TOO_LONG:
-      CallExternalAPI(
-          "setAdJoinParams", machine_name, username,
-          static_cast<int>(ActiveDirectoryErrorState::MACHINE_NAME_TOO_LONG),
-          false /* show_unlock_password */);
-      ShowStep(kEnrollmentStepAdJoin);
-      return;
-    case authpolicy::ERROR_INVALID_MACHINE_NAME:
-      CallExternalAPI(
-          "setAdJoinParams", machine_name, username,
-          static_cast<int>(ActiveDirectoryErrorState::MACHINE_NAME_INVALID),
-          false /* show_unlock_password */);
-      ShowStep(kEnrollmentStepAdJoin);
-      return;
-    case authpolicy::ERROR_PASSWORD_EXPIRED:
-      ShowError(IDS_AD_PASSWORD_EXPIRED, true);
-      return;
-    case authpolicy::ERROR_JOIN_ACCESS_DENIED:
-      ShowError(IDS_AD_USER_DENIED_TO_JOIN_DEVICE, true);
-      return;
-    case authpolicy::ERROR_USER_HIT_JOIN_QUOTA:
-      ShowError(IDS_AD_USER_HIT_JOIN_QUOTA, true);
-      return;
-    case authpolicy::ERROR_OU_DOES_NOT_EXIST:
-      ShowError(IDS_AD_OU_DOES_NOT_EXIST, true);
-      return;
-    case authpolicy::ERROR_OU_ACCESS_DENIED:
-      ShowError(IDS_AD_OU_ACCESS_DENIED, true);
-      return;
-    case authpolicy::ERROR_SETTING_OU_FAILED:
-      ShowError(IDS_AD_OU_SETTING_FAILED, true);
-      return;
-    case authpolicy::ERROR_KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE:
-      ShowError(IDS_AD_NOT_SUPPORTED_ENCRYPTION, true);
-      return;
-#if !defined(ARCH_CPU_X86_64)
-    // Currently, the Active Directory integration is only supported on x86_64
-    // systems. (see https://crbug.com/676602)
-    case authpolicy::ERROR_DBUS_FAILURE:
-      ShowError(IDS_AD_BOARD_NOT_SUPPORTED, true);
-      return;
-#endif
-    default:
-      LOG(ERROR) << "Unhandled error code: " << error;
-      ShowError(IDS_AD_DOMAIN_JOIN_UNKNOWN_ERROR, true);
-      return;
   }
 }
 
@@ -730,37 +634,6 @@ bool EnrollmentScreenHandler::IsOnEnrollmentScreen() {
   return (GetCurrentScreen() == kScreenId);
 }
 
-void EnrollmentScreenHandler::OnAdConfigurationUnlocked(
-    std::string unlocked_data) {
-  if (unlocked_data.empty()) {
-    CallExternalAPI(
-        "setAdJoinParams", std::string() /* machineName */,
-        std::string() /* userName */,
-        static_cast<int>(ActiveDirectoryErrorState::BAD_UNLOCK_PASSWORD),
-        true /* show_unlock_password */);
-    return;
-  }
-  active_directory_domain_join_config_.clear();
-  absl::optional<base::Value> options = base::JSONReader::Read(
-      unlocked_data, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-  if (!options || !options->is_list()) {
-    ShowError(IDS_AD_JOIN_CONFIG_NOT_PARSED, true);
-    CallExternalAPI("setAdJoinParams", std::string() /* machineName */,
-                    std::string() /* userName */,
-                    static_cast<int>(ActiveDirectoryErrorState::NONE),
-                    false /* show_unlock_password */);
-    return;
-  }
-  base::Value::Dict custom;
-  custom.Set(
-      "name",
-      base::Value(l10n_util::GetStringUTF8(IDS_AD_CONFIG_SELECTION_CUSTOM)));
-  options->GetList().Append(std::move(custom));
-  active_directory_join_type_ =
-      ActiveDirectoryDomainJoinType::USING_CONFIGURATION;
-  CallExternalAPI("setAdJoinConfiguration", std::move(*options));
-}
-
 void EnrollmentScreenHandler::ShowSkipConfirmationDialog() {
   CallExternalAPI("showSkipConfirmationDialog");
 }
@@ -777,17 +650,6 @@ void EnrollmentScreenHandler::HandleToggleFakeEnrollment() {
 
 void EnrollmentScreenHandler::HandleClose(const std::string& reason) {
   DCHECK(controller_);
-  if (active_directory_join_type_ != ActiveDirectoryDomainJoinType::COUNT) {
-    DCHECK(g_browser_process->platform_part()
-               ->browser_policy_connector_ash()
-               ->IsActiveDirectoryManaged());
-    // Record Active Directory join type in case of successful enrollment and
-    // domain join.
-    base::UmaHistogramEnumeration(kActiveDirectoryJoinHistogram,
-                                  active_directory_join_type_,
-                                  ActiveDirectoryDomainJoinType::COUNT);
-  }
-
   if (reason == "cancel") {
     controller_->OnCancel();
   } else if (reason == "done") {

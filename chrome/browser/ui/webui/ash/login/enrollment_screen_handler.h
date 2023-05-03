@@ -75,10 +75,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   void ShowSkipConfirmationDialog() override;
   void ShowUserError(const std::string& email) override;
   void ShowEnrollmentDuringTrialNotAllowedError() override;
-  void ShowActiveDirectoryScreen(const std::string& domain_join_config,
-                                 const std::string& machine_name,
-                                 const std::string& username,
-                                 authpolicy::ErrorType error) override;
   void ShowAttributePromptScreen(const std::string& asset_id,
                                  const std::string& location) override;
   void ShowEnrollmentSuccessScreen() override;
@@ -155,9 +151,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   // Returns true if current visible screen is the enrollment sign-in page.
   bool IsOnEnrollmentScreen();
 
-  // Called after configuration seed was unlocked.
-  void OnAdConfigurationUnlocked(std::string unlocked_data);
-
   // Keeps the controller for this view.
   raw_ptr<Controller, ExperimentalAsh> controller_ = nullptr;
 
@@ -170,9 +163,6 @@ class EnrollmentScreenHandler : public BaseScreenHandler,
   FlowType flow_type_;
 
   GaiaButtonsType gaia_buttons_type_;
-
-  // Active Directory configuration in the form of encrypted binary data.
-  std::string active_directory_domain_join_config_;
 
   ActiveDirectoryDomainJoinType active_directory_join_type_ =
       ActiveDirectoryDomainJoinType::COUNT;
