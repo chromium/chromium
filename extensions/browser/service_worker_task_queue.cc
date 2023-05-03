@@ -207,6 +207,7 @@ void ServiceWorkerTaskQueue::DidStartWorkerForScope(
 
 void ServiceWorkerTaskQueue::DidStartWorkerFail(
     const SequencedContextId& context_id,
+    base::Time start_time,
     blink::ServiceWorkerStatusCode status_code) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!IsCurrentActivation(context_id.first.extension_id(),
@@ -221,6 +222,8 @@ void ServiceWorkerTaskQueue::DidStartWorkerFail(
                         false);
   UMA_HISTOGRAM_ENUMERATION(
       "Extensions.ServiceWorkerBackground.StartWorker_FailStatus", status_code);
+  UMA_HISTOGRAM_TIMES("Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
+                      base::Time::Now() - start_time);
 
   WorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
@@ -516,7 +519,8 @@ void ServiceWorkerTaskQueue::RunTasksAfterStartWorker(
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerForScope,
                      weak_factory_.GetWeakPtr(), context_id, base::Time::Now()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidStartWorkerFail,
-                     weak_factory_.GetWeakPtr(), context_id));
+                     weak_factory_.GetWeakPtr(), context_id,
+                     base::Time::Now()));
 }
 
 void ServiceWorkerTaskQueue::DidRegisterServiceWorker(

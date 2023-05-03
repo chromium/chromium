@@ -4025,8 +4025,19 @@ chromium-metrics-reviews@google.com.
   <owner>extensions-core@chromium.org</owner>
   <summary>
     The amount of time it takes to start the background service worker of an
-    extension. Logged when we are starting the worker for extension for tasks to
-    run.
+    extension that succeeded in starting. Logged when we've confirmed the
+    service worker is started for extension tasks to run.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.StartWorkerTime_Fail"
+    units="ms" expires_after="2024-04-26">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The amount of time it takes to start the background service worker of an
+    extension that failed in starting. Logged when we've confirmed the service
+    worker has failed for extension tasks to run.
   </summary>
 </histogram>
 

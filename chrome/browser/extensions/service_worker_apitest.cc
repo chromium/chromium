@@ -684,6 +684,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, PRE_Event) {
   histograms.ExpectUniqueSample(
       "Extensions.ServiceWorkerBackground.StartWorkerStatus", /*sample=*/true,
       /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.StartWorkerTime",
+      /*expected_count=*/1);
+  histograms.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
+      /*expected_count=*/0);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerOnStartupEventTest, Event) {
@@ -2369,6 +2375,12 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
       // since failure is due to throwing error in oninstall?
       /*sample=*/blink::ServiceWorkerStatusCode::kErrorNotFound,
       /*expected_bucket_count=*/1);
+  histograms.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.StartWorkerTime_Fail",
+      /*expected_count=*/1);
+  histograms.ExpectTotalCount(
+      "Extensions.ServiceWorkerBackground.StartWorkerTime",
+      /*expected_count=*/0);
 
   // And the task count will be reset to zero afterwards.
   EXPECT_EQ(0u,
