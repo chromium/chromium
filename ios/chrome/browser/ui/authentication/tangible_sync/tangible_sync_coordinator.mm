@@ -31,6 +31,13 @@
 #error "This file requires ARC support."
 #endif
 
+namespace {
+
+constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
+    signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
+
+}  // namespace
+
 @interface TangibleSyncCoordinator () <AuthenticationFlowDelegate,
                                        TangibleSyncMediatorDelegate,
                                        TangibleSyncViewControllerDelegate>
@@ -92,7 +99,8 @@
                    syncSetupService:SyncSetupServiceFactory::GetForBrowserState(
                                         browserState)
               unifiedConsentService:UnifiedConsentServiceFactory::
-                                        GetForBrowserState(browserState)];
+                                        GetForBrowserState(browserState)
+                        accessPoint:kTangibleSyncAccessPoint];
   _mediator.consumer = _viewController;
   _mediator.delegate = self;
   if (_firstRun) {
@@ -195,16 +203,13 @@
           self.browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  signin_metrics::AccessPoint accessPoint =
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE;
-
   PostSignInAction postSignInAction = advancedSettings
                                           ? PostSignInAction::kNone
                                           : PostSignInAction::kCommitSync;
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:identity
-                                      accessPoint:accessPoint
+                                      accessPoint:kTangibleSyncAccessPoint
                                  postSignInAction:postSignInAction
                          presentingViewController:_viewController];
   authenticationFlow.dispatcher = HandlerForProtocol(

@@ -144,7 +144,8 @@ class AuthenticationService : public KeyedService,
   // This starts setting up Sync-the-feature, but the setup will only complete
   // once SyncUserSettings::SetFirstSetupComplete() is called.
   // Virtual for testing.
-  virtual void GrantSyncConsent(id<SystemIdentity> identity);
+  virtual void GrantSyncConsent(id<SystemIdentity> identity,
+                                signin_metrics::AccessPoint access_point);
 
   // Signs the authenticated user out of Chrome and clears the browsing
   // data if the account is managed. If force_clear_browsing_data is true,

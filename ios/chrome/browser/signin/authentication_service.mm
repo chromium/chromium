@@ -382,7 +382,9 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity) {
   SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 }
 
-void AuthenticationService::GrantSyncConsent(id<SystemIdentity> identity) {
+void AuthenticationService::GrantSyncConsent(
+    id<SystemIdentity> identity,
+    signin_metrics::AccessPoint access_point) {
   DCHECK(account_manager_service_->IsValidIdentity(identity));
   DCHECK(identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
@@ -401,7 +403,7 @@ void AuthenticationService::GrantSyncConsent(id<SystemIdentity> identity) {
   if (!HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
     const signin::PrimaryAccountMutator::PrimaryAccountError error =
         identity_manager_->GetPrimaryAccountMutator()->SetPrimaryAccount(
-            account_id, signin::ConsentLevel::kSync);
+            account_id, signin::ConsentLevel::kSync, access_point);
     CHECK_EQ(signin::PrimaryAccountMutator::PrimaryAccountError::kNoError,
              error)
         << "SetPrimaryAccount error: " << static_cast<int>(error);
