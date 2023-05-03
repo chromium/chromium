@@ -1472,9 +1472,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebsiteSettings.AllSitesAction2"
-    enum="WebSiteSettingsAllSitesAction2" expires_after="2023-02-19">
-  <owner>ayui@chromium.org</owner>
-  <owner>mxcai@chromium.org</owner>
+    enum="WebSiteSettingsAllSitesAction2" expires_after="2023-11-01">
+  <owner>sauski@google.com</owner>
+  <owner>alimariam@google.com</owner>
   <summary>
     Tracks actions with the &quot;All Sites&quot; page in website settings
     starting in M82. No data available for M94, was temporarily expired. Values
