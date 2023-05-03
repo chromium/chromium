@@ -101,6 +101,14 @@ char kLSanDefaultSuppressions[] =
     // Suppress leak in DelayedCallbackGroup test. crbug.com/1279563
     "leak:DelayedCallbackGroup_TimeoutAndRun_Test\n"
 #endif
+#if BUILDFLAG(IS_MAC)
+    // These are caused by the system, but not yet clear if they are false
+    // positives or bugs in the Mac LSAN runtime. Suppress while investigating.
+    // TODO(https://crbug.com/1320449): Remove these if/when fixed in macOS
+    // or the runtime.
+    "leak:_ensureAuxServiceAwareOfHostApp\n"
+    "leak:cssmErrorString\n"
+#endif
 
     // PLEASE READ ABOVE BEFORE ADDING NEW SUPPRESSIONS.
 
