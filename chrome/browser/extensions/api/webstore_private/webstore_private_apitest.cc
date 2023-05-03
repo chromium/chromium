@@ -211,13 +211,46 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
   std::unique_ptr<ScopedTestDialogAutoConfirm> auto_confirm_install_;
 };
 
+class ExtensionWebstorePrivateApiTestParameterized
+    : public ExtensionWebstorePrivateApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExtensionWebstorePrivateApiTestParameterized() {
+    if (IsExtensionApprovalsV2Enabled()) {
+      feature_list_.InitAndEnableFeature(
+          supervised_user::kLocalExtensionApprovalsV2);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          supervised_user::kLocalExtensionApprovalsV2);
+    }
+  }
+
+  ExtensionWebstorePrivateApiTestParameterized(
+      const ExtensionWebstorePrivateApiTestParameterized&) = delete;
+  ExtensionWebstorePrivateApiTestParameterized& operator=(
+      const ExtensionWebstorePrivateApiTestParameterized&) = delete;
+
+  ~ExtensionWebstorePrivateApiTestParameterized() override {}
+
+  bool IsExtensionApprovalsV2Enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExtensionWebstorePrivateApiTestParameterized,
+                         testing::Bool());
+
 // Test cases where the user accepts the install confirmation dialog.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallAccepted) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       InstallAccepted) {
   ASSERT_TRUE(RunInstallTest("accepted.html", "extension.crx"));
 }
 
 // Test having the default download directory missing.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, MissingDownloadDir) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       MissingDownloadDir) {
   // Set a non-existent directory as the download path.
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -235,27 +268,32 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, MissingDownloadDir) {
 }
 
 // Tests passing a localized name.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallLocalized) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       InstallLocalized) {
   ASSERT_TRUE(RunInstallTest("localized.html", "localized_extension.crx"));
 }
 
 // Now test the case where the user cancels the confirmation dialog.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallCancelled) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       InstallCancelled) {
   ScopedTestDialogAutoConfirm auto_cancel(ScopedTestDialogAutoConfirm::CANCEL);
   ASSERT_TRUE(RunInstallTest("cancelled.html", "extension.crx"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IncorrectManifest1) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       IncorrectManifest1) {
   ASSERT_TRUE(RunInstallTest("incorrect_manifest1.html", "extension.crx"));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IncorrectManifest2) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       IncorrectManifest2) {
   ASSERT_TRUE(RunInstallTest("incorrect_manifest2.html", "extension.crx"));
 }
 
 // Tests that we can request an app installed bubble (instead of the default
 // UI when an app is installed).
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, AppInstallBubble) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       AppInstallBubble) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
   ASSERT_TRUE(RunInstallTest("app_install_bubble.html", "app.crx"));
@@ -264,23 +302,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, AppInstallBubble) {
   ASSERT_EQ("iladmdjkfniedhfhcfoefgojhgaiaccc", listener.id());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsInIncognitoMode) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       IsInIncognitoMode) {
   GURL page_url = GetTestServerURL("incognito.html");
   ASSERT_TRUE(OpenTestURL(page_url, /*open_in_incognito=*/true));
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IsNotInIncognitoMode) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       IsNotInIncognitoMode) {
   GURL page_url = GetTestServerURL("not_incognito.html");
   ASSERT_TRUE(OpenTestURL(page_url));
 }
 
 // Tests using the iconUrl parameter to the install function.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, IconUrl) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized, IconUrl) {
   ASSERT_TRUE(RunInstallTest("icon_url.html", "extension.crx"));
 }
 
 // Tests that the Approvals are properly created in beginInstall.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       BeginInstall) {
   std::string appId = "iladmdjkfniedhfhcfoefgojhgaiaccc";
   ASSERT_TRUE(RunInstallTest("begin_install.html", "extension.crx"));
 
@@ -302,7 +343,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, BeginInstall) {
 }
 
 // Tests that themes are installed without an install prompt.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallTheme) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized,
+                       InstallTheme) {
   WebstoreInstallListener listener;
   WebstorePrivateApi::SetWebstoreInstallerDelegateForTesting(&listener);
   ASSERT_TRUE(RunInstallTest("theme.html", "../../theme.crx"));
@@ -312,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, InstallTheme) {
 }
 
 // Tests that an error is properly reported when an empty crx is returned.
-IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiTest, EmptyCrx) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebstorePrivateApiTestParameterized, EmptyCrx) {
   ASSERT_TRUE(RunInstallTest("empty.html", "empty.crx"));
 }
 

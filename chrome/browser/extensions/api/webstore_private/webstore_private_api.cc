@@ -902,12 +902,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::ShowInstallDialog(
     prompt->set_requires_parent_permission(requires_parent_permission);
     if (requires_parent_permission) {
       prompt->AddObserver(&supervised_user_extensions_metrics_recorder_);
-    }
-    // Bypass the install prompt dialog if V2 is enabled. The ParentAccessDialog
-    // handles both the blocked and install use case.
-    if (supervised_user::IsLocalExtensionApprovalsV2Enabled()) {
-      RequestExtensionApproval(contents);
-      return;
+      // Bypass the install prompt dialog if V2 is enabled. The
+      // ParentAccessDialog handles both the blocked and install use case.
+      if (supervised_user::IsLocalExtensionApprovalsV2Enabled()) {
+        RequestExtensionApproval(contents);
+        return;
+      }
     }
   }
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
