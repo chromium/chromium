@@ -6,6 +6,7 @@
 
 #include <GLES3/gl3.h>
 #include <limits>
+#include <numeric>
 
 #include "base/barrier_closure.h"
 #include "base/compiler_specific.h"
@@ -329,15 +330,6 @@ void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
   gl->DeleteQueriesEXT(1, &query_id);
 }
 
-// TODO(thomasanderson): Remove these and use std::gcd and std::lcm once we're
-// building with C++17.
-size_t GCD(size_t a, size_t b) {
-  return a == 0 ? b : GCD(b % a, a);
-}
-size_t LCM(size_t a, size_t b) {
-  return a / GCD(a, b) * b;
-}
-
 const libyuv::YuvConstants* GetYuvContantsForColorSpace(SkYUVColorSpace cs) {
   switch (cs) {
     case kJPEG_Full_SkYUVColorSpace:
@@ -395,8 +387,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   size_t rows_per_chunk = 1;
   for (size_t plane = 0; plane < VideoFrame::kMaxPlanes; ++plane) {
     if (VideoFrame::IsValidPlane(format, plane)) {
-      rows_per_chunk =
-          LCM(rows_per_chunk, VideoFrame::SampleSize(format, plane).height());
+      rows_per_chunk = std::lcm(rows_per_chunk,
+                                VideoFrame::SampleSize(format, plane).height());
     }
   }
 
