@@ -27,7 +27,7 @@
   }
 
   #icon,
-  #keyboardShortcutIllo {
+  #keyboardShortcutIcon {
     height: 48px;
     width: 48px;
   }
@@ -36,7 +36,7 @@
     display: none;
   }
 
-  :host-context(body:not(.jelly-enabled)) #keyboardShortcutIllo {
+  :host-context(body:not(.jelly-enabled)) #keyboardShortcutIcon {
     display: none;
   }
 
@@ -92,9 +92,8 @@
 
 <div id="icon"></div>
 
-<svg id="keyboardShortcutIllo" role="img" viewBox="0 0 48 48">
-  <use href="images/keyboard_shortcut_jelly.svg#export"></use>
-</svg>
+<iron-icon id="keyboardShortcutIcon" icon="os-settings:keyboard-shortcut">
+</iron-icon>
 
 <div id="text">
   <h2>[[header]]</h2>
