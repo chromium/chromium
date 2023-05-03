@@ -7,14 +7,12 @@
 
 #include <string>
 
-
 #if defined(__OBJC__)
 
 #import <Foundation/Foundation.h>
 #include <stdint.h>
 
 #include "base/mac/scoped_authorizationref.h"
-#import "base/mac/scoped_nsobject.h"
 
 // Possible outcomes of various operations.  A version may accompany some of
 // these, but beware: a version is never required.  For statuses that can be
@@ -66,38 +64,7 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 
 @class KSRegistration;
 
-@interface KeystoneGlue : NSObject {
- @protected
-
-  // Data for Keystone registration
-  base::scoped_nsobject<NSString> _productID;
-  base::scoped_nsobject<NSString> _appPath;
-  base::scoped_nsobject<NSString> _url;
-  base::scoped_nsobject<NSString> _version;
-  std::string _channel;  // Logically: dev, beta, or stable.
-  // Cached location of the brand file.
-  base::scoped_nsobject<NSString> _brandFile;
-
-  // And the Keystone registration itself, with the active timer
-  base::scoped_nsobject<KSRegistration> _registration;
-  NSTimer* _timer;  // strong
-  BOOL _registrationActive;
-  Class _ksUnsignedReportingAttributeClass;
-
-  // The most recent kAutoupdateStatusNotification notification posted.
-  base::scoped_nsobject<NSNotification> _recentNotification;
-
-  // The authorization object, when it needs to persist because it's being
-  // carried across threads.
-  base::mac::ScopedAuthorizationRef _authorization;
-
-  // YES if a synchronous promotion operation is in progress (promotion during
-  // installation).
-  BOOL _synchronousPromotion;
-
-  // YES if an update was ever successfully installed by -installUpdate.
-  BOOL _updateSuccessfullyInstalled;
-}
+@interface KeystoneGlue : NSObject
 
 // Return the default Keystone Glue object.
 + (KeystoneGlue*)defaultKeystoneGlue;
@@ -178,7 +145,12 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 
 @end  // @interface KeystoneGlue
 
-@interface KeystoneGlue(ExposedForTesting)
+@interface KeystoneGlue (ExposedForTesting)
+
+@property(readonly) NSString* productID;
+@property(readonly) NSString* url;
+@property(readonly) NSString* version;
+@property(readonly) NSTimer* timer;
 
 // Load any params we need for configuring Keystone.
 - (void)loadParameters;
@@ -186,6 +158,8 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 // Load the Keystone registration object.
 // Return NO on failure.
 - (BOOL)loadKeystoneRegistration;
+
+- (void)setKeystoneRegistration:(KSRegistration*)registration;
 
 - (void)stopTimer;
 
@@ -195,7 +169,7 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 // Called when an installUpdate: notification completes.
 - (void)installUpdateComplete:(NSNotification*)notification;
 
-@end  // @interface KeystoneGlue(ExposedForTesting)
+@end  // @interface KeystoneGlue (ExposedForTesting)
 
 #endif  // __OBJC__
 

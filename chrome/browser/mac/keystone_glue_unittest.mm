@@ -11,6 +11,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ksr = keystone_registration;
 
 
@@ -28,7 +32,7 @@ namespace ksr = keystone_registration;
 }
 
 - (BOOL)registerWithParameters:(NSDictionary*)args {
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
   [center postNotificationName:ksr::KSRegistrationDidCompleteNotification
                         object:nil
                       userInfo:@{ksr::KSRegistrationStatusKey : @1}];
@@ -64,15 +68,14 @@ namespace ksr = keystone_registration;
 - (void)checkForUpdateWasUserInitiated:(BOOL)userInitiated {
   NSString* statusKey = @"Status";
   NSDictionary* dictionary = @{statusKey : @YES};
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center postNotificationName:ksr::KSRegistrationCheckForUpdateNotification
-                        object:nil
-                      userInfo:dictionary];
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:ksr::KSRegistrationCheckForUpdateNotification
+                    object:nil
+                  userInfo:dictionary];
 }
 
 - (void)startUpdate {
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center
+  [NSNotificationCenter.defaultCenter
       postNotificationName:ksr::KSRegistrationStartUpdateNotification
                     object:nil
                   userInfo:@{ksr::KSUpdateCheckSuccessfullyInstalledKey : @1}];
@@ -84,7 +87,7 @@ namespace ksr = keystone_registration;
 @interface FakeKeystoneGlue : KeystoneGlue {
  @public
   BOOL _upToDate;
-  base::scoped_nsobject<NSString> _latestVersion;
+  NSString* __strong _latestVersion;
   BOOL _successful;
   int _installs;
 }
@@ -99,63 +102,61 @@ namespace ksr = keystone_registration;
   if ((self = [super init])) {
     // some lies
     _upToDate = YES;
-    _latestVersion.reset([@"foo bar" copy]);
+    _latestVersion = @"foo bar";
     _successful = YES;
     _installs = 1010101010;
 
     // Set up an observer that takes the notification that the About window
     // listens for.
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    [center addObserver:self
-               selector:@selector(fakeAboutWindowCallback:)
-                   name:kAutoupdateStatusNotification
-                 object:nil];
+    [NSNotificationCenter.defaultCenter
+        addObserver:self
+           selector:@selector(fakeAboutWindowCallback:)
+               name:kAutoupdateStatusNotification
+             object:nil];
   }
   return self;
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 // For mocking
 - (NSDictionary*)infoDictionary {
-  NSDictionary* dict = @{
+  return @{
     @"KSUpdateURL" : @"http://foo.bar",
     @"KSProductID" : @"com.google.whatever",
     @"KSVersion" : @"0.0.0.1"
   };
-  return dict;
 }
 
 - (BOOL)loadKeystoneRegistration {
   // The real loadKeystoneRegistration adds a real registration.
   // Add a fake one.
-  _registration.reset([[FakeKeystoneRegistration alloc] init]);
+  [self setKeystoneRegistration:[[FakeKeystoneRegistration alloc] init]];
   return YES;
 }
 
 // Confirms certain things are happy
 - (BOOL)dictReadCorrectly {
-  return ([_url isEqual:@"http://foo.bar"] &&
-          [_productID isEqual:@"com.google.whatever"] &&
-          [_version isEqual:@"0.0.0.1"]);
+  return ([self.url isEqual:@"http://foo.bar"] &&
+          [self.productID isEqual:@"com.google.whatever"] &&
+          [self.version isEqual:@"0.0.0.1"]);
 }
 
 // Confirms certain things are happy
 - (BOOL)hasATimer {
-  return _timer ? YES : NO;
+  return self.timer ? YES : NO;
 }
 
 - (void)fakeAboutWindowCallback:(NSNotification*)notification {
-  NSDictionary* dictionary = [notification userInfo];
+  NSDictionary* dictionary = notification.userInfo;
   AutoupdateStatus status = static_cast<AutoupdateStatus>(
       [dictionary[kAutoupdateStatusStatus] intValue]);
 
   if (status == kAutoupdateAvailable) {
     _upToDate = NO;
-    _latestVersion.reset([dictionary[kAutoupdateStatusVersion] copy]);
+    _latestVersion = [dictionary[kAutoupdateStatusVersion] copy];
   } else if (status == kAutoupdateInstallFailed) {
     _successful = NO;
     _installs = 0;
@@ -192,7 +193,7 @@ TEST_F(KeystoneGlueTest, BasicGlobalCreate) {
 }
 
 TEST_F(KeystoneGlueTest, BasicUse) {
-  FakeKeystoneGlue* glue = [[[FakeKeystoneGlue alloc] init] autorelease];
+  FakeKeystoneGlue* glue = [[FakeKeystoneGlue alloc] init];
   [glue loadParameters];
   ASSERT_TRUE([glue dictReadCorrectly]);
 
