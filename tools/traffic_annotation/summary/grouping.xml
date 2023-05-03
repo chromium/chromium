@@ -92,7 +92,6 @@ after discussions on the right group.
     </sender>
     <sender name="ChromeOS Recovery">
       <annotation id="cros_recovery_image_download"/>
-      <annotation id="download_recovery_component"/>
     </sender>
     <sender name="ChromeOS Printers Manager">
       <annotation id="printing_oauth2_first_token_request"/>
@@ -309,7 +308,6 @@ after discussions on the right group.
   <group name="Apps and Content" hidden="true">
     <sender name="Chrome Cleanup">
       <annotation id="chrome_cleaner"/>
-      <annotation id="chrome_cleanup_report"/>
     </sender>
     <sender name="Extension and App Management">
       <annotation id="chrome_apps_socket_api"/>
@@ -353,7 +351,6 @@ after discussions on the right group.
       <annotation id="safe_browsing_hashprefix_realtime_lookup"/>
       <annotation id="sct_auditing"/>
       <annotation id="sct_auditing_hashdance"/>
-      <annotation id="unwanted_software_report"/>
       <annotation id="ppapi_download_request"/>
       <annotation id="tailored_security_service"/>
     </sender>

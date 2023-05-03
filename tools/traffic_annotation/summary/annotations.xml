@@ -42,7 +42,6 @@ Refer to README.md for content description and update process.
  <item id="chrome_cart_discounts_lookup" added_in_milestone="92" content_hash_code="05b3e421" os_list="linux,windows,chromeos" file_path="chrome/browser/cart/cart_discount_fetcher.cc" />
  <item id="chrome_cart_get_discounted_link" added_in_milestone="92" content_hash_code="052260e0" os_list="linux,windows,chromeos" file_path="chrome/browser/cart/cart_discount_link_fetcher.cc" />
  <item id="chrome_cleaner" added_in_milestone="63" content_hash_code="06a16464" os_list="windows" file_path="chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_fetcher_win.cc" />
- <item id="chrome_cleanup_report" added_in_milestone="70" content_hash_code="07c84618" os_list="windows" file_path="chrome/chrome_cleaner/logging/cleaner_logging_service.cc" />
  <item id="chrome_feedback_report_app" added_in_milestone="62" content_hash_code="04bf864a" os_list="linux,windows,chromeos,android" file_path="components/feedback/feedback_uploader.cc" />
  <item id="chrome_variations_service" added_in_milestone="62" content_hash_code="00f59481" os_list="linux,windows,chromeos,android" file_path="components/variations/service/variations_service.cc" />
  <item id="client_download_request" added_in_milestone="62" content_hash_code="01da15dc" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/check_client_download_request_base.cc" />
@@ -69,7 +68,6 @@ Refer to README.md for content description and update process.
  <item id="domain_security_policy" added_in_milestone="62" content_hash_code="01d7c177" os_list="linux,windows,chromeos,android" file_path="services/network/network_context.cc" />
  <item id="download_internals_webui_source" added_in_milestone="66" content_hash_code="07b659d0" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ui/webui/download_internals/download_internals_ui_message_handler.cc" />
  <item id="download_manager_resume" added_in_milestone="62" content_hash_code="0275159a" os_list="linux,windows,chromeos,android" file_path="components/download/internal/common/download_item_impl.cc" />
- <item id="download_recovery_component" added_in_milestone="71" content_hash_code="00317d2f" os_list="windows" file_path="chrome/chrome_cleaner/components/recovery_component.cc" />
  <item id="download_web_contents_frame" added_in_milestone="62" content_hash_code="0037d0a1" os_list="linux,windows,chromeos,android" file_path="content/browser/web_contents/web_contents_impl.cc" />
  <item id="downloads_api_run_async" added_in_milestone="62" content_hash_code="008d9d92" os_list="linux,windows,chromeos" file_path="chrome/browser/extensions/api/downloads/downloads_api.cc" />
  <item id="downloads_dom_handler" added_in_milestone="73" content_hash_code="082cc10b" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/downloads/downloads_dom_handler.cc" />
@@ -243,7 +241,6 @@ Refer to README.md for content description and update process.
  <item id="trusted_vault_request" added_in_milestone="88" content_hash_code="0738dfaf" os_list="linux,windows,chromeos" file_path="components/trusted_vault/trusted_vault_request.cc" />
  <item id="ui_devtools_server" added_in_milestone="66" content_hash_code="03bc45b7" os_list="linux,windows,chromeos,android" file_path="components/ui_devtools/devtools_server.cc" />
  <item id="undefined" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
- <item id="unwanted_software_report" added_in_milestone="70" content_hash_code="0386a164" os_list="windows" file_path="chrome/chrome_cleaner/logging/reporter_logging_service.cc" />
  <item id="update_client" added_in_milestone="74" content_hash_code="05223987" os_list="linux,windows,chromeos,android" file_path="components/update_client/net/network_impl.cc" />
  <item id="url_prevision_fetcher" added_in_milestone="62" content_hash_code="03f14ce9" os_list="linux,windows,chromeos,android" file_path="content/browser/media/url_provision_fetcher.cc" />
  <item id="user_info_fetcher" added_in_milestone="62" content_hash_code="044ae168" os_list="linux,windows,chromeos,android" file_path="components/policy/core/common/cloud/user_info_fetcher.cc" />
