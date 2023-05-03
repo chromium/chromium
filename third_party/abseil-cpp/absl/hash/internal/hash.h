@@ -411,7 +411,7 @@ AbslHashValue(H hash_state, LongDouble value) {
 
 // AbslHashValue() for hashing pointers
 template <typename H, typename T>
-  H AbslHashValue(H hash_state, T* ptr) {
+H AbslHashValue(H hash_state, T* ptr) {
   auto v = reinterpret_cast<uintptr_t>(ptr);
   // Due to alignment, pointers tend to have low bits as zero, and the next few
   // bits follow a pattern since they are also multiples of some base value.
@@ -428,7 +428,7 @@ H AbslHashValue(H hash_state, std::nullptr_t) {
 
 // AbslHashValue() for hashing pointers-to-member
 template <typename H, typename T, typename C>
-H AbslHashValue(H hash_state, T C::* ptr) {
+H AbslHashValue(H hash_state, T C::*ptr) {
   auto salient_ptm_size = [](std::size_t n) -> std::size_t {
 #if defined(_MSC_VER)
     // Pointers-to-member-function on MSVC consist of one pointer plus 0, 1, 2,
@@ -446,8 +446,8 @@ H AbslHashValue(H hash_state, T C::* ptr) {
       return n == 24 ? 20 : n == 16 ? 12 : n;
     }
 #else
-    // On other platforms, we assume that pointers-to-members do not have
-    // padding.
+  // On other platforms, we assume that pointers-to-members do not have
+  // padding.
 #ifdef __cpp_lib_has_unique_object_representations
     static_assert(std::has_unique_object_representations<T C::*>::value);
 #endif  // __cpp_lib_has_unique_object_representations
@@ -955,8 +955,8 @@ class ABSL_DLL MixingHashState : public HashStateBase<MixingHashState> {
 #endif  // ABSL_HAVE_INTRINSIC_INT128
 
   static constexpr uint64_t kMul =
-      sizeof(size_t) == 4 ? uint64_t{0xcc9e2d51}
-                          : uint64_t{0x9ddfea08eb382d69};
+  sizeof(size_t) == 4 ? uint64_t{0xcc9e2d51}
+                      : uint64_t{0x9ddfea08eb382d69};
 
   template <typename T>
   using IntegralFastPath =

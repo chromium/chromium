@@ -197,7 +197,7 @@ void FlagImpl::AssertValidType(FlagFastTypeId rhs_type_id,
   FlagFastTypeId lhs_type_id = flags_internal::FastTypeId(op_);
 
   // `rhs_type_id` is the fast type id corresponding to the declaration
-  // visibile at the call site. `lhs_type_id` is the fast type id
+  // visible at the call site. `lhs_type_id` is the fast type id
   // corresponding to the type specified in flag definition. They must match
   //  for this operation to be well-defined.
   if (ABSL_PREDICT_TRUE(lhs_type_id == rhs_type_id)) return;

@@ -406,6 +406,10 @@ EXPORTS
     ??$ConvertIntArg@Vuint128@absl@@@str_format_internal@absl@@YA_NVuint128@1@VFormatConversionSpecImpl@01@PAVFormatSinkImpl@01@@Z
     ??$ConvertIntArg@_J@str_format_internal@absl@@YA_N_JVFormatConversionSpecImpl@01@PAVFormatSinkImpl@01@@Z
     ??$ConvertIntArg@_K@str_format_internal@absl@@YA_N_KVFormatConversionSpecImpl@01@PAVFormatSinkImpl@01@@Z
+    ??$CopyToEncodedBuffer@$00@LogMessage@log_internal@absl@@AAEXDI@Z
+    ??$CopyToEncodedBuffer@$00@LogMessage@log_internal@absl@@AAEXV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@@Z
+    ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AAEXDI@Z
+    ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AAEXV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@@Z
     ??$CreateWithCustomLimitImpl@$$V@CordBuffer@absl@@CA?AV01@II@Z
     ??$Dispatch@C@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
     ??$Dispatch@D@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
@@ -1502,6 +1506,9 @@ EXPORTS
     ??0KernelTimeout@synchronization_internal@absl@@QAE@XZ
     ??0LockHolder@synchronization_internal@absl@@QAE@PAU_RTL_SRWLOCK@@@Z
     ??0LogEntry@absl@@AAE@XZ
+    ??0LogMessage@log_internal@absl@@QAE@PBDHUErrorTag@012@@Z
+    ??0LogMessage@log_internal@absl@@QAE@PBDHUInfoTag@012@@Z
+    ??0LogMessage@log_internal@absl@@QAE@PBDHUWarningTag@012@@Z
     ??0LogMessage@log_internal@absl@@QAE@PBDHW4LogSeverity@2@@Z
     ??0LogMessageData@LogMessage@log_internal@absl@@QAE@PBDHW4LogSeverity@3@VTime@3@@Z
     ??0LogMessageFatal@log_internal@absl@@QAE@PBDH@Z
@@ -2247,8 +2254,6 @@ EXPORTS
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AAE?AUCopyResult@123@I@Z
     ?CopyTo@InlineRep@Cord@absl@@QBEXPAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ?CopyToArraySlowPath@Cord@absl@@ABEXPAD@Z
-    ?CopyToEncodedBuffer@LogMessage@log_internal@absl@@AAEXDIW4StringType@123@@Z
-    ?CopyToEncodedBuffer@LogMessage@log_internal@absl@@AAEXV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@W4StringType@123@@Z
     ?CopyToEndFrom@CordRepBtree@cord_internal@absl@@ABEPAV123@II@Z
     ?Crash@Helper@internal_statusor@absl@@SAXABVStatus@3@@Z
     ?Crc32CAndCopy@crc_internal@absl@@YA?AVcrc32c_t@2@PIAXPIBXIV32@_N@Z

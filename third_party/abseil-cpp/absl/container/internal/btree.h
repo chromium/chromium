@@ -1095,9 +1095,9 @@ class btree_iterator_generation_info_enabled {
 class btree_iterator_generation_info_disabled {
  public:
   explicit btree_iterator_generation_info_disabled(uint32_t) {}
-  void update_generation(const void *) {}
-  uint32_t generation() const { return 0; }
-  void assert_valid_generation(const void *) const {}
+  static void update_generation(const void *) {}
+  static uint32_t generation() { return 0; }
+  static void assert_valid_generation(const void *) {}
 };
 
 #ifdef ABSL_BTREE_ENABLE_GENERATIONS
@@ -2831,28 +2831,58 @@ inline auto btree<P>::internal_emplace(iterator iter, Args &&...args)
   }
   const field_type max_count = iter.node_->max_count();
   allocator_type *alloc = mutable_allocator();
+
+  const auto transfer_and_delete = [&](node_type *old_node,
+                                       node_type *new_node) {
+    new_node->transfer_n(old_node->count(), new_node->start(),
+                         old_node->start(), old_node, alloc);
+    new_node->set_finish(old_node->finish());
+    old_node->set_finish(old_node->start());
+    new_node->set_generation(old_node->generation());
+    node_type::clear_and_delete(old_node, alloc);
+  };
+  const auto replace_leaf_root_node = [&](field_type new_node_size) {
+    assert(iter.node_ == root());
+    node_type *old_root = iter.node_;
+    node_type *new_root = iter.node_ = new_leaf_root_node(new_node_size);
+    transfer_and_delete(old_root, new_root);
+    mutable_root() = mutable_rightmost() = new_root;
+  };
+
+  bool replaced_node = false;
   if (iter.node_->count() == max_count) {
     // Make room in the leaf for the new item.
     if (max_count < kNodeSlots) {
       // Insertion into the root where the root is smaller than the full node
       // size. Simply grow the size of the root node.
-      assert(iter.node_ == root());
-      iter.node_ = new_leaf_root_node(static_cast<field_type>(
+      replace_leaf_root_node(static_cast<field_type>(
           (std::min)(static_cast<int>(kNodeSlots), 2 * max_count)));
-      // Transfer the values from the old root to the new root.
-      node_type *old_root = root();
-      node_type *new_root = iter.node_;
-      new_root->transfer_n(old_root->count(), new_root->start(),
-                           old_root->start(), old_root, alloc);
-      new_root->set_finish(old_root->finish());
-      old_root->set_finish(old_root->start());
-      new_root->set_generation(old_root->generation());
-      node_type::clear_and_delete(old_root, alloc);
-      mutable_root() = mutable_rightmost() = new_root;
+      replaced_node = true;
     } else {
       rebalance_or_split(&iter);
     }
   }
+  (void)replaced_node;
+#ifdef ABSL_HAVE_ADDRESS_SANITIZER
+  if (!replaced_node) {
+    assert(iter.node_->is_leaf());
+    if (iter.node_->is_root()) {
+      replace_leaf_root_node(max_count);
+    } else {
+      node_type *old_node = iter.node_;
+      const bool was_rightmost = rightmost() == old_node;
+      const bool was_leftmost = leftmost() == old_node;
+      node_type *parent = old_node->parent();
+      const field_type position = old_node->position();
+      node_type *new_node = iter.node_ = new_leaf_node(position, parent);
+      parent->set_child_noupdate_position(position, new_node);
+      transfer_and_delete(old_node, new_node);
+      if (was_rightmost) mutable_rightmost() = new_node;
+      // The leftmost node is stored as the parent of the root node.
+      if (was_leftmost) root()->set_parent(new_node);
+    }
+  }
+#endif
   iter.node_->emplace_value(static_cast<field_type>(iter.position_), alloc,
                             std::forward<Args>(args)...);
   assert(

@@ -428,6 +428,7 @@ set(ABSL_INTERNAL_DLL_FILES
   "types/span.h"
   "types/internal/span.h"
   "types/variant.h"
+  "utility/internal/if_constexpr.h"
   "utility/utility.h"
   "debugging/leak_check.cc"
 )

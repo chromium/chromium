@@ -42,15 +42,15 @@
 #define ABSL_LOG_INTERNAL_QCHECK(failure_message) \
   ABSL_LOGGING_INTERNAL_LOG_QFATAL
 #else  // !defined(STRIP_LOG) || !STRIP_LOG
-#define ABSL_LOGGING_INTERNAL_LOG_INFO                 \
-  ::absl::log_internal::LogMessage(__FILE__, __LINE__, \
-                                   ::absl::LogSeverity::kInfo)
-#define ABSL_LOGGING_INTERNAL_LOG_WARNING              \
-  ::absl::log_internal::LogMessage(__FILE__, __LINE__, \
-                                   ::absl::LogSeverity::kWarning)
-#define ABSL_LOGGING_INTERNAL_LOG_ERROR                \
-  ::absl::log_internal::LogMessage(__FILE__, __LINE__, \
-                                   ::absl::LogSeverity::kError)
+#define ABSL_LOGGING_INTERNAL_LOG_INFO \
+  ::absl::log_internal::LogMessage(    \
+      __FILE__, __LINE__, ::absl::log_internal::LogMessage::InfoTag{})
+#define ABSL_LOGGING_INTERNAL_LOG_WARNING \
+  ::absl::log_internal::LogMessage(       \
+      __FILE__, __LINE__, ::absl::log_internal::LogMessage::WarningTag{})
+#define ABSL_LOGGING_INTERNAL_LOG_ERROR \
+  ::absl::log_internal::LogMessage(     \
+      __FILE__, __LINE__, ::absl::log_internal::LogMessage::ErrorTag{})
 #define ABSL_LOGGING_INTERNAL_LOG_FATAL \
   ::absl::log_internal::LogMessageFatal(__FILE__, __LINE__)
 #define ABSL_LOGGING_INTERNAL_LOG_QFATAL \

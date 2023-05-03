@@ -505,7 +505,7 @@ struct is_trivially_relocatable
 #else
 // Otherwise we use a fallback that detects only those types we can feasibly
 // detect. Any time that has trivial move-construction and destruction
-// operations is by definition trivally relocatable.
+// operations is by definition trivially relocatable.
 template <class T>
 struct is_trivially_relocatable
     : absl::conjunction<absl::is_trivially_move_constructible<T>,

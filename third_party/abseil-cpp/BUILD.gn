@@ -248,6 +248,7 @@ if (build_with_chromium) {
         "absl/time:time_test",
         "absl/types:optional_test",
         "absl/types:variant_test",
+        "absl/utility:if_constexpr_test",
         "//third_party/googletest:gtest_main",
       ]
     }

@@ -297,7 +297,7 @@ absl_cc_library(
 )
 
 ############################################################################
-# Unit tests in alpahabetical order.
+# Unit tests in alphabetical order.
 
 absl_cc_test(
   NAME

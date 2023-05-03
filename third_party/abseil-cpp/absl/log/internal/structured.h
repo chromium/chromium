@@ -42,7 +42,7 @@ class ABSL_MUST_USE_RESULT AsLiteralImpl final {
     return os << as_literal.str_;
   }
   void AddToMessage(log_internal::LogMessage& m) {
-    m.CopyToEncodedBuffer(str_, log_internal::LogMessage::StringType::kLiteral);
+    m.CopyToEncodedBuffer<log_internal::LogMessage::StringType::kLiteral>(str_);
   }
   friend log_internal::LogMessage& operator<<(log_internal::LogMessage& m,
                                               AsLiteralImpl as_literal) {

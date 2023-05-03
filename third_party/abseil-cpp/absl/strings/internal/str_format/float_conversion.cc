@@ -937,7 +937,7 @@ void FormatA(const HexFloatTypeParams float_traits, Int mantissa, int exp,
 
   // =============== Exponent ==================
   constexpr size_t kBufSizeForExpDecRepr =
-      numbers_internal::kFastToBufferSize  // requred for FastIntToBuffer
+      numbers_internal::kFastToBufferSize  // required for FastIntToBuffer
       + 1                                  // 'p' or 'P'
       + 1;                                 // '+' or '-'
   char exp_buffer[kBufSizeForExpDecRepr];

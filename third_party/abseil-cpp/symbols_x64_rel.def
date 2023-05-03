@@ -56,6 +56,10 @@ EXPORTS
     ??$ConvertIntArg@Vuint128@absl@@@str_format_internal@absl@@YA_NVuint128@1@VFormatConversionSpecImpl@01@PEAVFormatSinkImpl@01@@Z
     ??$ConvertIntArg@_J@str_format_internal@absl@@YA_N_JVFormatConversionSpecImpl@01@PEAVFormatSinkImpl@01@@Z
     ??$ConvertIntArg@_K@str_format_internal@absl@@YA_N_KVFormatConversionSpecImpl@01@PEAVFormatSinkImpl@01@@Z
+    ??$CopyToEncodedBuffer@$00@LogMessage@log_internal@absl@@AEAAXD_K@Z
+    ??$CopyToEncodedBuffer@$00@LogMessage@log_internal@absl@@AEAAXV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@@Z
+    ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AEAAXD_K@Z
+    ??$CopyToEncodedBuffer@$0A@@LogMessage@log_internal@absl@@AEAAXV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@@Z
     ??$Dispatch@C@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
     ??$Dispatch@D@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
     ??$Dispatch@E@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
@@ -214,6 +218,9 @@ EXPORTS
     ??0Impl@time_zone@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ??0KernelTimeout@synchronization_internal@absl@@QEAA@VDuration@2@@Z
     ??0KernelTimeout@synchronization_internal@absl@@QEAA@VTime@2@@Z
+    ??0LogMessage@log_internal@absl@@QEAA@PEBDHUErrorTag@012@@Z
+    ??0LogMessage@log_internal@absl@@QEAA@PEBDHUInfoTag@012@@Z
+    ??0LogMessage@log_internal@absl@@QEAA@PEBDHUWarningTag@012@@Z
     ??0LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@2@@Z
     ??0LogMessageData@LogMessage@log_internal@absl@@QEAA@PEBDHW4LogSeverity@3@VTime@3@@Z
     ??0LogMessageFatal@log_internal@absl@@QEAA@PEBDH@Z
@@ -459,8 +466,6 @@ EXPORTS
     ?CopySuffix@CordRepBtree@cord_internal@absl@@AEAA?AUCopyResult@123@_K@Z
     ?CopyTo@InlineRep@Cord@absl@@QEBAXPEAV?$basic_string@DU?$char_traits@D@Cr@std@@V?$allocator@D@23@@Cr@std@@@Z
     ?CopyToArraySlowPath@Cord@absl@@AEBAXPEAD@Z
-    ?CopyToEncodedBuffer@LogMessage@log_internal@absl@@AEAAXD_KW4StringType@123@@Z
-    ?CopyToEncodedBuffer@LogMessage@log_internal@absl@@AEAAXV?$basic_string_view@DU?$char_traits@D@Cr@std@@@Cr@std@@W4StringType@123@@Z
     ?Crash@Helper@internal_statusor@absl@@SAXAEBVStatus@3@@Z
     ?Crc32c@CRC@crc_internal@absl@@SAPEAV123@XZ
     ?CrcAndCopy@CrcMemcpy@crc_internal@absl@@SA?AVcrc32c_t@3@PEIAXPEIBX_KV43@_N@Z

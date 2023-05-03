@@ -144,7 +144,7 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
   // The frame pointer points to low address of a frame.  The first 64-bit
   // word of a frame points to the next frame up the call chain, which normally
   // is just after the high address of the current frame.  The second word of
-  // a frame contains return adress of to the caller.   To find a pc value
+  // a frame contains return address of to the caller.   To find a pc value
   // associated with the current frame, we need to go down a level in the call
   // chain.  So we remember return the address of the last frame seen.  This
   // does not work for the first stack frame, which belongs to UnwindImp() but

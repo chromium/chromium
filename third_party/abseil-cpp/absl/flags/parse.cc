@@ -417,7 +417,7 @@ bool HandleGeneratorFlags(std::vector<ArgsList>& input_args,
   // programmatically before invoking ParseCommandLine. Note that we do not
   // actually process arguments specified in the flagfile, but instead
   // create a secondary arguments list to be processed along with the rest
-  // of the comamnd line arguments. Since we always the process most recently
+  // of the command line arguments. Since we always the process most recently
   // created list of arguments first, this will result in flagfile argument
   // being processed before any other argument in the command line. If
   // FLAGS_flagfile contains more than one file name we create multiple new

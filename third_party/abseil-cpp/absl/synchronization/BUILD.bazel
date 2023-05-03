@@ -73,6 +73,7 @@ cc_test(
     name = "kernel_timeout_internal_test",
     srcs = ["internal/kernel_timeout_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":kernel_timeout_internal",
@@ -346,6 +347,7 @@ cc_test(
     name = "waiter_test",
     srcs = ["internal/waiter_test.cc"],
     copts = ABSL_TEST_COPTS,
+    flaky = 1,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     deps = [
         ":kernel_timeout_internal",

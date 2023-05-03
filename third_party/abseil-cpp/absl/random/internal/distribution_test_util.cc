@@ -236,7 +236,7 @@ double BetaIncompleteImpl(const double x, const double p, const double q,
     }
   }
 
-  // NOTE: See also TOMS Alogrithm 708.
+  // NOTE: See also TOMS Algorithm 708.
   // http://www.netlib.org/toms/index.html
   //
   // NOTE: The NWSC library also includes BRATIO / ISUBX (p87)

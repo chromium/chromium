@@ -273,7 +273,7 @@ struct FormatConversionSpecImplFriend;
 
 class FormatConversionSpecImpl {
  public:
-  // Width and precison are not specified, no flags are set.
+  // Width and precision are not specified, no flags are set.
   bool is_basic() const { return flags_ == Flags::kBasic; }
   bool has_left_flag() const { return FlagsContains(flags_, Flags::kLeft); }
   bool has_show_pos_flag() const {
