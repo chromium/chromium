@@ -46,6 +46,9 @@ namespace autofill {
 struct AutofillErrorDialogContext;
 class AutofillOptimizationGuide;
 class AutofillPopupControllerImpl;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
 struct VirtualCardManualFallbackBubbleOptions;
@@ -318,6 +321,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
   TouchToFillCreditCardController touch_to_fill_credit_card_controller_{this};
+  std::unique_ptr<AutofillSnackbarControllerImpl>
+      autofill_snackbar_controller_impl_;
 #endif
   std::unique_ptr<CardUnmaskPromptControllerImpl> unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
