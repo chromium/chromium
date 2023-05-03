@@ -66,13 +66,13 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
                                            bool is_malware,
                                            bool is_allowlisted) {
-    base::Value attributes(base::Value::Type::DICT);
-    if (is_malware)
-      attributes.SetBoolKey("_malware", true);
+    auto attributes = base::Value::Dict().Set("_esbAllowlist", is_allowlisted);
+    if (is_malware) {
+      attributes.Set("_malware", true);
+    }
 
-    attributes.SetBoolKey("_esbAllowlist", is_allowlisted);
-
-    service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
+    service()->PerformActionBasedOnOmahaAttributes(
+        extension_id, base::Value(std::move(attributes)));
   }
 
   bool IsEnabled(const std::string& extension_id) {
