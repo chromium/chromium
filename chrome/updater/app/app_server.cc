@@ -75,8 +75,14 @@ base::OnceClosure AppServer::ModeCheck() {
       return base::BindOnce(&AppServer::ActiveDutyInternal, this,
                             MakeInactiveUpdateServiceInternal());
     }
+
+#if BUILDFLAG(IS_WIN)
+    return base::BindOnce(&AppServer::Shutdown, this,
+                          static_cast<int>(UpdateService::Result::kInactive));
+#else
     return base::BindOnce(&AppServer::ActiveDuty, this,
                           MakeInactiveUpdateService());
+#endif
   }
 
   if (active_version != base::Version("0") && active_version != this_version) {
@@ -85,12 +91,19 @@ base::OnceClosure AppServer::ModeCheck() {
       global_prefs = nullptr;
       prefs_ = local_prefs;
       config_ = base::MakeRefCounted<Configurator>(prefs_, external_constants_);
-      return IsInternalService()
-                 ? base::BindOnce(&AppServer::ActiveDutyInternal, this,
-                                  MakeQualifyingUpdateServiceInternal(
-                                      config_, local_prefs))
-                 : base::BindOnce(&AppServer::ActiveDuty, this,
-                                  MakeInactiveUpdateService());
+      if (IsInternalService()) {
+        return base::BindOnce(
+            &AppServer::ActiveDutyInternal, this,
+            MakeQualifyingUpdateServiceInternal(config_, local_prefs));
+      }
+
+#if BUILDFLAG(IS_WIN)
+      return base::BindOnce(&AppServer::Shutdown, this,
+                            static_cast<int>(UpdateService::Result::kInactive));
+#else
+      return base::BindOnce(&AppServer::ActiveDuty, this,
+                            MakeInactiveUpdateService());
+#endif
     }
   }
 
