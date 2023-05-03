@@ -242,6 +242,9 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         this.checkedPasswordsText_ = this.i18n('checkupCanceled');
         return;
       case CheckState.RUNNING:
+        if (!!oldStatus && oldStatus.state !== CheckState.RUNNING) {
+          getAnnouncerInstance().announce('Password check started');
+        }
         this.checkedPasswordsText_ =
             await PluralStringProxyImpl.getInstance().getPluralString(
                 'checkingPasswords', this.status_.totalNumberOfPasswords || 0);
