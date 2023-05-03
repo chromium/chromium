@@ -453,7 +453,7 @@ input {
     background-color: Field;
 }
 
-input:not([type="file" i], [type="image" i]) {
+input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" i]) {
     -internal-align-content-block: center;
 }
 
