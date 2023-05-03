@@ -50,14 +50,24 @@ namespace {
 // A fake CWSInfoService for tests that utilize the test extension system and
 // service infrastructure but do not depend on the actual functionality of the
 // service.
-class FakeCWSInfoService : public CWSInfoServiceInterface, public KeyedService {
+class FakeCWSInfoService : public CWSInfoService {
  public:
-  FakeCWSInfoService() = default;
+  explicit FakeCWSInfoService(Profile* profile) {}
+
+  explicit FakeCWSInfoService(const CWSInfoService&) = delete;
+  FakeCWSInfoService& operator=(const CWSInfoService&) = delete;
+  ~FakeCWSInfoService() override = default;
+
+  // CWSInfoServiceInterface:
   absl::optional<bool> IsLiveInCWS(const Extension& extension) const override;
   absl::optional<CWSInfo> GetCWSInfo(const Extension& extension) const override;
   void CheckAndMaybeFetchInfo() override {}
   void AddObserver(Observer* observer) override {}
   void RemoveObserver(Observer* observer) override {}
+
+  // KeyedService:
+  // Ensure that the keyed service shutdown is a no-op.
+  void Shutdown() override {}
 };
 
 absl::optional<bool> FakeCWSInfoService::IsLiveInCWS(
@@ -72,7 +82,8 @@ absl::optional<CWSInfoServiceInterface::CWSInfo> FakeCWSInfoService::GetCWSInfo(
 
 std::unique_ptr<KeyedService> BuildFakeCWSService(
     content::BrowserContext* context) {
-  return std::make_unique<FakeCWSInfoService>();
+  return std::make_unique<FakeCWSInfoService>(
+      Profile::FromBrowserContext(context));
 }
 
 }  // namespace

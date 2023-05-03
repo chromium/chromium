@@ -128,7 +128,10 @@ class CWSInfoService : public CWSInfoServiceInterface, public KeyedService {
   base::Time GetCWSInfoTimestampForTesting() const;
   void SetMaxExtensionIdsPerRequestForTesting(int max);
 
- private:
+ protected:
+  // Only used for testing to create a fake derived class.
+  CWSInfoService();
+
   // Returns true if the service can perform fetch operations, false otherwise.
   bool CanFetchInfo() const;
 

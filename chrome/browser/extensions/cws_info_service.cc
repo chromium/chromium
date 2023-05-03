@@ -183,6 +183,7 @@ CWSInfoService::CWSInfoService(Profile* profile)
   ScheduleCheck(kStartupCheckDelaySeconds);
 }
 
+CWSInfoService::CWSInfoService() = default;
 CWSInfoService::~CWSInfoService() = default;
 
 void CWSInfoService::Shutdown() {
