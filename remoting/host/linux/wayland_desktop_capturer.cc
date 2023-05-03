@@ -54,7 +54,7 @@ bool WaylandDesktopCapturer::SelectSource(SourceId id) {
 
 void WaylandDesktopCapturer::SetScreenResolution(ScreenResolution resolution,
                                                  webrtc::ScreenId screen_id) {
-  // TODO(salmanmalik): For multi-mon, we will need to verify that screen id
+  // TODO(crbug/1442000): For multi-mon, we will need to verify that screen id
   // is managed by this capturer.
   base_capturer_pipewire_.UpdateResolution(resolution.dimensions().width(),
                                            resolution.dimensions().height());

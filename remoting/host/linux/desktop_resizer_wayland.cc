@@ -14,7 +14,7 @@ DesktopResizerWayland::~DesktopResizerWayland() = default;
 
 ScreenResolution DesktopResizerWayland::GetCurrentResolution(
     webrtc::ScreenId screen_id) {
-  // TODO(salmanmalik): Need to find a way to get the resolution from
+  // TODO(crbug/1442000): Need to find a way to get the resolution from
   // the capturer via wayland manager to avoid spurious resizing operations.
   // Note: This will become more trickier for the multi-mon case.
   return ScreenResolution();
