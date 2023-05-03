@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//ui/webui/webui_features.gni")
 import("./new_tab_page.gni")
 
 import("//ui/webui/resources/tools/build_webui.gni")
@@ -121,8 +120,6 @@ build_webui("build") {
                                 "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
                               ] + mojo_js_files
   }
-
-  enable_source_maps = enable_webui_inline_sourcemaps
 }
 
 if (optimize_webui) {

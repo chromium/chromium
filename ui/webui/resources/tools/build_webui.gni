@@ -43,7 +43,7 @@ template("build_webui") {
   minify = optimize
   bundle = optimize && defined(invoker.optimize_webui_in_files)
 
-  enable_source_maps = false
+  enable_source_maps = enable_webui_inline_sourcemaps
   if (defined(invoker.enable_source_maps)) {
     assert(!invoker.enable_source_maps || !optimize)
     enable_source_maps = invoker.enable_source_maps
@@ -181,8 +181,15 @@ template("build_webui") {
       # ":html_wrapper_files".
       inline_sourcemaps = true
 
-      sources =
-          filter_include(get_target_outputs(":preprocess_ts_files"), [ "*.ts" ])
+      sources = filter_include(
+              get_target_outputs(":preprocess_ts_files"),
+              [
+                "*.ts",
+
+                # TODO(crbug.com/1173575): Remove once we no longer pass JS
+                # files to build_webui.
+                "*.js",
+              ])
       originals = []
       outputs = []
 

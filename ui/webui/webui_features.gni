@@ -13,7 +13,7 @@ declare_args() {
   # Enable the WebUI version of the browser's tab strip.
   enable_webui_tab_strip = is_chromeos || is_linux || is_win
 
-  # Whether to inline source maps during build. This is an experimental feature
-  # currently only being used for New Tab Page being tracked at crbug/1337530.
+  # Whether to inline source maps during build. Cannot be enabled when
+  # `optimize_webui=true`.
   enable_webui_inline_sourcemaps = false
 }

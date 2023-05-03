@@ -69,6 +69,4 @@ build_webui("build") {
         rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
-
-  enable_source_maps = enable_webui_inline_sourcemaps
 }

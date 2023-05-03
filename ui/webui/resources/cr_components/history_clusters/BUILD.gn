@@ -67,6 +67,4 @@ build_webui("build") {
   ]
   generate_grdp = true
   grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
-
-  enable_source_maps = enable_webui_inline_sourcemaps
 }
