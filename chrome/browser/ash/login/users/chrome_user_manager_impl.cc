@@ -481,12 +481,6 @@ user_manager::UserList ChromeUserManagerImpl::GetUsersAllowedForMultiProfile()
     return user_manager::UserList();
   }
 
-  // Multiprofile mode is not allowed on the Active Directory managed devices.
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (connector->IsActiveDirectoryManaged())
-    return user_manager::UserList();
-
   user_manager::UserList result;
   const user_manager::UserList& users = GetUsers();
   for (user_manager::UserList::const_iterator it = users.begin();
@@ -1303,13 +1297,6 @@ bool ChromeUserManagerImpl::IsStubAccountId(const AccountId& account_id) const {
 
 bool ChromeUserManagerImpl::IsDeprecatedSupervisedAccountId(
     const AccountId& account_id) const {
-  const policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  // Supervised accounts are not allowed on the Active Directory devices. It
-  // also makes sure "locally-managed.localhost" would work properly and would
-  // not be detected as supervised users.
-  if (connector->IsActiveDirectoryManaged())
-    return false;
   return gaia::ExtractDomainName(account_id.GetUserEmail()) ==
          user_manager::kSupervisedUserDomain;
 }

@@ -158,10 +158,7 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
   if (arc::IsArcDemoModeSetupFlow())
     return false;
 
-  policy::BrowserPolicyConnectorAsh* policy_connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (!context.is_branded_build ||
-      policy_connector->IsActiveDirectoryManaged() ||
       user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;

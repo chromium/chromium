@@ -222,14 +222,6 @@ bool ShouldForceDircrypto(const AccountId& account_id) {
   return true;
 }
 
-// Returns true if the device is enrolled to an Active Directory domain
-// according to InstallAttributes (proxied through BrowserPolicyConnector).
-bool IsActiveDirectoryManaged() {
-  return g_browser_process->platform_part()
-      ->browser_policy_connector_ash()
-      ->IsActiveDirectoryManaged();
-}
-
 LoginDisplayHost* GetLoginDisplayHost() {
   return LoginDisplayHost::default_host();
 }
@@ -582,13 +574,6 @@ void ExistingUserController::PerformLogin(
     login_performer_.reset(nullptr);
     login_performer_ = std::make_unique<ChromeLoginPerformer>(
         this, AuthMetricsRecorder::Get());
-  }
-  if (IsActiveDirectoryManaged() &&
-      user_context.GetUserType() != user_manager::USER_TYPE_ACTIVE_DIRECTORY) {
-    PerformLoginFinishedActions(false /* don't start auto login timer */);
-    ShowError(SigninError::kGoogleAccountNotAllowed,
-              "Google accounts are not allowed on this device");
-    return;
   }
   if (user_context.GetAccountId().GetAccountType() ==
           AccountType::ACTIVE_DIRECTORY &&
