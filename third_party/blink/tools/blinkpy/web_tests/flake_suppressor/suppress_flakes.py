@@ -33,6 +33,7 @@ def main() -> int:
     common_tag_utils.SetTagUtilsImplementation(tag_utils.WebTestsTagUtils)
     expectations_processor = (
         web_tests_expectations.WebTestsExpectationProcessor())
+
     if not args.bypass_up_to_date_check:
         expectations_processor.AssertCheckoutIsUpToDate()
 
@@ -41,13 +42,18 @@ def main() -> int:
     querier_instance = web_tests_queries.WebTestsBigQueryQuerier(
         args.sample_period, args.project, results_processor)
 
-    if args.non_hidden_failures:
+    if len(args.builder_names) > 0:
+        results = querier_instance.\
+            GetFlakyOrFailingTestsFromCiBuilders(args.builder_names)
+        aggregated_results = results_processor.AggregateResults(results)
+    elif args.non_hidden_failures:
         results = querier_instance.GetFailingCiBuildCulpritTests()
         aggregated_results = results_processor.AggregateResults(results)
     else:
         results = querier_instance.GetFlakyOrFailingCiTests()
         results.extend(querier_instance.GetFlakyOrFailingTryTests())
         aggregated_results = results_processor.AggregateResults(results)
+
     if args.result_output_file:
         with open(args.result_output_file, 'w') as outfile:
             result_output.GenerateHtmlOutputFile(aggregated_results, outfile)
@@ -57,12 +63,20 @@ def main() -> int:
         'If there are many instances of failed tests, that may be indicative '
         'of an issue that should be handled in some other way, e.g. reverting '
         'a bad CL.')
+
     if args.prompt_for_user_input:
         input('\nBeginning of user input section - press any key to continue')
         expectations_processor.IterateThroughResultsForUser(
             aggregated_results, args.group_by_tags, args.include_all_tags)
     else:
-        if args.non_hidden_failures:
+        if len(args.builder_names) > 0:
+            result_counts = querier_instance.\
+                GetResultCountFromCiBuilders(args.builder_names)
+            expectations_processor.IterateThroughResultsWithThresholds(
+                aggregated_results, args.group_by_tags, result_counts,
+                args.ignore_threshold, args.flaky_threshold,
+                args.include_all_tags)
+        elif args.non_hidden_failures:
             expectations_processor.CreateFailureExpectationsForAllResults(
                 aggregated_results, args.group_by_tags, args.include_all_tags)
         else:
