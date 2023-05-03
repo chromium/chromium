@@ -2437,9 +2437,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Thumbstrip.CancelBy" enum="ThumbstripOpenByIOS"
-    expires_after="2023-05-14">
-  <owner>djean@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
+    expires_after="2024-05-14">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <summary>
     [iOS] Reports how a thumbstrip opening was cancelled. It uses the same enum
     as IOS.Thumbstrip.OpenBy.
@@ -2447,16 +2447,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Thumbstrip.CloseBy" enum="ThumbstripCloseByIOS"
-    expires_after="2023-05-14">
-  <owner>djean@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
+    expires_after="2024-05-14">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <summary>[iOS] Reports how the thumbstrip was closed.</summary>
 </histogram>
 
 <histogram name="IOS.Thumbstrip.OpenBy" enum="ThumbstripOpenByIOS"
-    expires_after="2023-05-14">
-  <owner>djean@chromium.org</owner>
-  <owner>rkgibson@chromium.org</owner>
+    expires_after="2024-05-14">
+  <owner>gambard@chromium.org</owner>
+  <owner>chromeleon@google.com</owner>
   <summary>[iOS] Reports how the thumbstrip was opened.</summary>
 </histogram>
 
