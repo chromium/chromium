@@ -3769,6 +3769,7 @@ test("ash_pixeltests") {
     "system/audio/audio_detailed_view_pixeltest.cc",
     "system/bluetooth/bluetooth_detailed_view_legacy_pixeltest.cc",
     "system/brightness/display_detailed_view_pixeltest.cc",
+    "system/cast/cast_detailed_view_pixeltest.cc",
     "system/cast/cast_zero_state_view_pixeltest.cc",
     "system/channel_indicator/channel_indicator_quick_settings_view_pixeltest.cc",
     "system/message_center/ash_notification_view_pixeltest.cc",
