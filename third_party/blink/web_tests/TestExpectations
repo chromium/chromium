@@ -82,7 +82,6 @@ crbug.com/1204961 [ Mac10.14 ] external/wpt/websockets/stream/tentative/construc
 # Flaking on WebKit Linux MSAN
 crbug.com/1207373 [ Linux ] external/wpt/uievents/order-of-events/mouse-events/mousemove-across.html [ Failure Pass ]
 crbug.com/1339285 [ Linux ] fast/loader/iframe-window-open-stealing-focus.html [ Failure Pass Timeout ]
-crbug.com/1339285 [ Win ] fast/loader/iframe-window-open-stealing-focus.html [ Failure Pass Timeout ]
 crbug.com/1339285 [ Mac ] fast/loader/iframe-window-open-stealing-focus.html [ Pass Timeout ]
 
 crbug.com/1393073 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/anchor-focus.https.html [ Failure Pass ]
@@ -2026,7 +2025,7 @@ crbug.com/922618 external/wpt/html/semantics/document-metadata/the-link-element/
 crbug.com/73609 http/tests/media/video-play-stall.html [ Failure Pass Timeout ]
 crbug.com/518987 http/tests/xmlhttprequest/navigation-abort-detaches-frame.html [ Pass Timeout ]
 crbug.com/829740 fast/history/history-back-twice-with-subframes-assert.html [ Pass Timeout ]
-crbug.com/836783 fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Timeout ]
+crbug.com/836783 [ Debug Mac12 ] fast/peerconnection/RTCRtpSender-setParameters.html [ Pass Timeout ]
 
 # crbug.com/1218715 This fails when PartitionConnectionsByNetworkIsolationKey is enabled.
 crbug.com/1218715 external/wpt/content-security-policy/reporting-api/reporting-api-works-on-frame-ancestors.https.sub.html [ Failure ]
@@ -2423,7 +2422,6 @@ crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/week-suggestion
 crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/month-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
 crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/time-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
 crbug.com/1299212 crbug.com/1047176 fast/forms/suggestion-picker/datetimelocal-suggestion-picker-mouse-operations.html [ Failure Pass Timeout ]
-crbug.com/1299212 [ Debug Linux ] fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Failure Pass Timeout ]
 crbug.com/1299212 [ Mac ] fast/forms/color-scheme/select/select-appearance-after-closing-popup.html [ Failure Pass Timeout ]
 crbug.com/1299212 fast/forms/color-scheme/select/select-popup-appearance-basic.html [ Failure Pass Timeout ]
 crbug.com/1299212 [ Mac ] fast/forms/select/menulist-popup-type-ahead-style-change.html [ Failure Pass Timeout ]
@@ -2928,7 +2926,6 @@ crbug.com/626703 external/wpt/css/css-inline/text-box-trim/text-box-trim-half-le
 crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/css/css-transforms/individual-transform/animation/individual-transform-ordering.html [ Failure ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/css/css-transforms/individual-transform/animation/individual-transform-ordering.html [ Failure ]
 crbug.com/626703 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/unfenced-top.https.html [ Skip Timeout ]
-crbug.com/626703 [ Win11 ] external/wpt/fetch/api/body/mime-type.any.worker.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymous-iframe/web-lock.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/isolate-sandboxed-iframes/external/wpt/html/infrastructure/urls/terminology-0/document-base-url-initiated-grand-parent.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
@@ -2978,10 +2975,8 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-image/MediaStreamTrack-g
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.html [ Crash Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webcodecs/video-decoder.crossOriginIsolated.https.any.worker.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Crash ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/protocol/video-codecs.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall-no-ssrcs.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simplecall.https.html [ Crash ]
@@ -3975,7 +3970,6 @@ crbug.com/862643 http/tests/serviceworker/navigation_preload/use-counter.html [ 
 crbug.com/862589 virtual/threaded/fast/idle-callback/long_idle_periods.html [ Pass Timeout ]
 
 # fast/events/middleClickAutoscroll-* are failing on Mac
-crbug.com/874162 [ Debug Mac12 ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Mac Release ] fast/events/middleClickAutoscroll-drag.html [ Crash Failure Pass Timeout ]
 crbug.com/874162 [ Debug Mac13-arm64 ] fast/events/middleClickAutoscroll-event-fired.html [ Crash Failure Pass Timeout ]
@@ -5245,7 +5239,6 @@ crbug.com/1249176 [ Mac12-arm64 ] http/tests/preload/without_doc_write_evaluator
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/devtools/elements/accessibility/edit-aria-attributes.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/overlay/overlay-persistent-overlays-with-emulation.js [ Failure Pass ]
-crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/timeline/page-frames.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] inspector-protocol/timeline/user-timing.js [ Failure Pass ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure Pass ]
