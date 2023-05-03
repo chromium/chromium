@@ -181,6 +181,13 @@ declare_args() {
   # Allow projects that wish to stay on C++17 to override Chromium's default.
   # TODO(crbug.com/1402249): evaluate removing this end of 2023
   use_cxx17 = false
+
+  # Enable ShadowCallStack for compiled binaries. SCS stores a pointer to a
+  # shadow call stack in register x18. Hence, x18 must not be used by the OS
+  # or libraries. We assume that to be the case for high end Android
+  # configurations. For more details see
+  # https://clang.llvm.org/docs/ShadowCallStack.html
+  enable_shadow_call_stack = false
 }
 
 declare_args() {
@@ -322,28 +329,44 @@ config("compiler") {
     # --------------------------------
     cflags += [ "-fno-strict-aliasing" ]  # See http://crbug.com/32204
 
-    # Stack protection.
-    if (is_apple) {
-      # The strong variant of the stack protector significantly increases
-      # binary size, so only enable it in debug mode.
-      if (is_debug) {
-        cflags += [ "-fstack-protector-strong" ]
-      } else {
-        cflags += [ "-fstack-protector" ]
-      }
-    } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
-      # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
-      # See also https://crbug.com/533294
-      if (current_os != "zos") {
-        cflags += [ "--param=ssp-buffer-size=4" ]
-      }
+    # Stack protection. ShadowCallStack and Stack protector address the same
+    # problems. Therefore, we only enable one or the other. Clang advertises SCS as
+    # a stronger alternative to StackProtector, so we give SCS precedence over SP.
+    if (enable_shadow_call_stack) {
+      # On Aarch64, SCS requires the x18 register to be unused because it will hold
+      # a pointer to the shadow stack. For Android we know that Clang doesn't use
+      # x18 by default. On other OSs adding "-ffixed-x18" might be required.
+      assert(is_android)
 
-      # The x86 toolchain currently has problems with stack-protector.
-      if (is_android && current_cpu == "x86") {
-        cflags += [ "-fno-stack-protector" ]
-      } else if (current_os != "aix") {
-        # Not available on aix.
-        cflags += [ "-fstack-protector" ]
+      scs_parameters = [
+        "-fsanitize=shadow-call-stack",
+        "-fno-stack-protector",
+      ]
+      cflags += scs_parameters
+      ldflags += scs_parameters
+    } else {
+      if (is_apple) {
+        # The strong variant of the stack protector significantly increases
+        # binary size, so only enable it in debug mode.
+        if (is_debug) {
+          cflags += [ "-fstack-protector-strong" ]
+        } else {
+          cflags += [ "-fstack-protector" ]
+        }
+      } else if ((is_posix && !is_chromeos && !is_nacl) || is_fuchsia) {
+        # TODO(phajdan.jr): Use -fstack-protector-strong when our gcc supports it.
+        # See also https://crbug.com/533294
+        if (current_os != "zos") {
+          cflags += [ "--param=ssp-buffer-size=4" ]
+        }
+
+        # The x86 toolchain currently has problems with stack-protector.
+        if (is_android && current_cpu == "x86") {
+          cflags += [ "-fno-stack-protector" ]
+        } else if (current_os != "aix") {
+          # Not available on aix.
+          cflags += [ "-fstack-protector" ]
+        }
       }
     }
 
