@@ -359,3 +359,10 @@ iron-list,
   direction: ltr;
   unicode-bidi: embed;
 }
+
+<if expr='chromeos_ash'>
+/* Override dialog title font specified in cros_color_overrides.css */
+:host-context(body.jelly-enabled) cr-dialog>[slot='title'] {
+  font: var(--cros-title-1-font);
+}
+</if>
