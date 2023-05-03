@@ -28,6 +28,13 @@ namespace image_util {
 // Returns a `gfx::ImageSkia` of the specified `size` which draws nothing.
 ASH_PUBLIC_EXPORT gfx::ImageSkia CreateEmptyImage(const gfx::Size& size);
 
+// Resizes a `gfx::ImageSkia` to just fill the entirety of `new_size`,
+// maintaining aspect ratio, and crops any portion of the image outside of the
+// bounds of `new_size`.
+ASH_PUBLIC_EXPORT gfx::ImageSkia ResizeAndCropImage(
+    const gfx::ImageSkia& image_skia,
+    const gfx::Size& new_size);
+
 struct ASH_PUBLIC_EXPORT AnimationFrame {
   gfx::ImageSkia image;
   base::TimeDelta duration;

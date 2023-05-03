@@ -198,22 +198,7 @@ gfx::ImageSkia HoldingSpaceImage::GetImageSkia(
   if (image_skia_.size() == size)
     return image_skia_;
 
-  gfx::ImageSkia image_skia(image_skia_);
-
-  // Resize.
-  const float scale_x = size.width() / static_cast<float>(image_skia.width());
-  const float scale_y = size.height() / static_cast<float>(image_skia.height());
-  const float scale = std::max(scale_x, scale_y);
-  DCHECK_LE(scale, 1.f);  // Upscaling would result in pixelation.
-  gfx::Size scaled_size = gfx::ScaleToCeiledSize(image_skia.size(), scale);
-  image_skia = gfx::ImageSkiaOperations::CreateResizedImage(
-      image_skia, skia::ImageOperations::ResizeMethod::RESIZE_BEST,
-      scaled_size);
-
-  // Crop.
-  gfx::Rect cropped_bounds(image_skia.size());
-  cropped_bounds.ClampToCenteredSize(size);
-  return gfx::ImageSkiaOperations::ExtractSubset(image_skia, cropped_bounds);
+  return image_util::ResizeAndCropImage(image_skia_, size);
 }
 
 void HoldingSpaceImage::Invalidate() {
