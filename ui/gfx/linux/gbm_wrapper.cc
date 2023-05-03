@@ -47,9 +47,9 @@ int GetPlaneCount(struct gbm_bo* bo) {
   return gbm_bo_get_plane_count(bo);
 }
 
-int GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
+base::ScopedFD GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
 #if defined(MINIGBM)
-  return gbm_bo_get_plane_fd(bo, plane);
+  return base::ScopedFD(gbm_bo_get_plane_fd(bo, plane));
 #else
   const int plane_count = GetPlaneCount(bo);
   DCHECK(plane_count > 0 && plane < static_cast<size_t>(plane_count));
@@ -70,10 +70,12 @@ int GetPlaneFdForBo(gbm_bo* bo, size_t plane) {
 
   // Older DRM implementations blocked DRM_RDWR, but gave a read/write mapping
   // anyways
-  if (ret)
+  if (ret) {
     ret = drmPrimeHandleToFD(dev_fd, plane_handle, DRM_CLOEXEC, &fd);
+    return base::ScopedFD();
+  }
 
-  return ret ? ret : fd;
+  return base::ScopedFD(fd);
 #endif
 }
 
@@ -246,8 +248,7 @@ std::unique_ptr<Buffer> CreateBufferForBO(struct gbm_bo* bo,
   for (size_t i = 0; i < static_cast<size_t>(plane_count); ++i) {
     // The fd returned by gbm_bo_get_fd is not ref-counted and need to be
     // kept open for the lifetime of the buffer.
-    base::ScopedFD fd(GetPlaneFdForBo(bo, i));
-
+    auto fd = GetPlaneFdForBo(bo, i);
     if (!fd.is_valid()) {
       PLOG(ERROR) << "Failed to export buffer to dma_buf";
       gbm_bo_destroy(bo);
