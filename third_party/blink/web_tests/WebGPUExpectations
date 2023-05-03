@@ -10,16 +10,6 @@
 # Workaround page loaded when content_shell starts, but not run as a test.
 crbug.com/1231599 wpt_internal/webgpu/000_run_me_first.https.html [ Skip ]
 
-# Mac doesn't support rgba8unorm for the swapchain format (yet)
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Skip ]
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_copy.https.html [ Skip ]
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_draw.https.html [ Skip ]
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_copy.https.html [ Skip ]
-crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_opaque_draw.https.html [ Skip ]
-# Conflicts with 1405639
-#crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_copy.https.html [ Skip ]
-#crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_composite_alpha_rgba8unorm_premultiplied_draw.https.html [ Skip ]
-
 # STORAGE_BINDING is only support on WIN.
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
@@ -47,6 +37,7 @@ crbug.com/1409154 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_col
 crbug.com/1409154 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Skip ]
 
 # Incorrect texture filtering: crbug.com/1285023 and crbug.com/1405548
+crbug.com/1298618 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]
 crbug.com/1405548 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_rgba16float.https.html [ Failure ]
 crbug.com/1405548 [ Win ] wpt_internal/webgpu/web_platform/reftests/canvas_colorspace_bgra8unorm.https.html [ Failure ]

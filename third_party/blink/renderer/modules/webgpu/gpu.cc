@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_adapter.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
@@ -341,11 +342,14 @@ ScriptPromise GPU::requestAdapter(ScriptState* script_state,
 }
 
 String GPU::getPreferredCanvasFormat() {
-  // TODO(crbug.com/1007166): Return actual preferred format for the swap chain.
+  return FromDawnEnum(preferred_canvas_format());
+}
+
+WGPUTextureFormat GPU::preferred_canvas_format() {
 #if BUILDFLAG(IS_ANDROID)
-  return "rgba8unorm";
+  return WGPUTextureFormat_RGBA8Unorm;
 #else
-  return "bgra8unorm";
+  return WGPUTextureFormat_BGRA8Unorm;
 #endif
 }
 

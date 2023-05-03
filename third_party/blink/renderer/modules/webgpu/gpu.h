@@ -79,6 +79,8 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
                                const GPURequestAdapterOptions* options);
   String getPreferredCanvasFormat();
 
+  static WGPUTextureFormat preferred_canvas_format();
+
   // Store the buffer in a weak hash set so we can destroy it when the
   // context is destroyed.
   void TrackMappableBuffer(GPUBuffer* buffer);
