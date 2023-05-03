@@ -10,6 +10,8 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/types/always_false.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_IOS)
@@ -185,9 +187,22 @@ inline BASE_EXPORT _Nullable CTFontRef NSToCFPtrCast(NSFont* _Nullable ns_val) {
 
 }  // namespace base::mac
 
-#endif
+#endif  // BUILDFLAG(IS_IOS)
 
 #undef CF_TO_NS_CAST_IMPL
 #undef CF_TO_NS_MUTABLE_CAST_IMPL
+
+namespace base::mac {
+
+template <typename CFT>
+id _Nullable CFToNSOwnershipCast(base::ScopedCFTypeRef<CFT>) {
+  static_assert(
+      AlwaysFalse<CFT>,
+      "Error: Do not pass a ScopedCFTypeRef to CFToNSOwnershipCast. "
+      "Call .release() on the ScopedCFTypeRef and pass the result in.");
+  return nil;
+}
+
+}  // namespace base::mac
 
 #endif  // BASE_MAC_BRIDGING_H_

@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/strings/string_piece.h"
+#include "base/types/always_false.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -70,19 +71,22 @@ BASE_EXPORT bool UTF16ToUTF8(const char16_t* src,
 // compile time.
 template <size_t N>
 std::u16string WideToUTF16(const wchar_t (&str)[N]) {
-  static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
+  static_assert(AlwaysFalse<decltype(N)>,
+                "Error: Use the u\"...\" prefix instead.");
   return std::u16string();
 }
 
 template <size_t N>
 std::u16string UTF8ToUTF16(const char (&str)[N]) {
-  static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
+  static_assert(AlwaysFalse<decltype(N)>,
+                "Error: Use the u\"...\" prefix instead.");
   return std::u16string();
 }
 
 template <size_t N>
 std::u16string ASCIIToUTF16(const char (&str)[N]) {
-  static_assert(N == 0, "Error: Use the u\"...\" prefix instead.");
+  static_assert(AlwaysFalse<decltype(N)>,
+                "Error: Use the u\"...\" prefix instead.");
   return std::u16string();
 }
 
