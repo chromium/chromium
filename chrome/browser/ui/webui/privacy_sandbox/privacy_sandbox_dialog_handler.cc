@@ -90,6 +90,7 @@ void PrivacySandboxDialogHandler::HandlePromptActionOccurred(
 
   switch (action) {
     case PrivacySandboxService::PromptAction::kNoticeAcknowledge:
+    case PrivacySandboxService::PromptAction::kRestrictedNoticeAcknowledge:
     case PrivacySandboxService::PromptAction::kNoticeDismiss: {
       CloseDialog();
       break;
