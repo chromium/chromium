@@ -79,8 +79,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
 
     using FakeDelegate = enterprise_connectors::FakeContentAnalysisDelegate;
 
-    policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting("dm_token"));
+    policy::SetDMTokenForTesting(policy::DMToken::CreateValidToken("dm_token"));
     auto callback = base::BindLambdaForTesting(
         [this](const std::string& contents, const base::FilePath& path)
             -> enterprise_connectors::ContentAnalysisResponse {
