@@ -233,8 +233,12 @@ void GeneratedCodeCache::CollectStatistics(
     GeneratedCodeCache::CacheEntryStatus status) {
   switch (cache_type_) {
     case GeneratedCodeCache::CodeCacheType::kJavaScript:
+      UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.JS.Behaviour", status);
+      break;
     case GeneratedCodeCache::CodeCacheType::kWebUIJavaScript:
       UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.JS.Behaviour", status);
+      UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.JS.WebUI.Behaviour",
+                                status);
       break;
     case GeneratedCodeCache::CodeCacheType::kWebAssembly:
       UMA_HISTOGRAM_ENUMERATION("SiteIsolatedCodeCache.WASM.Behaviour", status);

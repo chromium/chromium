@@ -11862,6 +11862,17 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
+<histogram name="SiteIsolatedCodeCache.JS.WebUI.Behaviour"
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2024-04-03">
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    The behaviour of site isolated WebUI JS code cache recorded for each cache
+    transaction. It records if the request was serviced and if serviced how it
+    was serviced for ex: hit, miss, update.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolatedCodeCache.WASM.Behaviour"
     enum="SiteIsolatedCodeCacheWASMBehaviour" expires_after="2024-04-03">
   <owner>awillia@chromium.org</owner>
@@ -14433,6 +14444,16 @@ regressions. -->
     The elapsed time for URL requests made through the WebUIURLLoaderFactory.
     The reported duration is the time spent in the browser process from the
     reception of the mojo request up to the content delivery through mojo call.
+  </summary>
+</histogram>
+
+<histogram name="WebUICodeCache.FeatureEnabled" units="Boolean"
+    expires_after="2024-04-12">
+  <owner>temao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <summary>
+    True if WebUICodeCache feature is enabled. This counts the number of times
+    generated WebUICodeCache JS code cache is instantiated.
   </summary>
 </histogram>
 
