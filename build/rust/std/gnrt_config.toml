@@ -16,7 +16,20 @@ rustflags = ['-Zforce-unstable-if-unmarked']
 output_dir = '$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/'
 
 # This target provides setup needed for building std.
-extra_gn_deps = ['//build/rust/std:std_build_deps']
+extra_gn_deps = [
+    '//build/rust/std:std_build_deps',
+    '//build/rust/std:profiler_builtins_group',
+]
+
+[crate.compiler_builtins]
+# Dependencies of profiler_builtins must have instrumentation disabled
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.core]
+# Dependencies of profiler_builtins must have instrumentation disabled
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 
 [crate.libc]
 # Many flags are set by libc's build.rs based on new enough rustc but we don't
@@ -27,6 +40,27 @@ cfg = ['libc_priv_mod_use', 'libc_union', 'libc_const_size_of', 'libc_align',
 'libc_non_exhaustive', 'libc_long_array', 'libc_ptr_addr_of',
 'libc_underscore_const_names', 'libc_const_extern_fn'
 ]
+
+# This target is #[no_core] when included by std, which is incompatible with
+# profiling.
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.profiler_builtins]
+# profiler_builtins cannot depend on itself, which it would if build with
+# instrumentation.
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.rustc-std-workspace-alloc]
+# This target is #[no_core] which is incompatible with profiling.
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
+
+[crate.rustc-std-workspace-core]
+# Dependencies of profiler_builtins must have instrumentation disabled
+remove_library_configs = ['//build/config/coverage:default_coverage']
+extra_gn_deps_to_ignore = ['//build/rust/std:profiler_builtins_group']
 
 [crate.std]
 # Requires:
@@ -40,6 +74,9 @@ cfg = ['libc_priv_mod_use', 'libc_union', 'libc_const_size_of', 'libc_align',
 # See https://github.com/rust-lang/rust/blob/master/library/std/build.rs
 cfg = ['backtrace_in_libstd']
 env = ['STD_ENV_ARCH=$rust_target_arch']
+
+# Remove this from std. It will be depended on directly when needed.
+exclude_deps_in_gn = ['profiler_builtins']
 
 [crate.test]
 # Requires:

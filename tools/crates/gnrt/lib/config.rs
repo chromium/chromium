@@ -37,9 +37,18 @@ pub struct CrateConfig {
     /// Sets GN output_dir variable.
     #[serde(default)]
     pub output_dir: Option<String>,
+    /// Removes the specified default library configs in the target.
+    #[serde(default)]
+    pub remove_library_configs: Vec<String>,
     /// GN deps to add to the generated target.
     #[serde(default)]
     pub extra_gn_deps: Vec<String>,
+    /// Remove GN deps added by the overall config.
+    ///
+    /// TODO(crbug.com/1245714): find a way to express these sorts of
+    /// dependencies.
+    #[serde(default)]
+    pub extra_gn_deps_to_ignore: Vec<String>,
     /// Deps on generated targets to exclude from this target's `deps` list.
     /// These do not affect dependency resolution, so it will not change any
     /// other generated targets.

@@ -31,6 +31,10 @@ fn test() {
                     cargo_pkg_description: Some(
                         "A generic framework for foo\nNewline\"\n".to_string(),
                     ),
+                    add_library_configs: vec!["config_a".to_string()],
+                    remove_library_configs: vec!["config_b".to_string()],
+                    add_executable_configs: vec!["config_c".to_string()],
+                    remove_executable_configs: vec!["config_d".to_string()],
                     deps: vec![RuleDep::construct_for_testing(
                         Condition::Always,
                         "//third_party/rust/bar:lib".to_string(),
@@ -82,10 +86,18 @@ cargo_pkg_version = "1.2.3"
 cargo_pkg_authors = "Somebody <somebody@foo.org>"
 cargo_pkg_name = "foo"
 cargo_pkg_description = "A generic framework for foo Newline\""
-library_configs -= [ "//build/config/compiler:chromium_code" ]
-library_configs += [ "//build/config/compiler:no_chromium_code" ]
-executable_configs -= [ "//build/config/compiler:chromium_code" ]
-executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+library_configs -= [
+"config_b",
+]
+library_configs += [
+"config_a",
+]
+executable_configs -= [
+"config_d",
+]
+executable_configs += [
+"config_c",
+]
 deps = [
 "//third_party/rust/bar:lib",
 ]
@@ -132,6 +144,10 @@ variables = []
                         cargo_pkg_authors: None,
                         cargo_pkg_name: "foo".to_string(),
                         cargo_pkg_description: None,
+                        add_library_configs: Vec::new(),
+                        remove_library_configs: Vec::new(),
+                        add_executable_configs: Vec::new(),
+                        remove_executable_configs: Vec::new(),
                         deps: vec![],
                         // dev_deps should *not* show up in the output currently.
                         dev_deps: vec![],
@@ -180,10 +196,6 @@ sources = [ "crate/src/lib.rs" ]
 edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_name = "foo"
-library_configs -= [ "//build/config/compiler:chromium_code" ]
-library_configs += [ "//build/config/compiler:no_chromium_code" ]
-executable_configs -= [ "//build/config/compiler:chromium_code" ]
-executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 }
 group("test_support") {
 public_deps = [ ":lib" ]
@@ -209,6 +221,10 @@ testonly = true
                     cargo_pkg_authors: None,
                     cargo_pkg_name: "foo".to_string(),
                     cargo_pkg_description: None,
+                    add_library_configs: Vec::new(),
+                    remove_library_configs: Vec::new(),
+                    add_executable_configs: Vec::new(),
+                    remove_executable_configs: Vec::new(),
                     deps: vec![
                         RuleDep::construct_for_testing(
                             Condition::Always,
@@ -271,10 +287,6 @@ sources = [ "crate/src/lib.rs" ]
 edition = "2021"
 cargo_pkg_version = "1.2.3"
 cargo_pkg_name = "foo"
-library_configs -= [ "//build/config/compiler:chromium_code" ]
-library_configs += [ "//build/config/compiler:no_chromium_code" ]
-executable_configs -= [ "//build/config/compiler:chromium_code" ]
-executable_configs += [ "//build/config/compiler:no_chromium_code" ]
 deps = [
 "//third_party/rust/bar:lib",
 ]
