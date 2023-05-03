@@ -193,12 +193,14 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*mechanism_experimenter=*/nullptr,
       /*is_mechanism_experiment_allowed=*/false,
       /*hash_real_time_lookup_enabled=*/false);
+  auto weak_impl = checker_impl->WeakPtr();
 
   checker_impl->CheckUrl(
       url, method,
       base::BindOnce(
           &CheckUrlCallbackWrapper::Run,
           base::Owned(new CheckUrlCallbackWrapper(std::move(callback)))));
+  CHECK(weak_impl);  // This is to ensure calling CheckUrl doesn't delete itself
   mojo::MakeSelfOwnedReceiver(std::move(checker_impl), std::move(receiver));
 }
 

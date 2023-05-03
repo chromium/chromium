@@ -144,6 +144,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
                         const std::string& method,
                         NativeCheckUrlCallback callback);
 
+  base::WeakPtr<SafeBrowsingUrlCheckerImpl> WeakPtr();
+
  private:
   using CompleteCheckResult = SafeBrowsingLookupMechanism::CompleteCheckResult;
 

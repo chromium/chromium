@@ -222,6 +222,11 @@ void SafeBrowsingUrlCheckerImpl::CheckUrl(const GURL& url,
   CheckUrlImplAndMaybeDeleteSelf(url, method, Notifier(std::move(callback)));
 }
 
+base::WeakPtr<SafeBrowsingUrlCheckerImpl>
+SafeBrowsingUrlCheckerImpl::WeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
     const GURL& url,
     SBThreatType threat_type,
