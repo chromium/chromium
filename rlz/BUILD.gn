@@ -99,6 +99,8 @@ if (enable_rlz_support) {
 
       frameworks = [ "Foundation.framework" ]
 
+      configs += [ "//build/config/compiler:enable_arc" ]
+
       if (is_mac) {
         sources += [ "mac/lib/machine_id_mac.cc" ]
         frameworks += [ "IOKit.framework" ]

@@ -4,6 +4,8 @@
 
 #include "rlz/mac/lib/rlz_value_store_mac.h"
 
+#import <Foundation/Foundation.h>
+
 #include <tuple>
 
 #include "base/check.h"
@@ -16,8 +18,9 @@
 #include "rlz/lib/recursive_cross_process_lock_posix.h"
 #include "rlz/lib/supplementary_branding.h"
 
-#import <Foundation/Foundation.h>
-#include <pthread.h>
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using base::mac::ObjCCast;
 
@@ -41,9 +44,8 @@ NSString* GetNSAccessPointName(AccessPoint p) {
 
 // Retrieves a subdictionary in |p| for key |k|, creating it if necessary.
 // If the dictionary contains an object for |k| that is not a mutable
-// dictionary, that object is replaced with an empty mutable dictinary.
-NSMutableDictionary* GetOrCreateDict(
-    NSMutableDictionary* p, NSString* k) {
+// dictionary, that object is replaced with an empty mutable dictionary.
+NSMutableDictionary* GetOrCreateDict(NSMutableDictionary* p, NSString* k) {
   NSMutableDictionary* d = ObjCCast<NSMutableDictionary>(p[k]);
   if (!d) {
     d = [NSMutableDictionary dictionary];
@@ -56,17 +58,16 @@ NSMutableDictionary* GetOrCreateDict(
 
 RlzValueStoreMac::RlzValueStoreMac(NSMutableDictionary* dict,
                                    NSString* plist_path)
-  : dict_([dict retain]), plist_path_([plist_path retain]) {
-}
+    : dict_(dict), plist_path_(plist_path) {}
 
-RlzValueStoreMac::~RlzValueStoreMac() {
-}
+RlzValueStoreMac::~RlzValueStoreMac() = default;
 
 bool RlzValueStoreMac::HasAccess(AccessType type) {
-  NSFileManager* manager = [NSFileManager defaultManager];
   switch (type) {
-    case kReadAccess:  return [manager isReadableFileAtPath:plist_path_];
-    case kWriteAccess: return [manager isWritableFileAtPath:plist_path_];
+    case kReadAccess:
+      return [NSFileManager.defaultManager isReadableFileAtPath:plist_path_];
+    case kWriteAccess:
+      return [NSFileManager.defaultManager isWritableFileAtPath:plist_path_];
   }
 }
 
@@ -77,7 +78,7 @@ bool RlzValueStoreMac::WritePingTime(Product product, int64_t time) {
 
 bool RlzValueStoreMac::ReadPingTime(Product product, int64_t* time) {
   if (NSNumber* n = ObjCCast<NSNumber>(ProductDict(product)[kPingTimeKey])) {
-    *time = [n longLongValue];
+    *time = n.longLongValue;
     return true;
   }
   return false;
@@ -87,7 +88,6 @@ bool RlzValueStoreMac::ClearPingTime(Product product) {
   [ProductDict(product) removeObjectForKey:kPingTimeKey];
   return true;
 }
-
 
 bool RlzValueStoreMac::WriteAccessPointRlz(AccessPoint access_point,
                                            const char* new_rlz) {
@@ -104,8 +104,9 @@ bool RlzValueStoreMac::ReadAccessPointRlz(AccessPoint access_point,
           ObjCCast<NSDictionary>(WorkingDict()[kAccessPointKey])) {
     NSString* val = ObjCCast<NSString>(d[GetNSAccessPointName(access_point)]);
     if (!val) {
-      if (rlz_size > 0)
+      if (rlz_size > 0) {
         rlz[0] = '\0';
+      }
       return true;
     }
 
@@ -118,8 +119,9 @@ bool RlzValueStoreMac::ReadAccessPointRlz(AccessPoint access_point,
     strncpy(rlz, s.c_str(), rlz_size);
     return true;
   }
-  if (rlz_size > 0)
+  if (rlz_size > 0) {
     rlz[0] = '\0';
+  }
   return true;
 }
 
@@ -135,8 +137,7 @@ bool RlzValueStoreMac::UpdateExistingAccessPointRlz(const std::string& brand) {
   return false;
 }
 
-bool RlzValueStoreMac::AddProductEvent(Product product,
-                                       const char* event_rlz) {
+bool RlzValueStoreMac::AddProductEvent(Product product, const char* event_rlz) {
   GetOrCreateDict(ProductDict(product),
                   kProductEventKey)[base::SysUTF8ToNSString(event_rlz)] = @YES;
   return true;
@@ -146,8 +147,9 @@ bool RlzValueStoreMac::ReadProductEvents(Product product,
                                          std::vector<std::string>* events) {
   if (NSDictionary* d =
           ObjCCast<NSDictionary>(ProductDict(product)[kProductEventKey])) {
-    for (NSString* s in d)
+    for (NSString* s in d) {
       events->push_back(base::SysNSStringToUTF8(s));
+    }
     return true;
   }
   return true;
@@ -168,7 +170,6 @@ bool RlzValueStoreMac::ClearAllProductEvents(Product product) {
   return true;
 }
 
-
 bool RlzValueStoreMac::AddStatefulEvent(Product product,
                                         const char* event_rlz) {
   GetOrCreateDict(ProductDict(product),
@@ -176,8 +177,7 @@ bool RlzValueStoreMac::AddStatefulEvent(Product product,
   return true;
 }
 
-bool RlzValueStoreMac::IsStatefulEvent(Product product,
-                                       const char* event_rlz) {
+bool RlzValueStoreMac::IsStatefulEvent(Product product, const char* event_rlz) {
   if (NSDictionary* d =
           ObjCCast<NSDictionary>(ProductDict(product)[kStatefulEventKey])) {
     return d[base::SysUTF8ToNSString(event_rlz)] != nil;
@@ -190,30 +190,29 @@ bool RlzValueStoreMac::ClearAllStatefulEvents(Product product) {
   return true;
 }
 
-
 void RlzValueStoreMac::CollectGarbage() {
   NOTIMPLEMENTED();
 }
 
 NSDictionary* RlzValueStoreMac::dictionary() {
-  return dict_.get();
+  return dict_;
 }
 
 NSMutableDictionary* RlzValueStoreMac::WorkingDict() {
   std::string brand(SupplementaryBranding::GetBrand());
-  if (brand.empty())
+  if (brand.empty()) {
     return dict_;
+  }
 
   NSString* brand_ns =
       [@"brand_" stringByAppendingString:base::SysUTF8ToNSString(brand)];
 
-  return GetOrCreateDict(dict_.get(), brand_ns);
+  return GetOrCreateDict(dict_, brand_ns);
 }
 
 NSMutableDictionary* RlzValueStoreMac::ProductDict(Product p) {
   return GetOrCreateDict(WorkingDict(), GetNSProductName(p));
 }
-
 
 namespace {
 
@@ -222,7 +221,7 @@ RecursiveCrossProcessLock g_recursive_lock =
 
 // This is set during test execution, to write RLZ files into a temporary
 // directory instead of the user's Application Support folder.
-NSString* g_test_folder;
+NSString* __strong g_test_folder;
 
 // RlzValueStoreMac keeps its data in memory and only writes it to disk when
 // ScopedRlzValueStoreLock goes out of scope. Hence, if several
@@ -233,27 +232,28 @@ NSString* g_test_folder;
 int g_lock_depth = 0;
 
 // This is the store object that might be shared. Only set if g_lock_depth > 0.
-RlzValueStoreMac* g_store_object = NULL;
-
+RlzValueStoreMac* g_store_object = nullptr;
 
 NSString* CreateRlzDirectory() {
-  NSFileManager* manager = [NSFileManager defaultManager];
   NSArray* paths = NSSearchPathForDirectoriesInDomains(
       NSApplicationSupportDirectory, NSUserDomainMask, /*expandTilde=*/YES);
   NSString* folder = nil;
-  if ([paths count] > 0)
+  if (paths.count > 0) {
     folder = ObjCCast<NSString>(paths[0]);
-  if (!folder)
+  }
+  if (!folder) {
     folder = [@"~/Library/Application Support" stringByStandardizingPath];
+  }
   folder = [folder stringByAppendingPathComponent:@"Google/RLZ"];
 
-  if (g_test_folder)
+  if (g_test_folder) {
     folder = [g_test_folder stringByAppendingPathComponent:folder];
+  }
 
-  [manager createDirectoryAtPath:folder
-     withIntermediateDirectories:YES
-                      attributes:nil
-                           error:nil];
+  [NSFileManager.defaultManager createDirectoryAtPath:folder
+                          withIntermediateDirectories:YES
+                                           attributes:nil
+                                                error:nil];
   return folder;
 }
 
@@ -275,7 +275,7 @@ NSString* RlzLockFilename() {
 
 ScopedRlzValueStoreLock::ScopedRlzValueStoreLock() {
   bool got_distributed_lock = g_recursive_lock.TryGetCrossProcessLock(
-      base::FilePath([RlzLockFilename() fileSystemRepresentation]));
+      base::mac::NSStringToFilePath(RlzLockFilename()));
   // At this point, we hold the in-process lock, no matter the value of
   // |got_distributed_lock|.
 
@@ -301,9 +301,9 @@ ScopedRlzValueStoreLock::ScopedRlzValueStoreLock() {
   NSString* plist = RlzPlistFilename();
 
   // Create an empty file if none exists yet.
-  NSFileManager* manager = [NSFileManager defaultManager];
-  if (![manager fileExistsAtPath:plist isDirectory:NULL])
+  if (![NSFileManager.defaultManager fileExistsAtPath:plist isDirectory:nil]) {
     [[NSDictionary dictionary] writeToFile:plist atomically:YES];
+  }
 
   NSMutableDictionary* dict =
       [NSMutableDictionary dictionaryWithContentsOfFile:plist];
@@ -326,7 +326,7 @@ ScopedRlzValueStoreLock::~ScopedRlzValueStoreLock() {
   }
 
   if (store_.get()) {
-    g_store_object = NULL;
+    g_store_object = nullptr;
 
     NSDictionary* dict =
         static_cast<RlzValueStoreMac*>(store_.get())->dictionary();
@@ -335,10 +335,12 @@ ScopedRlzValueStoreLock::~ScopedRlzValueStoreLock() {
 
   // Check that "store_ set" => "file_lock acquired". The converse isn't true,
   // for example if the rlz data file can't be read.
-  if (store_.get())
+  if (store_.get()) {
     CHECK(g_recursive_lock.file_lock_ != -1);
-  if (g_recursive_lock.file_lock_ == -1)
+  }
+  if (g_recursive_lock.file_lock_ == -1) {
     CHECK(!store_.get());
+  }
 
   g_recursive_lock.ReleaseLock();
 }
@@ -351,20 +353,17 @@ namespace testing {
 
 void SetRlzStoreDirectory(const base::FilePath& directory) {
   @autoreleasepool {
-    [g_test_folder release];
     if (directory.empty()) {
       g_test_folder = nil;
     } else {
-      // Not Unsafe on OS X.
-      g_test_folder = [[NSString alloc]
-          initWithUTF8String:directory.AsUTF8Unsafe().c_str()];
+      g_test_folder = base::mac::FilePathToNSString(directory);
     }
   }
 }
 
 std::string RlzStoreFilenameStr() {
   @autoreleasepool {
-    return std::string([RlzPlistFilename() fileSystemRepresentation]);
+    return std::string(RlzPlistFilename().fileSystemRepresentation);
   }
 }
 
