@@ -136,13 +136,9 @@ void AXTreeDistiller::DistillViaScreen2x(const ui::AXTree& tree,
 void AXTreeDistiller::ProcessScreen2xResult(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXNodeID>& content_node_ids) {
-  // If content nodes were identified, run callback.
-  if (!content_node_ids.empty()) {
-    on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids);
-    return;
-  }
+  on_ax_tree_distilled_callback_.Run(tree_id, content_node_ids);
 
-  // TODO(crbug.com/1266555): If still no content nodes were identified, and
+  // TODO(crbug.com/1266555): If no content nodes were identified, and
   // there is a selection, try sending Screen2x a partial tree just containing
   // the selected nodes.
 }
