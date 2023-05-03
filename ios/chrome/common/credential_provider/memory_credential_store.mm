@@ -62,8 +62,6 @@
   DCHECK(credential.recordIdentifier)
       << "credential must have a record identifier";
   dispatch_barrier_async(self.workingQueue, ^{
-    DCHECK(!self.memoryStorage[credential.recordIdentifier])
-        << "Credential already exists in the storage";
     self.memoryStorage[credential.recordIdentifier] =
         base::mac::ObjCCastStrict<ArchivableCredential>(credential);
   });
@@ -77,8 +75,6 @@
 - (void)removeCredentialWithRecordIdentifier:(NSString*)recordIdentifier {
   DCHECK(recordIdentifier.length) << "Invalid `recordIdentifier` was passed.";
   dispatch_barrier_async(self.workingQueue, ^{
-    DCHECK(self.memoryStorage[recordIdentifier])
-        << "Credential doesn't exist in the storage, " << recordIdentifier;
     self.memoryStorage[recordIdentifier] = nil;
   });
 }

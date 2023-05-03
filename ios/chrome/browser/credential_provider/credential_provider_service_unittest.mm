@@ -5,7 +5,9 @@
 #import "ios/chrome/browser/credential_provider/credential_provider_service.h"
 
 #import <memory>
+#import <string>
 #import <utility>
+#import <vector>
 
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
@@ -35,6 +37,18 @@
 #endif
 
 namespace {
+
+using testing::UnorderedElementsAre;
+
+// Extracts the service names of `credentials` to an std::vector, so tests can
+// use a gmock matcher on it.
+std::vector<std::string> GetServiceNames(NSArray<id<Credential>>* credentials) {
+  std::vector<std::string> service_names;
+  for (id<Credential> credential : credentials) {
+    service_names.push_back(base::SysNSStringToUTF8(credential.serviceName));
+  }
+  return service_names;
+}
 
 // Needed since FaviconLoader has no fake currently.
 class MockLargeIconService : public favicon::LargeIconService {
@@ -94,6 +108,8 @@ class CredentialProviderServiceTest : public PlatformTest {
     PlatformTest::SetUp();
     password_store_->Init(&testing_pref_service_,
                           /*affiliated_match_helper=*/nullptr);
+    account_password_store_->Init(&testing_pref_service_,
+                                  /*affiliated_match_helper=*/nullptr);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kCredentialsEnableService, true);
   }
@@ -101,14 +117,16 @@ class CredentialProviderServiceTest : public PlatformTest {
   void TearDown() override {
     credential_provider_service_->Shutdown();
     password_store_->ShutdownOnUIThread();
+    account_password_store_->ShutdownOnUIThread();
     PlatformTest::TearDown();
   }
 
-  void CreateCredentialProviderService() {
+  void CreateCredentialProviderService(bool with_account_store = false) {
     credential_provider_service_ = std::make_unique<CredentialProviderService>(
-        &testing_pref_service_, password_store_.get(), credential_store_,
-        identity_test_environment_.identity_manager(), &sync_service_,
-        &affiliation_service_, &favicon_loader_);
+        &testing_pref_service_, password_store_,
+        with_account_store ? account_password_store_ : nullptr,
+        credential_store_, identity_test_environment_.identity_manager(),
+        &sync_service_, &affiliation_service_, &favicon_loader_);
   }
 
  protected:
@@ -117,6 +135,9 @@ class CredentialProviderServiceTest : public PlatformTest {
   TestingPrefServiceSimple testing_pref_service_;
   scoped_refptr<password_manager::TestPasswordStore> password_store_ =
       base::MakeRefCounted<password_manager::TestPasswordStore>();
+  scoped_refptr<password_manager::TestPasswordStore> account_password_store_ =
+      base::MakeRefCounted<password_manager::TestPasswordStore>(
+          password_manager::IsAccountStore(true));
   MemoryCredentialStore* credential_store_ =
       [[MemoryCredentialStore alloc] init];
   signin::IdentityTestEnvironment identity_test_environment_;
@@ -147,6 +168,49 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
   EXPECT_NSEQ(credential_store_.credentials[0].user, @"user");
   EXPECT_NSEQ(credential_store_.credentials[0].keychainIdentifier,
               @"encrypted-pwd");
+}
+
+TEST_F(CredentialProviderServiceTest, TwoStores) {
+  password_manager::PasswordForm local_form;
+  local_form.url = GURL("http://local.com");
+  local_form.username_value = u"user";
+  local_form.encrypted_password = "encrypted-pwd";
+  password_store_->AddLogin(local_form);
+  password_manager::PasswordForm account_form = local_form;
+  account_form.url = GURL("http://account.com");
+  account_password_store_->AddLogin(account_form);
+  CreateCredentialProviderService(/*with_account_store=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  EXPECT_THAT(GetServiceNames(credential_store_.credentials),
+              UnorderedElementsAre("local.com", "account.com"));
+
+  password_manager::PasswordForm local_and_account_form = local_form;
+  local_and_account_form.url = GURL("http://local-and-account.com");
+  password_store_->AddLogin(local_and_account_form);
+  account_password_store_->AddLogin(local_and_account_form);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 3u);
+  EXPECT_THAT(GetServiceNames(credential_store_.credentials),
+              UnorderedElementsAre("local.com", "account.com",
+                                   "local-and-account.com"));
+
+  password_store_->RemoveLogin(local_and_account_form);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 3u);
+  EXPECT_THAT(GetServiceNames(credential_store_.credentials),
+              UnorderedElementsAre("local.com", "account.com",
+                                   "local-and-account.com"));
+
+  account_password_store_->RemoveLogin(local_and_account_form);
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  EXPECT_THAT(GetServiceNames(credential_store_.credentials),
+              UnorderedElementsAre("local.com", "account.com"));
 }
 
 // Test that CredentialProviderService observes changes in the password store.
