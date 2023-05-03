@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
@@ -431,6 +432,8 @@ class GPU_EXPORT Scheduler {
   std::unique_ptr<SchedulerDfs> scheduler_dfs_;
 
  private:
+  base::MetricsSubSampler metrics_subsampler_;
+
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorities);
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamDestroyRemovesPriorities);
   FRIEND_TEST_ALL_PREFIXES(SchedulerTest, StreamPriorityChangeWhileReleasing);
