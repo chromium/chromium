@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.SystemClock;
 
 import org.chromium.base.ObserverList;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
@@ -30,7 +30,7 @@ class LoadingModalDialogMediator
     private static final long LOAD_TIMEOUT_MS = 4500L;
 
     private final Handler mHandler;
-    private final ObservableSupplier<ModalDialogManager> mDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mDialogManagerSupplier;
     private final ObserverList<LoadingModalDialogCoordinator.Observer> mObservers =
             new ObserverList<>();
 
@@ -83,7 +83,7 @@ class LoadingModalDialogMediator
     }
 
     LoadingModalDialogMediator(
-            ObservableSupplier<ModalDialogManager> dialogManagerSupplier, Handler handler) {
+            Supplier<ModalDialogManager> dialogManagerSupplier, Handler handler) {
         assert dialogManagerSupplier != null;
         assert handler != null;
         mDialogManagerSupplier = dialogManagerSupplier;

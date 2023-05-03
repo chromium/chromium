@@ -15,8 +15,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
@@ -41,9 +41,8 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment;
@@ -85,9 +84,8 @@ public class ActionChipsDelegateImplUnitTest {
         public static boolean sPasswordSettingsRequested;
 
         @Implementation
-        public static void showPasswordSettings(Activity activity, int referrer,
-                ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
-                boolean managePasskeys) {
+        public static void showPasswordSettings(Context context, int referrer,
+                Supplier<ModalDialogManager> modalDialogManagerSupplier, boolean managePasskeys) {
             sPasswordSettingsRequested = true;
         }
 
@@ -111,12 +109,11 @@ public class ActionChipsDelegateImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
     private @Mock HistoryClustersCoordinator mHistoryClustersCoordinator;
     private @Mock Tab mTab;
-    private @Mock Activity mActivity;
+    private @Mock Context mMockContext;
     private ArgumentCaptor<Intent> mIntentCaptor = ArgumentCaptor.forClass(Intent.class);
 
     private ShadowLooper mShadowLooper;
     private OneshotSupplierImpl<HistoryClustersCoordinator> mHistoryClustersCoordinatorSupplier;
-    private ObservableSupplierImpl<Tab> mTabSupplier;
     private ActionChipsDelegate mDelegate;
 
     @Before
@@ -124,15 +121,15 @@ public class ActionChipsDelegateImplUnitTest {
         mShadowLooper = ShadowLooper.shadowMainLooper();
 
         mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
-        mTabSupplier = new ObservableSupplierImpl<>();
 
         mDelegate = new ActionChipsDelegateImpl(
-                mActivity, mHistoryClustersCoordinatorSupplier, null, mTabSupplier);
+                mMockContext, mHistoryClustersCoordinatorSupplier, () -> mTab);
 
-        doReturn(ContextUtils.getApplicationContext()).when(mActivity).getApplicationContext();
+        doReturn(ContextUtils.getApplicationContext()).when(mMockContext).getApplicationContext();
         doReturn(ContextUtils.getApplicationContext().getPackageName())
-                .when(mActivity)
+                .when(mMockContext)
                 .getPackageName();
+        doReturn(true).when(mTab).isUserInteractable();
     }
 
     @After
@@ -152,7 +149,7 @@ public class ActionChipsDelegateImplUnitTest {
      * @param fragmentClass When specified, expect particular settings fragment to be requested.
      */
     private void checkSettingsActivityFragmentStarted(@Nullable Class fragmentClass) {
-        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture(), any());
+        verify(mMockContext, times(1)).startActivity(mIntentCaptor.capture(), any());
 
         var intent = mIntentCaptor.getValue();
         assertEquals(SettingsActivity.class.getName(), intent.getComponent().getClassName());
@@ -254,9 +251,10 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_launchIncognito_fromCustomActivity() {
+        doReturn(false).when(mTab).isUserInteractable();
         mDelegate.execute(buildPedal(OmniboxPedalType.LAUNCH_INCOGNITO));
 
-        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mMockContext, times(1)).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -267,9 +265,10 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_viewChromeHistory_fromCustomActivity() {
+        doReturn(false).when(mTab).isUserInteractable();
         mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
 
-        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mMockContext, times(1)).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -281,7 +280,7 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_viewChromeHistory_fromTabbedActivity() {
-        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isUserInteractable();
         mDelegate.execute(buildPedal(OmniboxPedalType.VIEW_CHROME_HISTORY));
 
         var loadParamsCaptor = ArgumentCaptor.forClass(LoadUrlParams.class);
@@ -294,9 +293,10 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executePedal_playChromeDinoGame_fromCustomActivity() {
+        doReturn(false).when(mTab).isUserInteractable();
         mDelegate.execute(buildPedal(OmniboxPedalType.PLAY_CHROME_DINO_GAME));
 
-        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mMockContext, times(1)).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
         assertEquals(Intent.ACTION_VIEW, intent.getAction());
@@ -327,14 +327,14 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_executeDirectionsWithMaps() {
-        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isUserInteractable();
         doReturn(false).when(mTab).isIncognito();
 
         mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS,
                 new Intent("Magic Intent Action")));
 
         verify(mTab, times(1)).isIncognito();
-        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mMockContext, times(1)).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
 
         assertEquals("Magic Intent Action", intent.getAction());
@@ -348,7 +348,7 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_executeDirectionsInBrowserForIncognitoMode() {
-        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isUserInteractable();
         doReturn(true).when(mTab).isIncognito();
 
         var intent = new Intent(Intent.ACTION_VIEW);
@@ -357,7 +357,9 @@ public class ActionChipsDelegateImplUnitTest {
         mDelegate.execute(
                 buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent));
 
+        verify(mTab, times(1)).isUserInteractable();
         verify(mTab, times(1)).isIncognito();
+
         // Should not be recorded.
         assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -374,17 +376,19 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_redirectDirectionsActionToLocalTabIfAvailable() {
-        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isUserInteractable();
 
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
         // NOTE: the intent is serialized and deserialized. Can't directly check if instance is
         // same.
-        doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
+        doThrow(new ActivityNotFoundException()).when(mMockContext).startActivity(any());
         mDelegate.execute(
                 buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.DIRECTIONS, intent));
+        verify(mTab, times(1)).isUserInteractable();
         verify(mTab, times(1)).isIncognito();
+
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Android.Omnibox.ActionInSuggest.IntentResult",
@@ -401,7 +405,7 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_redirectDirectionsActionToRemoteTab() {
-        mTabSupplier.set(null);
+        doReturn(false).when(mTab).isUserInteractable();
 
         var intent = new Intent(Intent.ACTION_DIAL);
         intent.setClassName("no.such.package", ".");
@@ -413,12 +417,12 @@ public class ActionChipsDelegateImplUnitTest {
                 .doAnswer(inv -> {
                     Intent newIntent = inv.getArgument(0);
                     assertEquals(Intent.ACTION_VIEW, newIntent.getAction());
-                    assertEquals(
-                            mActivity.getPackageName(), newIntent.getComponent().getPackageName());
+                    assertEquals(mMockContext.getPackageName(),
+                            newIntent.getComponent().getPackageName());
                     assertEquals(UrlConstants.CHROME_DINO_URL, newIntent.getDataString());
                     return 0;
                 })
-                .when(mActivity)
+                .when(mMockContext)
                 .startActivity(any());
 
         mDelegate.execute(
@@ -432,11 +436,11 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_executeCallActionWithDialer() {
-        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isUserInteractable();
         mDelegate.execute(buildActionInSuggest(
                 EntityInfoProto.ActionInfo.ActionType.CALL, new Intent(Intent.ACTION_CALL)));
 
-        verify(mActivity, times(1)).startActivity(mIntentCaptor.capture());
+        verify(mMockContext, times(1)).startActivity(mIntentCaptor.capture());
         var intent = mIntentCaptor.getValue();
         // OBSERVE: We rewrite ACTION_CALL with ACTION_DIAL, which does not carry high permission
         // requirements.
@@ -451,14 +455,14 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_dontRedirectCallActionToLocalTab() {
-        mTabSupplier.set(mTab);
+        doReturn(true).when(mTab).isUserInteractable();
 
         var intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
         // NOTE: the intent is serialized and deserialized. Can't directly check if instance is
         // same.
-        doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
+        doThrow(new ActivityNotFoundException()).when(mMockContext).startActivity(any());
         mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.CALL, intent));
         assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -469,14 +473,14 @@ public class ActionChipsDelegateImplUnitTest {
 
     @Test
     public void executeActionInSuggest_dontRedirectCallActionToRemoteTab() {
-        mTabSupplier.set(null);
+        doReturn(false).when(mTab).isUserInteractable();
 
         var intent = new Intent(Intent.ACTION_DIAL);
         intent.setClassName("no.such.package", ".");
         intent.setData(Uri.parse(UrlConstants.CHROME_DINO_URL));
 
         // Keep throwing. Test should fail if we attempt to invoke intent to self.
-        doThrow(new ActivityNotFoundException()).when(mActivity).startActivity(any());
+        doThrow(new ActivityNotFoundException()).when(mMockContext).startActivity(any());
         mDelegate.execute(buildActionInSuggest(EntityInfoProto.ActionInfo.ActionType.CALL, intent));
 
         verifyNoMoreInteractions(mTab);

@@ -16,7 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -81,13 +81,13 @@ public class LoadingModalDialogCoordinator {
      * @param context The context for accessing resources.
      */
     public static LoadingModalDialogCoordinator create(
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context) {
         return create(modalDialogManagerSupplier, context, new Handler(Looper.getMainLooper()));
     }
 
     @VisibleForTesting
     static LoadingModalDialogCoordinator create(
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier, Context context,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier, Context context,
             Handler handler) {
         LoadingModalDialogMediator dialogMediator =
                 new LoadingModalDialogMediator(modalDialogManagerSupplier, handler);

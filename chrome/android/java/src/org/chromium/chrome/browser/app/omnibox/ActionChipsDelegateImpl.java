@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser.app.omnibox;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
@@ -35,7 +34,6 @@ import org.chromium.components.omnibox.action.OmniboxActionType;
 import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.omnibox.action.OmniboxPedalType;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.net.URISyntaxException;
 
@@ -43,20 +41,17 @@ import java.net.URISyntaxException;
  * Handle the events related to {@link OmniboxAction}.
  */
 public class ActionChipsDelegateImpl implements ActionChipsDelegate {
-    private final @NonNull Activity mActivity;
+    private final @NonNull Context mContext;
     private final @NonNull SettingsLauncher mSettingsLauncher;
     private final @NonNull Supplier<HistoryClustersCoordinator> mHistoryClustersCoordinatorSupplier;
-    private final @NonNull ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final @NonNull Supplier<Tab> mTabSupplier;
 
-    public ActionChipsDelegateImpl(@NonNull Activity activity,
+    public ActionChipsDelegateImpl(@NonNull Context context,
             @NonNull Supplier<HistoryClustersCoordinator> historyClustersCoordinatorSupplier,
-            @NonNull ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull Supplier<Tab> tabSupplier) {
-        mActivity = activity;
+        mContext = context;
         mSettingsLauncher = new SettingsLauncherImpl();
         mHistoryClustersCoordinatorSupplier = historyClustersCoordinatorSupplier;
-        mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mTabSupplier = tabSupplier;
     }
 
@@ -65,24 +60,24 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         int pedalId = pedal.pedalId;
         switch (pedalId) {
             case OmniboxPedalType.MANAGE_CHROME_SETTINGS:
-                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.MAIN);
+                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.MAIN);
                 break;
             case OmniboxPedalType.CLEAR_BROWSING_DATA:
                 mSettingsLauncher.launchSettingsActivity(
-                        mActivity, SettingsFragment.CLEAR_BROWSING_DATA);
+                        mContext, SettingsFragment.CLEAR_BROWSING_DATA);
                 break;
             case OmniboxPedalType.UPDATE_CREDIT_CARD:
                 mSettingsLauncher.launchSettingsActivity(
-                        mActivity, SettingsFragment.PAYMENT_METHODS);
+                        mContext, SettingsFragment.PAYMENT_METHODS);
                 break;
             case OmniboxPedalType.RUN_CHROME_SAFETY_CHECK:
-                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.SAFETY_CHECK);
+                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.SAFETY_CHECK);
                 break;
             case OmniboxPedalType.MANAGE_SITE_SETTINGS:
-                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.SITE);
+                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.SITE);
                 break;
             case OmniboxPedalType.MANAGE_CHROME_ACCESSIBILITY:
-                mSettingsLauncher.launchSettingsActivity(mActivity, SettingsFragment.ACCESSIBILITY);
+                mSettingsLauncher.launchSettingsActivity(mContext, SettingsFragment.ACCESSIBILITY);
                 break;
             case OmniboxPedalType.VIEW_CHROME_HISTORY:
                 loadPageInCurrentTab(UrlConstants.HISTORY_URL);
@@ -92,13 +87,16 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                 break;
 
             case OmniboxPedalType.MANAGE_PASSWORDS:
-                PasswordManagerLauncher.showPasswordSettings(mActivity,
-                        ManagePasswordsReferrer.CHROME_SETTINGS, mModalDialogManagerSupplier,
+                PasswordManagerLauncher.showPasswordSettings(mContext,
+                        ManagePasswordsReferrer.CHROME_SETTINGS,
+                        // clang-format off: trying to be clever even with curly braces.
+                        () -> mTabSupplier.get().getWindowAndroid().getModalDialogManager(),
+                        // clang-format on
                         /*managePasskeys=*/false);
                 break;
             case OmniboxPedalType.LAUNCH_INCOGNITO:
                 startActivity(IntentHandler.createTrustedOpenNewTabIntent(
-                        mActivity.getApplicationContext(), /*incognito=*/true));
+                        mContext.getApplicationContext(), /*incognito=*/true));
                 break;
         }
         SuggestionsMetrics.recordPedalUsed(pedalId);
@@ -134,12 +132,12 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
      */
     private void loadPageInCurrentTab(String url) {
         var tab = mTabSupplier.get();
-        if (tab != null) {
+        if (tab.isUserInteractable()) {
             tab.loadUrl(new LoadUrlParams(url));
         } else {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             intent.setComponent(new ComponentName(
-                    mActivity.getApplicationContext(), ChromeLauncherActivity.class));
+                    mContext.getApplicationContext(), ChromeLauncherActivity.class));
             intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
             startActivity(intent);
         }
@@ -228,9 +226,9 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
      * Decorates the intent with trusted intent extras when the intent references the browser.
      */
     private void startActivity(@NonNull Intent intent) {
-        if (IntentUtils.intentTargetsSelf(mActivity, intent)) {
+        if (IntentUtils.intentTargetsSelf(mContext, intent)) {
             IntentUtils.addTrustedIntentExtras(intent);
         }
-        mActivity.startActivity(intent);
+        mContext.startActivity(intent);
     }
 }
