@@ -78,6 +78,7 @@ android_library("net_java_test_support") {
     ":embedded_test_server_aidl_java",
     ":net_java",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_java_url_utils_for_test",
     "//base:jni_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -142,9 +143,7 @@ android_apk("net_test_support_apk") {
   # Used as an additional_apk in test scripts.
   never_incremental = true
 
-  # Multidex requires a custom Application class to initialize it. Simpler to
-  # just disable it.
-  enable_multidex = false
+  enable_multidex = true
 
   # Required on Android Q+ to read from /sdcard when installing certs.
   target_sdk_version = 28

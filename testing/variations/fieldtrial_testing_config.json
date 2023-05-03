@@ -2436,6 +2436,21 @@
             ]
         }
     ],
+    "CertVerifierBuiltin": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeRootStoreUsed"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChangeExtensionEventPageSuspendDelay": [
         {
             "platforms": [
