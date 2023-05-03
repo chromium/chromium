@@ -239,15 +239,15 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
     DCHECK(!bucket_result->is_default());
     bucket_result =
         UpdateBucketExpiration(bucket_result->id, params.expiration);
+    DCHECK(bucket_result.has_value());
   }
-  DCHECK(bucket_result.has_value());
 
   if (params.persistent && (*params.persistent != bucket_result->persistent)) {
     DCHECK(!bucket_result->is_default());
     bucket_result =
         UpdateBucketPersistence(bucket_result->id, *params.persistent);
+    DCHECK(bucket_result.has_value());
   }
-  DCHECK(bucket_result.has_value());
 
   return bucket_result;
 }
@@ -257,18 +257,13 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::GetOrCreateBucketDeprecated(
     StorageType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  QuotaErrorOr<BucketInfo> bucket_result =
-      GetBucket(params.storage_key, params.name, type);
-
-  if (bucket_result.has_value()) {
-    return bucket_result;
-  }
-
-  if (bucket_result.error() != QuotaError::kNotFound) {
-    return bucket_result;
-  }
-
-  return CreateBucketInternal(params, type);
+  return GetBucket(params.storage_key, params.name, type)
+      .or_else([&](QuotaError error) -> QuotaErrorOr<BucketInfo> {
+        if (error != QuotaError::kNotFound) {
+          return base::unexpected(error);
+        }
+        return CreateBucketInternal(params, type);
+      });
 }
 
 QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketForTesting(
