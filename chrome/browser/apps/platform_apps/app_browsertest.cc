@@ -1572,16 +1572,11 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_VideoPictureInPicture) {
           GetOrCreateVideoPictureInPictureController(web_contents);
   EXPECT_FALSE(window_controller->GetWindowForTesting());
 
-  bool result = false;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "enterPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "enterPictureInPicture();"));
   ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_TRUE(window_controller->GetWindowForTesting()->IsVisible());
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, "exitPictureInPicture();", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, content::EvalJs(web_contents, "exitPictureInPicture();"));
   EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
 }
 
