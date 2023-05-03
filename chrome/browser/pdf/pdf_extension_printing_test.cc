@@ -93,7 +93,7 @@ class PrintObserver : public printing::PrintViewManagerBase::Observer {
   using PrintViewManagerImpl = printing::PrintViewManagerBasic;
 #endif
   const raw_ptr<PrintViewManagerImpl> print_view_manager_;
-  const raw_ptr<const content::RenderFrameHost, DanglingUntriaged> rfh_;
+  const raw_ptr<const content::RenderFrameHost, FlakyDanglingUntriaged> rfh_;
   base::RunLoop run_loop_;
 };
 

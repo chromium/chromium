@@ -31,7 +31,7 @@ class BookmarkCounter : public browsing_data::BrowsingDataCounter {
   void Count() override;
   void CountBookmarks(const bookmarks::BookmarkModel* bookmark_model);
 
-  raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;
+  raw_ptr<bookmarks::BookmarkModel, FlakyDanglingUntriaged> bookmark_model_;
   base::WeakPtrFactory<BookmarkCounter> weak_ptr_factory_{this};
 };
 

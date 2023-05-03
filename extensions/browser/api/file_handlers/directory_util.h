@@ -45,7 +45,7 @@ class IsDirectoryCollector {
  private:
   void OnIsDirectoryCollected(size_t index, bool directory);
 
-  raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
+  raw_ptr<content::BrowserContext, FlakyDanglingUntriaged> context_;
   std::vector<base::FilePath> paths_;
   std::unique_ptr<std::set<base::FilePath>> result_;
   size_t left_;

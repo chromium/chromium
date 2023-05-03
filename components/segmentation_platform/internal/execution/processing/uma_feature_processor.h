@@ -69,7 +69,7 @@ class UmaFeatureProcessor : public QueryProcessor {
   const raw_ptr<SignalDatabase, FlakyDanglingUntriaged> signal_database_;
 
   // The FeatureAggregator aggregates all the data based on metadata and input.
-  const raw_ptr<FeatureAggregator, DanglingUntriaged> feature_aggregator_;
+  const raw_ptr<FeatureAggregator, FlakyDanglingUntriaged> feature_aggregator_;
 
   // Data needed for the processing of uma features.
   const base::Time prediction_time_;

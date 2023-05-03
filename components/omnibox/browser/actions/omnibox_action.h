@@ -125,7 +125,7 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
                      base::TimeTicks match_selection_timestamp,
                      WindowOpenDisposition disposition);
     ~ExecutionContext();
-    const raw_ref<Client, DanglingUntriaged> client_;
+    const raw_ref<Client, FlakyDanglingUntriaged> client_;
     OpenUrlCallback open_url_callback_;
     base::TimeTicks match_selection_timestamp_;
     WindowOpenDisposition disposition_;

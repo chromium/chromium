@@ -136,7 +136,8 @@ class TestFileErrorInjector
       created_factory_ = nullptr;
 
   // The download manager we set the factory on.
-  raw_ptr<DownloadManagerImpl, DanglingUntriaged> download_manager_ = nullptr;
+  raw_ptr<DownloadManagerImpl, FlakyDanglingUntriaged> download_manager_ =
+      nullptr;
 };
 
 }  // namespace content

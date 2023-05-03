@@ -100,7 +100,7 @@ class GetLoginsWithAffiliationsRequestHandler
 
   base::WeakPtr<PasswordStoreConsumer> consumer_;
 
-  raw_ptr<PasswordStoreInterface, DanglingUntriaged> store_;
+  raw_ptr<PasswordStoreInterface, FlakyDanglingUntriaged> store_;
 
   // Closure which is released after being called 2 times (3 in case
   // |kFillingAcrossGroupedSites| is enabled).
