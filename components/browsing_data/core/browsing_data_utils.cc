@@ -147,8 +147,8 @@ void RecordTimePeriodChange(TimePeriod period) {
   }
 }
 
-void RecordClearBrowsingDataAction(ClearBrowsingDataAction cbd_action) {
-  UMA_HISTOGRAM_ENUMERATION("Privacy.ClearBrowsingData.Action", cbd_action);
+void RecordDeleteBrowsingDataAction(DeleteBrowsingDataAction cbd_action) {
+  UMA_HISTOGRAM_ENUMERATION("Privacy.DeleteBrowsingData.Action", cbd_action);
 }
 
 std::u16string GetCounterTextFromResult(

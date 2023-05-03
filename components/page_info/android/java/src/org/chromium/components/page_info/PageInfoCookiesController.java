@@ -15,6 +15,7 @@ import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsObserver;
@@ -130,6 +131,9 @@ public class PageInfoCookiesController
     public void clearData() {
         if (isDeletionDisabled()) return;
         if (mWebsite == null) return;
+
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.COOKIES_IN_USE_DIALOG, DeleteBrowsingDataAction.MAX_VALUE);
 
         SiteDataCleaner.clearData(
                 mMainController.getBrowserContext(), mWebsite, mMainController::exitSubpage);

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.quick_delete;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataAction;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 /**
  * A delegate class to record metrics associated with {@link QuickDeleteController}.
@@ -40,9 +40,9 @@ public class QuickDeleteMetricsDelegate {
                 "Privacy.QuickDelete", quickDeleteAction, QuickDeleteAction.MAX_VALUE);
 
         if (quickDeleteAction == QuickDeleteAction.DELETE_CLICKED) {
-            RecordHistogram.recordEnumeratedHistogram("Privacy.ClearBrowsingData.Action",
-                    ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES,
-                    ClearBrowsingDataAction.MAX_VALUE);
+            RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                    DeleteBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES,
+                    DeleteBrowsingDataAction.MAX_VALUE);
         }
     }
 }

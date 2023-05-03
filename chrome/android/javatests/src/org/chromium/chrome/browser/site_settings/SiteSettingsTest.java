@@ -72,6 +72,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
@@ -119,6 +120,7 @@ import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsiteGroup;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -720,11 +722,16 @@ public class SiteSettingsTest {
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.SITES_SETTINGS_PAGE);
+
         resetSite(WebsiteAddress.create(url));
 
         // Load the page again and ensure the cookie is gone.
         mPermissionRule.loadUrl(url);
         Assert.assertEquals("\"\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+        // Verify DeleteBrowsingDataAction metric is recorded.
+        histogramWatcher.assertExpected();
     }
 
     /** Tests clearing cookies for a group of websites. */
@@ -759,6 +766,9 @@ public class SiteSettingsTest {
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
 
+        HistogramWatcher histogramWatcher = HistogramWatcher.newSingleRecordWatcher(
+                "Privacy.DeleteBrowsingData.Action", DeleteBrowsingDataAction.SITES_SETTINGS_PAGE);
+
         resetGroup(Arrays.asList(WebsiteAddress.create(url1), WebsiteAddress.create(url2)));
 
         // 1 and 2 got cleared; 3 stays intact.
@@ -769,6 +779,9 @@ public class SiteSettingsTest {
         mPermissionRule.loadUrl(url3);
         Assert.assertEquals(
                 "\"Foo=Bar\"", mPermissionRule.runJavaScriptCodeInCurrentTab("getCookie()"));
+
+        // Verify DeleteBrowsingDataAction metric is recorded.
+        histogramWatcher.assertExpected();
     }
 
     /** Set cookies for domains and check that they are removed when a site is cleared. */

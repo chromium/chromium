@@ -17394,16 +17394,6 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="613" label="X_Takri"/>
 </enum>
 
-<enum name="ClearBrowsingDataAction">
-  <int value="0" label="CBD dialog"/>
-  <int value="1" label="Clear on exit"/>
-  <int value="2" label="Close Incognito tabs"/>
-  <int value="3" label="Cookies in use dialog"/>
-  <int value="4" label="Site settings page"/>
-  <int value="5" label="History page"/>
-  <int value="6" label="Quick delete"/>
-</enum>
-
 <enum name="ClearBrowsingDataMyActivityNavigation">
   <int value="0" label="Top level MyActivity URL"/>
   <int value="1" label="Search history in MyActivity"/>
@@ -25660,6 +25650,16 @@ Called by update_debug_scenarios.py.-->
   <int value="8" label="Composited Not Axis Aligned - 3d Transform"/>
   <int value="9" label="Composited Not Axis Aligned - Shear Transform"/>
   <int value="10" label="Composited Not Axis Aligned - Rotated Transform"/>
+</enum>
+
+<enum name="DeleteBrowsingDataAction">
+  <int value="0" label="CBD dialog"/>
+  <int value="1" label="Clear on exit"/>
+  <int value="2" label="Close Incognito tabs"/>
+  <int value="3" label="Cookies in use dialog"/>
+  <int value="4" label="Site settings page"/>
+  <int value="6" label="Quick delete"/>
+  <int value="7" label="Page info permission reset"/>
 </enum>
 
 <enum name="DeleteCorruptedPasswordsResult">

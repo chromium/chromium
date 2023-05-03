@@ -31,7 +31,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
-import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataAction;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -42,6 +41,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -150,8 +150,8 @@ public class QuickDeleteControllerTest {
         openQuickDeleteDialog();
 
         HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher("Privacy.ClearBrowsingData.Action",
-                                ClearBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
+                HistogramWatcher.newSingleRecordWatcher("Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.QUICK_DELETE_LAST15_MINUTES);
 
         onViewWaiting(withId(R.id.positive_button)).perform(click());
 

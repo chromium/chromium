@@ -114,6 +114,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
+    "//components/browsing_data/core:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/content_settings/android:java",
     "//components/embedder_support/android:util_java",

@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePref
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -377,6 +378,10 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         RecordHistogram.recordEnumeratedHistogram(
                 "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice,
                 CookieOrCacheDeletionChoice.MAX_CHOICE_VALUE);
+
+        RecordHistogram.recordEnumeratedHistogram("Privacy.DeleteBrowsingData.Action",
+                DeleteBrowsingDataAction.CLEAR_BROWSING_DATA_DIALOG,
+                DeleteBrowsingDataAction.MAX_VALUE);
 
         Object spinnerSelection =
                 ((SpinnerPreference) findPreference(PREF_TIME_RANGE)).getSelectedOption();

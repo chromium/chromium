@@ -62,6 +62,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -75,6 +76,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
+import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -249,6 +251,10 @@ public class ClearBrowsingDataFragmentTest {
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
 
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher("Privacy.DeleteBrowsingData.Action",
+                        DeleteBrowsingDataAction.CLEAR_BROWSING_DATA_DIALOG);
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PreferenceScreen screen = preferences.getPreferenceScreen();
 
@@ -265,6 +271,9 @@ public class ClearBrowsingDataFragmentTest {
 
         waitForProgressToComplete(preferences);
         mCallbackHelper.waitForFirst();
+
+        // Verify DeleteBrowsingDataAction metric is recorded.
+        histogramWatcher.assertExpected();
 
         // Verify that we got the appropriate call to clear all data.
         verify(mBrowsingDataBridgeMock)
