@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -64,13 +63,6 @@ namespace {
   AppLaunchConfiguration config;
   // TODO (crbug.com/1285974) Remove when bug is resolved.
   config.features_disabled.push_back(kNewOverflowMenu);
-
-  if ([self isRunningTest:@selector
-            (testTogglePasswordLeakCheckForSignedOutUser)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kLeakDetectionUnauthenticated);
-  }
-
   return config;
 }
 

@@ -59,7 +59,6 @@ BASE_DECLARE_FEATURE(kMemoryMapWeaknessCheckDictionaries);
 BASE_DECLARE_FEATURE(kNewRegexForOtpFields);
 BASE_DECLARE_FEATURE(kPasswordIssuesInSpecificsMetadata);
 BASE_DECLARE_FEATURE(kSendPasswords);
-BASE_DECLARE_FEATURE(kLeakDetectionUnauthenticated);
 BASE_DECLARE_FEATURE(kPasswordChangeWellKnown);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kPasswordManagerRedesign);

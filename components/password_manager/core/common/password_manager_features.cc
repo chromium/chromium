@@ -156,11 +156,6 @@ BASE_FEATURE(kSendPasswords,
              "SendPasswords",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables password leak detection for unauthenticated users.
-BASE_FEATURE(kLeakDetectionUnauthenticated,
-             "LeakDetectionUnauthenticated",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables .well-known based password change flow from leaked password dialog.
 BASE_FEATURE(kPasswordChangeWellKnown,
              "PasswordChangeWellKnown",

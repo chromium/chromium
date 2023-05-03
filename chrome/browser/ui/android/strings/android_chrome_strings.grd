@@ -600,9 +600,6 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_TITLE" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn you if passwords are exposed in a data breach
       </message>
-      <message name="IDS_PASSWORDS_LEAK_DETECTION_SWITCH_SIGNED_OUT_ENABLE_DESCRIPTION" desc="Description for the switch toggling whether Chrome should check that entered credentials have been part of a leak. Displayed for users who are not signed in and syncing.">
-        When you sign in to your Google Account, this feature is turned on
-      </message>
       <message name="IDS_PASSWORDS_CHECK_TITLE" desc="Title for the check passwords button which allows to check whether the user's passwords have been compromised.">
         Check passwords
       </message>

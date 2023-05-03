@@ -78,28 +78,15 @@ public class StandardProtectionSettingsFragment
                 is_standard_protection && !extended_reporting_disabled_by_delegate);
         mExtendedReportingPreference.setChecked(extended_reporting_checked);
 
-        boolean has_token_for_leak_check = SafeBrowsingBridge.hasAccountForLeakCheckRequest()
-                || SafeBrowsingBridge.isLeakDetectionUnauthenticatedEnabled();
         boolean leak_detection_enabled =
                 mPrefService.getBoolean(Pref.PASSWORD_LEAK_DETECTION_ENABLED);
         boolean leak_detection_disabled_by_delegate =
                 mManagedPreferenceDelegate.isPreferenceClickDisabled(
                         mPasswordLeakDetectionPreference);
-        boolean should_leak_detection_checked =
-                is_enhanced_protection || (is_standard_protection && leak_detection_enabled);
-        // Leak detection should not be checked if there is no available account (and leak detection
-        // for signed out users is disabled), even if the feature is enabled.
-        boolean leak_detection_checked = should_leak_detection_checked && has_token_for_leak_check;
-        mPasswordLeakDetectionPreference.setEnabled(is_standard_protection
-                && has_token_for_leak_check && !leak_detection_disabled_by_delegate);
-        mPasswordLeakDetectionPreference.setChecked(leak_detection_checked);
-        // If leak detection should be checked but not checked due to lack of account or
-        // unauthenticated leak detection feature being disabled, show a message in the preference
-        // summary.
-        if (should_leak_detection_checked && !has_token_for_leak_check) {
-            mPasswordLeakDetectionPreference.setSummary(
-                    R.string.passwords_leak_detection_switch_signed_out_enable_description);
-        }
+        mPasswordLeakDetectionPreference.setEnabled(
+                is_standard_protection && !leak_detection_disabled_by_delegate);
+        mPasswordLeakDetectionPreference.setChecked(
+                is_enhanced_protection || (is_standard_protection && leak_detection_enabled));
     }
 
     @Override

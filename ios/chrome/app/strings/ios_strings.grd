@@ -2748,9 +2748,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_LEAK_CHECK_SWITCH" desc="Title for the switch toggling whether Chrome should check that entered credentials have been part of a leak.">
         Warn You if Passwords Are Exposed in a Data Breach
       </message>
-      <message name="IDS_IOS_LEAK_CHECK_SIGNED_OUT_ENABLED_DESC" desc="Text that describes the 'Password Leak Detection' functionality to signed-out users who have not disabled the feature.">
-        When you sign in to your Google Account, this feature is turned on.
-      </message>
       <message name="IDS_IOS_PASSWORDS" desc="Title for the view in Settings for managing saved passwords. [Length: 15em] [iOS only]">
         Passwords
       </message>

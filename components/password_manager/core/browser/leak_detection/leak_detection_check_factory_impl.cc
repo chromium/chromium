@@ -44,18 +44,12 @@ LeakDetectionCheckFactoryImpl::TryCreateLeakCheck(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     version_info::Channel channel) const {
-  bool has_account_for_request =
-      LeakDetectionCheckImpl::HasAccountForRequest(identity_manager);
-  if (!identity_manager || (!has_account_for_request &&
-                            !base::FeatureList::IsEnabled(
-                                features::kLeakDetectionUnauthenticated))) {
-    delegate->OnError(LeakDetectionError::kNotSignIn);
-    return nullptr;
-  }
+  CHECK(identity_manager);
 
   return std::make_unique<LeakDetectionCheckImpl>(
       delegate, identity_manager, std::move(url_loader_factory),
-      GetAPIKey(has_account_for_request, channel));
+      GetAPIKey(LeakDetectionCheckImpl::HasAccountForRequest(identity_manager),
+                channel));
 }
 
 std::unique_ptr<BulkLeakCheck>

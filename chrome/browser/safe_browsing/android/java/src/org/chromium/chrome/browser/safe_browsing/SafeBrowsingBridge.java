@@ -70,20 +70,6 @@ public final class SafeBrowsingBridge {
     }
 
     /**
-     * @return Whether there is a Google account to use for the leak detection check.
-     */
-    public static boolean hasAccountForLeakCheckRequest() {
-        return SafeBrowsingBridgeJni.get().hasAccountForLeakCheckRequest();
-    }
-
-    /**
-     * @return Whether the Leak Detection for signed out users feature is enabled.
-     */
-    public static boolean isLeakDetectionUnauthenticatedEnabled() {
-        return SafeBrowsingBridgeJni.get().isLeakDetectionUnauthenticatedEnabled();
-    }
-
-    /**
      * @return Whether the user is under Advanced Protection.
      */
     public static boolean isUnderAdvancedProtection() {
@@ -101,8 +87,6 @@ public final class SafeBrowsingBridge {
         int getSafeBrowsingState();
         void setSafeBrowsingState(@SafeBrowsingState int state);
         boolean isSafeBrowsingManaged();
-        boolean hasAccountForLeakCheckRequest();
-        boolean isLeakDetectionUnauthenticatedEnabled();
         boolean isUnderAdvancedProtection();
     }
 }
