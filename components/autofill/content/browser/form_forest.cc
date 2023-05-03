@@ -189,11 +189,18 @@ base::flat_set<FormGlobalId> FormForest::EraseForms(
   return forms_with_removed_fields;
 }
 
-void FormForest::EraseFrame(LocalFrameToken frame) {
+void FormForest::EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame) {
   some_rfh_for_debugging_ = content::GlobalRenderFrameHostId();
-  if (frame_datas_.erase(frame)) {
-    EraseReferencesTo(frame, /*forms_with_removed_fields=*/nullptr);
+  auto it = frame_datas_.find(frame);
+  if (it == frame_datas_.end()) {
+    return;
   }
+  if (keep_frame) {
+    it->get()->child_forms = {};
+  } else {
+    frame_datas_.erase(it);
+  }
+  EraseReferencesTo(frame, /*forms_with_removed_fields=*/nullptr);
 }
 
 // Maintains the following invariants:

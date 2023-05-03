@@ -71,7 +71,8 @@ ContentAutofillDriver::ContentAutofillDriver(
 }
 
 ContentAutofillDriver::~ContentAutofillDriver() {
-  autofill_router_->UnregisterDriver(this);
+  autofill_router_->UnregisterDriver(this,
+                                     /*driver_is_dying=*/true);
   render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
       suppress_showing_ime_callback_);
 }
@@ -573,7 +574,8 @@ void ContentAutofillDriver::Reset() {
   // The driver's RenderFrameHost may be used for the page we're navigating to.
   // Therefore, we need to forget all forms of the page we're navigating from.
   submitted_forms_.clear();
-  autofill_router_->UnregisterDriver(this);
+  autofill_router_->UnregisterDriver(this,
+                                     /*driver_is_dying=*/false);
   autofill_manager_->Reset();
 }
 

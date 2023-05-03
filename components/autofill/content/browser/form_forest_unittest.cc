@@ -1033,8 +1033,15 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
 
+class FormForestTestUpdateEraseFrame
+    : public FormForestTestUpdateTree,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  bool keep_frame() const { return GetParam(); }
+};
+
 // Tests that erasing a frame removes its form and fields.
-TEST_F(FormForestTestUpdateTree, EraseFrame_FieldRemoval) {
+TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_FieldRemoval) {
   MockFormForest(
       {.forms = {
            {.name = "main",
@@ -1046,8 +1053,14 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_FieldRemoval) {
   UpdateTreeOfRendererForm(ff, "main");
   UpdateTreeOfRendererForm(ff, "inner");
   UpdateTreeOfRendererForm(ff, "leaf");
-  ff.EraseFrame(GetMockedForm("leaf").host_frame);
-  frame_datas(mocked_forms_).erase(GetMockedForm("leaf").host_frame);
+  ff.EraseFormsOfFrame(GetMockedForm("leaf").host_frame,
+                       /*keep_frame=*/keep_frame());
+  if (!keep_frame()) {
+    frame_datas(mocked_forms_).erase(GetMockedForm("leaf").host_frame);
+  } else {
+    (*frame_datas(mocked_forms_).find(GetMockedForm("leaf").host_frame))
+        ->child_forms.clear();
+  }
   MockFlattening({{"main"}, {"inner"}});
   ASSERT_EQ(GetFlattenedForm("main").fields.size(), 12u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
@@ -1055,7 +1068,7 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_FieldRemoval) {
 
 // Tests that erasing a frame unsets the children's FrameData::parent_form
 // pointer.
-TEST_F(FormForestTestUpdateTree, EraseFrame_ParentReset) {
+TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
   MockFormForest(
       {.forms = {
            {.name = "main",
@@ -1067,8 +1080,14 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_ParentReset) {
   UpdateTreeOfRendererForm(ff, "main");
   UpdateTreeOfRendererForm(ff, "inner");
   UpdateTreeOfRendererForm(ff, "leaf");
-  ff.EraseFrame(GetMockedForm("inner").host_frame);
-  frame_datas(mocked_forms_).erase(GetMockedForm("inner").host_frame);
+  ff.EraseFormsOfFrame(GetMockedForm("inner").host_frame,
+                       /*keep_frame=*/keep_frame());
+  if (!keep_frame()) {
+    frame_datas(mocked_forms_).erase(GetMockedForm("inner").host_frame);
+  } else {
+    (*frame_datas(mocked_forms_).find(GetMockedForm("inner").host_frame))
+        ->child_forms.clear();
+  }
   driver("leaf")->set_sub_root(true);
   GetMockedFrame("leaf").parent_form = absl::nullopt;
   MockFlattening({{"main"}});
@@ -1080,6 +1099,10 @@ TEST_F(FormForestTestUpdateTree, EraseFrame_ParentReset) {
   ASSERT_EQ(GetFlattenedForm("leaf").fields.size(), 0u);
   EXPECT_THAT(ff, Equals(flattened_forms_));
 }
+
+INSTANTIATE_TEST_SUITE_P(FormForestTest,
+                         FormForestTestUpdateEraseFrame,
+                         testing::Bool());
 
 // Parameterized with a source and an optional target form and field index.
 class FormForestTestUpdateFieldChange : public FormForestTestUpdateTree {
@@ -1313,7 +1336,7 @@ TEST_F(FormForestTestUpdateTree, Converge) {
 }
 
 // Tests that removing a frame from FormData::child_frames removes the fields
-// (but not the FrameData; this is taken care of by EraseFrame()).
+// (but not the FrameData; this is taken care of by EraseFormsOfFrame()).
 TEST_F(FormForestTestUpdateTree, RemoveFrame) {
   auto url = [](base::StringPiece path) {  // Needed due to crbug/1217402.
     return base::StrCat({kMainUrl, path});

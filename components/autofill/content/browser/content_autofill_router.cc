@@ -81,7 +81,8 @@ ContentAutofillDriver* ContentAutofillRouter::DriverOfFrame(
   return it != frames.end() ? (*it)->driver.get() : nullptr;
 }
 
-void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
+void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver,
+                                             bool driver_is_dying) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes))
     return;
 
@@ -93,7 +94,8 @@ void ContentAutofillRouter::UnregisterDriver(ContentAutofillDriver* driver) {
        form_forest_.frame_datas()) {
     AFCHECK(frame, continue);
     if (frame->driver == driver) {
-      form_forest_.EraseFrame(frame->frame_token);
+      form_forest_.EraseFormsOfFrame(frame->frame_token,
+                                     /*keep_frame=*/!driver_is_dying);
       break;
     }
   }
