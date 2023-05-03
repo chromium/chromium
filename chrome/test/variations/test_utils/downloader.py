@@ -18,9 +18,7 @@ from pkg_resources import packaging
 from typing import List
 from urllib.request import urlopen
 from . import helper
-
-SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), *([os.pardir] * 4)))
+from .defines import SRC_DIR
 
 GSUTIL_PATH = os.path.join(
     SRC_DIR, 'third_party', 'catapult', 'third_party', 'gsutil', 'gsutil')

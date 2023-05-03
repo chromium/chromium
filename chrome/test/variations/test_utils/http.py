@@ -9,9 +9,7 @@ import os
 import threading
 
 from http.server import SimpleHTTPRequestHandler
-
-SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), *([os.pardir] * 4)))
+from .defines import SRC_DIR
 
 HTTP_DATA_BASEDIR = os.path.join(
     SRC_DIR, 'chrome', 'test', 'data', 'variations', 'http_server')

@@ -2,21 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import pytest
-
 import logging
 import os
-import test_utils
 import shutil
 
+import pytest
+
+from chrome.test.variations import test_utils
 from contextlib import contextmanager
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
+from typing import Optional
 
 pytest_plugins = [
-  'fixtures.skia_gold',
+  'chrome.test.variations.fixtures.skia_gold',
+  'chrome.test.variations.fixtures.seed_locator',
 ]
 
 def pytest_addoption(parser):
@@ -51,8 +53,8 @@ def chromedriver_path(pytestconfig) -> str:
   """Returns a path to the chromedriver."""
   if cd_path := pytestconfig.getoption('chromedriver'):
     cd_path = os.path.abspath(cd_path)
-    if not os.path.isfile(cd_path):
-      raise RuntimeError(f'Given chromedriver doesn\'t exist. ({cd_path})')
+    assert os.path.isfile(cd_path), (
+      f'Given chromedriver doesn\'t exist. ({cd_path})')
     return cd_path
 
   platform = pytestconfig.getoption('target_platform')
@@ -80,19 +82,25 @@ def driver_factory(pytestconfig,
                    tmp_path_factory: pytest.TempPathFactory):
   """Returns a factory that creates a webdriver."""
   @contextmanager
-  def factory(chrome_options = None):
+  def factory(seed_file: Optional[str] = None,
+              chrome_options: Optional[ChromeOptions] = None):
     # Crashpad is a separate process and its dump locations is set via env
     # variable.
     crash_dump_dir = tmp_path_factory.mktemp('crash', True)
     os.environ['BREAKPAD_DUMP_LOCATION'] = str(crash_dump_dir)
 
     chrome_options = chrome_options or ChromeOptions()
-    chrome_options.add_argument(
-      f'fake-variations-channel={pytestconfig.getoption("channel")}')
+    if seed_file:
+      assert os.path.exists(seed_file)
+      chrome_options.add_argument(f'variations-test-seed-path={seed_file}')
+      chrome_options.add_argument(
+        f'fake-variations-channel={pytestconfig.getoption("channel")}')
     chrome_options.add_experimental_option('excludeSwitches',
                                           ['disable-background-networking'])
     driver = None
     try:
+      logging.info('Launching Chrome w/ caps: %s',
+                   chrome_options.to_capabilities())
       driver = webdriver.Chrome(service=Service(chromedriver_path),
                                 options=chrome_options)
       yield driver

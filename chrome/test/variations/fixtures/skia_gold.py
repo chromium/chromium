@@ -10,15 +10,15 @@ import shutil
 import subprocess
 import sys
 
-from typing import Tuple
-
-SRC_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), *([os.pardir] * 4)))
-sys.path.append(os.path.join(SRC_DIR, 'build'))
-
 import attr
 import pytest
 from selenium.webdriver.remote.webelement import WebElement
+from typing import Tuple
+
+# The module skia_gold_common is relative to its own path, add "build" dir
+# to the search path.
+from chrome.test.variations.test_utils import SRC_DIR
+sys.path.append(os.path.join(SRC_DIR, 'build'))
 from skia_gold_common import output_managerless_skia_gold_session as omsgs
 from skia_gold_common import skia_gold_properties as sgp
 from skia_gold_common import skia_gold_session_manager as sgsm
@@ -85,7 +85,6 @@ class VariationsSkiaGoldUtil:
       f'{error_msg}'
       f'{self.skia_gold_session.GetTriageLinks(image_name)}'
     )
-
 
 @pytest.fixture
 def skia_gold_util(
