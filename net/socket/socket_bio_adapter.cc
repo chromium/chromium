@@ -64,9 +64,9 @@ SocketBIOAdapter::SocketBIOAdapter(StreamSocket* socket,
       read_buffer_capacity_(read_buffer_capacity),
       write_buffer_capacity_(write_buffer_capacity),
       delegate_(delegate) {
-  bio_.reset(BIO_new(&kBIOMethod));
-  bio_->ptr = this;
-  bio_->init = 1;
+  bio_.reset(BIO_new(BIOMethod()));
+  BIO_set_data(bio_.get(), this);
+  BIO_set_init(bio_.get(), 1);
 
   read_callback_ = base::BindRepeating(&SocketBIOAdapter::OnSocketReadComplete,
                                        weak_factory_.GetWeakPtr());
@@ -77,7 +77,7 @@ SocketBIOAdapter::SocketBIOAdapter(StreamSocket* socket,
 SocketBIOAdapter::~SocketBIOAdapter() {
   // BIOs are reference-counted and may outlive the adapter. Clear the pointer
   // so future operations fail.
-  bio_->ptr = nullptr;
+  BIO_set_data(bio_.get(), nullptr);
 }
 
 bool SocketBIOAdapter::HasPendingReadData() {
@@ -338,10 +338,11 @@ void SocketBIOAdapter::CallOnReadReady() {
 }
 
 SocketBIOAdapter* SocketBIOAdapter::GetAdapter(BIO* bio) {
-  DCHECK_EQ(&kBIOMethod, bio->method);
-  SocketBIOAdapter* adapter = reinterpret_cast<SocketBIOAdapter*>(bio->ptr);
-  if (adapter)
+  SocketBIOAdapter* adapter =
+      reinterpret_cast<SocketBIOAdapter*>(BIO_get_data(bio));
+  if (adapter) {
     DCHECK_EQ(bio, adapter->bio());
+  }
   return adapter;
 }
 
@@ -383,17 +384,16 @@ long SocketBIOAdapter::BIOCtrlWrapper(BIO* bio,
   return 0;
 }
 
-const BIO_METHOD SocketBIOAdapter::kBIOMethod = {
-    0,        // type (unused)
-    nullptr,  // name (unused)
-    SocketBIOAdapter::BIOWriteWrapper,
-    SocketBIOAdapter::BIOReadWrapper,
-    nullptr,  // puts
-    nullptr,  // gets
-    SocketBIOAdapter::BIOCtrlWrapper,
-    nullptr,  // create
-    nullptr,  // destroy
-    nullptr,  // callback_ctrl
-};
+const BIO_METHOD* SocketBIOAdapter::BIOMethod() {
+  static const BIO_METHOD* kMethod = []() {
+    BIO_METHOD* method = BIO_meth_new(0, nullptr);
+    CHECK(method);
+    CHECK(BIO_meth_set_write(method, SocketBIOAdapter::BIOWriteWrapper));
+    CHECK(BIO_meth_set_read(method, SocketBIOAdapter::BIOReadWrapper));
+    CHECK(BIO_meth_set_ctrl(method, SocketBIOAdapter::BIOCtrlWrapper));
+    return method;
+  }();
+  return kMethod;
+}
 
 }  // namespace net

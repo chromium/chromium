@@ -104,7 +104,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
   static int BIOWriteWrapper(BIO* bio, const char* in, int len);
   static long BIOCtrlWrapper(BIO* bio, int cmd, long larg, void* parg);
 
-  static const BIO_METHOD kBIOMethod;
+  static const BIO_METHOD* BIOMethod();
 
   bssl::UniquePtr<BIO> bio_;
 
