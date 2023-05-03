@@ -117,6 +117,9 @@ interface DevToolsAgent {
   // on start waiting for debugger to connect.
   // See ChildTargetCreated in DevToolsAgentHost for details.
   ReportChildTargets(bool report, bool wait_for_debugger) => ();
+
+  // Resolves DOMNodeId to a unique form control ID used by Autofill.
+  GetUniqueFormControlId(int32 nodeId) => (uint64 id);
 };
 
 // This interface is implemented in the browser and is notified by

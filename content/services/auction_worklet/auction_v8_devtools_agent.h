@@ -112,6 +112,8 @@ class AuctionV8DevToolsAgent : public blink::mojom::DevToolsAgent,
   void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           ReportChildTargetsCallback callback) override;
+  void GetUniqueFormControlId(int32_t nodeId,
+                              GetUniqueFormControlIdCallback callback) override;
 
   // V8InspectorClient implementation.
   // TODO(morlovich): Implement consoleAPIMessage and currentTimeMS and replace

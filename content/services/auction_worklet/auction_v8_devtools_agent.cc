@@ -102,6 +102,12 @@ void AuctionV8DevToolsAgent::ReportChildTargets(
   NOTIMPLEMENTED();  // Should not be used with this.
 }
 
+void AuctionV8DevToolsAgent::GetUniqueFormControlId(
+    int32_t nodeId,
+    GetUniqueFormControlIdCallback callback) {
+  NOTIMPLEMENTED();  // Should not be used with this.
+}
+
 void AuctionV8DevToolsAgent::runMessageLoopOnPause(int context_group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
   DCHECK(!paused_);
