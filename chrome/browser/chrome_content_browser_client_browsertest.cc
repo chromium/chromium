@@ -724,23 +724,6 @@ class IsClipboardPasteContentAllowedTest : public InProcessBrowserTest {
   raw_ptr<ChromeContentBrowserClient> client_ = nullptr;
 };
 
-IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, BitmapAllowed) {
-  content::WebContents* contents =
-      browser()->tab_strip_model()->GetWebContentsAt(0);
-  ChromeContentBrowserClient::ClipboardPasteData clipboard_paste_data =
-      ChromeContentBrowserClient::ClipboardPasteData(std::string(), "bitmap",
-                                                     {});
-
-  client()->IsClipboardPasteContentAllowed(
-      contents, GURL("google.com"), ui::ClipboardFormatType::BitmapType(),
-      clipboard_paste_data,
-      base::BindOnce(
-          [](absl::optional<ChromeContentBrowserClient::ClipboardPasteData>
-                 clipboard_paste_data) {
-            EXPECT_TRUE(clipboard_paste_data.has_value());
-          }));
-}
-
 IN_PROC_BROWSER_TEST_F(IsClipboardPasteContentAllowedTest, TextAllowed) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetWebContentsAt(0);

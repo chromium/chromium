@@ -70,6 +70,26 @@ LastWriterInfo& GetLastWriterInfo() {
   return info;
 }
 
+std::u16string ExtractText(ui::ClipboardBuffer clipboard_buffer,
+                           std::unique_ptr<ui::DataTransferEndpoint> data_dst) {
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string result;
+  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
+                                   clipboard_buffer, data_dst.get())) {
+    clipboard->ReadText(clipboard_buffer, data_dst.get(), &result);
+  } else {
+#if BUILDFLAG(IS_WIN)
+    if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
+                                     clipboard_buffer, data_dst.get())) {
+      std::string ascii;
+      clipboard->ReadAsciiText(clipboard_buffer, data_dst.get(), &ascii);
+      result = base::ASCIIToUTF16(ascii);
+    }
+#endif
+  }
+  return result;
+}
+
 }  // namespace
 
 // The amount of time that the result of a content allow request is cached
@@ -226,24 +246,10 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
     std::move(callback).Run(std::u16string());
     return;
   }
-  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  std::u16string result;
-  auto data_dst = CreateDataEndpoint();
-  if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
-                                   clipboard_buffer, data_dst.get())) {
-    clipboard->ReadText(clipboard_buffer, data_dst.get(), &result);
-  } else {
-#if BUILDFLAG(IS_WIN)
-    if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
-                                     clipboard_buffer, data_dst.get())) {
-      std::string ascii;
-      clipboard->ReadAsciiText(clipboard_buffer, data_dst.get(), &ascii);
-      result = base::ASCIIToUTF16(ascii);
-    }
-#endif
-  }
+
+  std::u16string text = ExtractText(clipboard_buffer, CreateDataEndpoint());
   ClipboardPasteData clipboard_paste_data =
-      ClipboardPasteData(base::UTF16ToUTF8(result), std::string(), {});
+      ClipboardPasteData(base::UTF16ToUTF8(text), std::string(), {});
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::PlainTextType(),
       std::move(clipboard_paste_data),
@@ -255,7 +261,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
             }
             std::move(callback).Run(result);
           },
-          std::move(result), std::move(callback)));
+          std::move(text), std::move(callback)));
 }
 
 void ClipboardHostImpl::ReadHtml(ui::ClipboardBuffer clipboard_buffer,
@@ -363,9 +369,10 @@ void ClipboardHostImpl::ReadPng(ui::ClipboardBuffer clipboard_buffer,
 void ClipboardHostImpl::OnReadPng(ui::ClipboardBuffer clipboard_buffer,
                                   ReadPngCallback callback,
                                   const std::vector<uint8_t>& data) {
-  // TODO(b/261589323): Pass image associated text obtained from ReadText().
+  // Pass both image and associated text for content analysis.
   ClipboardPasteData clipboard_paste_data = ClipboardPasteData(
-      std::string(), std::string(data.begin(), data.end()), {});
+      base::UTF16ToUTF8(ExtractText(clipboard_buffer, CreateDataEndpoint())),
+      std::string(data.begin(), data.end()), {});
   PasteIfPolicyAllowed(
       clipboard_buffer, ui::ClipboardFormatType::PngType(),
       std::move(clipboard_paste_data),

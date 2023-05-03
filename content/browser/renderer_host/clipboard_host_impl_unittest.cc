@@ -206,7 +206,7 @@ TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_AddCallback) {
 TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_Complete) {
   ClipboardHostImpl::IsPasteContentAllowedRequest request;
   ClipboardHostImpl::ClipboardPasteData final_clipboard_paste_data =
-      ClipboardHostImpl::ClipboardPasteData("data", std::string(), {});
+      ClipboardHostImpl::ClipboardPasteData("text", "image", {});
 
   int count = 0;
 
@@ -217,6 +217,8 @@ TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_Complete) {
               clipboard_paste_data) {
         ++count;
         ASSERT_EQ(clipboard_paste_data->text, final_clipboard_paste_data.text);
+        ASSERT_EQ(clipboard_paste_data->image,
+                  final_clipboard_paste_data.image);
       }));
   EXPECT_EQ(0, count);
 
@@ -232,6 +234,8 @@ TEST_F(ClipboardHostImplTest, IsPasteContentAllowedRequest_Complete) {
               clipboard_paste_data) {
         ++count;
         ASSERT_EQ(clipboard_paste_data->text, final_clipboard_paste_data.text);
+        ASSERT_EQ(clipboard_paste_data->image,
+                  final_clipboard_paste_data.image);
       }));
   EXPECT_EQ(2, count);
 }

@@ -7123,14 +7123,6 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
     ClipboardPasteData clipboard_paste_data,
     IsClipboardPasteContentAllowedCallback callback) {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Safe browsing does not support images, so accept without checking.
-  // TODO(crbug.com/1013584): check policy on what to do about unsupported
-  // types when it is implemented.
-  if (data_type == ui::ClipboardFormatType::BitmapType()) {
-    std::move(callback).Run(std::move(clipboard_paste_data));
-    return;
-  }
-
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   bool is_files = data_type == ui::ClipboardFormatType::FilenamesType();
@@ -7159,8 +7151,11 @@ void ChromeContentBrowserClient::IsClipboardPasteContentAllowed(
                                         std::move(dialog_data), connector,
                                         std::move(paths), std::move(callback)));
   } else {
-    // TODO(b/261589323): Pass additional info when we send data to local agent.
     dialog_data.text.push_back(clipboard_paste_data.text);
+    // Send image only to local agent for analysis.
+    if (dialog_data.settings.cloud_or_local_settings.is_local_analysis()) {
+      dialog_data.image = std::move(clipboard_paste_data.image);
+    }
     HandleStringData(web_contents, std::move(dialog_data), connector,
                      std::move(callback));
   }
