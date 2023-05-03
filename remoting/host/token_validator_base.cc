@@ -258,17 +258,29 @@ void TokenValidatorBase::OnCertificatesSelected(
         return WorseThan(issuer, now, i1->certificate(), i2->certificate());
       });
 
-  if (best_match_position == selected_certs.end() ||
-      !IsCertificateValid(issuer, now, (*best_match_position)->certificate())) {
+  if (best_match_position == selected_certs.end()) {
+    LOG(ERROR) << "Failed to find a certificate from the list of candidates ("
+               << selected_certs.size() << ").";
     ContinueWithCertificate(nullptr, nullptr);
-  } else {
-    scoped_refptr<net::X509Certificate> cert =
-        (*best_match_position)->certificate();
-    net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
-        std::move(*best_match_position),
-        base::BindOnce(&TokenValidatorBase::ContinueWithCertificate,
-                       weak_factory_.GetWeakPtr(), std::move(cert)));
+    return;
   }
+
+  scoped_refptr<net::X509Certificate> cert =
+      (*best_match_position)->certificate();
+  if (!IsCertificateValid(issuer, now, cert.get())) {
+    LOG(ERROR) << "Best client certificate match was not valid: " << std::endl
+               << "    issued by: " << GetPreferredIssuerFieldValue(cert.get())
+               << std::endl
+               << "    with start date: " << cert->valid_start() << std::endl
+               << "    and expiry date: " << cert->valid_expiry();
+    ContinueWithCertificate(nullptr, nullptr);
+    return;
+  }
+
+  net::ClientCertIdentity::SelfOwningAcquirePrivateKey(
+      std::move(*best_match_position),
+      base::BindOnce(&TokenValidatorBase::ContinueWithCertificate,
+                     weak_factory_.GetWeakPtr(), std::move(cert)));
 }
 
 void TokenValidatorBase::ContinueWithCertificate(
@@ -276,10 +288,12 @@ void TokenValidatorBase::ContinueWithCertificate(
     scoped_refptr<net::SSLPrivateKey> client_private_key) {
   if (request_) {
     if (client_cert) {
-      HOST_LOG << "Using client certificate issued by: '"
-               << GetPreferredIssuerFieldValue(client_cert.get())
-               << "' with start date: '" << client_cert->valid_start()
-               << "' and expiry date: '" << client_cert->valid_expiry() << "'";
+      auto* cert = client_cert.get();
+      HOST_LOG << "Using client certificate: " << std::endl
+               << "    issued by: " << GetPreferredIssuerFieldValue(cert)
+               << std::endl
+               << "    with start date: " << cert->valid_start() << std::endl
+               << "    and expiry date: " << cert->valid_expiry();
     }
 
     request_->ContinueWithCertificate(std::move(client_cert),
