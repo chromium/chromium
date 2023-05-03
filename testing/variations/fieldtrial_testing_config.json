@@ -6835,6 +6835,24 @@
             ]
         }
     ],
+    "IOSNativeFindInPage": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithSystemFindPanel_20230127",
+                    "params": {
+                        "variant": ""
+                    },
+                    "enable_features": [
+                        "NativeFindInPage"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSNewOverflowMenuIPH": [
         {
             "platforms": [
