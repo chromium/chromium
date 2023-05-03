@@ -1176,14 +1176,6 @@
       "use_remoteexec": true
     }
   },
-  "mac-hermetic-upgrade-rel": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "is_component_build": false,
-      "is_debug": false,
-      "use_remoteexec": true
-    }
-  },
   "mac-osxbeta-rel": {
     "gn_args": {
       "dcheck_always_on": true,

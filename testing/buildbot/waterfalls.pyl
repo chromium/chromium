@@ -3727,11 +3727,6 @@
           'gtest_tests': 'fieldtrial_browser_tests',
         },
       },
-      'mac-hermetic-upgrade-rel': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'mac-osxbeta-rel': {
         'mixins': [
           'limited_capacity_bot',
