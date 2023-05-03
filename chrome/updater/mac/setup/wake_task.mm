@@ -72,7 +72,7 @@ absl::optional<base::ScopedCFTypeRef<CFDictionaryRef>> CreateWakeLaunchdPlist(
   }
 
   NSDictionary<NSString*, id>* launchd_plist = @{
-    @LAUNCH_JOBKEY_LABEL : base::mac::CFToNSCast(CopyWakeLaunchdName(scope)),
+    @LAUNCH_JOBKEY_LABEL : base::SysUTF8ToNSString(GetWakeLaunchdName(scope)),
     @LAUNCH_JOBKEY_PROGRAMARGUMENTS : program_arguments,
     @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
     @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,

@@ -34,21 +34,23 @@ absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
 // the shim installed by this updater or a Keystone ksadmin.
 absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope);
 
-base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope);
+// Returns the path to the wake task plist.
+absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope);
 
-// Removes the Launchd job with the given 'name'.
-bool RemoveJobFromLaunchd(UpdaterScope scope,
-                          base::ScopedCFTypeRef<CFStringRef> name);
+std::string GetWakeLaunchdName(UpdaterScope scope);
+
+// Removes the wake launch job.
+bool RemoveWakeJobFromLaunchd(UpdaterScope scope);
 
 // Recursively remove quarantine attributes on the path.
 bool RemoveQuarantineAttributes(const base::FilePath& path);
 
-// Ensure that the LaunchAgents/LaunchDaemons directory contains the specified
+// Ensure that the LaunchAgents/LaunchDaemons directory contains the wake item
 // plist, with the specified contents. If not, the plist will be overwritten and
 // the item reloaded. May block.
-bool EnsureLaunchItemPresence(UpdaterScope scope,
-                              base::ScopedCFTypeRef<CFStringRef> name,
-                              base::ScopedCFTypeRef<CFDictionaryRef> contents);
+bool EnsureWakeLaunchItemPresence(
+    UpdaterScope scope,
+    base::ScopedCFTypeRef<CFDictionaryRef> contents);
 
 }  // namespace updater
 

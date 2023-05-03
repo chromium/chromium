@@ -4,7 +4,7 @@
 
 #import "chrome/updater/util/mac_util.h"
 
-#include <unistd.h>
+#import <CoreFoundation/CoreFoundation.h>
 
 #include "base/command_line.h"
 #include "base/files/file.h"
@@ -22,7 +22,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/version.h"
-#include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
@@ -62,7 +61,8 @@ bool BootstrapPlist(UpdaterScope scope, const base::FilePath& path) {
   launchctl.AppendArgPath(path);
   if (!base::GetAppOutputWithExitCode(launchctl, &output, &exit_code) ||
       exit_code != 0) {
-    VLOG(1) << "launchctl bootstrap failed: " << exit_code << ": " << output;
+    VLOG(1) << "launchctl bootstrap of " << path << " failed: " << exit_code
+            << ": " << output;
     return false;
   }
   return true;
@@ -119,21 +119,16 @@ absl::optional<base::FilePath> GetKSAdminPath(UpdaterScope scope) {
   return absl::make_optional(ksadmin_path);
 }
 
-base::ScopedCFTypeRef<CFStringRef> CopyWakeLaunchdName(UpdaterScope scope) {
-  return base::SysUTF8ToCFStringRef(
-      IsSystemInstall(scope) ? MAC_BUNDLE_IDENTIFIER_STRING ".wake.system"
-                             : MAC_BUNDLE_IDENTIFIER_STRING ".wake");
+std::string GetWakeLaunchdName(UpdaterScope scope) {
+  return IsSystemInstall(scope) ? MAC_BUNDLE_IDENTIFIER_STRING ".wake.system"
+                                : MAC_BUNDLE_IDENTIFIER_STRING ".wake";
 }
 
-bool RemoveJobFromLaunchd(UpdaterScope scope,
-                          base::ScopedCFTypeRef<CFStringRef> name) {
-  const base::FilePath path = base::mac::NSStringToFilePath(
-      Launchd::GetPlistURL(
-          IsSystemInstall(scope) ? Launchd::Domain::Local
-                                 : Launchd::Domain::User,
-          IsSystemInstall(scope) ? Launchd::Type::Daemon : Launchd::Type::Agent,
-          name)
-          .path);
+bool RemoveWakeJobFromLaunchd(UpdaterScope scope) {
+  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  if (!path) {
+    return false;
+  }
 
   // This may block while deleting the launchd plist file.
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -142,14 +137,14 @@ bool RemoveJobFromLaunchd(UpdaterScope scope,
   base::CommandLine command_line(base::FilePath("/bin/launchctl"));
   command_line.AppendArg("bootout");
   command_line.AppendArg(GetDomain(scope));
-  command_line.AppendArgPath(path);
+  command_line.AppendArgPath(*path);
   int exit_code = -1;
   std::string output;
   if (base::GetAppOutputWithExitCode(command_line, &output, &exit_code) &&
       exit_code != 0) {
     VLOG(2) << "launchctl bootout exited " << exit_code << ": " << output;
   }
-  return base::DeleteFile(path);
+  return base::DeleteFile(*path);
 }
 
 bool UnzipWithExe(const base::FilePath& src_path,
@@ -273,19 +268,39 @@ bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path) {
   return success;
 }
 
-bool EnsureLaunchItemPresence(UpdaterScope scope,
-                              base::ScopedCFTypeRef<CFStringRef> name,
-                              base::ScopedCFTypeRef<CFDictionaryRef> contents) {
+absl::optional<base::FilePath> GetWakeTaskPlistPath(UpdaterScope scope) {
   @autoreleasepool {
-    NSURL* url = Launchd::GetPlistURL(
-        IsSystemInstall(scope) ? Launchd::Domain::Local : Launchd::Domain::User,
-        IsSystemInstall(scope) ? Launchd::Type::Daemon : Launchd::Type::Agent,
-        name);
-    const base::FilePath path = base::mac::NSStringToFilePath(url.path);
-    const bool previousPlistExists = base::PathExists(path);
+    NSArray* library_paths = NSSearchPathForDirectoriesInDomains(
+        NSLibraryDirectory,
+        IsSystemInstall(scope) ? NSLocalDomainMask : NSUserDomainMask, YES);
+    if ([library_paths count] < 1) {
+      return absl::nullopt;
+    }
+    return base::mac::NSStringToFilePath(library_paths[0])
+        .Append(IsSystemInstall(scope) ? "LaunchDaemons" : "LaunchAgents")
+        .AppendASCII(base::StrCat({GetWakeLaunchdName(scope), ".plist"}));
+  }
+}
+
+bool EnsureWakeLaunchItemPresence(
+    UpdaterScope scope,
+    base::ScopedCFTypeRef<CFDictionaryRef> contents) {
+  const absl::optional<base::FilePath> path = GetWakeTaskPlistPath(scope);
+  if (!path) {
+    VLOG(1) << "Failed to find wake plist path.";
+    return false;
+  }
+  const bool previousPlistExists = base::PathExists(*path);
+  if (!base::CreateDirectory(path->DirName())) {
+    VLOG(1) << "Failed to create " << path->DirName();
+    return false;
+  }
+  @autoreleasepool {
+    NSURL* const url = base::mac::FilePathToNSURL(*path);
 
     // If the file is unchanged, avoid a spammy notification by not touching it.
-    if ([base::mac::CFToNSCast(contents)
+    if (previousPlistExists &&
+        [base::mac::CFToNSCast(contents)
             isEqualToDictionary:[NSDictionary
                                     dictionaryWithContentsOfURL:url]]) {
       return true;
@@ -295,7 +310,7 @@ bool EnsureLaunchItemPresence(UpdaterScope scope,
     base::ScopedTempDir backup_dir;
     if (previousPlistExists &&
         (!backup_dir.CreateUniqueTempDir() ||
-         !base::CopyFile(path, backup_dir.GetPath().Append("backup_plist")))) {
+         !base::CopyFile(*path, backup_dir.GetPath().Append("backup_plist")))) {
       VLOG(1) << "Failed to back up previous plist.";
       return false;
     }
@@ -307,7 +322,7 @@ bool EnsureLaunchItemPresence(UpdaterScope scope,
       base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
       launchctl.AppendArg("bootout");
       launchctl.AppendArg(GetDomain(scope));
-      launchctl.AppendArgPath(path);
+      launchctl.AppendArgPath(*path);
       if (!base::GetAppOutputWithExitCode(launchctl, &output, &exit_code)) {
         VLOG(1) << "Failed to launch launchctl.";
       } else if (exit_code != 0) {
@@ -326,13 +341,13 @@ bool EnsureLaunchItemPresence(UpdaterScope scope,
     }
 
     // Bootstrap the new plist.
-    if (!BootstrapPlist(scope, path)) {
+    if (!BootstrapPlist(scope, *path)) {
       // The plist has already been replaced! If launchctl doesn't like it,
       // this installation is now broken. Try to recover by restoring and
       // bootstrapping the backup.
       if (previousPlistExists &&
-          (!base::Move(backup_dir.GetPath().Append("backup_plist"), path) ||
-           !BootstrapPlist(scope, path))) {
+          (!base::Move(backup_dir.GetPath().Append("backup_plist"), *path) ||
+           !BootstrapPlist(scope, *path))) {
         VLOG(1) << "Failed to restore backup plist.";
       }
       return false;

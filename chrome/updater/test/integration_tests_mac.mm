@@ -26,7 +26,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/persisted_data.h"
@@ -45,24 +44,6 @@
 namespace updater {
 namespace test {
 namespace {
-
-Launchd::Domain LaunchdDomain(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      return Launchd::Domain::Local;
-    case UpdaterScope::kUser:
-      return Launchd::Domain::User;
-  }
-}
-
-Launchd::Type LaunchdType(UpdaterScope scope) {
-  switch (scope) {
-    case UpdaterScope::kSystem:
-      return Launchd::Type::Daemon;
-    case UpdaterScope::kUser:
-      return Launchd::Type::Agent;
-  }
-}
 
 base::FilePath GetExecutablePath() {
   base::FilePath out_dir;
@@ -114,10 +95,7 @@ void Clean(UpdaterScope scope) {
   EXPECT_TRUE(path);
   if (path)
     EXPECT_TRUE(base::DeletePathRecursively(*path));
-  EXPECT_TRUE(base::DeleteFile(base::mac::NSStringToFilePath(
-      Launchd::GetPlistURL(LaunchdDomain(scope), LaunchdType(scope),
-                           updater::CopyWakeLaunchdName(scope))
-          .path)));
+  EXPECT_TRUE(base::DeleteFile(*GetWakeTaskPlistPath(scope)));
 
   path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
@@ -129,9 +107,7 @@ void Clean(UpdaterScope scope) {
   if (keystone_path)
     EXPECT_TRUE(base::DeletePathRecursively(*keystone_path));
 
-  @autoreleasepool {
-    RemoveJobFromLaunchd(scope, CopyWakeLaunchdName(scope));
-  }
+  EXPECT_TRUE(RemoveWakeJobFromLaunchd(scope));
 
   // Also clean up any other versions of the updater that are around.
   base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
@@ -154,14 +130,8 @@ void Clean(UpdaterScope scope) {
 void ExpectClean(UpdaterScope scope) {
   ExpectCleanProcesses();
 
-  Launchd::Domain launchd_domain = LaunchdDomain(scope);
-  Launchd::Type launchd_type = LaunchdType(scope);
-
   // Files must not exist on the file system.
-  EXPECT_FALSE(base::PathExists(base::mac::NSStringToFilePath(
-      Launchd::GetPlistURL(launchd_domain, launchd_type,
-                           updater::CopyWakeLaunchdName(scope))
-          .path)));
+  EXPECT_FALSE(base::PathExists(*GetWakeTaskPlistPath(scope)));
 
   absl::optional<base::FilePath> path = GetInstallDirectory(scope);
   EXPECT_TRUE(path);
@@ -195,9 +165,6 @@ void ExpectClean(UpdaterScope scope) {
 }
 
 void ExpectInstalled(UpdaterScope scope) {
-  const Launchd::Domain launchd_domain = LaunchdDomain(scope);
-  const Launchd::Type launchd_type = LaunchdType(scope);
-
   absl::optional<base::FilePath> keystone_path = GetKeystoneFolderPath(scope);
   ASSERT_TRUE(keystone_path);
 
@@ -208,10 +175,7 @@ void ExpectInstalled(UpdaterScope scope) {
     EXPECT_TRUE(base::PathExists(*path)) << path;
   }
 
-  EXPECT_TRUE(base::PathExists(base::mac::NSStringToFilePath(
-      Launchd::GetPlistURL(launchd_domain, launchd_type,
-                           updater::CopyWakeLaunchdName(scope))
-          .path)));
+  EXPECT_TRUE(base::PathExists(*GetWakeTaskPlistPath(scope)));
 }
 
 absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {

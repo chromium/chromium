@@ -28,7 +28,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
-#include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/crash_client.h"
 #include "chrome/updater/crash_reporter.h"
@@ -101,7 +100,7 @@ bool CreateWakeLaunchdJobPlist(UpdaterScope scope) {
   if (!plist) {
     return false;
   }
-  return EnsureLaunchItemPresence(scope, CopyWakeLaunchdName(scope), *plist);
+  return EnsureWakeLaunchItemPresence(scope, *plist);
 }
 
 void CleanAfterInstallFailure(UpdaterScope scope) {
@@ -208,7 +207,7 @@ int Uninstall(UpdaterScope scope) {
           << " : " << __func__;
   int exit = UninstallCandidate(scope);
 
-  if (!RemoveJobFromLaunchd(scope, CopyWakeLaunchdName(scope))) {
+  if (!RemoveWakeJobFromLaunchd(scope)) {
     exit = kErrorFailedToRemoveWakeJobFromLaunchd;
   }
 

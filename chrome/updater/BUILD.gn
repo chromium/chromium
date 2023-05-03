@@ -203,7 +203,6 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         ":ks_ticket",
-        "//chrome/common/mac:launchd",
         "//mojo/public/cpp/platform",
         "//net",
       ]
@@ -601,7 +600,7 @@ if (is_win || is_mac || is_linux) {
         "util/mac_util.mm",
       ]
 
-      deps += [ "//chrome/common/mac:launchd" ]
+      frameworks = [ "Foundation.framework" ]
     }
 
     if (is_posix) {
@@ -869,7 +868,6 @@ if (is_win || is_mac || is_linux) {
 
       deps += [
         ":ks_ticket",
-        "//chrome/common/mac:launchd",
         "//chrome/updater/mac:ksadmin_lib",
         "//chrome/updater/mac:privileged_helper_sources",
         "//third_party/ocmock",
