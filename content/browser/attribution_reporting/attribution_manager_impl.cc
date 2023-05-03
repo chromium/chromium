@@ -72,6 +72,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom-forward.h"
@@ -513,7 +514,8 @@ AttributionManagerImpl::AttributionManagerImpl(
     std::unique_ptr<AttributionCookieChecker> cookie_checker,
     std::unique_ptr<AttributionReportSender> report_sender,
     scoped_refptr<base::UpdateableSequencedTaskRunner> storage_task_runner)
-    : storage_partition_(storage_partition),
+    : throttler_(DestinationThrottler::Policy()),
+      storage_partition_(storage_partition),
       max_pending_events_(max_pending_events),
       storage_task_runner_(std::move(storage_task_runner)),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
@@ -598,6 +600,14 @@ void AttributionManagerImpl::HandleSource(
         StoreSourceResult(StorableSource::Result::kProhibitedByBrowserPolicy));
     return;
   }
+
+  // TODO(csharrison): Consider enforcing this limit after checking metrics.
+  bool allowed_by_destination_window = throttler_.UpdateAndGetAllowed(
+      source.registration().destination_set,
+      net::SchemefulSite(source.common_info().source_origin()),
+      net::SchemefulSite(source.common_info().reporting_origin()));
+  base::UmaHistogramBoolean("Conversions.SourceAllowedByDestinationWindowLimit",
+                            allowed_by_destination_window);
 
   MaybeEnqueueEvent(std::move(source));
 }

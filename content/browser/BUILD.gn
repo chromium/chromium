@@ -473,6 +473,8 @@ source_set("browser") {
     "attribution_reporting/common_source_info.h",
     "attribution_reporting/create_report_result.cc",
     "attribution_reporting/create_report_result.h",
+    "attribution_reporting/destination_throttler.cc",
+    "attribution_reporting/destination_throttler.h",
     "attribution_reporting/rate_limit_result.h",
     "attribution_reporting/rate_limit_table.cc",
     "attribution_reporting/rate_limit_table.h",

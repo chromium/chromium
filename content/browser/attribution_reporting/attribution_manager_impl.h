@@ -27,6 +27,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
+#include "content/browser/attribution_reporting/destination_throttler.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -264,6 +265,8 @@ class CONTENT_EXPORT AttributionManagerImpl : public AttributionManager {
                         bool is_debug_key_allowed,
                         bool success);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  DestinationThrottler throttler_;
 
   // Never null.
   const raw_ptr<StoragePartitionImpl> storage_partition_;
