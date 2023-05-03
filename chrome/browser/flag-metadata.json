@@ -7241,11 +7241,6 @@
     "expiry_milestone": 117
   },
   {
-    "name": "trending-queries-module",
-    "owners": [ "thegreenfrog", "bling-flags@google.com" ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "turn-off-streaming-media-caching-always",
     "owners": [ "wicarr@microsoft.com", "cassew@google.com" ],
     "expiry_milestone": 99
@@ -7310,11 +7305,6 @@
     "name": "upcoming-sharing-features",
     "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
     "expiry_milestone": 110
-  },
-  {
-    "name": "update-history-entry-points-in-incognito",
-    "owners": [ "sideyilmaz", "chrome-incognito@google.com" ],
-    "expiry_milestone": 108
   },
   {
     "name": "update-menu-item-custom-summary",
