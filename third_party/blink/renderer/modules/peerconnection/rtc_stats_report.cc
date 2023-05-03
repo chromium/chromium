@@ -382,6 +382,14 @@ RTCInboundRtpStreamStats* ToV8Stat(
     v8_stat->setGoogTimingFrameInfo(
         String::FromUTF8(*webrtc_stat.goog_timing_frame_info));
   }
+  if (webrtc_stat.retransmitted_packets_received.is_defined()) {
+    v8_stat->setRetransmittedPacketsReceived(
+        *webrtc_stat.retransmitted_packets_received);
+  }
+  if (webrtc_stat.retransmitted_bytes_received.is_defined()) {
+    v8_stat->setRetransmittedBytesReceived(
+        *webrtc_stat.retransmitted_bytes_received);
+  }
   return v8_stat;
 }
 
