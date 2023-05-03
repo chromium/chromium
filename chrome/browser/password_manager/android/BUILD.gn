@@ -228,6 +228,7 @@ robolectric_binary("password_manager_junit_tests") {
   deps = [
     ":android_backend_java_enums",
     ":java",
+    ":junit_local_passwords_migration_warning",
     ":public_impl_java",
     ":settings_interface_java",
     ":test_support_java",
@@ -264,6 +265,24 @@ robolectric_binary("password_manager_junit_tests") {
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+robolectric_library("junit_local_passwords_migration_warning") {
+  testonly = true
+
+  sources = [ "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningControllerRobolectricTest.java" ]
+
+  deps = [
+    ":local_passwords_migration_warning_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
   ]
 }
 
@@ -502,5 +521,7 @@ android_library("local_passwords_migration_warning_java") {
   sources = [
     "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningBridge.java",
     "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningCoordinator.java",
+    "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningMediator.java",
+    "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningProperties.java",
   ]
 }
