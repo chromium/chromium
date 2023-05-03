@@ -25,6 +25,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/ash_test_helper.h"
@@ -560,6 +561,13 @@ bool AshTestBase::EnterOverview(OverviewEnterExitType type) {
 bool AshTestBase::ExitOverview(OverviewEnterExitType type) {
   return Shell::Get()->overview_controller()->EndOverview(
       OverviewEndAction::kTests, type);
+}
+
+void AshTestBase::WaitForShelfAnimation() {
+  for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
+    ShelfViewTestAPI(root_window_controller->shelf()->GetShelfViewForTesting())
+        .RunMessageLoopUntilAnimationsDone();
+  }
 }
 
 void AshTestBase::SwapPrimaryDisplay() {

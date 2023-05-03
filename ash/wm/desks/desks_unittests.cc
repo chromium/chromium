@@ -39,6 +39,7 @@
 #include "ash/style/close_button.h"
 #include "ash/style/color_util.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/test/test_widget_builder.h"
 #include "ash/wm/desks/cros_next_default_desk_button.h"
 #include "ash/wm/desks/cros_next_desk_button_base.h"
@@ -47,6 +48,7 @@
 #include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_animation_base.h"
+#include "ash/wm/desks/desk_bar_controller.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
@@ -60,6 +62,7 @@
 #include "ash/wm/desks/legacy_desk_bar_view.h"
 #include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
+#include "ash/wm/desks/templates/saved_desk_test_helper.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -398,6 +401,9 @@ class DesksTest : public AshTestBase,
 
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
+
+    enabled_features.push_back(features::kDeskButton);
+
     if (GetParam().use_16_desks) {
       enabled_features.push_back(features::kFeatureManagement16Desks);
     } else {
@@ -413,6 +419,10 @@ class DesksTest : public AshTestBase,
 
     AshTestBase::SetUp();
     SetVirtualKeyboardEnabled(true);
+
+    // Wait for the desk model to have completed its initialization. Not doing
+    // this would lead to flaky tests.
+    ash_test_helper()->saved_desk_test_helper()->WaitForDeskModel();
   }
 
   void TearDown() override {
@@ -501,6 +511,19 @@ class DesksTest : public AshTestBase,
                : bar_view->expanded_state_new_desk_button()
                      ->GetInnerButton()
                      ->GetBackgroundColorForTest();
+  }
+
+  desks_storage::DeskModel* desk_model() {
+    return ash_test_helper()->saved_desk_test_helper()->desk_model();
+  }
+
+  void DeleteAllSavedDesks() {
+    base::RunLoop loop;
+    desk_model()->DeleteAllEntries(base::BindLambdaForTesting(
+        [&](desks_storage::DeskModel::DeleteEntryStatus status) {
+          loop.Quit();
+        }));
+    loop.Run();
   }
 
  private:
@@ -8584,6 +8607,9 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
 
   // Enter overview and close the desk.
   EnterOverview();
+  // Wait for shelf animation, i.e. the desk button disappears and the
+  // scrollable shelf view expands to take more space.
+  WaitForShelfAnimation();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
   ClickOnCloseAllButtonForDesk(0);
 
@@ -8606,10 +8632,10 @@ TEST_P(DesksCloseAllTest, InteractingWithShelfClosesToast) {
   EXPECT_FALSE(window.is_valid());
 }
 
-using BentoButtonTest = DesksTest;
+using DeskButtonTest = DesksTest;
 
 // Tests that `DeskTextfield` can be used outside overview.
-TEST_P(BentoButtonTest, DeskTextfieldOutsideOverview) {
+TEST_P(DeskButtonTest, DeskTextfieldOutsideOverview) {
   auto widget =
       TestWidgetBuilder()
           .SetDelegate(nullptr)
@@ -8624,6 +8650,117 @@ TEST_P(BentoButtonTest, DeskTextfieldOutsideOverview) {
   // There is no crash for committing name changes for `DeskTextfield` outside
   // overview.
   desk_text_view->CommitChanges(widget.get());
+}
+
+struct DeskButtonDeskBarTestCase {
+  std::string test_name;
+
+  // IDs of all desks.
+  std::vector<int> desks;
+
+  // ID of active desk.
+  int active_desk;
+
+  // Shelf alignment.
+  ShelfAlignment shelf_alignment;
+
+  // Indicates if there are any saved desks.
+  bool has_saved_desks;
+
+  // The expected bar widget bounds.
+  gfx::Rect bar_widget_bounds_expected;
+
+  // The expected bar view bounds.
+  gfx::Rect bar_view_bounds_expected;
+};
+
+// Tests that desk button desk bar can show outside of overview with expected
+// bounds for different shelf alignments.
+TEST_P(DeskButtonTest, DeskBarBasic) {
+  UpdateDisplay("800x600");
+
+  const DeskButtonDeskBarTestCase tests[] = {
+      {.test_name = "single desk + bottom shelf + saved desks",
+       .desks = {0},
+       .active_desk = 0,
+       .shelf_alignment = ShelfAlignment::kBottom,
+       .has_saved_desks = true,
+       .bar_widget_bounds_expected = {0, 446, 800, 98},
+       .bar_view_bounds_expected = {0, 0, 800, 98}},
+      {.test_name = "single desk + left shelf + saved desks",
+       .desks = {0},
+       .active_desk = 0,
+       .shelf_alignment = ShelfAlignment::kLeft,
+       .has_saved_desks = true,
+       .bar_widget_bounds_expected = {56, 248, 744, 98},
+       .bar_view_bounds_expected = {0, 0, 744, 98}},
+      {.test_name = "single desk + right shelf + saved desks",
+       .desks = {0},
+       .active_desk = 0,
+       .shelf_alignment = ShelfAlignment::kRight,
+       .has_saved_desks = true,
+       .bar_widget_bounds_expected = {0, 248, 744, 98},
+       .bar_view_bounds_expected = {0, 0, 744, 98}},
+      {.test_name = "multiple desks + bottom shelf + saved desks",
+       .desks = {0, 1, 2},
+       .active_desk = 0,
+       .shelf_alignment = ShelfAlignment::kBottom,
+       .has_saved_desks = true,
+       .bar_widget_bounds_expected = {0, 446, 800, 98},
+       .bar_view_bounds_expected = {0, 0, 800, 98}},
+  };
+
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+  auto* desks_controller = DesksController::Get();
+  auto desk_bar_controller = std::make_unique<DeskBarController>();
+  Shelf* shelf = GetPrimaryShelf();
+
+  for (const auto& test : tests) {
+    SCOPED_TRACE(test.test_name);
+
+    // Set up desks.
+    while (desks_controller->desks().size() < test.desks.size()) {
+      NewDesk();
+    }
+    if (!desks_controller->desks()[test.active_desk]->is_active()) {
+      ActivateDesk(desks_controller->desks()[test.active_desk].get());
+    }
+
+    // Set up shelf.
+    shelf->SetAlignment(test.shelf_alignment);
+
+    // Set up saved desk.
+    if (test.has_saved_desks) {
+      AddSavedDeskEntry(desk_model(), base::Uuid::GenerateRandomV4(),
+                        "saved_desk_1", base::Time::Now(),
+                        DeskTemplateType::kSaveAndRecall);
+    }
+
+    // Create the desk bar then verify the bar and its child UI have expected
+    // appearance.
+    desk_bar_controller->CreateDeskBar(root);
+    auto* desk_bar_view = desk_bar_controller->GetDeskBarView(root);
+    auto* desk_bar_widget = desk_bar_view->GetWidget();
+    EXPECT_THAT(desk_bar_widget->GetWindowBoundsInScreen(),
+                test.bar_widget_bounds_expected);
+    EXPECT_TRUE(desk_bar_view && desk_bar_view->GetVisible() &&
+                !desk_bar_view->IsZeroState());
+    EXPECT_THAT(desk_bar_view->bounds(), test.bar_view_bounds_expected);
+    if (GetParam().enable_jellyroll) {
+      auto* new_desk_button = desk_bar_view->new_desk_button();
+      EXPECT_THAT(new_desk_button->state(),
+                  CrOSNextDeskIconButton::State::kExpanded);
+      auto* library_button = desk_bar_view->library_button();
+      EXPECT_THAT(library_button->state(),
+                  CrOSNextDeskIconButton::State::kExpanded);
+    }
+
+    // Reset to clean state, i.e. only 1 desk and no saved desks.
+    while (desks_controller->CanRemoveDesks()) {
+      RemoveDesk(desks_controller->desks().back().get());
+    }
+    DeleteAllSavedDesks();
+  }
 }
 
 // TODO(afakhry): Add more tests:
@@ -8675,7 +8812,7 @@ INSTANTIATE_TEST_SUITE_P(All, DesksAcceleratorsTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksMockTimeTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, DesksCloseAllTest, ValuesIn(kDeskCountOnly));
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfTest, ::testing::Bool());
-INSTANTIATE_TEST_SUITE_P(All, BentoButtonTest, ValuesIn(kAllCombinations));
+INSTANTIATE_TEST_SUITE_P(All, DeskButtonTest, ValuesIn(kAllCombinations));
 
 }  // namespace
 

@@ -102,8 +102,8 @@ class SavedDeskTest : public OverviewTestBase {
                 const std::string& name,
                 base::Time created_time,
                 DeskTemplateType type) {
-    AddEntry(uuid, name, created_time, DeskTemplateSource::kUser, type,
-             std::make_unique<app_restore::RestoreData>());
+    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
+                      uuid, name, created_time, type);
   }
 
   void AddEntry(const base::Uuid& uuid,
@@ -112,26 +112,15 @@ class SavedDeskTest : public OverviewTestBase {
                 DeskTemplateSource source,
                 DeskTemplateType type,
                 std::unique_ptr<app_restore::RestoreData> restore_data) {
-    auto saved_desk =
-        std::make_unique<DeskTemplate>(uuid, source, name, created_time, type);
-    saved_desk->set_desk_restore_data(std::move(restore_data));
-
-    AddEntry(std::move(saved_desk));
+    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
+                      uuid, name, created_time, source, type,
+                      std::move(restore_data));
   }
 
   // Adds a captured desk entry to the desks model.
   void AddEntry(std::unique_ptr<DeskTemplate> saved_desk) {
-    base::RunLoop loop;
-    desk_model()->AddOrUpdateEntry(
-        std::move(saved_desk),
-        base::BindLambdaForTesting(
-            [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
-                std::unique_ptr<ash::DeskTemplate> new_entry) {
-              EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
-                        status);
-              loop.Quit();
-            }));
-    loop.Run();
+    AddSavedDeskEntry(ash_test_helper()->saved_desk_test_helper()->desk_model(),
+                      std::move(saved_desk));
   }
 
   // Creates an app_restore::RestoreData object with `num_windows.size()` apps,

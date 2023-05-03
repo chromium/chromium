@@ -17,6 +17,7 @@
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/test/bind.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/bounds_animator_observer.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -279,6 +280,45 @@ const app_restore::AppRestoreData* QueryRestoreData(
   }
 
   return window_it->second.get();
+}
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       std::unique_ptr<DeskTemplate> saved_desk) {
+  base::RunLoop loop;
+  desk_model->AddOrUpdateEntry(
+      std::move(saved_desk),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            CHECK_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                     status);
+            loop.Quit();
+          }));
+  loop.Run();
+}
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       const base::Uuid& uuid,
+                       const std::string& name,
+                       base::Time created_time,
+                       DeskTemplateSource source,
+                       DeskTemplateType type,
+                       std::unique_ptr<app_restore::RestoreData> restore_data) {
+  auto saved_desk =
+      std::make_unique<DeskTemplate>(uuid, source, name, created_time, type);
+  saved_desk->set_desk_restore_data(std::move(restore_data));
+
+  AddSavedDeskEntry(desk_model, std::move(saved_desk));
+}
+
+void AddSavedDeskEntry(desks_storage::DeskModel* desk_model,
+                       const base::Uuid& uuid,
+                       const std::string& name,
+                       base::Time created_time,
+                       DeskTemplateType type) {
+  AddSavedDeskEntry(desk_model, uuid, name, created_time,
+                    DeskTemplateSource::kUser, type,
+                    std::make_unique<app_restore::RestoreData>());
 }
 
 }  // namespace ash

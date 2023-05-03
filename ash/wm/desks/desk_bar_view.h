@@ -1,0 +1,37 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_WM_DESKS_DESK_BAR_VIEW_H_
+#define ASH_WM_DESKS_DESK_BAR_VIEW_H_
+
+#include "ash/ash_export.h"
+#include "ash/wm/desks/desk_bar_view_base.h"
+#include "ui/views/view.h"
+
+namespace ash {
+
+// Desk bar that contains desk related UI including desk thumbnails, new desk
+// button, library button, and scroll arrow buttons when the available space is
+// not enough. For now this is only used for desk bar triggered by desk button
+// on the shelf. Going forward, this will support overview desk bar as well.
+class ASH_EXPORT DeskBarView : public DeskBarViewBase {
+ public:
+  explicit DeskBarView(aura::Window* root);
+
+  DeskBarView(const DeskBarView&) = delete;
+  DeskBarView& operator=(const DeskBarView&) = delete;
+
+  ~DeskBarView() override;
+
+  // views::View:
+  const char* GetClassName() const override;
+
+  // TODO(b/277969403): Improve and simplify state transition for desk bar view.
+  void UpdateNewMiniViews(bool initializing_bar_view,
+                          bool expanding_bar_view) override;
+};
+
+}  // namespace ash
+
+#endif  // ASH_WM_DESKS_DESK_BAR_VIEW_H_

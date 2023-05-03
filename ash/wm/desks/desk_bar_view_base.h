@@ -40,10 +40,8 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
     kExpanded,
   };
 
-  DeskBarViewBase(aura::Window* root, Type type);
   DeskBarViewBase(const DeskBarViewBase&) = delete;
   DeskBarViewBase& operator=(const DeskBarViewBase&) = delete;
-  ~DeskBarViewBase() override;
 
   // Returns the preferred height of the desk bar that exists on `root` with
   // `state`.
@@ -233,6 +231,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
                                   const ui::LocatedEvent& event);
 
  protected:
+  friend class DeskBarScrollViewLayout;
+
+  DeskBarViewBase(aura::Window* root, Type type);
+  ~DeskBarViewBase() override;
+
   // Returns the X offset of the first mini_view on the left (if there's one),
   // or the X offset of this view's center point when there are no mini_views.
   // This offset is used to calculate the amount by which the mini_views should
@@ -298,7 +301,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
 
   // The `OverviewGrid` that contains this object if this is a `Type::kOverview`
   // bar, nullptr otherwise.
-  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_;
+  raw_ptr<OverviewGrid, ExperimentalAsh> overview_grid_ = nullptr;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;

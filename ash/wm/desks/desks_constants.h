@@ -43,6 +43,22 @@ constexpr int kDeskBarScrollButtonWidth = 36;
 // The duration of scrolling one page.
 constexpr base::TimeDelta kDeskBarScrollDuration = base::Milliseconds(250);
 
+constexpr int kDeskBarMiniViewsY = 16;
+
+// Spacing between mini views.
+constexpr int kDeskBarMiniViewsSpacing = 12;
+
+// Spacing between zero state default desk button and new desk button.
+constexpr int kDeskBarZeroStateButtonSpacing = 8;
+
+// The local Y coordinate of the zero state desk buttons.
+constexpr int kDeskBarZeroStateY = 6;
+
+constexpr int kDeskBarDeskIconButtonAndLabelSpacing = 8;
+
+// For desk button desk bar, the spacing between shelf and desk bar.
+constexpr int kDeskBarShelfAndBarSpacing = 8;
+
 }  // namespace ash
 
 #endif  // ASH_WM_DESKS_DESKS_CONSTANTS_H_

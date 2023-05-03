@@ -21,7 +21,6 @@
 
 namespace ash {
 
-class DesksBarScrollViewLayout;
 class DeskBarHoverObserver;
 class DeskDragProxy;
 class DeskMiniView;
@@ -136,7 +135,6 @@ class ASH_EXPORT LegacyDeskBarView : public DeskBarViewBase {
       CrOSNextDeskIconButton::State target_state) override;
 
  private:
-  friend class DesksBarScrollViewLayout;
   friend class DesksTestApi;
 
   // If drag a desk over a scroll button (i.e., the desk intersects the button),

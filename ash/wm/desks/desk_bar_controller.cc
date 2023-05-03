@@ -4,10 +4,19 @@
 
 #include "ash/wm/desks/desk_bar_controller.h"
 
+#include "ash/public/cpp/shelf_types.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk_bar_view.h"
 #include "ash/wm/desks/desk_bar_view_base.h"
+#include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/work_area_insets.h"
+#include "base/notreached.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ash {
 
@@ -47,10 +56,8 @@ void DeskBarController::CreateDeskBar(aura::Window* root) {
   std::unique_ptr<views::Widget> desk_bar_widget =
       DeskBarViewBase::CreateDeskWidget(root, bounds,
                                         DeskBarViewBase::Type::kDeskButton);
-  // TODO(yongshun): Replace base class with derived class once available.
-  DeskBarViewBase* desk_bar_view =
-      desk_bar_widget->SetContentsView(std::make_unique<DeskBarViewBase>(
-          root, DeskBarViewBase::Type::kDeskButton));
+  DeskBarView* desk_bar_view =
+      desk_bar_widget->SetContentsView(std::make_unique<DeskBarView>(root));
   desk_bar_view->Init();
 
   // Ownership transfer and bookkeeping.
@@ -98,8 +105,42 @@ void DeskBarController::HideDeskBar(aura::Window* root) {
 }
 
 gfx::Rect DeskBarController::GetDeskBarWidgetBounds(aura::Window* root) const {
-  // TODO(yongshun): Calculate bar widget bounds given shelf settings in `root`.
-  return gfx::Rect(0, 0, 0, 0);
+  gfx::Rect work_area =
+      WorkAreaInsets::ForWindow(root)->user_work_area_bounds();
+  // TODO(yongshun): Calculate preferred bar widget width.
+  gfx::Size bar_size(work_area.width(),
+                     DeskBarViewBase::GetPreferredBarHeight(
+                         root, DeskBarViewBase::Type::kDeskButton,
+                         DeskBarViewBase::State::kExpanded));
+
+  const Shelf* shelf = Shelf::ForWindow(root);
+  gfx::Rect shelf_bounds = shelf->GetShelfBoundsInScreen();
+  gfx::Rect desk_button_bounds =
+      shelf->desk_button_widget()->GetWindowBoundsInScreen();
+
+  gfx::Point bar_origin;
+  switch (shelf->alignment()) {
+    case ShelfAlignment::kBottom:
+      bar_origin.set_x((work_area.width() - bar_size.width()) / 2);
+      bar_origin.set_y(shelf_bounds.y() - kDeskBarShelfAndBarSpacing -
+                       bar_size.height());
+      break;
+    case ShelfAlignment::kLeft:
+      bar_size.set_width(bar_size.width() - kDeskBarShelfAndBarSpacing);
+      bar_origin.set_x(shelf_bounds.right() + kDeskBarShelfAndBarSpacing);
+      bar_origin.set_y(desk_button_bounds.y());
+      break;
+    case ShelfAlignment::kRight:
+      bar_size.set_width(bar_size.width() - kDeskBarShelfAndBarSpacing);
+      bar_origin.set_x(shelf_bounds.x() - kDeskBarShelfAndBarSpacing -
+                       bar_size.width());
+      bar_origin.set_y(desk_button_bounds.y());
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
+  return {bar_origin, bar_size};
 }
 
 }  // namespace ash

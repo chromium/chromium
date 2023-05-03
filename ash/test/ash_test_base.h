@@ -236,6 +236,9 @@ class AshTestBase : public testing::Test {
   bool ExitOverview(
       OverviewEnterExitType type = OverviewEnterExitType::kNormal);
 
+  // Waits for shelf animation in all displays.
+  void WaitForShelfAnimation();
+
  protected:
   enum UserSessionBlockReason {
     FIRST_BLOCK_REASON,
