@@ -5,14 +5,6 @@
 # Contains flags that can be safely shared with Cronet, and thus would be
 # appropriate for third-party apps to include.
 
--keep @androidx.annotation.Keep class *
--keepclasseswithmembers,allowaccessmodification class * {
-  @androidx.annotation.Keep <fields>;
-}
--keepclasseswithmembers,allowaccessmodification class * {
-  @androidx.annotation.Keep <methods>;
-}
-
 # Allow unused native methods to be removed, but prevent renaming on those that are kept.
 -keepclasseswithmembernames,includedescriptorclasses,allowaccessmodification class ** {
   native <methods>;
