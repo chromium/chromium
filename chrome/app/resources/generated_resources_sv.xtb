@@ -3252,6 +3252,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3760460896538743390">Kontrollera &amp;bakgrundssida</translation>
 <translation id="37613671848467444">Öppna i &amp;inkognitofönster</translation>
 <translation id="3761556954875533505">Vill du låta webbplatsen redigera filer?</translation>
+<translation id="3763433740586298940">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än 30 dagar automatiskt.</translation>
 <translation id="3763549179847864476">Bakåtknapp i Integritetsguide</translation>
 <translation id="3764314093345384080">Detaljerad versionsinformation</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kommunicera med en USB-enhet}other{Kommunicera med # USB-enheter}}</translation>
@@ -5344,6 +5345,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5633149627228920745">Läs mer om systemkrav</translation>
 <translation id="563371367637259496">Mobilt</translation>
 <translation id="5634446357546764049">Se minnen från resor du gjort nyligen och mycket annat</translation>
+<translation id="5635091213277904818">Chrome raderar webbplatser som är äldre än 30 dagar automatiskt. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan även blockera en webbplats från att föreslå annonser för dig.</translation>
 <translation id="5635312199252507107">Tillåt på vissa webbplatser</translation>
 <translation id="563535393368633106">Fråga innan informationen används (rekommenderas)</translation>
 <translation id="5636012309446422">Vill du ta bort <ph name="DEVICE" /> från <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7335,7 +7337,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7412226954991670867">GPU-minne</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigurationen är klar</translation>
-<translation id="7415484647604548662">Du kan blockera webbplatser som du inte vill ha. Chrome raderar även webbplatser som är äldre än fyra veckor automatiskt.</translation>
 <translation id="7416091793702109803">Granska <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Användarvillkoren gick inte att läsa in. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="7416362041876611053">Okänt nätverksfel.</translation>
@@ -9402,7 +9403,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="9180380851667544951">Webbplatsen kan dela din skärm</translation>
 <translation id="9180847522826713506">Klicka på nyckelikonen om du vill visa lösenordet eller lägga till en anteckning om det</translation>
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>
-<translation id="9183331776983279456">Chrome raderar webbplatser som är äldre än fyra veckor automatiskt. Om du besöker en webbplats på nytt kan den dyka upp på listan igen. Du kan även blockera en webbplats från att föreslå annonser för dig.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# appar}}</translation>
 <translation id="9186963452600581158">Logga in med ett barns Google-konto</translation>
 <translation id="9187967020623675250">Tangenterna matchar inte. Tryck på valfri tangent för att <ph name="RESPONSE" />.</translation>

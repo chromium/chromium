@@ -3238,6 +3238,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3760460896538743390">Inspectați pagina de fun&amp;dal</translation>
 <translation id="37613671848467444">Deschideți într-o &amp;fereastră incognito</translation>
 <translation id="3761556954875533505">Permiți ca site-ul să editeze fișierele?</translation>
+<translation id="3763433740586298940">Poți să blochezi site-urile pe care nu le dorești. În plus, Chrome șterge automat site-urile din listă mai vechi de 30 de zile.</translation>
 <translation id="3763549179847864476">Butonul Înapoi din Ghidul privind confidențialitatea</translation>
 <translation id="3764314093345384080">Informații detaliate privind versiunea</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunică cu un dispozitiv USB}few{Comunică cu # dispozitive USB}other{Comunică cu # de dispozitive USB}}</translation>
@@ -5329,6 +5330,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5633149627228920745">Află mai multe despre cerințele de sistem</translation>
 <translation id="563371367637259496">Mobilă</translation>
 <translation id="5634446357546764049">Vezi amintiri cu călătoriile recente și altele</translation>
+<translation id="5635091213277904818">Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri.</translation>
 <translation id="5635312199252507107">Permite pe anumite site-uri</translation>
 <translation id="563535393368633106">Solicită permisiunea înainte de accesare (recomandat)</translation>
 <translation id="5636012309446422">Elimini <ph name="DEVICE" /> din <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7322,7 +7324,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7412226954991670867">Memorie GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configurare finalizată</translation>
-<translation id="7415484647604548662">Poți să blochezi site-urile pe care nu le dorești. În plus, Chrome șterge automat site-urile din listă mai vechi de patru săptămâni.</translation>
 <translation id="7416091793702109803">Examinează <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Nu se pot încărca Termenii și condițiile. Verifică-ți conexiunea de rețea și încearcă din nou.</translation>
 <translation id="7416362041876611053">Eroare de rețea necunoscută.</translation>
@@ -8850,6 +8851,9 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8725178340343806893">Preferințe/Marcaje</translation>
 <translation id="87254326763805752">Confirmă cheia de acces</translation>
 <translation id="8726206820263995930">Eroare la preluarea setărilor politicii de pe server: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Trimite <ph name="BEGIN_LINK1" />metadate pentru completare automată<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (datele pentru completarea automată nu vor fi trimise)</translation>
 <translation id="8728351286589123703">Permisiunile selectate vor fi resetate</translation>
 <translation id="8729133765463465108">Folosește camera ca să scanezi codul QR</translation>
 <translation id="8730621377337864115">Terminat</translation>
@@ -9387,7 +9391,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9180380851667544951">Site-ul poate permite accesul la ecranul tău</translation>
 <translation id="9180847522826713506">Pentru a vedea parola sau pentru a adăuga o notă despre ea, dă clic pe pictograma cheie</translation>
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
-<translation id="9183331776983279456">Chrome șterge automat site-urile mai vechi de patru săptămâni. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicație}few{# aplicații}other{# de aplicații}}</translation>
 <translation id="9186963452600581158">Conectează-te cu Contul Google al unui copil</translation>
 <translation id="9187967020623675250">Tastele nu corespund. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>

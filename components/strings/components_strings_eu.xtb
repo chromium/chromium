@@ -783,7 +783,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2903493209154104877">Helbideak</translation>
 <translation id="290376772003165898">Ez al da <ph name="LANGUAGE" /> orriko hizkuntza?</translation>
 <translation id="2909946352844186028">Aldaketa bat hauteman da sarean.</translation>
-<translation id="2911973620368911614">Laneko kontabilitateaz arduratzen den erabiltzaile IDa</translation>
+<translation id="2911973620368911614">Laneko kontabilitateaz arduratzen den erabiltzaile-identifikatzailea</translation>
 <translation id="2914160345369867329">Eskuarki, <ph name="SITE" /> webguneak enkriptatzea erabiltzen du informazioa babesteko. Chrome <ph name="SITE" /> webgunera konektatzen saiatu denean, webguneak kredentzial desegokiak eta ezohikoak bidali ditu. Erasotzaile bat <ph name="SITE" /> webgunearen plantak egiten ari delako gerta daiteke hori, edo wifi-sarean saioa hasteko pantailak konexioa eten duelako. Zure informazioa seguru dago, datuak trukatu aurretik eten baitu Chrome-k konexioa.</translation>
 <translation id="2915068235268646559">Hutsegitearen ordua: <ph name="CRASH_TIME" /></translation>
 <translation id="2915496182262110498">Margotzea</translation>
@@ -1088,7 +1088,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3671540257457995106">Tamaina aldatzeko baimena ematen duzu?</translation>
 <translation id="3672568546897166916">Errorea (<ph name="ERROR_PATH" />): <ph name="ERROR_MESSAGE" /></translation>
 <translation id="3675563144891642599">Hirugarren arrabola</translation>
-<translation id="3676592649209844519">Gailuaren IDa:</translation>
+<translation id="3676592649209844519">Gailuaren identifikatzailea:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; esan nahi al zenuen?</translation>
 <translation id="3678029195006412963">Ezin izan da sinatu eskaera</translation>
 <translation id="3678342917559046352">Luzapenak ez du balio: balioak formatu hauetako bat izatea espero zen: &lt;extension_id&gt; edo &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
@@ -1885,7 +1885,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5596939519753369075">5,08 × 8,89 cm (2 × 3,5 in)</translation>
 <translation id="560412284261940334">Ez da onartzen kudeaketarik</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Nola kudea ditzakezu datuak?<ph name="END_BOLD" /> Lau aste baino gehiago dituzten webguneak automatikoki ezabatzen ditu Chrome-k. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Era berean, webgune bati zuretzako iragarkiak iradokitzea galaraz diezaiokezu, eta webguneek iradokitako iragarkiak desaktibatu. Horretarako, joan Chrome-ren ezarpenetara.</translation>
 <translation id="5610142619324316209">Konexioa egiaztatu.</translation>
 <translation id="5610807607761827392"><ph name="BEGIN_LINK" />Ezarpenak<ph name="END_LINK" /> atalean kudea ditzakezu txartelak eta helbideak.</translation>
 <translation id="5611398002774823980">Gorde kontuan</translation>
@@ -2653,7 +2652,7 @@ Xehetasun gehiago:
           <ph name="LIST_ITEM" />inprimakietan idatzitako informazioa
         <ph name="END_LIST" /></translation>
 <translation id="7507075214339298899">Gutun-azala 9</translation>
-<translation id="7508255263130623398">Itzuli den gidalerroaren gailu IDa hutsik dago edo ez dator bat gailuaren IDarekin</translation>
+<translation id="7508255263130623398">Itzuli den gidalerroaren gailuaren identifikatzailea hutsik dago edo ez dator bat gailuaren identifikatzailearekin</translation>
 <translation id="7508870219247277067">Ahuakatea</translation>
 <translation id="7510225383966760306"><ph name="BEGIN_BOLD" />Nola erabiltzen dituzte webguneek datu horiek?<ph name="END_BOLD" /> Zure interesei eta gustuei buruzko informazioa gorde dezakete webguneek Chrome-n. Adibidez, demagun maratoietarako entrenamenduei buruzko webgune batera joan zarela. Hala bada, korrika egiteko oinetakoak interesatzen zaizkizula erabakiko du agian webgune horrek. Horregatik, gero beste webgune batera joaten zarenean, baliteke korrika egiteko oinetakoen iragarki bat agertzea, lehen webguneak iradokita.</translation>
 <translation id="7510269639068718544">Katuak</translation>
@@ -3214,7 +3213,6 @@ Xehetasun gehiago:
 <translation id="8876033571432926051">Casual jokoak</translation>
 <translation id="8877780815363510165">Arrantza</translation>
 <translation id="8884537526797090108">Ezin da grabatu isilpeko edukirik</translation>
-<translation id="8890798179125483517">Lau aste baino gehiago dituzten gaiak eta webguneak (iragarkiak iradokitzen dituztenak) automatikoki ezabatzen ditu Chrome-k. Gainera, gustatzen ez zaizkizun gaiak eta webguneak blokea ditzakezu.</translation>
 <translation id="8891727572606052622">Proxy moduak ez du balio.</translation>
 <translation id="8894794286471754040">Ertz luzea lehendabizi</translation>
 <translation id="8897428486789851669">Igeriketa</translation>

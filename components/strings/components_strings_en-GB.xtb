@@ -1889,7 +1889,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5596939519753369075">2.0 in x 3.5 in</translation>
 <translation id="560412284261940334">Management not supported</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes sites that are older than four weeks. A site that you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.</translation>
 <translation id="5610142619324316209">Checking the connection</translation>
 <translation id="5610807607761827392">You can manage cards and addresses in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
 <translation id="5611398002774823980">Save in account</translation>
@@ -3219,7 +3218,6 @@ Additional details:
 <translation id="8876033571432926051">Casual games</translation>
 <translation id="8877780815363510165">Fishing</translation>
 <translation id="8884537526797090108">Can't record confidential content</translation>
-<translation id="8890798179125483517">Chrome auto-deletes topics and sites that suggest ads older than four weeks. Or you can block specific topics and sites that you don’t like.</translation>
 <translation id="8891727572606052622">Invalid proxy mode.</translation>
 <translation id="8894794286471754040">Long edge first</translation>
 <translation id="8897428486789851669">Swimming</translation>

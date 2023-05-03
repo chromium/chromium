@@ -3253,6 +3253,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3760460896538743390">Kanna &amp;bakgrunnssíðu</translation>
 <translation id="37613671848467444">Opna í hul&amp;iðsglugga</translation>
 <translation id="3761556954875533505">Viltu leyfa svæði að breyta skrám?</translation>
+<translation id="3763433740586298940">Þú getur sett hvaða vefsvæði sem er á bannlista. Chrome eyðir einnig vefsvæðum sem eru eldri en 30 daga sjálfkrafa af listanum.</translation>
 <translation id="3763549179847864476">Hnappur til að fara til baka í leiðbeiningum um persónuvernd</translation>
 <translation id="3764314093345384080">Ítarupplýsingar smíði</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Eiga samskipti við USB-tæki}one{Eiga samskipti við # USB-tæki}other{Eiga samskipti við # USB-tæki}}</translation>
@@ -5345,6 +5346,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5633149627228920745">Nánar um kerfiskröfur</translation>
 <translation id="563371367637259496">Farsímakerfi</translation>
 <translation id="5634446357546764049">Sjáðu minningar um nýlegar ferðir og fleira</translation>
+<translation id="5635091213277904818">Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig bannað vefsvæði að birta þér tillögur að auglýsingum.</translation>
 <translation id="5635312199252507107">Leyfa á tilteknum vefsvæðum</translation>
 <translation id="563535393368633106">Spyrja fyrir notkun (ráðlagt)</translation>
 <translation id="5636012309446422">Fjarlægja <ph name="DEVICE" /> af <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7338,7 +7340,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7412226954991670867">Minni skjástýringar</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Uppsetningu lokið</translation>
-<translation id="7415484647604548662">Þú getur sett hvaða vefsvæði sem er á bannlista. Chrome eyðir einnig vefsvæðum sem eru eldri en 4 vikna sjálfkrafa af listanum.</translation>
 <translation id="7416091793702109803">Yfirfara <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Ekki er hægt að hlaða þjónustuskilmálum. Athugaðu nettenginguna og reyndu aftur.</translation>
 <translation id="7416362041876611053">Óþekkt netvilla.</translation>
@@ -8865,6 +8866,9 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8725178340343806893">Uppáhald/bókamerki</translation>
 <translation id="87254326763805752">Staðfesta aðgangslykil</translation>
 <translation id="8726206820263995930">Villa við að sækja stefnustillingar frá þjóninum: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Senda <ph name="BEGIN_LINK1" />lýsigögn sjálfvirkrar útfyllingar<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (gögnum sjálfvirkrar útfyllingar verður ekki deilt)</translation>
 <translation id="8728351286589123703">Valdar heimildir þínar verða endurstilltar</translation>
 <translation id="8729133765463465108">Notaðu myndavélina til að skanna inn QR-kóða</translation>
 <translation id="8730621377337864115">Lokið</translation>
@@ -9402,7 +9406,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="9180380851667544951">Vefsvæði getur deilt skjánum þínum</translation>
 <translation id="9180847522826713506">Til að skoða aðgangsorð eða bæta við glósu um það skaltu smella á lykilstáknið</translation>
 <translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>
-<translation id="9183331776983279456">Chrome eyðir vefsvæðum sem eru eldri en 4 vikna sjálfkrafa af listanum. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig bannað vefsvæði að birta þér tillögur að auglýsingum.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Forrit}one{# forrit}other{# forrit}}</translation>
 <translation id="9186963452600581158">Skráðu þig inn með Google reikningi barnsins</translation>
 <translation id="9187967020623675250">Lyklarnir passa ekki saman. Ýttu á hvaða lykil sem er til að <ph name="RESPONSE" />.</translation>

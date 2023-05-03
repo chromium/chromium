@@ -786,7 +786,6 @@
 <translation id="5235196193381275927">સાઇન ઇન કરતી વખતે કંઈક ખોટું થયું</translation>
 <translation id="5246093389635966745">ટૂલબારના શૉર્ટકટમાં ફેરફાર કરો</translation>
 <translation id="5271967389191913893">ડિવાઇસ, ડાઉનલોડ કરવાની કન્ટેન્ટ ખોલી શકતું નથી.</translation>
-<translation id="5274286919938458946"><ph name="CARD_DETAIL" />ની સાથે લિંક કર્યું</translation>
 <translation id="5292796745632149097">આના પર મોકલો</translation>
 <translation id="5300426565656326054">બ્રાઉઝર આધારિત રુચિ મુજબ જાહેરાત</translation>
 <translation id="5304593522240415983">આ ફીલ્ડ ખાલી હોઈ શકતું નથી</translation>
@@ -848,6 +847,7 @@
 <translation id="562289928968387744">પ્રતિક્રિયાઓ મેનેજ કરો</translation>
 <translation id="5626134646977739690">નામ:</translation>
 <translation id="5628604359369369630">વાંચ્યા વગરનું - ઑફલાઇન ઉપલબ્ધ</translation>
+<translation id="5635091213277904818">30 દિવસથી જૂની સાઇટ Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. તમે ફરીથી મુલાકાત લીધેલી કોઈ સાઇટ સૂચિમાં ફરીથી દેખાઈ શકે છે. અથવા તમે કોઈ સાઇટને તમારા માટે જાહેરાતોનું સૂચન કરવાથી બ્લૉક કરી શકો છો.</translation>
 <translation id="5639724618331995626">તમામ સાઇટની મંજૂરી આપો</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />શોધ ઇતિહાસ<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK2" /> તમારા Google એકાઉન્ટમાં સચવાઈ શકે છે</translation>
 <translation id="564667659802381754">પ્રાઇવસી સંબંધિત માર્ગદર્શિકા <ph name="BEGIN_NEW" />નવી<ph name="END_NEW" /></translation>
@@ -1256,6 +1256,7 @@
 <translation id="7682724950699840886">નીચેની ટિપ અજમાવી જુઓ: ખાતરી કરો કે તમારા ઉપકરણ પર પૂરતી સ્પેસ છે, ફરીથી નિકાસ કરવાનો પ્રયાસ કરો.</translation>
 <translation id="7686086654630106285">સાઇટ દ્વારા સૂચિત જાહેરાતો વિશે વધુ વિગતો</translation>
 <translation id="768618399695552958">તમે મુલાકાત લો છો તે કેટલાક પેજ પહેલેથી લોડ કરેલા છે. જ્યારે પેજ Google site પરથી લિંક કરવામાં આવેલા હોય, ત્યારે તેમને Googleના સર્વર મારફતે પહેલેથી લોડ કરી શકાય છે.</translation>
+<translation id="7690596512217303514">તમારા ડિવાઇસ દ્વારા Chrome ખોલી શક્યું નથી. સમસ્યાને ઠીક કરવા માટે, તમારા ઍપ સ્ટોરમાંથી Chromeની નવીનતમ અપડેટ ડાઉનલોડ કરો.</translation>
 <translation id="7691043218961417207">ફૉલો કરવા માટેના કન્ટેન્ટ વિશે જાણકારી મેળવો</translation>
 <translation id="7697383401610880082">ઑબ્જેક્ટ ખેંચવાનું હૅન્ડલ</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> માં ઇમેઇલ બનાવો</translation>
@@ -1367,6 +1368,7 @@
 <translation id="8209050860603202033">છબી ખોલો</translation>
 <translation id="8216351761227087153">જુઓ</translation>
 <translation id="8218622182176210845">તમારું એકાઉન્ટ મેનેજ કરો</translation>
+<translation id="8221401890884589479">તમને ન જોઈતી સાઇટ તમે બ્લૉક કરી શકો છો. Chrome સૂચિમાંથી 30 દિવસથી જૂની સાઇટને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">ફીડ કાર્ડ મેનૂ</translation>
 <translation id="8236097722223016103">બુકમાર્કમાં ઉમેરો</translation>
 <translation id="8250920743982581267">દસ્તાવેજો</translation>
@@ -1552,7 +1554,6 @@
 <translation id="9158770349521403363">માત્ર કન્ટેન્ટ શેર કરો</translation>
 <translation id="9159716826369098114"><ph name="TAB_COUNT" /> ટૅબવાળા ટૅબના ગ્રૂપને નવા બૅકગ્રાઉન્ડ ટૅબના ગ્રૂપ તરીકે રિસ્ટોર કરો.</translation>
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
-<translation id="9183331776983279456">4 અઠવાડિયાથી વધુ જૂની સાઇટને Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. તમે ફરી વાર મુલાકાત લો છો તે સાઇટ ફરીથી સૂચિમાં દેખાઈ શકે છે. અથવા તમે કોઈ સાઇટને તમને જાહેરાતોનું સૂચન કરવાથી બ્લૉક કરી શકો છો.</translation>
 <translation id="9190276265094487094">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 મિનિટ પહેલાં ચેક કર્યું}one{# મિનિટ પહેલાં ચેક કર્યું}other{# મિનિટ પહેલાં ચેક કર્યું}}</translation>
 <translation id="9204836675896933765">1 ફાઇલ બાકી છે</translation>
@@ -1574,7 +1575,6 @@
 <translation id="96681097142096641">શું સરળ કરેલું પેજ જોવું છે?</translation>
 <translation id="968900484120156207">તમે મુલાકાત લીધેલા પેજ અહીં દેખાય છે</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> મિનિટ બાકી</translation>
-<translation id="978317418833355355">તમને ન જોઈતી સાઇટ તમે બ્લૉક કરી શકો છો. 4 અઠવાડિયાથી વધુ જૂની હોય તેવી સૂચિમાંથી Chrome પણ સાઇટને ઑટોમૅટિક રીતે ડિલીટ કરે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">ઑફલાઇન</translation>
 <translation id="983192555821071799">બધા ટેબ્સ બંધ કરો</translation>
 <translation id="987264212798334818">સામાન્ય</translation>

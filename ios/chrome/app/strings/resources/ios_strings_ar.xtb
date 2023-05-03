@@ -610,6 +610,7 @@
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
 <translation id="4986678885919050584">‏إزالة حساب Google من هذا الجهاز</translation>
 <translation id="498985224078955265">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
+<translation id="4996567535980789550">تفعيل المزامنة لإدارة المحتوى الذي تراه</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5016420433031926653">سيتم الإرسال إلى <ph name="USER_EMAIL" />.</translation>
 <translation id="5017828934289857214">تذكيري لاحقًا</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">‏لن يتم تسجيل خروجك من حسابك في Google. قد يتضمن حسابك في Google نماذج أخرى من سجل التصفح في <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">عرض الصفحة الأصلية</translation>
 <translation id="9039373489628511875">النطاق الترددي</translation>
+<translation id="9043368763795653245">‏لتخصيص متصفِّح Chrome وخلاصة "اقتراحات"، يُرجى تفعيل المزامنة.</translation>
 <translation id="9055772144595778347">تعذر تسجيل الدخول</translation>
 <translation id="9055960261314198756">"الحماية المحسَّنة" غير مفعَّلة</translation>
 <translation id="9057972802061533987">تتعذّر المتابعة. حدث خطأ.</translation>

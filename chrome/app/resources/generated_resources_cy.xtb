@@ -3255,6 +3255,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="3760460896538743390">Archwilio'r &amp;Dudalen Gefndir</translation>
 <translation id="37613671848467444">Agor mewn &amp;Ffenestr Anhysbys</translation>
 <translation id="3761556954875533505">Caniatáu i'r wefan olygu ffeiliau?</translation>
+<translation id="3763433740586298940">Gallwch rwystro gwefannau nad ydych eu heisiau. Mae Chrome hefyd yn dileu gwefannau yn awtomatig o'r rhestr sy'n hŷn na 30 diwrnod.</translation>
 <translation id="3763549179847864476">Botwm yn ôl y Canllaw Preifatrwydd</translation>
 <translation id="3764314093345384080">Gwybodaeth fanwl am y datblygiad</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Cyfathrebu â dyfais USB}zero{Cyfathrebu â # dyfais USB}two{Cyfathrebu â # dyfais USB}few{Cyfathrebu â # dyfais USB}many{Cyfathrebu â # dyfais USB}other{Cyfathrebu â # dyfais USB}}</translation>
@@ -5347,6 +5348,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5633149627228920745">Dysgu rhagor am ofynion system</translation>
 <translation id="563371367637259496">Symudol</translation>
 <translation id="5634446357546764049">Gweld atgofion o'ch teithiau diweddar a rhagor</translation>
+<translation id="5635091213277904818">Mae Chrome yn dileu gwefannau sy'n hŷn na 30 diwrnod yn awtomatig. Mae'n bosib y bydd gwefan y byddwch yn ymweld â hi eto yn ailymddangos ar y rhestr. Neu gallwch rwystro gwefan rhag awgrymu hysbysebion i chi.</translation>
 <translation id="5635312199252507107">Caniatáu ar wefannau penodol</translation>
 <translation id="563535393368633106">Gofyn cyn cael mynediad (argymhellir)</translation>
 <translation id="5636012309446422">Tynnu <ph name="DEVICE" /> o <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7346,7 +7348,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7412226954991670867">Cof GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Wedi cwblhau'r gosod</translation>
-<translation id="7415484647604548662">Gallwch rwystro gwefannau nad ydych eu heisiau. Mae Chrome hefyd yn dileu gwefannau yn awtomatig o'r rhestr sy'n hŷn na 4 wythnos.</translation>
 <translation id="7416091793702109803">Adolygu <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Ni ellir llwytho'r Telerau Gwasanaeth. Gwiriwch eich cysylltiad rhwydwaith a rhowch gynnig arall arni.</translation>
 <translation id="7416362041876611053">Gwall rhwydwaith anhysbys.</translation>
@@ -8873,6 +8874,9 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8725178340343806893">Ffefrynnau/Nodau Tudalen</translation>
 <translation id="87254326763805752">Cadarnhau cod pas</translation>
 <translation id="8726206820263995930">Gwall wrth nôl gosodiadau polisi o'r gweinydd: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Anfon <ph name="BEGIN_LINK1" />metaddata awtolenwi<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (ni fydd eich data awtolenwi yn cael eu rhannu)</translation>
 <translation id="8728351286589123703">Bydd y caniatâd a ddewiswyd gennych yn cael ei ailosod</translation>
 <translation id="8729133765463465108">Defnyddiwch y camera i sganio'r Cod QR</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
@@ -9413,7 +9417,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="9180380851667544951">Gall y wefan rannu eich sgrîn</translation>
 <translation id="9180847522826713506">I weld eich cyfrinair neu ychwanegu nodyn amdano, cliciwch yr eicon allwedd</translation>
 <translation id="9182556968660520230">Peidio â chaniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
-<translation id="9183331776983279456">Mae Chrome yn dileu gwefannau yn awtomatig sy'n hŷn na 4 wythnos. Mae'n bosib y bydd gwefan y byddwch yn ymweld â hi eto yn ailymddangos ar y rhestr. Neu gallwch rwystro gwefan rhag awgrymu hysbysebion i chi.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Ap}zero{# ap}two{# ap}few{# ap}many{# ap}other{# ap}}</translation>
 <translation id="9186963452600581158">Mewngofnodi gyda Chyfrif Google plentyn</translation>
 <translation id="9187967020623675250">Nid yw'r bysellau'n cyfateb. Pwyswch unrhyw fysell i <ph name="RESPONSE" />.</translation>

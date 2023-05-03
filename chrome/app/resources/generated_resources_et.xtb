@@ -3243,6 +3243,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3760460896538743390">Uuri &amp;taustalehte</translation>
 <translation id="37613671848467444">&amp;Ava inkognito aknas</translation>
 <translation id="3761556954875533505">Kas lubada saidil faile muuta?</translation>
+<translation id="3763433740586298940">Saate blokeerida saidid, millel te ei soovi lubada andmeid salvestada. Chrome kustutab loendist automaatselt ka saidid, mis on vanemad kui 30 päeva.</translation>
 <translation id="3763549179847864476">Privaatsusjuhendi tagasinupp</translation>
 <translation id="3764314093345384080">Üksikasjalik järguteave</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Ühendus USB-seadmega}other{Ühendus # USB-seadmega}}</translation>
@@ -5334,6 +5335,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5633149627228920745">Lugege lisateavet süsteemi nõuete kohta</translation>
 <translation id="563371367637259496">Mobiil</translation>
 <translation id="5634446357546764049">Vaadake mälestusi oma hiljutistest reisidest ja muust</translation>
+<translation id="5635091213277904818">Chrome kustutab automaatselt saidid, mis on vanemad kui 30 päeva. Sait, mida uuesti külastate, võidakse uuesti loendis kuvada. Võite ka saidi puhul reklaamide soovitamise blokeerida.</translation>
 <translation id="5635312199252507107">Luba konkreetsetel saitidel</translation>
 <translation id="563535393368633106">Küsib enne juurdepääsu hankimist (soovitatav)</translation>
 <translation id="5636012309446422">Kas eemaldada seade <ph name="DEVICE" /> kontolt <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7325,7 +7327,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7412226954991670867">GPU-mälu</translation>
 <translation id="7414464185801331860">18-kordne</translation>
 <translation id="7415454883318062233">Seadistus on lõpetatud</translation>
-<translation id="7415484647604548662">Saate blokeerida saidid, millel te ei soovi lubada andmeid salvestada. Samuti kustutab Chrome loendist automaatselt saidid, mis on seal olnud kauem kui 4 nädalat.</translation>
 <translation id="7416091793702109803">Faili <ph name="FILE_NAME" /> ülevaatamine</translation>
 <translation id="7416263748877373774">Teenusetingimusi ei saa laadida. Kontrollige võrguühendust ja proovige uuesti.</translation>
 <translation id="7416362041876611053">Tundmatu võrguviga.</translation>
@@ -9389,7 +9390,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="9180380851667544951">Sait saab jagada teie ekraanikuva</translation>
 <translation id="9180847522826713506">Oma parooli vaatamiseks või selle kohta märkme lisamiseks klõpsake võtmeikoonil</translation>
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
-<translation id="9183331776983279456">Chrome kustutab automaatselt saidid, mis on vanemad kui 4 nädalat. Sait, mida uuesti külastate, võidakse uuesti loendis kuvada. Võite ka saidi puhul reklaamide soovitamise blokeerida.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Rakendus}other{# rakendust}}</translation>
 <translation id="9186963452600581158">Logige sisse oma lapse Google'i kontoga</translation>
 <translation id="9187967020623675250">Klahvid ei ühti. Vajutage mis tahes klahvi, et <ph name="RESPONSE" />.</translation>

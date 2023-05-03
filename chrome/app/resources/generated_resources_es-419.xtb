@@ -7316,7 +7316,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7412226954991670867">Memoria de GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuración completa</translation>
-<translation id="7415484647604548662">Puedes bloquear los sitios que no quieras que aparezcan en la lista. Chrome también borra de forma automática los sitios de la lista luego de 4 semanas.</translation>
 <translation id="7416091793702109803">Revisar <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">No se pueden cargar las Condiciones del Servicio. Verifica tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="7416362041876611053">Error de red desconocido</translation>
@@ -9380,7 +9379,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9180380851667544951">El sitio puede compartir la pantalla</translation>
 <translation id="9180847522826713506">Para ver tu contraseña o agregar una nota al respecto, haz clic en el ícono de llave.</translation>
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
-<translation id="9183331776983279456">Chrome borra de forma automática los sitios luego de 4 semanas. Es posible que si vuelves a visitar un sitio, aparezca en la lista otra vez. También puedes bloquear un sitio para que no te sugiera anuncios.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>

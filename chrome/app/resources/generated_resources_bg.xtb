@@ -7333,7 +7333,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7412226954991670867">Памет на графичния процесор</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Настройването завърши</translation>
-<translation id="7415484647604548662">Можете да блокирате нежеланите сайтове. Също така Chrome автоматично изтрива от списъка сайтовете, посетени преди повече от 4 седмици.</translation>
 <translation id="7416091793702109803">Преглед на <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Общите условия не могат да се заредят. Моля, проверете връзката си с мрежата и опитайте отново.</translation>
 <translation id="7416362041876611053">Неизвестна грешка в мрежата.</translation>
@@ -8861,6 +8860,9 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8725178340343806893">Любими/Отметки</translation>
 <translation id="87254326763805752">Потвърждаване на кода за достъп</translation>
 <translation id="8726206820263995930">Грешка при извличането на настройките за правилa от сървъра: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Изпращане на <ph name="BEGIN_LINK1" />метаданни за автоматичното попълване<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (данните ви за автоматичното попълване няма да бъдат споделени)</translation>
 <translation id="8728351286589123703">Избраните от вас разрешения ще бъдат нулирани</translation>
 <translation id="8729133765463465108">Използване на камерата за сканиране на QR код</translation>
 <translation id="8730621377337864115">Готово</translation>
@@ -9397,7 +9399,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9180380851667544951">Сайтът може да споделя екрана ви</translation>
 <translation id="9180847522826713506">За да видите паролата си или да добавите бележка за нея, кликнете върху иконата на ключ</translation>
 <translation id="9182556968660520230">Да не се разрешава на сайтовете да възпроизвеждат защитено съдържание</translation>
-<translation id="9183331776983279456">Chrome автоматично изтрива сайтовете, посетени преди повече от 4 седмици. Ако отново посетите даден сайт, той може пак да се покаже в списъка. Също така имате възможност да блокирате даден сайт, така че да не ви предлага реклами.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Приложение}other{# приложения}}</translation>
 <translation id="9186963452600581158">Влизане с профил в Google на дете</translation>
 <translation id="9187967020623675250">Клавишите не съвпадат. Натиснете произволен клавиш за <ph name="RESPONSE" />.</translation>

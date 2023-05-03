@@ -7322,7 +7322,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7412226954991670867">GPU memorija</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Podešavanje je dovršeno</translation>
-<translation id="7415484647604548662">Možete da blokirate sajtove koje ne želite. Chrome takođe automatski sa liste briše sajtove koji su stariji od 4 nedelje.</translation>
 <translation id="7416091793702109803">Napišite recenziju za <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Nije uspelo učitavanje Uslova korišćenja usluge. Proverite mrežnu vezu i probajte ponovo.</translation>
 <translation id="7416362041876611053">Nepoznata greška na mreži.</translation>
@@ -9391,7 +9390,6 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="9180380851667544951">Sajt može da deli ekran</translation>
 <translation id="9180847522826713506">Da biste videli lozinku ili dodali napomenu o njoj, kliknite na ikonu ključa</translation>
 <translation id="9182556968660520230">Ne dozvoljavaj sajtovima da puštaju zaštićeni sadržaj</translation>
-<translation id="9183331776983279456">Chrome automatski briše sajtove starije od 4 nedelje. Sajt koji ponovo posetite može opet da se pojavi na listi. A možete i da blokirate sajt kako vam ne bi predlagao oglase.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikacija}one{# aplikacija}few{# aplikacije}other{# aplikacija}}</translation>
 <translation id="9186963452600581158">Prijavite se pomoću Google naloga deteta</translation>
 <translation id="9187967020623675250">Tasteri se ne podudaraju. Pritisnite bilo koji taster da biste <ph name="RESPONSE" />.</translation>

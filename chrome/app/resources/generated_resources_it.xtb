@@ -3237,6 +3237,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3760460896538743390">Ispeziona pagina in &amp;background</translation>
 <translation id="37613671848467444">Apri in finestra di navigazione in &amp;incognito</translation>
 <translation id="3761556954875533505">Vuoi consentire al sito di modificare file?</translation>
+<translation id="3763433740586298940">Puoi bloccare i siti indesiderati. Inoltre, Chrome elimina automaticamente dall'elenco i siti risalenti a più di 30 giorni prima della data corrente.</translation>
 <translation id="3763549179847864476">Pulsante Indietro della Guida alla privacy</translation>
 <translation id="3764314093345384080">Informazioni build dettagliate</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicazione con un dispositivo USB}other{Comunicazione con # dispositivi USB}}</translation>
@@ -5326,6 +5327,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5633149627228920745">Scopri di più sui requisiti di sistema</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634446357546764049">Visualizza ricordi dei tuoi ultimi viaggi e altro ancora</translation>
+<translation id="5635091213277904818">Chrome elimina automaticamente i siti risalenti a più di 30 giorni prima della data corrente. Se visiti di nuovo un sito, questo potrebbe essere visualizzato di nuovo nell'elenco. In alternativa, puoi impedire a un sito di suggerire annunci per te.</translation>
 <translation id="5635312199252507107">Consenti su siti specifici</translation>
 <translation id="563535393368633106">Chiedi prima di accedere (opzione consigliata)</translation>
 <translation id="5636012309446422">Vuoi rimuovere <ph name="DEVICE" /> da <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7316,7 +7318,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7412226954991670867">Memoria GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configurazione completata</translation>
-<translation id="7415484647604548662">Puoi bloccare i siti indesiderati. Chrome elimina automaticamente dall'elenco i siti risalenti a più di 4 settimane prima della data corrente.</translation>
 <translation id="7416091793702109803">Controlla il file <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Impossibile caricare i Termini di servizio. Controlla la connessione di rete e riprova.</translation>
 <translation id="7416362041876611053">Errore di rete sconosciuto.</translation>
@@ -8844,6 +8845,9 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8725178340343806893">Preferiti/Segnalibri</translation>
 <translation id="87254326763805752">Conferma passkey</translation>
 <translation id="8726206820263995930">Errore durante il recupero delle impostazioni criterio dal server. <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Invia <ph name="BEGIN_LINK1" />metadati di compilazione automatica<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (i dati di compilazione automatica non verranno condivisi)</translation>
 <translation id="8728351286589123703">Le autorizzazioni selezionate verranno reimpostate</translation>
 <translation id="8729133765463465108">Utilizza la fotocamera per scansionare il codice QR</translation>
 <translation id="8730621377337864115">Fine</translation>
@@ -9380,7 +9384,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9180380851667544951">Il sito può condividere lo schermo</translation>
 <translation id="9180847522826713506">Per visualizzare la password o aggiungere una nota, fai clic sull'icona della chiave</translation>
 <translation id="9182556968660520230">Non consentire ai siti di riprodurre contenuti protetti</translation>
-<translation id="9183331776983279456">Chrome elimina automaticamente i siti che risalgono a più di 4 settimane prima della data corrente. Se visiti di nuovo un sito, questo potrebbe essere visualizzato di nuovo nell'elenco. In alternativa, puoi impedire a un sito di suggerire annunci per te.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# app}}</translation>
 <translation id="9186963452600581158">Accedi con l'Account Google di un bambino</translation>
 <translation id="9187967020623675250">I tasti non corrispondono. Premi un tasto qualsiasi per <ph name="RESPONSE" />.</translation>

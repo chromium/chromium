@@ -1058,6 +1058,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3587738293690942763">Middel</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Jy kan jou groep enige tyd terugstel. Dit neem omtrent 'n dag om by 'n nuwe groep aan te sluit.}=1{Jy kan jou groep enige tyd terugstel. Dit neem omtrent 'n dag om by 'n nuwe groep aan te sluit.}other{Jy kan jou groep enige tyd terugstel. Dit neem {NUM_DAYS} dae om by 'n nuwe groep aan te sluit.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome vee onderwerpe en werwe wat advertensies voorstel wat ouer as 30 dae is, outomaties uit. Of jy kan spesifieke onderwerpe en werwe waarvan jy nie hou nie, blokkeer.</translation>
 <translation id="3603507503523709">Jou administrateur blokkeer die program</translation>
 <translation id="3605899229568538311">5x5 dm.</translation>
 <translation id="3608932978122581043">Stroomoriëntasie</translation>
@@ -1187,6 +1188,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Jy kan enige tyd in Chrome-instellings van plan verander</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Bestuur jou data só:<ph name="END_BOLD" /> Chrome vee werwe wat ouer as 30 dae is, outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Jy kan ook ’n werf keer om vir jou advertensies voor te stel, en werfvoorgestelde advertensies enige tyd in Chrome-instellings afskakel.</translation>
 <translation id="3921869355029467742">Voer jou sekuriteitkode in</translation>
 <translation id="3927932062596804919">Weier</translation>
 <translation id="393316646445601645">Internet en telekommunikasie</translation>
@@ -1889,7 +1891,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5596939519753369075">2x3,5 dm.</translation>
 <translation id="560412284261940334">Bestuur word nie gesteun nie</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />Hoe jy jou data kan bestuur:<ph name="END_BOLD" /> Chrome vee werwe wat ouer as 4 weke is, outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Jy kan ook enige tyd in Chrome-instellings ’n werf keer om vir jou advertensies voor te stel en werfvoorgestelde advertensies afskakel.</translation>
 <translation id="5610142619324316209">Die verbinding nagaan</translation>
 <translation id="5610807607761827392">Jy kan kaarte en adresse in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> bestuur.</translation>
 <translation id="5611398002774823980">Stoor in rekening</translation>
@@ -3219,7 +3220,6 @@ Bykomende besonderhede:
 <translation id="8876033571432926051">Informele speletjies</translation>
 <translation id="8877780815363510165">Visvang</translation>
 <translation id="8884537526797090108">Kan nie vertroulike inhoud opneem nie</translation>
-<translation id="8890798179125483517">Chrome vee onderwerpe en werwe wat advertensies voorstel wat ouer as 4 weke is, outomaties uit. Of jy kan spesifieke onderwerpe en werwe waarvan jy nie hou nie, blokkeer.</translation>
 <translation id="8891727572606052622">Ongeldige instaanbedienermodus.</translation>
 <translation id="8894794286471754040">Lang kant eerste</translation>
 <translation id="8897428486789851669">Swem</translation>

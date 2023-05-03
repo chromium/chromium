@@ -3253,6 +3253,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3760460896538743390">Undersøg &amp;baggrundsside</translation>
 <translation id="37613671848467444">Åbn i &amp;inkognitovindue</translation>
 <translation id="3761556954875533505">Skal websitet kunne redigere filer?</translation>
+<translation id="3763433740586298940">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 30 dage gamle.</translation>
 <translation id="3763549179847864476">Knappen Tilbage i Privatlivsguide</translation>
 <translation id="3764314093345384080">Detaljerede buildoplysninger</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Kommuniker med en USB-enhed}one{Kommuniker med # USB-enheder}other{Kommuniker med # USB-enheder}}</translation>
@@ -5345,6 +5346,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5633149627228920745">Få flere oplysninger om systemkrav</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Se minder fra dine seneste rejser og meget mere</translation>
+<translation id="5635091213277904818">Chrome sletter automatisk websites, der er mere end 30 dage gamle. Et website, du besøger igen, kan dukke op på listen igen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig.</translation>
 <translation id="5635312199252507107">Tillad på bestemte websites</translation>
 <translation id="563535393368633106">Spørg inden brug (anbefales)</translation>
 <translation id="5636012309446422">Vil du fjerne <ph name="DEVICE" /> fra <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7338,7 +7340,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7412226954991670867">GPU-hukommelse</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigurationen er fuldført</translation>
-<translation id="7415484647604548662">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 4 uger gamle.</translation>
 <translation id="7416091793702109803">Se <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Servicevilkårene kan ikke indlæses. Tjek din netværksforbindelse, og prøv igen.</translation>
 <translation id="7416362041876611053">Ukendt netværksfejl.</translation>
@@ -8865,6 +8866,9 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8725178340343806893">Favoritter/Bogmærker</translation>
 <translation id="87254326763805752">Bekræft adgangsnøglen</translation>
 <translation id="8726206820263995930">Fejl ved hentning af politikindstillinger fra serveren: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Send <ph name="BEGIN_LINK1" />metadata for autofyld<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (dine data for autofyld deles ikke)</translation>
 <translation id="8728351286589123703">Dine valgte tilladelser nulstilles</translation>
 <translation id="8729133765463465108">Scan QR-koden med kameraet</translation>
 <translation id="8730621377337864115">Udfør</translation>
@@ -9403,7 +9407,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>
 <translation id="9180847522826713506">Du kan se din adgangskode eller tilføje en note om den ved at klikke på nøgleikonet</translation>
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
-<translation id="9183331776983279456">Chrome sletter automatisk websites, der er mere end 4 uger gamle. Et website, du besøger igen, kan blive dukke op på listen igen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9187967020623675250">Tasterne stemmer ikke overens. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>

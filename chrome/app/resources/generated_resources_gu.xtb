@@ -3235,6 +3235,7 @@
 <translation id="3760460896538743390">&amp;બૅકગ્રાઉન્ડ પેજની તપાસ કરો</translation>
 <translation id="37613671848467444">&amp;છુપી વિંડોમાં ખોલો</translation>
 <translation id="3761556954875533505">સાઇટને ફાઇલોમાં ફેરફાર કરવાની મંજૂરી આપીએ?</translation>
+<translation id="3763433740586298940">તમને ન જોઈતી સાઇટ તમે બ્લૉક કરી શકો છો. Chrome સૂચિમાંથી 30 દિવસથી જૂની સાઇટને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે.</translation>
 <translation id="3763549179847864476">'પ્રાઇવસી સંબંધિત માર્ગદર્શિકા' પર પાછા ફરવાનું બટન</translation>
 <translation id="3764314093345384080">વિગતવાર બિલ્ડ માહિતી</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{એક USB ઉપકરણ સાથે સંચાર કરો}one{# USB ઉપકરણો સાથે સંચાર કરો}other{# USB ઉપકરણો સાથે સંચાર કરો}}</translation>
@@ -5327,6 +5328,7 @@
 <translation id="5633149627228920745">સિસ્ટમની જરૂરિયાતો વિશે વધુ જાણો</translation>
 <translation id="563371367637259496">મોબાઇલ</translation>
 <translation id="5634446357546764049">તમારી તાજેતરની ટ્રિપની યાદગીરીઓ અને વધુ જુઓ</translation>
+<translation id="5635091213277904818">30 દિવસથી જૂની સાઇટ Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. તમે ફરીથી મુલાકાત લીધેલી કોઈ સાઇટ સૂચિમાં ફરીથી દેખાઈ શકે છે. અથવા તમે કોઈ સાઇટને તમારા માટે જાહેરાતોનું સૂચન કરવાથી બ્લૉક કરી શકો છો.</translation>
 <translation id="5635312199252507107">ચોક્કસ સાઇટ પર મંજૂરી આપો</translation>
 <translation id="563535393368633106">ઍક્સેસ કરતાં પહેલાં પૂછો (ભલામણ કરેલ)</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" />માંથી <ph name="DEVICE" /> કાઢી નાખીએ?</translation>
@@ -7321,7 +7323,6 @@ USB ડિવાઇસ</translation>
 <translation id="7412226954991670867">GPU મેમરી</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">સેટઅપ પૂર્ણ થયું</translation>
-<translation id="7415484647604548662">તમને ન જોઈતી સાઇટ તમે બ્લૉક કરી શકો છો. Chrome સૂચિમાંથી 4 અઠવાડિયાથી જૂની સાઇટને પણ ઑટોમૅટિક રીતે ડિલીટ કરે છે.</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" />નો રિવ્યૂ કરો</translation>
 <translation id="7416263748877373774">સેવાની શરતો લોડ કરી શકાતી નથી. કૃપા કરીને તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="7416362041876611053">અજ્ઞાત નેટવર્ક ભૂલ.</translation>
@@ -8843,6 +8844,9 @@ USB ડિવાઇસ</translation>
 <translation id="8725178340343806893">પસંદગીઓ/બુકમાર્ક</translation>
 <translation id="87254326763805752">પાસકી કન્ફર્મ કરો</translation>
 <translation id="8726206820263995930">સર્વરમાંથી પૉલિસી સેટિંગ લાવતી વખતે ભૂલ: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />ઑટોમૅટિક રીતે ભરવાનો મેટાડેટા<ph name="END_LINK1" /> મોકલો
+          <ph name="LINE_BREAK" />
+          (તમારો ઑટોમૅટિક રીતે ભરવાનો ડેટા શેર કરવામાં આવશે નહીં)</translation>
 <translation id="8728351286589123703">તમારી પસંદ કરેલી પરવાનગીઓને રીસેટ કરવામાં આવશે</translation>
 <translation id="8729133765463465108">QR કોડ સ્કૅન કરવા માટે કૅમેરાનો ઉપયોગ કરો</translation>
 <translation id="8730621377337864115">થઈ ગયું</translation>
@@ -9380,7 +9384,6 @@ USB ડિવાઇસ</translation>
 <translation id="9180380851667544951">સાઇટ તમારી સ્ક્રીનને શેર કરી શકે છે</translation>
 <translation id="9180847522826713506">તમારો પાસવર્ડ જોવા માટે અથવા તેના વિશેની એક નોંધ ઉમેરવા માટે, કી આઇકન પર ક્લિક કરો</translation>
 <translation id="9182556968660520230">સાઇટને સુરક્ષિત કન્ટેન્ટ ચલાવવાની મંજૂરી આપશો નહીં</translation>
-<translation id="9183331776983279456">4 અઠવાડિયાથી વધુ જૂની સાઇટને Chrome ઑટોમૅટિક રીતે ડિલીટ કરે છે. તમે ફરી વાર મુલાકાત લો છો તે સાઇટ ફરીથી સૂચિમાં દેખાઈ શકે છે. અથવા તમે કોઈ સાઇટને તમને જાહેરાતોનું સૂચન કરવાથી બ્લૉક કરી શકો છો.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{ઍપ}one{# ઍપ}other{# ઍપ}}</translation>
 <translation id="9186963452600581158">બાળકના Google એકાઉન્ટ વડે સાઇન ઇન કરો</translation>
 <translation id="9187967020623675250">કીનો મેળ થતો નથી. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>

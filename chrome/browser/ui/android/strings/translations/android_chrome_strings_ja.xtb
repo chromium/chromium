@@ -786,7 +786,6 @@
 <translation id="5235196193381275927">ログイン中に問題が発生しました</translation>
 <translation id="5246093389635966745">ツールバー ショートカットの編集</translation>
 <translation id="5271967389191913893">デバイスでダウンロード コンテンツを開くことができません。</translation>
-<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> とリンクしました</translation>
 <translation id="5292796745632149097">送信先</translation>
 <translation id="5300426565656326054">ブラウザベースの広告のパーソナライズ</translation>
 <translation id="5304593522240415983">この項目は必須です</translation>
@@ -848,6 +847,7 @@
 <translation id="562289928968387744">リアクションを管理</translation>
 <translation id="5626134646977739690">名前:</translation>
 <translation id="5628604359369369630">未読 - オフラインで閲覧可能</translation>
+<translation id="5635091213277904818">30 日以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合もあります。広告の提案を行わないようサイトをブロックすることもできます。</translation>
 <translation id="5639724618331995626">すべてのサイトを許可</translation>
 <translation id="5641456720590409793">Google アカウントに<ph name="BEGIN_LINK1" />検索履歴<ph name="END_LINK1" />や<ph name="BEGIN_LINK2" />その他のアクティビティ<ph name="END_LINK2" />が保存される可能性があります</translation>
 <translation id="564667659802381754">プライバシー ガイド<ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1256,6 +1256,7 @@
 <translation id="7682724950699840886">推奨される対策: デバイスに十分な空き容量があることを確認し、再度エクスポートを試します。</translation>
 <translation id="7686086654630106285">サイト提案広告の詳細</translation>
 <translation id="768618399695552958">アクセスしたページの一部はプリロードされています。ページが Google サイトからリンクされている場合、Google サーバーを介してプリロードされる可能性があります。</translation>
+<translation id="7690596512217303514">デバイスで Chrome を開けませんでした。この問題を解決するには、アプリストアから最新の Chrome アップデートをダウンロードしてください。</translation>
 <translation id="7691043218961417207">フォローするコンテンツを探しましょう</translation>
 <translation id="7697383401610880082">ドラッグ ハンドル</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> でメールを作成</translation>
@@ -1367,6 +1368,7 @@
 <translation id="8209050860603202033">画像を開く</translation>
 <translation id="8216351761227087153">見る</translation>
 <translation id="8218622182176210845">アカウントを管理</translation>
+<translation id="8221401890884589479">広告の提案を希望しないサイトをブロックすることもできます。また、30 日以上経過したサイトはリストから自動削除されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">フィードカード メニュー</translation>
 <translation id="8236097722223016103">ブックマークに追加</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
@@ -1552,7 +1554,6 @@
 <translation id="9158770349521403363">コンテンツのみ共有</translation>
 <translation id="9159716826369098114"><ph name="TAB_COUNT" /> 個のタブのタブグループを新しいバックグラウンドのタブグループとして復元します。</translation>
 <translation id="9169507124922466868">ナビゲーション履歴が半分開いています</translation>
-<translation id="9183331776983279456">Chrome では、4 週間以上経過したサイトは自動削除されます。サイトにもう一度アクセスすると、リストに再度表示される場合があります。広告の提案を行わないようサイトをブロックすることもできます。</translation>
 <translation id="9190276265094487094">同期しているすべてのデバイスから履歴にアクセスして、作業の続きを行うことができます</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{前回の確認: 1 分前}other{前回の確認: # 分前}}</translation>
 <translation id="9204836675896933765">残り 1 ファイル</translation>
@@ -1574,7 +1575,6 @@
 <translation id="96681097142096641">簡易版ページを表示しますか？</translation>
 <translation id="968900484120156207">アクセスしたページがここに表示されます</translation>
 <translation id="970715775301869095">残り <ph name="MINUTES" /> 分</translation>
-<translation id="978317418833355355">広告の提案を希望しないサイトをブロックすることもできます。また、4 週間以上経過したサイトはリストから自動削除されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="983192555821071799">すべてのタブを閉じる</translation>
 <translation id="987264212798334818">全般</translation>

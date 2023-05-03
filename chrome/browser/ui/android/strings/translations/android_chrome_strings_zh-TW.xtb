@@ -785,7 +785,6 @@
 <translation id="5235196193381275927">登入時發生問題</translation>
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
-<translation id="5274286919938458946">已連結到 <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">傳送到</translation>
 <translation id="5300426565656326054">根據瀏覽器的使用記錄放送個人化廣告</translation>
 <translation id="5304593522240415983">這個欄位不能留空</translation>
@@ -847,6 +846,7 @@
 <translation id="562289928968387744">管理回應</translation>
 <translation id="5626134646977739690">名稱：</translation>
 <translation id="5628604359369369630">尚未閱讀 - 可離線閱讀</translation>
+<translation id="5635091213277904818">Chrome 會自動刪除 30 天前的網站，你再次造訪的網站可能會重新顯示在清單中。你也可以封鎖網站，讓該網站無法為你提供建議廣告。</translation>
 <translation id="5639724618331995626">允許所有網站</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至你的 Google 帳戶</translation>
 <translation id="564667659802381754">隱私權指南 <ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
@@ -1255,6 +1255,7 @@
 <translation id="7682724950699840886">請嘗試按照下列提示操作：確認你的裝置上有足夠空間，然後嘗試重新匯出。</translation>
 <translation id="7686086654630106285">進一步瞭解網站建議廣告</translation>
 <translation id="768618399695552958">系統會預先載入你要造訪的部分網頁。當你從 Google 網站連到這些網頁時，系統可能會透過 Google 伺服器預先載入網頁內容。</translation>
+<translation id="7690596512217303514">你的裝置無法開啟 Chrome。如要修正問題，請前往應用程式商店下載 Chrome 更新。</translation>
 <translation id="7691043218961417207">探索值得追蹤的內容</translation>
 <translation id="7697383401610880082">拖曳控點</translation>
 <translation id="7698359219371678927">在「<ph name="APP_NAME" />」中建立電子郵件</translation>
@@ -1366,6 +1367,7 @@
 <translation id="8209050860603202033">開啟圖片</translation>
 <translation id="8216351761227087153">觀看</translation>
 <translation id="8218622182176210845">管理你的帳戶</translation>
+<translation id="8221401890884589479">你可以封鎖不喜歡的網站，Chrome 也會自動將 30 天前的網站從清單中刪除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">動態消息資訊卡選單</translation>
 <translation id="8236097722223016103">加入書籤</translation>
 <translation id="8250920743982581267">文件</translation>
@@ -1551,7 +1553,6 @@
 <translation id="9158770349521403363">僅分享內容</translation>
 <translation id="9159716826369098114">將 <ph name="TAB_COUNT" /> 個分頁群組還原為新的背景分頁群組。</translation>
 <translation id="9169507124922466868">已在畫面下半部顯示瀏覽記錄</translation>
-<translation id="9183331776983279456">Chrome 會自動刪除 4 週前造訪的網站，但你再次造訪的網站可能會重新加回清單。你也可以封鎖網站，讓該網站無法為你提供建議廣告。</translation>
 <translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{已在 1 分鐘前檢查}other{已在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">還剩 1 個檔案</translation>
@@ -1573,7 +1574,6 @@
 <translation id="96681097142096641">要查看簡化頁面嗎？</translation>
 <translation id="968900484120156207">你曾造訪的頁面會顯示在這裡</translation>
 <translation id="970715775301869095">還剩 <ph name="MINUTES" /> 分鐘</translation>
-<translation id="978317418833355355">你可以封鎖不喜歡的網站，Chrome 也會自動將 4 週前造訪的網站從清單中刪除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">離線</translation>
 <translation id="983192555821071799">關閉所有分頁</translation>
 <translation id="987264212798334818">一般</translation>

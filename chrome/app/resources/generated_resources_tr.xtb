@@ -7318,7 +7318,6 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7412226954991670867">GPU Belleği</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Kurulum tamamlandı</translation>
-<translation id="7415484647604548662">İstemediğiniz siteleri engelleyebilirsiniz. Chrome 4 haftadan daha uzun süre önce ziyaret edilmiş siteleri de otomatik olarak siler.</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> dosyasını incele</translation>
 <translation id="7416263748877373774">Hizmet Şartları yüklenemiyor. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin.</translation>
 <translation id="7416362041876611053">Bilinmeyen ağ hatası.</translation>
@@ -9381,7 +9380,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="9180380851667544951">Site, ekranınızı paylaşabilir</translation>
 <translation id="9180847522826713506">Şifrenizi görüntülemek ya da bununla ilgili bir not eklemek için anahtar simgesini tıklayın</translation>
 <translation id="9182556968660520230">Sitelerin korumalı içeriği oynatmasına izin verme</translation>
-<translation id="9183331776983279456">Chrome, 4 haftadan daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak siler. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Alternatif olarak bir sitenin size reklam önermesini de engelleyebilirsiniz.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Uygulama}other{# uygulama}}</translation>
 <translation id="9186963452600581158">Çocuğunuzun Google Hesabıyla oturum açın</translation>
 <translation id="9187967020623675250">Tuşlar eşleşmiyor. <ph name="RESPONSE" /> için herhangi bir tuşa basın.</translation>

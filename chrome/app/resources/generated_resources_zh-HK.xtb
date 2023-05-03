@@ -3252,6 +3252,7 @@
 <translation id="3760460896538743390">檢查背景頁面(&amp;B)</translation>
 <translation id="37613671848467444">在無痕式視窗中開啟(&amp;I)</translation>
 <translation id="3761556954875533505">要允許網站編輯檔案嗎？</translation>
+<translation id="3763433740586298940">您可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 30 日的網站。</translation>
 <translation id="3763549179847864476">私隱權指南返回掣</translation>
 <translation id="3764314093345384080">詳細版本資料</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{與 1 個 USB 裝置通訊}other{與 # 個 USB 裝置通訊}}</translation>
@@ -5342,6 +5343,7 @@
 <translation id="5633149627228920745">進一步了解系統要求</translation>
 <translation id="563371367637259496">流動網絡</translation>
 <translation id="5634446357546764049">查看近期旅行等活動的回憶</translation>
+<translation id="5635091213277904818">Chrome 會自動刪除超過 30 日的網站。再次瀏覽的網站可能會再度出現在清單中。您亦可封鎖網站，讓該網站無法為您建議廣告。</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
 <translation id="563535393368633106">存取前先詢問 (建議)</translation>
 <translation id="5636012309446422">要從 <ph name="PRIMARY_EMAIL" /> 移除 <ph name="DEVICE" /> 嗎？</translation>
@@ -7333,7 +7335,6 @@
 <translation id="7412226954991670867">GPU 記憶體</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完成</translation>
-<translation id="7415484647604548662">您可封鎖不想要的網站。Chrome 亦會從清單自動刪除超過 4 星期的網站。</translation>
 <translation id="7416091793702109803">審核 <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">無法載入《服務條款》。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="7416362041876611053">不明的網絡錯誤</translation>
@@ -8860,7 +8861,7 @@
 <translation id="8725178340343806893">我的最愛/書籤</translation>
 <translation id="87254326763805752">確認密鑰</translation>
 <translation id="8726206820263995930">從伺服器擷取政策設定時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
-<translation id="8727751378406387165">傳送<ph name="BEGIN_LINK1" />自動填入中繼資料<ph name="END_LINK1" />
+<translation id="8727751378406387165">傳送<ph name="BEGIN_LINK1" />自動填入元數據<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (系統不會共用自動填入資料)</translation>
 <translation id="8728351286589123703">系統會重設您所選的權限。</translation>
@@ -9399,7 +9400,6 @@
 <translation id="9180380851667544951">網站可以分享您的螢幕畫面</translation>
 <translation id="9180847522826713506">如要查看密碼或新增密碼相關備註，請按一下鎖匙圖示</translation>
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
-<translation id="9183331776983279456">Chrome 會自動刪除超過 4 星期的網站。您再次瀏覽的網頁可能會再次在清單中顯示。您亦可封鎖網站，讓該網站無法為您提供建議廣告。</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
 <translation id="9186963452600581158">使用子女的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>

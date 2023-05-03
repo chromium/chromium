@@ -1057,6 +1057,7 @@
 <translation id="3587738293690942763">中間</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{你隨時可以重設群組。大約需要 1 天才能加入新群組。}=1{你隨時可以重設群組。大約需要 1 天才能加入新群組。}other{你隨時可以重設群組。需要 {NUM_DAYS} 天才能加入新群組。}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome 會自動刪除 30 天以前用於建議廣告的主題和網站，你也可以封鎖不喜歡的特定主題和網站。</translation>
 <translation id="3603507503523709">已遭系統管理員封鎖的應用程式</translation>
 <translation id="3605899229568538311">5 x 5 吋</translation>
 <translation id="3608932978122581043">送紙方向</translation>
@@ -1186,6 +1187,7 @@
 <translation id="3906954721959377182">平板電腦</translation>
 <translation id="3909695131102177774"><ph name="LABEL" />：<ph name="ERROR" /></translation>
 <translation id="3911401144270344103">你隨時可以在 Chrome 設定中變更這個選項</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />如何自行管理資料：<ph name="END_BOLD" />Chrome 會自動刪除 30 天以前的網站，你再次造訪的網站可能會重新顯示在清單中。你隨時可以在 Chrome 設定中禁止網站提供廣告建議，也可以關閉網站建議廣告設定。</translation>
 <translation id="3921869355029467742">輸入安全碼</translation>
 <translation id="3927932062596804919">拒絕</translation>
 <translation id="393316646445601645">網際網路與電信</translation>
@@ -1888,7 +1890,6 @@
 <translation id="5596939519753369075">2 x 3.5 吋</translation>
 <translation id="560412284261940334">系統不支援管理</translation>
 <translation id="5605670050355397069">Ledger</translation>
-<translation id="5606444889871204172"><ph name="BEGIN_BOLD" />管理資料的方式：<ph name="END_BOLD" />Chrome 會自動刪除 4 週以前的網站。你再次造訪的網站可能會重新加入清單中。你隨時可以在 Chrome 設定中禁止根據特定網站建議廣告，也可以關閉網站建議廣告設定。</translation>
 <translation id="5610142619324316209">檢查連線狀態</translation>
 <translation id="5610807607761827392">你可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中管理信用卡和地址資訊。</translation>
 <translation id="5611398002774823980">儲存到帳戶</translation>
@@ -3218,7 +3219,6 @@
 <translation id="8876033571432926051">休閒遊戲</translation>
 <translation id="8877780815363510165">釣魚</translation>
 <translation id="8884537526797090108">無法錄製機密內容</translation>
-<translation id="8890798179125483517">Chrome 會自動刪除 4 週以前用於建議廣告的主題和網站。你也可以封鎖不喜歡的特定主題和網站。</translation>
 <translation id="8891727572606052622">Proxy 模式無效。</translation>
 <translation id="8894794286471754040">先從長邊開始</translation>
 <translation id="8897428486789851669">游泳</translation>

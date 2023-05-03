@@ -449,7 +449,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3443221991560634068">Znovu načíst aktuální stránku</translation>
 <translation id="3444179773590444986">Poskytnout zpětnou vazbu k tmavému motivu pro weby?</translation>
 <translation id="3452832259067974318">Aby Chrome chránil vaše soukromí, nebude do tohoto pole automaticky vyplňovat heslo.</translation>
-<translation id="3474624961160222204">Pokrač. jako <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Můžete si vybrat vyhledávač</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
@@ -786,7 +786,6 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="5235196193381275927">Při přihlašování se něco pokazilo</translation>
 <translation id="5246093389635966745">Upravit zkratku lišty</translation>
 <translation id="5271967389191913893">Zařízení obsah ke stažení nemůže otevřít.</translation>
-<translation id="5274286919938458946">Propojeno s kartou <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Odeslat do zařízení</translation>
 <translation id="5300426565656326054">Personalizace reklam na základě prohlížeče</translation>
 <translation id="5304593522240415983">Toto pole nesmí být prázdné</translation>
@@ -1552,7 +1551,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="9158770349521403363">Sdílet pouze obsah</translation>
 <translation id="9159716826369098114">Obnovit skupinu <ph name="TAB_COUNT" /> karet jako novou skupinu karet na pozadí.</translation>
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
-<translation id="9183331776983279456">Weby, které jsou starší než 4 týdny, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam můžete webu také zablokovat.</translation>
 <translation id="9190276265094487094">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>
@@ -1574,7 +1572,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="96681097142096641">Zobrazit zjednodušenou stránku?</translation>
 <translation id="968900484120156207">Zde se zobrazují navštívené stránky</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
-<translation id="978317418833355355">Nežádoucí weby můžete zablokovat. Chrome ze seznamu také automaticky maže weby starší než 4 týdny. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>
 <translation id="987264212798334818">Všeobecné</translation>

@@ -2905,7 +2905,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3473241910002674503">Umožňuje přejít na domovskou stránku či zpět a přepínat aplikace pomocí tlačítek v režimu tabletu.</translation>
 <translation id="3473479545200714844">Lupa obrazovky</translation>
 <translation id="3474218480460386727">Nová slova smí mít maximálně 99 písmen</translation>
-<translation id="3474624961160222204">Pokrač. jako <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3475843873335999118">Otisk prstu stále nebyl rozpoznán. Zadejte prosím heslo.</translation>
 <translation id="3476303763173086583">Odesílat údaje o využití a diagnostice. Pomozte prostředí Android svého dítěte zlepšit tím, že necháte do Googlu automaticky odesílat diagnostické údaje a údaje o využití zařízení a aplikací. Tyto údaje nebudou používány ke zjištění totožnosti dítěte a pomohou nám se zvyšováním stability systému a aplikací a dalšími vylepšeními. Některá souhrnná data budou moci využít také naši partneři, např. vývojáři aplikací pro Android. Toto nastavení je <ph name="BEGIN_LINK1" />vyžadováno<ph name="END_LINK1" /> vlastníkem. Vlastník může zvolit, že se diagnostické údaje a údaje o využití z tohoto zařízení mají odesílat do Googlu. Pokud má dítě zapnuté dodatečné nastavení Aktivita na webu a v aplikacích, mohou se tato data ukládat do jeho účtu Google. <ph name="BEGIN_LINK2" />Další informace<ph name="END_LINK2" /></translation>
 <translation id="347670947055184738">Jejda! Systému se nepodařilo načíst zásady pro vaše zařízení.</translation>
@@ -7321,7 +7321,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7412226954991670867">Paměť GPU</translation>
 <translation id="7414464185801331860">18×</translation>
 <translation id="7415454883318062233">Nastavení je hotové</translation>
-<translation id="7415484647604548662">Nežádoucí weby můžete zablokovat. Chrome ze seznamu také automaticky maže weby starší než 4 týdny.</translation>
 <translation id="7416091793702109803">Zkontrolovat soubor <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Smluvní podmínky se nepodařilo načíst. Zkontrolujte připojení k síti a zkuste to znovu.</translation>
 <translation id="7416362041876611053">Neznámá chyba sítě.</translation>
@@ -9386,7 +9385,6 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9180380851667544951">Web může sdílet vaši obrazovku</translation>
 <translation id="9180847522826713506">Pokud chcete zobrazit heslo nebo k němu přidat poznámku, klikněte na ikonu klíče</translation>
 <translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
-<translation id="9183331776983279456">Weby, které jsou starší než 4 týdny, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam můžete webu také zablokovat.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="9186963452600581158">Přihlásit se pomocí účtu Google dítěte</translation>
 <translation id="9187967020623675250">Klávesy se neshodují. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>

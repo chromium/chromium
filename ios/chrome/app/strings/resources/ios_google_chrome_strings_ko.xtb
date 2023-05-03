@@ -20,10 +20,10 @@
 <translation id="2339201583852607431">비밀번호가 Google 계정(<ph name="EMAIL" />)에 저장됩니다.</translation>
 <translation id="2342919707875585281">Chrome은 사용자가 허용한 사이트와 위치 정보를 공유합니다.</translation>
 <translation id="2347208864470321755">이 기능을 사용하면 Chrome에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="2414068465746584414">기기 설정에서 '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />'을(를) 열고 'Chrome'을 선택하세요.</translation>
+<translation id="2414068465746584414">기기 설정에서 '<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />' 항목을 열고 'Chrome'을 선택하세요</translation>
 <translation id="2427791862912929107">Chrome에는 사용자가 간편하게 인터넷 데이터를 관리하고 웹페이지 로드 시간을 제어할 수 있도록 돕는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
-<translation id="2444854139071078915">저장된 비밀번호를 다른 앱에서 쉽게 사용하려면 Chrome용 자동 완성 기능을 사용하세요</translation>
+<translation id="2444854139071078915">저장된 비밀번호를 다른 앱에서 쉽게 입력하려면 Chrome 자동 완성 기능을 사용하세요</translation>
 <translation id="2561231791489583059">Chrome을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호합니다.</translation>
 <translation id="2574249610672786438">Chrome을 사용하는 어느 곳에서나 탭을 확인하려면 모든 기기에서 로그인하세요.</translation>
 <translation id="2576431527583832481">한층 개선된 Chrome의 최신 버전이 출시되었습니다.</translation>
@@ -96,7 +96,7 @@
 <translation id="6709398533399187136">정보 유출로 인해 비밀번호가 노출되었습니다. Google 비밀번호 관리자에서 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="6822673484890854830">Chrome에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6964931465519938134">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
-<translation id="6975725306479268850">자동 완성에서 Chrome을 선택하세요</translation>
+<translation id="6975725306479268850">Chrome 자동 완성을 선택하세요</translation>
 <translation id="701356708427365932">새로운 Chrome 메뉴를 알아보세요.</translation>
 <translation id="7059914902409643750">나만의 Chrome 만들기</translation>
 <translation id="7124339256045485976">Chrome을 최신 상태로 유지합니다.</translation>

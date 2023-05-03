@@ -7335,7 +7335,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7412226954991670867">GPU Memory</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Setup complete</translation>
-<translation id="7415484647604548662">You can block sites that you don't want. Chrome also auto-deletes sites that are older than four weeks from the list.</translation>
 <translation id="7416091793702109803">Review <ph name="FILE_NAME" /></translation>
 <translation id="7416263748877373774">Terms of Service cannot be loaded. Please check your network connection and retry.</translation>
 <translation id="7416362041876611053">Unknown network error</translation>
@@ -9402,7 +9401,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="9180380851667544951">Site can share your screen</translation>
 <translation id="9180847522826713506">To view your password or add a note about it, click the key icon</translation>
 <translation id="9182556968660520230">Don't allow sites to play protected content</translation>
-<translation id="9183331776983279456">Chrome auto-deletes sites that are older than four weeks. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186963452600581158">Sign in with a child's Google Account</translation>
 <translation id="9187967020623675250">Keys don’t match. Press any key to <ph name="RESPONSE" />.</translation>
