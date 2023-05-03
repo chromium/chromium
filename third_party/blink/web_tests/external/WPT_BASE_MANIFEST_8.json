@@ -245735,6 +245735,171 @@
        {}
       ]
      ],
+     "offset-path-shape-inset-001.html": [
+      "dd96c42ebb33e585a9848e12b097dfadb82d7ccf",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-inset-001-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            30
+           ],
+           [
+            0,
+            200
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "offset-path-shape-inset-002.html": [
+      "6279cdd35ebe1c1e977c67b30733fe82524a56dd",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-inset-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-polygon-001.html": [
+      "7e9ccdbfda91bf82a30fe696dba6c8eb4fb3af1a",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-polygon-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-polygon-002.html": [
+      "39352f22be95b72c62ac942f224f756d2774bac4",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-polygon-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-polygon-003.html": [
+      "caa08082e4e879f93aa249d01c9971788513f2ae",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-polygon-003-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            20
+           ],
+           [
+            0,
+            50
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
+     "offset-path-shape-rect-001.html": [
+      "a8a2336cc81c8e9089d62a8d8b2773df8af91f3b",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-rect-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-rect-002.html": [
+      "c7b60b3660ba7332efa9a95d8b699ebba1cbea95",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-rect-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-xywh-001.html": [
+      "ace1ee1c639ca0dd612f54e2c08321ada3bf74d9",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-xywh-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-shape-xywh-002.html": [
+      "65bf8aa2ee91543ce4ac81fcf132a3c83017f9bc",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-shape-xywh-002-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            20
+           ],
+           [
+            0,
+            20
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "offset-path-shape.html": [
       "2750fd9f2fc2b63d50df63cbbf071577c8f24438",
       [
@@ -263954,6 +264119,19 @@
    },
    "scroll-animations": {
     "css": {
+     "scroll-animation-initial-offset.html": [
+      "34ae52d47927ee73c9c41c6f608bcd988e8f0cd7",
+      [
+       null,
+       [
+        [
+         "/scroll-animations/css/scroll-animation-initial-offset-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "scroll-timeline-default-iframe.html": [
       "dbcf5941a85dfdb79f99066ae0225ab9c91db0f6",
       [
@@ -278802,7 +278980,7 @@
       []
      ],
      "fedcm-mock.js": [
-      "18634355b8ee39196f9ebf44105be2897961df95",
+      "cb48bdb27e846f50019741f33826586df377f75a",
       []
      ],
      "fedcm-mojojs-helper.js": [
@@ -336779,8 +336957,44 @@
       "fca4b190db514034fd7b3647cebda99d25aae0dc",
       []
      ],
+     "offset-path-shape-inset-001-ref.html": [
+      "52a9662841c5d56c7655d11329d82f65ac9d17e9",
+      []
+     ],
+     "offset-path-shape-inset-002-ref.html": [
+      "28195129f3282fadc8a2e691321425f886eef6c3",
+      []
+     ],
+     "offset-path-shape-polygon-001-ref.html": [
+      "efaf54c79f2865155811f37de3648468b78541eb",
+      []
+     ],
+     "offset-path-shape-polygon-002-ref.html": [
+      "1e4c6c689b31e9628d7cb90076a9b0f096c10787",
+      []
+     ],
+     "offset-path-shape-polygon-003-ref.html": [
+      "0507f7b45ef022effb8fb8208792fcaa65f017fd",
+      []
+     ],
+     "offset-path-shape-rect-001-ref.html": [
+      "2cb45198e95e06406064d3b3de08d77a2997f570",
+      []
+     ],
+     "offset-path-shape-rect-002-ref.html": [
+      "7e9e07cccf3d26c8090ba98ee788565eca799b07",
+      []
+     ],
      "offset-path-shape-ref.html": [
       "a659b287fdab1ed7bda453c36c17140e0c2740f2",
+      []
+     ],
+     "offset-path-shape-xywh-001-ref.html": [
+      "12f9668dd5c8884368fe89104474d287bb04b28b",
+      []
+     ],
+     "offset-path-shape-xywh-002-ref.html": [
+      "1b672d1d98e712667d6c8d819f0c97c49985fc7b",
       []
      ],
      "offset-path-shape.html.ini": [
@@ -344012,7 +344226,7 @@
       []
      ],
      "default-enabled-features-helper.js": [
-      "d7eb3c63befde6b2f3eb96efb8d8c44ab7a7589a",
+      "821ebf69e367b2cd95edf2e736fc4d44008442d4",
       []
      ],
      "default-enabled-features-redirect.https.html": [
@@ -348752,7 +348966,7 @@
       []
      ],
      "FileSystemBaseHandle-buckets.js": [
-      "01c41231808e2c18d707c0b4413c03d825918578",
+      "c06e940d7e9c5ab2c236c12e87f917f84e368004",
       []
      ],
      "FileSystemBaseHandle-getUniqueId.js": [
@@ -354531,6 +354745,14 @@
        }
       },
       "path-objects": {
+       "2d.path.fill.overlap.png": [
+        "e2a35d48d4c4363294aec671a38cbd4b39c9a53c",
+        []
+       ],
+       "2d.path.stroke.overlap.png": [
+        "e2a35d48d4c4363294aec671a38cbd4b39c9a53c",
+        []
+       ],
        "2d.path.stroke.prune.arc-expected.txt": [
         "cc89923ba955bba7bcd5a241ef42c21a2207ea7a",
         []
@@ -372086,7 +372308,7 @@
     ]
    },
    "lint.ignore": [
-    "6f8ec10470ba416e3e282ddfa3afc97354e66650",
+    "7118adb16114c8ae8b9da512470fb94124f5b8cb",
     []
    ],
    "loading": {
@@ -381615,6 +381837,10 @@
        []
       ]
      },
+     "scroll-animation-initial-offset-ref.html": [
+      "8e6907860ba13eeb70b6cd94759ebaea4e68cb29",
+      []
+     ],
      "scroll-timeline-default-iframe-ref.html": [
       "1ab5646c8bddbec83b29c3d335b0e33fb1a3465c",
       []
@@ -495364,49 +495590,49 @@
      ]
     ],
     "default-enabled-features-allow-all.https.html": [
-     "faebeec26c482d6ddba19994bc801eb300109a7b",
+     "f5084cf3861e37a540ff5f23ea43c304be99e7db",
      [
       null,
       {}
      ]
     ],
     "default-enabled-features-allow-none.https.html": [
-     "a338e00c874f1945b2ce1c017d701b1f8cbb71ef",
+     "d44cb5bca77d59d194bba1116003b137cb594307",
      [
       null,
       {}
      ]
     ],
     "default-enabled-features-allow-self.https.html": [
-     "d59ee7fcdc82e48b4773ebb45d019bab97d712bf",
+     "0360963a0b8f8aec0df19084071137c9803df1de",
      [
       null,
       {}
      ]
     ],
     "default-enabled-features-attribute-allow.https.html": [
-     "dd6dd4ec5022c7861b65e63ba4672630fe18c2dd",
+     "3c3831f0157de1235bead0c2c6f69170b1dc26da",
      [
       null,
       {}
      ]
     ],
     "default-enabled-features-attribute-change.https.html": [
-     "179a8683e32c32007d54200db9e417e091f86d00",
+     "9878e615adbca66d52190a225c765c380c4bab9d",
      [
       null,
       {}
      ]
     ],
     "default-enabled-features-attribute-disallow.https.html": [
-     "29fdc788bf5b7d92ffb343625c4624d5b15178f7",
+     "f9ef9b6db24676f420cd8ced98f47e8b6c19f646",
      [
       null,
       {}
      ]
     ],
     "default-enabled-features-attribution-disabled.https.html": [
-     "7683b35a69942044f95c35f4861e520eaae9e7ba",
+     "9e037e24a3e042751c4b32a33030e094b8e8b045",
      [
       null,
       {}
@@ -495420,7 +495646,7 @@
      ]
     ],
     "default-enabled-features-unset.https.html": [
-     "0e9c300bdcb95f24bd11cabe5db6e4b13f458eac",
+     "b438d1ff35ad934d653ac3375cbe954f3d22cc68",
      [
       null,
       {}
@@ -495980,6 +496206,13 @@
       {
        "timeout": "long"
       }
+     ]
+    ],
+    "resolve-to-config-promise.https.html": [
+     "97df37ef2bc9f43abffb41ff4e88c72fe238f9be",
+     [
+      null,
+      {}
      ]
     ],
     "sandbox-attribute.https.html": [
@@ -532511,6 +532744,20 @@
          {}
         ]
        ],
+       "2d.path.ellipse.basics.html": [
+        "d664c45593102a8a8177f17d44d136223d828df3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.ellipse.basics.worker.js": [
+        "60f3e9a67317a4fb030a14b1c9ebd5a5bd9a4a51",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.ellipse.basics.worker.html",
+         {}
+        ]
+       ],
        "2d.path.fill.closed.basic.html": [
         "6f8fd51de79c2bc79019b88cdaedf7430b285a83",
         [
@@ -532662,6 +532909,20 @@
         "6024a0dc390dc68e3d50a12d9c5435537cc8d963",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInPath.basic.2.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.isPointInPath.basic.html": [
+        "21cf448de2134d287803262696aae4a43703377c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.isPointInPath.basic.worker.js": [
+        "3e2a95c15e5a236ff575971a2d63bfcf53cfe9a2",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.isPointInPath.basic.worker.html",
          {}
         ]
        ],
@@ -532858,6 +533119,48 @@
         "844f0ef1545526dddc5a8a0265946d3947fed7f1",
         [
          "html/canvas/offscreen/path-objects/2d.path.isPointInStroke.basic.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.isPointInStroke.scaleddashes.html": [
+        "1ed13b32de6ad75726dc7f662fe987afe350155d",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.isPointInStroke.scaleddashes.worker.js": [
+        "240905308e3c34927158b82f670421f632ae2e54",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.isPointInStroke.scaleddashes.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.isPointInpath.invalid.html": [
+        "0b4c635fc86df5e314902ff9904376bd41033198",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.isPointInpath.invalid.worker.js": [
+        "f09eeb75264c0fca5ce082e03142b8d661377573",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.isPointInpath.invalid.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.isPointInpath.multi.path.html": [
+        "945855231b7dc07fd24d253c61796aabb0120200",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.isPointInpath.multi.path.worker.js": [
+        "d3d4e60747b7cb29ac1661000f401f2ccd2cd187",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.isPointInpath.multi.path.worker.html",
          {}
         ]
        ],
@@ -533302,6 +533605,20 @@
          {}
         ]
        ],
+       "2d.path.roundrect.1.radius.dompoint.single argument.html": [
+        "4ea78c32d12bec16a76b08666b6fdf742f9253c7",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.dompoint.single argument.worker.js": [
+        "b93d88e89cdc16751d4afab322e383c22b2b83ca",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompoint.single argument.worker.html",
+         {}
+        ]
+       ],
        "2d.path.roundrect.1.radius.dompoint.worker.js": [
         "06d787437e77c440e10dc364ac95a6828b0217b7",
         [
@@ -533316,6 +533633,20 @@
          {}
         ]
        ],
+       "2d.path.roundrect.1.radius.dompointinit.single.argument.html": [
+        "10c5c14cff003e9312bc2d4f2e7f0850bfa025f2",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.dompointinit.single.argument.worker.js": [
+        "a62370677beb87ebb0a65527ae7c4993276b35ae",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompointinit.single.argument.worker.html",
+         {}
+        ]
+       ],
        "2d.path.roundrect.1.radius.dompointinit.worker.js": [
         "56c8e1fcef51b2c861956f60585cda1669a56c17",
         [
@@ -533327,6 +533658,20 @@
         "33574eeaa0ea7f1a9fe280df73de4386a81930d1",
         [
          null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.double.single.argument.html": [
+        "b2c826ff386c89e9cd14497d40b666ffbcd6c9d3",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.double.single.argument.worker.js": [
+        "04350e81aac17d98c918cd5c7e90d6633b681011",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.double.single.argument.worker.html",
          {}
         ]
        ],
@@ -533715,6 +534060,20 @@
          {}
         ]
        ],
+       "2d.path.roundrect.badinput.html": [
+        "97b322971c3ca1842af90c3012b8ce075025ee05",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.badinput.worker.js": [
+        "461dee89adeab7ddd928a81363a00e538f6e0d07",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.badinput.worker.html",
+         {}
+        ]
+       ],
        "2d.path.roundrect.closed.html": [
         "7407ead9cf5b22218fbdf45ce701cc914ac1fd02",
         [
@@ -533866,6 +534225,20 @@
         "554a1ac078e32375a390ada7bd8916577fe20989",
         [
          "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.negative.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.noargument.html": [
+        "26a69afad07a1cb115d707bb2dd267b8305161cd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.noargument.worker.js": [
+        "1f6227786b674a5b9f4fc0b5c122a3772a37f3a3",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.noargument.worker.html",
          {}
         ]
        ],
@@ -542595,7 +542968,7 @@
     "embedded-content": {
      "the-img-element": {
       "attr-img-fetchpriority.html": [
-       "996aa4d1567d1548c805163f2c9ce30cd2008e47",
+       "40daf958705873e5ebceac85ac5a9430c8860ff0",
        [
         null,
         {}
@@ -545739,7 +546112,7 @@
     "scripting": {
      "the-script-element": {
       "attr-script-fetchpriority.html": [
-       "8639d04d86aaa8d5275fee19fadab0e23d1a8583",
+       "738c9eab747cc176ac046ada02a1cd9817f42c4f",
        [
         null,
         {}
@@ -554273,7 +554646,7 @@
        ]
       ],
       "popover-focus-2.html": [
-       "5a7f5da8f7b52d47c7e09e984cb835465591a67d",
+       "be6923e604a18cef5b5f2150ec8345e62bebfbd5",
        [
         null,
         {
@@ -554289,7 +554662,7 @@
        ]
       ],
       "popover-focus.html": [
-       "915a1bcade3279de506dba251b1afeabe0cee929",
+       "df7c046e003a8e70481e124e6441e246043970cd",
        [
         null,
         {
@@ -554325,7 +554698,7 @@
        ]
       ],
       "popover-light-dismiss.html": [
-       "f913aaa357e7bea084f9b4c19d16c3e2b98e9363",
+       "3c776fd6f65fbdf7d2d7abd3567c24e5cd9e81fa",
        [
         null,
         {
@@ -554342,7 +554715,7 @@
        ]
       ],
       "popover-not-keyboard-focusable.html": [
-       "5246073c960180fb92d411fe45f7e60d7c11babc",
+       "55c70aa643e0b1302024d55ee8f19d09815d7401",
        [
         null,
         {
@@ -558849,7 +559222,7 @@
      },
      "the-link-element": {
       "attr-link-fetchpriority.html": [
-       "32c318b7605c2bd92ef59fdd27137fe3dd48d0f5",
+       "8aa515fa4c227066c097b99bf24d42e3e2778488",
        [
         null,
         {}
