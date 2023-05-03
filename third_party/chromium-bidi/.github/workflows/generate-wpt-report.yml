@@ -43,12 +43,12 @@ jobs:
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      - name: Install Chromium
-        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
+      - name: Install Chrome
+        run: echo "chrome_binary=$(npx @puppeteer/browsers install chrome@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
       - name: Run WPT tests
         run: ./runWPT.sh webdriver/tests/bidi/
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ env.chrome_binary }}
           CHROMEDRIVER: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report

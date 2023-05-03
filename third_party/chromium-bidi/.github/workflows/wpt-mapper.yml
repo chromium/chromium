@@ -43,8 +43,8 @@ jobs:
       - name: Set up hosts
         run: ./wpt make-hosts-file | sudo tee -a /etc/hosts
         working-directory: wpt
-      - name: Install Chromium
-        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2 -d' ')" >> $GITHUB_ENV
+      - name: Install Chrome
+        run: echo "chrome_binary=$(npx @puppeteer/browsers install chrome@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
       - name: Run WPT tests
         if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' }}
         timeout-minutes: 30
@@ -53,7 +53,7 @@ jobs:
           xvfb-run --auto-servernum
           ./runWPT.sh webdriver/tests/bidi/
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ env.chrome_binary }}
           HEADLESS: false
           WPT_REPORT: out/wptreport.json
       - name: Run WPT tests
@@ -62,7 +62,7 @@ jobs:
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
         env:
-          BROWSER_BIN: ${{ env.chromium_binary }}
+          BROWSER_BIN: ${{ env.chrome_binary }}
           HEADLESS: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
@@ -77,7 +77,7 @@ jobs:
         if: ${{ always() }}
         run: >
           ./wpt/wpt update-expectations
-          --product chromium
+          --product chrome
           --manifest MANIFEST.json
           --metadata wpt-metadata/mapper/${{ matrix.head }}
           out/wptreport.json
