@@ -1124,7 +1124,8 @@ void AppsGridView::OnDragExited() {
   // TODO(b/261985897): Add timer to close folder bounds.
   if (folder_delegate_) {
     if (drag_view_) {
-      folder_delegate_->ReparentItem(Pointer::NONE, drag_view_, gfx::Point());
+      folder_delegate_->ReparentItem(drag_pointer_, drag_view_,
+                                     last_drag_point_);
     }
 
     if (item_list_) {
@@ -1166,8 +1167,11 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   drag_icon_proxy_.reset();
 
   PrepareItemsForBoundsAnimation();
-
-  drag_pointer_ = MOUSE;
+  if (event.IsMouseEvent()) {
+    drag_pointer_ = MOUSE;
+  } else {
+    drag_pointer_ = TOUCH;
+  }
   drag_view_ = GetItemViewAt(GetModelIndexOfItem(drag_item_));
   if (drag_view_) {
     drag_view_hider_ = std::make_unique<DragViewHider>(drag_view_);
@@ -1178,15 +1182,23 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   } else {
     dragging_for_reparent_item_ = true;
   }
+
+  const gfx::Size initial_grid_size = GetTileGridSize();
   reorder_placeholder_ =
       drag_view_ ? drag_view_init_index_
                  : GetGridIndexFromIndexInViewModel(view_model()->view_size());
+
+  // When reparenting drag, the preferred grid size may change if there are no
+  // extra slots on the grid for the placeholder item.
+  if (GetTileGridSize() != initial_grid_size) {
+    PreferredSizeChanged();
+  }
   ExtractDragLocation(event.root_location(), &drag_start_grid_view_);
 }
 
 int AppsGridView::OnDragUpdated(const ui::DropTargetEvent& event) {
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
-    UpdateDrag(MOUSE, event.location());
+    UpdateDrag(drag_pointer_, event.location());
   }
   return ui::DragDropTypes::DRAG_MOVE;
 }
