@@ -442,6 +442,9 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
   // should wait before deleting `this`.
   bool all_work_done_ = false;
 
+  // Content type of the page that triggered the action.
+  std::string page_content_type_;
+
   base::TimeTicks upload_start_time_;
 
   base::WeakPtrFactory<ContentAnalysisDelegate> weak_ptr_factory_{this};

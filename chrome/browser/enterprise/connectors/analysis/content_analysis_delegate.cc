@@ -361,6 +361,7 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
   std::string user_action_token = base::RandBytesAsString(128);
   user_action_id_ =
       base::HexEncode(user_action_token.data(), user_action_token.size());
+  page_content_type_ = web_contents->GetContentsMimeType();
   result_.text_results.resize(data_.text.size(), false);
   result_.image_result = false;
   result_.paths_results.resize(data_.paths.size(), false);
@@ -635,6 +636,9 @@ void ContentAnalysisDelegate::PreparePageRequest() {
 
     PrepareRequest(enterprise_connectors::PRINT, request.get());
     request->set_filename(title_);
+    if (!page_content_type_.empty()) {
+      request->set_content_type(page_content_type_);
+    }
     UploadPageForDeepScanning(std::move(request));
   }
 }
