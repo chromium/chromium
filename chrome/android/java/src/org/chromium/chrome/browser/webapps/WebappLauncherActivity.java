@@ -164,8 +164,7 @@ public class WebappLauncherActivity extends Activity {
             return;
         }
 
-        if (FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
-                    shouldPreferLightweightFre(launchData))) {
+        if (FirstRunFlowSequencer.launch(this, intent, shouldPreferLightweightFre(launchData))) {
             // Do not remove the current task. The full FRE reuses the task due to
             // android:launchMode arguments, while the LWFRE does not. So removing the task would
             // break the full FRE. The LWFRE will still clean up the task since this is the only

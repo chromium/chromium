@@ -249,12 +249,10 @@ public abstract class FirstRunFlowSequencer  {
      *
      * @param caller               Activity instance that is checking if first run is necessary.
      * @param fromIntent           Intent used to launch the caller.
-     * @param requiresBroadcast    Whether or not the Intent triggers a BroadcastReceiver.
      * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
      * @return Whether startup must be blocked (e.g. via Activity#finish or dropping the Intent).
      */
-    public static boolean launch(Context caller, Intent fromIntent, boolean requiresBroadcast,
-            boolean preferLightweightFre) {
+    public static boolean launch(Context caller, Intent fromIntent, boolean preferLightweightFre) {
         // Check if the user needs to go through First Run at all.
         if (!checkIfFirstRunIsNecessary(preferLightweightFre, fromIntent)) return false;
 
@@ -273,8 +271,7 @@ public abstract class FirstRunFlowSequencer  {
 
         if ((fromIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
             FreIntentCreator intentCreator = new FreIntentCreator();
-            Intent freIntent = intentCreator.create(
-                    caller, fromIntent, requiresBroadcast, preferLightweightFre);
+            Intent freIntent = intentCreator.create(caller, fromIntent, preferLightweightFre);
 
             // Although the FRE tries to run in the same task now, this is still needed for
             // non-activity entry points like the search widget to launch at all. This flag does not

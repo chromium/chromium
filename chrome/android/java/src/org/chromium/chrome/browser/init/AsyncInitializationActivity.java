@@ -362,8 +362,7 @@ public abstract class AsyncInitializationActivity
         }
 
         if (requiresFirstRunToBeCompleted(intent)
-                && FirstRunFlowSequencer.launch(this, intent, false /* requiresBroadcast */,
-                        shouldPreferLightweightFre(intent))) {
+                && FirstRunFlowSequencer.launch(this, intent, shouldPreferLightweightFre(intent))) {
             abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY);
             return false;
         }
