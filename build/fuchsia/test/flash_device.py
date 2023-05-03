@@ -14,8 +14,8 @@ import time
 from typing import Optional, Tuple
 
 import common
-from common import BootMode, boot_device, check_ssh_config_file, \
-    get_system_info, find_image_in_sdk, register_device_args
+from common import BootMode, boot_device, get_system_info, \
+    find_image_in_sdk, register_device_args
 from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
     running_unattended, add_exec_to_file, get_host_arch
 from lockfile import lock
@@ -169,7 +169,6 @@ def update(system_image_dir: str,
 
     system_image_dir = actual_image_dir
     if needs_update:
-        check_ssh_config_file()
         if should_pave:
             if running_unattended():
                 assert target, ('Target ID must be specified on swarming when'
