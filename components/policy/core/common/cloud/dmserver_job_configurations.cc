@@ -5,12 +5,10 @@
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/base/url_util.h"
@@ -185,18 +183,6 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       return DM_STATUS_TEMPORARY_UNAVAILABLE;
     case DeviceManagementService::kDeviceNotFound: {
 #if !BUILDFLAG(IS_CHROMEOS)
-      if (!base::FeatureList::IsEnabled(features::kDmTokenDeletion))
-        return DM_STATUS_SERVICE_DEVICE_NOT_FOUND;
-
-      // If the DMToken deletion feature is enabled and forced, the DM status
-      // corresponding to DMToken deletion will be returned regardless of
-      // whether DMServer signals for deletion or invalidation. This is a
-      // temporary feature intended for testing purposes only.
-      if (base::GetFieldTrialParamByFeatureAsBool(features::kDmTokenDeletion,
-                                                  /*param_name=*/"forced",
-                                                  /*default_value=*/false))
-        return DM_STATUS_SERVICE_DEVICE_NEEDS_RESET;
-
       // The `kDeviceNotFound` response code can correspond to different DM
       // statuses depending on the contents of the response body.
       em::DeviceManagementResponse response;

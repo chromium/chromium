@@ -2039,11 +2039,6 @@ extern const char kWebSQLAccessDescription[];
 extern const char kUseIDNA2008NonTransitionalName[];
 extern const char kUseIDNA2008NonTransitionalDescription[];
 
-#if !BUILDFLAG(IS_CHROMEOS)
-extern const char kDmTokenDeletionName[];
-extern const char kDmTokenDeletionDescription[];
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 extern const char kPolicyMergeMultiSourceName[];
 extern const char kPolicyMergeMultiSourceDescription[];
 

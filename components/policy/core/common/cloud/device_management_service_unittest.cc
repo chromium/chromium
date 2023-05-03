@@ -18,13 +18,11 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
-#include "components/policy/core/common/features.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -356,15 +354,7 @@ void PrintTo(const FailedRequestParams& params, std::ostream* os) {
 // the same for all kinds of requests.
 class DeviceManagementServiceFailedRequestTest
     : public DeviceManagementServiceTestBase,
-      public testing::WithParamInterface<FailedRequestParams> {
- protected:
-  DeviceManagementServiceFailedRequestTest() {
-    feature_list_.InitAndEnableFeature(features::kDmTokenDeletion);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+      public testing::WithParamInterface<FailedRequestParams> {};
 
 TEST_P(DeviceManagementServiceFailedRequestTest, RegisterRequest) {
   EXPECT_CALL(*this, OnJobDone(_, GetParam().expected_status_, _, _));

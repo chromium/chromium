@@ -22,10 +22,6 @@ BASE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher,
              "UserCloudSigninRestrictionPolicyFetcher",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDmTokenDeletion,
-             "DmTokenDeletion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kListPoliciesAcceptCommaSeparatedStringsAndroid,
              "ListPoliciesAcceptCommaSeparatedStringsAndroid",

@@ -27,10 +27,6 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(kPasswordBreachEventReporting);
 POLICY_EXPORT BASE_DECLARE_FEATURE(
     kEnableUserCloudSigninRestrictionPolicyFetcher);
 
-// Causes the DMToken to be deleted (rather than invalidated) when a browser is
-// deleted from CBCM.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
-
 #if BUILDFLAG(IS_ANDROID)
 // Enable comma-separated strings for list policies on Android.
 // Enabled by default, to be used as a kill switch.
