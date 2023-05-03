@@ -57,13 +57,6 @@ size_t EstimateFlatMapSize(
   return result;
 }
 
-std::string ConvertAdSizeToString(const blink::AdSize& ad_size) {
-  return base::StrCat({base::NumberToString(ad_size.width),
-                       ConvertAdSizeUnitToString(ad_size.width_units), "\n",
-                       base::NumberToString(ad_size.height),
-                       ConvertAdSizeUnitToString(ad_size.height_units)});
-}
-
 }  // namespace
 
 InterestGroup::Ad::Ad() = default;
@@ -358,11 +351,9 @@ std::string KAnonKeyForAdBid(const url::Origin& owner,
 std::string KAnonKeyForAdBid(const url::Origin& owner,
                              const GURL& bidding_url,
                              const blink::AdDescriptor& ad_descriptor) {
+  // TODO(crbug.com/1442242): Add size back to this check.
   return "AdBid\n" + owner.GetURL().spec() + '\n' + bidding_url.spec() + '\n' +
-         ad_descriptor.url.spec() +
-         (ad_descriptor.size.has_value()
-              ? '\n' + ConvertAdSizeToString(ad_descriptor.size.value())
-              : "");
+         ad_descriptor.url.spec();
 }
 
 std::string KAnonKeyForAdComponentBid(const GURL& ad_url) {
@@ -371,10 +362,8 @@ std::string KAnonKeyForAdComponentBid(const GURL& ad_url) {
 
 std::string KAnonKeyForAdComponentBid(
     const blink::AdDescriptor& ad_descriptor) {
-  return "ComponentBid\n" + ad_descriptor.url.spec() +
-         (ad_descriptor.size.has_value()
-              ? '\n' + ConvertAdSizeToString(ad_descriptor.size.value())
-              : "");
+  // TODO(crbug.com/1442242): Add size back to this check.
+  return "ComponentBid\n" + ad_descriptor.url.spec();
 }
 
 std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
