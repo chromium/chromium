@@ -47,8 +47,6 @@
   SyncSetupService* _syncSetupService;
   // Manager for user consent.
   unified_consent::UnifiedConsentService* _unifiedConsentService;
-  // Sync opt-in access point.
-  signin_metrics::AccessPoint _accessPoint;
 }
 
 - (instancetype)
@@ -61,8 +59,7 @@
                       syncService:(syncer::SyncService*)syncService
                  syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
-                (unified_consent::UnifiedConsentService*)unifiedConsentService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint {
+                (unified_consent::UnifiedConsentService*)unifiedConsentService {
   self = [super init];
   if (self) {
     _authenticationService = authenticationService;
@@ -78,7 +75,6 @@
     _syncService = syncService;
     _syncSetupService = syncSetupService;
     _unifiedConsentService = unifiedConsentService;
-    _accessPoint = accessPoint;
   }
   return self;
 }
@@ -219,7 +215,7 @@
         base::SysNSStringToUTF8(identity.gaiaID),
         base::SysNSStringToUTF8(identity.userEmail));
     _consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
-    _authenticationService->GrantSyncConsent(identity, _accessPoint);
+    _authenticationService->GrantSyncConsent(identity);
 
     _unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
 

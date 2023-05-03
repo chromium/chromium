@@ -78,9 +78,7 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     system_identity_manager->AddIdentity(fake_identity);
     authentication_service_->SignIn(fake_identity);
-    authentication_service_->GrantSyncConsent(
-        fake_identity,
-        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
+    authentication_service_->GrantSyncConsent(fake_identity);
   }
 
   void setEmailInSnackbarFlag(bool enabled) {

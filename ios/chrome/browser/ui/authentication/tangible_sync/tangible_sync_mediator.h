@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_TANGIBLE_SYNC_TANGIBLE_SYNC_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
-#import "components/signin/public/base/signin_metrics.h"
 
 @class AuthenticationFlow;
 class AuthenticationService;
@@ -53,7 +52,6 @@ class UnifiedConsentService;
                  syncSetupService:(SyncSetupService*)syncSetupService
             unifiedConsentService:
                 (unified_consent::UnifiedConsentService*)unifiedConsentService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
 // Disconnect the mediator.

@@ -294,8 +294,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityNoPromptSignIn) {
   // Sign in.
   SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0));
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->GrantSyncConsent(identity(0));
 
   // Set the authentication service as "In Foreground", remove identity and run
   // the loop.
@@ -322,8 +321,7 @@ TEST_F(AuthenticationServiceTest, TestHandleForgottenIdentityPromptSignIn) {
   // Sign in.
   SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0));
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->GrantSyncConsent(identity(0));
 
   // Set the authentication service as "In Background", remove identity and run
   // the loop.
@@ -745,8 +743,7 @@ TEST_F(AuthenticationServiceTest, SigninAndSyncDecoupled) {
   // Grant Sync consent.
   EXPECT_CALL(*sync_setup_service_mock(), PrepareForFirstSyncSetup).Times(1);
   EXPECT_CALL(*mock_sync_service(), SetSyncFeatureRequested());
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->GrantSyncConsent(identity(0));
 
   EXPECT_NSEQ(identity(0), authentication_service()->GetPrimaryIdentity(
                                signin::ConsentLevel::kSignin));
@@ -774,8 +771,7 @@ TEST_F(AuthenticationServiceTest, TestHandleRestrictedIdentityPromptSignIn) {
   // Sign in.
   SetExpectationsForSignInAndSync();
   authentication_service()->SignIn(identity(0));
-  authentication_service()->GrantSyncConsent(
-      identity(0), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  authentication_service()->GrantSyncConsent(identity(0));
 
   // Set the account restriction.
   SetPattern("foo");

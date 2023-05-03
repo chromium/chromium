@@ -306,8 +306,7 @@ TEST_F(SigninUtilsTest,
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   authentication_service->SignIn(identity);
-  authentication_service->GrantSyncConsent(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
+  authentication_service->GrantSyncConsent(identity);
   chrome_browser_state_->GetPrefs()->SetBoolean(
       syncer::prefs::kSyncFirstSetupComplete, true);
 
@@ -333,8 +332,7 @@ TEST_F(SigninUtilsTest, TestGetPrimaryIdentitySigninStateSyncGranted) {
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
   authentication_service->SignIn(identity);
-  authentication_service->GrantSyncConsent(
-      identity, signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO);
+  authentication_service->GrantSyncConsent(identity);
 
   IdentitySigninState state =
       signin::GetPrimaryIdentitySigninState(chrome_browser_state_.get());

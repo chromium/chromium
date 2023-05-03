@@ -248,9 +248,7 @@
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.userEmail));
   self.consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
-
-  signin_metrics::AccessPoint accessPoint = self.authenticationFlow.accessPoint;
-  self.authenticationService->GrantSyncConsent(identity, accessPoint);
+  self.authenticationService->GrantSyncConsent(identity);
 
   // FirstSetupComplete flag should be turned on after the authentication
   // service has granted user consent to start Sync when tapping "Yes, I'm in."
