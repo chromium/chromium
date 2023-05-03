@@ -536,8 +536,6 @@
 -DiceManageAccountBrowserTest.ClearManagedProfileOnStartup
 -InProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
 -OutOfProcess/ChromeNetworkServiceBrowserTest.EncryptedCookies/0
--VariationsSafeModeEndToEndBrowserTest.ExtendedNullSeedEndToEnd
--VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 -WebHidExtensionFeatureEnabledBrowserTest.HidConnectionTracker
 
 # TODO(crbug.com/1349540): Missing various services, see bug for more info.

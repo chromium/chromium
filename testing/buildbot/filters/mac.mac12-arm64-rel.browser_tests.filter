@@ -197,5 +197,3 @@
 -WelcomeWelcomeAppTest.All
 -WorkerDevToolsTest.PauseInSharedWorkerInitialization
 -V4SafeBrowsingServiceTest.CheckDownloadUrlRedirects
--VariationsSafeModeEndToEndBrowserTest.ExtendedNullSeedEndToEnd
--VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
