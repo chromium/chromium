@@ -40,6 +40,7 @@ void AddReadOnlyFiles(std::vector<BrokerFilePermission>* permissions) {
   // These files are required for some syscalls e.g. get_nprocs, sysinfo.
   permissions->push_back(BrokerFilePermission::ReadOnly("/proc/stat"));
   permissions->push_back(BrokerFilePermission::ReadOnly("/proc/meminfo"));
+  permissions->push_back(BrokerFilePermission::ReadOnly("/proc/cpuinfo"));
 }
 
 std::vector<BrokerFilePermission> GetTtsFilePermissions() {
