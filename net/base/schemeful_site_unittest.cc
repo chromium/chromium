@@ -129,6 +129,19 @@ TEST(SchemefulSiteTest, IPBasedOriginsRemovePort) {
             SchemefulSite(origin_ipv6).GetInternalOriginForTesting());
 }
 
+TEST(SchemefulSiteTest, LocalhostOriginsRemovePort) {
+  // Localhost origins should not be modified, except for removing their ports.
+  url::Origin localhost_http =
+      url::Origin::Create(GURL("http://localhost:1234"));
+  EXPECT_EQ(url::Origin::Create(GURL("http://localhost")),
+            SchemefulSite(localhost_http).GetInternalOriginForTesting());
+
+  url::Origin localhost_https =
+      url::Origin::Create(GURL("https://localhost:1234"));
+  EXPECT_EQ(url::Origin::Create(GURL("https://localhost")),
+            SchemefulSite(localhost_https).GetInternalOriginForTesting());
+}
+
 TEST(SchemefulSiteTest, OpaqueOrigins) {
   url::Origin opaque_origin_a =
       url::Origin::Create(GURL("data:text/html,<body>Hello World</body>"));
