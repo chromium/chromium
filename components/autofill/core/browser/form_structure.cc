@@ -876,7 +876,7 @@ bool FormStructure::ShouldBeParsed(ShouldBeParsedParams params,
   }
 
   bool has_text_field = base::ranges::any_of(*this, [](const auto& field) {
-    return field->form_control_type != "select-one";
+    return !field->IsSelectOrSelectMenuElement();
   });
   if (!has_text_field) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing

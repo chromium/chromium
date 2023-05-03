@@ -378,6 +378,12 @@ class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
     form_structure_ = nullptr;
   }
 
+  void AddTextField() {
+    FormFieldData field;
+    field.form_control_type = "text";
+    AddField(field);
+  }
+
   FormStructure* form_structure() {
     if (!form_structure_)
       form_structure_ = std::make_unique<FormStructure>(form_);
@@ -421,11 +427,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
 
   // Add one text field.
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
@@ -433,22 +435,14 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, IgnoresCheckableFields) {
 
 // Forms with at least one text field should be parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOneTextField) {
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
   EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
@@ -466,28 +460,32 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectField) {
   EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
-  EXPECT_FALSE(
-      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
+      test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
+}
+
+TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfOnlySelectMenuField) {
+  {
+    FormFieldData field;
+    field.form_control_type = "selectmenu";
+    AddField(field);
+  }
+  EXPECT_FALSE(test_api(form_structure()).ShouldBeParsed());
+  EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
+
+  AddTextField();
+  EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
 }
 
 // Form whose action is a search URL should not be parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, FalseIfSearchURL) {
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_TRUE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 1}));
@@ -548,11 +546,7 @@ TEST_F(FormStructureTestImpl_ShouldBeParsed_Test, TrueIfOnlyPasswordFields) {
 // parsed.
 TEST_F(FormStructureTestImpl_ShouldBeParsed_Test,
        TrueIfOneFieldHasAutocomplete) {
-  {
-    FormFieldData field;
-    field.form_control_type = "text";
-    AddField(field);
-  }
+  AddTextField();
   EXPECT_TRUE(test_api(form_structure()).ShouldBeParsed());
   EXPECT_FALSE(
       test_api(form_structure()).ShouldBeParsed({.min_required_fields = 2}));
