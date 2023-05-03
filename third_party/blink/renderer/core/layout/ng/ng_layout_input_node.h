@@ -137,7 +137,6 @@ class CORE_EXPORT NGLayoutInputNode {
   bool IsSvgText() const;
   bool IsTable() const { return IsBlock() && box_->IsTable(); }
   bool IsTextCombine() const { return box_->IsLayoutNGTextCombine(); }
-  bool IsNGTable() const { return IsTable() && box_->IsLayoutNGObject(); }
 
   bool IsTableCaption() const { return IsBlock() && box_->IsTableCaption(); }
   bool IsTableSection() const { return IsBlock() && box_->IsTableSection(); }

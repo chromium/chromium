@@ -367,7 +367,7 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionInternal(
 
   // Tables need to apply one final constraint. They are never allowed to go
   // below their min-intrinsic size (even if they have an inline-size, etc).
-  if (child.IsNGTable()) {
+  if (child.IsTable()) {
     result.sizes.Encompass(
         min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size);
   }
@@ -427,12 +427,6 @@ MinMaxSizesResult ComputeMinAndMaxContentContribution(
   const auto child_writing_mode = child_style.GetWritingMode();
 
   if (IsParallelWritingMode(parent_writing_mode, child_writing_mode)) {
-    // Legacy tables are special - always let the legacy table code handle this.
-    if (child.IsTable() && !child.IsNGTable()) {
-      return child.ComputeMinMaxSizes(
-          parent_writing_mode, MinMaxSizesType::kContent, space, float_input);
-    }
-
     if (child.IsReplaced())
       return ComputeMinAndMaxContentContributionForReplaced(child, space);
   }
@@ -453,12 +447,6 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
 
   const ComputedStyle& child_style = child.Style();
   WritingMode writing_mode = child_style.GetWritingMode();
-
-  // Legacy tables are special - always let the legacy table code handle this.
-  if (child.IsTable() && !child.IsNGTable()) {
-    return child.ComputeMinMaxSizes(writing_mode, MinMaxSizesType::kContent,
-                                    space);
-  }
 
   if (child.IsReplaced())
     return ComputeMinAndMaxContentContributionForReplaced(child, space);
@@ -574,8 +562,9 @@ LayoutUnit ComputeInlineSizeForFragment(
   if (space.IsFixedInlineSize() || space.IsAnonymous())
     return space.AvailableSize().inline_size;
 
-  if (node.IsNGTable())
+  if (node.IsTable()) {
     return To<NGTableNode>(node).ComputeTableInlineSize(space, border_padding);
+  }
 
   return ComputeInlineSizeForFragmentInternal(space, node, border_padding,
                                               override_min_max_sizes_for_test);
@@ -1328,8 +1317,9 @@ NGBoxStrut ComputeBorders(const NGConstraintSpace& constraint_space,
   if (constraint_space.IsTableCell())
     return constraint_space.TableCellBorders();
 
-  if (node.IsNGTable())
+  if (node.IsTable()) {
     return To<NGTableNode>(node).GetTableBorders()->TableBorder();
+  }
 
   return ComputeBordersInternal(node.Style());
 }
