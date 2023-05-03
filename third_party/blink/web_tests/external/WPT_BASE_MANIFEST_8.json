@@ -202993,6 +202993,19 @@
        {}
       ]
      ],
+     "transform-containing-block-and-scrolling-area-for-fixed.html": [
+      "2fd5f3873a211fc3a0970fabc9e1d23873bf2afe",
+      [
+       null,
+       [
+        [
+         "/css/css-transforms/transform-containing-block-and-scrolling-area-for-fixed-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "transform-containing-block-dynamic-1a.html": [
       "7e6a10dda1c24e86f7635bd202efec48e6089fbd",
       [
@@ -271294,16 +271307,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "f8d7f18a03fa3b55f1885423fbfd1b51e5446717",
-     []
-    ],
-    "mtime.json": [
-     "76c86ff0e70b1f2680809c557d18bac31f74c27e",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -326074,6 +326077,10 @@
      ],
      "transform-compound-ref.html": [
       "5122ad98c209f7a46fe9cad2a81497db2001cee2",
+      []
+     ],
+     "transform-containing-block-and-scrolling-area-for-fixed-ref.html": [
+      "2e88d4493fc23356a1f623983bd85292ca44ade5",
       []
      ],
      "transform-descendant-ref.html": [
