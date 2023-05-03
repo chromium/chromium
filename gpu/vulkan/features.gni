@@ -8,8 +8,7 @@ import("//build/config/ui.gni")
 # For details see declare_args() in build/config/BUILDCONFIG.gn.
 declare_args() {
   # Enable experimental vulkan backend.
-  enable_vulkan =
-      is_linux || is_chromeos || is_android || is_fuchsia || is_win || is_mac
+  enable_vulkan = is_linux || is_chromeos || is_android || is_fuchsia || is_win
 
   # Enable swiftshader vulkan. Disabling it can save build time, however
   # --use-vulkan=swiftshader and some tests which use swiftshader vulkan will
