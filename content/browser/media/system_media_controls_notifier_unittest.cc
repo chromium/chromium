@@ -76,19 +76,59 @@ class SystemMediaControlsNotifierTest : public testing::Test {
     notifier_->MediaSessionMetadataChanged(absl::nullopt);
   }
 
-  void SimulateImageChanged() {
+  void SimulatePositionChanged(const media_session::MediaPosition& position) {
+    notifier_->MediaSessionPositionChanged(
+        absl::optional<media_session::MediaPosition>(position));
+  }
+
+  void SimulateEmptyPosition() {
+    notifier_->MediaSessionPositionChanged(absl::nullopt);
+  }
+
+  void SimulateImageChanged(int image_size) {
     // Need a non-empty SkBitmap so MediaControllerImageChanged doesn't try to
     // get the icon from ChromeContentBrowserClient.
     SkBitmap bitmap;
-    bitmap.allocN32Pixels(1, 1);
+    bitmap.allocN32Pixels(image_size, image_size);
     notifier_->MediaControllerImageChanged(
         media_session::mojom::MediaSessionImageType::kArtwork, bitmap);
+  }
+
+  void SimulateIsSeekToEnabledChanged(bool is_seek_to_enabled) {
+    std::vector<media_session::mojom::MediaSessionAction> actions;
+
+    if (is_seek_to_enabled) {
+      actions.push_back(media_session::mojom::MediaSessionAction::kSeekTo);
+    }
+
+    notifier_->MediaSessionActionsChanged(actions);
   }
 
   SystemMediaControlsNotifier& notifier() { return *notifier_; }
   system_media_controls::testing::MockSystemMediaControls&
   mock_system_media_controls() {
     return mock_system_media_controls_;
+  }
+
+  media_session::MediaPosition GetTestMediaPosition(
+      base::TimeDelta position = base::Seconds(10)) {
+    constexpr double kPlaybackRate = 1.0;
+    constexpr base::TimeDelta kDuration = base::Seconds(300);
+
+    return media_session::MediaPosition(kPlaybackRate, kDuration, position,
+                                        false);
+  }
+
+  base::OneShotTimer& metadata_update_timer() {
+    return notifier_->metadata_update_timer_;
+  }
+
+  base::OneShotTimer& icon_update_timer() {
+    return notifier_->icon_update_timer_;
+  }
+
+  base::OneShotTimer& actions_update_timer() {
+    return notifier_->actions_update_timer_;
   }
 
 #if BUILDFLAG(IS_WIN)
@@ -119,8 +159,42 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPlaybackState) {
   EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).After(stopped);
 
   SimulatePlaying();
+  metadata_update_timer().FireNow();
+
+  SimulatePaused();
+  metadata_update_timer().FireNow();
+
+  SimulateStopped();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyDebouncesPlaybackState) {
+  EXPECT_CALL(mock_system_media_controls(),
+              SetPlaybackStatus(PlaybackStatus::kPlaying))
+      .Times(0);
+  EXPECT_CALL(mock_system_media_controls(),
+              SetPlaybackStatus(PlaybackStatus::kPaused));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+
+  SimulatePlaying();
+  SimulatePaused();
+  metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, StopClearsPendingPlaybackState) {
+  EXPECT_CALL(mock_system_media_controls(),
+              SetPlaybackStatus(PlaybackStatus::kPlaying))
+      .Times(0);
+  EXPECT_CALL(mock_system_media_controls(),
+              SetPlaybackStatus(PlaybackStatus::kPaused))
+      .Times(0);
+  EXPECT_CALL(mock_system_media_controls(),
+              SetPlaybackStatus(PlaybackStatus::kStopped));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
+
+  SimulatePlaying();
   SimulatePaused();
   SimulateStopped();
+  EXPECT_FALSE(metadata_update_timer().IsRunning());
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadata) {
@@ -135,6 +209,7 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadata) {
   EXPECT_CALL(mock_system_media_controls(), UpdateDisplay());
 
   SimulateMetadataChanged(title, artist, album);
+  metadata_update_timer().FireNow();
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesNullMetadata) {
@@ -144,12 +219,181 @@ TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesNullMetadata) {
   EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
 
   SimulateEmptyMetadata();
+  EXPECT_FALSE(metadata_update_timer().IsRunning());
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyDebouncesMetadataUpdates) {
+  std::u16string dropped_title = u"dropped_title";
+  std::u16string dropped_artist = u"dropped_artist";
+  std::u16string dropped_album = u"dropped_album";
+
+  std::u16string title = u"title";
+  std::u16string artist = u"artist";
+  std::u16string album = u"album";
+
+  EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
+  EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(album));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), UpdateDisplay());
+
+  // When there are two calls in quick succession, only the last one should be
+  // applied.
+  SimulateMetadataChanged(dropped_title, dropped_artist, dropped_album);
+  SimulateMetadataChanged(title, artist, album);
+  metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesMetadaBetweenDebounces) {
+  std::u16string title = u"title";
+  std::u16string artist = u"artist";
+  std::u16string album = u"album";
+
+  EXPECT_CALL(mock_system_media_controls(), SetTitle(title));
+  EXPECT_CALL(mock_system_media_controls(), SetArtist(artist));
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(album));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), UpdateDisplay());
+
+  SimulateMetadataChanged(title, artist, album);
+  metadata_update_timer().FireNow();
+
+  testing::Mock::VerifyAndClearExpectations(&mock_system_media_controls());
+
+  std::u16string other_title = u"other_title";
+  std::u16string other_artist = u"other_artist";
+  std::u16string other_album = u"other_album";
+
+  EXPECT_CALL(mock_system_media_controls(), SetTitle(other_title));
+  EXPECT_CALL(mock_system_media_controls(), SetArtist(other_artist));
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(other_album));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), UpdateDisplay());
+
+  SimulateMetadataChanged(other_title, other_artist, other_album);
+  metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, EmptyMetadataClearsPendingMetadata) {
+  std::u16string title = u"title";
+  std::u16string artist = u"artist";
+  std::u16string album = u"album";
+
+  EXPECT_CALL(mock_system_media_controls(), SetTitle(_)).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), SetArtist(_)).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), SetAlbum(_)).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
+
+  SimulateMetadataChanged(title, artist, album);
+  SimulateEmptyMetadata();
+  EXPECT_FALSE(metadata_update_timer().IsRunning());
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesPosition) {
+  auto position = GetTestMediaPosition();
+
+  EXPECT_CALL(mock_system_media_controls(), SetPosition(position));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+
+  SimulatePositionChanged(position);
+  metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyHandlesNullPosition) {
+  EXPECT_CALL(mock_system_media_controls(), SetPosition(_)).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
+
+  SimulateEmptyPosition();
+  EXPECT_FALSE(metadata_update_timer().IsRunning());
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyDebouncesPositionUpdates) {
+  auto dropped_position = GetTestMediaPosition(base::Seconds(10));
+  auto position = GetTestMediaPosition(base::Seconds(20));
+
+  EXPECT_CALL(mock_system_media_controls(), SetPosition(position));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+
+  SimulatePositionChanged(dropped_position);
+  SimulatePositionChanged(position);
+  metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest,
+       ProperlyUpdatesPositionBetweenDebounces) {
+  auto first_position = GetTestMediaPosition(base::Seconds(10));
+
+  EXPECT_CALL(mock_system_media_controls(), SetPosition(first_position));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+
+  SimulatePositionChanged(first_position);
+  metadata_update_timer().FireNow();
+
+  testing::Mock::VerifyAndClearExpectations(&mock_system_media_controls());
+
+  auto second_position = GetTestMediaPosition(base::Seconds(20));
+
+  EXPECT_CALL(mock_system_media_controls(), SetPosition(second_position));
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata()).Times(0);
+
+  SimulatePositionChanged(second_position);
+  metadata_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, NullPositionClearsPendingPosition) {
+  EXPECT_CALL(mock_system_media_controls(), SetPosition(_)).Times(0);
+  EXPECT_CALL(mock_system_media_controls(), ClearMetadata());
+
+  SimulatePositionChanged(GetTestMediaPosition());
+  SimulateEmptyPosition();
+  EXPECT_FALSE(metadata_update_timer().IsRunning());
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesImage) {
+  constexpr int kIconSize = 1;
   EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_));
 
-  SimulateImageChanged();
+  SimulateImageChanged(kIconSize);
+  icon_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyDebouncesImage) {
+  constexpr int kDroppedIconSize = 1;
+  constexpr int kIconSize = 2;
+  EXPECT_CALL(mock_system_media_controls(), SetThumbnail(_))
+      .WillOnce(testing::Invoke([kIconSize](const SkBitmap& bitmap) {
+        EXPECT_EQ(bitmap.width(), kIconSize);
+        EXPECT_EQ(bitmap.height(), kIconSize);
+      }));
+
+  SimulateImageChanged(kDroppedIconSize);
+  SimulateImageChanged(kIconSize);
+  icon_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesIsSeekTooEnabled) {
+  EXPECT_CALL(mock_system_media_controls(), SetIsSeekToEnabled(true));
+
+  SimulateIsSeekToEnabledChanged(true);
+  actions_update_timer().FireNow();
+
+  testing::Mock::VerifyAndClearExpectations(&mock_system_media_controls());
+
+  EXPECT_CALL(mock_system_media_controls(), SetIsSeekToEnabled(false));
+
+  SimulateIsSeekToEnabledChanged(false);
+  actions_update_timer().FireNow();
+}
+
+TEST_F(SystemMediaControlsNotifierTest, ProperlyDebouncesIsSeekTooEnabled) {
+  EXPECT_CALL(mock_system_media_controls(), SetIsSeekToEnabled(true)).Times(1);
+  EXPECT_CALL(mock_system_media_controls(), SetIsSeekToEnabled(false)).Times(0);
+
+  SimulateIsSeekToEnabledChanged(true);
+  SimulateIsSeekToEnabledChanged(false);
+  SimulateIsSeekToEnabledChanged(false);
+  SimulateIsSeekToEnabledChanged(true);
+  actions_update_timer().FireNow();
 }
 
 TEST_F(SystemMediaControlsNotifierTest, ProperlyUpdatesID) {
@@ -224,6 +468,7 @@ TEST_F(SystemMediaControlsNotifierTest, DisablesAfterPausingOnLockScreen) {
   EXPECT_CALL(mock_system_media_controls(), SetEnabled(false)).After(paused);
 
   SimulatePlaying();
+  metadata_update_timer().FireNow();
 
   // Lock the screen.
   ui::ScopedSetIdleState locked(ui::IDLE_STATE_LOCKED);
@@ -237,6 +482,7 @@ TEST_F(SystemMediaControlsNotifierTest, DisablesAfterPausingOnLockScreen) {
   EXPECT_FALSE(hide_smtc_timer().IsRunning());
 
   SimulatePaused();
+  metadata_update_timer().FireNow();
 
   // Now that we're paused, the timer to hide the SMTC should be running.
   EXPECT_TRUE(hide_smtc_timer().IsRunning());
