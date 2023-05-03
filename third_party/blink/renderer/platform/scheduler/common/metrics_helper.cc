@@ -20,13 +20,7 @@ constexpr base::TimeDelta kLongTaskDiscardingThreshold = base::Seconds(30);
 
 MetricsHelper::MetricsHelper(ThreadType thread_type,
                              bool has_cpu_timing_for_each_task)
-    : thread_type_(thread_type),
-      thread_task_cpu_duration_reporter_(
-          "RendererScheduler.TaskCPUDurationPerThreadType2"),
-      foreground_thread_task_cpu_duration_reporter_(
-          "RendererScheduler.TaskCPUDurationPerThreadType2.Foreground"),
-      background_thread_task_cpu_duration_reporter_(
-          "RendererScheduler.TaskCPUDurationPerThreadType2.Background") {}
+    : thread_type_(thread_type) {}
 
 MetricsHelper::~MetricsHelper() {}
 
@@ -38,24 +32,6 @@ bool MetricsHelper::ShouldDiscardTask(
   using State = base::sequence_manager ::TaskQueue::TaskTiming::State;
   return task_timing.state() == State::Finished &&
          task_timing.wall_duration() > kLongTaskDiscardingThreshold;
-}
-
-void MetricsHelper::RecordCommonTaskMetrics(
-    const base::sequence_manager::Task& task,
-    const base::sequence_manager::TaskQueue::TaskTiming& task_timing) {
-  bool backgrounded = internal::ProcessState::Get()->is_process_backgrounded;
-
-  if (!task_timing.has_thread_time())
-    return;
-  thread_task_cpu_duration_reporter_.RecordTask(thread_type_,
-                                                task_timing.thread_duration());
-  if (backgrounded) {
-    background_thread_task_cpu_duration_reporter_.RecordTask(
-        thread_type_, task_timing.thread_duration());
-  } else {
-    foreground_thread_task_cpu_duration_reporter_.RecordTask(
-        thread_type_, task_timing.thread_duration());
-  }
 }
 
 }  // namespace scheduler

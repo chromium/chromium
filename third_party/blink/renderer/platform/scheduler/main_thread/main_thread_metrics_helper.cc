@@ -171,8 +171,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
     return;
   }
 
-  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
-
   // WARNING: All code below must be compatible with down-sampling.
   constexpr double kSamplingProbability = .01;
   if (!metrics_subsampler_.ShouldSample(kSamplingProbability)) {

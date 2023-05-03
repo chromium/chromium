@@ -238,7 +238,6 @@ source_set("unit_tests") {
     "common/blink_scheduler_single_thread_task_runner_unittest.cc",
     "common/cooperative_scheduling_manager_unittest.cc",
     "common/idle_helper_unittest.cc",
-    "common/metrics_helper_unittest.cc",
     "common/post_cancellable_task_unittest.cc",
     "common/process_time_override_coordinator_unittest.cc",
     "common/scheduler_helper_unittest.cc",

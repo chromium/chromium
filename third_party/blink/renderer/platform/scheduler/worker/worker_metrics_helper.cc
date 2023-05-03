@@ -30,8 +30,6 @@ void WorkerMetricsHelper::RecordTaskMetrics(
   if (ShouldDiscardTask(task, task_timing))
     return;
 
-  MetricsHelper::RecordCommonTaskMetrics(task, task_timing);
-
   bool backgrounded = internal::ProcessState::Get()->is_process_backgrounded;
 
   if (thread_type_ == ThreadType::kDedicatedWorkerThread) {

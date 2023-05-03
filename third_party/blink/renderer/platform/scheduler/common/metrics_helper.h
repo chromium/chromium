@@ -27,8 +27,7 @@ constexpr int kUkmMetricVersion = 2;
 // task metrics.
 //
 // Each thread-specific scheduler should have its own subclass of MetricsHelper
-// (MainThreadMetricsHelper, WorkerMetricsHelper, etc) and should call
-// RecordCommonTaskMetrics manually.
+// (MainThreadMetricsHelper, WorkerMetricsHelper, etc).
 // Note that this is code reuse, not data reuse -- each thread should have its
 // own instantiation of this class.
 class PLATFORM_EXPORT MetricsHelper {
@@ -45,21 +44,8 @@ class PLATFORM_EXPORT MetricsHelper {
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
 
-  // Record task metrics which are shared between threads.
-  void RecordCommonTaskMetrics(
-      const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
-
  protected:
   const ThreadType thread_type_;
-
- private:
-  scheduling_metrics::TaskDurationMetricReporter<ThreadType>
-      thread_task_cpu_duration_reporter_;
-  scheduling_metrics::TaskDurationMetricReporter<ThreadType>
-      foreground_thread_task_cpu_duration_reporter_;
-  scheduling_metrics::TaskDurationMetricReporter<ThreadType>
-      background_thread_task_cpu_duration_reporter_;
 };
 
 }  // namespace scheduler
