@@ -75,6 +75,10 @@ import org.junit.runner.RunWith;
 import org.chromium.base.Callback;
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -104,6 +108,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTestin
 import org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageService;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
@@ -111,7 +116,9 @@ import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarControl
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.LegacyTestParams;
+import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.RefactorTestParams;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -128,6 +135,7 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
@@ -145,13 +153,11 @@ import java.util.concurrent.atomic.AtomicReference;
 // clang-format off
 /** Tests for the {@link TabSwitcherAndStartSurfaceLayout} */
 @SuppressWarnings("ConstantConditions")
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "force-fieldtrials=Study/Group"})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study"})
-// TODO(1315676): make this test suite works for testing both TabSwitcherAndStartSurfaceLayout and
-// TabSwitcherLayout.
-@DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutTest {
@@ -177,24 +183,45 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
+    @Nullable
     private TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout;
+    @Nullable
+    private TabSwitcherLayout mTabSwitcherLayout;
     private String mUrl;
     private int mRepeat;
     private List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
     private Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
     private TabSwitcher.TabListDelegate mTabListDelegate;
+    private boolean mIsStartSurfaceRefactorEnabled;
+
+    @UseMethodParameterBefore(RefactorTestParams.class)
+    public void setupRefactorTest(boolean isStartSurfaceRefactorEnabled) {
+        mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
+    }
+
+    @UseMethodParameterBefore(LegacyTestParams.class)
+    public void setupLegacyTest(boolean isStartSurfaceRefactorEnabled) {
+        mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
+    }
 
     @Before
     public void setUp() throws ExecutionException {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
+        ChromeFeatureList.sStartSurfaceRefactor.setForTesting(mIsStartSurfaceRefactorEnabled);
+
         // After setUp, Chrome is launched and has one NTP.
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
-        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
-        mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Layout layout = TabUiTestHelper.getTabSwitcherLayoutAndVerify(
+                mIsStartSurfaceRefactorEnabled, cta.getLayoutManager());
+        if (mIsStartSurfaceRefactorEnabled) {
+            mTabSwitcherLayout = (TabSwitcherLayout) layout;
+        } else {
+            mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
+        }
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
 
@@ -213,22 +240,23 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @After
     public void tearDown() {
-        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
         TestThreadUtils.runOnUiThreadBlocking(
                 ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null));
+        mTestServer.stopAndDestroyServer();
     }
 
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1300962")
-    public void testRenderGrid_3WebTabs() throws IOException {
+    public void testRenderGrid_3WebTabs(boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(3, 0, "about:blank");
@@ -244,12 +272,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1300962")
-    public void testRenderGrid_10WebTabs() throws IOException {
+    public void testRenderGrid_10WebTabs(boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(10, 0, "about:blank");
@@ -265,12 +294,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1139807")
     @DisableIf.Build(sdk_is_greater_than = O_MR1, message = "crbug.com/1077552")
-    public void testRenderGrid_10WebTabs_InitialScroll() throws IOException {
+    public void testRenderGrid_10WebTabs_InitialScroll(boolean isStartSurfaceRefactorEnabled)
+            throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(10, 0, "about:blank");
@@ -282,9 +313,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testSwitchTabModel_ScrollToSelectedTab() throws IOException {
+    public void testSwitchTabModel_ScrollToSelectedTab(boolean isStartSurfaceRefactorEnabled)
+            throws IOException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(10, 0, "about:blank");
         assertEquals(9, cta.getCurrentTabModel().index());
@@ -305,12 +338,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1324721 "
         + "and crbug.com/1077552", supported_abis_includes = "x86")
-    public void testRenderGrid_Incognito() throws IOException {
+    public void testRenderGrid_Incognito(boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Prepare some incognito tabs and enter tab switcher.
@@ -329,12 +363,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1313747",
         supported_abis_includes = "x86")
-    public void testRenderGrid_3NativeTabs() throws IOException {
+    public void testRenderGrid_3NativeTabs(boolean isStartSurfaceRefactorEnable)
+            throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Prepare some incognito native tabs and enter tab switcher.
@@ -354,12 +390,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(message = "https://crbug.com/1365708",
-            supported_abis_includes = "x86",
+    @DisableIf.Build(message = "https://crbug.com/1365708", supported_abis_includes = "x86",
             sdk_is_greater_than = O_MR1, sdk_is_less_than = Q)
-    public void testTabToGridFromLiveTab() throws InterruptedException {
+    public void
+    testTabToGridFromLiveTab(boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         assertEquals(0, mTabListDelegate.getSoftCleanupDelayForTesting());
@@ -371,10 +408,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/991852 This test is flaky")
-    public void testTabToGridFromLiveTabAnimation() throws InterruptedException {
+    public void testTabToGridFromLiveTabAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
 
@@ -384,12 +423,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
-    @DisableIf.Build(message = "https://crbug.com/1365708",
-            supported_abis_includes = "x86",
+    @DisableIf.Build(message = "https://crbug.com/1365708", supported_abis_includes = "x86",
             sdk_is_greater_than = O_MR1, sdk_is_less_than = Q)
-    public void testTabToGridFromLiveTabWarm() throws InterruptedException {
+    public void testTabToGridFromLiveTabWarm(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         assertEquals(2000, mTabListDelegate.getSoftCleanupDelayForTesting());
@@ -401,10 +441,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
     @DisabledTest(message = "https://crbug.com/1207875")
-    public void testTabToGridFromLiveTabWarmAnimation() throws InterruptedException {
+    public void testTabToGridFromLiveTabWarmAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(2, 0, NTP_URL);
@@ -413,9 +455,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
-    public void testTabToGridFromLiveTabSoft() throws InterruptedException {
+    public void testTabToGridFromLiveTabSoft(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         assertEquals(0, mTabListDelegate.getSoftCleanupDelayForTesting());
@@ -427,10 +471,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
     @DisabledTest(message = "https://crbug.com/1272561")
-    public void testTabToGridFromLiveTabSoftAnimation() throws InterruptedException {
+    public void testTabToGridFromLiveTabSoftAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(2, 0, NTP_URL);
@@ -439,9 +485,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testTabToGridFromNtp() throws InterruptedException {
+    public void testTabToGridFromNtp(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(NTP_URL);
     }
@@ -474,27 +522,32 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testGridToTabToCurrentNTP() throws InterruptedException {
+    public void testGridToTabToCurrentNTP(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(1, 0, NTP_URL);
         testGridToTab(false, false);
     }
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testGridToTabToOtherNTP() throws InterruptedException {
+    public void testGridToTabToOtherNTP(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(2, 0, NTP_URL);
         testGridToTab(true, false);
     }
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableIf.Build(message = "https://crbug.com/1365708",
-            supported_abis_includes = "x86",
+    @DisableIf.Build(message = "https://crbug.com/1365708", supported_abis_includes = "x86",
             sdk_is_greater_than = O_MR1, sdk_is_less_than = Q)
-    public void testGridToTabToCurrentLive() throws InterruptedException {
+    public void
+    testGridToTabToCurrentLive(boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(1, 0, mUrl);
@@ -517,11 +570,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
      */
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     // clang-format off
     @DisableIf.Build(message = "Flaky on emulators; see https://crbug.com/1094492",
         supported_abis_includes = "x86")
-    public void testGridToTabToCurrentLiveDetached() throws Exception {
+    public void testGridToTabToCurrentLiveDetached(boolean isStartSurfaceRefactorEnabled)
+            throws Exception {
         // clang-format on
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
@@ -561,9 +616,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @DisabledTest(message = "crbug.com/993201 This test fails deterministically on Nexus 5X")
-    public void testGridToTabToCurrentLiveWithAnimation() throws InterruptedException {
+    public void testGridToTabToCurrentLiveWithAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(1, 0, mUrl);
@@ -572,9 +629,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @DisabledTest(message = "crbug.com/1313972")
-    public void testGridToTabToOtherLive() throws InterruptedException {
+    public void testGridToTabToOtherLive(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(2, 0, mUrl);
@@ -583,9 +642,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
     @DisabledTest(message = "crbug.com/993201 This test fails deterministically on Nexus 5X")
-    public void testGridToTabToOtherLiveWithAnimation() throws InterruptedException {
+    public void testGridToTabToOtherLiveWithAnimation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertTrue(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(2, 0, mUrl);
@@ -594,9 +655,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
     @DisabledTest(message = "crbug.com/1237623 test is flaky")
-    public void testGridToTabToOtherFrozen() throws InterruptedException {
+    public void testGridToTabToOtherFrozen(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
         prepareTabs(2, 0, mUrl);
@@ -651,9 +714,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testRestoredTabsDontFetch() throws Exception {
+    public void testRestoredTabsDontFetch(boolean isStartSurfaceRefactorEnabled) throws Exception {
         prepareTabs(2, 0, mUrl);
         int oldCount = mTabListDelegate.getBitmapFetchCountForTesting();
 
@@ -664,17 +728,18 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         assertEquals(3, mActivityTestRule.tabsCount(false));
 
-        Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
-        assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
-        mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
+        TabUiTestHelper.getTabSwitcherLayoutAndVerify(
+                mIsStartSurfaceRefactorEnabled, mActivityTestRule.getActivity().getLayoutManager());
         assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - oldCount);
     }
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testInvisibleTabsDontFetch() throws InterruptedException {
+    public void testInvisibleTabsDontFetch(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // Open a few new tabs.
         final int count = mTabListDelegate.getBitmapFetchCountForTesting();
         for (int i = 0; i < 3; i++) {
@@ -690,10 +755,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
     @DisabledTest(message = "crbug.com/1130830")
-    public void testInvisibleTabsDontFetchWarm() throws InterruptedException {
+    public void testInvisibleTabsDontFetchWarm(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // Get the GTS in the warm state.
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(NTP_URL);
@@ -715,10 +782,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
     @DisabledTest(message = "crbug.com/1130830")
-    public void testInvisibleTabsDontFetchSoft() throws InterruptedException {
+    public void testInvisibleTabsDontFetchSoft(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // Get the GTS in the soft cleaned up state.
         prepareTabs(2, 0, NTP_URL);
         testTabToGrid(NTP_URL);
@@ -740,12 +809,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "http://crbug/1005865 - Test was previously flaky but only on bots."
             + "Was not locally reproducible. Disabling until verified that it's deflaked on bots.")
-    public void testIncognitoEnterGts() throws InterruptedException {
+    public void testIncognitoEnterGts(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // clang-format on
         prepareTabs(1, 1, null);
         enterGTSWithThumbnailChecking();
@@ -761,12 +832,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     // clang-format off
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1063991",
         sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
-    public void testIncognitoToggle_tabCount() throws InterruptedException{
+    public void testIncognitoToggle_tabCount(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException{
         // clang-format on
         mActivityTestRule.loadUrl(mUrl);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -788,11 +861,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "https://crbug.com/1233169")
-    public void testIncognitoToggle_thumbnailFetchCount() throws InterruptedException {
+    public void testIncognitoToggle_thumbnailFetchCount(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         int oldFetchCount = mTabListDelegate.getBitmapFetchCountForTesting();
@@ -834,12 +909,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
                     ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
                     ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testUrlUpdatedNotCrashing_ForUndoableClosedTab() throws Exception {
+    public void testUrlUpdatedNotCrashing_ForUndoableClosedTab(
+            boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
         prepareTabs(2, 0, null);
@@ -856,12 +933,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
+    public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel(
+            boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 1, null);
@@ -881,13 +960,15 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
-        + "thumbnail_aspect_ratio/1.0"})
-    public void testTabSuggestionMessageCard_dismiss() throws InterruptedException {
+        + "thumbnail_aspect_ratio/1.0/soft-cleanup-delay/2000/cleanup-delay/10000"})
+    public void testTabSuggestionMessageCard_dismiss(boolean isStartSurfaceRefactorEnable)
+            throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
 
@@ -898,13 +979,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
 
+        mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
 
         // TODO(meiliang): Avoid using static variable for tracking state,
         // TabSwitcherCoordinator::hasAppendedMessagesForTesting. Instead, we can query the number
         // of items that the inner model of the TabSwitcher has.
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
         onView(allOf(withId(R.id.close_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
         onView(withId(R.id.tab_grid_message_item)).check(doesNotExist());
@@ -913,13 +995,15 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0"
-        + "/thumbnail_aspect_ratio/1.0"})
-    public void testTabSuggestionMessageCard_review() throws InterruptedException {
+        + "/thumbnail_aspect_ratio/1.0/soft-cleanup-delay/2000/cleanup-delay/10000"})
+    public void testTabSuggestionMessageCard_review(boolean isStartSurfaceRefactorEnable)
+            throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, null);
 
@@ -927,11 +1011,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
 
+        mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
 
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-        onView(allOf(withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
+        ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        ViewUtils
+                .onViewWaiting(allOf(
+                        withId(R.id.action_button), withParent(withId(R.id.tab_grid_message_item))))
                 .perform(click());
 
         TabSelectionEditorTestingRobot tabSelectionEditorTestingRobot =
@@ -944,6 +1031,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @Feature("TabSuggestion")
     @DisabledTest(message = "https://crbug.com/1230107, crbug.com/1130621")
     // clang-format off
@@ -952,14 +1040,15 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
-    public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup()
-            throws InterruptedException {
+    public void testShowOnlyOneTabSuggestionMessageCard_withSoftCleanup(
+            boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         // clang-format on
         verifyOnlyOneTabSuggestionMessageCardIsShowing();
     }
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @Feature("TabSuggestion")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
@@ -968,8 +1057,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
         + "thumbnail_aspect_ratio/1.0"})
     @DisabledTest(message = "https://crbug.com/1198484, crbug.com/1130621")
-    public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup()
-            throws InterruptedException {
+    public void testShowOnlyOneTabSuggestionMessageCard_withHardCleanup(
+            boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         // clang-format on
         verifyOnlyOneTabSuggestionMessageCardIsShowing();
     }
@@ -977,23 +1066,26 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
-        + "thumbnail_aspect_ratio/1.0"})
+        + "thumbnail_aspect_ratio/1.0/soft-cleanup-delay/2000/cleanup-delay/10000"})
     @DisabledTest(message = "https://crbug.com/1311825")
-    public void testTabSuggestionMessageCardDismissAfterTabClosing() throws InterruptedException {
+    public void testTabSuggestionMessageCardDismissAfterTabClosing(
+            boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         // clang-format on
         prepareTabs(3, 0, mUrl);
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
 
+        mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
-        onView(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
+        ViewUtils.onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
 
         closeFirstTabInTabSwitcher(mActivityTestRule.getActivity());
 
@@ -1011,14 +1103,16 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0/"
-        + "thumbnail_aspect_ratio/1.0"})
+        + "thumbnail_aspect_ratio/1.0/soft-cleanup-delay/2000/cleanup-delay/10000"})
     @DisabledTest(message = "https://crbug.com/1326533")
-    public void testTabSuggestionMessageCard_orientation() throws InterruptedException {
+    public void testTabSuggestionMessageCard_orientation(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(3, 0, null);
@@ -1028,6 +1122,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
 
+        mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
 
@@ -1047,6 +1142,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         onView(tabSwitcherViewMatcher())
                 .perform(RecyclerViewActions.scrollToPosition(3))
                 .check(MessageCardWidthAssertion.checkMessageItemSpanSize(3, 3));
+        ActivityTestUtils.clearActivityOrientation(mActivityTestRule.getActivity());
     }
 
     private static class MessageCardWidthAssertion implements ViewAssertion {
@@ -1089,12 +1185,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @LargeTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
     @DisabledTest(message = "https://crbug.com/1122657")
-    public void testThumbnailAspectRatio_default() {
+    public void testThumbnailAspectRatio_default(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
         prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1105,12 +1202,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @LargeTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75/enable_launch_polish/true"})
     @DisabledTest(message = "https://crbug.com/1122657")
-    public void testThumbnailAspectRatio_point75() throws InterruptedException{
+    public void testThumbnailAspectRatio_point75(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException{
         // clang-format on
         prepareTabs(2, 0, "about:blank");
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1128,13 +1227,15 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @LargeTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS
             + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true/enable_launch_polish/true"})
     @DisabledTest(message = "Flaky - https://crbug.com/1124041")
-    public void testThumbnailAspectRatio_fromTwoToPoint75() throws Exception {
+    public void testThumbnailAspectRatio_fromTwoToPoint75(
+            boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         prepareTabs(2, 0, "about:blank");
         // Select the first tab to ensure the second tab thumbnail is captured.
@@ -1160,9 +1261,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testThumbnailFetchingResult_liveLayer() throws Exception {
+    public void testThumbnailFetchingResult_liveLayer(boolean isStartSurfaceRefactorEnabled)
+            throws Exception {
         var histograms = HistogramWatcher.newSingleRecordWatcher(
                 TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
                 TabContentManager.ThumbnailFetchingResult.GOT_NOTHING);
@@ -1178,9 +1281,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testThumbnailFetchingResult_jpeg() throws Exception {
+    public void testThumbnailFetchingResult_jpeg(boolean isStartSurfaceRefactorEnabled)
+            throws Exception {
         var histograms = HistogramWatcher.newSingleRecordWatcher(
                 TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
                 TabContentManager.ThumbnailFetchingResult.GOT_JPEG);
@@ -1198,10 +1303,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/2.0/allow_to_refetch/true"})
     @DisabledTest(message = "crbug.com/1315676#c20")
-    public void testThumbnailFetchingResult_changingAspectRatio() throws Exception {
+    public void testThumbnailFetchingResult_changingAspectRatio(
+            boolean isStartSurfaceRefactorEnabled) throws Exception {
         var histograms = HistogramWatcher.newSingleRecordWatcher(
                 TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
                 TabContentManager.ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG);
@@ -1221,10 +1328,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1297930")
-    public void testRecycling_defaultAspectRatio() {
+    public void testRecycling_defaultAspectRatio(boolean isStartSurfaceRefactorEnabled) {
         prepareTabs(10, 0, mUrl);
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1233,11 +1341,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
     @DisabledTest(message = "http://crbug/1092987")
-    public void testRecycling_aspectRatioPoint75() {
+    public void testRecycling_aspectRatioPoint75(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
         prepareTabs(10, 0, mUrl);
         ChromeTabUtils.switchTabInCurrentTabModel(mActivityTestRule.getActivity(), 0);
@@ -1247,10 +1356,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/0.75"})
-    public void testExpandTab_withAspectRatioPoint75() throws InterruptedException {
+    public void testExpandTab_withAspectRatioPoint75(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // clang-format on
         prepareTabs(1, 0, mUrl);
         enterTabSwitcher(mActivityTestRule.getActivity());
@@ -1259,13 +1370,15 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @Feature({"RenderTest"})
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/thumbnail_aspect_ratio/1.0"})
     @DisabledTest(message = "https://crbug.com/1359687")
-    public void testRenderGrid_withAspectRatioOfOne() throws IOException {
+    public void testRenderGrid_withAspectRatioOfOne(
+            boolean isStartSurfaceRefactorEnabled) throws IOException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(3, 0, "about:blank");
@@ -1280,13 +1393,14 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
     @DisabledTest(message = "https://crbug.com/1130212")
-    public void testCloseTabViaCloseButton() throws Exception {
+    public void testCloseTabViaCloseButton(boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
         prepareTabs(1, 0, null);
@@ -1299,12 +1413,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<study"})
     @DisabledTest(message = "Flaky - https://crbug.com/1124041, crbug.com/1061178")
-    public void testSwipeToDismiss_GTS() {
+    public void testSwipeToDismiss_GTS(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         // Create 3 tabs and merge the first two tabs into one group.
@@ -1334,11 +1449,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS + "/enable_launch_polish/true"})
-    public void testCloseButtonDescription() {
+    public void testCloseButtonDescription(boolean isStartSurfaceRefactorEnabled) {
         String expectedDescription = "Close New tab tab";
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1446,10 +1562,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
     @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @DisabledTest(message = "crbug.com/1096997")
-    public void testTabGroupManualSelection() throws InterruptedException {
+    public void testTabGroupManualSelection(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
         createTabs(cta, false, 3);
@@ -1472,9 +1590,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    public void testTabSelectionEditorV2_SystemBackDismiss() {
+    public void testTabSelectionEditorV2_SystemBackDismiss(boolean isStartSurfaceRefactorEnabled) {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
@@ -1492,14 +1611,16 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
+    @UseMethodParameter(LegacyTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study"})
     @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
     @CommandLineFlags.Add({BASE_PARAMS + "/baseline_tab_suggestions/true" +
             "/baseline_close_tab_suggestions/true/min_time_between_prefetches/0" +
-            "/thumbnail_aspect_ratio/1.0"})
-    public void testTabGroupManualSelection_AfterReviewTabSuggestion() throws InterruptedException {
+            "/thumbnail_aspect_ratio/1.0/soft-cleanup-delay/2000/cleanup-delay/10000"})
+    public void testTabGroupManualSelection_AfterReviewTabSuggestion(
+            boolean isStartSurfaceRefactorEnable) throws InterruptedException {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         TabSelectionEditorTestingRobot robot = new TabSelectionEditorTestingRobot();
@@ -1510,6 +1631,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
 
+        mayEnterGTSAndLeave(cta);
         // Entering GTS with thumbnail checking here is trying to reduce flakiness that is caused by
         // the TabContextObserver. TabContextObserver listens to
         // TabObserver#didFirstVisuallyNonEmptyPaint and invalidates the suggestion. Do the
@@ -1549,9 +1671,11 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @DisabledTest(message = "crbug.com/1187320 This doesn't work with FeedV2 and crbug.com/1096295")
-    public void testActivityCanBeGarbageCollectedAfterFinished() throws Exception {
+    public void testActivityCanBeGarbageCollectedAfterFinished(
+            boolean isStartSurfaceRefactorEnabled) throws Exception {
         prepareTabs(1, 0, "about:blank");
 
         WeakReference<ChromeTabbedActivity> activityRef =
@@ -1562,6 +1686,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         mTabSwitcherAndStartSurfaceLayout = null;
+        mTabSwitcherLayout = null;
         mTabListDelegate = null;
         mActivityTestRule.setActivity(activity);
 
@@ -1572,10 +1697,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testTabGroupNotFormDuringRestore() throws Exception {
+    public void testTabGroupNotFormDuringRestore(boolean isStartSurfaceRefactorEnabled)
+            throws Exception {
         // clang-format on
         // Finish the activity and disable the ChromeFeatureList.TAB_GROUPS_ANDROID flag.
         finishActivity(mActivityTestRule.getActivity());
@@ -1612,10 +1739,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void verifyTabGroupStateAfterReparenting() throws Exception {
+    public void verifyTabGroupStateAfterReparenting(boolean isStartSurfaceRefactorEnabled)
+            throws Exception {
         // clang-format on
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertTrue(cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
@@ -1652,6 +1781,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
             ChromeFeatureList.START_SURFACE_WITH_ACCESSIBILITY})
@@ -1663,7 +1793,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
                                                "/gts-accessibility-support/true"})
     // clang-format on
     public void
-    testUndoClosure_AccessibilityMode() throws Exception {
+    testUndoClosure_AccessibilityMode(boolean isStartSurfaceRefactorEnabled) throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1685,12 +1815,13 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.INSTANT_START,
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     // TODO(crbug.com/1112557): Remove this test when critical tests in StartSurfaceLayoutTest are
     // running with InstantStart on.
-    public void testSetup_WithInstantStart() throws Exception {
+    public void testSetup_WithInstantStart(boolean isStartSurfaceRefactorEnabled) throws Exception {
         // clang-format on
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
@@ -1712,8 +1843,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    public void testUndoGroupClosureInTabSwitcher() {
+    public void testUndoGroupClosureInTabSwitcher(boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 2);
@@ -1735,7 +1867,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    public void testLongPressTab_entryInTabSwitcher_verifyNoSelectionOccurs() {
+    @UseMethodParameter(RefactorTestParams.class)
+    public void testLongPressTab_entryInTabSwitcher_verifyNoSelectionOccurs(
+            boolean isStartSurfaceRefactorEnable) {
         TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1759,7 +1893,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    public void testLongPressTabGroup_entryInTabSwitcher() {
+    @UseMethodParameter(RefactorTestParams.class)
+    public void testLongPressTabGroup_entryInTabSwitcher(boolean isStartSurfaceRefactorEnable) {
         TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1783,7 +1918,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
-    public void testLongPressTab_verifyPostLongPressClickNoSelectionEditor() {
+    @UseMethodParameter(RefactorTestParams.class)
+    public void testLongPressTab_verifyPostLongPressClickNoSelectionEditor(
+            boolean isStartSurfaceRefactorEnabled) {
         TabUiFeatureUtilities.setTabSelectionEditorLongPressEntryEnabledForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -1813,8 +1950,9 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    public void testUndoGroupMergeInTabSwitcher_TabToTab() {
+    public void testUndoGroupMergeInTabSwitcher_TabToTab(boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 2);
@@ -1835,8 +1973,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    public void testUndoGroupMergeInTabSwitcher_TabToGroupAdjacent() {
+    public void testUndoGroupMergeInTabSwitcher_TabToGroupAdjacent(
+            boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 3);
@@ -1867,8 +2007,10 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(RefactorTestParams.class)
     @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
-    public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent() {
+    public void testUndoGroupMergeInTabSwitcher_GroupToGroupNonAdjacent(
+            boolean isStartSurfaceRefactorEnabled) {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
         createTabs(cta, false, 5);
@@ -1912,9 +2054,12 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         AtomicReference<TabSwitcher.TabListDelegate> tabListDelegate = new AtomicReference<>();
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> tabListDelegate.set(
-                                mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting()
-                                        .getGridTabListDelegate()));
+                        -> tabListDelegate.set(mIsStartSurfaceRefactorEnabled
+                                        ? mTabSwitcherLayout.getTabSwitcherForTesting()
+                                                  .getTabListDelegate()
+                                        : mTabSwitcherAndStartSurfaceLayout
+                                                  .getStartSurfaceForTesting()
+                                                  .getGridTabListDelegate()));
         return tabListDelegate.get();
     }
 
@@ -1993,13 +2138,31 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                 LayoutType.TAB_SWITCHER));
 
-        StartSurface startSurface = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting();
-        TabUiTestHelper.pressBackOnGts(startSurface);
+        TabUiTestHelper.pressBackOnTabSwitcher(mIsStartSurfaceRefactorEnabled, mTabSwitcherLayout,
+                mTabSwitcherAndStartSurfaceLayout);
         // TODO(wychen): using default timeout or even converting to
         //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
         LayoutTestUtils.waitForLayout(
                 mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         assertThumbnailsAreReleased();
+    }
+
+    /**
+     * Enters the GTS and leaves if Start surface refactoring isn't enabled. TODO(
+     */
+    private void mayEnterGTSAndLeave(ChromeTabbedActivity cta) throws InterruptedException {
+        if (mIsStartSurfaceRefactorEnabled) return;
+
+        enterTabSwitcher(cta);
+        assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
+                LayoutType.TAB_SWITCHER));
+
+        TabUiTestHelper.pressBackOnTabSwitcher(mIsStartSurfaceRefactorEnabled, mTabSwitcherLayout,
+                mTabSwitcherAndStartSurfaceLayout);
+        // TODO(wychen): using default timeout or even converting to
+        //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
+        LayoutTestUtils.waitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
     }
 
     private void checkFinalCaptureCount(boolean switchToAnotherTab, int initCount) {
@@ -2106,6 +2269,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(getTabCountInCurrentTabModel(), Matchers.is(3)));
 
+        mayEnterGTSAndLeave(mActivityTestRule.getActivity());
         enterGTSWithThumbnailChecking();
         CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
         onView(allOf(withText(suggestionMessage), withParent(withId(R.id.tab_grid_message_item))))

@@ -44,6 +44,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -114,6 +115,34 @@ public class StartSurfaceTestUtils {
                     new ParameterSet().value(true, false).name("Instant_NoReturn"),
                     new ParameterSet().value(false, true).name("NoInstant_Return"),
                     new ParameterSet().value(true, true).name("Instant_Return"));
+
+    /**
+     * {@link ParameterProvider} used for parameterized tests with/without "Start Surface refactor"
+     * flag enabled.
+     */
+    public static class RefactorTestParams implements ParameterProvider {
+        private static List<ParameterSet> sRefactorTestParams =
+                Arrays.asList(new ParameterSet().value(false).name("RefactorDisabled"),
+                        new ParameterSet().value(true).name("RefactorEnabled"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sRefactorTestParams;
+        }
+    }
+
+    /**
+     * {@link ParameterProvider} used for tests with "Start Surface refactor" flag disabled.
+     */
+    public static class LegacyTestParams implements ParameterProvider {
+        private static List<ParameterSet> sLegacyTestParams =
+                Arrays.asList(new ParameterSet().value(false));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sLegacyTestParams;
+        }
+    }
 
     private static final long MAX_TIMEOUT_MS = 30000L;
 

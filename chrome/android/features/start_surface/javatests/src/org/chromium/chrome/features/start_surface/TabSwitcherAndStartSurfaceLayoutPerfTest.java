@@ -26,12 +26,17 @@ import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameterBefore;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -39,6 +44,8 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -47,15 +54,18 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout.PerfListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.LegacyTestParams;
+import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.RefactorTestParams;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -68,16 +78,14 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for the {@link TabSwitcherAndStartSurfaceLayout}, mainly for animation performance. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study,"
                 + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
         "force-fieldtrials=Study/Group"})
 @Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
-// TODO(1315676): make this test suite works for both TabSwitcherAndStartSurfaceLayout and
-// TabSwitcherLayout.
-@DisableFeatures({ChromeFeatureList.START_SURFACE_REFACTOR})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class TabSwitcherAndStartSurfaceLayoutPerfTest {
@@ -95,23 +103,42 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
+    @Nullable
     private TabSwitcherAndStartSurfaceLayout mTabSwitcherAndStartSurfaceLayout;
+    @Nullable
+    private TabSwitcherLayout mTabSwitcherLayout;
     private String mUrl;
     private int mRepeat;
     private long mWaitingTime;
     private int mTabNumCap;
+    private boolean mIsStartSurfaceRefactorEnabled;
+
+    @UseMethodParameterBefore(RefactorTestParams.class)
+    public void setupRefactorTest(boolean isStartSurfaceRefactorEnabled) {
+        mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
+    }
+
+    @UseMethodParameterBefore(LegacyTestParams.class)
+    public void setupLegacyTest(boolean isStartSurfaceRefactorEnable) {
+        mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnable;
+    }
 
     @Before
     public void setUp() {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 ApplicationProvider.getApplicationContext());
+        ChromeFeatureList.sStartSurfaceRefactor.setForTesting(mIsStartSurfaceRefactorEnabled);
+
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
-        TabUiTestHelper.verifyTabSwitcherLayoutType(mActivityTestRule.getActivity());
-        mTabSwitcherAndStartSurfaceLayout =
-                (TabSwitcherAndStartSurfaceLayout) mActivityTestRule.getActivity()
-                        .getLayoutManager()
-                        .getOverviewLayout();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        Layout layout = TabUiTestHelper.getTabSwitcherLayoutAndVerify(
+                mIsStartSurfaceRefactorEnabled, cta.getLayoutManager());
+        if (mIsStartSurfaceRefactorEnabled) {
+            mTabSwitcherLayout = (TabSwitcherLayout) layout;
+        } else {
+            mTabSwitcherAndStartSurfaceLayout = (TabSwitcherAndStartSurfaceLayout) layout;
+        }
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
         mWaitingTime = 0;
@@ -128,76 +155,94 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
                     mActivityTestRule.getActivity()));
         });
 
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+        CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
+    }
+
+    @After
+    public void tearDown() {
+        mTestServer.stopAndDestroyServer();
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testTabToGridFromLiveTab() throws InterruptedException {
+    public void testTabToGridFromLiveTab(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(1, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testTabToGridFromLiveTabWith10Tabs() throws InterruptedException {
+    public void testTabToGridFromLiveTabWith10Tabs(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/10000/cleanup-delay/10000"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
-    testTabToGridFromLiveTabWith10TabsWarm() throws InterruptedException {
+    testTabToGridFromLiveTabWith10TabsWarm(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (warm)");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
             supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
             sdk_is_less_than = VERSION_CODES.Q)
     public void
-    testTabToGridFromLiveTabWith10TabsSoft() throws InterruptedException {
+    testTabToGridFromLiveTabWith10TabsSoft(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (soft)");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/downsampling-scale/1"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
-    testTabToGridFromLiveTabWith10TabsNoDownsample() throws InterruptedException {
+    testTabToGridFromLiveTabWith10TabsNoDownsample(boolean isStartSurfaceRefactorEnable)
+            throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no downsample)");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS + "/max-duty-cycle/1"})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
-    testTabToGridFromLiveTabWith10TabsNoRateLimit() throws InterruptedException {
+    testTabToGridFromLiveTabWith10TabsNoRateLimit(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no rate-limit)");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @DisabledTest(message = "https://crbug.com/1045938")
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testTabToGridFromLiveTabWith10TabsWithoutThumbnail() throws InterruptedException {
+    public void testTabToGridFromLiveTabWith10TabsWithoutThumbnail(
+            boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         // Note that most of the tabs won't have thumbnails.
         prepareTabs(10, null);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs without thumbnails");
@@ -205,9 +250,11 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1048268")
-    public void testTabToGridFromLiveTabWith100Tabs() throws InterruptedException {
+    public void testTabToGridFromLiveTabWith100Tabs(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         // Skip waiting for loading. Otherwise it would take too long.
         // Note that most of the tabs won't have thumbnails.
         prepareTabs(100, null);
@@ -216,8 +263,10 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testTabToGridFromNtp() throws InterruptedException {
+    public void testTabToGridFromNtp(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException {
         prepareTabs(1, NTP_URL);
         reportTabToGridPerf(NTP_URL, "Tab-to-Grid from NTP");
     }
@@ -289,8 +338,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
         List<Float> dirtySpans = new LinkedList<>();
-        TabSwitcherAndStartSurfaceLayout.PerfListener collector =
-                (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
+        PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
             assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
                             * CompositorAnimator.sDurationScale);
             float fps = 1000.f * frameRendered / elapsedMs;
@@ -302,9 +350,8 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         mActivityTestRule.loadUrl(fromUrl);
         Thread.sleep(mWaitingTime);
 
-        StartSurface startSurface = mTabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting();
         for (int i = 0; i < mRepeat; i++) {
-            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(collector);
+            setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             TestThreadUtils.runOnUiThreadBlocking(
                     ()
@@ -318,8 +365,9 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             assertTrue(mActivityTestRule.getActivity().getLayoutManager().isLayoutVisible(
                     LayoutType.TAB_SWITCHER));
 
-            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(null);
-            TabUiTestHelper.pressBackOnGts(startSurface);
+            setPerfListenerForTesting(null);
+            TabUiTestHelper.pressBackOnTabSwitcher(mIsStartSurfaceRefactorEnabled,
+                    mTabSwitcherLayout, mTabSwitcherAndStartSurfaceLayout);
             LayoutTestUtils.waitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
         }
@@ -330,47 +378,56 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1184787 and https://crbug.com/1363755")
-    public void testGridToTabToCurrentNTP() throws InterruptedException, TimeoutException {
+    public void testGridToTabToCurrentNTP(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
         prepareTabs(1, NTP_URL);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current NTP");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1087608")
-    public void testGridToTabToOtherNTP() throws InterruptedException, TimeoutException {
+    public void testGridToTabToOtherNTP(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
         prepareTabs(2, NTP_URL);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other NTP");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "crbug.com/1087608")
-    public void testGridToTabToCurrentLive() throws InterruptedException, TimeoutException {
+    public void testGridToTabToCurrentLive(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
         prepareTabs(1, mUrl);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current live tab");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisabledTest(message = "https://crbug.com/1225926")
-    public void testGridToTabToOtherLive() throws InterruptedException, TimeoutException {
+    public void testGridToTabToOtherLive(boolean isStartSurfaceRefactorEnabled)
+            throws InterruptedException, TimeoutException {
         prepareTabs(2, mUrl);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other live tab");
     }
 
     @Test
     @EnormousTest
+    @UseMethodParameter(RefactorTestParams.class)
     @CommandLineFlags.Add({BASE_PARAMS})
     @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
             sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
     public void
-    testGridToTabToOtherFrozen() throws InterruptedException {
+    testGridToTabToOtherFrozen(boolean isStartSurfaceRefactorEnabled) throws InterruptedException {
         prepareTabs(2, mUrl);
         reportGridToTabPerf(true, true, "Grid-to-Tab to other frozen tab");
     }
@@ -379,8 +436,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
             String description) throws InterruptedException {
         List<Float> frameRates = new LinkedList<>();
         List<Float> frameInterval = new LinkedList<>();
-        TabSwitcherAndStartSurfaceLayout.PerfListener collector =
-                (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
+        PerfListener collector = (frameRendered, elapsedMs, maxFrameInterval, dirtySpan) -> {
             assertTrue(elapsedMs >= TabSwitcherAndStartSurfaceLayout.ZOOMING_DURATION
                             * CompositorAnimator.sDurationScale);
             float fps = 1000.f * frameRendered / elapsedMs;
@@ -390,7 +446,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         Thread.sleep(mWaitingTime);
 
         for (int i = 0; i < mRepeat; i++) {
-            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(null);
+            setPerfListenerForTesting(null);
             LayoutTestUtils.startShowingAndWaitForLayout(
                     mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER,
                     true);
@@ -404,7 +460,7 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
                 Thread.sleep(1000);
             }
 
-            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(collector);
+            setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
             Espresso.onView(allOf(withParent(withId(TabUiTestHelper.getTabSwitcherParentId(
                                           mActivityTestRule.getActivity()))),
@@ -445,5 +501,13 @@ public class TabSwitcherAndStartSurfaceLayoutPerfTest {
         }
         Arrays.sort(array);
         return array[array.length / 2];
+    }
+
+    private void setPerfListenerForTesting(PerfListener perfListener) {
+        if (mTabSwitcherLayout != null) {
+            mTabSwitcherLayout.setPerfListenerForTesting(perfListener);
+        } else {
+            mTabSwitcherAndStartSurfaceLayout.setPerfListenerForTesting(perfListener);
+        }
     }
 }

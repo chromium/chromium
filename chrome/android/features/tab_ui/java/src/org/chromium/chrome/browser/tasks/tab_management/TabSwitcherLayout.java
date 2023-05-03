@@ -108,7 +108,10 @@ public class TabSwitcherLayout extends Layout {
 
     private boolean mAndroidViewFinishedShowing;
 
-    interface PerfListener {
+    /**
+     * Notified when the animation is complete.
+     */
+    public interface PerfListener {
         void onAnimationDone(
                 int frameRendered, long elapsedMs, long maxFrameInterval, int dirtySpan);
     }
@@ -634,7 +637,7 @@ public class TabSwitcherLayout extends Layout {
     }
 
     @VisibleForTesting
-    void setPerfListenerForTesting(PerfListener perfListener) {
+    public void setPerfListenerForTesting(PerfListener perfListener) {
         mPerfListenerForTesting = perfListener;
     }
 

@@ -57,6 +57,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -68,8 +69,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.features.start_surface.StartSurface;
-import org.chromium.chrome.features.start_surface.StartSurfaceCoordinator;
 import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -755,24 +754,52 @@ public class TabUiTestHelper {
      */
     public static void verifyTabSwitcherLayoutType(ChromeTabbedActivity cta) {
         boolean isStartSurfaceRefactorEnabled = ChromeFeatureList.sStartSurfaceRefactor.isEnabled();
-        if (isStartSurfaceRefactorEnabled) {
-            Layout layout = cta.getLayoutManager().getTabSwitcherLayoutForTesting();
-            assertTrue(layout instanceof TabSwitcherLayout);
-        } else {
-            Layout layout = cta.getLayoutManager().getOverviewLayout();
-            assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
-        }
+        getTabSwitcherLayoutAndVerify(isStartSurfaceRefactorEnabled, cta.getLayoutManager());
     }
 
     /**
-     * Presses the back button on the grid tab switcher and make sure that the fading animation
-     * is done.
-     * @param startSurface The {@link StartSurfaceCoordinator} which handles the back button
-     *        pressing on GTS.
+     * Gets the tab switcher layout depends on whether the refactoring is enabled and verifies its
+     * type.
      */
-    public static void pressBackOnGts(StartSurface startSurface) throws InterruptedException {
-        Thread.sleep(1000);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { startSurface.onBackPressed(); });
-        Thread.sleep(1000);
+    public static Layout getTabSwitcherLayoutAndVerify(
+            boolean isStartSurfaceRefactorEnabled, LayoutManagerChrome layoutManager) {
+        Layout layout;
+        if (isStartSurfaceRefactorEnabled) {
+            layout = layoutManager.getTabSwitcherLayoutForTesting();
+            assertTrue(layout instanceof TabSwitcherLayout);
+        } else {
+            layout = layoutManager.getOverviewLayout();
+            assertTrue(layout instanceof TabSwitcherAndStartSurfaceLayout);
+        }
+        return layout;
+    }
+
+    /**
+     * Presses the back button on the Tab switcher.
+     * @param isStartSurfaceRefactorEnabled Whether Start surface refactoring is enabled.
+     * @param tabSwitcherLayout The {@link TabSwitcherLayout} when the refactoring is enabled.
+     * @param tabSwitcherAndStartSurfaceLayout The {@link TabSwitcherAndStartSurfaceLayout} which
+     *                                         handles the back operations of Tab switcher before
+     *                                         the refactoring is enabled.
+     */
+    public static void pressBackOnTabSwitcher(boolean isStartSurfaceRefactorEnabled,
+            @Nullable TabSwitcherLayout tabSwitcherLayout,
+            @Nullable TabSwitcherAndStartSurfaceLayout tabSwitcherAndStartSurfaceLayout)
+            throws InterruptedException {
+        if (isStartSurfaceRefactorEnabled) {
+            assert tabSwitcherLayout != null;
+            Thread.sleep(1000);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                tabSwitcherLayout.getTabSwitcherForTesting().getController().onBackPressed();
+            });
+            Thread.sleep(1000);
+        } else {
+            assert tabSwitcherAndStartSurfaceLayout != null;
+            Thread.sleep(1000);
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                tabSwitcherAndStartSurfaceLayout.getStartSurfaceForTesting().onBackPressed();
+            });
+            Thread.sleep(1000);
+        }
     }
 }
