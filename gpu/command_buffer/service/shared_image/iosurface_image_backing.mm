@@ -898,14 +898,10 @@ IOSurfaceImageBacking::ProduceSkiaGraphite(
     return SkiaGraphiteDawnImageRepresentation::Create(
         std::move(dawn_representation), context_state,
         context_state->gpu_main_graphite_recorder(), manager, this, tracker);
-#else
-    NOTREACHED();
-    return nullptr;
 #endif
   }
   // TODO(hitawala): Implement this for GrContextType::kGraphiteMetal.
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void IOSurfaceImageBacking::SetPurgeable(bool purgeable) {

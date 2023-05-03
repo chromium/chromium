@@ -17,10 +17,10 @@
 
 namespace {
 
+// TODO(sunnyps): Revisit this when implementing wrapped graphite backings
+// for render passes - do we also need CopySrc and/or CopyDst?
 constexpr WGPUTextureUsage kDefaultTextureUsage = static_cast<WGPUTextureUsage>(
-    WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst |
     WGPUTextureUsage_RenderAttachment | WGPUTextureUsage_TextureBinding);
-
 }
 
 namespace gpu {
@@ -71,12 +71,17 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
       kDefaultTextureUsage, AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
-    LOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
+    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
   }
 
   // TODO(crbug.com/1430206): Add multiplanar format support.
-  CHECK(format().is_single_plane());
+  if (!format().is_single_plane()) {
+    DLOG(ERROR) << "BeginWriteAccess called for unsupported format = "
+                << format().ToString();
+    return {};
+  }
+
   viz::SharedImageFormat actual_format = format();
 #if BUILDFLAG(IS_MAC)
   // IOSurfaces are allocated as BGRA_8888 if the requested format is RGBA_8888,
@@ -101,7 +106,7 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess(
       backing()->color_space().GetAsFullRangeRGB().ToSkColorSpace(),
       &surface_props);
   if (!surface) {
-    LOG(ERROR) << "Could not create SkSurface";
+    DLOG(ERROR) << "Could not create SkSurface";
     dawn_scoped_access_.reset();
     return {};
   }
@@ -114,11 +119,16 @@ SkiaGraphiteDawnImageRepresentation::BeginWriteAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
   // TODO(crbug.com/1430206): Add multiplanar format support.
-  CHECK(format().is_single_plane());
+  if (!format().is_single_plane()) {
+    DLOG(ERROR) << "BeginWriteAccess called for unsupported format = "
+                << format().ToString();
+    return {};
+  }
+
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
       kDefaultTextureUsage, AllowUnclearedAccess::kYes);
   if (!dawn_scoped_access_) {
-    LOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
+    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
   }
   mode_ = RepresentationAccessMode::kWrite;
@@ -136,11 +146,16 @@ SkiaGraphiteDawnImageRepresentation::BeginReadAccess() {
   CHECK_EQ(mode_, RepresentationAccessMode::kNone);
   CHECK(!dawn_scoped_access_);
   // TODO(crbug.com/1430206): Add multiplanar format support.
-  CHECK(format().is_single_plane());
+  if (!format().is_single_plane()) {
+    DLOG(ERROR) << "BeginReadAccess called for unsupported format = "
+                << format().ToString();
+    return {};
+  }
+
   dawn_scoped_access_ = dawn_representation_->BeginScopedAccess(
       kDefaultTextureUsage, AllowUnclearedAccess::kNo);
   if (!dawn_scoped_access_) {
-    LOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
+    DLOG(ERROR) << "Could not create DawnImageRepresentation::ScopedAccess";
     return {};
   }
   mode_ = RepresentationAccessMode::kRead;
