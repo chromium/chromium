@@ -36,6 +36,7 @@ BASE_DECLARE_FEATURE(kBottomSheetGtsSupport);
 BASE_DECLARE_FEATURE(kClearOmniboxFocusAfterNavigation);
 BASE_DECLARE_FEATURE(kCloseTabSuggestions);
 BASE_DECLARE_FEATURE(kCloseTabSaveTabList);
+BASE_DECLARE_FEATURE(kCreateNewTabInitializeRenderer);
 BASE_DECLARE_FEATURE(kCriticalPersistedTabData);
 BASE_DECLARE_FEATURE(kCastDeviceFilter);
 BASE_DECLARE_FEATURE(kCCTAllowCrossUidActivitySwitchFromBelow);

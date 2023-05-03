@@ -499,4 +499,29 @@ public class WarmupManagerTest {
                 TaskTraits.UI_DEFAULT, () -> { Assert.assertFalse(mWarmupManager.hasSpareTab()); });
         histogramWatcher.assertExpected();
     }
+
+    /**
+     * Tests that we are able to create new tab along with initializing renderer when the feature
+     * CREATE_NEW_TAB_INITIALIZE_RENDERER is enabled.
+     */
+    @Test
+    @MediumTest
+    @Feature({"SpareTab"})
+    @UiThreadTest
+    @EnableFeatures(
+            {ChromeFeatureList.SPARE_TAB, ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER})
+    public void
+    testOnTabCreationWithInitializeRenderer() {
+        mWarmupManager.createSpareTab(mActivityTestRule.getActivity().getCurrentTabCreator(),
+                TabLaunchType.FROM_TAB_GROUP_UI);
+        Assert.assertTrue(mWarmupManager.hasSpareTab());
+
+        Tab tab = mWarmupManager.takeSpareTab(false, TabLaunchType.FROM_TAB_GROUP_UI);
+        WebContents webContents = tab.getWebContents();
+        Assert.assertNotNull(tab);
+        Assert.assertNotNull(webContents);
+
+        // RenderFrame should be created when the CREATE_NEW_TAB_INITIALIZE_RENDERER is enabled.
+        Assert.assertTrue(webContents.getMainFrame().isRenderFrameLive());
+    }
 }

@@ -188,6 +188,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCloseTabSuggestions,
     &kCloseTabSaveTabList,
     &kCriticalPersistedTabData,
+    &kCreateNewTabInitializeRenderer,
     &kCCTAllowCrossUidActivitySwitchFromBelow,
     &kCCTBackgroundTab,
     &kCCTBottomBarSwipeUpGesture,
@@ -531,6 +532,10 @@ BASE_FEATURE(kCloseTabSuggestions,
 BASE_FEATURE(kCloseTabSaveTabList,
              "CloseTabSaveTabList",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCreateNewTabInitializeRenderer,
+             "CreateNewTabInitializeRenderer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCriticalPersistedTabData,
              "CriticalPersistedTabData",
