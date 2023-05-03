@@ -219,12 +219,9 @@ void HidCollection::GetMaxReportSizes(size_t* max_input_report_bits,
         reports;
     const raw_ref<size_t, ExperimentalAsh> max_report_bits;
   } report_lists[]{
-      {ToRawRef<ExperimentalAsh>(input_reports_),
-       ToRawRef<ExperimentalAsh>(*max_input_report_bits)},
-      {ToRawRef<ExperimentalAsh>(output_reports_),
-       ToRawRef<ExperimentalAsh>(*max_output_report_bits)},
-      {ToRawRef<ExperimentalAsh>(feature_reports_),
-       ToRawRef<ExperimentalAsh>(*max_feature_report_bits)},
+      {raw_ref(input_reports_), raw_ref(*max_input_report_bits)},
+      {raw_ref(output_reports_), raw_ref(*max_output_report_bits)},
+      {raw_ref(feature_reports_), raw_ref(*max_feature_report_bits)},
   };
   auto collection_info = mojom::HidCollectionInfo::New();
   collection_info->usage =
@@ -274,12 +271,9 @@ mojom::HidCollectionInfoPtr HidCollection::ToMojo() const {
     const raw_ref<std::vector<mojom::HidReportDescriptionPtr>, ExperimentalAsh>
         out;
   } report_lists[]{
-      {ToRawRef<ExperimentalAsh>(input_reports_),
-       ToRawRef<ExperimentalAsh>(collection->input_reports)},
-      {ToRawRef<ExperimentalAsh>(output_reports_),
-       ToRawRef<ExperimentalAsh>(collection->output_reports)},
-      {ToRawRef<ExperimentalAsh>(feature_reports_),
-       ToRawRef<ExperimentalAsh>(collection->feature_reports)},
+      {raw_ref(input_reports_), raw_ref(collection->input_reports)},
+      {raw_ref(output_reports_), raw_ref(collection->output_reports)},
+      {raw_ref(feature_reports_), raw_ref(collection->feature_reports)},
   };
 
   collection->usage =

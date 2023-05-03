@@ -77,7 +77,7 @@ struct Quoter {
 
 template <typename T>
 Quoter<T> Quote(const T& value) {
-  return {ToRawRef<ExperimentalAsh>(value)};
+  return {raw_ref(value)};
 }
 
 template <typename T>

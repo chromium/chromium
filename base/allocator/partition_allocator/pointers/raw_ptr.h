@@ -50,15 +50,15 @@
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #include "base/allocator/partition_allocator/pointers/raw_ptr_backup_ref_impl.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 #if BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 #include "base/allocator/partition_allocator/pointers/raw_ptr_asan_unowned_impl.h"
-#endif
+#endif  // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
 #if BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 #include "base/allocator/partition_allocator/pointers/raw_ptr_hookable_impl.h"
-#endif
+#endif  // BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
 namespace cc {
 class Scheduler;
@@ -108,24 +108,17 @@ enum class RawPtrTraits : unsigned {
   // Don't use directly, use AllowPtrArithmetic instead.
   kAllowPtrArithmetic = (1 << 3),
 
-  // This pointer is evaluated by a separate, Ash-related experiment.
-  //
-  // Don't use directly, use ExperimentalAsh instead.
-  kExperimentalAsh = (1 << 4),
-
-  // *** ForTest traits below ***
-
   // Adds accounting, on top of the chosen implementation, for test purposes.
   // raw_ptr/raw_ref with this trait perform extra bookkeeping, e.g. to track
   // the number of times the raw_ptr is wrapped, unwrapped, etc.
   //
   // Test only.
-  kUseCountingWrapperForTest = (1 << 10),
+  kUseCountingWrapperForTest = (1 << 4),
 
   // Helper trait that can be used to test raw_ptr's behaviour or conversions.
   //
   // Test only.
-  kDummyForTest = (1 << 11),
+  kDummyForTest = (1 << 5),
 };
 
 // Used to combine RawPtrTraits:
@@ -154,7 +147,6 @@ constexpr RawPtrTraits Remove(RawPtrTraits a, RawPtrTraits b) {
 constexpr bool AreValid(RawPtrTraits traits) {
   return Remove(traits, RawPtrTraits::kMayDangle | RawPtrTraits::kDisableHooks |
                             RawPtrTraits::kAllowPtrArithmetic |
-                            RawPtrTraits::kExperimentalAsh |
                             RawPtrTraits::kUseCountingWrapperForTest |
                             RawPtrTraits::kDummyForTest) ==
          RawPtrTraits::kEmpty;
@@ -188,21 +180,9 @@ using MayBeDangling = base::raw_ptr<T, Traits | base::RawPtrTraits::kMayDangle>;
 
 namespace base {
 
-struct RawPtrGlobalSettings {
-  static void EnableExperimentalAsh() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::EnableExperimentalAsh();
-#endif
-  }
-
-  static void DisableExperimentalAshForTest() {
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-    internal::BackupRefPtrGlobalSettings::DisableExperimentalAshForTest();
-#endif
-  }
-};
-
 namespace internal {
+// These classes/structures are part of the raw_ptr implementation.
+// DO NOT USE THESE CLASSES DIRECTLY YOURSELF.
 
 struct RawPtrNoOpImpl {
   static constexpr bool kMustZeroOnInit = false;
@@ -495,8 +475,7 @@ struct TraitsToImpl {
   // protections related to raw_ptr.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   using UnderlyingImpl = internal::RawPtrBackupRefImpl<
-      /*AllowDangling=*/Contains(Traits, RawPtrTraits::kMayDangle),
-      /*ExperimentalAsh=*/Contains(Traits, RawPtrTraits::kExperimentalAsh)>;
+      /*allow_dangling=*/Contains(Traits, RawPtrTraits::kMayDangle)>;
 
 #elif BUILDFLAG(USE_ASAN_UNOWNED_PTR)
   using UnderlyingImpl = std::conditional_t<
@@ -642,8 +621,8 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     }
   }
 
-#else   // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+#else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
+       // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
 
   // raw_ptr can be trivially default constructed (leaving |wrapped_ptr_|
   // uninitialized).
@@ -667,7 +646,7 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   static_assert(!kZeroOnMove);
   static_assert(!kZeroOnDestruct);
 #endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
-        // BUILDFLAG(USE_ASAN_UNOWNED_PTR) || BUILDFLAG(USE_HOOKABLE_RAW_PTR)
+        // BUILDFLAG(USE_ASAN_UNOWNED_PTR)
 
   // Cross-kind copy constructor.
   // Move is not supported as different traits may use different ref-counts, so
@@ -1190,15 +1169,12 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 // to differentiate pointers added recently for the ChromeOS ash rewrite.
 //
 // See launch plan:
-// https://docs.google.com/document/d/105OVhNl-2lrfWElQSk5BXYv-nLynfxUrbC4l8cZ0CoU/edit
+// https://docs.google.com/document/d/105OVhNl-2lrfWElQSk5BXYv-nLynfxUrbC4l8cZ0CoU/edit#
 //
 // This is not meant to be added manually. You can ignore this flag.
 //
-// kMayDangle is added only temporarily to avoid triggering DPD CQ bot.
-// TODO(arthursonzogni): Remove kMayDangle from here and annotate necessary
-// `raw_ptr`s explicitly.
-constexpr auto ExperimentalAsh =
-    base::RawPtrTraits::kExperimentalAsh | base::RawPtrTraits::kMayDangle;
+// TODO(https://crbug.com/1435441) Implement the ExperimentalAsh Trait.
+constexpr auto ExperimentalAsh = base::RawPtrTraits::kMayDangle;
 
 namespace std {
 

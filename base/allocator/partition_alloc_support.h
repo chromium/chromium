@@ -45,7 +45,6 @@ class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-    bool enable_brp_for_ash = false;
     bool enable_brp_zapping = false;
     bool enable_brp_partition_memory_reclaimer = false;
     bool split_main_partition = false;

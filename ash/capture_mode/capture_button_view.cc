@@ -18,7 +18,6 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -71,19 +70,19 @@ CaptureButtonState GetCaptureButtonState() {
   const auto* const controller = CaptureModeController::Get();
   if (controller->type() == CaptureModeType::kImage) {
     return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_IMAGE_CAPTURE,
-                              ToRawRef<ExperimentalAsh>(kCaptureModeImageIcon)};
+                              raw_ref(kCaptureModeImageIcon)};
   }
 
   if (controller->recording_type() == RecordingType::kWebM) {
     return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_VIDEO_RECORD,
-                              ToRawRef<ExperimentalAsh>(kCaptureModeVideoIcon)};
+                              raw_ref(kCaptureModeVideoIcon)};
   }
 
   DCHECK(features::IsGifRecordingEnabled());
   DCHECK_EQ(controller->recording_type(), RecordingType::kGif);
 
   return CaptureButtonState{IDS_ASH_SCREEN_CAPTURE_LABEL_GIF_RECORD,
-                            ToRawRef<ExperimentalAsh>(kCaptureGifIcon)};
+                            raw_ref(kCaptureGifIcon)};
 }
 
 }  // namespace

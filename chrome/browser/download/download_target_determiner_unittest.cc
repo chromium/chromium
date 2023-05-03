@@ -1324,12 +1324,12 @@ TEST_F(DownloadTargetDeterminerTest, TransitionType) {
       {// Benign file type. Results in a danger type of NOT_DANGEROUS. Page
        // transition type is irrelevant.
        ui::PAGE_TRANSITION_LINK, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-       ToRawRef<ExperimentalAsh>(kSafeFile)},
+       raw_ref(kSafeFile)},
 
       {// File type is ALLOW_ON_USER_GESTURE. PAGE_TRANSITION_LINK doesn't
        // cause file to be marked as safe.
        ui::PAGE_TRANSITION_LINK, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
+       raw_ref(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE. PAGE_TRANSITION_TYPED doesn't
        // cause file to be marked as safe. TYPED can be used for certain
@@ -1337,33 +1337,32 @@ TEST_F(DownloadTargetDeterminerTest, TransitionType) {
        // initiated by a user. Hence a resulting download may not be
        // intentional.
        ui::PAGE_TRANSITION_TYPED, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
+       raw_ref(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE.
        // PAGE_TRANSITION_FROM_ADDRESS_BAR causes file to be marked as safe.
        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_TYPED |
                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
+       raw_ref(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE.
        // PAGE_TRANSITION_FROM_ADDRESS_BAR causes file to be marked as safe.
        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_GENERATED |
                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
+       raw_ref(kAllowOnUserGesture)},
 
       {// File type is ALLOW_ON_USER_GESTURE.
        // PAGE_TRANSITION_FROM_ADDRESS_BAR causes file to be marked as safe.
        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR,
        download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-       ToRawRef<ExperimentalAsh>(kAllowOnUserGesture)},
+       raw_ref(kAllowOnUserGesture)},
 
       {// File type is DANGEROUS. PageTransition is irrelevant.
        static_cast<ui::PageTransition>(ui::PAGE_TRANSITION_TYPED |
                                        ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
-       ToRawRef<ExperimentalAsh>(kDangerousFile)},
+       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE, raw_ref(kDangerousFile)},
   };
 
   // Test assumptions:
