@@ -636,8 +636,6 @@ DetermineWhetherToForbidTrustTokenOperation(
     const RenderFrameHostImpl* frame,
     const blink::mojom::CommitNavigationParams& commit_params,
     const url::Origin& subframe_origin,
-    absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-        fenced_frame_mode_for_navigation,
     const network::mojom::TrustTokenOperationType& operation) {
   std::unique_ptr<blink::PermissionsPolicy> subframe_policy;
   // TODO(https://crbug.com/1430514): Add WPT to test how TrustTokens behave in
@@ -648,9 +646,14 @@ DetermineWhetherToForbidTrustTokenOperation(
     // inheriting from its parent. Note that the parent policies must allow the
     // required policies, which is checked separately in
     // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
-    CHECK(fenced_frame_mode_for_navigation);
+    const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+        frame->frame_tree_node()->GetFencedFrameProperties();
+    base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
+    if (fenced_frame_properties) {
+      permissions = fenced_frame_properties->required_permissions_to_load;
+    }
     subframe_policy = blink::PermissionsPolicy::CreateForFencedFrame(
-        subframe_origin, fenced_frame_mode_for_navigation.value());
+        subframe_origin, permissions);
   } else {
     // For main frame loads, the frame's permissions policy is determined
     // entirely by response headers, which are provided by the renderer.
@@ -1221,13 +1224,11 @@ class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
           DetermineWhetherToForbidTrustTokenOperation(
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin(),
-              navigation_request.ComputeDeprecatedFencedFrameMode(),
               network::mojom::TrustTokenOperationType::kRedemption);
       result.trust_token_issuance_policy_ =
           DetermineWhetherToForbidTrustTokenOperation(
               navigation_request.GetRenderFrameHost(),
               navigation_request.commit_params(), result.origin(),
-              navigation_request.ComputeDeprecatedFencedFrameMode(),
               network::mojom::TrustTokenOperationType::kIssuance);
 
       if (navigation_request.GetIsThirdPartyCookiesUserBypassEnabled()) {
@@ -11028,18 +11029,19 @@ void RenderFrameHostImpl::CreateWebUsbService(
 
 void RenderFrameHostImpl::ResetPermissionsPolicy() {
   if (IsFencedFrameRoot()) {
-    const absl::optional<FencedFrameProperties>& properties =
-        frame_tree_node()->GetFencedFrameProperties();
     // Fenced frames have a list of required permission policies to load and
     // can't be granted extra policies, so use the required policies instead of
     // inheriting from its parent. Note that the parent policies must allow the
     // required policies, which is checked separately in
     // NavigationRequest::CheckPermissionsPoliciesForFencedFrames.
+    const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+        frame_tree_node()->GetFencedFrameProperties();
+    base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
+    if (fenced_frame_properties) {
+      permissions = fenced_frame_properties->required_permissions_to_load;
+    }
     permissions_policy_ = blink::PermissionsPolicy::CreateForFencedFrame(
-        last_committed_origin_,
-        properties.has_value() &&
-            properties->mode_ ==
-                blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+        last_committed_origin_, permissions);
     return;
   }
 

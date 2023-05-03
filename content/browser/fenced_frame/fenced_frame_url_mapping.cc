@@ -16,6 +16,7 @@
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size.h"
 #include "third_party/blink/public/common/interest_group/ad_display_size_utils.h"
 #include "ui/display/screen.h"
@@ -172,6 +173,16 @@ absl::optional<GURL> FencedFrameURLMapping::AddFencedFrameURLForTesting(
   config.mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
   config.deprecated_should_freeze_initial_size_.emplace(
       true, VisibilityToEmbedder::kTransparent, VisibilityToContent::kOpaque);
+  // We don't know at this point if the test being run needs the FLEDGE or
+  // Shared Storage permissions set. To be safe, we set both here.
+  config.required_permissions_to_load.insert(
+      config.required_permissions_to_load.end(),
+      std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
+      std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+  config.required_permissions_to_load.insert(
+      config.required_permissions_to_load.end(),
+      std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
+      std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
   return urn;
 }
 
@@ -242,6 +253,11 @@ FencedFrameURLMapping::AssignFencedFrameURLAndInterestGroupInfo(
                                   VisibilityToEmbedder::kOpaque,
                                   VisibilityToContent::kOpaque);
   config.on_navigate_callback_ = std::move(on_navigate_callback);
+
+  config.required_permissions_to_load =
+      std::vector<blink::mojom::PermissionsPolicyFeature>(
+          std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
+          std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
 
   std::vector<FencedFrameConfig> nested_configs;
   nested_configs.reserve(ad_component_descriptors.size());
@@ -348,6 +364,10 @@ FencedFrameURLMapping::OnSharedStorageURNMappingResultDetermined(
                                mapping_result.budget_metadata,
                                std::move(mapping_result.fenced_frame_reporter));
     config->mode_ = blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds;
+    config->required_permissions_to_load = {
+        std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
+        std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures)};
+
     urn_uuid_to_url_map_.emplace(urn_uuid, *config);
   }
 

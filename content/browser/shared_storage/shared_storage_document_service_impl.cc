@@ -287,18 +287,6 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     return;
   }
 
-  // TODO(crbug.com/1347953): Remove this check once we put permissions inside
-  // FencedFrameConfig.
-  if (shared_storage_fenced_frame_root_count < fenced_frame_depth) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/
-        "selectURL() is not allowed in a fenced frame that did not originate "
-        "from shared storage.",
-        /*result_config=*/absl::nullopt);
-    return;
-  }
-
   GetSharedStorageWorkletHostManager()->NotifySharedStorageAccessed(
       AccessType::kDocumentSelectURL, main_frame_id(),
       SerializeLastCommittedOrigin(),

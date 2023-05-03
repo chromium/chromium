@@ -2465,8 +2465,14 @@ void DocumentLoader::CommitNavigation() {
     // PermissionsPolicy and DocumentPolicy require SecurityOrigin and origin
     // trials to be initialized.
     // TODO(iclelland): Add Permissions-Policy-Report-Only to Origin Policy.
+    auto required_permissions_for_fenced_frames =
+        FencedFrameProperties()
+            ? base::make_span(
+                  FencedFrameProperties()->required_permissions_to_load())
+            : base::span<const mojom::blink::PermissionsPolicyFeature>();
     security_init.ApplyPermissionsPolicy(
-        *frame_.Get(), response_, frame_policy_, initial_permissions_policy_);
+        *frame_.Get(), response_, frame_policy_, initial_permissions_policy_,
+        required_permissions_for_fenced_frames);
 
     // |document_policy_| is parsed in document loader because it is
     // compared with |frame_policy.required_document_policy| to decide

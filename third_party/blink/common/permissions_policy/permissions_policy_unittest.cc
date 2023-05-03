@@ -10,6 +10,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/frame/fenced_frame_permissions_policies.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "url/gurl.h"
@@ -76,9 +77,10 @@ class PermissionsPolicyTest : public testing::Test {
   }
   std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
       const url::Origin& origin,
-      bool is_opaque_ads_mode) {
-    return PermissionsPolicy::CreateForFencedFrame(origin, feature_list_,
-                                                   is_opaque_ads_mode);
+      base::span<const blink::mojom::PermissionsPolicyFeature>
+          required_permissions_to_load) {
+    return PermissionsPolicy::CreateForFencedFrame(
+        origin, feature_list_, required_permissions_to_load);
   }
 
   bool PolicyContainsInheritedValue(const PermissionsPolicy* policy,
@@ -2177,7 +2179,7 @@ TEST_F(PermissionsPolicyTest, ProposedTestNestedPolicyPropagates) {
 
 TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, /*is_opaque_ads_mode=*/false);
+      CreateForFencedFrame(origin_a_, {});
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(
@@ -2186,9 +2188,34 @@ TEST_F(PermissionsPolicyTest, CreateForDefaultFencedFrame) {
       mojom::PermissionsPolicyFeature::kSharedStorage));
 }
 
-TEST_F(PermissionsPolicyTest, CreateForOpaqueFencedFrame) {
+TEST_F(PermissionsPolicyTest, CreateForFledgeFencedFrame) {
+  std::vector<blink::mojom::PermissionsPolicyFeature>
+      required_permissions_to_load;
+  required_permissions_to_load.insert(
+      required_permissions_to_load.end(),
+      std::begin(blink::kFencedFrameFledgeDefaultRequiredFeatures),
+      std::end(blink::kFencedFrameFledgeDefaultRequiredFeatures));
+
   std::unique_ptr<PermissionsPolicy> policy =
-      CreateForFencedFrame(origin_a_, /*is_opaque_ads_mode=*/true);
+      CreateForFencedFrame(origin_a_, required_permissions_to_load);
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
+  EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
+  EXPECT_TRUE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kAttributionReporting));
+  EXPECT_FALSE(policy->IsFeatureEnabled(
+      mojom::PermissionsPolicyFeature::kSharedStorage));
+}
+
+TEST_F(PermissionsPolicyTest, CreateForSharedStorageFencedFrame) {
+  std::vector<blink::mojom::PermissionsPolicyFeature>
+      required_permissions_to_load;
+  required_permissions_to_load.insert(
+      required_permissions_to_load.end(),
+      std::begin(blink::kFencedFrameSharedStorageDefaultRequiredFeatures),
+      std::end(blink::kFencedFrameSharedStorageDefaultRequiredFeatures));
+
+  std::unique_ptr<PermissionsPolicy> policy =
+      CreateForFencedFrame(origin_a_, required_permissions_to_load);
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultOnFeature));
   EXPECT_FALSE(policy->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_TRUE(policy->IsFeatureEnabled(

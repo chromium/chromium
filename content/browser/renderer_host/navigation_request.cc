@@ -7344,7 +7344,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
     // * The initial about:blank navigation in a fenced frame.
     // * Embedder-initiated FF root navigations to transparent (non-urn) urls.
     // In those cases, we skip this step.
-    if (fenced_frame_properties_->mapped_url_.has_value()) {
+    if (fenced_frame_properties_.has_value() &&
+        fenced_frame_properties_->mapped_url_.has_value()) {
       fenced_frame_properties_->UpdateMappedURL(GetURL());
     }
   }
@@ -8489,6 +8490,12 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   if (!frame_tree_node_->IsFencedFrameRoot())
     return true;
 
+  // Permissions policies only need to be checked for fenced frames created from
+  // an API like FLEDGE or Shared Storage.
+  if (!fenced_frame_properties_) {
+    return true;
+  }
+
   // Check that all of the required policies for a new document with origin
   // `origin` in the fenced frame are allowed. This looks at the outer
   // document's policies and the "allow" attribute. Note that the document will
@@ -8496,7 +8503,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   // extra policies defined in the outer document/"allow" attribute won't have
   // any effect.
   for (const blink::mojom::PermissionsPolicyFeature feature :
-       blink::kFencedFrameOpaqueAdsDefaultAllowedFeatures) {
+       fenced_frame_properties_->required_permissions_to_load) {
     if (!IsFencedFrameRequiredPolicyFeatureAllowed(origin, feature)) {
       const blink::PermissionsPolicyFeatureToNameMap& feature_to_name_map =
           blink::GetPermissionsPolicyFeatureToNameMap();
@@ -9020,16 +9027,6 @@ NavigationRequest::ComputeFencedFrameNonce() const {
   }
   return computed_fenced_frame_properties->partition_nonce_
       ->GetValueIgnoringVisibility();
-}
-
-const absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-NavigationRequest::ComputeDeprecatedFencedFrameMode() const {
-  const absl::optional<FencedFrameProperties>&
-      computed_fenced_frame_properties = ComputeFencedFrameProperties();
-  if (!computed_fenced_frame_properties.has_value()) {
-    return absl::nullopt;
-  }
-  return computed_fenced_frame_properties->mode_;
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {

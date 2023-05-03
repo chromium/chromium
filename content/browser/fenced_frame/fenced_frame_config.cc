@@ -176,6 +176,8 @@ blink::FencedFrame::RedactedFencedFrameConfig FencedFrameConfig::RedactFor(
   // was called to generate the config, rather than any cross-site data.
   redacted_config.mode_ = mode_;
 
+  redacted_config.required_permissions_to_load_ = required_permissions_to_load;
+
   return redacted_config;
 }
 
@@ -206,7 +208,8 @@ FencedFrameProperties::FencedFrameProperties(const FencedFrameConfig& config)
                        VisibilityToEmbedder::kOpaque,
                        VisibilityToContent::kOpaque),
       mode_(config.mode_),
-      is_ad_component_(config.is_ad_component_) {
+      is_ad_component_(config.is_ad_component_),
+      required_permissions_to_load(config.required_permissions_to_load) {
   if (config.shared_storage_budget_metadata_) {
     shared_storage_budget_metadata_.emplace(
         &config.shared_storage_budget_metadata_->GetValueIgnoringVisibility(),
@@ -286,6 +289,9 @@ FencedFrameProperties::RedactFor(FencedFrameEntity entity) const {
   // The mode never needs to be redacted, because it is a function of which API
   // was called to generate the config, rather than any cross-site data.
   redacted_properties.mode_ = mode_;
+
+  redacted_properties.required_permissions_to_load_ =
+      required_permissions_to_load;
 
   return redacted_properties;
 }

@@ -31,6 +31,8 @@
 #include "content/browser/attribution_reporting/test/mock_attribution_host.h"
 #include "content/browser/attribution_reporting/test/mock_data_host.h"
 #include "content/browser/attribution_reporting/test/source_observer.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -39,6 +41,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
@@ -1099,14 +1102,25 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcFencedFrameBrowserTest,
   GURL main_url = https_server()->GetURL("b.test", "/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
 
-  GURL fenced_frame_url =
-      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
-
-  RenderFrameHost* parent = web_contents()->GetPrimaryMainFrame();
-
+  RenderFrameHostImpl* root_rfh =
+      static_cast<RenderFrameHostImpl*>(web_contents()->GetPrimaryMainFrame());
+  GURL fenced_frame_url(https_server()->GetURL(
+      "b.test", "/attribution_reporting/page_with_impression_creator.html"));
+  FencedFrameURLMapping& url_mapping =
+      root_rfh->GetPage().fenced_frame_urls_map();
+  auto fenced_frame_urn =
+      test::AddAndVerifyFencedFrameURL(&url_mapping, fenced_frame_url);
   RenderFrameHost* fenced_frame_host = fenced_frame_helper_->CreateFencedFrame(
-      parent, fenced_frame_url, net::OK,
+      root_rfh, GURL(url::kAboutBlankURL), net::OK,
       blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+
+  TestFrameNavigationObserver observer(fenced_frame_host);
+
+  EXPECT_TRUE(ExecJs(root_rfh, JsReplace("document.querySelector('fencedframe')"
+                                         ".config = new FencedFrameConfig($1);",
+                                         fenced_frame_urn.spec())));
+
+  observer.Wait();
 
   ASSERT_NE(fenced_frame_host, nullptr);
   EXPECT_TRUE(fenced_frame_host->IsFencedFrameRoot());

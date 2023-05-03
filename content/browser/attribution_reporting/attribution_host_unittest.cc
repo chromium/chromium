@@ -114,6 +114,22 @@ class AttributionHostTest : public RenderViewHostTestHarness {
     return AttributionHost::FromWebContents(web_contents());
   }
 
+  void SetFencedFrameConfigPermissions(RenderFrameHost* fenced_frame) {
+    // Permissions in a fenced frame are tied to its urn:uuid-bound properties
+    // object. Because no navigation actually takes place in these tests, the
+    // code path that sets the permissions in the properties is never actually
+    // exercised. Instead, we need to manually inject the permissions into the
+    // properties object to ensure that the fenced frame loads with the needed
+    // permissions policy set.
+    FrameTreeNode* fenced_frame_node =
+        static_cast<RenderFrameHostImpl*>(fenced_frame)->frame_tree_node();
+    absl::optional<FencedFrameProperties> new_props =
+        fenced_frame_node->GetFencedFrameProperties();
+    new_props->required_permissions_to_load.push_back(
+        blink::mojom::PermissionsPolicyFeature::kAttributionReporting);
+    fenced_frame_node->set_fenced_frame_properties(new_props);
+  }
+
   void ClearAttributionManager() {
     mock_data_host_manager_ = nullptr;
     OverrideAttributionManager(nullptr);
@@ -616,6 +632,7 @@ TEST_F(AttributionHostTest, NotifyFencedFrameReportingBeaconStarted) {
     static_cast<RenderFrameHostImpl*>(fenced_frame)
         ->frame_tree_node()
         ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
+    SetFencedFrameConfigPermissions(fenced_frame);
     fenced_frame = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
         GURL("https://fencedframe.example"), fenced_frame);
 
@@ -637,6 +654,7 @@ TEST_F(AttributionHostTest, FencedFrameReportingBeacon_FeaturePolicyChecked) {
   static_cast<RenderFrameHostImpl*>(fenced_frame)
       ->frame_tree_node()
       ->SetFencedFramePropertiesOpaqueAdsModeForTesting();
+  SetFencedFrameConfigPermissions(fenced_frame);
 
   static constexpr char kAllowedOriginUrl[] = "https://a.test";
 

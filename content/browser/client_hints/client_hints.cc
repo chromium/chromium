@@ -568,11 +568,14 @@ struct ClientHintsExtendedData {
       // TODO(https://crbug.com/1430508) Add WPT tests and specify the behavior
       // of client hints delegation for subframes inside
       // FencedFrames/Portals/etc...
+      const absl::optional<FencedFrameProperties>& fenced_frame_properties =
+          frame_tree_node->GetFencedFrameProperties();
+      base::span<const blink::mojom::PermissionsPolicyFeature> permissions;
+      if (fenced_frame_properties) {
+        permissions = fenced_frame_properties->required_permissions_to_load;
+      }
       permissions_policy = blink::PermissionsPolicy::CreateForFencedFrame(
-          resource_origin,
-          /*is_opaque_ads_mode=*/frame_tree_node
-                  ->GetDeprecatedFencedFrameMode() ==
-              blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds);
+          resource_origin, permissions);
     } else {
       RenderFrameHostImpl* main_frame =
           frame_tree_node->frame_tree().GetMainFrame();

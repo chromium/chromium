@@ -5635,8 +5635,7 @@ IN_PROC_BROWSER_TEST_F(
       static_cast<RenderFrameHostImpl*>(
           fenced_frame_test_helper_.CreateFencedFrame(
               shell()->web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
-              net::OK,
-              blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds))
+              net::OK, blink::FencedFrame::DeprecatedFencedFrameMode::kDefault))
           ->frame_tree_node();
 
   EXPECT_TRUE(ExecJs(fenced_frame_root_node_1,
@@ -5661,8 +5660,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(
       result.error,
       testing::HasSubstr(
-          "selectURL() is not allowed in a fenced frame that did not originate "
-          "from shared storage."));
+          "The \"shared-storage\" Permissions Policy denied the method on "
+          "window.sharedStorage."));
 }
 
 IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameInteractionBrowserTest,

@@ -1021,9 +1021,6 @@ class CONTENT_EXPORT NavigationRequest
 
   const absl::optional<base::UnguessableToken> ComputeFencedFrameNonce() const;
 
-  const absl::optional<blink::FencedFrame::DeprecatedFencedFrameMode>
-  ComputeDeprecatedFencedFrameMode() const;
-
   void RenderFallbackContentForObjectTag();
 
   // Returns the vector of web features used during the navigation, whose
