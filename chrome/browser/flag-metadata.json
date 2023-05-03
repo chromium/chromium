@@ -2439,7 +2439,7 @@
     "owners": [ "fgm", "thibaudm", "wasm-team@google.com" ],
     // This flag is used by developers and partners to test
     // stack switching features in WebAssembly.
-    "expiry_milestone": 115
+    "expiry_milestone": 130
   },
   {
     "name": "enable-expkit-calendar-text-classifier",
