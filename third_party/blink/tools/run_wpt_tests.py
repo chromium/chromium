@@ -240,11 +240,6 @@ class WPTAdapter:
         parser.add_argument('--isolated-script-test-perf-output',
                             help=argparse.SUPPRESS)
         parser.add_argument('--script-type', help=argparse.SUPPRESS)
-        # `Port.setup_test_run` will always start Xvfb on Linux.
-        parser.add_argument('--xvfb',
-                            action='store_true',
-                            default=True,
-                            help=argparse.SUPPRESS)
         parser.add_argument(
             '-j',
             '--processes',

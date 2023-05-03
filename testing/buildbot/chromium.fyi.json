@@ -47057,7 +47057,6 @@
       {
         "args": [
           "--log-wptreport",
-          "--xvfb",
           "--enable-sanitizer"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
@@ -47091,8 +47090,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "merge": {
@@ -47122,7 +47120,6 @@
       {
         "args": [
           "--log-wptreport",
-          "--xvfb",
           "--flag-specific",
           "highdpi"
         ],
@@ -47155,7 +47152,6 @@
         "args": [
           "--child-processes=8",
           "--log-wptreport",
-          "--xvfb",
           "--flag-specific",
           "disable-site-isolation-trials"
         ],
@@ -47191,7 +47187,6 @@
       {
         "args": [
           "--log-wptreport",
-          "--xvfb",
           "--enable-leak-detection"
         ],
         "experiment_percentage": 100,
@@ -49617,8 +49612,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
@@ -49653,8 +49647,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
@@ -49689,8 +49682,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
@@ -49725,8 +49717,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
@@ -49761,8 +49752,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
@@ -49797,8 +49787,7 @@
     "isolated_scripts": [
       {
         "args": [
-          "--log-wptreport",
-          "--xvfb"
+          "--log-wptreport"
         ],
         "isolate_name": "wpt_tests_isolate_content_shell",
         "isolate_profile_data": true,
@@ -53033,7 +53022,6 @@
       {
         "args": [
           "--log-wptreport",
-          "--xvfb",
           "--target",
           "Release_x64"
         ],
@@ -53071,7 +53059,6 @@
       {
         "args": [
           "--log-wptreport",
-          "--xvfb",
           "--target",
           "Release_x64"
         ],
