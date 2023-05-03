@@ -1920,7 +1920,7 @@ auto HasReferrerPolicy(
           "policy", &mojom::blink::Referrer::policy, matcher))));
 }
 
-auto HasNoVarySearchExpected() {
+auto HasNoVarySearchHint() {
   return ::testing::Pointee(::testing::Field(
       "no_vary_search_expected",
       &mojom::blink::SpeculationCandidate::no_vary_search_expected,
@@ -1929,7 +1929,7 @@ auto HasNoVarySearchExpected() {
 
 auto NVSVariesOnKeyOrder() {
   return ::testing::AllOf(
-      HasNoVarySearchExpected(),
+      HasNoVarySearchHint(),
       ::testing::Pointee(::testing::Field(
           "no_vary_search_expected",
           &mojom::blink::SpeculationCandidate::no_vary_search_expected,
@@ -2026,7 +2026,7 @@ TEST_F(DocumentRulesTest,
                                   KURL("https://foo.com/doc2.html")));
   //  Check that the candidates have the correct No-Vary-Search hint.
   EXPECT_THAT(candidates, ::testing::Each(::testing::AllOf(
-                              HasNoVarySearchExpected(), NVSVariesOnKeyOrder(),
+                              HasNoVarySearchHint(), NVSVariesOnKeyOrder(),
                               NVSHasNoVaryParams("a"))));
 }
 
@@ -3961,8 +3961,60 @@ TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
 
   // Check that the candidate has the correct No-Vary-Search hint.
   EXPECT_THAT(candidates[0],
-              ::testing::AllOf(HasNoVarySearchExpected(), NVSVariesOnKeyOrder(),
+              ::testing::AllOf(HasNoVarySearchHint(), NVSVariesOnKeyOrder(),
                                NVSHasNoVaryParams("a")));
+}
+
+// Test that an empty but valid No-Vary-Search hint will generate a speculation
+// candidate.
+TEST_F(SpeculationRuleSetTest, EmptyNoVarySearchHintValueGeneratesCandidate) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  String speculation_script = R"({
+    "prefetch": [{
+        "source": "list",
+        "urls": ["https://example.com/prefetch/list/page1.html"],
+        "no_vary_search_expected": ""
+      }]
+    })";
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_EQ(candidates.size(), 1u);
+
+  // Check that the candidate has the correct No-Vary-Search hint.
+  EXPECT_THAT(candidates[0], Not(HasNoVarySearchHint()));
+}
+
+// Test that a No-Vary-Search hint equivalent to the default
+// will generate a speculation candidate.
+TEST_F(SpeculationRuleSetTest, DefaultNoVarySearchHintValueGeneratesCandidate) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+      true};
+
+  DummyPageHolder page_holder;
+  StubSpeculationHost speculation_host;
+
+  String speculation_script = R"({
+    "prefetch": [{
+        "source": "list",
+        "urls": ["https://example.com/prefetch/list/page1.html"],
+        "no_vary_search_expected": "key-order=?0"
+      }]
+    })";
+
+  PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
+                                      speculation_script);
+  const auto& candidates = speculation_host.candidates();
+  EXPECT_EQ(candidates.size(), 1u);
+
+  // Check that the candidate has the correct No-Vary-Search hint.
+  EXPECT_THAT(candidates[0], Not(HasNoVarySearchHint()));
 }
 
 // Tests that No-Vary-Search errors that cause the speculation rules to be
@@ -4038,10 +4090,20 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       ]
     })",
                       KURL("https://example.com"), execution_context());
-    EXPECT_THAT(
-        rule_set->error_message().Utf8(),
-        ::testing::HasSubstr(
-            "No-Vary-Search hint value is equivalent to the default behavior"));
+    EXPECT_THAT(rule_set->error_message().Utf8(), ::testing::IsEmpty());
+  }
+  {
+    auto* rule_set =
+        CreateRuleSet(R"({
+      "prefetch": [{
+          "source": "list",
+          "urls": ["https://example.com/prefetch/list/page1.html"],
+          "no_vary_search_expected": ""
+        }
+      ]
+    })",
+                      KURL("https://example.com"), execution_context());
+    EXPECT_THAT(rule_set->error_message().Utf8(), ::testing::IsEmpty());
   }
   {
     auto* rule_set =

@@ -339,12 +339,17 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     auto no_vary_search_expected = blink::ParseNoVarySearch(no_vary_search_str);
     CHECK(no_vary_search_expected);
     if (no_vary_search_expected->is_parse_error()) {
-      SetParseErrorMessage(out_error,
-                           GetNoVarySearchHintConsoleMessage(
-                               no_vary_search_expected->get_parse_error()));
-      return nullptr;
+      const auto& parse_error = no_vary_search_expected->get_parse_error();
+      CHECK_NE(parse_error, network::mojom::NoVarySearchParseError::kOk);
+      if (parse_error !=
+          network::mojom::NoVarySearchParseError::kDefaultValue) {
+        SetParseErrorMessage(out_error,
+                             GetNoVarySearchHintConsoleMessage(parse_error));
+        return nullptr;
+      }
+    } else {
+      no_vary_search = std::move(no_vary_search_expected->get_no_vary_search());
     }
-    no_vary_search = std::move(no_vary_search_expected->get_no_vary_search());
   }
 
   const mojom::blink::SpeculationInjectionWorld world =
