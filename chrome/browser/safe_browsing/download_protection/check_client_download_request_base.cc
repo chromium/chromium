@@ -467,6 +467,13 @@ void CheckClientDownloadRequestBase::SendRequest() {
                                                   access_token_);
   }
 
+  network::mojom::URLLoaderFactory* url_loader_factory =
+      service_->GetURLLoaderFactory(GetBrowserContext()).get();
+  if (!url_loader_factory) {
+    FinishRequest(DownloadCheckResult::UNKNOWN, REASON_SERVER_PING_FAILED);
+    return;
+  }
+
   loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                              traffic_annotation);
   loader_->AttachStringForUpload(client_download_request_data_,

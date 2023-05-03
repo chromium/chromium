@@ -293,8 +293,16 @@ void PPAPIDownloadRequest::SendRequest() {
                                              traffic_annotation);
   loader_->AttachStringForUpload(client_download_request_data_,
                                  "application/octet-stream");
+
+  network::mojom::URLLoaderFactory* url_loader_factory =
+      service_->GetURLLoaderFactory(profile_).get();
+  if (!url_loader_factory) {
+    Finish(RequestOutcome::FETCH_FAILED, DownloadCheckResult::UNKNOWN);
+    return;
+  }
+
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      service_->GetURLLoaderFactory(profile_).get(),
+      url_loader_factory,
       base::BindOnce(&PPAPIDownloadRequest::OnURLLoaderComplete,
                      base::Unretained(this)));
 }
