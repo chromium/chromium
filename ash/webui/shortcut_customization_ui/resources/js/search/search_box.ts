@@ -203,6 +203,11 @@ export class SearchBoxElement extends SearchBoxElementBase implements
 
   private onSearchChanged(): void {
     this.hasSearchQuery = !!this.getCurrentQuery();
+    if (!this.hasSearchQuery) {
+      // Cancel the spinner if the current query is empty to avoid a rare case
+      // where the spinner stays active forever.
+      this.spinnerActive = false;
+    }
     this.fetchSearchResults(this.getCurrentQuery());
   }
 
