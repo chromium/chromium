@@ -12,7 +12,6 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_RESUME;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_ID;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
-import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_STATE_AT_CANCEL;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_AUTO_RESUMPTION;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.clearResumptionAttemptLeft;
@@ -33,7 +32,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.chrome.browser.download.DownloadNotificationUmaHelper.UmaDownloadResumption;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.BrowserParts;
@@ -200,13 +198,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 // Delay the stop of the service by WAIT_TIME_MS after native library is loaded.
                 mHandler.postDelayed(mStopSelfRunnable, WAIT_TIME_MS);
 
-                if (ACTION_DOWNLOAD_RESUME.equals(intent.getAction())
-                        && LegacyHelpers.isLegacyDownload(id)) {
-                    DownloadNotificationUmaHelper.recordDownloadResumptionHistogram(browserStarted
-                                    ? UmaDownloadResumption.BROWSER_RUNNING
-                                    : UmaDownloadResumption.BROWSER_NOT_RUNNING);
-                }
-
                 DownloadStartupUtils.ensureDownloadSystemInitialized(
                         BrowserStartupController.getInstance().isFullBrowserStarted(),
                         IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false));
@@ -268,9 +259,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         // Handle all remaining actions.
         switch (action) {
             case ACTION_DOWNLOAD_CANCEL:
-                DownloadNotificationUmaHelper.recordStateAtCancelHistogram(
-                        LegacyHelpers.isLegacyDownload(id),
-                        intent.getIntExtra(EXTRA_DOWNLOAD_STATE_AT_CANCEL, -1));
                 downloadServiceDelegate.cancelDownload(id, otrProfileID);
                 break;
 

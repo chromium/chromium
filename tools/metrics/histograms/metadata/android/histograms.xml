@@ -2181,19 +2181,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.OfflineItems.StateAtCancel{OfflineItemsSource}"
-    enum="OfflineItemsStateAtCancel" expires_after="M81">
-  <owner>chili@chromium.org</owner>
-  <summary>
-    State of a download or offline page request at user-initiated cancel.
-    {OfflineItemsSource}
-  </summary>
-  <token key="OfflineItemsSource">
-    <variant name=".Downloads" summary="Downloads"/>
-    <variant name=".OfflinePages" summary="Offline pages"/>
-  </token>
-</histogram>
-
 <histogram name="Android.Omnibox.ActionInSuggest.IntentResult"
     enum="ActionInSuggestIntentResult" expires_after="2023-08-20">
   <owner>ender@google.com</owner>

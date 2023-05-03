@@ -25,20 +25,6 @@ import java.util.List;
  * Helper to track necessary stats in UMA related to downloads notifications.
  */
 public final class DownloadNotificationUmaHelper {
-    // The state of a download or offline page request at user-initiated cancel.
-    // Keep in sync with enum OfflineItemsStateAtCancel in enums.xml.
-    @IntDef({StateAtCancel.DOWNLOADING, StateAtCancel.PAUSED, StateAtCancel.PENDING_NETWORK,
-            StateAtCancel.PENDING_ANOTHER_DOWNLOAD})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface StateAtCancel {
-        int DOWNLOADING = 0;
-        int PAUSED = 1;
-        int PENDING_NETWORK = 2;
-        int PENDING_ANOTHER_DOWNLOAD = 3;
-
-        int NUM_ENTRIES = 4;
-    }
-
     // NOTE: Keep these lists/classes in sync with DownloadNotification[...] in enums.xml.
     @IntDef({ForegroundLifecycle.START, ForegroundLifecycle.UPDATE, ForegroundLifecycle.STOP})
     @Retention(RetentionPolicy.SOURCE)
@@ -72,23 +58,6 @@ public final class DownloadNotificationUmaHelper {
         int LOW_MEMORY = 3;
         int START_STICKY = 4;
         int NUM_ENTRIES = 5;
-    }
-
-    // Values for the histogram MobileDownloadResumptionCount.
-    @IntDef({UmaDownloadResumption.MANUAL_PAUSE, UmaDownloadResumption.BROWSER_KILLED,
-            UmaDownloadResumption.CLICKED, UmaDownloadResumption.FAILED,
-            UmaDownloadResumption.AUTO_STARTED, UmaDownloadResumption.BROWSER_RUNNING,
-            UmaDownloadResumption.BROWSER_NOT_RUNNING})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UmaDownloadResumption {
-        int MANUAL_PAUSE = 0;
-        int BROWSER_KILLED = 1;
-        int CLICKED = 2;
-        int FAILED = 3;
-        int AUTO_STARTED = 4;
-        int BROWSER_RUNNING = 5;
-        int BROWSER_NOT_RUNNING = 6;
-        int NUM_ENTRIES = 7;
     }
 
     /**
@@ -125,33 +94,5 @@ public final class DownloadNotificationUmaHelper {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.DownloadManager.ForegroundServiceLifecycle", lifecycleStep,
                 ForegroundLifecycle.NUM_ENTRIES);
-    }
-
-    /**
-     * Records the state of a request at user-initiated cancel.
-     * @param isDownload True if the request is a download, false if it is an offline page.
-     * @param state State of a request when cancelled (e.g. downloading, paused).
-     */
-    static void recordStateAtCancelHistogram(boolean isDownload, @StateAtCancel int state) {
-        if (state == -1) return;
-        if (!LibraryLoader.getInstance().isInitialized()) return;
-        if (isDownload) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.OfflineItems.StateAtCancel.Downloads", state,
-                    StateAtCancel.NUM_ENTRIES);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.OfflineItems.StateAtCancel.OfflinePages", state,
-                    StateAtCancel.NUM_ENTRIES);
-        }
-    }
-
-    /**
-     * Helper method to record the download resumption UMA.
-     * @param type UMA type to be recorded.
-     */
-    static void recordDownloadResumptionHistogram(@UmaDownloadResumption int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "MobileDownload.DownloadResumption", type, UmaDownloadResumption.NUM_ENTRIES);
     }
 }

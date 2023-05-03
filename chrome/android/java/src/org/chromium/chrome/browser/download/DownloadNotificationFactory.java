@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.download.DownloadNotificationService.A
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_ID;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_CONTENTID_NAMESPACE;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH;
-import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_DOWNLOAD_STATE_AT_CANCEL;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_IS_SUPPORTED_MIME_TYPE;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.EXTRA_NOTIFICATION_BUNDLE_ICON_ID;
@@ -47,7 +46,6 @@ import org.chromium.components.browser_ui.util.DownloadUtils;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
-import org.chromium.components.offline_items_collection.PendingState;
 
 /**
  * Creates and updates notifications related to downloads.
@@ -150,21 +148,6 @@ public final class DownloadNotificationFactory {
                         downloadUpdate.getContentId(), downloadUpdate.getOTRProfileID());
                 Intent cancelIntent = buildActionIntent(context, ACTION_DOWNLOAD_CANCEL,
                         downloadUpdate.getContentId(), downloadUpdate.getOTRProfileID());
-                switch (downloadUpdate.getPendingState()) {
-                    case PendingState.NOT_PENDING:
-                        cancelIntent.putExtra(EXTRA_DOWNLOAD_STATE_AT_CANCEL,
-                                DownloadNotificationUmaHelper.StateAtCancel.DOWNLOADING);
-                        break;
-                    case PendingState.PENDING_NETWORK:
-                        cancelIntent.putExtra(EXTRA_DOWNLOAD_STATE_AT_CANCEL,
-                                DownloadNotificationUmaHelper.StateAtCancel.PENDING_NETWORK);
-                        break;
-                    case PendingState.PENDING_ANOTHER_DOWNLOAD:
-                        cancelIntent.putExtra(EXTRA_DOWNLOAD_STATE_AT_CANCEL,
-                                DownloadNotificationUmaHelper.StateAtCancel
-                                        .PENDING_ANOTHER_DOWNLOAD);
-                        break;
-                }
                 cancelIntent.putExtra(NotificationConstants.EXTRA_NOTIFICATION_ID,
                         downloadUpdate.getNotificationId());
                 builder.setOngoing(true)
@@ -220,8 +203,6 @@ public final class DownloadNotificationFactory {
                         downloadUpdate.getContentId(), downloadUpdate.getOTRProfileID());
                 cancelIntent = buildActionIntent(context, ACTION_DOWNLOAD_CANCEL,
                         downloadUpdate.getContentId(), downloadUpdate.getOTRProfileID());
-                cancelIntent.putExtra(EXTRA_DOWNLOAD_STATE_AT_CANCEL,
-                        DownloadNotificationUmaHelper.StateAtCancel.PAUSED);
 
                 builder.setAutoCancel(false)
                         .addAction(R.drawable.ic_file_download_white_24dp,

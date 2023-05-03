@@ -75655,13 +75655,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="Cannot animate controls, omnibox focused"/>
 </enum>
 
-<enum name="OfflineItemsStateAtCancel">
-  <int value="0" label="Downloading"/>
-  <int value="1" label="Paused"/>
-  <int value="2" label="Pending network connection"/>
-  <int value="3" label="Pending another download completion"/>
-</enum>
-
 <enum name="OfflineMeasurementsHttpProbeResult">
   <int value="0" label="Invalid"/>
   <int value="1" label="No internet"/>
