@@ -405,7 +405,7 @@ BASE_FEATURE(kCrostiniMultiContainer,
 // Enables or disables Crostini IME support.
 BASE_FEATURE(kCrostiniImeSupport,
              "CrostiniImeSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables Crostini Virtual Keyboard support.
 BASE_FEATURE(kCrostiniVirtualKeyboardSupport,
