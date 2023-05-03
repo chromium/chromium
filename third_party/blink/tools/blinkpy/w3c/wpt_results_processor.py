@@ -460,21 +460,33 @@ class WPTResultsProcessor:
             file_path=self._file_path_for_test(test),
             pid=event.pid)
 
-    @memoized
-    def _file_path_for_test(self, test: str) -> str:
-        if test.startswith('wpt_internal/'):
-            prefix = 'wpt_internal'
+    def get_path_from_test_root(self, test: str) -> str:
+        if self.path_finder.is_wpt_internal_path(test):
             path_from_test_root = self.internal_manifest.file_path_for_test_url(
                 test[len('wpt_internal/'):])
         else:
-            prefix = self.path_finder.wpt_prefix()
             path_from_test_root = self.wpt_manifest.file_path_for_test_url(
                 test)
+        return path_from_test_root
+
+    @memoized
+    def _file_path_for_test(self, test: str) -> str:
+        path_from_test_root = self.get_path_from_test_root(test)
+        if self.path_finder.is_wpt_internal_path(test):
+            prefix = 'wpt_internal'
+        else:
+            prefix = self.path_finder.wpt_prefix()
         if not path_from_test_root:
             raise EventProcessingError(
                 'Test ID %r does not exist in the manifest' % test)
         return self.path_finder.path_from_web_tests(prefix,
                                                     path_from_test_root)
+
+    def get_test_type(self, test_path: str) -> str:
+        if self.path_finder.is_wpt_internal_path(test_path):
+            return self.internal_manifest.get_test_type(test_path)
+        else:
+            return self.wpt_manifest.get_test_type(test_path)
 
     def test_status(self,
                     event: Event,
@@ -655,8 +667,13 @@ class WPTResultsProcessor:
         expected_node = None
         if expected_file_exists:
             expected_node = expected_manifest.node
+
+        path_from_test_root = self.get_path_from_test_root(test_name)
+
+        test_type = self.get_test_type(path_from_test_root)
+
         html_diff_content = wpt_results_diff(expected_node, actual_node,
-                                             file_path)
+                                             file_path, test_type)
         html_diff_subpath = self.port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_HTML_DIFF, '.html')
         artifacts.CreateArtifact('pretty_text_diff', html_diff_subpath,

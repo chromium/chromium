@@ -5,6 +5,7 @@
 from blinkpy.common import path_finder
 
 path_finder.bootstrap_wpt_imports()
+
 from wptrunner import manifestexpected
 from wptrunner.wptmanifest import node as wptnode
 from wptrunner.wptmanifest.backends import static
@@ -31,10 +32,10 @@ def create_top_level_node(node):
     return top_level
 
 
-# TODO(nihardamar): right now we're on the fly comparing subtests which may be empty and assuming a positive
+# TODO(crbug.com/1440565): right now we're on the fly comparing subtests which may be empty and assuming a positive
 # result. A potential refactor could be to simply build the trees earlier so they are the same structure,
 # that way we can also write an expected_results file for the error.
-def wpt_results_diff(expected_node, actual_node, file_path):
+def wpt_results_diff(expected_node, actual_node, file_path, test_type):
     """
         assumption for .ini files is that first arg is expected text and second is actual text
     """
@@ -52,13 +53,14 @@ def wpt_results_diff(expected_node, actual_node, file_path):
                                 manifestexpected.data_cls_getter,
                                 test_path=file_path).get_test(actual_node.data)
 
-    return _TEMPLATE % WPTResultsDiffGenerator().generate_tbody(
+    return _TEMPLATE % WPTResultsDiffGenerator(test_type).generate_tbody(
         expected, actual)
 
 
 class WPTResultsDiffGenerator:
-    def __init__(self):
+    def __init__(self, test_type):
         self.tbody = ""
+        self.test_type = test_type
 
     def generate_tbody(self, expected_node, actual_node):
 
@@ -95,6 +97,8 @@ class WPTResultsDiffGenerator:
         # important difference between expected and actual
         # is that expected will omit PASS results
 
+        default_pass_value = "OK" if self.test_type == "testharness" else "PASS"
+
         if expected_node:
             # Test comparison
             if expected_node.has_key("expected"):
@@ -102,7 +106,8 @@ class WPTResultsDiffGenerator:
                                             expected_node.expected, 0,
                                             actual_node.id)
             else:
-                self.compare_single_results(actual_node.expected, "OK", 0,
+                self.compare_single_results(actual_node.expected,
+                                            default_pass_value, 0,
                                             actual_node.id)
 
             # Subtest comparison
@@ -134,8 +139,8 @@ class WPTResultsDiffGenerator:
             # expected node is None, so no .ini file, assume all passes
 
             # Test comparison
-            self.compare_single_results(actual_node.expected, "OK", 0,
-                                        actual_node.id)
+            self.compare_single_results(actual_node.expected,
+                                        default_pass_value, 0, actual_node.id)
 
             # Subtest comparison
             for actual_subtest in actual_node.subtests:
