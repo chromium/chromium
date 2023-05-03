@@ -34,6 +34,7 @@
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/GrBackendSurfaceMutableState.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/vk/GrVkBackendContext.h"
 #include "third_party/skia/include/gpu/vk/GrVkExtensions.h"
 #include "third_party/skia/include/gpu/vk/GrVkTypes.h"
@@ -578,8 +579,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
           &surface_props);
       CHECK(sk_surface);
     } else {
-      auto backend = sk_surface->getBackendRenderTarget(
-          SkSurface::kFlushRead_BackendHandleAccess);
+      auto backend = SkSurfaces::GetBackendRenderTarget(
+          sk_surface.get(), SkSurfaces::BackendHandleAccess::kFlushRead);
       backend.setVkImageLayout(scoped_write.image_layout());
     }
 

@@ -35,6 +35,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -2272,8 +2273,8 @@ TEST_F(D3DImageBackingFactoryTest, MultiplanarUploadAndReadback) {
                             SkCanvas::kStrict_SrcRectConstraint);
     }
 
-    GrBackendTexture backend_texture = dest_surface->getBackendTexture(
-        SkSurface::kFlushWrite_BackendHandleAccess);
+    GrBackendTexture backend_texture = SkSurfaces::GetBackendTexture(
+        dest_surface.get(), SkSurfaces::BackendHandleAccess::kFlushWrite);
     auto dst_image = SkImages::BorrowTextureFrom(
         context_state_->gr_context(), backend_texture, kTopLeft_GrSurfaceOrigin,
         kRGBA_8888_SkColorType, alpha_type, nullptr);

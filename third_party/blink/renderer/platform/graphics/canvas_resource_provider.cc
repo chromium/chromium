@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 
 namespace blink {
 
@@ -334,7 +335,8 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
       // Note that the call below is guarenteed to not issue any GPU work for
       // the backend texture since we ensure that all skia work on the resource
       // is issued before releasing write access.
-      surface_->getBackendTexture(SkSurface::kFlushRead_BackendHandleAccess)
+      SkSurfaces::GetBackendTexture(surface_.get(),
+                                    SkSurfaces::BackendHandleAccess::kFlushRead)
           .glTextureParametersModified();
     }
   }
