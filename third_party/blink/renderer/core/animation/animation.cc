@@ -2101,6 +2101,12 @@ base::TimeDelta Animation::ComputeCompositorTimeOffset() const {
   if (!playback_rate)
     return base::TimeDelta::Max();
 
+  // Don't set a compositor time offset for a scroll timeline. When we tick the
+  // animation, we pass "absolute" times to cc::KeyframeEffect::Pause.
+  if (timeline_ && timeline_->IsScrollTimeline()) {
+    return base::TimeDelta();
+  }
+
   bool reversed = playback_rate < 0;
 
   absl::optional<AnimationTimeDelta> current_time = CurrentTimeInternal();
