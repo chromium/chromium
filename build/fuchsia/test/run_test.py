@@ -49,6 +49,9 @@ def _get_test_runner(runner_args: argparse.Namespace,
 
 def main():
     """E2E method for installing packages and running a test."""
+    # Always add time stamps to the logs.
+    logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s')
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'test_type',
