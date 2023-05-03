@@ -74,6 +74,7 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
   webui::SetupWebUIDataSource(
       source, base::make_span(kExtensionsResources, kExtensionsResourcesSize),
       IDR_EXTENSIONS_EXTENSIONS_HTML);
+  webui::SetupChromeRefresh2023(source);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
     // Add common strings.

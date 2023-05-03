@@ -453,6 +453,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::make_span(kSettingsSharedResources, kSettingsSharedResourcesSize));
 #endif
 
+  webui::SetupChromeRefresh2023(html_source);
   AddLocalizedStrings(html_source, profile, web_ui->GetWebContents());
 
   ManagedUIHandler::Initialize(web_ui, html_source);

@@ -49,6 +49,7 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   webui::SetupWebUIDataSource(
       source, base::make_span(kBookmarksResources, kBookmarksResourcesSize),
       IDR_BOOKMARKS_BOOKMARKS_HTML);
+  webui::SetupChromeRefresh2023(source);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in bookmarks/command_manager.js
