@@ -111,7 +111,7 @@
             on-input="validateNickname_"
             invalid="[[nicknameInvalid_]]"
             error-message="$i18n{creditCardNicknameInvalid}">
-            <div id="charCount" slot="suffix">
+            <div id="charCount" slot="suffix" aria-hidden="true">
               [[computeNicknameCharCount_(nickname_)]]/25
             </div>
         </cr-input>
