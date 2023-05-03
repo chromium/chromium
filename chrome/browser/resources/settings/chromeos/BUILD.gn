@@ -215,6 +215,8 @@ generate_grd("build_grd") {
   grd_prefix = "os_settings"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
   input_files = [
+    "css/base.css",
+
     "images/error_badge_dark.svg",
     "images/error_badge.svg",
     "images/icon_add_cellular.svg",
@@ -264,6 +266,7 @@ generate_grd("build_grd") {
     "images/switch_access_setup_guide_start_pairing.svg",
     "images/switch_access_setup_guide_start_pairing_dark.svg",
     "images/switch_access_setup_guide_start_pairing_jelly.svg",
+
     "os_settings_v3.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
