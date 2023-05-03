@@ -140,7 +140,10 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
 
   // This raw pointer is safe because all DatabaseImpl instances are owned by
   // an IndexedDBDispatcherHost.
-  raw_ptr<IndexedDBDispatcherHost> dispatcher_host_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: AccessContextAuditBrowserTest.MultipleAccesses
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/172869/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FAccessContextAuditBrowserTest.MultipleAccesses+VHash%3Abdbee181b3e0309b
+  raw_ptr<IndexedDBDispatcherHost, FlakyDanglingUntriaged> dispatcher_host_;
   scoped_refptr<IndexedDBContextImpl> indexed_db_context_;
   std::unique_ptr<IndexedDBConnection> connection_;
   const storage::BucketInfo bucket_info_;

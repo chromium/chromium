@@ -251,7 +251,7 @@ class BackgroundContentsService
 
   // PrefService used to store list of background pages (or NULL if this is
   // running under an incognito profile).
-  raw_ptr<PrefService> prefs_ = nullptr;
+  raw_ptr<PrefService, FlakyDanglingUntriaged> prefs_ = nullptr;
 
   // Information we track about each BackgroundContents.
   struct BackgroundContentsInfo {

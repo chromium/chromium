@@ -1174,6 +1174,13 @@ constexpr auto DisableDanglingPtrDetection = base::RawPtrTraits::kMayDangle;
 // occurrences are meant to be removed. See https://crbug.com/1291138.
 constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
+// Unlike DanglingUntriaged, this annotates raw_ptrs that are known to
+// dangle only occasionally on the CQ.
+//
+// These were found from CQ runs and analysed in this dashboard:
+// https://docs.google.com/spreadsheets/d/1k12PQOG4y1-UEV9xDfP1F8FSk4cVFywafEYHmzFubJ8/
+constexpr auto FlakyDanglingUntriaged = base::RawPtrTraits::kMayDangle;
+
 // The use of pointer arithmetic with raw_ptr is strongly discouraged and
 // disabled by default. Usually a container like span<> should be used
 // instead of the raw_ptr.

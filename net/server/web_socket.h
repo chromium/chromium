@@ -53,7 +53,10 @@ class WebSocket final {
   void SendErrorResponse(const std::string& message,
                          const NetworkTrafficAnnotationTag traffic_annotation);
 
-  const raw_ptr<HttpServer> server_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: PortForwardingDisconnectTest.DisconnectOnRelease
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/170974/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPortForwardingDisconnectTest.DisconnectOnRelease+VHash%3Abdbee181b3e0309b
+  const raw_ptr<HttpServer, FlakyDanglingUntriaged> server_;
   const raw_ptr<HttpConnection> connection_;
   std::unique_ptr<WebSocketEncoder> encoder_;
   bool closed_ = false;

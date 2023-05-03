@@ -1502,7 +1502,10 @@ class MainThreadFrameObserver {
  private:
   void Quit(bool);
 
-  raw_ptr<RenderWidgetHost> render_widget_host_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: All/NavigationPageLoadMetricsBrowserTest.FirstInputDelay/1
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/180209/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FNavigationPageLoadMetricsBrowserTest.FirstInputDelay%2FAll.1+VHash%3Abdbee181b3e0309b
+  raw_ptr<RenderWidgetHost, FlakyDanglingUntriaged> render_widget_host_;
   base::OnceClosure quit_closure_;
   int routing_id_;
 };

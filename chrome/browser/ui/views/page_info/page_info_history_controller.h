@@ -43,7 +43,10 @@ class PageInfoHistoryController {
 
   std::unique_ptr<page_info::PageInfoHistoryDataSource> history_data_source_;
   views::ViewTracker container_tracker_;
-  raw_ptr<content::WebContents> web_contents_;
+  // This dangling raw_ptr occurred in:
+  // browser_tests: PageInfoBubbleViewHistoryDialogBrowserTest.InvokeUi_History
+  // https://ci.chromium.org/ui/p/chromium/builders/try/win-rel/163992/test-results?q=ExactID%3Aninja%3A%2F%2Fchrome%2Ftest%3Abrowser_tests%2FPageInfoBubbleViewHistoryDialogBrowserTest.InvokeUi_History+VHash%3A0817a4e5ae191c8f&sortby=&groupby=
+  raw_ptr<content::WebContents, FlakyDanglingUntriaged> web_contents_;
   GURL site_url_;
 
   base::WeakPtrFactory<PageInfoHistoryController> weak_factory_{this};
