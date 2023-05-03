@@ -21,9 +21,9 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 import android.os.Build;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Assume;

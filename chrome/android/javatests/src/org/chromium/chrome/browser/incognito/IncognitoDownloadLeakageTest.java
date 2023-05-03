@@ -10,9 +10,9 @@ import static org.junit.Assert.assertTrue;
 import android.os.Environment;
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;

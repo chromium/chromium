@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import android.content.pm.ActivityInfo;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

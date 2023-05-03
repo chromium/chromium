@@ -11,8 +11,8 @@ import android.app.Activity;
 import android.view.KeyEvent;
 
 import androidx.fragment.app.Fragment;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;

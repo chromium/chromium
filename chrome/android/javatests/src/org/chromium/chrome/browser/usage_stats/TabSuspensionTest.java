@@ -14,9 +14,9 @@ import android.content.Intent;
 import android.media.AudioManager;
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;

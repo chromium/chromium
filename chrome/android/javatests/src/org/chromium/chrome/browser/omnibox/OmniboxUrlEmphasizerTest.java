@@ -8,8 +8,8 @@ import android.content.Context;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;

@@ -8,7 +8,7 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;

@@ -23,10 +23,10 @@ import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;

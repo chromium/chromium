@@ -17,8 +17,8 @@ import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Build;
 
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
 import org.json.JSONArray;

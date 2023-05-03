@@ -11,10 +11,10 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.benchmark.macro.junit4.BaselineProfileRule;
-import androidx.test.InstrumentationRegistry;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;

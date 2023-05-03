@@ -22,7 +22,7 @@ import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 
 import androidx.annotation.IntDef;
-import androidx.test.InstrumentationRegistry;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.common.collect.ImmutableMap;
 
