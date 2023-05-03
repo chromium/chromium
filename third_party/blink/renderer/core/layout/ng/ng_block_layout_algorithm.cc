@@ -1967,6 +1967,10 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       new_child_space = CreateConstraintSpaceForChild(
           child, child_break_token, *child_data, ChildAvailableSize(),
           /* is_new_fc */ false, child_bfc_block_offset);
+      recordreplay::Assert(
+        "[RUN-1855-1862] NGBlockLayoutAlgorithm::FinishInflow space(%s)",
+        new_child_space.ToString().Ascii().c_str()
+      );
       auto minimum_top2 = CreateMinimumTopScopeForChild(child, *child_data);
       layout_result = LayoutInflow(new_child_space, child_break_token,
                                    early_break_, column_spanner_path_, &child,

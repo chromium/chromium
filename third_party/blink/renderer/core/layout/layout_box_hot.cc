@@ -99,6 +99,10 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
     const NGColumnSpannerPath* column_spanner_path,
     absl::optional<NGFragmentGeometry>* initial_fragment_geometry,
     NGLayoutCacheStatus* out_cache_status) {
+  recordreplay::Assert("[RUN-1855-1862] LayoutBox::CachedLayoutResult %d new(%s)",
+    RecordReplayId(),
+    new_space.ToString().Ascii().c_str()
+  );
   NOT_DESTROYED();
   *out_cache_status = NGLayoutCacheStatus::kNeedsLayout;
 
