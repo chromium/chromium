@@ -69,31 +69,13 @@ blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
   return blink::FormElementPiiType::kOthers;
 }
 
-void LogDeprecationMessages(const WebFormControlElement& element) {
-  std::string autocomplete_attribute =
-      element.GetAttribute("autocomplete").Utf8();
-
-  static const char* const deprecated[] = {"region", "locality"};
-  for (const char* str : deprecated) {
-    if (autocomplete_attribute.find(str) == std::string::npos)
-      continue;
-    std::string msg = base::StrCat(
-        {"autocomplete='", str,
-         "' is deprecated and will soon be ignored. See http://goo.gl/YjeSsW"});
-    WebConsoleMessage console_message = WebConsoleMessage(
-        blink::mojom::ConsoleMessageLevel::kWarning, WebString::FromASCII(msg));
-    element.GetDocument().GetFrame()->AddMessageToConsole(console_message);
-  }
-}
-
 // Determines whether the form is interesting enough to be sent to the browser
 // for further operations. This is the case if any of the below holds:
-// (1) At least one field is editable.
+// (1) At least one form field is autofillable.
 // (2) At least one field has a non-empty autocomplete attribute.
 // (3) There is at least one iframe.
-bool IsFormInteresting(const FormData& form, size_t num_editable_elements) {
-  DCHECK_GE(form.fields.size(), num_editable_elements);
-  return num_editable_elements >= 1 || !form.child_frames.empty() ||
+bool IsFormInteresting(const FormData& form, bool has_autofillable_form_field) {
+  return has_autofillable_form_field || !form.child_frames.empty() ||
          base::ranges::any_of(form.fields, base::not_fn(&std::string::empty),
                               &FormFieldData::autocomplete_attribute);
 }
@@ -134,10 +116,6 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
 
   std::set<FieldRendererId> observed_unique_renderer_ids;
 
-  // Log an error message for deprecated attributes, but only the first time
-  // the form is parsed.
-  bool log_deprecation_messages = parsed_forms_.empty();
-
   // |parsed_forms_| is re-populated below in ProcessForm().
   std::map<FormRendererId, FormData> old_parsed_forms =
       std::move(parsed_forms_);
@@ -173,11 +151,11 @@ FormCache::UpdateFormCacheResult FormCache::UpdateFormCache(
         if (num_frames_seen > kMaxParseableChildFrames)
           form.child_frames.clear();
 
-        size_t num_editable_elements =
-            ScanFormControlElements(control_elements, log_deprecation_messages);
+        bool has_autofillable_form_field =
+            HasAutofillableFormControl(control_elements);
 
         // Store only forms that contain iframes or fields.
-        if (IsFormInteresting(form, num_editable_elements)) {
+        if (IsFormInteresting(form, has_autofillable_form_field)) {
           FormRendererId form_id = form.unique_renderer_id;
           DCHECK(parsed_forms_.find(form_id) == parsed_forms_.end());
           auto it = old_parsed_forms.find(form_id);
@@ -475,26 +453,14 @@ void FormCache::SetFieldsEligibleForManualFilling(
       std::move(fields_eligible_for_manual_filling));
 }
 
-size_t FormCache::ScanFormControlElements(
-    const std::vector<WebFormControlElement>& control_elements,
-    bool log_deprecation_messages) {
-  size_t num_editable_elements = 0;
+bool FormCache::HasAutofillableFormControl(
+    const std::vector<WebFormControlElement>& control_elements) {
   for (const WebFormControlElement& element : control_elements) {
-    if (log_deprecation_messages)
-      LogDeprecationMessages(element);
-
-    // Save original values of <select> elements so we can restore them
-    // when |ClearFormWithNode()| is invoked.
-    if (form_util::IsSelectElement(element) ||
-        form_util::IsTextAreaElement(element)) {
-      ++num_editable_elements;
-    } else if (!form_util::IsSelectMenuElement(element) &&
-               !form_util::IsCheckableElement(element)) {
-      ++num_editable_elements;
+    if (!form_util::IsCheckableElement(element)) {
+      return true;
     }
-    // TODO(crbug.com/1336051): Handle selectmenu case.
   }
-  return num_editable_elements;
+  return false;
 }
 
 void FormCache::SaveInitialValues(
