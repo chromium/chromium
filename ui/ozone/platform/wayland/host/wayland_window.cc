@@ -150,6 +150,10 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
   }
 }
 
+WaylandZAuraSurface* WaylandWindow::GetZAuraSurface() {
+  return root_surface_ ? root_surface_->zaura_surface() : nullptr;
+}
+
 gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
   return accelerated_widget_;
 }
@@ -331,17 +335,6 @@ void WaylandWindow::OnChannelDestroyed() {
 
 bool WaylandWindow::SupportsConfigureMinimizedState() const {
   return false;
-}
-
-void WaylandWindow::SetAuraSurface(zaura_surface* aura_surface) {
-  DCHECK(connection()->zaura_shell());
-  DCHECK_NE(aura_surface_.get(), aura_surface);
-  aura_surface_.reset(aura_surface);
-}
-
-bool WaylandWindow::IsSupportedOnAuraSurface(uint32_t version) const {
-  return aura_surface_ &&
-         zaura_surface_get_version(aura_surface_.get()) >= version;
 }
 
 void WaylandWindow::Close() {

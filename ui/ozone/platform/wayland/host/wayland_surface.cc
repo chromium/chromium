@@ -39,6 +39,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
+#include "ui/ozone/platform/wayland/host/wayland_zaura_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_output.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_management_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
@@ -103,6 +105,19 @@ WaylandSurface::~WaylandSurface() {
     std::move(release.second.explicit_release_callback)
         .Run(release.second.buffer.get(), base::ScopedFD());
   }
+}
+
+WaylandZAuraSurface* WaylandSurface::CreateZAuraSurface() {
+  auto* zaura_shell = connection_->zaura_shell();
+  if (!zaura_surface_ && zaura_shell) {
+    zaura_surface_ = std::make_unique<WaylandZAuraSurface>(
+        zaura_shell->wl_object(), surface(), connection_);
+  }
+  return zaura_surface_.get();
+}
+
+void WaylandSurface::ResetZAuraSurface() {
+  zaura_surface_.reset();
 }
 
 void WaylandSurface::RequestExplicitRelease(ExplicitReleaseCallback callback) {

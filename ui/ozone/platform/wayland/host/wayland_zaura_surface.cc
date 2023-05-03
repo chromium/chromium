@@ -192,6 +192,18 @@ bool WaylandZAuraSurface::HideTooltip() {
   return false;
 }
 
+bool WaylandZAuraSurface::SupportsActivate() const {
+  return IsSupported(ZAURA_SURFACE_ACTIVATE_SINCE_VERSION);
+}
+
+bool WaylandZAuraSurface::SupportsSetServerStartResize() const {
+  return IsSupported(ZAURA_SURFACE_SET_SERVER_START_RESIZE_SINCE_VERSION);
+}
+
+bool WaylandZAuraSurface::SupportsUnsetSnap() const {
+  return IsSupported(ZAURA_SURFACE_UNSET_SNAP_SINCE_VERSION);
+}
+
 bool WaylandZAuraSurface::IsSupported(uint32_t version) const {
   CHECK(zaura_surface_);
   return zaura_surface_get_version(zaura_surface_.get()) >= version;

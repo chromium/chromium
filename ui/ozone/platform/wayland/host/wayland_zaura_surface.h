@@ -81,6 +81,12 @@ class WaylandZAuraSurface {
                    const base::TimeDelta& hide_delay);
   bool HideTooltip();
 
+  // Helpers to check whether a given request is supported by the currently
+  // bound version.
+  bool SupportsActivate() const;
+  bool SupportsSetServerStartResize() const;
+  bool SupportsUnsetSnap() const;
+
   zaura_surface* wl_object() { return zaura_surface_.get(); }
 
   void set_delegate(base::WeakPtr<Delegate> delegate) { delegate_ = delegate; }
