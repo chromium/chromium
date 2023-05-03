@@ -690,27 +690,6 @@ chromium-metrics-reviews@google.com.
   <token key="ArcUserTypes" variants="ArcUserTypes"/>
 </histogram>
 
-<histogram name="Arc.Auth.CodeFetcher.ProxyBypass{ArcUserTypes}" enum="Boolean"
-    expires_after="M96">
-  <owner>acostinas@google.com</owner>
-  <owner>chromeos-commercial-networking@google.com</owner>
-  <summary>
-    If the network is configured to use a mandatory Proxy Auto-Configuration
-    (PAC) script which is unreachable, all network requests will fail. In this
-    case, the code which fetches the auth code used for Google Play Store
-    sign-in will retry to connect directly to the Google endpoint, bypassing the
-    proxy. This histogram is only recorded if the auth code was fetched
-    successfully. A &quot;false&quot; entry means the code was successfully
-    fetched at the first try, regardless of proxy configuration. A
-    &quot;true&quot; entry means that the network is configured to use a
-    mandatory PAC script which is unreachable and code was successfully fetched
-    at the second try, when the unreachable proxy was bypassed. {ArcUserTypes}
-  </summary>
-  <token key="ArcUserTypes" variants="ArcUserTypes">
-    <variant name=""/>
-  </token>
-</histogram>
-
 <histogram name="Arc.Auth.MainAccountHashMigration.Status"
     enum="ArcMainAccountHashMigrationStatus" expires_after="2023-08-20">
   <owner>vsomani@google.com</owner>
