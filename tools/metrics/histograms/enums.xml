@@ -32682,6 +32682,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1097" label="DeviceReportNetworkEvents"/>
   <int value="1098" label="SafeBrowsingExtensionProtectionAllowed"/>
   <int value="1099" label="ShowDisplaySizeScreenEnabled"/>
+  <int value="1100" label="AnonymousSearchEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
