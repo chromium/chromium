@@ -9026,6 +9026,33 @@
             ]
         }
     ],
+    "OnBeginFrameAcks": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_AllowLateAcks",
+                    "enable_features": [
+                        "OnBeginFrameAcks",
+                        "OnBeginFrameAllowLateAcks"
+                    ]
+                },
+                {
+                    "name": "Enabled_OnlyBatched",
+                    "enable_features": [
+                        "OnBeginFrameAcks"
+                    ]
+                }
+            ]
+        }
+    ],
     "OnDemandAT": [
         {
             "platforms": [
