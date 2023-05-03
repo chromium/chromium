@@ -71,7 +71,7 @@ using GetBadgeTextCallback = base::RepeatingCallback<gfx::RenderText&()>;
 
 constexpr int kProgressRingRadius = 9;
 constexpr int kProgressRingRadiusTouchMode = 12;
-constexpr float kProgressRingStrokeWidth = 1.7f;
+constexpr float kProgressRingStrokeWidth = 2.0f;
 
 // Close the partial bubble after 5 seconds if the user doesn't interact with
 // it.
