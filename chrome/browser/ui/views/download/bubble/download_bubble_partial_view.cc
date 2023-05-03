@@ -196,14 +196,14 @@ std::unique_ptr<DownloadBubblePartialView> DownloadBubblePartialView::Create(
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    base::OnceClosure on_mouse_entered_closure) {
+    base::OnceClosure on_interacted_closure) {
   if (rows.empty()) {
     return nullptr;
   }
 
   return base::WrapUnique(new DownloadBubblePartialView(
       browser, bubble_controller, navigation_handler, std::move(rows),
-      std::move(on_mouse_entered_closure)));
+      std::move(on_interacted_closure)));
 }
 
 DownloadBubblePartialView::DownloadBubblePartialView(
@@ -211,8 +211,8 @@ DownloadBubblePartialView::DownloadBubblePartialView(
     DownloadBubbleUIController* bubble_controller,
     DownloadBubbleNavigationHandler* navigation_handler,
     std::vector<DownloadUIModel::DownloadUIModelPtr> rows,
-    base::OnceClosure on_mouse_entered_closure)
-    : on_mouse_entered_closure_(std::move(on_mouse_entered_closure)) {
+    base::OnceClosure on_interacted_closure)
+    : on_interacted_closure_(std::move(on_interacted_closure)) {
   SetNotifyEnterExitOnChild(true);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
@@ -252,10 +252,35 @@ DownloadBubblePartialView::DownloadBubblePartialView(
 
 DownloadBubblePartialView::~DownloadBubblePartialView() = default;
 
-void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
-  if (on_mouse_entered_closure_) {
-    std::move(on_mouse_entered_closure_).Run();
+void DownloadBubblePartialView::AddedToWidget() {
+  auto* focus_manager = GetFocusManager();
+  if (focus_manager) {
+    focus_manager->AddFocusChangeListener(this);
   }
+}
+
+void DownloadBubblePartialView::RemovedFromWidget() {
+  auto* focus_manager = GetFocusManager();
+  if (focus_manager) {
+    focus_manager->RemoveFocusChangeListener(this);
+  }
+}
+
+void DownloadBubblePartialView::OnInteracted() {
+  if (on_interacted_closure_) {
+    std::move(on_interacted_closure_).Run();
+  }
+}
+
+void DownloadBubblePartialView::OnWillChangeFocus(views::View* before,
+                                                  views::View* now) {
+  if (now && Contains(now)) {
+    OnInteracted();
+  }
+}
+
+void DownloadBubblePartialView::OnMouseEntered(const ui::MouseEvent& event) {
+  OnInteracted();
 }
 
 BEGIN_METADATA(DownloadBubblePartialView, views::View)
