@@ -32,8 +32,6 @@ ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
 
   registrar_.Add(this, content::NOTIFICATION_LOAD_START,
                  content::NotificationService::AllSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-                 content::NotificationService::AllSources());
 
 #if BUILDFLAG(IS_ANDROID)
   auto* crash_manager = crash_reporter::CrashMetricsReporter::GetInstance();
@@ -90,11 +88,8 @@ void ContentStabilityMetricsProvider::Observe(
     const content::NotificationSource& source,
     const content::NotificationDetails& details) {
   switch (type) {
-    case content::NOTIFICATION_LOAD_START:
+    case content::NOTIFICATION_LOAD_START: {
       helper_.LogLoadStarted();
-      break;
-
-    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG: {
       break;
     }
 
