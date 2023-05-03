@@ -34,7 +34,7 @@
 //
 class ReadAnythingPageHandler
     : public ui::AXActionHandlerObserver,
-      public read_anything::mojom::PageHandler,
+      public read_anything::mojom::UntrustedPageHandler,
       public ReadAnythingModel::Observer,
       public ReadAnythingCoordinator::Observer,
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -44,8 +44,9 @@ class ReadAnythingPageHandler
       public content::WebContentsObserver {
  public:
   ReadAnythingPageHandler(
-      mojo::PendingRemote<read_anything::mojom::Page> page,
-      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver,
+      mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
+      mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
+          receiver,
       content::WebUI* web_ui);
   ReadAnythingPageHandler(const ReadAnythingPageHandler&) = delete;
   ReadAnythingPageHandler& operator=(const ReadAnythingPageHandler&) = delete;
@@ -55,7 +56,7 @@ class ReadAnythingPageHandler
   // ui::AXActionHandlerObserver:
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
 
-  // read_anything::mojom::PageHandler:
+  // read_anything::mojom::UntrustedPageHandler:
   void OnLinkClicked(const ui::AXTreeID& target_tree_id,
                      ui::AXNodeID target_node_id) override;
   void OnSelectionChange(const ui::AXTreeID& target_tree_id,
@@ -109,8 +110,8 @@ class ReadAnythingPageHandler
   const raw_ptr<Browser> browser_;
   const raw_ptr<content::WebUI> web_ui_;
 
-  const mojo::Receiver<read_anything::mojom::PageHandler> receiver_;
-  const mojo::Remote<read_anything::mojom::Page> page_;
+  const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
+  const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
 
   // Whether the Read Anything feature is currently active. The feature is
   // active when it is currently shown in the Side Panel.

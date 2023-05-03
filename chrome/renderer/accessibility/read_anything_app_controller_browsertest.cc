@@ -27,7 +27,8 @@ class MockAXTreeDistiller : public AXTreeDistiller {
               (override));
 };
 
-class MockReadAnythingPageHandler : public read_anything::mojom::PageHandler {
+class MockReadAnythingPageHandler
+    : public read_anything::mojom::UntrustedPageHandler {
  public:
   MockReadAnythingPageHandler() = default;
 
@@ -44,14 +45,14 @@ class MockReadAnythingPageHandler : public read_anything::mojom::PageHandler {
                int focus_offset),
               (override));
 
-  mojo::PendingRemote<read_anything::mojom::PageHandler>
+  mojo::PendingRemote<read_anything::mojom::UntrustedPageHandler>
   BindNewPipeAndPassRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
  private:
-  mojo::Receiver<read_anything::mojom::PageHandler> receiver_{this};
+  mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_{this};
 };
 
 class ReadAnythingAppControllerTest : public ChromeRenderViewTest {

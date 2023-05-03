@@ -726,10 +726,10 @@ bool ReadAnythingAppController::isSelectable() const {
 }
 
 void ReadAnythingAppController::OnConnected() {
-  mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory>
+  mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
       page_handler_factory_receiver =
           page_handler_factory_.BindNewPipeAndPassReceiver();
-  page_handler_factory_->CreatePageHandler(
+  page_handler_factory_->CreateUntrustedPageHandler(
       receiver_.BindNewPipeAndPassRemote(),
       page_handler_.BindNewPipeAndPassReceiver());
   render_frame_->GetBrowserInterfaceBroker()->GetInterface(

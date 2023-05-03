@@ -59,7 +59,7 @@ class ReadAnythingAppControllerTest;
 //
 class ReadAnythingAppController
     : public gin::Wrappable<ReadAnythingAppController>,
-      public read_anything::mojom::Page,
+      public read_anything::mojom::UntrustedPage,
       public ui::AXTreeObserver {
  public:
   static gin::WrapperInfo kWrapperInfo;
@@ -82,7 +82,7 @@ class ReadAnythingAppController
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
-  // read_anything::mojom::Page:
+  // read_anything::mojom::UntrustedPage:
   void AccessibilityEventReceived(
       const ui::AXTreeID& tree_id,
       const std::vector<ui::AXTreeUpdate>& updates,
@@ -177,9 +177,10 @@ class ReadAnythingAppController
 
   content::RenderFrame* render_frame_;
   std::unique_ptr<AXTreeDistiller> distiller_;
-  mojo::Remote<read_anything::mojom::PageHandlerFactory> page_handler_factory_;
-  mojo::Remote<read_anything::mojom::PageHandler> page_handler_;
-  mojo::Receiver<read_anything::mojom::Page> receiver_{this};
+  mojo::Remote<read_anything::mojom::UntrustedPageHandlerFactory>
+      page_handler_factory_;
+  mojo::Remote<read_anything::mojom::UntrustedPageHandler> page_handler_;
+  mojo::Receiver<read_anything::mojom::UntrustedPage> receiver_{this};
 
   // Model that holds state for this controller.
   ReadAnythingAppModel model_;

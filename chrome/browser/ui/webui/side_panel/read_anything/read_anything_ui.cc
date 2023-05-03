@@ -86,14 +86,16 @@ ReadAnythingUI::~ReadAnythingUI() = default;
 WEB_UI_CONTROLLER_TYPE_IMPL(ReadAnythingUI)
 
 void ReadAnythingUI::BindInterface(
-    mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver) {
+    mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
+        receiver) {
   read_anything_page_factory_receiver_.reset();
   read_anything_page_factory_receiver_.Bind(std::move(receiver));
 }
 
-void ReadAnythingUI::CreatePageHandler(
-    mojo::PendingRemote<read_anything::mojom::Page> page,
-    mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver) {
+void ReadAnythingUI::CreateUntrustedPageHandler(
+    mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
+    mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
+        receiver) {
   DCHECK(page);
   read_anything_page_handler_ = std::make_unique<ReadAnythingPageHandler>(
       std::move(page), std::move(receiver), web_ui());

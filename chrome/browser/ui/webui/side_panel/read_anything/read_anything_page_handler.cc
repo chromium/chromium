@@ -23,13 +23,13 @@
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router_factory.h"
 #endif
 
-using read_anything::mojom::Page;
-using read_anything::mojom::PageHandler;
 using read_anything::mojom::ReadAnythingTheme;
+using read_anything::mojom::UntrustedPage;
+using read_anything::mojom::UntrustedPageHandler;
 
 ReadAnythingPageHandler::ReadAnythingPageHandler(
-    mojo::PendingRemote<Page> page,
-    mojo::PendingReceiver<PageHandler> receiver,
+    mojo::PendingRemote<UntrustedPage> page,
+    mojo::PendingReceiver<UntrustedPageHandler> receiver,
     content::WebUI* web_ui)
     : browser_(chrome::FindLastActive()),
       web_ui_(web_ui),
@@ -85,7 +85,7 @@ void ReadAnythingPageHandler::TreeRemoved(ui::AXTreeID ax_tree_id) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// read_anything::mojom::PageHandler:
+// read_anything::mojom::UntrustedPageHandler:
 ///////////////////////////////////////////////////////////////////////////////
 
 void ReadAnythingPageHandler::OnLinkClicked(const ui::AXTreeID& target_tree_id,

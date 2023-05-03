@@ -34,28 +34,30 @@ class ReadAnythingUIUntrustedConfig : public content::WebUIConfig {
 //  A WebUI that holds distilled page contents for the Read Anything feature.
 //  This class has the same lifetime as the Side Panel view.
 //
-class ReadAnythingUI : public ui::UntrustedBubbleWebUIController,
-                       public read_anything::mojom::PageHandlerFactory {
+class ReadAnythingUI
+    : public ui::UntrustedBubbleWebUIController,
+      public read_anything::mojom::UntrustedPageHandlerFactory {
  public:
   explicit ReadAnythingUI(content::WebUI* web_ui);
   ReadAnythingUI(const ReadAnythingUI&) = delete;
   ReadAnythingUI& operator=(const ReadAnythingUI&) = delete;
   ~ReadAnythingUI() override;
 
-  // Instantiates the implementor of the mojom::PageHandlerFactory mojo
+  // Instantiates the implementor of the mojom::UntrustedPageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory> receiver);
+      mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandlerFactory>
+          receiver);
 
  private:
-  // read_anything::mojom::PageHandlerFactory:
-  void CreatePageHandler(
-      mojo::PendingRemote<read_anything::mojom::Page> page,
-      mojo::PendingReceiver<read_anything::mojom::PageHandler> receiver)
-      override;
+  // read_anything::mojom::UntrustedPageHandlerFactory:
+  void CreateUntrustedPageHandler(
+      mojo::PendingRemote<read_anything::mojom::UntrustedPage> page,
+      mojo::PendingReceiver<read_anything::mojom::UntrustedPageHandler>
+          receiver) override;
 
   std::unique_ptr<ReadAnythingPageHandler> read_anything_page_handler_;
-  mojo::Receiver<read_anything::mojom::PageHandlerFactory>
+  mojo::Receiver<read_anything::mojom::UntrustedPageHandlerFactory>
       read_anything_page_factory_receiver_{this};
 
   WEB_UI_CONTROLLER_TYPE_DECL();
