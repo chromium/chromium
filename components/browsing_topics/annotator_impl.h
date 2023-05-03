@@ -77,6 +77,10 @@ class AnnotatorImpl : public Annotator,
   absl::optional<std::vector<int32_t>> ExtractCategoriesFromModelOutput(
       const std::vector<tflite::task::core::Category>& model_output) const;
 
+ protected:
+  // optimization_guide::BertModelHandler:
+  void UnloadModel() override;
+
  private:
   // Sets the |override_list_| after it was loaded on a background thread and
   // calls |StartBatchAnnotate|.
@@ -103,9 +107,6 @@ class AnnotatorImpl : public Annotator,
   void OnBatchComplete(
       BatchAnnotationCallback callback,
       std::unique_ptr<std::vector<Annotation>> annotations_ptr);
-
-  // optimization_guide::BertModelHandler:
-  void UnloadModel() override;
 
   // Sets |annotation.topics| from the output of the model, calling
   // |ExtractCategoriesFromModelOutput| in the process.

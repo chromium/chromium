@@ -1,6 +1,7 @@
 # Copyright 2022 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 source_set("browsing_topics") {
   sources = [
@@ -104,5 +105,18 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/common",
     "//third_party/zlib/google:compression_utils",
+  ]
+}
+
+fuzzer_test("browsing_topics_annotator_fuzzer") {
+  sources = [ "annotator_fuzzer.cc" ]
+  deps = [
+    ":browsing_topics",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }

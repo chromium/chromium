@@ -488,32 +488,6 @@ if (is_mac && build_with_internal_optimization_guide) {
 }
 
 if (build_with_tflite_lib) {
-  template("bert_model_fuzzer") {
-    forward_variables_from(invoker, "*")
-
-    fuzzer_test("optimization_guide_${target_name}_fuzzer") {
-      sources = [ "bert_model_fuzzer.cc" ]
-      defines = [
-        "OPTIMIZATION_TARGET=${optimization_target}",
-        "MODEL_FILE_BASENAME=\"${model_file_basename}\"",
-      ]
-      deps = [
-        ":core",
-        ":features",
-        ":machine_learning",
-        ":model_executor",
-        "//base:base",
-        "//base/test:test_support",
-        "//components/optimization_guide/proto:optimization_guide_proto",
-      ]
-    }
-  }
-
-  bert_model_fuzzer("page_topics") {
-    optimization_target = "OPTIMIZATION_TARGET_PAGE_TOPICS_V2"
-    model_file_basename = "bert_page_topics_model.tflite"
-  }
-
   fuzzer_test("optimization_guide_page_visibility_model_fuzzer") {
     sources = [ "page_visibility_model_fuzzer.cc" ]
     deps = [
