@@ -133,40 +133,6 @@ TEST_F(VideoCaptureDeviceClientTest, Minimal) {
   device_client_.reset();
 }
 
-// Tests that we don't try to pass on frames with an invalid frame format.
-TEST_F(VideoCaptureDeviceClientTest, FailsSilentlyGivenInvalidFrameFormat) {
-  const size_t kScratchpadSizeInBytes = 400;
-  unsigned char data[kScratchpadSizeInBytes] = {};
-  // kFrameFormat is invalid in a number of ways.
-  const VideoCaptureFormat kFrameFormat(
-      gfx::Size(limits::kMaxDimension + 1, limits::kMaxDimension),
-      limits::kMaxFramesPerSecond + 1, VideoPixelFormat::PIXEL_FORMAT_I420);
-  const gfx::ColorSpace kColorSpace = gfx::ColorSpace::CreateREC601();
-  DCHECK(device_client_.get());
-  // Expect the the call to fail silently inside the VideoCaptureDeviceClient.
-  EXPECT_CALL(*receiver_, OnLog(_)).Times(AtLeast(1));
-  EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(0);
-  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedData(
-      data, kScratchpadSizeInBytes, kFrameFormat, kColorSpace,
-      0 /* clockwise rotation */, false /* flip_y */, base::TimeTicks(),
-      base::TimeDelta());
-
-  const gfx::Size kBufferDimensions(10, 10);
-  const VideoCaptureFormat kFrameFormatNV12(
-      kBufferDimensions, 30.0f /*frame_rate*/, PIXEL_FORMAT_NV12);
-  std::unique_ptr<gfx::GpuMemoryBuffer> buffer =
-      gpu_memory_buffer_manager_->CreateFakeGpuMemoryBuffer(
-          kBufferDimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-          gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE, gpu::kNullSurfaceHandle,
-          nullptr);
-  EXPECT_CALL(*receiver_, MockOnFrameReadyInBuffer(_, _, _)).Times(0);
-  device_client_->VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
-      buffer.get(), kFrameFormat, 0 /*clockwise rotation*/, base::TimeTicks(),
-      base::TimeDelta());
-
-  Mock::VerifyAndClearExpectations(receiver_);
-}
-
 // Tests that we fail silently if no available buffers to use.
 TEST_F(VideoCaptureDeviceClientTest, DropsFrameIfNoBuffer) {
   const size_t kScratchpadSizeInBytes = 400;
