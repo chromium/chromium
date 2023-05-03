@@ -72,9 +72,6 @@ declare namespace chrome {
     // determine which empty state to display.
     function isSelectable(): boolean;
 
-    // Indicates that the Reading mode panel selection was cleared.
-    function clearSelection(): void;
-
     // Called when a user makes a selection change. AnchorNodeID and
     // focusAXNodeID are AXNodeIDs which identify the anchor and focus AXNodes
     // in the main pane. The selection can either be forward or backwards.
