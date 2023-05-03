@@ -84,21 +84,6 @@ constexpr char kUserActionSkipDialogConfirmation[] = "skip-confirmation";
 // Max number of retries to check install attributes state.
 constexpr int kMaxInstallAttributesStateCheckRetries = 60;
 
-bool ShouldAttemptRestart() {
-  // Restart browser to switch from DeviceCloudPolicyManagerAsh to
-  // DeviceActiveDirectoryPolicyManager.
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsActiveDirectoryManaged()) {
-    // TODO(tnagel): Refactor BrowserPolicyConnectorAsh so that device
-    // policy providers are only registered after enrollment has finished and
-    // thus the correct one can be picked without restarting the browser.
-    return true;
-  }
-
-  return false;
-}
-
 // Returns the manager of the domain (either the domain name or the email of the
 // admin of the domain) after enrollment, or an empty string.
 std::string GetEnterpriseDomainManager() {
@@ -583,9 +568,6 @@ void EnrollmentScreen::OnConfirmationClosed() {
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
   ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
-
-  if (ShouldAttemptRestart())
-    chrome::AttemptRestart();
 }
 
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
