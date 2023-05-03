@@ -18,6 +18,8 @@ export interface ExtensionsSidebarElement {
     sectionMenu: IronSelectorElement,
     sectionsExtensions: HTMLElement,
     sectionsShortcuts: HTMLElement,
+    sectionsSitePermissions: HTMLElement,
+    moreExtensions: HTMLElement,
   };
 }
 

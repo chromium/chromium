@@ -388,7 +388,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "getMoreExtensionsUrl",
       base::ASCIIToUTF16(
           google_util::AppendGoogleLocaleParam(
-              GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+              extension_urls::AppendUtmSource(
+                  GURL(extension_urls::GetWebstoreExtensionsCategoryURL()),
+                  extension_urls::kExtensionsSidebarUtmSource),
               g_browser_process->GetApplicationLocale())
               .spec()));
   source->AddString("hostPermissionsLearnMoreLink",
