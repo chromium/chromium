@@ -420,13 +420,17 @@ const ChooserTypeNameEntry kChooserTypeGroupNames[] = {
     {&GetHidChooserContext, kHidChooserDataGroupType},
     {&GetBluetoothChooserContext, kBluetoothChooserDataGroupType}};
 
-// There are two FormatOptions to support both hostname-only and schemeful URL
-// formatting, both of which are used in Site Settings.
-constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsWithScheme = {
+// These variables represent different formatting options for default (i.e. not
+// extension or IWA) URLs as well as fallbacks for when the IWA/extension is not
+// found in the registry.
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsOmitHttps = {
     .default_options = {
         UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
-constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsHostnameOnly = {
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsHostOnly = {
     .default_options = {UrlIdentity::DefaultFormatOptions::kHostname}};
+constexpr UrlIdentity::FormatOptions kUrlIdentityOptionsRawSpec = {
+    .default_options = {UrlIdentity::DefaultFormatOptions::kRawSpec}};
+
 constexpr UrlIdentity::TypeSet kUrlIdentityAllowedTypes = {
     UrlIdentity::Type::kDefault, UrlIdentity::Type::kFile,
     UrlIdentity::Type::kIsolatedWebApp, UrlIdentity::Type::kChromeExtension};
@@ -636,8 +640,8 @@ std::string GetDisplayNameForGURL(Profile* profile,
 
   auto url_identity = UrlIdentity::CreateFromUrl(
       profile, origin.GetURL(), kUrlIdentityAllowedTypes,
-      hostname_only ? kUrlIdentityOptionsHostnameOnly
-                    : kUrlIdentityOptionsWithScheme);
+      hostname_only ? kUrlIdentityOptionsHostOnly
+                    : kUrlIdentityOptionsOmitHttps);
   return base::UTF16ToUTF8(url_identity.name);
 }
 
@@ -929,23 +933,10 @@ base::Value::Dict CreateChooserExceptionObject(
     const std::string& source = std::get<1>(details);
     const bool incognito = std::get<2>(details);
 
-    std::string site_display_name = origin.spec();
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    // Set the |site_display_name| to the extension's name which is more clear
-    // to the user if the |origin| is for an extension and the extension name
-    // can be found in the |profile|.
-    if (origin.SchemeIs(extensions::kExtensionScheme)) {
-      DCHECK(profile);
-      const auto* extension_registry =
-          extensions::ExtensionRegistry::Get(profile);
-      const extensions::Extension* extension =
-          extension_registry->GetExtensionById(
-              origin.host(), extensions::ExtensionRegistry::EVERYTHING);
-      if (extension) {
-        site_display_name = extension->name();
-      }
-    }
-#endif
+    std::string site_display_name = base::UTF16ToUTF8(
+        UrlIdentity::CreateFromUrl(profile, origin, kUrlIdentityAllowedTypes,
+                                   kUrlIdentityOptionsRawSpec)
+            .name);
 
     auto& this_provider_sites =
         all_provider_sites[HostContentSettingsMap::GetProviderTypeFromSource(

@@ -16,8 +16,11 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -46,7 +49,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/test/test_extension_dir.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace site_settings {
 
@@ -1139,5 +1142,69 @@ TEST_F(SiteSettingsHelperExtensionTest,
   EXPECT_EQ(CHECK_DEREF(exception.FindString(kDisplayName)), extension_name);
 }
 #endif  // #if BUILDFLAG(ENABLE_EXTENSIONS)
+
+class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
+ protected:
+  void InstallIsolatedWebApp(const GURL& url, const std::string& name) {
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(&testing_profile_);
+    web_app::AddDummyIsolatedAppToRegistry(&testing_profile_, url, name);
+  }
+
+  Profile* profile() { return &testing_profile_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile testing_profile_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+};
+
+TEST_F(SiteSettingsHelperIsolatedWebAppTest,
+       IsolatedWebAppsUseAppNameAsDisplayName) {
+  const GURL kAppUrl(
+      "isolated-app://"
+      "berugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic");
+  const std::string kAppName("test IWA Name");
+
+  const std::string kUsbChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::USB_CHOOSER_DATA));
+  const std::string& kPolicySource =
+      SiteSettingSourceToString(SiteSettingSource::kPolicy);
+  const std::string& kPreferenceSource =
+      SiteSettingSourceToString(SiteSettingSource::kPreference);
+  const std::u16string& kObjectName = u"Gadget";
+
+  InstallIsolatedWebApp(kAppUrl, kAppName);
+
+  // Create a chooser object for testing.
+  base::Value::Dict chooser_object;
+  chooser_object.Set("name", kObjectName);
+
+  // Add a user permission for an origin of |kAppUrl|.
+  ChooserExceptionDetails exception_details;
+  exception_details.insert({kAppUrl.DeprecatedGetOriginAsURL(),
+                            kPreferenceSource, /*incognito=*/false});
+  {
+    auto exception = CreateChooserExceptionObject(
+        /*display_name=*/kObjectName,
+        /*object=*/base::Value(chooser_object.Clone()),
+        /*chooser_type=*/kUsbChooserGroupName,
+        /*chooser_exception_details=*/exception_details,
+        /*profile=*/profile());
+    ExpectValidChooserExceptionObject(
+        exception, /*chooser_type=*/kUsbChooserGroupName,
+        /*display_name=*/kObjectName, chooser_object);
+
+    const auto& sites_list = exception.Find(kSites)->GetList();
+    ExpectValidSiteExceptionObject(
+        /*actual_site_object=*/sites_list[0],
+        /*display_name=*/kAppName,
+        /*origin=*/kAppUrl,
+        /*source=*/kPreferenceSource,
+        /*incognito=*/false);
+  }
+}
 
 }  // namespace site_settings
