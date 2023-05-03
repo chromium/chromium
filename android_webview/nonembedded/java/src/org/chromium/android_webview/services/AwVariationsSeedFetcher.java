@@ -10,11 +10,9 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.Build;
 import android.os.PersistableBundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.AwSwitches;
@@ -255,10 +253,11 @@ public class AwVariationsSeedFetcher extends JobService {
                         .setBackoffCriteria(JOB_INITIAL_BACKOFF_TIME_IN_MS, JOB_BACKOFF_POLICY)
                         .setExtras(extras);
         if (requireFastMode) {
-            builder.setPeriodic(VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                builder = JobBuildHelperForTiramisu.expediteAndRaisePriority(builder);
-            }
+            // TODO(avvall): Re-add setExpedited & setPriority when periodic seed fetches are
+            // implemented without using setPeriodic. Since setPeriodic conflicts with setExpedited
+            // & setPriority, these can only be re-added when periodic seed fetches are implemented
+            // without the use of the setPeriodic API.
+            builder = builder.setPeriodic(VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
         } else {
             boolean requiresCharging = !CommandLine.getInstance().hasSwitch(
                     AwSwitches.FINCH_SEED_NO_CHARGING_REQUIREMENT);
@@ -273,15 +272,6 @@ public class AwVariationsSeedFetcher extends JobService {
             }
         } else {
             Log.e(TAG, "Failed to schedule job");
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private static class JobBuildHelperForTiramisu {
-        private JobBuildHelperForTiramisu() {}
-
-        public static JobInfo.Builder expediteAndRaisePriority(JobInfo.Builder builder) {
-            return builder.setExpedited(true).setPriority(JobInfo.PRIORITY_MAX);
         }
     }
 

@@ -21,7 +21,3 @@
 -org.chromium.android_webview.test.devui.FlagsFragmentTest.testToggledFlagsFloatToTop
 -org.chromium.android_webview.test.devui.FlagsFragmentTest.testTogglingFlagShowsBlueDot_baseFeature
 -org.chromium.android_webview.test.devui.FlagsFragmentTest.testTogglingFlagShowsBlueDot_commandLineFlag
-
-# crbug.com/1430275
--org.chromium.android_webview.test.AwVariationsSeedFetcherTest.testScheduleWithCorrectFastModeSettings
--org.chromium.android_webview.test.SafeModeTest.testSafeModeActionList_turnOffSafeModeSeedFetch
