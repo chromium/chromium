@@ -936,15 +936,12 @@ class LayerTreeHostContextTestDontUseLostResources
     }
   }
 
-  DrawResult PrepareToDrawOnThread(LayerTreeHostImpl* host_impl,
-                                   LayerTreeHostImpl::FrameData* frame,
-                                   DrawResult draw_result) override {
+  void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
     if (host_impl->active_tree()->source_frame_number() == 2) {
       // Lose the context after draw on the second commit. This will cause
       // a third commit to recover.
-      gl_->set_times_bind_texture_succeeds(0);
+      LoseContext();
     }
-    return draw_result;
   }
 
   void RequestNewLayerTreeFrameSink() override {

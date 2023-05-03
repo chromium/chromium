@@ -124,7 +124,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
     return last_waited_sync_token_;
   }
   void set_context_lost(bool context_lost) { context_lost_ = context_lost; }
-  void set_times_bind_texture_succeeds(int times);
 
   void set_have_extension_egl_image(bool have);
   void set_support_texture_format_bgra8888(bool support);
@@ -196,7 +195,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
 
   unsigned context_id_;
   gpu::Capabilities test_capabilities_;
-  int times_bind_texture_succeeds_ = -1;
   int times_end_query_succeeds_ = -1;
   bool context_lost_ = false;
   int times_map_buffer_chromium_succeeds_ = -1;
