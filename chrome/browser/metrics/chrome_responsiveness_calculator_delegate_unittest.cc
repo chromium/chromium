@@ -61,3 +61,22 @@ TEST_F(ChromeResponsivenessCalculatorDelegateTest, OnMeasurementIntervalEnded) {
   histogram_tester_.ExpectUniqueSample("Browser.MainThreadsCongestion.Passive",
                                        10, 1);
 }
+
+TEST_F(ChromeResponsivenessCalculatorDelegateTest, UsedScenario) {
+  // First interval. Not visible so there should not be any samples.
+  delegate_->OnMeasurementIntervalEnded();
+  delegate_->OnResponsivenessEmitted(10, 0, 50, 50);
+
+  histogram_tester_.ExpectUniqueSample("Browser.MainThreadsCongestion.Used", 10,
+                                       0);
+
+  // Second interval. With a visible window so a sample will be emitted.
+  data_store_.OnTabAdded();
+  data_store_.OnWindowVisible();
+
+  delegate_->OnMeasurementIntervalEnded();
+  delegate_->OnResponsivenessEmitted(10, 0, 50, 50);
+
+  histogram_tester_.ExpectUniqueSample("Browser.MainThreadsCongestion.Used", 10,
+                                       1);
+}

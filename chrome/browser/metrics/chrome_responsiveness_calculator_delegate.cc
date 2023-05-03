@@ -7,10 +7,41 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/metrics/usage_scenario/usage_scenario.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_data_store.h"
 #include "chrome/browser/metrics/usage_scenario/usage_scenario_tracker.h"
+
+namespace {
+
+bool IsChromeUsedInScenario(Scenario scenario) {
+  // Exclude all scenarios in which Chrome is not being used. Defined as either
+  // visible to the user, playing audio, or capturing video.
+  switch (scenario) {
+    case Scenario::kAllTabsHiddenNoVideoCaptureOrAudio:
+    case Scenario::kZeroWindow:
+      return false;
+
+    case Scenario::kAllTabsHiddenAudio:
+    case Scenario::kAllTabsHiddenVideoCapture:
+    case Scenario::kAudio:
+    case Scenario::kEmbeddedVideoNoNavigation:
+    case Scenario::kEmbeddedVideoWithNavigation:
+    case Scenario::kFullscreenVideo:
+    case Scenario::kInteraction:
+    case Scenario::kNavigation:
+    case Scenario::kPassive:
+    case Scenario::kVideoCapture:
+      return true;
+
+    case Scenario::kAllTabsHiddenNoVideoCaptureOrAudioRecent:
+    case Scenario::kZeroWindowRecent:
+      // Short scenario only.
+      NOTREACHED_NORETURN();
+  }
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ChromeResponsivenessCalculatorDelegate>
@@ -32,9 +63,8 @@ ChromeResponsivenessCalculatorDelegate::
     ~ChromeResponsivenessCalculatorDelegate() = default;
 
 void ChromeResponsivenessCalculatorDelegate::OnMeasurementIntervalEnded() {
-  interval_histogram_suffix_ =
-      GetLongIntervalScenario(usage_scenario_data_store_->ResetIntervalData())
-          .histogram_suffix;
+  interval_scenario_params_ =
+      GetLongIntervalScenario(usage_scenario_data_store_->ResetIntervalData());
 }
 
 void ChromeResponsivenessCalculatorDelegate::OnResponsivenessEmitted(
@@ -42,11 +72,17 @@ void ChromeResponsivenessCalculatorDelegate::OnResponsivenessEmitted(
     int min,
     int exclusive_max,
     size_t buckets) {
-  CHECK(interval_histogram_suffix_);
-  base::UmaHistogramCustomCounts(base::StrCat({"Browser.MainThreadsCongestion",
-                                               interval_histogram_suffix_}),
-                                 num_congested_slices, min, exclusive_max,
-                                 buckets);
+  CHECK(interval_scenario_params_);
+  base::UmaHistogramCustomCounts(
+      base::StrCat({"Browser.MainThreadsCongestion",
+                    interval_scenario_params_->histogram_suffix}),
+      num_congested_slices, min, exclusive_max, buckets);
+
+  if (IsChromeUsedInScenario(interval_scenario_params_->scenario)) {
+    base::UmaHistogramCustomCounts("Browser.MainThreadsCongestion.Used",
+                                   num_congested_slices, min, exclusive_max,
+                                   buckets);
+  }
 }
 
 ChromeResponsivenessCalculatorDelegate::ChromeResponsivenessCalculatorDelegate(
