@@ -878,11 +878,11 @@ void BrowserTestBase::ProxyRunTestOnMainThreadLoop() {
       // to avoid navigations silently failing. This won't catch all cases, i.e.
       // if the test creates a new window or tab and navigates that.
       initial_navigation_observer = std::make_unique<InitialNavigationObserver>(
-          initial_web_contents_,
+          initial_web_contents_.get(),
           base::BindOnce(&BrowserTestBase::InitializeNetworkProcess,
                          base::Unretained(this)));
     }
-    initial_web_contents_ = nullptr;
+    initial_web_contents_.reset();
     SetUpOnMainThread();
 
     if (!IsSkipped()) {
@@ -978,7 +978,7 @@ void BrowserTestBase::UseSoftwareCompositing() {
 
 void BrowserTestBase::SetInitialWebContents(WebContents* web_contents) {
   DCHECK(!initial_web_contents_);
-  initial_web_contents_ = web_contents;
+  initial_web_contents_ = web_contents->GetWeakPtr();
 }
 
 void BrowserTestBase::AssertThatNetworkServiceDidNotCrash() {
