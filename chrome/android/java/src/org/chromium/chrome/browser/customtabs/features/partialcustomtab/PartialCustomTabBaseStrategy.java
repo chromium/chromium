@@ -250,8 +250,8 @@ public abstract class PartialCustomTabBaseStrategy
         // |mNavbarHeight| is zero now. Post the task instead.
         new Handler().post(() -> {
             initializeSize();
-            if (shouldDrawDividerLine()) drawDividerLine();
-            updateShadowOffset();
+            if (shouldDrawDividerLine() && !isMaximized()) drawDividerLine();
+            if (!isMaximized()) updateShadowOffset();
             maybeInvokeResizeCallback();
         });
     }

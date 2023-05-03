@@ -583,8 +583,16 @@ public class PartialCustomTabSideSheetStrategyTest {
 
     @Test
     public void maximizeAndFullscreen() {
+        doReturn(16)
+                .when(mPCCTTestRule.mResources)
+                .getDimensionPixelSize(eq(R.dimen.custom_tabs_handle_height));
         // Ensure maximize -> fullscreen enter/exit -> comes back to maximize mode
-        var strategy = createPcctSideSheetStrategy(700);
+        var strategy = createPcctSideSheetStrategy(700, ACTIVITY_SIDE_SHEET_POSITION_END,
+                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
+                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_TOP);
+        strategy.onToolbarInitialized(
+                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+        assertNotEquals("Corner not rounded", 0, mPCCTTestRule.mLayoutParams.topMargin);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(anyInt(), anyInt(), anyInt(), anyInt(),
                         eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET));
@@ -598,11 +606,13 @@ public class PartialCustomTabSideSheetStrategyTest {
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(eq(0), eq(0), eq(DEVICE_WIDTH), eq(DEVICE_HEIGHT - NAVBAR_HEIGHT),
                         eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
+        assertEquals("Corner rounded while maximized", 0, mPCCTTestRule.mLayoutParams.topMargin);
 
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
         mFullscreen = true;
         strategy.onEnterFullscreen(null, null);
+        assertEquals("Corner rounded in fullscreen", 0, mPCCTTestRule.mLayoutParams.topMargin);
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
@@ -611,6 +621,7 @@ public class PartialCustomTabSideSheetStrategyTest {
         mFullscreen = false;
         strategy.onExitFullscreen(null);
         PartialCustomTabTestRule.waitForAnimationToFinish();
+        assertEquals("Corner rounded while maximized", 0, mPCCTTestRule.mLayoutParams.topMargin);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
