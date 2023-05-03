@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_EXO_WAYLAND_ZAURA_OUTPUT_MANAGER_H_
 #define COMPONENTS_EXO_WAYLAND_ZAURA_OUTPUT_MANAGER_H_
 
-#include <cstdint>
+#include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
 
@@ -18,7 +18,7 @@ class Display;
 
 namespace exo::wayland {
 
-inline constexpr uint32_t kZAuraOutputManagerVersion = 3;
+inline constexpr uint32_t kZAuraOutputManagerVersion = 2;
 
 void bind_aura_output_manager(wl_client* client,
                               void* data,
