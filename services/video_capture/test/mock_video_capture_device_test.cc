@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/video_capture/test/mock_device_test.h"
+#include "mock_video_capture_device_test.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -18,11 +18,11 @@ using testing::InvokeWithoutArgs;
 
 namespace video_capture {
 
-MockDeviceTest::MockDeviceTest() = default;
+MockVideoCaptureDeviceTest::MockVideoCaptureDeviceTest() = default;
 
-MockDeviceTest::~MockDeviceTest() = default;
+MockVideoCaptureDeviceTest::~MockVideoCaptureDeviceTest() = default;
 
-void MockDeviceTest::SetUp() {
+void MockVideoCaptureDeviceTest::SetUp() {
   task_environment_ =
       std::make_unique<base::test::SingleThreadTaskEnvironment>();
   auto mock_device_factory = std::make_unique<media::MockDeviceFactory>();

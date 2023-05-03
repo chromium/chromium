@@ -4,16 +4,12 @@
 
 #include "base/run_loop.h"
 
-#include "services/video_capture/test/mock_device_test.h"
+#include "services/video_capture/test/mock_video_capture_device_test.h"
 
 using testing::_;
 using testing::Invoke;
 
 namespace video_capture {
-
-// This alias ensures test output is easily attributed to this service's tests.
-// TODO(rockot/chfremer): Consider just renaming the type.
-using MockVideoCaptureDeviceTest = MockDeviceTest;
 
 // Tests that the service stops the capture device when the client closes the
 // connection to the client proxy it provided to the service.

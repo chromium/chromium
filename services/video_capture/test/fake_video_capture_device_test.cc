@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/video_capture/test/fake_device_test.h"
+#include "services/video_capture/test/fake_video_capture_device_test.h"
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -12,11 +12,12 @@ using testing::Invoke;
 
 namespace video_capture {
 
-FakeDeviceTest::FakeDeviceTest() : FakeDeviceDescriptorTest() {}
+FakeVideoCaptureDeviceTest::FakeVideoCaptureDeviceTest()
+    : FakeDeviceDescriptorTest() {}
 
-FakeDeviceTest::~FakeDeviceTest() = default;
+FakeVideoCaptureDeviceTest::~FakeVideoCaptureDeviceTest() = default;
 
-void FakeDeviceTest::SetUp() {
+void FakeVideoCaptureDeviceTest::SetUp() {
   FakeDeviceDescriptorTest::SetUp();
 
   ASSERT_LE(1u, i420_fake_device_info_.supported_formats.size());

@@ -34,15 +34,15 @@ using testing::SaveArg;
 
 namespace video_capture {
 
-class MockDeviceSharedAccessTest : public ::testing::Test {
+class MockVideoCaptureDeviceSharedAccessTest : public ::testing::Test {
  public:
-  MockDeviceSharedAccessTest()
+  MockVideoCaptureDeviceSharedAccessTest()
       : mock_video_frame_handler_1_(
             video_frame_handler_1_.InitWithNewPipeAndPassReceiver()),
         mock_video_frame_handler_2_(
             video_frame_handler_2_.InitWithNewPipeAndPassReceiver()),
         next_arbitrary_frame_feedback_id_(123) {}
-  ~MockDeviceSharedAccessTest() override {}
+  ~MockVideoCaptureDeviceSharedAccessTest() override {}
 
   void SetUp() override {
     auto mock_device_factory = std::make_unique<media::MockDeviceFactory>();
@@ -283,10 +283,6 @@ class MockDeviceSharedAccessTest : public ::testing::Test {
 
  private:
 };
-
-// This alias ensures test output is easily attributed to this service's tests.
-// TODO(chfremer): Consider just renaming the type.
-using MockVideoCaptureDeviceSharedAccessTest = MockDeviceSharedAccessTest;
 
 TEST_F(MockVideoCaptureDeviceSharedAccessTest,
        TwoClientsCreatePushSubscriptionWithSameSettings) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIDEO_CAPTURE_TEST_FAKE_DEVICE_TEST_H_
-#define SERVICES_VIDEO_CAPTURE_TEST_FAKE_DEVICE_TEST_H_
+#ifndef SERVICES_VIDEO_CAPTURE_TEST_FAKE_VIDEO_CAPTURE_DEVICE_TEST_H_
+#define SERVICES_VIDEO_CAPTURE_TEST_FAKE_VIDEO_CAPTURE_DEVICE_TEST_H_
 
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,10 +15,10 @@ namespace video_capture {
 
 // Test fixture that creates a remote to the fake device provided by the fake
 // device factory.
-class FakeDeviceTest : public FakeDeviceDescriptorTest {
+class FakeVideoCaptureDeviceTest : public FakeDeviceDescriptorTest {
  public:
-  FakeDeviceTest();
-  ~FakeDeviceTest() override;
+  FakeVideoCaptureDeviceTest();
+  ~FakeVideoCaptureDeviceTest() override;
 
   void SetUp() override;
 
@@ -31,4 +31,4 @@ class FakeDeviceTest : public FakeDeviceDescriptorTest {
 
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_TEST_FAKE_DEVICE_TEST_H_
+#endif  // SERVICES_VIDEO_CAPTURE_TEST_FAKE_VIDEO_CAPTURE_DEVICE_TEST_H_

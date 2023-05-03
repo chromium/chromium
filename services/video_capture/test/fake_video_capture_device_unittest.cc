@@ -15,7 +15,7 @@
 #include "services/video_capture/public/cpp/mock_video_frame_handler.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 #include "services/video_capture/public/mojom/video_frame_handler.mojom.h"
-#include "services/video_capture/test/fake_device_test.h"
+#include "services/video_capture/test/fake_video_capture_device_test.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -23,10 +23,6 @@ using testing::Invoke;
 using testing::InvokeWithoutArgs;
 
 namespace video_capture {
-
-// This alias ensures test output is easily attributed to this service's tests.
-// TODO(rockot/chfremer): Consider just renaming the type.
-using FakeVideoCaptureDeviceTest = FakeDeviceTest;
 
 TEST_F(FakeVideoCaptureDeviceTest, FrameCallbacksArriveFromI420Device) {
   base::RunLoop wait_loop;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_VIDEO_CAPTURE_TEST_MOCK_DEVICE_TEST_H_
-#define SERVICES_VIDEO_CAPTURE_TEST_MOCK_DEVICE_TEST_H_
+#ifndef SERVICES_VIDEO_CAPTURE_TEST_MOCK_VIDEO_CAPTURE_DEVICE_TEST_H_
+#define SERVICES_VIDEO_CAPTURE_TEST_MOCK_VIDEO_CAPTURE_DEVICE_TEST_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
@@ -24,15 +24,15 @@ namespace base {
 namespace test {
 class SingleThreadTaskEnvironment;
 }
-}
+}  // namespace base
 
 namespace video_capture {
 
 // Reusable test setup for testing with a single mock device.
-class MockDeviceTest : public ::testing::Test {
+class MockVideoCaptureDeviceTest : public ::testing::Test {
  public:
-  MockDeviceTest();
-  ~MockDeviceTest() override;
+  MockVideoCaptureDeviceTest();
+  ~MockVideoCaptureDeviceTest() override;
 
   void SetUp() override;
 
@@ -55,4 +55,4 @@ class MockDeviceTest : public ::testing::Test {
 
 }  // namespace video_capture
 
-#endif  // SERVICES_VIDEO_CAPTURE_TEST_MOCK_DEVICE_TEST_H_
+#endif  // SERVICES_VIDEO_CAPTURE_TEST_MOCK_VIDEO_CAPTURE_DEVICE_TEST_H_
