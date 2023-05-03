@@ -1825,6 +1825,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
     PageLoad.Internal.Prerender2.ActivatedPageLoaderStatus{PrerenderTriggerType},
     but used to track the loading status of not activated prerendered pages.
   </summary>
+  <token key="PrerenderTriggerType" variants="PrerenderTriggerType"/>
 </histogram>
 
 <histogram
