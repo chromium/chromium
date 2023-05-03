@@ -5669,6 +5669,7 @@ test("unit_tests") {
     "../browser/performance_manager/decorators/process_priority_aggregator_unittest.cc",
     "../browser/performance_manager/mechanisms/page_freezer_unittest.cc",
     "../browser/performance_manager/metrics/memory_pressure_metrics_unittest.cc",
+    "../browser/performance_manager/metrics/metrics_provider_common_unittest.cc",
     "../browser/performance_manager/metrics/page_timeline_monitor_unittest.cc",
     "../browser/performance_manager/policies/page_freezing_policy_unittest.cc",
     "../browser/performance_manager/policies/working_set_trimmer_policy_unittest.cc",
@@ -5890,7 +5891,7 @@ test("unit_tests") {
       # Android. We should enable this test when Android becomes supported.
       "../browser/content_settings/one_time_permission_provider_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
-      "../browser/performance_manager/metrics/metrics_provider_unittest.cc",
+      "../browser/performance_manager/metrics/metrics_provider_desktop_unittest.cc",
       "../browser/permissions/permission_hats_trigger_unittest.cc",
       "../browser/policy/messaging_layer/util/reporting_server_connector_unittest.cc",
       "../browser/ssl/generated_https_first_mode_pref_unittest.cc",

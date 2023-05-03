@@ -20,7 +20,7 @@
 #include "chrome/browser/performance_manager/decorators/page_aggregator.h"
 #include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/metrics/memory_pressure_metrics.h"
-#include "chrome/browser/performance_manager/metrics/metrics_provider.h"
+#include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
@@ -299,7 +299,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PreMainMessageLoopRun() {
   // This object is created by the metrics service before threads, but it
   // needs the UserPerformanceTuningManager to exist. At this point it's
   // instantiated, but still needs to be initialized.
-  performance_manager::MetricsProvider::GetInstance()->Initialize();
+  performance_manager::MetricsProviderDesktop::GetInstance()->Initialize();
 #endif
 }
 

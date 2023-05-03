@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/metrics_provider.h"
+#include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,21 +14,6 @@
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
-
-class ScopedAXModeSetter {
- public:
-  explicit ScopedAXModeSetter(ui::AXMode new_mode) {
-    previous_mode_ = ui::AXPlatformNode::GetAccessibilityMode();
-    ui::AXPlatformNode::SetAXMode(new_mode);
-  }
-  ~ScopedAXModeSetter() {
-    ui::AXPlatformNode::SetAXMode(previous_mode_.flags());
-  }
-
- private:
-  ui::AXMode previous_mode_;
-};
 
 class FakeHighEfficiencyModeDelegate
     : public performance_manager::user_tuning::UserPerformanceTuningManager::
@@ -38,7 +23,7 @@ class FakeHighEfficiencyModeDelegate
   ~FakeHighEfficiencyModeDelegate() override = default;
 };
 
-class PerformanceManagerMetricsProviderTest : public testing::Test {
+class PerformanceManagerMetricsProviderDesktopTest : public testing::Test {
  protected:
   PrefService* local_state() { return &local_state_; }
 
@@ -62,7 +47,7 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 
   void ExpectSingleUniqueSample(
       const base::HistogramTester& tester,
-      performance_manager::MetricsProvider::EfficiencyMode sample,
+      performance_manager::MetricsProviderDesktop::EfficiencyMode sample,
       int battery_saver_percent,
       int memory_saver_percent) {
     tester.ExpectUniqueSample("PerformanceManager.UserTuning.EfficiencyMode",
@@ -77,7 +62,9 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 
   void InitProvider() { provider_->Initialize(); }
 
-  performance_manager::MetricsProvider* provider() { return provider_.get(); }
+  performance_manager::MetricsProviderDesktop* provider() {
+    return provider_.get();
+  }
 
   void ShutdownUserPerformanceTuningManager() {
     user_performance_tuning_env_->TearDown();
@@ -98,14 +85,16 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
                              TestUserPerformanceTuningManagerEnvironment>();
     user_performance_tuning_env_->SetUp(&local_state_);
 
-    provider_.reset(new performance_manager::MetricsProvider(local_state()));
+    provider_.reset(
+        new performance_manager::MetricsProviderDesktop(local_state()));
   }
 
   void TearDown() override {
     // Tests may teardown the environment before this is called to make some
     // assertions.
-    if (user_performance_tuning_env_)
+    if (user_performance_tuning_env_) {
       user_performance_tuning_env_->TearDown();
+    }
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -116,10 +105,10 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
   std::unique_ptr<performance_manager::user_tuning::
                       TestUserPerformanceTuningManagerEnvironment>
       user_performance_tuning_env_;
-  std::unique_ptr<performance_manager::MetricsProvider> provider_;
+  std::unique_ptr<performance_manager::MetricsProviderDesktop> provider_;
 };
 
-TEST_F(PerformanceManagerMetricsProviderTest, TestNormalMode) {
+TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestNormalMode) {
   SetHighEfficiencyEnabled(false);
 
   InitProvider();
@@ -128,11 +117,12 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestNormalMode) {
   provider()->ProvideCurrentSessionData(nullptr);
 
   ExpectSingleUniqueSample(
-      tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal,
+      tester,
+      performance_manager::MetricsProviderDesktop::EfficiencyMode::kNormal,
       /*battery_saver_percent=*/0, /*memory_saver_percent=*/0);
 }
 
-TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
+TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestMixedMode) {
   // Start in normal mode
   SetHighEfficiencyEnabled(false);
 
@@ -141,7 +131,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
     base::HistogramTester tester;
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kNormal,
         /*battery_saver_percent=*/0, /*memory_saver_percent=*/0);
   }
 
@@ -157,7 +148,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
     FastForwardBy(base::Minutes(10));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kMixed,
         /*battery_saver_percent=*/0, /*memory_saver_percent=*/50);
   }
 
@@ -167,10 +159,11 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
     // High-Efficiency Mode. Memory Saver is considered on for 100% of the
     // interval.
     provider()->ProvideCurrentSessionData(nullptr);
-    ExpectSingleUniqueSample(
-        tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kHighEfficiency,
-        /*battery_saver_percent=*/0, /*memory_saver_percent=*/100);
+    ExpectSingleUniqueSample(tester,
+                             performance_manager::MetricsProviderDesktop::
+                                 EfficiencyMode::kHighEfficiency,
+                             /*battery_saver_percent=*/0,
+                             /*memory_saver_percent=*/100);
   }
 
   {
@@ -182,12 +175,13 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
     FastForwardBy(base::Minutes(10));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kMixed,
         /*battery_saver_percent=*/20, /*memory_saver_percent=*/100);
   }
 }
 
-TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
+TEST_F(PerformanceManagerMetricsProviderDesktopTest, TestBothModes) {
   SetHighEfficiencyEnabled(true);
   SetBatterySaverEnabled(true);
 
@@ -199,7 +193,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     // enabled both modes in a previous session).
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kBoth,
         /*battery_saver_percent=*/100, /*memory_saver_percent=*/100);
   }
 
@@ -211,7 +206,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     SetHighEfficiencyEnabled(false);
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kMixed,
         /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
   }
 
@@ -219,10 +215,11 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     base::HistogramTester tester;
     // No changes until the following report, "Battery saver" is reported
     provider()->ProvideCurrentSessionData(nullptr);
-    ExpectSingleUniqueSample(
-        tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver,
-        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
+    ExpectSingleUniqueSample(tester,
+                             performance_manager::MetricsProviderDesktop::
+                                 EfficiencyMode::kBatterySaver,
+                             /*battery_saver_percent=*/100,
+                             /*memory_saver_percent=*/0);
   }
 
   {
@@ -234,7 +231,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     FastForwardBy(base::Minutes(30));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kMixed,
         /*battery_saver_percent=*/100, /*memory_saver_percent=*/75);
   }
 
@@ -243,12 +241,13 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     // One more report with no changes, this one reports "both" again.
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth,
+        tester,
+        performance_manager::MetricsProviderDesktop::EfficiencyMode::kBoth,
         /*battery_saver_percent=*/100, /*memory_saver_percent=*/100);
   }
 }
 
-TEST_F(PerformanceManagerMetricsProviderTest,
+TEST_F(PerformanceManagerMetricsProviderDesktopTest,
        TestCorrectlyLoggedDuringShutdown) {
   SetHighEfficiencyEnabled(false);
   SetBatterySaverEnabled(true);
@@ -259,67 +258,27 @@ TEST_F(PerformanceManagerMetricsProviderTest,
     base::HistogramTester tester;
     // No changes until the following report, "Battery saver" is reported
     provider()->ProvideCurrentSessionData(nullptr);
-    ExpectSingleUniqueSample(
-        tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver,
-        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
+    ExpectSingleUniqueSample(tester,
+                             performance_manager::MetricsProviderDesktop::
+                                 EfficiencyMode::kBatterySaver,
+                             /*battery_saver_percent=*/100,
+                             /*memory_saver_percent=*/0);
   }
 
   ShutdownUserPerformanceTuningManager();
 
-  // During shutdown, the MetricsProvider will attempt to record session data
-  // one last time. This happens after the UserPerformanceTuningManager is
+  // During shutdown, the MetricsProviderDesktop will attempt to record session
+  // data one last time. This happens after the UserPerformanceTuningManager is
   // destroyed, which can cause a crash if the manager is accessed to compute
   // the current mode.
   {
     base::HistogramTester tester;
     // No changes until the following report, "Battery saver" is reported
     provider()->ProvideCurrentSessionData(nullptr);
-    ExpectSingleUniqueSample(
-        tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver,
-        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
+    ExpectSingleUniqueSample(tester,
+                             performance_manager::MetricsProviderDesktop::
+                                 EfficiencyMode::kBatterySaver,
+                             /*battery_saver_percent=*/100,
+                             /*memory_saver_percent=*/0);
   }
-}
-
-TEST_F(PerformanceManagerMetricsProviderTest, A11yModeOff) {
-  InitProvider();
-
-  base::HistogramTester tester;
-  provider()->ProvideCurrentSessionData(nullptr);
-  tester.ExpectUniqueSample(
-      "PerformanceManager.Experimental.HasAccessibilityModeFlag", false, 1);
-}
-
-TEST_F(PerformanceManagerMetricsProviderTest, A11yModeOn) {
-  InitProvider();
-
-  ScopedAXModeSetter scoped_setter(ui::AXMode::kWebContents);
-
-  base::HistogramTester tester;
-  provider()->ProvideCurrentSessionData(nullptr);
-  tester.ExpectUniqueSample(
-      "PerformanceManager.Experimental.HasAccessibilityModeFlag", true, 1);
-  tester.ExpectUniqueSample(
-      "PerformanceManager.Experimental.AccessibilityModeFlag",
-      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS, 1);
-}
-
-TEST_F(PerformanceManagerMetricsProviderTest, MultipleA11yModeFlags) {
-  InitProvider();
-
-  ScopedAXModeSetter scoped_setter(ui::AXMode::kWebContents |
-                                   ui::AXMode::kHTML);
-
-  base::HistogramTester tester;
-  provider()->ProvideCurrentSessionData(nullptr);
-  tester.ExpectUniqueSample(
-      "PerformanceManager.Experimental.HasAccessibilityModeFlag", true, 1);
-  // Each mode flag gets recorded in its own bucket
-  tester.ExpectBucketCount(
-      "PerformanceManager.Experimental.AccessibilityModeFlag",
-      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS, 1);
-  tester.ExpectBucketCount(
-      "PerformanceManager.Experimental.AccessibilityModeFlag",
-      ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML, 1);
 }

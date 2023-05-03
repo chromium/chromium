@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/performance_manager/metrics/metrics_provider.h"
+#include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -22,50 +22,13 @@ namespace performance_manager {
 
 namespace {
 
-MetricsProvider* g_metrics_provider = nullptr;
+MetricsProviderDesktop* g_metrics_provider = nullptr;
 
 uint64_t kBytesPerMb = 1024 * 1024;
 
 #if BUILDFLAG(IS_MAC)
 uint64_t kKilobytesPerMb = 1024;
 #endif
-
-ui::AXMode::ModeFlagHistogramValue ModeFlagsToEnum(uint32_t mode_flags) {
-  switch (mode_flags) {
-    case ui::AXMode::kNativeAPIs:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_NATIVE_APIS;
-    case ui::AXMode::kWebContents:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS;
-    case ui::AXMode::kInlineTextBoxes:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_INLINE_TEXT_BOXES;
-    case ui::AXMode::kScreenReader:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_SCREEN_READER;
-    case ui::AXMode::kHTML:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML;
-    case ui::AXMode::kHTMLMetadata:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_HTML_METADATA;
-    case ui::AXMode::kLabelImages:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_LABEL_IMAGES;
-    case ui::AXMode::kPDF:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF;
-    case ui::AXMode::kPDFOcr:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF_OCR;
-    default:
-      return ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX;
-  }
-}
-
-void MaybeRecordAccessibilityModeFlags(const ui::AXMode& mode,
-                                       uint32_t mode_flags) {
-  if (mode.has_mode(mode_flags)) {
-    ui::AXMode::ModeFlagHistogramValue mode_enum = ModeFlagsToEnum(mode_flags);
-    if (mode_enum != ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX) {
-      UMA_HISTOGRAM_ENUMERATION(
-          "PerformanceManager.Experimental.AccessibilityModeFlag", mode_enum,
-          ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
-    }
-  }
-}
 }  // namespace
 
 // Tracks the proportion of time a specific mode was enabled during this
@@ -156,23 +119,23 @@ class ScopedTimeInModeTracker {
 };
 
 // static
-MetricsProvider* MetricsProvider::GetInstance() {
+MetricsProviderDesktop* MetricsProviderDesktop::GetInstance() {
   DCHECK(g_metrics_provider);
   return g_metrics_provider;
 }
 
-MetricsProvider::~MetricsProvider() {
+MetricsProviderDesktop::~MetricsProviderDesktop() {
   DCHECK_EQ(this, g_metrics_provider);
   g_metrics_provider = nullptr;
 }
 
-void MetricsProvider::Initialize() {
+void MetricsProviderDesktop::Initialize() {
   DCHECK(!initialized_);
 
   pref_change_registrar_.Init(local_state_);
   pref_change_registrar_.Add(
       kHighEfficiencyModeState,
-      base::BindRepeating(&MetricsProvider::OnHighEfficiencyPrefChanged,
+      base::BindRepeating(&MetricsProviderDesktop::OnHighEfficiencyPrefChanged,
                           base::Unretained(this)));
   performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
       ->AddObserver(this);
@@ -186,27 +149,7 @@ void MetricsProvider::Initialize() {
   ResetTrackers();
 }
 
-void MetricsProvider::RecordA11yFlags() {
-  ui::AXMode mode = ui::AXPlatformNode::GetAccessibilityMode();
-  bool is_mode_on = !mode.is_mode_off();
-
-  UMA_HISTOGRAM_BOOLEAN(
-      "PerformanceManager.Experimental.HasAccessibilityModeFlag", is_mode_on);
-
-  if (is_mode_on) {
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kNativeAPIs);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kWebContents);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kInlineTextBoxes);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kScreenReader);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTML);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kHTMLMetadata);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kLabelImages);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDF);
-    MaybeRecordAccessibilityModeFlags(mode, ui::AXMode::kPDFOcr);
-  }
-}
-
-void MetricsProvider::ProvideCurrentSessionData(
+void MetricsProviderDesktop::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   // It's valid for this to be called when `initialized_` is false if the finch
   // features controlling battery saver and high efficiency are disabled.
@@ -223,33 +166,31 @@ void MetricsProvider::ProvideCurrentSessionData(
   // that this mode is what is adequately reported at the next report, unless it
   // changes in the meantime.
   current_mode_ = ComputeCurrentMode();
-
-  RecordA11yFlags();
 }
 
-MetricsProvider::MetricsProvider(PrefService* local_state)
+MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
 
   available_memory_metrics_timer_.Start(
       FROM_HERE, base::Minutes(2),
-      base::BindRepeating(&MetricsProvider::RecordAvailableMemoryMetrics,
+      base::BindRepeating(&MetricsProviderDesktop::RecordAvailableMemoryMetrics,
                           base::Unretained(this)));
 }
 
-void MetricsProvider::OnBatterySaverModeChanged(bool is_active) {
+void MetricsProviderDesktop::OnBatterySaverModeChanged(bool is_active) {
   battery_saver_enabled_ = is_active;
   battery_saver_mode_tracker_->ModeChanged(battery_saver_enabled_);
   OnTuningModesChanged();
 }
 
-void MetricsProvider::OnHighEfficiencyPrefChanged() {
+void MetricsProviderDesktop::OnHighEfficiencyPrefChanged() {
   high_efficiency_mode_tracker_->ModeChanged(IsHighEfficiencyEnabled());
   OnTuningModesChanged();
 }
 
-void MetricsProvider::OnTuningModesChanged() {
+void MetricsProviderDesktop::OnTuningModesChanged() {
   EfficiencyMode new_mode = ComputeCurrentMode();
 
   // If the mode changes between UMA reports, mark it as Mixed for this
@@ -259,7 +200,8 @@ void MetricsProvider::OnTuningModesChanged() {
   }
 }
 
-MetricsProvider::EfficiencyMode MetricsProvider::ComputeCurrentMode() const {
+MetricsProviderDesktop::EfficiencyMode
+MetricsProviderDesktop::ComputeCurrentMode() const {
   // It's valid for this to be uninitialized if the battery saver/high
   // efficiency modes are unavailable. In that case, the browser is running in
   // normal mode, so return kNormal.
@@ -290,12 +232,12 @@ MetricsProvider::EfficiencyMode MetricsProvider::ComputeCurrentMode() const {
   return EfficiencyMode::kNormal;
 }
 
-bool MetricsProvider::IsHighEfficiencyEnabled() const {
+bool MetricsProviderDesktop::IsHighEfficiencyEnabled() const {
   return local_state_->GetInteger(kHighEfficiencyModeState) !=
          static_cast<int>(HighEfficiencyModeState::kDisabled);
 }
 
-void MetricsProvider::RecordAvailableMemoryMetrics() {
+void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {
   auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
   auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
 
@@ -319,7 +261,7 @@ void MetricsProvider::RecordAvailableMemoryMetrics() {
 #endif
 }
 
-void MetricsProvider::ResetTrackers() {
+void MetricsProviderDesktop::ResetTrackers() {
   battery_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
       battery_saver_enabled_,
       "PerformanceManager.UserTuning.BatterySaverModeEnabledPercent");

@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_
-#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_
+#ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
+#define CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
@@ -11,7 +11,7 @@
 #include "components/prefs/pref_change_registrar.h"
 
 class ChromeMetricsServiceClient;
-class PerformanceManagerMetricsProviderTest;
+class PerformanceManagerMetricsProviderDesktopTest;
 class PrefService;
 
 namespace performance_manager {
@@ -19,10 +19,11 @@ namespace performance_manager {
 class ScopedTimeInModeTracker;
 
 // A metrics provider to add some performance manager related metrics to the UMA
-// protos on each upload.
-class MetricsProvider : public ::metrics::MetricsProvider,
-                        public performance_manager::user_tuning::
-                            UserPerformanceTuningManager::Observer {
+// protos on each upload, such as related to memory saver, battery saver, and
+// available physical memory. Only present on desktop platforms.
+class MetricsProviderDesktop : public ::metrics::MetricsProvider,
+                               public performance_manager::user_tuning::
+                                   UserPerformanceTuningManager::Observer {
  public:
   enum class EfficiencyMode {
     // No efficiency mode for the entire upload window
@@ -39,9 +40,9 @@ class MetricsProvider : public ::metrics::MetricsProvider,
     kMaxValue = kMixed
   };
 
-  static MetricsProvider* GetInstance();
+  static MetricsProviderDesktop* GetInstance();
 
-  ~MetricsProvider() override;
+  ~MetricsProviderDesktop() override;
 
   void Initialize();
 
@@ -52,9 +53,9 @@ class MetricsProvider : public ::metrics::MetricsProvider,
 
  private:
   friend class ::ChromeMetricsServiceClient;
-  friend class ::PerformanceManagerMetricsProviderTest;
+  friend class ::PerformanceManagerMetricsProviderDesktopTest;
 
-  explicit MetricsProvider(PrefService* local_state);
+  explicit MetricsProviderDesktop(PrefService* local_state);
 
   // UserPerformanceTuningManager::Observer:
   void OnBatterySaverModeChanged(bool is_active) override;
@@ -65,8 +66,6 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   bool IsHighEfficiencyEnabled() const;
 
   void RecordAvailableMemoryMetrics();
-  void RecordA11yFlags();
-
   void ResetTrackers();
 
   PrefChangeRegistrar pref_change_registrar_;
@@ -85,4 +84,4 @@ class MetricsProvider : public ::metrics::MetricsProvider,
 
 }  // namespace performance_manager
 
-#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_H_
+#endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_METRICS_PROVIDER_DESKTOP_H_
