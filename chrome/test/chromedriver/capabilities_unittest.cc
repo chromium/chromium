@@ -661,9 +661,8 @@ TEST(ParseCapabilities, MobileEmulationUserAgent) {
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
 
-  ASSERT_EQ(1u, capabilities.switches.GetSize());
-  ASSERT_TRUE(capabilities.switches.HasSwitch("user-agent"));
-  ASSERT_EQ("Agent Smith", capabilities.switches.GetSwitchValue("user-agent"));
+  ASSERT_TRUE(capabilities.mobile_device->user_agent.has_value());
+  ASSERT_EQ("Agent Smith", capabilities.mobile_device->user_agent.value());
 }
 
 TEST(ParseCapabilities, MobileEmulationDeviceMetrics) {
@@ -694,10 +693,9 @@ TEST(ParseCapabilities, MobileEmulationDeviceName) {
   Status status = capabilities.Parse(caps);
   ASSERT_TRUE(status.IsOk());
 
-  ASSERT_EQ(1u, capabilities.switches.GetSize());
-  ASSERT_TRUE(capabilities.switches.HasSwitch("user-agent"));
+  ASSERT_TRUE(capabilities.mobile_device->user_agent.has_value());
   ASSERT_TRUE(base::MatchPattern(
-      capabilities.switches.GetSwitchValue("user-agent"),
+      capabilities.mobile_device->user_agent.value(),
       "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
       "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/*.*.*.* Mobile "
       "Safari/537.36"));

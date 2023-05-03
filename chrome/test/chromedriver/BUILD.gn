@@ -464,6 +464,7 @@ test("chromedriver_unittests") {
     "chrome/geolocation_override_manager_unittest.cc",
     "chrome/heap_snapshot_taker_unittest.cc",
     "chrome/javascript_dialog_manager_unittest.cc",
+    "chrome/mobile_device_unittest.cc",
     "chrome/mobile_emulation_override_manager_unittest.cc",
     "chrome/navigation_tracker_unittest.cc",
     "chrome/network_conditions_override_manager_unittest.cc",

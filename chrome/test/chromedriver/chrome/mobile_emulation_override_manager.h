@@ -21,7 +21,8 @@ class Status;
 class MobileEmulationOverrideManager : public DevToolsEventListener {
  public:
   MobileEmulationOverrideManager(DevToolsClient* client,
-                                 absl::optional<MobileDevice> mobile_device);
+                                 absl::optional<MobileDevice> mobile_device,
+                                 int browser_major_version);
 
   MobileEmulationOverrideManager(const MobileEmulationOverrideManager&) =
       delete;
@@ -46,6 +47,7 @@ class MobileEmulationOverrideManager : public DevToolsEventListener {
 
   raw_ptr<DevToolsClient> client_;
   absl::optional<MobileDevice> mobile_device_;
+  int browser_major_version_ = 0;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_MOBILE_EMULATION_OVERRIDE_MANAGER_H_

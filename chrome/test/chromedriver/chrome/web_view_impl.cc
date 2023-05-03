@@ -328,7 +328,8 @@ WebViewImpl::WebViewImpl(const std::string& id,
       dialog_manager_(new JavaScriptDialogManager(client_.get(), browser_info)),
       mobile_emulation_override_manager_(
           new MobileEmulationOverrideManager(client_.get(),
-                                             std::move(mobile_device))),
+                                             std::move(mobile_device),
+                                             browser_info->major_version)),
       geolocation_override_manager_(
           new GeolocationOverrideManager(client_.get())),
       network_conditions_override_manager_(

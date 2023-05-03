@@ -19,11 +19,10 @@ struct MobileDevice {
   MobileDevice(const MobileDevice&);
   ~MobileDevice();
   MobileDevice& operator=(const MobileDevice&);
-
   // Returns the reduced User-agent string for
   // https://github.com/WICG/ua-client-hints.
   Status GetReducedUserAgent(std::string major_version,
-                             std::string* reduced_user_agent);
+                             std::string* reduced_user_agent) const;
 
   // Find an emulation preset by a device name.
   static Status FindMobileDevice(std::string device_name,
@@ -31,6 +30,9 @@ struct MobileDevice {
   // List of platform names for the platforms where Chrome supports reduced user
   // agent.
   static std::vector<std::string> GetReducedUserAgentPlatforms();
+  // Names of devices that have presets.
+  static Status GetKnownMobileDeviceNamesForTesting(
+      std::vector<std::string>* device_names);
   // Guess the platform to which the user agent belongs.
   static bool GuessPlatform(const std::string& user_agent,
                             std::string* platform);

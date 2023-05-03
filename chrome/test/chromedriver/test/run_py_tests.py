@@ -35,9 +35,9 @@ import urllib.request
 
 _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
-_CLIENT_DIR = os.path.join(_PARENT_DIR, "client")
-_SERVER_DIR = os.path.join(_PARENT_DIR, "server")
-_TEST_DIR = os.path.join(_PARENT_DIR, "test")
+_CLIENT_DIR = os.path.join(_PARENT_DIR, 'client')
+_SERVER_DIR = os.path.join(_PARENT_DIR, 'server')
+_TEST_DIR = os.path.join(_PARENT_DIR, 'test')
 
 sys.path.insert(1, _PARENT_DIR)
 import chrome_paths
@@ -544,7 +544,7 @@ class ChromeDriverTestWithCustomCapability(ChromeDriverBaseTestWithWebServer):
 
   def testUnsupportedPageLoadStrategyRaisesException(self):
     self.assertRaises(chromedriver.InvalidArgument,
-                      self.CreateDriver, page_load_strategy="unsupported")
+                      self.CreateDriver, page_load_strategy='unsupported')
 
   def testGetUrlOnInvalidUrl(self):
     # Make sure we don't return 'chrome-error://chromewebdata/' (see
@@ -593,7 +593,7 @@ class ChromeDriverWebSocketTest(ChromeDriverBaseTestWithWebServer):
   def testWebSocketInvalidSessionId(self):
     self.CreateDriver(web_socket_url=True)
     self.assertRaises(Exception, websocket_connection.WebSocketConnection,
-                      _CHROMEDRIVER_SERVER_URL, "random_session_id_123")
+                      _CHROMEDRIVER_SERVER_URL, 'random_session_id_123')
 
   def testWebSocketClosedCanReconnect(self):
     driver = self.CreateDriver(web_socket_url=True)
@@ -4839,6 +4839,16 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
   overridden in Chrome.
   """
 
+  def getHighEntropyClientHints(self, driver):
+    return driver.ExecuteScript('''
+                         return navigator.userAgentData.getHighEntropyValues([
+                          'architecture',
+                          'bitness',
+                          'model',
+                          'platformVersion',
+                          'fullVersionList',
+                          'wow64'])''')
+
   # Run in Legacy mode
   def testDeviceMetricsWithStandardWidth(self):
     driver = self.CreateDriver(
@@ -4875,7 +4885,7 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
         mobile_emulation = {'userAgent': 'Agent Smith'})
     driver.Load(self._http_server.GetUrl() + '/userAgent')
     body_tag = driver.FindElement('tag name', 'body')
-    self.assertEqual("Agent Smith", body_tag.GetText())
+    self.assertEqual('Agent Smith', body_tag.GetText())
 
   def testDeviceName(self):
     driver = self.CreateDriver(
@@ -5107,6 +5117,127 @@ class MobileEmulationCapabilityTest(ChromeDriverBaseTestWithWebServer):
     driver = self.CreateDriver(send_w3c_capability=False,
                                send_w3c_request=False)
     self.assertFalse(driver.w3c_compliant)
+
+  def testClientHintsMobileLegacy(self):
+    expected_ua = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Bui'
+    'ld/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chr'
+    'ome/18.0.1025.166 Mobile Safari/535.19'
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'deviceMetrics': {'width': 360, 'height': 640, 'pixelRatio': 3},
+            'userAgent': expected_ua
+            })
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual('Android', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsNonMobileLegacy(self):
+    expected_ua = 'Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Bui'
+    'ld/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chr'
+    'ome/18.0.1025.166 Safari/535.19'
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'userAgent': expected_ua
+            })
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual("Android", driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(False, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsInferredMobileUA(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'deviceMetrics': {'width': 360, 'height': 640, 'pixelRatio': 3},
+            'clientHints': {
+                'platform': 'Android',
+                'platformVersion': '17',
+                'architecture': 'arm',
+                'bitness': '32',
+                'model': 'Special',
+            }
+        })
+    major_version = driver.capabilities['browserVersion'].split('.')[0]
+    expected_ua = ''.join(('Mozilla/5.0 (Linux; Android 10; K) ',
+                          'AppleWebKit/537.36 (KHTML, like Gecko) ',
+                          f'Chrome/{major_version}.0.0.0 Mobile ',
+                          'Safari/537.36'))
+
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual('Android', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('arm', hints['architecture'])
+    self.assertEqual('32', hints['bitness'])
+    self.assertEqual('Special', hints['model'])
+    self.assertEqual('17', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsInferredDesktopUA(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {
+            'clientHints': {
+                'platform': 'Windows',
+                'platformVersion': '12',
+                'architecture': 'x86',
+                'bitness': '64',
+            }
+        })
+    major_version = driver.capabilities['browserVersion'].split('.')[0]
+    expected_ua = ''.join(('Mozilla/5.0 (Windows NT 10.0; Win64; x64) ',
+                          'AppleWebKit/537.36 (KHTML, like Gecko) ',
+                           f'Chrome/{major_version}.0.0.0 Safari/537.36'))
+
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual(expected_ua, driver.ExecuteScript(
+        'return navigator.userAgent'))
+    self.assertEqual('Windows', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(False, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('x86', hints['architecture'])
+    self.assertEqual('64', hints['bitness'])
+    self.assertEqual('', hints['model'])
+    self.assertEqual('12', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
+
+  def testClientHintsDeviceName(self):
+    driver = self.CreateDriver(
+        mobile_emulation = {'deviceName': 'Nexus 5'})
+    driver.Load(self._http_server.GetUrl() + '/userAgent')
+    self.assertEqual('Android', driver.ExecuteScript(
+        'return navigator.userAgentData.platform'))
+    self.assertEqual(True, driver.ExecuteScript(
+        'return navigator.userAgentData.mobile'))
+    hints = self.getHighEntropyClientHints(driver)
+    self.assertEqual('', hints['architecture'])
+    self.assertEqual('', hints['bitness'])
+    self.assertEqual('Nexus 5', hints['model'])
+    self.assertEqual('6.0', hints['platformVersion'])
+    self.assertEqual(False, hints['wow64'])
 
 
 class ChromeDriverLogTest(ChromeDriverBaseTest):

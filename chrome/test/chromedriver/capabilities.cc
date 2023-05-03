@@ -130,11 +130,6 @@ Status ParseDeviceName(const std::string& device_name,
                   "'" + device_name + "' must be a valid device", status);
   }
 
-  // Don't override the user agent if blank (like for notebooks).
-  if (!device.user_agent.value_or("").empty()) {
-    capabilities->switches.SetSwitch("user-agent", *device.user_agent);
-  }
-
   capabilities->mobile_device = std::move(device);
 
   return Status(kOk);
@@ -480,8 +475,6 @@ Status ParseMobileEmulation(const base::Value& option,
             << ", platform='" << client_hints.platform << "'"
             << ", platformVersion='" << client_hints.platform_version << "'"
             << ", wow64=" << std::boolalpha << client_hints.wow64 << "}";
-    capabilities->switches.SetSwitch("user-agent",
-                                     mobile_device.user_agent.value());
     mobile_device.client_hints = std::move(client_hints);
   }
 

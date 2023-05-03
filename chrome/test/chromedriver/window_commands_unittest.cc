@@ -969,7 +969,8 @@ class StoreScreenshotParamsWebView : public StubWebView {
   explicit StoreScreenshotParamsWebView(
       DevToolsClient* dtc = nullptr,
       absl::optional<MobileDevice> md = absl::nullopt)
-      : StubWebView("1"), meom_(new MobileEmulationOverrideManager(dtc, md)) {}
+      : StubWebView("1"),
+        meom_(new MobileEmulationOverrideManager(dtc, md, 0)) {}
   ~StoreScreenshotParamsWebView() override = default;
 
   Status SendCommandAndGetResult(const std::string& cmd,

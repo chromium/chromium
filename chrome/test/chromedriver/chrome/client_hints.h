@@ -56,8 +56,9 @@ struct ClientHints {
   // Mandatory "platform" client hint.
   // Maps to Sec-CH-UA-Platform header value.
   // Maps to navigator.userAgentData.platform JS value.
-  // The value can be any string.
-  // Examples: "Windows", "iOS", "AmazingOS", etc.
+  // Normally the values are "Android", "Chrome OS", "Fuchsia", "iOS", "Linux",
+  // "macOS", "Windows", or "Unknown".
+  // The value can be any string though.
   // We have special treatment for some values returned by the function
   // GetPlatformForUAMetadata in components/embedder_support/user_agent_utils.cc
   std::string platform;

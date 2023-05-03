@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chrome/test/chromedriver/chrome/client_hints.h"
 #include "chrome/test/chromedriver/chrome/mobile_device_list.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
@@ -81,6 +82,87 @@ const Platform* kPlatformsWithReducedUserAgentSupport[] = {
     &kLinuxPlatform,
 };
 
+Status ParsePresetDeviceMetrics(const base::Value::Dict& device_metrics_dict,
+                                DeviceMetrics* device_metrics) {
+  absl::optional<int> maybe_width = device_metrics_dict.FindInt("width");
+  absl::optional<int> maybe_height = device_metrics_dict.FindInt("height");
+  if (!maybe_width) {
+    return Status(kUnknownError,
+                  "malformed device width: should be an integer");
+  }
+  if (!maybe_height) {
+    return Status(kUnknownError,
+                  "malformed device height: should be an integer");
+  }
+  absl::optional<double> maybe_device_scale_factor =
+      device_metrics_dict.FindDouble("deviceScaleFactor");
+  if (!maybe_device_scale_factor) {
+    return Status(kUnknownError,
+                  "malformed device scale factor: should be a double");
+  }
+  absl::optional<bool> touch = device_metrics_dict.FindBool("touch");
+  if (!touch) {
+    return Status(kUnknownError, "malformed touch: should be a bool");
+  }
+  absl::optional<bool> mobile = device_metrics_dict.FindBool("mobile");
+  if (!mobile) {
+    return Status(kUnknownError, "malformed mobile: should be a bool");
+  }
+  *device_metrics = DeviceMetrics(*maybe_width, *maybe_height,
+                                  *maybe_device_scale_factor, *touch, *mobile);
+  return Status{kOk};
+}
+
+Status ParsePresetClientHints(const base::Value::Dict& client_hints_dict,
+                              ClientHints* client_hints) {
+  absl::optional<bool> mobile = client_hints_dict.FindBool("mobile");
+  if (!mobile.has_value()) {
+    return Status(kUnknownError,
+                  "malformed clientHints.mobile: should be a boolean");
+  }
+  const std::string* platform = client_hints_dict.FindString("platform");
+  if (!platform) {
+    return Status(kUnknownError,
+                  "malformed clientHints.platform: should be a string");
+  }
+  const std::string* platform_version =
+      client_hints_dict.FindString("platformVersion");
+  if (!platform_version) {
+    return Status(kUnknownError,
+                  "malformed clientHints.platformVersion: should be a string");
+  }
+  const std::string* architecture =
+      client_hints_dict.FindString("architecture");
+  if (!architecture) {
+    return Status(kUnknownError,
+                  "malformed clientHints.architecture: should be a string");
+  }
+  const std::string* model = client_hints_dict.FindString("model");
+  if (!model) {
+    return Status(kUnknownError,
+                  "malformed clientHints.model: should be a string");
+  }
+  const std::string* bitness = client_hints_dict.FindString("bitness");
+  if (!bitness) {
+    return Status(kUnknownError,
+                  "malformed clientHints.bitness: should be a string");
+  }
+  absl::optional<bool> wow64 = client_hints_dict.FindBool("wow64");
+  if (!wow64.has_value()) {
+    return Status(kUnknownError,
+                  "malformed clientHints.wow64: should be a boolean");
+  }
+
+  client_hints->architecture = *architecture;
+  client_hints->bitness = *bitness;
+  client_hints->mobile = mobile.value();
+  client_hints->model = *model;
+  client_hints->platform = *platform;
+  client_hints->platform_version = *platform_version;
+  client_hints->wow64 = wow64.value();
+  return Status{kOk};
+}
+
 }  // namespace
 
 MobileDevice::MobileDevice() = default;
@@ -113,36 +195,61 @@ Status MobileDevice::FindMobileDevice(std::string device_name,
   }
   tmp_mobile_device.user_agent = *maybe_ua;
 
-  absl::optional<int> maybe_width = device->FindInt("width");
-  absl::optional<int> maybe_height = device->FindInt("height");
-  if (!maybe_width) {
-    return Status(kUnknownError,
-                  "malformed device width: should be an integer");
-  }
-  if (!maybe_height) {
-    return Status(kUnknownError,
-                  "malformed device height: should be an integer");
-  }
+  Status status{kOk};
 
-  absl::optional<double> maybe_device_scale_factor =
-      device->FindDouble("deviceScaleFactor");
-  if (!maybe_device_scale_factor) {
+  // Parse device metrics
+  const base::Value::Dict* maybe_device_metrics_dict =
+      device->FindDict("deviceMetrics");
+  if (!maybe_device_metrics_dict) {
     return Status(kUnknownError,
-                  "malformed device scale factor: should be a double");
+                  "malformed deviceMetrics: should be a dictionary");
   }
-  absl::optional<bool> touch = device->FindBool("touch");
-  if (!touch) {
-    return Status(kUnknownError, "malformed touch: should be a bool");
+  DeviceMetrics device_metrics;
+  status =
+      ParsePresetDeviceMetrics(*maybe_device_metrics_dict, &device_metrics);
+  if (status.IsError()) {
+    return status;
   }
-  absl::optional<bool> mobile = device->FindBool("mobile");
-  if (!mobile) {
-    return Status(kUnknownError, "malformed mobile: should be a bool");
+  tmp_mobile_device.device_metrics = std::move(device_metrics);
+
+  // Parsing the client hints
+  if (device->Find("clientHints")) {
+    const base::Value::Dict* maybe_client_hints_dict =
+        device->FindDict("clientHints");
+    if (!maybe_client_hints_dict) {
+      return Status(kUnknownError,
+                    "malformed clientHints: should be a dictionary");
+    }
+    ClientHints client_hints;
+    status = ParsePresetClientHints(*maybe_client_hints_dict, &client_hints);
+    if (status.IsError()) {
+      return status;
+    }
+    tmp_mobile_device.client_hints = std::move(client_hints);
   }
-  tmp_mobile_device.device_metrics = DeviceMetrics(
-      *maybe_width, *maybe_height, *maybe_device_scale_factor, *touch, *mobile);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);
+}
+
+Status MobileDevice::GetKnownMobileDeviceNamesForTesting(
+    std::vector<std::string>* result) {
+  auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+      kMobileDevices, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!parsed_json.has_value()) {
+    return Status(kUnknownError, "could not parse mobile device list because " +
+                                     parsed_json.error().message);
+  }
+
+  if (!parsed_json->is_dict()) {
+    return Status(kUnknownError, "malformed device metrics dictionary");
+  }
+  base::Value::Dict& mobile_devices = parsed_json->GetDict();
+
+  for (auto [key, value] : mobile_devices) {
+    result->push_back(std::move(key));
+  }
+  return Status{kOk};
 }
 
 // The idea is borrowed from
@@ -175,8 +282,9 @@ std::vector<std::string> MobileDevice::GetReducedUserAgentPlatforms() {
   return result;
 }
 
-Status MobileDevice::GetReducedUserAgent(std::string major_version,
-                                         std::string* reduced_user_agent) {
+Status MobileDevice::GetReducedUserAgent(
+    std::string major_version,
+    std::string* reduced_user_agent) const {
   if (!client_hints.has_value()) {
     return Status{kUnknownError,
                   "unable to construct userAgent without client hints"};
