@@ -626,6 +626,7 @@ void EnterTestMode(const GURL& update_url,
                   .SetDeviceManagementURL(device_management_url.spec())
                   .SetUseCUP(false)
                   .SetInitialDelay(base::Milliseconds(100))
+                  .SetServerKeepAliveTime(base::Seconds(1))
                   .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .SetOverinstallTimeout(base::Seconds(11))
                   .Modify());
