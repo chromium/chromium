@@ -34,6 +34,7 @@ class AshAttestationService : public AttestationService {
   void BuildChallengeResponseForVAChallenge(
       const std::string& serialized_signed_challenge,
       base::Value::Dict signals,
+      const std::set<DTCPolicyLevel>& levels,
       AttestationCallback callback) override;
 
  private:

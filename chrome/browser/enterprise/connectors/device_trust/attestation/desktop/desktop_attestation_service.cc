@@ -119,18 +119,20 @@ DesktopAttestationService::~DesktopAttestationService() = default;
 void DesktopAttestationService::BuildChallengeResponseForVAChallenge(
     const std::string& challenge,
     base::Value::Dict signals,
+    const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   key_manager_->ExportPublicKeyAsync(
       base::BindOnce(&DesktopAttestationService::OnPublicKeyExported,
                      weak_factory_.GetWeakPtr(), challenge, std::move(signals),
-                     std::move(callback)));
+                     levels, std::move(callback)));
 }
 
 void DesktopAttestationService::OnPublicKeyExported(
     const std::string& challenge,
     base::Value::Dict signals,
+    const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
     absl::optional<std::string> exported_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -149,7 +151,7 @@ void DesktopAttestationService::OnPublicKeyExported(
                      google_keys_.va_signing_key(GetVAType()).modulus_in_hex()),
       base::BindOnce(&DesktopAttestationService::OnChallengeValidated,
                      weak_factory_.GetWeakPtr(), signed_data,
-                     std::move(exported_key), std::move(signals),
+                     std::move(exported_key), std::move(signals), levels,
                      std::move(callback)));
 }
 
@@ -157,6 +159,7 @@ void DesktopAttestationService::OnChallengeValidated(
     const SignedData& signed_data,
     const absl::optional<std::string>& exported_public_key,
     base::Value::Dict signals,
+    const std::set<DTCPolicyLevel>& levels,
     AttestationCallback callback,
     bool is_va_challenge) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

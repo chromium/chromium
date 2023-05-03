@@ -198,7 +198,7 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ true), CreateSignals(),
-      future.GetCallback());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   VerifyAttestationResponse(future.Get());
 }
@@ -212,7 +212,7 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      future.GetCallback());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   VerifyAttestationResponse(future.Get());
 }
@@ -224,7 +224,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_InvalidDmToken) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), CreateSignals(), future.GetCallback());
+      GetSerializedSignedChallenge(), CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   const auto& attestation_response = future.Get();
   // No challenge response is returned if no valid DMToken was found.
@@ -240,7 +241,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      GetSerializedSignedChallenge(), CreateSignals(), future.GetCallback());
+      GetSerializedSignedChallenge(), CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   const auto& attestation_response = future.Get();
   // No challenge response is returned if no valid DMToken was found.
@@ -257,7 +259,7 @@ TEST_F(DesktopAttestationServiceTest,
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      future.GetCallback());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   VerifyAttestationResponse(future.Get());
 }
@@ -267,7 +269,8 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyChallenge) {
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      "", CreateSignals(), future.GetCallback());
+      "", CreateSignals(), std::set<enterprise_connectors::DTCPolicyLevel>(),
+      future.GetCallback());
 
   const auto& attestation_response = future.Get();
   ASSERT_TRUE(attestation_response.challenge_response.empty());
@@ -284,7 +287,8 @@ TEST_F(DesktopAttestationServiceTest,
 
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      challenge_not_from_va, CreateSignals(), future.GetCallback());
+      challenge_not_from_va, CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   const auto& attestation_response = future.Get();
   ASSERT_TRUE(attestation_response.challenge_response.empty());
@@ -299,12 +303,9 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_NoSignature) {
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
-      future.GetCallback());
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   VerifyAttestationResponse(future.Get(), /*has_signature=*/false);
 }
-
-// TODO(crbug.com/1208881): Add signals and validate they effectively get
-// added to the signed data in new tests.
 
 }  // namespace enterprise_connectors

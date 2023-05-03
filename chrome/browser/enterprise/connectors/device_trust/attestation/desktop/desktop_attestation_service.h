@@ -39,6 +39,7 @@ class DesktopAttestationService : public AttestationService {
   void BuildChallengeResponseForVAChallenge(
       const std::string& challenge,
       base::Value::Dict signals,
+      const std::set<DTCPolicyLevel>& levels,
       AttestationCallback callback) override;
 
  private:
@@ -48,6 +49,7 @@ class DesktopAttestationService : public AttestationService {
 
   void OnPublicKeyExported(const std::string& serialized_signed_challenge,
                            base::Value::Dict signals,
+                           const std::set<DTCPolicyLevel>& levels,
                            AttestationCallback callback,
                            absl::optional<std::string> exported_key);
 
@@ -55,6 +57,7 @@ class DesktopAttestationService : public AttestationService {
       const SignedData& signed_data,
       const absl::optional<std::string>& exported_public_key,
       base::Value::Dict signals,
+      const std::set<DTCPolicyLevel>& levels,
       AttestationCallback callback,
       bool is_va_challenge);
 

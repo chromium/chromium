@@ -147,7 +147,7 @@ class DeviceTrustServiceTest
     EXPECT_CALL(*mock_signals_service_, CollectSignals(_)).Times(0);
 
     EXPECT_CALL(*mock_attestation_service_,
-                BuildChallengeResponseForVAChallenge(_, _, _))
+                BuildChallengeResponseForVAChallenge(_, _, _, _))
         .Times(0);
 
     base::test::TestFuture<const DeviceTrustResponse&> future;
@@ -200,10 +200,11 @@ TEST_P(DeviceTrustServiceTest, BuildChallengeResponse) {
                                               result_code};
   EXPECT_CALL(*mock_attestation_service_,
               BuildChallengeResponseForVAChallenge(
-                  GetSerializedSignedChallenge(kJsonChallenge), _, _))
+                  GetSerializedSignedChallenge(kJsonChallenge), _, levels_, _))
       .WillOnce(Invoke([&fake_display_name, &attestation_response](
                            const std::string& challenge,
                            const base::Value::Dict signals,
+                           const std::set<DTCPolicyLevel> levels,
                            AttestationService::AttestationCallback callback) {
         EXPECT_EQ(
             signals.FindString(device_signals::names::kDisplayName)->c_str(),
@@ -245,10 +246,11 @@ TEST_P(DeviceTrustServiceTest, AttestationFailure) {
                                               result_code};
   EXPECT_CALL(*mock_attestation_service_,
               BuildChallengeResponseForVAChallenge(
-                  GetSerializedSignedChallenge(kJsonChallenge), _, _))
+                  GetSerializedSignedChallenge(kJsonChallenge), _, levels_, _))
       .WillOnce(Invoke([&attestation_response](
                            const std::string& challenge,
                            const base::Value::Dict signals,
+                           const std::set<DTCPolicyLevel> levels,
                            AttestationService::AttestationCallback callback) {
         std::move(callback).Run(attestation_response);
       }));

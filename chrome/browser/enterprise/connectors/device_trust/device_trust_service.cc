@@ -126,7 +126,7 @@ void DeviceTrustService::OnSignalsCollected(
   LogAttestationFunnelStep(DTAttestationFunnelStep::kSignalsCollected);
 
   attestation_service_->BuildChallengeResponseForVAChallenge(
-      challenge, std::move(signals),
+      challenge, std::move(signals), levels,
       base::BindOnce(&DeviceTrustService::OnAttestationResponseReceived,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
