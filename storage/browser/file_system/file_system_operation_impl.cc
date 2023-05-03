@@ -72,7 +72,7 @@ void FileSystemOperationImpl::CreateFile(const FileSystemURL& url,
   DCHECK(SetPendingOperationType(kOperationCreateFile));
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoCreateFile,
                      weak_factory_.GetWeakPtr(), url,
@@ -88,7 +88,7 @@ void FileSystemOperationImpl::CreateDirectory(const FileSystemURL& url,
   DCHECK(SetPendingOperationType(kOperationCreateDirectory));
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoCreateDirectory,
                      weak_factory_.GetWeakPtr(), url,
@@ -225,7 +225,7 @@ void FileSystemOperationImpl::Truncate(const FileSystemURL& url,
   DCHECK(SetPendingOperationType(kOperationTruncate));
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoTruncate,
                      weak_factory_.GetWeakPtr(), url,
@@ -259,7 +259,7 @@ void FileSystemOperationImpl::OpenFile(const FileSystemURL& url,
   }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       url,
       base::BindOnce(&FileSystemOperationImpl::DoOpenFile,
                      weak_factory_.GetWeakPtr(), url,
@@ -304,7 +304,7 @@ void FileSystemOperationImpl::CopyInForeignFile(
   DCHECK(SetPendingOperationType(kOperationCopyInForeignFile));
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoCopyInForeignFile,
                      weak_factory_.GetWeakPtr(), src_local_disk_file_path,
@@ -352,7 +352,7 @@ void FileSystemOperationImpl::CopyFileLocal(
   DCHECK_EQ(src_url.type(), dest_url.type());
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoCopyFileLocal,
                      weak_factory_.GetWeakPtr(), src_url, dest_url, options,
@@ -380,7 +380,7 @@ void FileSystemOperationImpl::MoveFileLocal(const FileSystemURL& src_url,
   DCHECK_EQ(src_url.type(), dest_url.type());
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
-  GetUsageAndQuotaThenRunTask(
+  GetBucketSpaceRemainingAndRunTask(
       dest_url,
       base::BindOnce(&FileSystemOperationImpl::DoMoveFileLocal,
                      weak_factory_.GetWeakPtr(), src_url, dest_url, options,
@@ -417,7 +417,7 @@ FileSystemOperationImpl::FileSystemOperationImpl(
   DCHECK(async_file_util_);
 }
 
-void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
+void FileSystemOperationImpl::GetBucketSpaceRemainingAndRunTask(
     const FileSystemURL& url,
     base::OnceClosure task,
     base::OnceClosure error_callback) {
@@ -433,28 +433,28 @@ void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
     return;
   }
 
+  BucketLocator bucket =
+      url.bucket().value_or(BucketLocator::ForDefaultBucket(url.storage_key()));
+  bucket.type = FileSystemTypeToQuotaStorageType(url.type());
+
   DCHECK(quota_manager_proxy);
-  quota_manager_proxy->GetUsageAndQuota(
-      blink::StorageKey::CreateFirstParty(url.origin()),
-      FileSystemTypeToQuotaStorageType(url.type()),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      base::BindOnce(&FileSystemOperationImpl::DidGetUsageAndQuotaAndRunTask,
+  quota_manager_proxy->GetBucketSpaceRemaining(
+      bucket, base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindOnce(&FileSystemOperationImpl::DidGetBucketSpaceRemaining,
                      weak_ptr_, std::move(task), std::move(error_callback)));
 }
 
-void FileSystemOperationImpl::DidGetUsageAndQuotaAndRunTask(
+void FileSystemOperationImpl::DidGetBucketSpaceRemaining(
     base::OnceClosure task,
     base::OnceClosure error_callback,
-    blink::mojom::QuotaStatusCode status,
-    int64_t usage,
-    int64_t quota) {
-  if (status != blink::mojom::QuotaStatusCode::kOk) {
-    LOG(WARNING) << "Got unexpected quota error : " << static_cast<int>(status);
+    QuotaErrorOr<int64_t> space_left) {
+  if (!space_left.has_value()) {
+    LOG(WARNING) << "Got unexpected quota error";
     std::move(error_callback).Run();
     return;
   }
 
-  operation_context_->set_allowed_bytes_growth(quota - usage);
+  operation_context_->set_allowed_bytes_growth(space_left.value());
   std::move(task).Run();
 }
 
