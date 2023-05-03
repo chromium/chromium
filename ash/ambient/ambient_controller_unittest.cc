@@ -189,7 +189,10 @@ INSTANTIATE_TEST_SUITE_P(
                         ,
                     AmbientUiSettings(AmbientTheme::kFeelTheBreeze)
 #endif  // BUILDFLAG(HAS_ASH_AMBIENT_ANIMATION_RESOURCES)
-                        ));
+                        ),
+    [](const ::testing::TestParamInfo<AmbientUiSettings>& param_info) {
+      return std::string(ToString(param_info.param.theme()));
+    });
 
 TEST_P(AmbientControllerTestForAnyUiSettings, ShowAmbientScreenUponLock) {
   LockScreen();
