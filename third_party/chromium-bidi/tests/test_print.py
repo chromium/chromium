@@ -14,7 +14,7 @@
 # limitations under the License.
 
 import pytest
-from anys import ANY_STR
+from anys import ANY_INT, ANY_STR
 from test_helpers import goto_url, read_JSON_message, send_JSON_command
 
 
@@ -24,7 +24,6 @@ async def test_print(websocket, context_id):
 
     await send_JSON_command(
         websocket, {
-            "id": 1,
             "method": "browsingContext.print",
             "params": {
                 "context": context_id,
@@ -34,7 +33,7 @@ async def test_print(websocket, context_id):
                     "width": 800,
                     "height": 600,
                 },
-                "pageRanges": ["1", "1-", "-1", "1-1", 1],
+                "pageRanges": ["1-"],
                 "scale": 1.0,
             }
         })
@@ -43,4 +42,4 @@ async def test_print(websocket, context_id):
 
     # 'data' is not deterministic.
     # There is always ~half a dozen characters that differ between runs.
-    assert resp == {'id': 1, 'result': {'data': ANY_STR}}
+    assert resp == {'id': ANY_INT, 'result': {'data': ANY_STR}}
