@@ -11,6 +11,12 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './sp_heading.html.js';
 
+export interface SpHeading {
+  $: {
+    backButton: HTMLElement,
+  };
+}
+
 export class SpHeading extends PolymerElement {
   static get is() {
     return 'sp-heading';
@@ -58,6 +64,10 @@ export class SpHeading extends PolymerElement {
 
   private onBackButtonClick_() {
     this.dispatchEvent(new CustomEvent('back-button-click'));
+  }
+
+  getBackButton(): HTMLElement {
+    return this.$.backButton;
   }
 }
 

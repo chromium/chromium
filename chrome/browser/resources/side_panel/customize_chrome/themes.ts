@@ -1,6 +1,9 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_grid/cr_grid.js';
@@ -9,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import './check_mark_wrapper.js';
 
+import {SpHeading} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import {HelpBubbleMixin, HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -29,9 +33,8 @@ const ThemesElementBase = HelpBubbleMixin(PolymerElement) as
 
 export interface ThemesElement {
   $: {
-    backButton: HTMLButtonElement,
-    header: HTMLElement,
     refreshDailyToggle: CrToggleElement,
+    heading: SpHeading,
   };
 }
 
@@ -99,11 +102,12 @@ export class ThemesElement extends ThemesElementBase {
 
   override ready() {
     super.ready();
-    this.registerHelpBubble(CHROME_THEME_BACK_ELEMENT_ID, this.$.backButton);
+    this.registerHelpBubble(
+        CHROME_THEME_BACK_ELEMENT_ID, this.$.heading.getBackButton());
   }
 
   focusOnBackButton() {
-    this.$.backButton.focus();
+    this.$.heading.getBackButton().focus();
   }
 
   private onThemesRendered_() {

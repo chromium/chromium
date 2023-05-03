@@ -1,24 +1,10 @@
-<style include="cr-hidden-style cr-icons">
-  #headerContainer {
-    align-items: center;
-    display: flex;
-    height: 20px;
-    margin: 0 16px 16px;
-    padding-top: 16px;
+<style include="cr-hidden-style cr-icons sp-shared-style">
+  sp-heading {
+    margin: 8px 16px;
   }
 
-  cr-icon-button {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
-    --cr-icon-button-margin-start: -8px;
-  }
-
-  h2 {
-    color: var(--cr-primary-text-color);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    margin: 0;
-    margin-inline-start: 10px;
+  :host-context([chrome-refresh-2023]) .sp-card sp-heading {
+    margin: 0 0 8px;
   }
 
   cr-grid {
@@ -95,34 +81,35 @@
     }
   }
 </style>
-<div id="headerContainer">
-  <cr-icon-button on-click="onBackClick_" id="backButton"
-      class="icon-arrow-back" title="$i18n{backButton}">
-  </cr-icon-button>
-  <h2 id="header">[[header_]]</h2>
+<div class="sp-card">
+  <sp-heading id="heading" on-back-button-click="onBackClick_"
+      back-button-aria-label="$i18n{backButton}"
+      back-button-title="$i18n{backButton}">
+    <h2 slot="heading">[[header_]]</h2>
+  </sp-heading>
+  <div id="refreshDailyToggleContainer">
+    <div id="refreshDailyToggleTitle">$i18n{refreshDaily}</div>
+    <cr-toggle id="refreshDailyToggle" title="$i18n{refreshDaily}"
+        checked="[[isRefreshToggleChecked_]]"
+        on-change="onRefreshDailyToggleChange_">
+    </cr-toggle>
+  </div>
+  <cr-grid columns="3" disable-arrow-navigation>
+    <template is="dom-repeat" id="themesRepeat" items="[[themes_]]"
+        on-rendered-item-count-changed="onThemesRendered_">
+      <div class="tile theme" tabindex="0" role="button"
+          on-click="onSelectTheme_" title$="[[item.attribution1]]"
+          aria-current$="[[getThemeCheckedStatus_(item.imageUrl.url, theme_)]]">
+        <customize-chrome-check-mark-wrapper
+            checked="[[isThemeSelected_(item.imageUrl.url, theme_)]]">
+          <div class="image-container">
+            <img is="cr-auto-img"
+                auto-src="[[item.previewImageUrl.url]]"
+                draggable="false">
+            </img>
+          </div>
+        </customize-chrome-check-mark-wrapper>
+      </div>
+    </template>
+  <cr-grid>
 </div>
-<div id="refreshDailyToggleContainer">
-  <div id="refreshDailyToggleTitle">$i18n{refreshDaily}</div>
-  <cr-toggle id="refreshDailyToggle" title="$i18n{refreshDaily}"
-      checked="[[isRefreshToggleChecked_]]"
-      on-change="onRefreshDailyToggleChange_">
-  </cr-toggle>
-</div>
-<cr-grid columns="3" disable-arrow-navigation>
-  <template is="dom-repeat" id="themesRepeat" items="[[themes_]]"
-      on-rendered-item-count-changed="onThemesRendered_">
-    <div class="tile theme" tabindex="0" role="button"
-        on-click="onSelectTheme_" title$="[[item.attribution1]]"
-        aria-current$="[[getThemeCheckedStatus_(item.imageUrl.url, theme_)]]">
-      <customize-chrome-check-mark-wrapper
-          checked="[[isThemeSelected_(item.imageUrl.url, theme_)]]">
-        <div class="image-container">
-          <img is="cr-auto-img"
-              auto-src="[[item.previewImageUrl.url]]"
-              draggable="false">
-          </img>
-        </div>
-      </customize-chrome-check-mark-wrapper>
-    </div>
-  </template>
-<cr-grid>

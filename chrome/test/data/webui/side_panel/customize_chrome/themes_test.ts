@@ -68,7 +68,7 @@ suite('ThemesTest', () => {
   test('themes buttons create events', async () => {
     // Check that clicking the back button produces a back-click event.
     const eventPromise = eventToPromise('back-click', themesElement);
-    themesElement.$.backButton.click();
+    themesElement.$.heading.getBackButton().click();
     const event = await eventPromise;
     assertTrue(!!event);
   });
@@ -86,7 +86,7 @@ suite('ThemesTest', () => {
   test('get collection images when collection changes', async () => {
     await setCollection('test1', 3);
 
-    let header = themesElement.$.header;
+    let header = themesElement.$.heading;
     assertEquals(header.textContent, 'test1');
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 3);
@@ -102,7 +102,7 @@ suite('ThemesTest', () => {
 
     await setCollection('test2', 5);
 
-    header = themesElement.$.header;
+    header = themesElement.$.heading;
     assertEquals(header.textContent, 'test2');
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
     assertEquals(themes.length, 5);
