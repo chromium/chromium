@@ -6871,8 +6871,8 @@
   },
   {
     "name" : "side-search",
-    "owners": [ "chrome-cros@google.com", "tluk" ],
-    "expiry_milestone" : 110
+    "owners": [ "chrome-cros@google.com", "lens-chrome@google.com", "tluk"  ],
+    "expiry_milestone" : 120
   },
   {
     "name" : "side-search-dse-support",
