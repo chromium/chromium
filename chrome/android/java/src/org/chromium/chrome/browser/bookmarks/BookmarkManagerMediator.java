@@ -171,7 +171,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         }
 
         @Override
-        // TODO(crbug.com/1419493): Investigate use of synchronized.
         public synchronized BookmarkUiState pop() {
             var state = super.pop();
             onBackPressStateChanged();
