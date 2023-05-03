@@ -9,6 +9,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
@@ -31,6 +32,9 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   void DecodeWifiCredentialsResponse(
       const std::vector<uint8_t>& data,
       DecodeWifiCredentialsResponseCallback callback) override;
+  void DecodeNotifySourceOfUpdateResponse(
+      const std::vector<uint8_t>& data,
+      DecodeNotifySourceOfUpdateResponseCallback callback) override;
 
   void SetExpectedData(std::vector<uint8_t> expected_data);
   void SetAssertionResponse(
@@ -45,6 +49,8 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   void SetWifiCredentialsResponse(
       mojom::GetWifiCredentialsResponsePtr response);
 
+  void SetNotifySourceOfUpdateResponse(absl::optional<bool> ack_received);
+
  private:
   std::vector<uint8_t> expected_data_;
   mojom::GetAssertionResponse::GetAssertionStatus response_status_;
@@ -56,6 +62,7 @@ class FakeQuickStartDecoder : public mojom::QuickStartDecoder {
   std::vector<uint8_t> response_data_;
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   mojom::GetWifiCredentialsResponsePtr wifi_credentials_response_;
+  absl::optional<bool> notify_source_of_update_response_;
 };
 
 }  // namespace ash::quick_start

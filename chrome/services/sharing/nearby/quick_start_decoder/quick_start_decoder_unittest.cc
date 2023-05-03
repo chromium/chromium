@@ -52,6 +52,10 @@ constexpr char kWifiNetworkSecurityTypeKey[] = "wifi_security_type";
 // Key in wifi_network dictionary containing if the wifi network is hidden.
 constexpr char kWifiNetworkIsHiddenKey[] = "wifi_hidden_ssid";
 
+// Key in Notify Source of Update response containing bool acknowledging the
+// message.
+constexpr char kNotifySourceOfUpdateAckKey[] = "forced_update_acknowledged";
+
 const std::vector<uint8_t> kValidCredentialId = {0x01, 0x02, 0x03};
 const std::vector<uint8_t> kValidAuthData = {0x02, 0x03, 0x04};
 const std::vector<uint8_t> kValidSignature = {0x03, 0x04, 0x05};
@@ -106,6 +110,12 @@ class QuickStartDecoderTest : public testing::Test {
   mojom::GetWifiCredentialsResponsePtr DoDecodeWifiCredentialsResponse(
       QuickStartMessage* message) {
     return decoder_->DoDecodeWifiCredentialsResponse(
+        ConvertMessageToBytes(message));
+  }
+
+  absl::optional<bool> DoDecodeNotifySourceOfUpdateResponse(
+      QuickStartMessage* message) {
+    return decoder_->DoDecodeNotifySourceOfUpdateResponse(
         ConvertMessageToBytes(message));
   }
 
@@ -540,6 +550,26 @@ TEST_F(QuickStartDecoderTest,
   EXPECT_TRUE(response->is_failure_reason());
   EXPECT_EQ(response->get_failure_reason(),
             mojom::GetWifiCredentialsFailureReason::kMissingWifiInformation);
+}
+
+TEST_F(QuickStartDecoderTest, DecodeNotifySourceOfUpdateResponseSuccess) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+  message.GetPayload()->Set(kNotifySourceOfUpdateAckKey, true);
+
+  EXPECT_TRUE(DoDecodeNotifySourceOfUpdateResponse(&message).has_value());
+  EXPECT_TRUE(DoDecodeNotifySourceOfUpdateResponse(&message).value());
+
+  message.GetPayload()->Set(kNotifySourceOfUpdateAckKey, false);
+
+  EXPECT_TRUE(DoDecodeNotifySourceOfUpdateResponse(&message).has_value());
+  EXPECT_FALSE(DoDecodeNotifySourceOfUpdateResponse(&message).value());
+}
+
+TEST_F(QuickStartDecoderTest,
+       DecodeNotifySourceOfUpdateResponseFailsWhenMissingValue) {
+  QuickStartMessage message(QuickStartMessageType::kQuickStartPayload);
+
+  EXPECT_FALSE(DoDecodeNotifySourceOfUpdateResponse(&message).has_value());
 }
 
 }  // namespace ash::quick_start

@@ -20,7 +20,6 @@ source_set("quick_start_decoder") {
     "//chromeos/ash/services/nearby/public/mojom",
     "//components/cbor",
     "//mojo/public/cpp/bindings",
-    "//sandbox/policy",
   ]
 }
 

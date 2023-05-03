@@ -40,6 +40,12 @@ void FakeQuickStartDecoder::DecodeGetAssertionResponse(
       response_signature_));
 }
 
+void FakeQuickStartDecoder::DecodeNotifySourceOfUpdateResponse(
+    const std::vector<uint8_t>& data,
+    DecodeNotifySourceOfUpdateResponseCallback callback) {
+  std::move(callback).Run(/*ack_received=*/notify_source_of_update_response_);
+}
+
 void FakeQuickStartDecoder::SetExpectedData(
     std::vector<uint8_t> expected_data) {
   expected_data_ = expected_data;
@@ -65,6 +71,11 @@ void FakeQuickStartDecoder::SetAssertionResponse(
 void FakeQuickStartDecoder::SetWifiCredentialsResponse(
     mojom::GetWifiCredentialsResponsePtr response) {
   wifi_credentials_response_ = std::move(response);
+}
+
+void FakeQuickStartDecoder::SetNotifySourceOfUpdateResponse(
+    absl::optional<bool> ack_received) {
+  notify_source_of_update_response_ = ack_received;
 }
 
 }  // namespace ash::quick_start

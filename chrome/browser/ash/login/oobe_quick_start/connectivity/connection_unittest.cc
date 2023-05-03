@@ -332,13 +332,17 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(signature, assertion_info_->signature);
 }
 
-TEST_F(ConnectionTest, NotifySourceOfUpdate) {
+TEST_F(ConnectionTest, NotifySourceOfUpdate_Success) {
   MarkConnectionAuthenticated();
-
+  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
+      /*ack_received=*/true);
+  base::test::TestFuture<bool> future;
   int32_t session_id = 1;
 
-  authenticated_connection_->NotifySourceOfUpdate(session_id);
+  authenticated_connection_->NotifySourceOfUpdate(session_id,
+                                                  future.GetCallback());
 
+  fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
   std::vector<uint8_t> notify_source_data =
       fake_nearby_connection_->GetWrittenData();
 
@@ -357,6 +361,36 @@ TEST_F(ConnectionTest, NotifySourceOfUpdate) {
   std::string shared_secret_base64;
   base::Base64Encode(shared_secret_str, &shared_secret_base64);
   EXPECT_EQ(*parsed_payload.FindString("shared_secret"), shared_secret_base64);
+
+  EXPECT_TRUE(future.Get());
+}
+
+TEST_F(ConnectionTest, NotifySourceOfUpdate_FalseAckReceivedValue) {
+  MarkConnectionAuthenticated();
+  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
+      /*ack_received=*/false);
+  base::test::TestFuture<bool> future;
+  int32_t session_id = 1;
+
+  authenticated_connection_->NotifySourceOfUpdate(session_id,
+                                                  future.GetCallback());
+
+  fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
+  EXPECT_FALSE(future.Get());
+}
+
+TEST_F(ConnectionTest, NotifySourceOfUpdate_NoAckReceivedValue) {
+  MarkConnectionAuthenticated();
+  fake_quick_start_decoder_->SetNotifySourceOfUpdateResponse(
+      /*ack_received=*/absl::nullopt);
+  base::test::TestFuture<bool> future;
+  int32_t session_id = 1;
+
+  authenticated_connection_->NotifySourceOfUpdate(session_id,
+                                                  future.GetCallback());
+
+  fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
+  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(ConnectionTest, TestClose) {

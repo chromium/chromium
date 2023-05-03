@@ -20,6 +20,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
 #include "components/cbor/values.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace ash::quick_start {
@@ -120,7 +121,8 @@ class Connection
   // TargetDeviceConnectionBroker::AuthenticatedConnection
   void RequestWifiCredentials(int32_t session_id,
                               RequestWifiCredentialsCallback callback) override;
-  void NotifySourceOfUpdate(int32_t session_id) override;
+  void NotifySourceOfUpdate(int32_t session_id,
+                            NotifySourceOfUpdateCallback callback) override;
   void RequestAccountTransferAssertion(
       const std::string& challenge_b64url,
       RequestAccountTransferAssertionCallback callback) override;
@@ -134,6 +136,13 @@ class Connection
       RequestWifiCredentialsCallback callback,
       ::ash::quick_start::mojom::GetWifiCredentialsResponsePtr response);
 
+  void OnNotifySourceOfUpdateResponse(
+      NotifySourceOfUpdateCallback callback,
+      absl::optional<std::vector<uint8_t>> response_bytes);
+
+  void HandleNotifySourceOfUpdateResponse(NotifySourceOfUpdateCallback callback,
+                                          absl::optional<bool> ack_received);
+
   // Parses a raw AssertionResponse and converts it into a FidoAssertionInfo
   void OnRequestAccountTransferAssertionResponse(
       RequestAccountTransferAssertionCallback callback,
@@ -144,7 +153,7 @@ class Connection
       ::ash::quick_start::mojom::GetAssertionResponsePtr response);
 
   void SendMessage(std::unique_ptr<QuickStartMessage> message,
-                   absl::optional<ConnectionResponseCallback> callback);
+                   ConnectionResponseCallback callback);
 
   // Reusable method to serialize a payload into JSON bytes and send via Nearby
   // Connections.

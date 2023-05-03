@@ -109,14 +109,18 @@ void Connection::RequestWifiCredentials(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void Connection::NotifySourceOfUpdate(int32_t session_id) {
+void Connection::NotifySourceOfUpdate(int32_t session_id,
+                                      NotifySourceOfUpdateCallback callback) {
   // Send message to source that target device will perform an update.
+  // TODO(b/234655072): Cleanup BuildNotifySourceOfUpdateMessage plumbing to
+  // pass in session_id as a base::span<uint8_t,32> and avoid copying twice.
   std::string shared_secret_str(secondary_shared_secret_.begin(),
                                 secondary_shared_secret_.end());
 
   SendMessage(
       requests::BuildNotifySourceOfUpdateMessage(session_id, shared_secret_str),
-      absl::nullopt);
+      base::BindOnce(&Connection::OnNotifySourceOfUpdateResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void Connection::RequestAccountTransferAssertion(
@@ -176,6 +180,44 @@ void Connection::ParseWifiCredentialsResponse(
   std::move(callback).Run(std::move(credentials));
 }
 
+void Connection::OnNotifySourceOfUpdateResponse(
+    NotifySourceOfUpdateCallback callback,
+    absl::optional<std::vector<uint8_t>> response_bytes) {
+  if (!response_bytes.has_value()) {
+    QS_LOG(ERROR)
+        << "No response bytes received for notify source of update message";
+    std::move(callback).Run(/*ack_received=*/false);
+    return;
+  }
+
+  auto handle_mojo_response_callback =
+      base::BindOnce(&Connection::HandleNotifySourceOfUpdateResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
+
+  decoder_->DecodeNotifySourceOfUpdateResponse(
+      response_bytes.value(), std::move(handle_mojo_response_callback));
+}
+
+void Connection::HandleNotifySourceOfUpdateResponse(
+    NotifySourceOfUpdateCallback callback,
+    absl::optional<bool> ack_received) {
+  if (!ack_received.has_value()) {
+    QS_LOG(ERROR)
+        << "No ack received value in the NotifySourceOfUpdate response.";
+    std::move(callback).Run(/*ack_successful=*/false);
+    return;
+  }
+
+  if (!ack_received.value()) {
+    QS_LOG(ERROR) << "The ack received value in the NotifySourceOfUpdate "
+                     "response is unexpectedly 'false'.";
+    std::move(callback).Run(/*ack_successful=*/false);
+    return;
+  }
+
+  std::move(callback).Run(/*ack_successful=*/true);
+}
+
 void Connection::OnRequestAccountTransferAssertionResponse(
     RequestAccountTransferAssertionCallback callback,
     absl::optional<std::vector<uint8_t>> response_bytes) {
@@ -212,15 +254,10 @@ void Connection::GenerateFidoAssertionInfo(
   std::move(callback).Run(assertion_info);
 }
 
-void Connection::SendMessage(
-    std::unique_ptr<QuickStartMessage> message,
-    absl::optional<ConnectionResponseCallback> callback) {
+void Connection::SendMessage(std::unique_ptr<QuickStartMessage> message,
+                             ConnectionResponseCallback callback) {
   SendPayload(*message->GenerateEncodedMessage());
-  if (!callback.has_value()) {
-    return;
-  }
-
-  nearby_connection_->Read(std::move(callback.value()));
+  nearby_connection_->Read(std::move(callback));
 }
 
 void Connection::InitiateHandshake(const std::string& authentication_token,

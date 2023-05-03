@@ -48,6 +48,12 @@ class MockQuickStartDecoder
                DecodeWifiCredentialsResponseCallback callback),
               (override));
 
+  MOCK_METHOD(void,
+              DecodeNotifySourceOfUpdateResponse,
+              (const std::vector<uint8_t>& data,
+               DecodeNotifySourceOfUpdateResponseCallback callback),
+              (override));
+
  private:
   mojo::ReceiverSet<ash::quick_start::mojom::QuickStartDecoder> receiver_set_;
   mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder> shared_remote_;

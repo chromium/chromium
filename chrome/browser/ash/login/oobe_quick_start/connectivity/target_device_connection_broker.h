@@ -50,6 +50,11 @@ class TargetDeviceConnectionBroker {
    public:
     using RequestWifiCredentialsCallback =
         base::OnceCallback<void(absl::optional<WifiCredentials>)>;
+    // The ack_successful bool indicates whether the ack was successfully
+    // received by the source device. If true, then the target device will
+    // prepare to resume the Quick Start connection after it updates.
+    using NotifySourceOfUpdateCallback =
+        base::OnceCallback<void(/*ack_successful=*/bool)>;
     using RequestAccountTransferAssertionCallback =
         base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
 
@@ -61,8 +66,11 @@ class TargetDeviceConnectionBroker {
         RequestWifiCredentialsCallback callback) = 0;
 
     // Notify Android device that the Chromebook will download an update and
-    // reboot.
-    virtual void NotifySourceOfUpdate(int32_t session_id) = 0;
+    // reboot. The session_id should be the same as the one sent in
+    // RequestWifiCredentials().
+    virtual void NotifySourceOfUpdate(
+        int32_t session_id,
+        NotifySourceOfUpdateCallback callback) = 0;
 
     // Begin the account transfer process and retrieve
     // an Assertion from the source device. The user will be asked to confirm
