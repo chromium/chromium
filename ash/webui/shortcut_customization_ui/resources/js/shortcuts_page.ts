@@ -6,6 +6,7 @@ import './accelerator_subsection.js';
 import '../css/shortcut_customization_shared.css.js';
 import './shortcut_input.js';
 
+import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -103,7 +104,8 @@ export class ShortcutsPageElement extends PolymerElement implements
     if (isActive) {
       afterNextRender(this, () => {
         // Scroll to the top of the page after the active page changes.
-        window.scrollTo({top: 0});
+        strictQuery('#container', this.shadowRoot, HTMLDivElement)
+            .scrollIntoView();
 
         // Scroll to the specific accelerator if this page change was caused by
         // clicking on a search result. If the page change was manual, the
