@@ -721,13 +721,11 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
             profile);
     DCHECK(service);
 
-    // b/280330705: Properly pass QuickStartDecoder through to controller.
-    bootstrap_controller_ = std::make_unique<
-        ash::quick_start::TargetDeviceBootstrapController>(
-        quick_start::TargetDeviceConnectionBrokerFactory::Create(
-            service->GetNearbyConnectionsManager(),
-            mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(),
-            false));
+    bootstrap_controller_ =
+        std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
+            quick_start::TargetDeviceConnectionBrokerFactory::Create(
+                service->GetNearbyConnectionsManager(),
+                service->GetQuickStartDecoder(), false));
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }
