@@ -1597,10 +1597,10 @@ uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
 
 namespace {
 
-VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
+VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
                                                  uint32_t v4l2_profile) {
-  switch (codec) {
-    case VideoCodec::kH264:
+  switch (v4l2_codec) {
+    case V4L2_CID_MPEG_VIDEO_H264_PROFILE:
       switch (v4l2_profile) {
         // H264 Stereo amd Multiview High are not tested and the use is
         // minuscule, skip.
@@ -1615,7 +1615,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return H264PROFILE_HIGH;
       }
       break;
-    case VideoCodec::kVP8:
+    case V4L2_CID_MPEG_VIDEO_VP8_PROFILE:
       switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_VP8_PROFILE_0:
         case V4L2_MPEG_VIDEO_VP8_PROFILE_1:
@@ -1624,7 +1624,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
           return VP8PROFILE_ANY;
       }
       break;
-    case VideoCodec::kVP9:
+    case V4L2_CID_MPEG_VIDEO_VP9_PROFILE:
       switch (v4l2_profile) {
         // VP9 Profile 1 and 3 are not tested and the use is minuscule, skip.
         case V4L2_MPEG_VIDEO_VP9_PROFILE_0:
@@ -1634,7 +1634,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
       }
       break;
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-    case VideoCodec::kHEVC:
+    case V4L2_CID_MPEG_VIDEO_HEVC_PROFILE:
       switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_HEVC_PROFILE_MAIN:
           return HEVCPROFILE_MAIN;
@@ -1646,7 +1646,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
       break;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    case VideoCodec::kAV1:
+    case V4L2_CID_MPEG_VIDEO_AV1_PROFILE:
       switch (v4l2_profile) {
         case V4L2_MPEG_VIDEO_AV1_PROFILE_MAIN:
           return AV1PROFILE_PROFILE_MAIN;
@@ -1658,7 +1658,7 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
       break;
 #endif
     default:
-      VLOGF(2) << "Unsupported codec: " << GetCodecName(codec);
+      VLOGF(2) << "Unsupported V4L2 codec: " << v4l2_codec;
   }
   VLOGF(2) << "Unsupported V4L2 profile: " << v4l2_profile;
   return VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -1667,62 +1667,39 @@ VideoCodecProfile V4L2ProfileToVideoCodecProfile(VideoCodec codec,
 }  // namespace
 
 std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
-    uint32_t pix_fmt) {
-  auto get_supported_profiles = [this](
-                                    VideoCodec codec,
-                                    std::vector<VideoCodecProfile>* profiles) {
-    uint32_t query_id = 0;
-    switch (codec) {
-      case VideoCodec::kH264:
-        query_id = V4L2_CID_MPEG_VIDEO_H264_PROFILE;
-        break;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case VideoCodec::kHEVC:
-        query_id = V4L2_CID_MPEG_VIDEO_HEVC_PROFILE;
-        break;
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-      case VideoCodec::kVP8:
-        query_id = V4L2_CID_MPEG_VIDEO_VP8_PROFILE;
-        break;
-      case VideoCodec::kVP9:
-        query_id = V4L2_CID_MPEG_VIDEO_VP9_PROFILE;
-        break;
-#if BUILDFLAG(IS_CHROMEOS)
-      case VideoCodec::kAV1:
-        query_id = V4L2_CID_MPEG_VIDEO_AV1_PROFILE;
-        break;
-#endif
-      default:
-        return false;
-    }
+    uint32_t codec_as_pix_fmt) {
+  auto get_supported_profiles =
+      [this](int codec_id, std::vector<VideoCodecProfile>* profiles) {
+        v4l2_queryctrl query_ctrl;
+        memset(&query_ctrl, 0, sizeof(query_ctrl));
+        query_ctrl.id = codec_id;
+        if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) != 0) {
+          return false;
+        }
 
-    v4l2_queryctrl query_ctrl;
-    memset(&query_ctrl, 0, sizeof(query_ctrl));
-    query_ctrl.id = query_id;
-    if (Ioctl(VIDIOC_QUERYCTRL, &query_ctrl) != 0)
-      return false;
-
-    v4l2_querymenu query_menu;
-    memset(&query_menu, 0, sizeof(query_menu));
-    query_menu.id = query_ctrl.id;
-    for (query_menu.index = query_ctrl.minimum;
-         static_cast<int>(query_menu.index) <= query_ctrl.maximum;
-         query_menu.index++) {
-      if (Ioctl(VIDIOC_QUERYMENU, &query_menu) == 0) {
-        const VideoCodecProfile profile =
-            V4L2ProfileToVideoCodecProfile(codec, query_menu.index);
-        if (profile != VIDEO_CODEC_PROFILE_UNKNOWN)
-          profiles->push_back(profile);
-      }
-    }
-    return true;
-  };
+        v4l2_querymenu query_menu;
+        memset(&query_menu, 0, sizeof(query_menu));
+        query_menu.id = query_ctrl.id;
+        for (query_menu.index = query_ctrl.minimum;
+             static_cast<int>(query_menu.index) <= query_ctrl.maximum;
+             query_menu.index++) {
+          if (Ioctl(VIDIOC_QUERYMENU, &query_menu) == 0) {
+            const VideoCodecProfile profile =
+                V4L2ProfileToVideoCodecProfile(codec_id, query_menu.index);
+            if (profile != VIDEO_CODEC_PROFILE_UNKNOWN) {
+              profiles->push_back(profile);
+            }
+          }
+        }
+        return true;
+      };
 
   std::vector<VideoCodecProfile> profiles;
-  switch (pix_fmt) {
+  switch (codec_as_pix_fmt) {
     case V4L2_PIX_FMT_H264:
     case V4L2_PIX_FMT_H264_SLICE:
-      if (!get_supported_profiles(VideoCodec::kH264, &profiles)) {
+      if (!get_supported_profiles(V4L2_CID_MPEG_VIDEO_H264_PROFILE,
+                                  &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY H264 profiles, "
                       << "use default values, Base, Main, High";
         profiles = {
@@ -1735,7 +1712,8 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     case V4L2_PIX_FMT_HEVC:
     case V4L2_PIX_FMT_HEVC_SLICE:
-      if (!get_supported_profiles(VideoCodec::kHEVC, &profiles)) {
+      if (!get_supported_profiles(V4L2_CID_MPEG_VIDEO_HEVC_PROFILE,
+                                  &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY HEVC profiles, "
                       << "use default value, Main";
         profiles = {
@@ -1750,22 +1728,24 @@ std::vector<VideoCodecProfile> V4L2Device::V4L2PixFmtToVideoCodecProfiles(
       break;
     case V4L2_PIX_FMT_VP9:
     case V4L2_PIX_FMT_VP9_FRAME:
-      if (!get_supported_profiles(VideoCodec::kVP9, &profiles)) {
+      if (!get_supported_profiles(V4L2_CID_MPEG_VIDEO_VP9_PROFILE, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY VP9 profiles, "
                       << "use default values, Profile0";
         profiles = {VP9PROFILE_PROFILE0};
       }
       break;
+#if BUILDFLAG(IS_CHROMEOS)
     case V4L2_PIX_FMT_AV1:
     case V4L2_PIX_FMT_AV1_FRAME:
-      if (!get_supported_profiles(VideoCodec::kAV1, &profiles)) {
+      if (!get_supported_profiles(V4L2_CID_MPEG_VIDEO_AV1_PROFILE, &profiles)) {
         DLOG(WARNING) << "Driver doesn't support QUERY AV1 profiles, "
                       << "use default values, Main";
         profiles = {AV1PROFILE_PROFILE_MAIN};
       }
       break;
+#endif
     default:
-      VLOGF(1) << "Unhandled pixelformat " << FourccToString(pix_fmt);
+      VLOGF(1) << "Unhandled pixelformat " << FourccToString(codec_as_pix_fmt);
       return {};
   }
 
