@@ -6656,8 +6656,8 @@
   },
   {
     "name": "send-tab-to-self-signin-promo",
-    "owners": ["victorvianna@google.com", "harrisonsean@google.com"],
-    "expiry_milestone": 115
+    "owners": ["victorvianna@google.com", "chrome-sync-dev+finch@google.com"],
+    "expiry_milestone": 117
   },
   {
     "name": "send-tab-to-self-v2",
