@@ -1,0 +1,13 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = [
+    "browser.h",
+    "browser_observer.h",
+    "browser_user_data.h",
+  ]
+  public_deps = [ "//ios/chrome/browser/main:public" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
