@@ -48,6 +48,7 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       chrome::kChromeUIUntrustedReadAnythingSidePanelURL);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"readAnythingTabTitle", IDS_READING_MODE_TITLE},
+      {"notSelectableHeader", IDS_READING_MODE_NOT_SELECTABLE_HEADER},
       {"emptyStateHeader", IDS_READING_MODE_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READING_MODE_EMPTY_STATE_SUBHEADER},
       {"readAnythingLoadingMessage", IDS_READ_ANYTHING_LOADING},

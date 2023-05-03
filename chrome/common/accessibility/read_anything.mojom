@@ -103,7 +103,9 @@ interface Page {
   // after the tree_id was previously passed to AccessibilityEventsReceived.
   // ukm_source_id is a ukm::SourceId which is used to tie the UKM event to the
   // main frame URL for metrics collection.
-  OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id, int64 ukm_source_id);
+  OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id,
+                          int64 ukm_source_id,
+                          url.mojom.Url url);
 
   // Notifies the WebUI that an AXTree with the provided AXTreeID was
   // destroyed. This is not guaranteed to be called after the tree_id was

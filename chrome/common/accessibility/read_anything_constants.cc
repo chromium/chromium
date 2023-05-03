@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/common/accessibility/read_anything_constants.h"
-#include "read_anything_constants.h"
 
 namespace string_constants {
 
@@ -18,5 +17,12 @@ const char kLineSpacingHistogramName[] =
     "Accessibility.ReadAnything.LineSpacing";
 const char kColorHistogramName[] = "Accessibility.ReadAnything.Color";
 const char kFontScaleHistogramName[] = "Accessibility.ReadAnything.FontScale";
+
+const std::set<std::string> GetNonSelectableUrls() {
+  return {
+      "https://docs.google.com/document*",
+      "https://docs.sandbox.google.com/*",
+  };
+}
 
 }  // namespace string_constants

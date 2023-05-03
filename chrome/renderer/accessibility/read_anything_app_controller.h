@@ -22,6 +22,7 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+#include "url/gurl.h"
 
 namespace content {
 class RenderFrame;
@@ -87,7 +88,8 @@ class ReadAnythingAppController
       const std::vector<ui::AXTreeUpdate>& updates,
       const std::vector<ui::AXEvent>& events) override;
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id,
-                               ukm::SourceId ukm_source_id) override;
+                               ukm::SourceId ukm_source_id,
+                               const GURL& hostname) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
   void OnThemeChanged(
       read_anything::mojom::ReadAnythingThemePtr new_theme) override;
@@ -129,6 +131,7 @@ class ReadAnythingAppController
                          int anchor_offset,
                          ui::AXNodeID focus_node_id,
                          int focus_offset) const;
+  bool isSelectable() const;
 
   void Distill();
   void Draw();

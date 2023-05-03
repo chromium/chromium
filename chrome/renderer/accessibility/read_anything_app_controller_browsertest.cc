@@ -13,6 +13,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
+#include "url/gurl.h"
 
 class MockAXTreeDistiller : public AXTreeDistiller {
  public:
@@ -153,7 +154,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
 
   void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id) {
-    controller_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId);
+    OnActiveAXTreeIDChanged(tree_id, GURL::EmptyGURL());
+  }
+
+  void OnActiveAXTreeIDChanged(const ui::AXTreeID& tree_id, const GURL& url) {
+    controller_->OnActiveAXTreeIDChanged(tree_id, ukm::kInvalidSourceId, url);
   }
 
   void OnAXTreeDistilled(const std::vector<ui::AXNodeID>& content_node_ids) {
@@ -200,6 +205,8 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   float LineSpacing() { return controller_->LineSpacing(); }
 
   float LetterSpacing() { return controller_->LetterSpacing(); }
+
+  bool isSelectable() { return controller_->isSelectable(); }
 
   std::vector<ui::AXNodeID> GetChildren(ui::AXNodeID ax_node_id) {
     return controller_->GetChildren(ax_node_id);
@@ -743,6 +750,35 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   // Changing the active tree ID to the same ID does nothing.
   EXPECT_CALL(*distiller_, Distill).Times(0);
   OnActiveAXTreeIDChanged(tree_ids[2]);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnActiveAXTreeIDChanged_DocsLabeledNotSelectable) {
+  ui::AXTreeUpdate update;
+  ui::AXTreeID id_1 = ui::AXTreeID::CreateNewAXTreeID();
+  SetUpdateTreeID(&update, id_1);
+  update.root_id = 1;
+  update.nodes.resize(1);
+  update.nodes[0].id = 1;
+  AccessibilityEventReceived({update});
+  OnAXTreeDistilled({1});
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnActiveAXTreeIDChanged(id_1, GURL("www.google.com"));
+  EXPECT_TRUE(isSelectable());
+
+  ui::AXTreeUpdate update_1;
+  SetUpdateTreeID(&update_1, tree_id_);
+  update_1.root_id = 1;
+  update_1.nodes.resize(1);
+  update_1.nodes[0].id = 1;
+  AccessibilityEventReceived({update_1});
+  OnAXTreeDistilled({1});
+  EXPECT_CALL(*distiller_, Distill).Times(1);
+  OnActiveAXTreeIDChanged(
+      tree_id_, GURL("https://docs.google.com/document/d/"
+                     "1t6x1PQaQWjE8wb9iyYmFaoK1XAEgsl8G1Hx3rzfpoKA/"
+                     "edit?ouid=103677288878638916900&usp=docs_home&ths=true"));
+  EXPECT_FALSE(isSelectable());
 }
 
 TEST_F(ReadAnythingAppControllerTest, DoesNotCrashIfActiveAXTreeIDUnknown) {

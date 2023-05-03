@@ -431,6 +431,7 @@ static_library("renderer") {
       "//components/crx_file",
       "//components/services/screen_ai/buildflags",
       "//components/services/screen_ai/public/mojom",
+      "//third_party/re2:re2",
     ]
   }
 

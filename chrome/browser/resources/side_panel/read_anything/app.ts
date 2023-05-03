@@ -265,10 +265,16 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // If there is no content to show, the empty state container will be shown.
     const node = this.buildSubtree_(rootId);
+    // The empty state header tells the user to select text to distill. Some web
+    // pages don't work with selection, so we show a different message.
     if (!node.textContent) {
+      if (chrome.readAnything.isSelectable()) {
+        this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
+      } else {
+        this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');
+      }
       this.emptyStateImagePath_ = './images/empty_state.svg';
       this.emptyStateDarkImagePath_ = './images/empty_state.svg';
-      this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
       this.emptyStateSubheading_ =
           loadTimeData.getString('emptyStateSubheader');
       this.hasContent_ = false;

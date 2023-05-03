@@ -44,6 +44,7 @@ class ReadAnythingAppModel {
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
   bool loading() const { return loading_; }
+  bool active_tree_selectable() const { return active_tree_selectable_; }
   const ukm::SourceId& active_ukm_source_id() const {
     return active_ukm_source_id_;
   }
@@ -63,6 +64,9 @@ class ReadAnythingAppModel {
     distillation_in_progress_ = distillation;
   }
   void SetLoading(bool loading) { loading_ = loading; }
+  void SetActiveTreeSelectable(bool active_tree_selectable) {
+    active_tree_selectable_ = active_tree_selectable;
+  }
   void SetActiveUkmSourceId(ukm::SourceId source_id) {
     active_ukm_source_id_ = source_id;
   }
@@ -148,6 +152,9 @@ class ReadAnythingAppModel {
   // The UKM source ID of the main frame of the active web contents, whose
   // AXTree has ID active_tree_id_. This is used for metrics collection.
   ukm::SourceId active_ukm_source_id_ = ukm::kInvalidSourceId;
+
+  // Certain websites (e.g. Docs and PDFs) are not distillable with selection.
+  bool active_tree_selectable_ = true;
 
   // Distillation is slow and happens out-of-process when Screen2x is running.
   // This boolean marks when distillation is in progress to avoid sending

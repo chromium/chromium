@@ -5,6 +5,9 @@
 #ifndef CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_
 #define CHROME_COMMON_ACCESSIBILITY_READ_ANYTHING_CONSTANTS_H_
 
+#include <set>
+#include <string>
+
 #include "ui/accessibility/ax_mode.h"
 
 // Various constants used throughout the Read Anything feature.
@@ -15,6 +18,8 @@ extern const char kLetterSpacingHistogramName[];
 extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];
 extern const char kFontScaleHistogramName[];
+
+extern const std::set<std::string> GetNonSelectableUrls();
 
 }  // namespace string_constants
 

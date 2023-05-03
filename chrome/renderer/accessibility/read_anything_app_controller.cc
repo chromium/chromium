@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_script_source.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_role_properties.h"
@@ -305,6 +307,18 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   return snapshot;
 }
 
+bool GetSelectable(const GURL& url) {
+  std::string full_url = url.spec();
+  for (std::string non_selectable_url :
+       string_constants::GetNonSelectableUrls()) {
+    if (re2::RE2::PartialMatch(full_url, non_selectable_url)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // static
@@ -372,13 +386,15 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     const ui::AXTreeID& tree_id,
-    ukm::SourceId ukm_source_id) {
+    ukm::SourceId ukm_source_id,
+    const GURL& url) {
   if (tree_id == model_.active_tree_id()) {
     return;
   }
   ui::AXTreeID previous_active_tree_id = model_.active_tree_id();
   model_.SetActiveTreeId(tree_id);
   model_.SetActiveUkmSourceId(ukm_source_id);
+  model_.SetActiveTreeSelectable(GetSelectable(url));
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
@@ -554,6 +570,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onLinkClicked", &ReadAnythingAppController::OnLinkClicked)
+      .SetMethod("isSelectable", &ReadAnythingAppController::isSelectable)
       .SetMethod("clearSelection", &ReadAnythingAppController::ClearSelection)
       .SetMethod("onSelectionChange",
                  &ReadAnythingAppController::OnSelectionChange)
@@ -704,6 +721,10 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
   return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
 }
 
+bool ReadAnythingAppController::isSelectable() const {
+  return model_.active_tree_selectable();
+}
+
 void ReadAnythingAppController::OnConnected() {
   mojo::PendingReceiver<read_anything::mojom::PageHandlerFactory>
       page_handler_factory_receiver =
@@ -808,7 +829,8 @@ void ReadAnythingAppController::SetContentForTesting(
   selectionEvent.event_type = ax::mojom::Event::kDocumentSelectionChanged;
   selectionEvent.event_from = ax::mojom::EventFrom::kUser;
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
-  OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId);
+  OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
+                          GURL::EmptyGURL());
   OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
 
   // Trigger a selection event (for testing selections).

@@ -68,6 +68,10 @@ declare namespace chrome {
     // the link's corresponding AXNode in the main pane.
     function onLinkClicked(nodeId: number): void;
 
+    // Returns true if select-to-distill works on the web page. Used to
+    // determine which empty state to display.
+    function isSelectable(): boolean;
+
     // Indicates that the Reading mode panel selection was cleared.
     function clearSelection(): void;
 

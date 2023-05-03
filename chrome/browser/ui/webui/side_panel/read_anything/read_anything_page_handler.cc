@@ -16,6 +16,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "components/services/screen_ai/public/cpp/screen_ai_service_router.h"
@@ -253,7 +254,9 @@ void ReadAnythingPageHandler::OnActiveWebContentsChanged() {
 void ReadAnythingPageHandler::OnActiveAXTreeIDChanged() {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+  GURL visible_url;
   if (active_ && web_contents()) {
+    visible_url = web_contents()->GetVisibleURL();
     content::RenderFrameHost* render_frame_host =
         web_contents()->GetPrimaryMainFrame();
     if (render_frame_host) {
@@ -262,5 +265,5 @@ void ReadAnythingPageHandler::OnActiveAXTreeIDChanged() {
     }
   }
 
-  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id);
+  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, visible_url);
 }
