@@ -169,6 +169,8 @@ source_set("wayland") {
     "host/wayland_zaura_output_manager.h",
     "host/wayland_zaura_shell.cc",
     "host/wayland_zaura_shell.h",
+    "host/wayland_zaura_surface.cc",
+    "host/wayland_zaura_surface.h",
     "host/wayland_zcr_color_management_output.cc",
     "host/wayland_zcr_color_management_output.h",
     "host/wayland_zcr_color_management_surface.cc",
