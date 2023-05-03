@@ -893,9 +893,6 @@ const char kShelfHotseat[] = "shelf-hotseat";
 const char kScheduledRebootGracePeriodInSecondsForTesting[] =
     "scheduled-reboot-grace-period-in-seconds-for-testing";
 
-// App window previews when hovering over the shelf.
-const char kShelfHoverPreviews[] = "shelf-hover-previews";
-
 // If true, the developer tool overlay will be shown for the login/lock screen.
 // This makes it easier to test layout logic.
 const char kShowLoginDevOverlay[] = "show-login-dev-overlay";
@@ -1018,10 +1015,6 @@ bool IsRevenBranding() {
 bool IsSigninFrameClientCertsEnabled() {
   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
       kDisableSigninFrameClientCerts);
-}
-
-bool ShouldShowShelfHoverPreviews() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kShelfHoverPreviews);
 }
 
 bool ShouldTetherHostScansIgnoreWiredConnections() {

@@ -1657,9 +1657,6 @@ extern const char kSidePanelJourneysQuerylessDescription[];
 extern const char kSharingDesktopScreenshotsName[];
 extern const char kSharingDesktopScreenshotsDescription[];
 
-extern const char kShelfHoverPreviewsName[];
-extern const char kShelfHoverPreviewsDescription[];
-
 extern const char kShelfStackedHotseatName[];
 extern const char kShelfStackedHotseatDescription[];
 

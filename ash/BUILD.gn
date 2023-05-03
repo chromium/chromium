@@ -1062,8 +1062,6 @@ component("ash") {
     "shelf/shelf_tooltip_delegate.h",
     "shelf/shelf_tooltip_manager.cc",
     "shelf/shelf_tooltip_manager.h",
-    "shelf/shelf_tooltip_preview_bubble.cc",
-    "shelf/shelf_tooltip_preview_bubble.h",
     "shelf/shelf_view.cc",
     "shelf/shelf_view.h",
     "shelf/shelf_widget.cc",

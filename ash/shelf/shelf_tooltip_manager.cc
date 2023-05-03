@@ -10,7 +10,6 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_tooltip_bubble.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
-#include "ash/shelf/shelf_tooltip_preview_bubble.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "base/functional/bind.h"
@@ -72,13 +71,8 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
       shelf_tooltip_delegate_->GetOpenWindowsForView(view);
 
   const ShelfAlignment alignment = shelf_->alignment();
-  if (switches::ShouldShowShelfHoverPreviews() && open_windows.size() > 0) {
-    bubble_ =
-        new ShelfTooltipPreviewBubble(view, open_windows, this, alignment);
-  } else {
-    bubble_ = new ShelfTooltipBubble(
-        view, alignment, shelf_tooltip_delegate_->GetTitleForView(view));
-  }
+  bubble_ = new ShelfTooltipBubble(
+      view, alignment, shelf_tooltip_delegate_->GetTitleForView(view));
 
   aura::Window* window = bubble_->GetWidget()->GetNativeWindow();
   ::wm::SetWindowVisibilityAnimationType(
