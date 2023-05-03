@@ -10,11 +10,9 @@ namespace mojo {
 namespace core {
 
 WatcherSet::WatcherSet(Dispatcher* owner) : owner_(owner) {
-  recordreplay::RegisterPointer("WatcherSet", this);
 }
 
 WatcherSet::~WatcherSet() {
-  recordreplay::UnregisterPointer(this);
 }
 
 void WatcherSet::NotifyState(const HandleSignalsState& state) {
