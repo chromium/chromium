@@ -709,6 +709,7 @@ constexpr CGFloat kCompactStyleTextSize = 15.0;
       self.titleLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
       self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      self.titleLabel.textAlignment = NSTextAlignmentLeft;
       self.textLabel.font =
           [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
       self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
