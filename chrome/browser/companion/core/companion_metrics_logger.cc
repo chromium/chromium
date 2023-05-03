@@ -83,6 +83,10 @@ CompanionMetricsLogger::~CompanionMetricsLogger() {
   FlushStats();
 }
 
+void CompanionMetricsLogger::RecordOpenTrigger(OpenTrigger open_trigger) {
+  open_trigger_ = open_trigger;
+}
+
 void CompanionMetricsLogger::RecordUiSurfaceShown(
     UiSurface ui_surface,
     uint32_t child_element_count) {
@@ -121,6 +125,11 @@ void CompanionMetricsLogger::OnPhFeedback(PhFeedback ph_feedback) {
 
 void CompanionMetricsLogger::FlushStats() {
   ukm::builders::Companion_PageView ukm_builder(ukm_source_id_);
+
+  // Open trigger.
+  if (open_trigger_.has_value()) {
+    ukm_builder.SetOpenTrigger(static_cast<int>(open_trigger_.value()));
+  }
 
   // CQ surface.
   auto iter = ui_surface_metrics_.find(UiSurface::kCQ);

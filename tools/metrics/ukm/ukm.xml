@@ -6682,6 +6682,11 @@ be describing additional metrics about the same event.
       The last event on the CQ surface.
     </summary>
   </metric>
+  <metric name="OpenTrigger" enum="Companion.OpenTrigger">
+    <summary>
+      The UI location from which the companion page was opened.
+    </summary>
+  </metric>
   <metric name="PH.Feedback" enum="Companion.PhFeedback">
     <summary>
       The last user feedback event on the PH surface.

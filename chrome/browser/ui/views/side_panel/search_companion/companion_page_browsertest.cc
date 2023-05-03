@@ -17,6 +17,7 @@
 #include "chrome/browser/companion/core/mojom/companion.mojom.h"
 #include "chrome/browser/companion/core/proto/companion_url_params.pb.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/side_panel/companion/companion_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
@@ -24,12 +25,14 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/url_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -43,6 +46,7 @@ namespace {
 const char kRegularUrl1[] = "foo.com";
 const char kRegularUrl2[] = "bar.com";
 const char kRegularUrl3[] = "baz.com";
+const char kSearchQueryUrl[] = "https://www.google.com/search?q=xyz";
 
 }  // namespace
 
@@ -414,4 +418,95 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   builder.ui_surface = UiSurface::kCQ;
   builder.text_directive = "abc";
   EXPECT_TRUE(ExecJs(builder.Build()));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       OpenedFromContextMenuTextSearch) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+  // Load a page on the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+
+  // Start a text query via context menu. It should open companion side panel.
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  companion_helper->ShowCompanionSidePanelForSearchURL(GURL(kSearchQueryUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+  EXPECT_EQ(ukm_recorder_.GetEntriesByName(entry_name).size(), 1ul);
+  auto* entry = ukm_recorder_.GetEntriesByName(entry_name)[0];
+  ukm_recorder_.EntryHasMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName);
+  ukm_recorder_.ExpectEntryMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(companion::OpenTrigger::kContextMenuTextSearch));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, OpenedFromEntryPoint) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+
+  // Load a page on the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion from entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+  EXPECT_EQ(ukm_recorder_.GetEntriesByName(entry_name).size(), 1ul);
+  auto* entry = ukm_recorder_.GetEntriesByName(entry_name)[0];
+  ukm_recorder_.EntryHasMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName);
+  ukm_recorder_.ExpectEntryMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(companion::OpenTrigger::kOther));
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       SubsequentContextMenuTextSearch) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder_;
+  // Load a page on the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion from entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Start a text query via context menu.
+  auto* companion_helper =
+      companion::CompanionTabHelper::FromWebContents(web_contents());
+  companion_helper->ShowCompanionSidePanelForSearchURL(GURL(kSearchQueryUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+  EXPECT_EQ(ukm_recorder_.GetEntriesByName(entry_name).size(), 1ul);
+  auto* entry = ukm_recorder_.GetEntriesByName(entry_name)[0];
+  ukm_recorder_.EntryHasMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName);
+  ukm_recorder_.ExpectEntryMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(companion::OpenTrigger::kOther));
 }

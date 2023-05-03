@@ -35,6 +35,23 @@ class CompanionMetricsLoggerTest : public testing::Test {
   std::unique_ptr<CompanionMetricsLogger> logger_;
 };
 
+TEST_F(CompanionMetricsLoggerTest, RecordOpenTrigger) {
+  base::HistogramTester histogram_tester;
+  logger_->RecordOpenTrigger(OpenTrigger::kContextMenuTextSearch);
+
+  // Destroy the logger. Verify that UKM event is recorded.
+  logger_.reset();
+
+  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+  EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
+  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
+  ukm_recorder()->EntryHasMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName);
+  ukm_recorder()->ExpectEntryMetric(
+      entry, ukm::builders::Companion_PageView::kOpenTriggerName,
+      static_cast<int>(OpenTrigger::kContextMenuTextSearch));
+}
+
 TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
   base::HistogramTester histogram_tester;
 
