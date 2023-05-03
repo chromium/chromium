@@ -221,7 +221,9 @@ void BleV2Medium::DiscoverableChanged(bool discoverable) {
 }
 
 void BleV2Medium::DiscoveringChanged(bool discovering) {
-  NOTIMPLEMENTED();
+  if (!discovering) {
+    StopScanning();
+  }
 }
 
 void BleV2Medium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
