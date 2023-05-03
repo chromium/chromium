@@ -494,6 +494,16 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
     return false;
   }
 
+  // interstitial_state_ is only created after the initial checks in
+  // MaybeCreateLoader(). If it wasn't created, the load wasn't eligible for
+  // upgrades, so ignore the load here as well. Also explicitly ignore non-main
+  // frame loads because we don't want to trigger a fallback navigation in
+  // non-main frames.
+  // This is a fix for crbug.com/1441276.
+  if (!interstitial_state_ || !request.is_outermost_main_frame) {
+    return false;
+  }
+
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   StatefulSSLHostStateDelegate* state =

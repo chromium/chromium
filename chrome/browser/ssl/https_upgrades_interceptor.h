@@ -127,9 +127,8 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
   bool http_interstitial_enabled_by_pref_ = false;
 
   // Parameters about whether the throttle should trigger the interstitial
-  // warning before navigating to the HTTP fallback URL.
-  // This is a unique ptr to ensure that all fields are initialized (otherwise
-  // this should be null).
+  // warning before navigating to the HTTP fallback URL. Can be null if the
+  // current load isn't eligible for an upgrade.
   std::unique_ptr<
       security_interstitials::https_only_mode::HttpInterstitialState>
       interstitial_state_;
