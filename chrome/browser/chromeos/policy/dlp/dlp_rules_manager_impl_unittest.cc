@@ -39,6 +39,7 @@ constexpr char kGoogleUrl[] = "https://www.google.com";
 constexpr char kWildCardMatching[] = "*";
 constexpr char kGmailUrl[] = "https://www.gmail.com";
 constexpr char kCompanyUrl[] = "https://company.com";
+constexpr char kDriveUrl[] = "https://drive.google.com";
 
 constexpr char kHttpsPrefix[] = "https://www.";
 
@@ -318,6 +319,58 @@ TEST_F(DlpRulesManagerImplTest, IsRestrictedComponent_Clipboard) {
   EXPECT_EQ(src_pattern, std::string(""));
   EXPECT_EQ(rule_metadata.name, std::string(""));
   EXPECT_EQ(rule_metadata.obfuscated_id, std::string(""));
+}
+
+TEST_F(DlpRulesManagerImplTest, IsRestrictedDriveComponent_Files) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kDataLeakPreventionFilesRestriction);
+  chromeos::DlpClient::InitializeFake();
+
+  dlp_test_util::DlpRule rule(kRuleName1, "Block", kRuleId1);
+  rule.AddSrcUrl(kExampleUrl)
+      .AddDstComponent(dlp::kDrive)
+      .AddRestriction(dlp::kFilesRestriction, dlp::kBlockLevel);
+
+  UpdatePolicyPref({rule});
+
+  {
+    std::string src_pattern;
+    std::string dst_pattern;
+    DlpRulesManager::RuleMetadata rule_metadata;
+    EXPECT_EQ(DlpRulesManager::Level::kBlock,
+              dlp_rules_manager_.IsRestrictedComponent(
+                  GURL(kExampleUrl), DlpRulesManager::Component::kDrive,
+                  DlpRulesManager::Restriction::kFiles, &src_pattern,
+                  &rule_metadata));
+    EXPECT_EQ(src_pattern, kExampleUrl);
+    EXPECT_EQ(rule_metadata.name, kRuleName1);
+    EXPECT_EQ(rule_metadata.obfuscated_id, kRuleId1);
+  }
+
+  {
+    // Make sure that blocking the drive component also blocks the drive
+    // website.
+    std::string src_pattern;
+    std::string dst_pattern;
+    DlpRulesManager::RuleMetadata rule_metadata;
+    EXPECT_EQ(DlpRulesManager::Level::kBlock,
+              dlp_rules_manager_.IsRestrictedDestination(
+                  GURL(kExampleUrl), GURL(kDriveUrl),
+                  DlpRulesManager::Restriction::kFiles, &src_pattern,
+                  &dst_pattern, &rule_metadata));
+    EXPECT_EQ(src_pattern, kExampleUrl);
+    EXPECT_EQ(dst_pattern, kDrivePattern);
+    EXPECT_EQ(rule_metadata.name, kRuleName1);
+    EXPECT_EQ(rule_metadata.obfuscated_id, kRuleId1);
+  }
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop_.QuitClosure());
+
+  run_loop_.Run();
+
+  chromeos::DlpClient::Shutdown();
 }
 
 TEST_F(DlpRulesManagerImplTest, SameSrcDst_Clipboard) {
