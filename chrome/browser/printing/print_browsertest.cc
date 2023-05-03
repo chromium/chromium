@@ -1959,7 +1959,7 @@ class ContentAnalysisPrintBrowserTest
  public:
   ContentAnalysisPrintBrowserTest() {
     policy::SetDMTokenForTesting(
-        policy::DMToken::CreateValidTokenForTesting(kFakeDmToken));
+        policy::DMToken::CreateValidToken(kFakeDmToken));
     enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
         base::BindRepeating(
             &enterprise_connectors::FakeContentAnalysisDelegate::Create,
