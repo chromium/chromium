@@ -5207,7 +5207,7 @@
     'machines': {
       'Linux ASan LSan Tests (1)': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_and_gl_gtests',

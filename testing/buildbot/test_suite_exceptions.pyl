@@ -23,6 +23,20 @@
 # The goal is to drive the number of exceptions to zero, to make all
 # the bots behave similarly.
 {
+  'accessibility_unittests': {
+    'modifications': {
+      'Linux ASan LSan Tests (1)': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1442303): Move to Jammy when it's compatible.
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
+      },
+    },
+  },
   'android_browsertests': {
     'modifications': {
       'android-11-x86-rel': {
