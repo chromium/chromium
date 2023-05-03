@@ -945,13 +945,6 @@ template("test_runner_script") {
       assert(false, "Invalid test type: $_test_type.")
     }
 
-    # Devil does not reliably work with component builds of its tools.
-    # There's no benefit to them, so fall back to prebuilts for component builds.
-    # https://crbug.com/1404180
-    if (_test_type != "junit" && !is_component_build) {
-      executable_args += [ "--use-local-devil-tools" ]
-    }
-
     if (defined(invoker.additional_apks)) {
       foreach(additional_apk, invoker.additional_apks) {
         deps += [ "$additional_apk$build_config_target_suffix" ]

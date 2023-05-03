@@ -138,9 +138,9 @@ class LocalDeviceEnvironment(environment.Environment):
     self._use_persistent_shell = args.use_persistent_shell
     self._disable_test_server = args.disable_test_server
 
-    devil_chromium.Initialize(output_directory=constants.GetOutDirectory(),
-                              adb_path=args.adb_path,
-                              use_local_devil_tools=args.use_local_devil_tools)
+    devil_chromium.Initialize(
+        output_directory=constants.GetOutDirectory(),
+        adb_path=args.adb_path)
 
     # Some things such as Forwarder require ADB to be in the environment path,
     # while others like Devil's bundletool.py require Java on the path.

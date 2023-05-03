@@ -118,12 +118,10 @@ python_library("devil_chromium_py") {
 group("apk_installer_data") {
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    if (is_component_build) {
-      data_deps = [
-        "//build/android/pylib/device/commands",
-        "//tools/android/md5sum",
-      ]
-    }
+    data_deps = [
+      "//build/android/pylib/device/commands",
+      "//tools/android/md5sum",
+    ]
     data = [ "//third_party/android_build_tools/bundletool/bundletool.jar" ]
   }
 }
@@ -170,13 +168,11 @@ group("test_runner_device_support") {
 
   # Other //build users let devil library fetch these from Google Storage.
   if (build_with_chromium) {
-    if (!is_component_build) {
-      data_deps += [ "//tools/android/forwarder2" ]
-    }
+    data_deps += [ "//tools/android/forwarder2" ]
     data += [ "//tools/android/avd/proto/" ]
     if (enable_chrome_android_internal) {
-      data += [ "//clank/tools/android/avd/proto/" ]
-    }
+       data += [ "//clank/tools/android/avd/proto/" ]
+     }
     if (is_asan) {
       data_deps += [ "//tools/android/asan/third_party:asan_device_setup" ]
     }
