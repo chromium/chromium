@@ -62,9 +62,17 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
 
   void ExpectSingleUniqueSample(
       const base::HistogramTester& tester,
-      performance_manager::MetricsProvider::EfficiencyMode sample) {
+      performance_manager::MetricsProvider::EfficiencyMode sample,
+      int battery_saver_percent,
+      int memory_saver_percent) {
     tester.ExpectUniqueSample("PerformanceManager.UserTuning.EfficiencyMode",
                               sample, 1);
+    tester.ExpectUniqueSample(
+        "PerformanceManager.UserTuning.BatterySaverModeEnabledPercent",
+        battery_saver_percent, 1);
+    tester.ExpectUniqueSample(
+        "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent",
+        memory_saver_percent, 1);
   }
 
   void InitProvider() { provider_->Initialize(); }
@@ -74,6 +82,10 @@ class PerformanceManagerMetricsProviderTest : public testing::Test {
   void ShutdownUserPerformanceTuningManager() {
     user_performance_tuning_env_->TearDown();
     user_performance_tuning_env_.reset();
+  }
+
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
   }
 
  private:
@@ -116,7 +128,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestNormalMode) {
   provider()->ProvideCurrentSessionData(nullptr);
 
   ExpectSingleUniqueSample(
-      tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal);
+      tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal,
+      /*battery_saver_percent=*/0, /*memory_saver_percent=*/0);
 }
 
 TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
@@ -128,28 +141,49 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestMixedMode) {
     base::HistogramTester tester;
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal);
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kNormal,
+        /*battery_saver_percent=*/0, /*memory_saver_percent=*/0);
   }
 
   {
     base::HistogramTester tester;
-    // Enabled High-Efficiency Mode, the next reported value should be "mixed"
+    // Enable High-Efficiency Mode, the next reported value should be "mixed"
     // because we transitioned from normal to High-Efficiency during the
-    // interval.
+    // interval. Simulate 10 minutes elapsing before and after the change, which
+    // should result in memory saver being reported as enabled for 50% of the
+    // interval
+    FastForwardBy(base::Minutes(10));
     SetHighEfficiencyEnabled(true);
+    FastForwardBy(base::Minutes(10));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed);
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        /*battery_saver_percent=*/0, /*memory_saver_percent=*/50);
   }
 
   {
     base::HistogramTester tester;
     // If another UMA upload happens without mode changes, this one will report
-    // High-Efficiency Mode.
+    // High-Efficiency Mode. Memory Saver is considered on for 100% of the
+    // interval.
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kHighEfficiency);
+        performance_manager::MetricsProvider::EfficiencyMode::kHighEfficiency,
+        /*battery_saver_percent=*/0, /*memory_saver_percent=*/100);
+  }
+
+  {
+    base::HistogramTester tester;
+    // Advance time, change battery saver state, then advance time again. The
+    // Battery Saver Percent histogram should report the correct percentage.
+    FastForwardBy(base::Minutes(40));
+    SetBatterySaverEnabled(true);
+    FastForwardBy(base::Minutes(10));
+    provider()->ProvideCurrentSessionData(nullptr);
+    ExpectSingleUniqueSample(
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        /*battery_saver_percent=*/20, /*memory_saver_percent=*/100);
   }
 }
 
@@ -165,16 +199,20 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     // enabled both modes in a previous session).
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth);
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/100);
   }
 
   {
     base::HistogramTester tester;
     // Disabling High-Efficiency Mode will cause the next report to be "mixed".
+    // Since the time didn't advance, memory saver was off for the entire
+    // interval and battery saver was on for it.
     SetHighEfficiencyEnabled(false);
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed);
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
   }
 
   {
@@ -183,17 +221,21 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver);
+        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
   }
 
   {
     base::HistogramTester tester;
     // Re-enabling High-Efficiency Mode will cause the next report to indicate
     // "mixed".
+    FastForwardBy(base::Minutes(10));
     SetHighEfficiencyEnabled(true);
+    FastForwardBy(base::Minutes(30));
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed);
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kMixed,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/75);
   }
 
   {
@@ -201,7 +243,8 @@ TEST_F(PerformanceManagerMetricsProviderTest, TestBothModes) {
     // One more report with no changes, this one reports "both" again.
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
-        tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth);
+        tester, performance_manager::MetricsProvider::EfficiencyMode::kBoth,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/100);
   }
 }
 
@@ -218,7 +261,8 @@ TEST_F(PerformanceManagerMetricsProviderTest,
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver);
+        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
   }
 
   ShutdownUserPerformanceTuningManager();
@@ -233,7 +277,8 @@ TEST_F(PerformanceManagerMetricsProviderTest,
     provider()->ProvideCurrentSessionData(nullptr);
     ExpectSingleUniqueSample(
         tester,
-        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver);
+        performance_manager::MetricsProvider::EfficiencyMode::kBatterySaver,
+        /*battery_saver_percent=*/100, /*memory_saver_percent=*/0);
   }
 }
 

@@ -34,6 +34,16 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.UserTuning.BatterySaverModeEnabledPercent"
+    units="%" expires_after="2023-10-28">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every UMA upload, this histogram represents the percentage of the
+    interval since the last upload that was spent with Battery Saver enabled.
+  </summary>
+</histogram>
+
 <histogram name="PerformanceManager.UserTuning.EfficiencyMode"
     enum="EfficiencyMode" expires_after="2023-09-10">
   <owner>anthonyvd@chromium.org</owner>
@@ -45,6 +55,16 @@ each histogram.
 
     This histogram is used internally to filter other histograms by efficiency
     mode.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.UserTuning.MemorySaverModeEnabledPercent"
+    units="%" expires_after="2023-10-28">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every UMA upload, this histogram represents the percentage of the
+    interval since the last upload that was spent with Memory Saver enabled.
   </summary>
 </histogram>
 

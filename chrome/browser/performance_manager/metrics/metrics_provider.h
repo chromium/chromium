@@ -16,6 +16,8 @@ class PrefService;
 
 namespace performance_manager {
 
+class ScopedTimeInModeTracker;
+
 // A metrics provider to add some performance manager related metrics to the UMA
 // protos on each upload.
 class MetricsProvider : public ::metrics::MetricsProvider,
@@ -57,12 +59,15 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   // UserPerformanceTuningManager::Observer:
   void OnBatterySaverModeChanged(bool is_active) override;
 
+  void OnHighEfficiencyPrefChanged();
   void OnTuningModesChanged();
   EfficiencyMode ComputeCurrentMode() const;
+  bool IsHighEfficiencyEnabled() const;
 
   void RecordAvailableMemoryMetrics();
-
   void RecordA11yFlags();
+
+  void ResetTrackers();
 
   PrefChangeRegistrar pref_change_registrar_;
   const raw_ptr<PrefService> local_state_;
@@ -73,6 +78,9 @@ class MetricsProvider : public ::metrics::MetricsProvider,
   bool initialized_ = false;
 
   base::RepeatingTimer available_memory_metrics_timer_;
+
+  std::unique_ptr<ScopedTimeInModeTracker> battery_saver_mode_tracker_;
+  std::unique_ptr<ScopedTimeInModeTracker> high_efficiency_mode_tracker_;
 };
 
 }  // namespace performance_manager
