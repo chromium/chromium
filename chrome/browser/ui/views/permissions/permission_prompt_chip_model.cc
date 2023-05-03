@@ -124,59 +124,60 @@ bool PermissionPromptChipModel::IsExpandAnimationAllowed() {
 void PermissionPromptChipModel::UpdateWithUserDecision(
     permissions::PermissionAction user_decision) {
   DCHECK(delegate_.has_value());
-  absl::optional<std::u16string> chip_text_opt;
-  absl::optional<std::u16string> accessibility_chip_text_opt;
+
+  permissions::PermissionRequest::ChipTextType chip_text_type;
+  permissions::PermissionRequest::ChipTextType accessibility_text_type;
+  int cam_mic_combo_accessibility_text_id;
 
   switch (user_decision) {
     case permissions::PermissionAction::GRANTED:
+      should_display_blocked_icon_ = false;
+      chip_theme_ = OmniboxChipTheme::kNormalVisibility;
+      chip_text_type =
+          permissions::PermissionRequest::ChipTextType::ALLOW_CONFIRMATION;
+      accessibility_text_type = permissions::PermissionRequest::ChipTextType::
+          ACCESSIBILITY_ALLOWED_CONFIRMATION;
+      cam_mic_combo_accessibility_text_id =
+          IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT;
+      break;
     case permissions::PermissionAction::GRANTED_ONCE:
       should_display_blocked_icon_ = false;
       chip_theme_ = OmniboxChipTheme::kNormalVisibility;
-      chip_text_ =
-          delegate_.value()
-              ->Requests()[0]
-              ->GetRequestChipText(permissions::PermissionRequest::
-                                       ChipTextType::ALLOW_CONFIRMATION)
-              .value_or(u"");
-      if (delegate_.value()->Requests().size() == 1) {
-        accessibility_chip_text_ =
-            delegate_.value()
-                ->Requests()[0]
-                ->GetRequestChipText(
-                    permissions::PermissionRequest::ChipTextType::
-                        ACCESSIBILITY_ALLOWED_CONFIRMATION)
-                .value_or(u"");
-      } else {
-        accessibility_chip_text_ = l10n_util::GetStringUTF16(
-            IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT);
-      }
+      chip_text_type =
+          permissions::PermissionRequest::ChipTextType::ALLOW_ONCE_CONFIRMATION;
+      accessibility_text_type = permissions::PermissionRequest::ChipTextType::
+          ACCESSIBILITY_ALLOWED_ONCE_CONFIRMATION;
+      cam_mic_combo_accessibility_text_id =
+          IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT;
       break;
     case permissions::PermissionAction::DENIED:
     case permissions::PermissionAction::DISMISSED:
     case permissions::PermissionAction::IGNORED:
     case permissions::PermissionAction::REVOKED:
       should_display_blocked_icon_ = true;
-      chip_text_ =
-          delegate_.value()
-              ->Requests()[0]
-              ->GetRequestChipText(permissions::PermissionRequest::
-                                       ChipTextType::BLOCKED_CONFIRMATION)
-              .value_or(u"");
-      if (delegate_.value()->Requests().size() == 1) {
-        accessibility_chip_text_ =
-            delegate_.value()
-                ->Requests()[0]
-                ->GetRequestChipText(
-                    permissions::PermissionRequest::ChipTextType::
-                        ACCESSIBILITY_BLOCKED_CONFIRMATION)
-                .value_or(u"");
-      } else {
-        accessibility_chip_text_ = l10n_util::GetStringUTF16(
-            IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT);
-      }
       chip_theme_ = OmniboxChipTheme::kLowVisibility;
+      chip_text_type =
+          permissions::PermissionRequest::ChipTextType::BLOCKED_CONFIRMATION;
+      accessibility_text_type = permissions::PermissionRequest::ChipTextType::
+          ACCESSIBILITY_BLOCKED_CONFIRMATION;
+      cam_mic_combo_accessibility_text_id =
+          IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT;
       break;
     case permissions::PermissionAction::NUM:
       NOTREACHED_NORETURN();
+  }
+
+  chip_text_ = delegate_.value()
+                   ->Requests()[0]
+                   ->GetRequestChipText(chip_text_type)
+                   .value_or(u"");
+  if (delegate_.value()->Requests().size() == 1) {
+    accessibility_chip_text_ = delegate_.value()
+                                   ->Requests()[0]
+                                   ->GetRequestChipText(accessibility_text_type)
+                                   .value_or(u"");
+  } else {
+    accessibility_chip_text_ =
+        l10n_util::GetStringUTF16(cam_mic_combo_accessibility_text_id);
   }
 }

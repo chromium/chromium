@@ -264,6 +264,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION" desc="Text displayed next to a permission icon confirming that a permission has been granted.">
         Allowed
     </message>
+    <message name="IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION" desc="Text displayed next to a permission icon confirming that a permission has been granted once.">
+        Allowed this time
+    </message>
     <message name="IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION" desc="Text displayed next to a permission icon confirming that a permission has not been granted.">
         Not allowed
     </message>
@@ -276,11 +279,17 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted..">
         Location allowed
     </message>
+    <message name="IDS_PERMISSIONS_GEOLOCATION_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been granted once.">
+        Location allowed this time
+    </message>
       <message name="IDS_PERMISSIONS_GEOLOCATION_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a location permission requested has been denied.">
         Location not allowed
     </message>
     <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted..">
         Camera allowed
+    </message>
+    <message name="IDS_PERMISSIONS_CAMERA_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been granted once.">
+        Camera allowed this time
     </message>
       <message name="IDS_PERMISSIONS_CAMERA_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a camera permission requested has been denied.">
         Camera not allowed
@@ -288,11 +297,17 @@ This will otherwise be blocked by your privacy settings. This will allow the con
       <message name="IDS_PERMISSIONS_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone permission requested has been granted.">
         Microphone allowed
     </message>
+    <message name="IDS_PERMISSIONS_MICROPHONE_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone permission requested has been granted once.">
+        Microphone allowed this time
+    </message>
       <message name="IDS_PERMISSIONS_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone permission requested has been denied.">
         Microphone not allowed
     </message>
-      <message name="IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone and camera permission requested has been granted.">
+    <message name="IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone and camera permission requested has been granted.">
         Camera and microphone allowed
+    </message>
+    <message name="IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone and camera permission requested has been granted once.">
+        Camera and microphone allowed this time
     </message>
       <message name="IDS_PERMISSIONS_CAMERA_AND_MICROPHONE_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a microphone and camera permission requested has been denied.">
         Camera and microphone not allowed
