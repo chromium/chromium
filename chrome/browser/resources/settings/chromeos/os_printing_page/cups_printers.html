@@ -1,7 +1,12 @@
 <style include="cups-printer-shared action-link iron-flex
     iron-flex-alignment">
-  .custom-list-item {
+  .custom-list-item-bottom {
     border-bottom: var(--cr-separator-line);
+    min-height: var(--cr-section-min-height);
+  }
+
+  .custom-list-item-top {
+    border-top: var(--cr-separator-line);
     min-height: var(--cr-section-min-height);
   }
 
@@ -13,12 +18,12 @@
     flex: 1;
   }
 
-  #addManualPrinterIcon {
+  .add-manual-printer-icon {
     --cr-icon-button-fill-color: var(--cros-button-icon-color-secondary);
     --cr-icon-button-margin-end: 0;
   }
 
-  :host-context(body.jelly-enabled) #addManualPrinterIcon {
+  :host-context(body.jelly-enabled) .add-manual-printer-icon {
     --cr-icon-button-fill-color: var(--cros-sys-primary);
   }
 
@@ -193,11 +198,12 @@
         the revamp Add printer section will be shown in the correct order. -->
   <div id="addPrinterSection" class="list-frame add-printer-section"
       hidden="[[isPrinterSettingsRevampEnabled_]]">
-    <div class="layout horizontal center custom-list-item">
+    <div class="layout horizontal center custom-list-item-bottom">
       <div id="addPrinterText" aria-hidden="true">
         $i18n{addCupsPrinter}
       </div>
-      <cr-icon-button class="action-button" id="addManualPrinterIcon"
+      <cr-icon-button id="addManualPrinterIcon"
+          class="action-button add-manual-printer-icon"
           iron-icon="os-settings:printer-add"
           on-click="onAddPrinterClick_"
           disabled="[[!addPrinterButtonActive_(canAddPrinter,
@@ -235,16 +241,17 @@
       </settings-cups-nearby-printers>
       <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
           hidden="[[!isPrinterSettingsRevampEnabled_]]">
-        <div class="layout horizontal center custom-list-item">
+        <div class="layout horizontal center custom-list-item-top">
           <div id="addPrinterTextRevamp" aria-hidden="true">
-            $i18n{addCupsPrinter}
+            $i18n{addCupsPrinterManually}
           </div>
-          <cr-icon-button class="action-button" id="addManualPrinterIconRevamp"
+          <cr-icon-button id="addManualPrinterIconRevamp"
+              class="action-button add-manual-printer-icon"
               iron-icon="os-settings:printer-add"
               on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(canAddPrinter,
                   prefs.native_printing.user_native_printers_allowed.value)]]"
-              title="$i18n{addCupsPrinter}"
+              title="$i18n{addCupsPrinterManually}"
               deep-link-focus-id$="[[Setting.kAddPrinter]]">
           </cr-icon-button>
         </div>

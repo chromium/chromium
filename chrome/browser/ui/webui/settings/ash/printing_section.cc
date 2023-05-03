@@ -120,6 +120,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"cupsPrintersLearnMoreLabel",
        IDS_SETTINGS_PRINTING_CUPS_PRINTERS_LEARN_MORE_LABEL},
       {"addCupsPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_PRINTER},
+      {"addCupsPrinterManually",
+       IDS_SETTINGS_PRINTING_CUPS_PRINTERS_ADD_PRINTER_MANUALLY},
       {"editPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_EDIT},
       {"viewPrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_VIEW},
       {"removePrinter", IDS_SETTINGS_PRINTING_CUPS_PRINTERS_REMOVE},
