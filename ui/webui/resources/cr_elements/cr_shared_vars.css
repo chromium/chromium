@@ -100,18 +100,26 @@ html {
   --cr-secondary-text-color: var(--google-grey-700);
 
   --cr-card-background-color: white;
-  --cr-card-shadow-color-rgb: var(--google-grey-800-rgb);
 
-  --cr-elevation-1: rgba(var(--cr-card-shadow-color-rgb), .3) 0 1px 2px 0,
-                    rgba(var(--cr-card-shadow-color-rgb), .15) 0 1px 3px 1px;
-  --cr-elevation-2: rgba(var(--cr-card-shadow-color-rgb), .3) 0 1px 2px 0,
-                    rgba(var(--cr-card-shadow-color-rgb), .15) 0 2px 6px 2px;
-  --cr-elevation-3: rgba(var(--cr-card-shadow-color-rgb), .3) 0 1px 3px 0,
-                    rgba(var(--cr-card-shadow-color-rgb), .15) 0 4px 8px 3px;
-  --cr-elevation-4: rgba(var(--cr-card-shadow-color-rgb), .3) 0 2px 3px 0,
-                    rgba(var(--cr-card-shadow-color-rgb), .15) 0 6px 10px 4px;
-  --cr-elevation-5: rgba(var(--cr-card-shadow-color-rgb), .3) 0 4px 4px 0,
-                    rgba(var(--cr-card-shadow-color-rgb), .15) 0 8px 12px 6px;
+  --cr-shadow-color: var(--google-grey-800);
+
+  /* Vars to help define --cr-elevation-* vars. Components should use the
+   * --cr-elevation-* variables instead of these colors directly. */
+  --cr-shadow-key-color_:
+      color-mix(in srgb, var(--cr-shadow-color) 30%, transparent);
+  --cr-shadow-ambient-color_:
+      color-mix(in srgb, var(--cr-shadow-color) 15%, transparent);
+
+  --cr-elevation-1: var(--cr-shadow-key-color_) 0 1px 2px 0,
+                    var(--cr-shadow-ambient-color_) 0 1px 3px 1px;
+  --cr-elevation-2: var(--cr-shadow-key-color_) 0 1px 2px 0,
+                    var(--cr-shadow-ambient-color_) 0 2px 6px 2px;
+  --cr-elevation-3: var(--cr-shadow-key-color_) 0 1px 3px 0,
+                    var(--cr-shadow-ambient-color_) 0 4px 8px 3px;
+  --cr-elevation-4: var(--cr-shadow-key-color_) 0 2px 3px 0,
+                    var(--cr-shadow-ambient-color_) 0 6px 10px 4px;
+  --cr-elevation-5: var(--cr-shadow-key-color_) 0 4px 4px 0,
+                    var(--cr-shadow-ambient-color_) 0 8px 12px 6px;
 
   --cr-card-shadow: var(--cr-elevation-2);
 
@@ -278,6 +286,9 @@ html[chrome-refresh-2023] {
 
   /* Layout */
   --cr-button-height: 36px;
+
+  /* Elevation */
+  --cr-shadow-color: var(--color-sys-shadow, rgb(0, 0, 0));
 }
 
 @media (prefers-color-scheme: dark) {

@@ -70,7 +70,7 @@ cr-dialog [slot=body] {
 
 #dialog div[slot='button-container'] {
   align-items: center;
-  box-shadow: 0 -1px 1px 0 rgba(var(--cr-card-shadow-color-rgb), 0.3);
+  box-shadow: 0 -1px 1px 0 var(--cr-separator-color);
   min-height: 64px;
   padding-bottom: 0;
   padding-top: 0;
