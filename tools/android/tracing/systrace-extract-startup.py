@@ -466,10 +466,8 @@ def PrintTrace(trace_file_path, options):
       log('{} (ms): {}', name, time_ms)
 
   histogram_names = [
-      'Startup.FirstCommitNavigationTime3.ZoomedIn',
-      'MobileStartup.ToolbarFirstDrawTime.ChromeTabbedActivity',
-      'ChromeGeneratedCustomTab.IntentToFirstCommitNavigationTime2.ZoomedIn',
-      'CustomTabs.IntentToFirstCommitNavigationTime2.ZoomedIn',
+      'ChromeGeneratedCustomTab.IntentToFirstCommitNavigationTime3.ZoomedIn',
+      'CustomTabs.IntentToFirstCommitNavigationTime3.ZoomedIn',
       'PageLoad.PaintTiming.NavigationToFirstPaint',
       'PageLoad.PaintTiming.NavigationToFirstContentfulPaint',
       'PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint',
