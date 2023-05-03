@@ -5087,7 +5087,7 @@
   {
     "name": "most-visited-tiles",
     "owners": [ "christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "multi-zone-rgb-keyboard",
@@ -5371,11 +5371,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-adaptive-suggestions-count",
-    "owners": [ "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "omnibox-adaptive-suggestions-visible-group-eligibility-update",
     "owners": [ "ender", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 125
@@ -5394,11 +5389,6 @@
     "name": "omnibox-cache-suggestion-resources",
     "owners": ["pnoland", "chrome-omnibox-team@google.com"],
     "expiry_milestone": 120
-  },
-  {
-    "name": "omnibox-carousel-dynamic-spacing",
-    "owners": ["christianxu", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 115
   },
   {
     "name": "omnibox-close-popup-with-escape",
@@ -5535,7 +5525,7 @@
   {
     "name": "omnibox-keyboard-paste-button",
     "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "omnibox-local-history-zero-suggest-beyond-ntp",
@@ -5560,7 +5550,7 @@
   {
     "name": "omnibox-max-zps-matches",
     "owners": [ "stkhapugin", "christianxu", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone" : 113
+    "expiry_milestone" : 120
   },
   {
     "name": "omnibox-ml-log-url-scoring-signals",
@@ -5603,14 +5593,9 @@
     "expiry_milestone": 120
   },
   {
-    "name": "omnibox-new-popup-ui",
-    "owners": ["rkgibson@google.com", "stkhapugin", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 110
-  },
-  {
       "name": "omnibox-new-textfield-implementation",
       "owners": ["stkhapugin", "rkgibson@google.com", "chrome-omnibox-team@google.com"],
-      "expiry_milestone": 107
+      "expiry_milestone": 120
   },
   {
     "name": "omnibox-on-clobber-focus-type-on-content",
