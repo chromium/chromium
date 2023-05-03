@@ -17,6 +17,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace power_sampler {
 namespace {
 
@@ -169,7 +173,7 @@ BatterySampler::MaybeComputeAvgConsumption(base::TimeDelta duration,
   // The gauging hardware measures current consumed (or charged), but reports
   // the remaining capacity with respect to a load-dependent max capacity.
   // Here, however, we care about the delta capacity consumed rather than the
-  // capacity remaining. To get to capacity consumed, we flip the capcacity
+  // capacity remaining. To get to capacity consumed, we flip the capacity
   // remaining estimates to capacity consumed and work from there. It's been
   // experimentally determined that this backs out the effects of any
   // load-dependent max capacity estimates to yield the capacity consumed.

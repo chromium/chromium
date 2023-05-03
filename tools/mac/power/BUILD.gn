@@ -64,6 +64,7 @@ static_library("power_sampler_lib") {
     "DisplayServices.framework",
     "IOKit.framework",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
   framework_dirs = [ "$mac_sdk_path/System/Library/PrivateFrameworks" ]
 }
 
@@ -98,6 +99,8 @@ test("power_sampler_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 proto_library("proto") {
