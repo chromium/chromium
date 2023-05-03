@@ -188,11 +188,18 @@ reset_dirs linux/arm64
 gen_config_files linux/arm64 \
   "${toolchain}/arm64-linux-gcc.cmake ${all_platforms}"
 
+# CMAKE_INSTALL_NAME_TOOL is set to a non-empty/true value to allow this
+# configuration to complete on platforms without `install_name`. The build
+# commands are not invoked so the value doesn't matter.
 reset_dirs ios/arm-neon
-gen_config_files ios/arm-neon "${toolchain}/armv7-ios.cmake ${all_platforms}"
+gen_config_files ios/arm-neon \
+  "${toolchain}/armv7-ios.cmake -DCMAKE_INSTALL_NAME_TOOL=no-such-command \
+   ${all_platforms}"
 
 reset_dirs ios/arm64
-gen_config_files ios/arm64 "${toolchain}/arm64-ios.cmake ${all_platforms}"
+gen_config_files ios/arm64 \
+  "${toolchain}/arm64-ios.cmake -DCMAKE_INSTALL_NAME_TOOL=no-such-command \
+   ${all_platforms}"
 
 # Copy linux configurations and modify for Windows.
 reset_dirs win/arm64
