@@ -14,6 +14,8 @@
 #include "content/browser/scheduler/responsiveness/native_event_observer.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 
 namespace content {
 namespace responsiveness {
@@ -26,7 +28,8 @@ Watcher::Metadata::Metadata(const void* identifier,
       execution_start_time(execution_start_time) {}
 
 std::unique_ptr<Calculator> Watcher::CreateCalculator() {
-  return std::make_unique<Calculator>();
+  return std::make_unique<Calculator>(
+      GetContentClient()->browser()->CreateResponsivenessCalculatorDelegate());
 }
 
 std::unique_ptr<MetricSource> Watcher::CreateMetricSource() {

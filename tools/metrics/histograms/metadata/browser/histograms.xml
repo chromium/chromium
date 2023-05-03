@@ -292,6 +292,72 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Browser.MainThreadsCongestion{UsageScenario}" units="janks"
+    expires_after="2024-03-31">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    This metric is emitted every 30 seconds after main message loop start, when
+    there is user activity. Each 30 second duration is divided into 100ms
+    intervals. This metric counts the number of these intervals that were
+    &quot;congested&quot;. An interval is congested if during it the UI or IO
+    thread executes an &quot;important&quot; task that was queued more than 100
+    ms ago, or a non-important task or a native event handler that started
+    executing more than 100 ms ago. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    This metric is split by usage scenarios (go/chrome_power_use_per_scenario).
+    This version is recorded for {UsageScenario}.
+  </summary>
+  <token key="UsageScenario">
+<!--
+  Variants describing the usage scenario for a time interval. Consider updating
+  both "UsageScenario" and "UsageScenario10Sec" in
+  tools/metrics/histograms/metadata/power/histograms.xml when updating this.
+-->
+
+    <variant name=".AllTabsHidden_Audio"
+        summary="intervals during which there was no visible tab and no video
+                 capture, but there was audio"/>
+    <variant name=".AllTabsHidden_NoVideoCaptureOrAudio"
+        summary="intervals during which there was no visible tab, no video
+                 capture and no audio"/>
+    <variant name=".AllTabsHidden_VideoCapture"
+        summary="intervals during which there was no visible tab, but there
+                 was video capture"/>
+    <variant name=".Audio"
+        summary="intervals during which there was audio and at least 1
+                 visible tab, but there was no video playback or video
+                 capture"/>
+    <variant name=".EmbeddedVideo_NoNavigation"
+        summary="intervals during which a video played in a visible tab and
+                 there was no navigation and no video capture"/>
+    <variant name=".EmbeddedVideo_WithNavigation"
+        summary="intervals during which a video played in a visible tab and
+                 there was a navigation, but no video capture"/>
+    <variant name=".FullscreenVideo"
+        summary="intervals during which a video played in fullscreen and
+                 there was no video capture"/>
+    <variant name=".Interaction"
+        summary="intervals during which there was at least 1 visible tab and
+                 a user interaction, but no navigation, audio, video playback
+                 or video capture"/>
+    <variant name=".Navigation"
+        summary="intervals during which there was at least 1 visible tab and
+                 a navigation, but no audio, video playback or video capture"/>
+    <variant name=".Passive"
+        summary="intervals during which there was at least 1 visible tab, but
+                 no user interaction, navigation, audio, video playback or
+                 video capture"/>
+    <variant name=".VideoCapture"
+        summary="intervals during which there was at least 1 visible tab and
+                 video capture"/>
+    <variant name=".ZeroWindow"
+        summary="intervals during which there was no window"/>
+  </token>
+</histogram>
+
 <histogram name="Browser.PaintPreview.Capture.CompressedOnDiskSize" units="KB"
     expires_after="2023-11-27">
   <owner>ckitagawa@chromium.org</owner>

@@ -548,6 +548,23 @@ ChromeBrowserMainExtraPartsMetrics::ChromeBrowserMainExtraPartsMetrics()
 ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
     default;
 
+void ChromeBrowserMainExtraPartsMetrics::PreCreateThreads() {
+#if !BUILDFLAG(IS_ANDROID)
+  // Initialize the TabStatsTracker singleton instance. Must be initialized
+  // before `responsiveness::Watcher`, which happens in
+  // BrowserMainLoop::PreMainMessageLoopRun(), thus the decision to use
+  // `PreCreateThreads`.
+  // Only instantiate the tab stats tracker if a local state exists. This is
+  // always the case for Chrome but not for the unittests.
+  if (g_browser_process != nullptr &&
+      g_browser_process->local_state() != nullptr) {
+    metrics::TabStatsTracker::SetInstance(
+        std::make_unique<metrics::TabStatsTracker>(
+            g_browser_process->local_state()));
+  }
+#endif
+}
+
 void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
 #if !BUILDFLAG(IS_ANDROID)
   // Must be initialized before any child processes are spawned.
@@ -696,14 +713,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 
 #if !BUILDFLAG(IS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
-  // Only instantiate the tab stats tracker if a local state exists. This is
-  // always the case for Chrome but not for the unittests.
-  if (g_browser_process != nullptr &&
-      g_browser_process->local_state() != nullptr) {
-    metrics::TabStatsTracker::SetInstance(
-        std::make_unique<metrics::TabStatsTracker>(
-            g_browser_process->local_state()));
-  }
 
   // Instantiate the power-related metrics reporters.
 

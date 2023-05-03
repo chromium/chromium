@@ -68,7 +68,8 @@ chromium-metrics-reviews@google.com.
 <variants name="UsageScenario">
 <!--
   Variants describing the usage scenario for a time interval. Consider updating
-  UsageScenario10Sec when updating this.
+  both "UsageScenario10Sec" in this file, and "UsageScenario" in
+  tools/metrics/histograms/metadata/browser/histograms.xml when updating this.
 -->
 
   <variant name="" summary="all intervals no matter the usage scenario"/>
