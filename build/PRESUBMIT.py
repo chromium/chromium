@@ -17,6 +17,9 @@ def CheckNoBadDeps(input_api, output_api):
       r'(.+/)?BUILD\.gn',
       r'.+\.gni',
   ]
+  exclude_file_patterns = [
+      r'build/rust/tests',
+  ]
   blocklist_pattern = input_api.re.compile(r'^[^#]*"//(?!build).+?/.*"')
   allowlist_pattern = input_api.re.compile(r'^[^#]*"//third_party/junit')
 
@@ -31,7 +34,8 @@ def CheckNoBadDeps(input_api, output_api):
 
   def FilterFile(affected_file):
     return input_api.FilterSourceFile(affected_file,
-                                      files_to_check=build_file_patterns)
+                                      files_to_check=build_file_patterns,
+                                      files_to_skip=exclude_file_patterns)
 
   problems = []
   for f in input_api.AffectedSourceFiles(FilterFile):
