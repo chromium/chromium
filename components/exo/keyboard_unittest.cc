@@ -838,8 +838,8 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
       ui::DeviceDataManager::GetInstance();
   ASSERT_TRUE(device_data_manager != nullptr);
   // Make sure that DeviceDataManager has one external keyboard...
-  const std::vector<ui::InputDevice> keyboards{
-      ui::InputDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard")};
+  const std::vector<ui::KeyboardDevice> keyboards{
+      ui::KeyboardDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard")};
   device_data_manager->OnKeyboardDevicesUpdated(keyboards);
   // and a touch screen.
   const std::vector<ui::TouchscreenDevice> touch_screen{
@@ -866,7 +866,7 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged) {
   // OnKeyboardTypeChanged() with false.
   EXPECT_CALL(configuration_delegate, OnKeyboardTypeChanged(false));
   device_data_manager->OnKeyboardDevicesUpdated(
-      std::vector<ui::InputDevice>({}));
+      std::vector<ui::KeyboardDevice>({}));
   testing::Mock::VerifyAndClearExpectations(&configuration_delegate);
 
   // Re-adding keyboards calls OnKeyboardTypeChanged() with true.
@@ -890,8 +890,8 @@ TEST_F(KeyboardTest, OnKeyboardTypeChanged_AccessibilityKeyboard) {
       ui::DeviceDataManager::GetInstance();
   ASSERT_TRUE(device_data_manager != nullptr);
   // Make sure that DeviceDataManager has one external keyboard.
-  const std::vector<ui::InputDevice> keyboards{
-      ui::InputDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard")};
+  const std::vector<ui::KeyboardDevice> keyboards{
+      ui::KeyboardDevice(2, ui::InputDeviceType::INPUT_DEVICE_USB, "keyboard")};
   device_data_manager->OnKeyboardDevicesUpdated(keyboards);
 
   Seat seat;

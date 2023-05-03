@@ -57,6 +57,7 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
       has_touchpad_(devinfo.HasTouchpad()),
       has_numberpad_(devinfo.HasNumberpad()),
       has_stylus_switch_(devinfo.HasStylusSwitch()),
+      has_assistant_key_(devinfo.HasKeyEvent(KEY_ASSISTANT)),
       has_caps_lock_led_(devinfo.HasLedEvent(LED_CAPSL)),
       controller_(FROM_HERE),
       cursor_(cursor),
@@ -122,6 +123,10 @@ bool EventConverterEvdevImpl::HasCapsLockLed() const {
 
 bool EventConverterEvdevImpl::HasStylusSwitch() const {
   return has_stylus_switch_;
+}
+
+bool EventConverterEvdevImpl::HasAssistantKey() const {
+  return has_assistant_key_;
 }
 
 void EventConverterEvdevImpl::SetKeyFilter(bool enable_filter,

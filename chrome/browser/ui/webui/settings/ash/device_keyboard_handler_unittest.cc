@@ -192,7 +192,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   auto fake_udev = std::make_unique<testing::FakeUdevLoader>();
 
   // Standard internal keyboard on x86 device.
-  const ui::InputDevice internal_kbd(
+  const ui::KeyboardDevice internal_kbd(
       1, ui::INPUT_DEVICE_INTERNAL, "AT Translated Set 2 keyboard", "",
       base::FilePath("/devices/platform/i8042/serio0/input/input1"), 1, 1,
       0xab41);
@@ -201,7 +201,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
                            /*devtype=*/absl::nullopt, /*sysattrs=*/{},
                            /*properties=*/{});
   // Generic external USB keyboard.
-  const ui::InputDevice external_generic_kbd(
+  const ui::KeyboardDevice external_generic_kbd(
       2, ui::INPUT_DEVICE_USB, "Logitech USB Keyboard", "",
       base::FilePath("/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/"
                      "0003:046D:C31C.0007/"
@@ -213,7 +213,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
                            /*devtype=*/absl::nullopt, /*sysattrs=*/{},
                            /*properties=*/{});
   // Apple keyboard.
-  const ui::InputDevice external_apple_kbd(
+  const ui::KeyboardDevice external_apple_kbd(
       3, ui::INPUT_DEVICE_USB, "Apple Inc. Apple Keyboard", "",
       base::FilePath("/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.1/"
                      "0003:05AC:026C.000A/input/input3"),
@@ -224,7 +224,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
                            /*devtype=*/absl::nullopt, /*sysattrs=*/{},
                            /*properties=*/{});
   // Chrome OS external USB keyboard.
-  const ui::InputDevice external_chromeos_kbd(
+  const ui::KeyboardDevice external_chromeos_kbd(
       4, ui::INPUT_DEVICE_USB, "LG USB Keyboard", "",
       base::FilePath("/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/"
                      "0003:04CA:0082.000B/input/input4"),
@@ -236,7 +236,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
       /*properties=*/{{"CROS_KEYBOARD_TOP_ROW_LAYOUT", "1"}});
 
   // Chrome OS external Bluetooth keyboard.
-  const ui::InputDevice external_bt_chromeos_kbd(
+  const ui::KeyboardDevice external_bt_chromeos_kbd(
       4, ui::INPUT_DEVICE_BLUETOOTH, "LG BT Keyboard", "",
       base::FilePath("/devices/pci0000:00/0000:00:14.0/usb1/1-1/1-1:1.0/"
                      "0003:04CA:0082.000B/input/input5"),
@@ -261,7 +261,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // Simulate an external keyboard being connected. We should assume there's a
   // Caps Lock and Meta keys now.
   device_data_manager_test_api_.SetKeyboardDevices(
-      std::vector<ui::InputDevice>{internal_kbd, external_generic_kbd});
+      std::vector<ui::KeyboardDevice>{internal_kbd, external_generic_kbd});
   EXPECT_TRUE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_TRUE(HasExternalMetaKey());
@@ -271,7 +271,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // However when connecting external ChromeOS-branded keyboard, we should not
   // see neither CapsLock not meta keys.
   device_data_manager_test_api_.SetKeyboardDevices(
-      std::vector<ui::InputDevice>{internal_kbd, external_chromeos_kbd});
+      std::vector<ui::KeyboardDevice>{internal_kbd, external_chromeos_kbd});
   EXPECT_TRUE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
@@ -281,7 +281,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // Connecting external Bluetooth ChromeOS-branded keyboard, we should not
   // see neither CapsLock not meta keys.
   device_data_manager_test_api_.SetKeyboardDevices(
-      std::vector<ui::InputDevice>{external_bt_chromeos_kbd});
+      std::vector<ui::KeyboardDevice>{external_bt_chromeos_kbd});
   EXPECT_TRUE(HasLauncherKey());
   EXPECT_FALSE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
@@ -291,7 +291,7 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // Simulate an external Apple keyboard being connected. Now users can remap
   // the command key.
   device_data_manager_test_api_.SetKeyboardDevices(
-      std::vector<ui::InputDevice>{internal_kbd, external_apple_kbd});
+      std::vector<ui::KeyboardDevice>{internal_kbd, external_apple_kbd});
   EXPECT_TRUE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_FALSE(HasExternalMetaKey());
@@ -301,7 +301,8 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // Simulate two external keyboards (Apple and non-Apple) are connected at the
   // same time.
   device_data_manager_test_api_.SetKeyboardDevices(
-      std::vector<ui::InputDevice>{external_generic_kbd, external_apple_kbd});
+      std::vector<ui::KeyboardDevice>{external_generic_kbd,
+                                      external_apple_kbd});
   EXPECT_FALSE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_TRUE(HasExternalMetaKey());
@@ -312,9 +313,10 @@ TEST_F(KeyboardHandlerTest, ExternalKeyboard) {
   // device names. Those should also be detected as external keyboards, and
   // should show the capslock and external meta remapping.
   // https://crbug.com/834594.
-  device_data_manager_test_api_.SetKeyboardDevices(std::vector<ui::InputDevice>{
-      {6, ui::INPUT_DEVICE_USB, "Topre Corporation Realforce 87", "",
-       external_generic_kbd.sys_path, 0x046d, 0xc31c, 0x0111}});
+  device_data_manager_test_api_.SetKeyboardDevices(
+      std::vector<ui::KeyboardDevice>{
+          {6, ui::INPUT_DEVICE_USB, "Topre Corporation Realforce 87", "",
+           external_generic_kbd.sys_path, 0x046d, 0xc31c, 0x0111}});
   EXPECT_FALSE(HasLauncherKey());
   EXPECT_TRUE(HasCapsLock());
   EXPECT_TRUE(HasExternalMetaKey());

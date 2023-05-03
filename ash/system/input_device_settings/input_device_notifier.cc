@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace ash {
 
@@ -29,11 +30,11 @@ DeviceId ExtractDeviceIdFromDeviceMapPair(
 // Figures out which devices from `connected_devices` have been added/removed
 // and stores them in the passed in vectors. `devices_to_add` and
 // `devices_to_remove` will be cleared before being filled with the result.
-template <class DeviceMojomPtr>
+template <class DeviceMojomPtr, typename InputDeviceType>
 void GetAddedAndRemovedDevices(
-    std::vector<ui::InputDevice> updated_device_list,
+    std::vector<InputDeviceType> updated_device_list,
     const base::flat_map<DeviceId, DeviceMojomPtr>& connected_devices,
-    std::vector<ui::InputDevice>* devices_to_add,
+    std::vector<InputDeviceType>* devices_to_add,
     std::vector<DeviceId>* devices_to_remove) {
   // Output parameter vectors must be empty to start.
   devices_to_add->clear();
@@ -74,8 +75,8 @@ void GetAddedAndRemovedDevices(
 }
 }  // namespace
 
-template <typename MojomDevicePtr>
-InputDeviceNotifier<MojomDevicePtr>::InputDeviceNotifier(
+template <typename MojomDevicePtr, typename InputDeviceType>
+InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::InputDeviceNotifier(
     base::flat_map<DeviceId, MojomDevicePtr>* connected_devices,
     InputDeviceListsUpdatedCallback callback)
     : connected_devices_(connected_devices),
@@ -85,14 +86,14 @@ InputDeviceNotifier<MojomDevicePtr>::InputDeviceNotifier(
   RefreshDevices();
 }
 
-template <typename MojomDevicePtr>
-InputDeviceNotifier<MojomDevicePtr>::~InputDeviceNotifier() {
+template <typename MojomDevicePtr, typename InputDeviceType>
+InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::~InputDeviceNotifier() {
   ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
 }
 
-template <typename MojomDevicePtr>
-void InputDeviceNotifier<MojomDevicePtr>::RefreshDevices() {
-  std::vector<ui::InputDevice> devices_to_add;
+template <typename MojomDevicePtr, typename InputDeviceType>
+void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::RefreshDevices() {
+  std::vector<InputDeviceType> devices_to_add;
   std::vector<DeviceId> device_ids_to_remove;
 
   GetAddedAndRemovedDevices(GetUpdatedDeviceList(), *connected_devices_,
@@ -102,34 +103,37 @@ void InputDeviceNotifier<MojomDevicePtr>::RefreshDevices() {
                                      std::move(device_ids_to_remove));
 }
 
-template <typename MojomDevicePtr>
-void InputDeviceNotifier<MojomDevicePtr>::OnDeviceListsComplete() {
+template <typename MojomDevicePtr, typename InputDeviceType>
+void InputDeviceNotifier<MojomDevicePtr,
+                         InputDeviceType>::OnDeviceListsComplete() {
   RefreshDevices();
 }
 
-template <typename MojomDevicePtr>
-void InputDeviceNotifier<MojomDevicePtr>::OnInputDeviceConfigurationChanged(
-    uint8_t input_device_type) {
+template <typename MojomDevicePtr, typename InputDeviceType>
+void InputDeviceNotifier<MojomDevicePtr, InputDeviceType>::
+    OnInputDeviceConfigurationChanged(uint8_t input_device_type) {
   RefreshDevices();
 }
 
 // Template specialization for retrieving the updated device lists for each
 // device type.
 template <>
-std::vector<ui::InputDevice>
-InputDeviceNotifier<mojom::KeyboardPtr>::GetUpdatedDeviceList() {
+std::vector<ui::KeyboardDevice>
+InputDeviceNotifier<mojom::KeyboardPtr,
+                    ui::KeyboardDevice>::GetUpdatedDeviceList() {
   return ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
 }
 
 template <>
 std::vector<ui::InputDevice>
-InputDeviceNotifier<mojom::TouchpadPtr>::GetUpdatedDeviceList() {
+InputDeviceNotifier<mojom::TouchpadPtr,
+                    ui::InputDevice>::GetUpdatedDeviceList() {
   return ui::DeviceDataManager::GetInstance()->GetTouchpadDevices();
 }
 
 template <>
 std::vector<ui::InputDevice>
-InputDeviceNotifier<mojom::MousePtr>::GetUpdatedDeviceList() {
+InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>::GetUpdatedDeviceList() {
   auto mice = ui::DeviceDataManager::GetInstance()->GetMouseDevices();
   base::EraseIf(mice, [](const auto& mouse) {
     // Some I2C touchpads falsely claim to be mice, see b/205272718
@@ -142,18 +146,19 @@ InputDeviceNotifier<mojom::MousePtr>::GetUpdatedDeviceList() {
 
 template <>
 std::vector<ui::InputDevice>
-InputDeviceNotifier<mojom::PointingStickPtr>::GetUpdatedDeviceList() {
+InputDeviceNotifier<mojom::PointingStickPtr,
+                    ui::InputDevice>::GetUpdatedDeviceList() {
   return ui::DeviceDataManager::GetInstance()->GetPointingStickDevices();
 }
 
 // Explicit instantiations for each device type.
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
-    InputDeviceNotifier<mojom::KeyboardPtr>;
+    InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
-    InputDeviceNotifier<mojom::TouchpadPtr>;
+    InputDeviceNotifier<mojom::TouchpadPtr, ui::InputDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
-    InputDeviceNotifier<mojom::MousePtr>;
+    InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
-    InputDeviceNotifier<mojom::PointingStickPtr>;
+    InputDeviceNotifier<mojom::PointingStickPtr, ui::InputDevice>;
 
 }  // namespace ash

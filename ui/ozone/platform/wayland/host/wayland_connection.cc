@@ -23,6 +23,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/geometry/point.h"
@@ -336,8 +337,8 @@ std::vector<InputDevice> WaylandConnection::CreateMouseDevices() const {
   return devices;
 }
 
-std::vector<InputDevice> WaylandConnection::CreateKeyboardDevices() const {
-  std::vector<InputDevice> devices;
+std::vector<KeyboardDevice> WaylandConnection::CreateKeyboardDevices() const {
+  std::vector<KeyboardDevice> devices;
   if (const auto* keyboard = seat_->keyboard()) {
     devices.emplace_back(keyboard->id(), InputDeviceType::INPUT_DEVICE_UNKNOWN,
                          "keyboard");

@@ -47,6 +47,7 @@
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
@@ -245,15 +246,16 @@ class EventRewriterTest : public ChromeAshTestBase {
     int_pref->SetValue(static_cast<int>(modifierKey));
   }
 
-  ui::InputDevice SetupKeyboard(
+  ui::KeyboardDevice SetupKeyboard(
       const std::string& name,
       const std::string& layout = "",
       ui::InputDeviceType type = ui::INPUT_DEVICE_INTERNAL,
       bool has_custom_top_row = false) {
     // Add a fake device to udev.
-    const ui::InputDevice keyboard(kKeyboardDeviceId, type, name, /*phys=*/"",
-                                   base::FilePath(kKbdSysPath), /*vendor=*/-1,
-                                   /*product=*/-1, /*version=*/-1);
+    const ui::KeyboardDevice keyboard(kKeyboardDeviceId, type, name,
+                                      /*phys=*/"", base::FilePath(kKbdSysPath),
+                                      /*vendor=*/-1,
+                                      /*product=*/-1, /*version=*/-1);
 
     // Old CrOS keyboards supply an integer/enum as a sysfs property to identify
     // their layout type. New keyboards provide the mapping of scan codes to

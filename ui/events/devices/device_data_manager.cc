@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/input_device_event_observer.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touch_device_transform.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/geometry/point3_f.h"
@@ -140,7 +141,8 @@ const std::vector<TouchscreenDevice>& DeviceDataManager::GetTouchscreenDevices()
   return touchscreen_devices_;
 }
 
-const std::vector<InputDevice>& DeviceDataManager::GetKeyboardDevices() const {
+const std::vector<KeyboardDevice>& DeviceDataManager::GetKeyboardDevices()
+    const {
   return keyboard_devices_;
 }
 
@@ -190,7 +192,7 @@ void DeviceDataManager::OnTouchscreenDevicesUpdated(
 }
 
 void DeviceDataManager::OnKeyboardDevicesUpdated(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<KeyboardDevice>& devices) {
   if (base::ranges::equal(devices, keyboard_devices_, InputDeviceEquals)) {
     return;
   }

@@ -19,6 +19,7 @@
 #include "ui/events/ash/keyboard_layout_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -28,7 +29,7 @@ namespace {
 
 using DeviceType = ui::KeyboardCapability::DeviceType;
 
-bool IsChromeOSKeyboard(const ui::InputDevice& keyboard) {
+bool IsChromeOSKeyboard(const ui::KeyboardDevice& keyboard) {
   const auto device_type =
       Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
   return device_type == DeviceType::kDeviceInternalKeyboard ||
@@ -37,9 +38,9 @@ bool IsChromeOSKeyboard(const ui::InputDevice& keyboard) {
 
 // Gets the most recently plugged in external keyboard. If there are no external
 // keyboards, return the internal keyboard.
-absl::optional<ui::InputDevice> GetPriorityExternalKeyboard() {
-  absl::optional<ui::InputDevice> priority_keyboard;
-  for (const ui::InputDevice& keyboard :
+absl::optional<ui::KeyboardDevice> GetPriorityExternalKeyboard() {
+  absl::optional<ui::KeyboardDevice> priority_keyboard;
+  for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     const auto device_type =
         Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
@@ -62,8 +63,8 @@ absl::optional<ui::InputDevice> GetPriorityExternalKeyboard() {
   return priority_keyboard;
 }
 
-absl::optional<ui::InputDevice> GetInternalKeyboard() {
-  for (const ui::InputDevice& keyboard :
+absl::optional<ui::KeyboardDevice> GetInternalKeyboard() {
+  for (const ui::KeyboardDevice& keyboard :
        ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     const auto device_type =
         Shell::Get()->keyboard_capability()->GetDeviceType(keyboard);
@@ -132,9 +133,9 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
     const ui::Accelerator& accelerator) const {
-  absl::optional<ui::InputDevice> priority_external_keyboard =
+  absl::optional<ui::KeyboardDevice> priority_external_keyboard =
       GetPriorityExternalKeyboard();
-  absl::optional<ui::InputDevice> internal_keyboard = GetInternalKeyboard();
+  absl::optional<ui::KeyboardDevice> internal_keyboard = GetInternalKeyboard();
 
   // Set is used to get rid of possible duplicate accelerators.
   base::flat_set<ui::Accelerator> aliases_set;
@@ -197,7 +198,7 @@ std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
 
 absl::optional<ui::Accelerator>
 AcceleratorAliasConverter::CreateFunctionKeyAliases(
-    const ui::InputDevice& keyboard,
+    const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
   // TODO(dpad): Handle the case when meta + top row key rewrite is
   // suppressed.
@@ -261,7 +262,7 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
 }
 
 absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
-    const ui::InputDevice& keyboard,
+    const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
   // TODO(zhangwenyu): Handle the case when meta + top row key rewrite is
   // suppressed, following https://crrev.com/c/4160339.

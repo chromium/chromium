@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
-#include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
@@ -30,6 +29,7 @@ class ImeKeyboard;
 namespace ui {
 
 enum class DomCode;
+struct KeyboardDevice;
 
 // EventRewriterAsh makes various changes to keyboard-related events,
 // including KeyEvents and some other events with keyboard modifier flags:
@@ -207,7 +207,7 @@ class EventRewriterAsh : public EventRewriter {
   // Given a keyboard device, returns true if we get back the Assistant key
   // property without getting an error. Property value is stored in
   // |has_assistant_key|.
-  static bool HasAssistantKeyOnKeyboard(const InputDevice& keyboard_device,
+  static bool HasAssistantKeyOnKeyboard(const KeyboardDevice& keyboard_device,
                                         bool* has_assistant_key);
 
   // Part of rewrite phases below. These methods are public only so that

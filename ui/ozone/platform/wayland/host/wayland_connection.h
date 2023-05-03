@@ -40,6 +40,7 @@ namespace ui {
 struct InputDevice;
 class OrgKdeKwinIdle;
 class SurfaceAugmenter;
+struct KeyboardDevice;
 struct TouchscreenDevice;
 class WaylandBufferFactory;
 class WaylandBufferManagerHost;
@@ -380,7 +381,7 @@ class WaylandConnection {
   // how to model these input devices.
   void UpdateInputDevices();
   std::vector<InputDevice> CreateMouseDevices() const;
-  std::vector<InputDevice> CreateKeyboardDevices() const;
+  std::vector<KeyboardDevice> CreateKeyboardDevices() const;
   std::vector<TouchscreenDevice> CreateTouchscreenDevices() const;
 
   // Updates cursor related objects in this instance.

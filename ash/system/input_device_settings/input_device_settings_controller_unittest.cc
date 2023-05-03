@@ -37,50 +37,56 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace ash {
 
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
 namespace {
-const ui::InputDevice kSampleKeyboardInternal = {5,
+
+const ui::KeyboardDevice kSampleKeyboardInternal(5,
                                                  ui::INPUT_DEVICE_INTERNAL,
                                                  "kSampleKeyboardInternal",
                                                  "",
                                                  base::FilePath(),
                                                  0x1111,
                                                  0x1111,
-                                                 0};
-const ui::InputDevice kSampleKeyboardBluetooth = {
-    10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
-const ui::InputDevice kSampleKeyboardUsb = {15,
+                                                 0);
+const ui::KeyboardDevice kSampleKeyboardBluetooth(10,
+                                                  ui::INPUT_DEVICE_BLUETOOTH,
+                                                  "kSampleKeyboardBluetooth");
+const ui::KeyboardDevice kSampleKeyboardUsb(15,
                                             ui::INPUT_DEVICE_USB,
                                             "kSampleKeyboardUsb",
                                             "",
                                             base::FilePath(),
                                             0x1111,
                                             0x2222,
-                                            0};
-const ui::InputDevice kSampleKeyboardUsb2 = {20,
+                                            0);
+const ui::KeyboardDevice kSampleKeyboardUsb2(20,
                                              ui::INPUT_DEVICE_USB,
                                              "kSampleKeyboardUsb2",
                                              "",
                                              base::FilePath(),
                                              0x1111,
                                              0x3333,
-                                             0};
-const ui::InputDevice kSampleTouchpadInternal = {1,
-                                                 ui::INPUT_DEVICE_INTERNAL,
-                                                 "kSampleTouchpadInternal",
-                                                 "",
-                                                 base::FilePath(),
-                                                 0x1111,
-                                                 0x4444,
-                                                 0};
-const ui::InputDevice kSamplePointingStickInternal = {
-    2, ui::INPUT_DEVICE_INTERNAL, "kSamplePointingStickInternal"};
-const ui::InputDevice kSampleMouseUsb = {3, ui::INPUT_DEVICE_USB,
-                                         "kSampleMouseUsb"};
+                                             0);
+const ui::InputDevice kSampleTouchpadInternal(1,
+                                              ui::INPUT_DEVICE_INTERNAL,
+                                              "kSampleTouchpadInternal",
+                                              "",
+                                              base::FilePath(),
+                                              0x1111,
+                                              0x4444,
+                                              0);
+const ui::InputDevice kSamplePointingStickInternal(
+    2,
+    ui::INPUT_DEVICE_INTERNAL,
+    "kSamplePointingStickInternal");
+const ui::InputDevice kSampleMouseUsb(3,
+                                      ui::INPUT_DEVICE_USB,
+                                      "kSampleMouseUsb");
 
 constexpr char kUserEmail1[] = "example1@abc.com";
 constexpr char kUserEmail2[] = "joy@abc.com";
@@ -526,7 +532,7 @@ TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdatedInvalidId) {
 TEST_F(InputDeviceSettingsControllerTest, KeyboardSettingsUpdateMultiple) {
   // The SetKeyboardSettings call should update both keyboards since they have
   // the same |device_key|.
-  ui::InputDevice sample_usb_keyboard_copy = kSampleKeyboardUsb;
+  ui::KeyboardDevice sample_usb_keyboard_copy = kSampleKeyboardUsb;
   sample_usb_keyboard_copy.id = kSampleKeyboardUsb2.id;
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleKeyboardUsb, sample_usb_keyboard_copy});

@@ -28,6 +28,7 @@
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/pref_names.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
@@ -690,7 +691,7 @@ void EventRewriterAsh::BuildRewrittenKeyEvent(
 
 // static
 bool EventRewriterAsh::HasAssistantKeyOnKeyboard(
-    const InputDevice& keyboard_device,
+    const KeyboardDevice& keyboard_device,
     bool* has_assistant_key) {
   std::unique_ptr<EventDeviceInfo> devinfo =
       KeyboardCapability::CreateEventDeviceInfoFromInputDevice(keyboard_device);

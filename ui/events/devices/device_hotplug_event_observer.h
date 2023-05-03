@@ -12,6 +12,7 @@
 namespace ui {
 
 struct InputDevice;
+struct KeyboardDevice;
 enum class StylusState;
 struct TouchscreenDevice;
 
@@ -28,7 +29,7 @@ class EVENTS_DEVICES_EXPORT DeviceHotplugEventObserver {
   // On a hotplug event this is called with the list of available keyboard
   // devices. The set of keyboard devices may not have changed.
   virtual void OnKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices) = 0;
+      const std::vector<KeyboardDevice>& devices) = 0;
 
   // On a hotplug event this is called with the list of available mice. The set
   // of mice may not have changed.

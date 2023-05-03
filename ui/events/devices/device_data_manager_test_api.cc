@@ -6,6 +6,7 @@
 
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 
 namespace ui {
@@ -58,7 +59,7 @@ void DeviceDataManagerTestApi::OnDeviceListsComplete() {
 }
 
 void DeviceDataManagerTestApi::SetKeyboardDevices(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<KeyboardDevice>& devices) {
   DeviceDataManager::instance_->OnKeyboardDevicesUpdated(devices);
 }
 

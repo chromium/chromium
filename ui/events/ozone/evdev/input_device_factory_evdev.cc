@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
@@ -584,11 +585,13 @@ void InputDeviceFactoryEvdev::NotifyTouchscreensUpdated() {
 
 void InputDeviceFactoryEvdev::NotifyKeyboardsUpdated() {
   base::flat_map<int, std::vector<uint64_t>> key_bits_mapping;
-  std::vector<InputDevice> keyboards;
-  for (auto it = converters_.begin(); it != converters_.end(); ++it) {
-    if (it->second->HasKeyboard()) {
-      keyboards.push_back(InputDevice(it->second->input_device()));
-      key_bits_mapping[it->second->id()] = it->second->GetKeyboardKeyBits();
+  std::vector<KeyboardDevice> keyboards;
+  for (auto& converter : converters_) {
+    if (converter.second->HasKeyboard()) {
+      keyboards.emplace_back(converter.second->input_device(),
+                             converter.second->HasAssistantKey());
+      key_bits_mapping[converter.second->id()] =
+          converter.second->GetKeyboardKeyBits();
     }
   }
   dispatcher_->DispatchKeyboardDevicesUpdated(keyboards,

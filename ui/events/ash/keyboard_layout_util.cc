@@ -6,11 +6,12 @@
 
 #include "ui/events/ash/event_rewriter_ash.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace ui {
 
 bool DeviceKeyboardHasAssistantKey() {
-  for (const InputDevice& keyboard :
+  for (const KeyboardDevice& keyboard :
        DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
     bool has_assistant_key = false;
     if (EventRewriterAsh::HasAssistantKeyOnKeyboard(keyboard,

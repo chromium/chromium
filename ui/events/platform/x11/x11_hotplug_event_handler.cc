@@ -27,6 +27,7 @@
 #include "ui/events/devices/device_hotplug_event_observer.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/extension_manager.h"
@@ -53,7 +54,7 @@ enum DeviceType {
 };
 
 using KeyboardDeviceCallback =
-    base::OnceCallback<void(const std::vector<InputDevice>&)>;
+    base::OnceCallback<void(const std::vector<KeyboardDevice>&)>;
 
 using TouchscreenDeviceCallback =
     base::OnceCallback<void(const std::vector<TouchscreenDevice>&)>;
@@ -221,7 +222,7 @@ base::FilePath GetDevicePath(x11::Connection* connection,
 void HandleKeyboardDevicesInWorker(const std::vector<DeviceInfo>& device_infos,
                                    scoped_refptr<base::TaskRunner> reply_runner,
                                    KeyboardDeviceCallback callback) {
-  std::vector<InputDevice> devices;
+  std::vector<KeyboardDevice> devices;
 
   for (const DeviceInfo& device_info : device_infos) {
     if (device_info.type != DEVICE_TYPE_KEYBOARD)
@@ -364,7 +365,7 @@ DeviceHotplugEventObserver* GetHotplugEventObserver() {
   return DeviceDataManager::GetInstance();
 }
 
-void OnKeyboardDevices(const std::vector<InputDevice>& devices) {
+void OnKeyboardDevices(const std::vector<KeyboardDevice>& devices) {
   GetHotplugEventObserver()->OnKeyboardDevicesUpdated(devices);
 }
 

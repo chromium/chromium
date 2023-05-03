@@ -14,18 +14,19 @@
 #include "base/ranges/functional.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/keyboard_device.h"
 
 namespace ash {
 
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
 namespace {
-const ui::InputDevice kSampleKeyboardInternal = {5, ui::INPUT_DEVICE_INTERNAL,
-                                                 "kSampleKeyboardInternal"};
-const ui::InputDevice kSampleKeyboardBluetooth = {
+const ui::KeyboardDevice kSampleKeyboardInternal = {
+    5, ui::INPUT_DEVICE_INTERNAL, "kSampleKeyboardInternal"};
+const ui::KeyboardDevice kSampleKeyboardBluetooth = {
     10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
-const ui::InputDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
-                                            "kSampleKeyboardUsb"};
+const ui::KeyboardDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
+                                               "kSampleKeyboardUsb"};
 
 const ui::InputDevice kSampleMouseUsb = {20, ui::INPUT_DEVICE_USB,
                                          "kSampleMouseUsb"};
@@ -35,8 +36,8 @@ const ui::InputDevice kSampleMouseInternal = {30, ui::INPUT_DEVICE_INTERNAL,
                                               "kSampleMouseInternal"};
 
 template <typename Comp = base::ranges::less>
-void SortDevices(std::vector<ui::InputDevice>& devices, Comp comp = {}) {
-  base::ranges::sort(devices, comp, [](const ui::InputDevice& keyboard) {
+void SortDevices(std::vector<ui::KeyboardDevice>& devices, Comp comp = {}) {
+  base::ranges::sort(devices, comp, [](const ui::KeyboardDevice& keyboard) {
     return keyboard.id;
   });
 }
@@ -45,10 +46,10 @@ void SortDevices(std::vector<ui::InputDevice>& devices, Comp comp = {}) {
 struct InputDeviceStateNotifierTestData {
   InputDeviceStateNotifierTestData() = default;
   InputDeviceStateNotifierTestData(
-      std::vector<ui::InputDevice> initial_devices,
-      std::vector<ui::InputDevice> updated_devices,
-      std::vector<ui::InputDevice> expected_devices_to_add,
-      std::vector<ui::InputDevice> expected_devices_to_remove)
+      std::vector<ui::KeyboardDevice> initial_devices,
+      std::vector<ui::KeyboardDevice> updated_devices,
+      std::vector<ui::KeyboardDevice> expected_devices_to_add,
+      std::vector<ui::KeyboardDevice> expected_devices_to_remove)
       : initial_devices(initial_devices),
         updated_devices(updated_devices),
         expected_devices_to_add(expected_devices_to_add),
@@ -63,10 +64,10 @@ struct InputDeviceStateNotifierTestData {
     SortDevices(expected_devices_to_remove);
   }
 
-  std::vector<ui::InputDevice> initial_devices;
-  std::vector<ui::InputDevice> updated_devices;
-  std::vector<ui::InputDevice> expected_devices_to_add;
-  std::vector<ui::InputDevice> expected_devices_to_remove;
+  std::vector<ui::KeyboardDevice> initial_devices;
+  std::vector<ui::KeyboardDevice> updated_devices;
+  std::vector<ui::KeyboardDevice> expected_devices_to_add;
+  std::vector<ui::KeyboardDevice> expected_devices_to_remove;
 };
 
 class InputDeviceStateNotifierTest
@@ -85,7 +86,8 @@ class InputDeviceStateNotifierTest
     AshTestBase::SetUp();
     Initialize();
 
-    notifier_ = std::make_unique<InputDeviceNotifier<mojom::KeyboardPtr>>(
+    notifier_ = std::make_unique<
+        InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>(
         &keyboards_,
         base::BindRepeating(&InputDeviceStateNotifierTest::SaveNotifierResults,
                             base::Unretained(this)));
@@ -97,7 +99,7 @@ class InputDeviceStateNotifierTest
     AshTestBase::TearDown();
   }
 
-  void SaveNotifierResults(std::vector<ui::InputDevice> devices_to_add,
+  void SaveNotifierResults(std::vector<ui::KeyboardDevice> devices_to_add,
                            std::vector<DeviceId> device_ids_to_remove) {
     devices_to_add_ = std::move(devices_to_add);
     device_ids_to_remove_ = std::move(device_ids_to_remove);
@@ -135,10 +137,11 @@ class InputDeviceStateNotifierTest
 
  protected:
   InputDeviceStateNotifierTestData test_data_;
-  std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr>> notifier_;
+  std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
+      notifier_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
 
-  std::vector<ui::InputDevice> devices_to_add_;
+  std::vector<ui::KeyboardDevice> devices_to_add_;
   std::vector<DeviceId> device_ids_to_remove_;
 };
 
@@ -230,10 +233,11 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    notifier_ = std::make_unique<InputDeviceNotifier<mojom::MousePtr>>(
-        &mice_,
-        base::BindRepeating(&InputDeviceMouseNotifierTest::SaveNotifierResults,
-                            base::Unretained(this)));
+    notifier_ =
+        std::make_unique<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>(
+            &mice_, base::BindRepeating(
+                        &InputDeviceMouseNotifierTest::SaveNotifierResults,
+                        base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -250,7 +254,8 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
 
  protected:
   InputDeviceStateNotifierTestData test_data_;
-  std::unique_ptr<InputDeviceNotifier<mojom::MousePtr>> notifier_;
+  std::unique_ptr<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>
+      notifier_;
   base::flat_map<DeviceId, mojom::MousePtr> mice_;
 
   std::vector<ui::InputDevice> devices_to_add_;

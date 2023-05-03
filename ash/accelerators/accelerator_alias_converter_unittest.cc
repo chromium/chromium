@@ -13,6 +13,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
@@ -52,7 +53,7 @@ class FakeDeviceManager {
 
   // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
   // fake udev.
-  void AddFakeKeyboard(const ui::InputDevice& fake_keyboard,
+  void AddFakeKeyboard(const ui::KeyboardDevice& fake_keyboard,
                        const std::string& layout) {
     fake_keyboard_devices_.push_back(fake_keyboard);
 
@@ -77,7 +78,7 @@ class FakeDeviceManager {
 
  private:
   testing::FakeUdevLoader fake_udev_;
-  std::vector<ui::InputDevice> fake_keyboard_devices_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
 };
 
 }  // namespace
@@ -87,7 +88,7 @@ using AcceleratorAliasConverterTest = AshTestBase;
 TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -110,7 +111,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckGlobeKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -123,7 +124,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckGlobeKeyAlias) {
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
-  ui::InputDevice wilco_keyboard(
+  ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   wilco_keyboard.sys_path = base::FilePath("path2");
@@ -138,7 +139,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckGlobeKeyAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckCalculatorKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -151,7 +152,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckCalculatorKeyAlias) {
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
-  ui::InputDevice wilco_keyboard(
+  ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayout1Tag);
   wilco_keyboard.sys_path = base::FilePath("path2");
@@ -166,7 +167,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckCalculatorKeyAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckBrowserSearchKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -179,7 +180,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckBrowserSearchKeyAlias) {
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
-  ui::InputDevice wilco_keyboard(
+  ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayoutWilcoTag);
   wilco_keyboard.sys_path = base::FilePath("path2");
@@ -194,7 +195,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckBrowserSearchKeyAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckHelpKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -207,7 +208,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckHelpKeyAlias) {
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
-  ui::InputDevice wilco_keyboard(
+  ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayoutWilcoTag);
   wilco_keyboard.sys_path = base::FilePath("path2");
@@ -222,7 +223,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckHelpKeyAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -235,7 +236,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
-  ui::InputDevice wilco_keyboard(
+  ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayoutWilcoTag);
   wilco_keyboard.sys_path = base::FilePath("path2");
@@ -250,7 +251,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckSettingsKeyAlias) {
 TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -482,7 +483,7 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
   // Add fake keyboards based on layout type.
   fake_keyboard_manager_->RemoveAllDevices();
   for (int i = 0; const std::string& layout : keyboard_layout_types_) {
-    ui::InputDevice fake_keyboard(
+    ui::KeyboardDevice fake_keyboard(
         /*id=*/i, /*type=*/keyboard_connection_type_[i],
         /*name=*/layout);
     fake_keyboard.sys_path = base::FilePath("path" + layout);
@@ -575,7 +576,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(SixPackAliasTestWithExternalKeyboard, CheckSixPackAlias) {
   fake_keyboard_manager_->RemoveAllDevices();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -668,7 +669,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(SixPackAliasTestWithInternalKeyboard, CheckSixPackAlias) {
   fake_keyboard_manager_->RemoveAllDevices();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -709,7 +710,7 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(MediaKeyAliasTest, CheckMediaKeyAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
       std::make_unique<FakeDeviceManager>();
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_INTERNAL,
       /*name=*/kKbdTopRowLayout1Tag);
   fake_keyboard.sys_path = base::FilePath("path");
@@ -722,7 +723,7 @@ TEST_P(MediaKeyAliasTest, CheckMediaKeyAlias) {
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
   EXPECT_EQ(0u, accelerator_aliases.size());
 
-  ui::InputDevice wilco_keyboard(
+  ui::KeyboardDevice wilco_keyboard(
       /*id=*/2, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/kKbdTopRowLayoutWilcoTag);
   wilco_keyboard.sys_path = base::FilePath("path2");

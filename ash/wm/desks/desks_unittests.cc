@@ -7265,7 +7265,7 @@ TEST_P(DesksTest, NameNudgesTabletMode) {
 
   // Setup an internal keyboard and an external keyboard.
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      std::vector<ui::InputDevice>{
+      std::vector<ui::KeyboardDevice>{
           {1, ui::INPUT_DEVICE_INTERNAL, "internal keyboard"},
           {2, ui::INPUT_DEVICE_USB, "external keyboard"}});
   auto* device_data_manager = ui::DeviceDataManager::GetInstance();
@@ -7288,7 +7288,7 @@ TEST_P(DesksTest, NameNudgesTabletMode) {
 
   // Reset the devices and make it so there's only an internal keyboard.
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
-      std::vector<ui::InputDevice>{
+      std::vector<ui::KeyboardDevice>{
           {1, ui::INPUT_DEVICE_INTERNAL, "internal keyboard"},
       });
   keyboard_devices = device_data_manager->GetKeyboardDevices();

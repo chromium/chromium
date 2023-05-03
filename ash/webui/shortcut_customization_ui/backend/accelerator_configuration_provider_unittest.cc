@@ -72,7 +72,7 @@ class FakeDeviceManager {
 
   // Add a fake keyboard to DeviceDataManagerTestApi and provide layout info to
   // fake udev.
-  void AddFakeKeyboard(const ui::InputDevice& fake_keyboard,
+  void AddFakeKeyboard(const ui::KeyboardDevice& fake_keyboard,
                        const std::string& layout) {
     fake_keyboard_devices_.push_back(fake_keyboard);
 
@@ -97,7 +97,7 @@ class FakeDeviceManager {
 
  private:
   testing::FakeUdevLoader fake_udev_;
-  std::vector<ui::InputDevice> fake_keyboard_devices_;
+  std::vector<ui::KeyboardDevice> fake_keyboard_devices_;
 };
 class FakeAcceleratorsUpdatedObserver
     : public shortcut_ui::AcceleratorConfigurationProvider::
@@ -177,8 +177,8 @@ bool CompareAccelerators(const ui::Accelerator& expected_accelerator,
   return AreAcceleratorsEqual(expected_accelerator, actual_info);
 }
 
-void CompareInputDevices(const ui::InputDevice& expected,
-                         const ui::InputDevice& actual) {
+void CompareInputDevices(const ui::KeyboardDevice& expected,
+                         const ui::KeyboardDevice& actual) {
   EXPECT_EQ(expected.type, actual.type);
   EXPECT_EQ(expected.id, actual.id);
   EXPECT_EQ(expected.name, actual.name);
@@ -337,7 +337,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
 
     fake_keyboard_manager_ = std::make_unique<FakeDeviceManager>();
     // Add a fake layout2 keyboard.
-    ui::InputDevice fake_keyboard(
+    ui::KeyboardDevice fake_keyboard(
         /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
         /*name=*/"fake_Keyboard");
     fake_keyboard.sys_path = base::FilePath("path1");
@@ -362,7 +362,7 @@ class AcceleratorConfigurationProviderTest : public AshTestBase {
   }
 
  protected:
-  const std::vector<ui::InputDevice>& GetConnectedKeyboards() {
+  const std::vector<ui::KeyboardDevice>& GetConnectedKeyboards() {
     return provider_->connected_keyboards_;
   }
 
@@ -521,18 +521,20 @@ TEST_F(AcceleratorConfigurationProviderTest, ConnectedKeyboardsUpdated) {
 
   EXPECT_EQ(0, mojo_observer.num_times_notified());
 
-  const std::vector<ui::InputDevice>& actual_devices = GetConnectedKeyboards();
+  const std::vector<ui::KeyboardDevice>& actual_devices =
+      GetConnectedKeyboards();
   EXPECT_EQ(0u, actual_devices.size());
 
-  ui::InputDevice expected_test_keyboard(
+  ui::KeyboardDevice expected_test_keyboard(
       1, ui::InputDeviceType::INPUT_DEVICE_INTERNAL, "Keyboard");
 
-  std::vector<ui::InputDevice> keyboard_devices;
+  std::vector<ui::KeyboardDevice> keyboard_devices;
   keyboard_devices.push_back(expected_test_keyboard);
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(keyboard_devices);
 
-  const std::vector<ui::InputDevice>& actual_devices2 = GetConnectedKeyboards();
+  const std::vector<ui::KeyboardDevice>& actual_devices2 =
+      GetConnectedKeyboards();
   EXPECT_EQ(1u, actual_devices2.size());
   CompareInputDevices(expected_test_keyboard, actual_devices[0]);
 
@@ -605,7 +607,7 @@ TEST_F(AcceleratorConfigurationProviderTest, FilterOutHiddenAccelerators) {
 
 TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   // Add a fake layout2 keyboard.
-  ui::InputDevice fake_keyboard(
+  ui::KeyboardDevice fake_keyboard(
       /*id=*/1, /*type=*/ui::InputDeviceType::INPUT_DEVICE_BLUETOOTH,
       /*name=*/"fake_Keyboard");
   fake_keyboard.sys_path = base::FilePath("path1");
