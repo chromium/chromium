@@ -137,7 +137,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(DlpFilesPolicyServiceProviderTest, IsDlpPolicyMatched) {
   dlp::IsDlpPolicyMatchedRequest request;
-  request.set_source_url(kExampleUrl);
   request.mutable_file_metadata()->set_inode(kInode);
   request.mutable_file_metadata()->set_path(kFilePath);
   request.mutable_file_metadata()->set_source_url(kExampleUrl);

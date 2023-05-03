@@ -109,13 +109,6 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
             "Unable to parse IsDlpPolicyMatchedRequest"));
     return;
   }
-  if (!request.has_source_url()) {
-    std::move(response_sender)
-        .Run(dbus::ErrorResponse::FromMethodCall(
-            method_call, DBUS_ERROR_INVALID_ARGS,
-            "Missing source url in request"));
-    return;
-  }
 
   policy::DlpRulesManager* rules_manager =
       policy::DlpRulesManagerFactory::GetForPrimaryProfile();
