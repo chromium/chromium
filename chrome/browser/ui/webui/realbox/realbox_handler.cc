@@ -555,12 +555,6 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
 // static
 std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
-  std::string answerNames[] = {
-      omnibox::kAnswerCurrencyIcon.name,   omnibox::kAnswerDefaultIcon.name,
-      omnibox::kAnswerDictionaryIcon.name, omnibox::kAnswerFinanceIcon.name,
-      omnibox::kAnswerSunriseIcon.name,    omnibox::kAnswerTranslationIcon.name,
-      omnibox::kAnswerWhenIsIcon.name,     omnibox::kAnswerWhenIsIcon.name};
-
   if (icon.name == omnibox::kAnswerCurrencyIcon.name) {
     return kAnswerCurrencyIconResourceName;
   } else if (icon.name == omnibox::kAnswerDefaultIcon.name) {
@@ -618,7 +612,9 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
   } else {
     NOTREACHED()
         << "Every vector icon returned by AutocompleteMatch::GetVectorIcon "
-           "must have an equivalent SVG resource for the NTP Realbox.";
+           "must have an equivalent SVG resource for the NTP Realbox. "
+           "icon.name: '"
+        << icon.name << "'";
   }
   return "";
 }
@@ -626,6 +622,9 @@ std::string RealboxHandler::AutocompleteMatchVectorIconToResourceName(
 // static
 std::string RealboxHandler::PedalVectorIconToResourceName(
     const gfx::VectorIcon& icon) {
+  if (icon.name == omnibox::kSwitchIcon.name) {
+    return kTabIconResourceName;
+  }
   if (icon.name == omnibox::kDinoIcon.name) {
     return kDinoIconResourceName;
   }
@@ -678,7 +677,9 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
   }
 #endif
   NOTREACHED() << "Every vector icon returned by OmniboxAction::GetVectorIcon "
-                  "must have an equivalent SVG resource for the NTP Realbox.";
+                  "must have an equivalent SVG resource for the NTP Realbox. "
+                  "icon.name: '"
+               << icon.name << "'";
   return "";
 }
 
@@ -827,16 +828,8 @@ void RealboxHandler::ExecuteAction(uint8_t line,
   const WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
-  // Realbox currently only supports one action button and gives preference to
-  // actions over tab switch, but the omnibox shows tab switch button first.
-  // This disparity can be eliminated once realbox supports multiple
-  // actions on a button row.
-  const bool has_action = match->GetActionAt(0u) != nullptr;
-  DCHECK(has_action || match->has_tab_match.value_or(false));
   OmniboxPopupSelection selection(
-      line, has_action
-                ? OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION
-                : OmniboxPopupSelection::LineState::FOCUSED_BUTTON_TAB_SWITCH);
+      line, OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION);
   edit_model()->OpenSelection(selection, match_selection_timestamp,
                               disposition);
 }

@@ -186,11 +186,12 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
 void OmniboxSuggestionButtonRowView::BuildViews() {
   // Clear and reset existing views.
   {
-    RemoveAllChildViews();
-    keyword_button_ = nullptr;
-    tab_switch_button_ = nullptr;
-    action_buttons_.clear();
+    // Reset all raw_ptr instances first to avoid dangling.
     previous_active_button_ = nullptr;
+    keyword_button_ = nullptr;
+    action_buttons_.clear();
+
+    RemoveAllChildViews();
   }
 
   // For all of these buttons, the visibility set from UpdateFromModel().
@@ -205,17 +206,6 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
       std::u16string(), vector_icons::kSearchIcon, popup_contents_view_,
       OmniboxPopupSelection(model_index_,
                             OmniboxPopupSelection::KEYWORD_MODE)));
-  tab_switch_button_ =
-      AddChildView(std::make_unique<OmniboxSuggestionRowButton>(
-          base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
-                              base::Unretained(this),
-                              OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH),
-          l10n_util::GetStringUTF16(IDS_OMNIBOX_TAB_SUGGEST_HINT),
-          omnibox::kSwitchIcon, popup_contents_view_,
-          OmniboxPopupSelection(
-              model_index_, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH)));
-  tab_switch_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_BUTTON));
 
   if (!HasMatch()) {
     // Skip remaining code that depends on `match()`.
@@ -266,9 +256,6 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
         l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
   }
 
-  SetPillButtonVisibility(tab_switch_button_,
-                          OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH);
-
   for (const auto& action_button : action_buttons_) {
     SetPillButtonVisibility(action_button,
                             OmniboxPopupSelection::FOCUSED_BUTTON_ACTION);
@@ -284,7 +271,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   }
 
   bool is_any_button_visible =
-      keyword_button_->GetVisible() || tab_switch_button_->GetVisible() ||
+      keyword_button_->GetVisible() ||
       base::ranges::any_of(action_buttons_, [](const auto& action_button) {
         return action_button->GetVisible();
       });
@@ -308,7 +295,6 @@ void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
 void OmniboxSuggestionButtonRowView::SetThemeState(
     OmniboxPartState theme_state) {
   keyword_button_->SetThemeState(theme_state);
-  tab_switch_button_->SetThemeState(theme_state);
   for (const auto& action_button : action_buttons_) {
     action_button->SetThemeState(theme_state);
   }
@@ -317,7 +303,6 @@ void OmniboxSuggestionButtonRowView::SetThemeState(
 views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
   std::vector<OmniboxSuggestionRowButton*> buttons{
       keyword_button_,
-      tab_switch_button_,
   };
   buttons.insert(buttons.end(), action_buttons_.begin(), action_buttons_.end());
 

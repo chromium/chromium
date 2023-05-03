@@ -90,6 +90,8 @@
 
 namespace {
 
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+
 // Appends available autocompletion of the given type, subtype, and number to
 // the existing available autocompletions string, encoding according to the
 // spec.
@@ -1056,26 +1058,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
   result_.Validate();
 #endif  // DCHECK_IS_ON()
 
-  if (!input_.IsZeroSuggest()) {
-    bool perform_tab_match = true;
-#if BUILDFLAG(IS_ANDROID)
-    // Do not look for matching tabs on Android unless we collected all the
-    // suggestions. Tab matching is an expensive process with multiple JNI calls
-    // involved. Run it only when all the suggestions are collected.
-    perform_tab_match &= done_;
-#endif
-    if (perform_tab_match) {
-      result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
-    }
-
-    result_.AttachPedalsToMatches(input_, *provider_client_);
-
-#if !BUILDFLAG(IS_IOS)
-    // HistoryClusters is not enabled on iOS.
-    AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
-                                 provider_client_->GetPrefs(), result_);
-#endif
-  }
+  AttachActions();
 
   UpdateKeywordDescriptions(&result_);
   UpdateAssociatedKeywords(&result_);
@@ -1125,6 +1108,26 @@ void AutocompleteController::SortCullAndAnnotateResult(
 
   DelayedNotifyChanged(force_notify_default_match_changed ||
                        notify_default_match);
+}
+
+void AutocompleteController::AttachActions() {
+  if (!input_.IsZeroSuggest()) {
+    // Do not look for matching tabs on Android unless we collected all the
+    // suggestions. Tab matching is an expensive process with multiple JNI calls
+    // involved. Run it only when all the suggestions are collected.
+    bool perform_tab_match = is_android ? done_ : true;
+    if (perform_tab_match) {
+      result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
+    }
+
+    result_.AttachPedalsToMatches(input_, *provider_client_);
+
+#if !BUILDFLAG(IS_IOS)
+    // HistoryClusters is not enabled on iOS.
+    AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
+                                 provider_client_->GetPrefs(), result_);
+#endif
+  }
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(

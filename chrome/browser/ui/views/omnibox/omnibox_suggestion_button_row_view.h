@@ -68,7 +68,6 @@ class OmniboxSuggestionButtonRowView : public views::View {
   size_t const model_index_;
 
   raw_ptr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;
-  raw_ptr<OmniboxSuggestionRowButton> tab_switch_button_ = nullptr;
 
   std::vector<raw_ptr<OmniboxSuggestionRowButton>> action_buttons_;
 

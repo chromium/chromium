@@ -308,6 +308,9 @@ class AutocompleteController : public AutocompleteProviderListener,
       bool force_notify_default_match_changed,
       absl::optional<AutocompleteMatch> default_match_to_preserve);
 
+  // Attaches actions to matches: pedals, history clusters, tab switch, etc.
+  void AttachActions();
+
   // Updates `result` to populate each match's `associated_keyword` if that
   // match can show a keyword hint. `result` should be sorted by relevance
   // before this is called.

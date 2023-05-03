@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
+#include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_grouper_sections.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -530,9 +531,7 @@ void AutocompleteResult::SortAndCull(
   }
 #endif
 
-  if constexpr (is_android) {
-    TrimOmniboxActions();
-  }
+  TrimOmniboxActions();
 }
 
 void AutocompleteResult::TrimOmniboxActions() {
@@ -543,19 +542,22 @@ void AutocompleteResult::TrimOmniboxActions() {
   // - Slots 4 and beyond permit only HISTORY_CLUSTERS.
   // - In every case, ACTION_IN_SUGGEST is preferred over HISTORY_CLUSTERS
   // - In every case, HISTORY_CLUSTERS is preferred over PEDALs.
-  std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
-                                           OmniboxActionId::HISTORY_CLUSTERS,
-                                           OmniboxActionId::PEDAL};
-  std::vector<OmniboxActionId> include_at_most_pedals{
-      OmniboxActionId::HISTORY_CLUSTERS, OmniboxActionId::PEDAL};
-  std::vector<OmniboxActionId> include_at_most_history_clusters{
-      OmniboxActionId::HISTORY_CLUSTERS};
+  // - TAB_SWITCH actions are not considered because they're never attached.
+  if constexpr (is_android) {
+    std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
+                                             OmniboxActionId::HISTORY_CLUSTERS,
+                                             OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_at_most_pedals{
+        OmniboxActionId::HISTORY_CLUSTERS, OmniboxActionId::PEDAL};
+    std::vector<OmniboxActionId> include_at_most_history_clusters{
+        OmniboxActionId::HISTORY_CLUSTERS};
 
-  for (size_t index = 0u; index < matches_.size(); ++index) {
-    matches_[index].FilterOmniboxActions(
-        index < 2   ? include_all
-        : index < 3 ? include_at_most_pedals
-                    : include_at_most_history_clusters);
+    for (size_t index = 0u; index < matches_.size(); ++index) {
+      matches_[index].FilterOmniboxActions(
+          index < 2   ? include_all
+          : index < 3 ? include_at_most_pedals
+                      : include_at_most_history_clusters);
+    }
   }
 }
 
@@ -706,8 +708,9 @@ void AutocompleteResult::ConvertOpenTabMatches(
     // possibly re-change the description.
     // Note: explicitly check for value rather than deferring to implicit
     // boolean conversion of absl::optional.
-    if (match.has_tab_match.has_value())
+    if (match.has_tab_match.has_value()) {
       continue;
+    }
     batch_lookup_map.insert({match.destination_url, {}});
   }
 
@@ -715,15 +718,29 @@ void AutocompleteResult::ConvertOpenTabMatches(
     client->GetTabMatcher().FindMatchingTabs(&batch_lookup_map, input);
 
     for (auto& match : matches_) {
-      if (match.has_tab_match.has_value())
+      if (match.has_tab_match.has_value()) {
         continue;
+      }
 
       auto tab_info = batch_lookup_map.find(match.destination_url);
       DCHECK(tab_info != batch_lookup_map.end());
-      if (tab_info == batch_lookup_map.end())
+      if (tab_info == batch_lookup_map.end()) {
         continue;
+      }
 
       match.has_tab_match = tab_info->second.has_matching_tab;
+      // Do not attach the action for iOS or Android since they have separate
+      // UI treatment for tab matches (no button row as on desktop and realbox).
+      if (!is_android && !is_ios && match.has_tab_match.value()) {
+        // The default action for suggestions from the open tab provider in
+        // keyword mode is to switch to the open tab so no button is necessary.
+        if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() ||
+            !match.from_keyword ||
+            match.provider->type() != AutocompleteProvider::TYPE_OPEN_TAB) {
+          match.actions.push_back(
+              base::MakeRefCounted<TabSwitchAction>(match.destination_url));
+        }
+      }
 #if BUILDFLAG(IS_ANDROID)
       match.UpdateMatchingJavaTab(tab_info->second.android_tab);
 #endif

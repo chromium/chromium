@@ -118,6 +118,8 @@ static_library("browser") {
     "actions/omnibox_pedal_concepts.h",
     "actions/omnibox_pedal_provider.cc",
     "actions/omnibox_pedal_provider.h",
+    "actions/tab_switch_action.cc",
+    "actions/tab_switch_action.h",
     "answers_cache.cc",
     "answers_cache.h",
     "autocomplete_classifier.cc",

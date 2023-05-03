@@ -144,8 +144,8 @@ class OmniboxAction : public base::RefCounted<OmniboxAction> {
   // `executed` is set to true if the action was also executed by the user.
   virtual void RecordActionShown(size_t position, bool executed) const {}
 
-  // Takes the action associated with this Action.  Non-navigation
-  // Actions must override the default, but Navigation Actions don't need to.
+  // Takes the action associated with this OmniboxAction. Non-navigation
+  // actions must override the default, but navigation actions don't need to.
   virtual void Execute(ExecutionContext& context) const;
 
   // Returns true if this Action is ready to be used now, or false if

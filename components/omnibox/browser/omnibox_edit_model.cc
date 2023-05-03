@@ -897,12 +897,20 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     TryDeletingPopupLine(selection.line);
   } else if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION) {
-    DCHECK(timestamp != base::TimeTicks());
-    ExecuteAction(selection, disposition, timestamp);
-  } else {
-    if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH) {
+    // TODO(crbug.com/1408506): This is a stopgap to prevent disruption in
+    //  tab switch metrics, and can be cleanly eliminated once all actions
+    //  are fully logged omnibox events.
+    DCHECK_LT(selection.action_index, match.actions.size());
+    if (match.actions[selection.action_index]->ActionId() ==
+        OmniboxActionId::TAB_SWITCH) {
       disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+      OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
+                timestamp);
+    } else {
+      DCHECK(timestamp != base::TimeTicks());
+      ExecuteAction(selection, disposition, timestamp);
     }
+  } else {
     OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
               timestamp);
   }
@@ -2029,12 +2037,6 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     }
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;
-      if (OmniboxPopupSelection(
-              line, OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH)
-              .IsControlPresentOnMatch(result(), GetPrefService())) {
-        additional_message_id = IDS_ACC_TAB_SWITCH_SUFFIX;
-        available_actions_count++;
-      }
       if (OmniboxPopupSelection(line, OmniboxPopupSelection::KEYWORD_MODE)
               .IsControlPresentOnMatch(result(), GetPrefService())) {
         additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
@@ -2053,7 +2055,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
         additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
         available_actions_count++;
       }
-      DCHECK_EQ(OmniboxPopupSelection::LINE_STATE_MAX_VALUE, 6);
+      static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 5);
       if (available_actions_count > 1)
         additional_message_id = IDS_ACC_MULTIPLE_ACTIONS_SUFFIX;
 
@@ -2070,12 +2072,10 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       return l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE,
                                         replacement_string);
     }
-    case OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH:
-      additional_message_id = IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX;
-      break;
     case OmniboxPopupSelection::FOCUSED_BUTTON_ACTION:
       // When pedal button is focused, the autocomplete suggestion isn't
       // read because it's not relevant to the button's action.
+      DCHECK(match.GetActionAt(0u));
       return match.GetActionAt(0u)->GetLabelStrings().accessibility_hint;
     case OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION:
       additional_message_id = IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
@@ -2109,10 +2109,8 @@ void OmniboxEditModel::OnPopupResultChanged() {
       OmniboxPopupSelection selection = GetPopupSelection();
       selection.line = 0;
 
-      // If selected line state was |BUTTON_FOCUSED_TAB_SWITCH| and nothing has
-      // changed leave it.
       const bool has_focused_match =
-          selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_TAB_SWITCH &&
+          selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_ACTION &&
           result.match_at(selection.line).has_tab_match.value_or(false);
       const bool has_changed =
           selection.line != old_selected_line ||
