@@ -15,7 +15,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/win/object_watcher.h"
 #include "components/device_event_log/device_event_log.h"
-#include "services/device/hid/hid_report_type.h"
+#include "services/device/public/cpp/hid/hid_report_type.h"
 
 #define INITGUID
 
@@ -254,7 +254,7 @@ void HidConnectionWin::OnReadInputReport(
   }
 
   uint8_t report_id = buffer->data()[0];
-  if (!IsReportIdProtected(report_id, HidReportType::kInput)) {
+  if (!IsReportProtected(report_id, HidReportType::kInput)) {
     // Hold a reference to |this| to prevent a callback executed by
     // ProcessInputReport from freeing this object.
     scoped_refptr<HidConnection> self(this);

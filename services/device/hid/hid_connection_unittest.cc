@@ -16,9 +16,14 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_io_thread.h"
+#include "build/build_config.h"
+#include "services/device/hid/hid_connection.h"
 #include "services/device/hid/hid_service.h"
+#include "services/device/public/cpp/test/test_report_descriptors.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "services/device/test/usb_test_gadget.h"
 #include "services/device/usb/usb_device.h"
@@ -28,6 +33,8 @@
 namespace device {
 
 namespace {
+
+using ::base::test::TestFuture;
 
 // Helper class that can be used to block until a HID device with a particular
 // serial number is available. Example usage:
@@ -222,6 +229,203 @@ TEST_F(HidConnectionTest, ReadWrite) {
   }
 
   conn->Close();
+}
+
+namespace {
+
+// A test implementation of HidConnection where the platform operations always
+// succeed.
+class TestHidConnection : public HidConnection {
+ public:
+  explicit TestHidConnection(scoped_refptr<HidDeviceInfo> device_info)
+      : HidConnection(device_info,
+                      /*allow_protected_reports=*/false,
+                      /*allow_fido_reports=*/false) {}
+  TestHidConnection(const TestHidConnection&) = delete;
+  TestHidConnection& operator=(TestHidConnection&) = delete;
+
+  void PlatformClose() override {}
+  void PlatformWrite(scoped_refptr<base::RefCountedBytes> buffer,
+                     WriteCallback callback) override {
+    std::move(callback).Run(/*success=*/true);
+  }
+  void PlatformGetFeatureReport(uint8_t report_id,
+                                ReadCallback callback) override {
+    auto buffer =
+        base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{42});
+    std::move(callback).Run(/*success=*/true, buffer, buffer->size());
+  }
+  void PlatformSendFeatureReport(scoped_refptr<base::RefCountedBytes> buffer,
+                                 WriteCallback callback) override {
+    std::move(callback).Run(/*success=*/true);
+  }
+  void SimulateInputReport(scoped_refptr<base::RefCountedBytes> buffer) {
+    ProcessInputReport(buffer, buffer->size());
+  }
+
+ private:
+  ~TestHidConnection() override = default;
+};
+
+}  // namespace
+
+class HidConnectionProtectedReportTest : public testing::Test,
+                                         HidConnection::Client {
+ public:
+  HidConnectionProtectedReportTest() = default;
+  HidConnectionProtectedReportTest(const HidConnectionProtectedReportTest&) =
+      delete;
+  HidConnectionProtectedReportTest& operator=(
+      const HidConnectionProtectedReportTest&) = delete;
+  ~HidConnectionProtectedReportTest() override = default;
+
+  scoped_refptr<HidDeviceInfo> CreateHidDeviceInfo(
+      base::span<const uint8_t> report_descriptor) {
+#if BUILDFLAG(IS_MAC)
+    const uint64_t kTestDeviceId = 0;
+#elif BUILDFLAG(IS_WIN)
+    const wchar_t* const kTestDeviceId = L"0";
+#else
+    const char* const kTestDeviceId = "0";
+#endif
+    return base::MakeRefCounted<HidDeviceInfo>(
+        kTestDeviceId, "physical-device-id", /*vendor_id=*/0x1234,
+        /*product_id=*/0xabcd, "product-name", "serial-number",
+        mojom::HidBusType::kHIDBusTypeUSB, report_descriptor);
+  }
+
+  void CreateConnection(scoped_refptr<HidDeviceInfo> device_info) {
+    connection_ = base::MakeRefCounted<TestHidConnection>(device_info);
+  }
+
+  void SetConnectionClient() { connection_->SetClient(this); }
+
+  TestHidConnection& connection() { return *connection_.get(); }
+
+  bool HasNextInputReport() { return !input_report_future_.IsEmpty(); }
+
+  std::pair<scoped_refptr<base::RefCountedBytes>, size_t>
+  TakeNextInputReport() {
+    return input_report_future_.Take();
+  }
+
+ private:
+  // HidConnection::Client:
+  void OnInputReport(scoped_refptr<base::RefCountedBytes> buffer,
+                     size_t size) override {
+    input_report_future_.AddValue(buffer, size);
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  scoped_refptr<TestHidConnection> connection_;
+  base::test::RepeatingTestFuture<scoped_refptr<base::RefCountedBytes>, size_t>
+      input_report_future_;
+};
+
+TEST_F(HidConnectionProtectedReportTest, UnprotectedReadWrite) {
+  // Simulate a connection to a device with input, output, and feature reports.
+  // No reports are protected.
+  auto device_info =
+      CreateHidDeviceInfo(TestReportDescriptors::SonyDualshock3Usb());
+  ASSERT_TRUE(device_info);
+  CreateConnection(device_info);
+
+  // Simulate an input report and read it.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{1});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  EXPECT_TRUE(read_future.Get<0>());
+
+  SetConnectionClient();
+
+  // Simulate another input report. This time it should notify the connection
+  // client.
+  connection().SimulateInputReport(buffer);
+  TakeNextInputReport();
+
+  // Write an output report.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_TRUE(write_future.Get());
+
+  // Get a feature report.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t>
+      get_feature_future;
+  connection().GetFeatureReport(/*report_id=*/1,
+                                get_feature_future.GetCallback());
+  EXPECT_TRUE(get_feature_future.Get<0>());
+
+  // Send a feature report.
+  TestFuture<bool> send_feature_future;
+  connection().SendFeatureReport(buffer, send_feature_future.GetCallback());
+  EXPECT_TRUE(send_feature_future.Get());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest, ProtectedReportsWithClient) {
+  // Simulate a connection to a device with protected input and output reports
+  // and an unprotected feature report. Input and output reports are protected
+  // because the device has the Generic Desktop Keyboard usage.
+  auto device_info =
+      CreateHidDeviceInfo(TestReportDescriptors::RfideasPcproxBadgeReader());
+  ASSERT_TRUE(device_info);
+  CreateConnection(device_info);
+
+  SetConnectionClient();
+
+  // Simulate an input report after setting the connection client. The
+  // report should not be received by the client.
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(HasNextInputReport());
+
+  // Try to write a protected output report. It should be blocked.
+  TestFuture<bool> write_future;
+  connection().Write(buffer, write_future.GetCallback());
+  EXPECT_FALSE(write_future.Get());
+
+  // Get a feature report. It should succeed.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t>
+      get_feature_future;
+  connection().GetFeatureReport(/*report_id=*/0,
+                                get_feature_future.GetCallback());
+  EXPECT_TRUE(get_feature_future.Get<0>());
+
+  // Send a feature report. It should succeed.
+  TestFuture<bool> send_feature_future;
+  connection().SendFeatureReport(buffer, send_feature_future.GetCallback());
+  EXPECT_TRUE(send_feature_future.Get());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
+}
+
+TEST_F(HidConnectionProtectedReportTest, ProtectedInputReportWithoutClient) {
+  // Simulate a connection to a device with protected input reports.
+  auto device_info = CreateHidDeviceInfo(TestReportDescriptors::Mouse());
+  ASSERT_TRUE(device_info);
+  CreateConnection(device_info);
+
+  // Simulate an input report. It should be ignored.
+  TestFuture<bool, scoped_refptr<base::RefCountedBytes>, size_t> read_future;
+  auto buffer =
+      base::MakeRefCounted<base::RefCountedBytes>(std::vector<uint8_t>{0});
+  connection().SimulateInputReport(buffer);
+  connection().Read(read_future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(read_future.IsReady());
+
+  // Close the connection.
+  connection().Close();
+  EXPECT_TRUE(connection().closed());
 }
 
 }  // namespace device
