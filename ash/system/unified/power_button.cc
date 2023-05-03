@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/shutdown_controller_impl.h"
 #include "ash/shutdown_reason.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -299,6 +300,8 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
         session_controller->login_status() == LoginStatus::NOT_LOGGED_IN;
     bool const can_show_settings = TrayPopupUtils::CanOpenWebUISettings();
     bool const can_lock_screen = session_controller->CanLockScreen();
+    bool const show_power_off_button =
+        !Shell::Get()->shutdown_controller()->reboot_on_shutdown();
 
     // Add the user's email address (which is also the entry point for OS-level
     // multi-profile).
@@ -311,12 +314,15 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
       context_menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
     }
 
-    context_menu_model_->AddItemWithIcon(
-        VIEW_ID_QS_POWER_OFF_MENU_BUTTON,
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_OFF),
-        ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuPowerOffIcon,
-                                       cros_tokens::kCrosSysOnSurface,
-                                       kTrayTopShortcutButtonIconSize));
+    if (show_power_off_button) {
+      context_menu_model_->AddItemWithIcon(
+          VIEW_ID_QS_POWER_OFF_MENU_BUTTON,
+          l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_OFF),
+          ui::ImageModel::FromVectorIcon(kSystemPowerButtonMenuPowerOffIcon,
+                                         cros_tokens::kCrosSysOnSurface,
+                                         kTrayTopShortcutButtonIconSize));
+    }
+
     context_menu_model_->AddItemWithIcon(
         VIEW_ID_QS_POWER_RESTART_MENU_BUTTON,
         l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_REBOOT),

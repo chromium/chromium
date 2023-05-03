@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/shell.h"
+#include "ash/shutdown_controller_impl.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/unified/quick_settings_footer.h"
 #include "ash/system/unified/quick_settings_view.h"
@@ -406,6 +408,17 @@ TEST_F(PowerButtonTest, ButtonRoundedRadii) {
 
   EXPECT_EQ(gfx::RoundedCornersF(16, 4, 16, 16),
             GetBackgroundLayer()->rounded_corner_radii());
+}
+
+TEST_F(PowerButtonTest, DeviceRebootOnShutdownPolicyHidesPowerOffButton) {
+  CreateUserSessions(1);
+  // Simulate DeviceRebootOnShutdownPolicy is enabled.
+  Shell::Get()->shutdown_controller()->SetRebootOnShutdown(true);
+
+  SimulatePowerButtonPress();
+
+  EXPECT_FALSE(GetPowerOffButton());
+  EXPECT_TRUE(GetRestartButton());
 }
 
 }  // namespace ash
