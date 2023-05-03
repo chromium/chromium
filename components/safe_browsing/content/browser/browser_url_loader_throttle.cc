@@ -91,7 +91,8 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
     base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
     base::WeakPtr<HashRealTimeService> hash_realtime_service,
     base::WeakPtr<PingManager> ping_manager,
-    bool is_mechanism_experiment_allowed)
+    bool is_mechanism_experiment_allowed,
+    bool hash_real_time_lookup_enabled)
     : delegate_getter_(std::move(delegate_getter)),
       frame_tree_node_id_(frame_tree_node_id),
       web_contents_getter_(web_contents_getter),
@@ -105,6 +106,7 @@ BrowserURLLoaderThrottle::CheckerOnSB::CheckerOnSB(
       hash_realtime_service_(hash_realtime_service),
       ping_manager_(ping_manager),
       is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
+      hash_real_time_lookup_enabled_(hash_real_time_lookup_enabled),
       creation_time_(base::TimeTicks::Now()) {
   content::WebContents* contents = web_contents_getter_.Run();
   if (!!contents) {
@@ -174,7 +176,7 @@ void BrowserURLLoaderThrottle::CheckerOnSB::Start(
         last_committed_url_, content::GetUIThreadTaskRunner({}),
         url_lookup_service_, WebUIInfoSingleton::GetInstance(),
         hash_realtime_service_, mechanism_experimenter_,
-        is_mechanism_experiment_allowed_);
+        is_mechanism_experiment_allowed_, hash_real_time_lookup_enabled_);
   }
 
   CheckUrl(url, method);
@@ -322,13 +324,18 @@ BrowserURLLoaderThrottle::BrowserURLLoaderThrottle(
       url_real_time_lookup_enabled_ ? url_lookup_service->GetMetricSuffix()
                                     : kNoRealTimeURLLookupService;
 
+  // Checking that hash_realtime_service exists also confirms that (1) it's for
+  // FULL_SAFE_BROWSING and (2) it's not incognito mode.
+  bool hash_real_time_lookup_enabled =
+      !!hash_realtime_service && IsHashRealTimeLookupEnabled();
+
   sb_checker_ = std::make_unique<CheckerOnSB>(
       std::move(delegate_getter), frame_tree_node_id, web_contents_getter,
       weak_factory_.GetWeakPtr(), url_real_time_lookup_enabled_,
       can_urt_check_subresource_url, can_check_db,
       can_check_high_confidence_allowlist, url_lookup_service_metric_suffix_,
       url_lookup_service, hash_realtime_service, ping_manager,
-      is_mechanism_experiment_allowed);
+      is_mechanism_experiment_allowed, hash_real_time_lookup_enabled);
 }
 
 BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
@@ -339,6 +346,10 @@ BrowserURLLoaderThrottle::~BrowserURLLoaderThrottle() {
   }
 
   DeleteCheckerOnSB();
+}
+
+bool BrowserURLLoaderThrottle::IsHashRealTimeLookupEnabled() {
+  return false;
 }
 
 void BrowserURLLoaderThrottle::WillStartRequest(

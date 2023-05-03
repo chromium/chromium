@@ -142,6 +142,14 @@ bool HashRealTimeService::IsEnhancedProtectionEnabled() {
 }
 
 // static
+bool HashRealTimeService::CanCheckUrl(
+    const GURL& url,
+    network::mojom::RequestDestination request_destination) {
+  return request_destination == network::mojom::RequestDestination::kDocument &&
+         CanGetReputationOfUrl(url);
+}
+
+// static
 SBThreatType HashRealTimeService::DetermineSBThreatType(
     const GURL& url,
     const std::vector<V5::FullHash>& result_full_hashes,

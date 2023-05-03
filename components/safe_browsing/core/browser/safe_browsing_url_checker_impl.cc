@@ -136,7 +136,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
     scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
         mechanism_experimenter,
-    bool is_mechanism_experiment_allowed)
+    bool is_mechanism_experiment_allowed,
+    bool hash_real_time_lookup_enabled)
     : headers_(headers),
       load_flags_(load_flags),
       request_destination_(request_destination),
@@ -158,7 +159,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       webui_delegate_(webui_delegate),
       hash_realtime_service_on_ui_(hash_realtime_service_on_ui),
       mechanism_experimenter_(mechanism_experimenter),
-      is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed) {
+      is_mechanism_experiment_allowed_(is_mechanism_experiment_allowed),
+      hash_real_time_lookup_enabled_(hash_real_time_lookup_enabled) {
   DCHECK(!web_contents_getter_.is_null());
   DCHECK(!can_urt_check_subresource_url_ || url_real_time_lookup_enabled_);
   DCHECK(url_real_time_lookup_enabled_ || can_check_db_);
@@ -490,9 +492,9 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "CheckUrl",
                                       TRACE_ID_LOCAL(this), "url", url.spec());
-    bool can_perform_full_url_lookup = CanPerformFullURLLookup(url);
+    bool performed_hash_database_check = false;
     SafeBrowsingLookupMechanism::StartCheckResult start_check_result =
-        KickOffLookupMechanism(url, can_perform_full_url_lookup);
+        KickOffLookupMechanism(url, &performed_hash_database_check);
     urls_[next_index_].did_check_url_real_time_allowlist =
         start_check_result.did_check_url_real_time_allowlist;
 
@@ -515,14 +517,13 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
     // Only send out notification of starting a slow check if the database
     // manager actually supports fast checks (i.e., synchronous checks) but is
     // not able to complete the check synchronously in this case and we're doing
-    // hash-based checks.
+    // hash-based database checks.
     // Don't send out notification if the database manager doesn't support
-    // synchronous checks at all (e.g., on mobile), or if performing a full URL
-    // check since we don't want to block resource fetch while we perform a full
-    // URL lookup. Note that we won't parse the response until the Safe Browsing
-    // check is complete and return SAFE, so there's no Safe Browsing bypass
-    // risk here.
-    if (!can_perform_full_url_lookup &&
+    // synchronous checks at all (e.g., on mobile), or if performing a real-time
+    // check since we don't want to block resource fetch while we perform that.
+    // Note that we won't parse the response until the Safe Browsing check is
+    // complete and return SAFE, so there's no Safe Browsing bypass risk here.
+    if (performed_hash_database_check &&
         !database_manager_->ChecksAreAlwaysAsync()) {
       urls_[next_index_].notifier.OnStartSlowCheck();
     }
@@ -534,7 +535,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrlsAndMaybeDeleteSelf() {
 SafeBrowsingLookupMechanism::StartCheckResult
 SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
     const GURL& url,
-    bool can_perform_full_url_lookup) {
+    bool* out_hash_database_check_was_performed) {
   if (is_mechanism_experiment_allowed_) {
     database_manager_->SetLookupMechanismExperimentIsEnabled();
   }
@@ -542,10 +543,10 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
   scheme_logger::LogScheme(url, "SafeBrowsing.CheckUrl.UrlScheme");
   std::unique_ptr<SafeBrowsingLookupMechanism> lookup_mechanism;
   DCHECK(!lookup_mechanism_runner_);
-  if (can_perform_full_url_lookup) {
+  if (CanPerformFullURLLookup(url)) {
     urls_[next_index_].did_perform_url_real_time_check = true;
     if (can_check_db_ && mechanism_experimenter_ &&
-        HashRealTimeMechanism::CanCheckUrl(url, request_destination_)) {
+        HashRealTimeService::CanCheckUrl(url, request_destination_)) {
       return mechanism_experimenter_->RunChecks(
           next_index_,
           base::BindOnce(
@@ -570,10 +571,17 @@ SafeBrowsingUrlCheckerImpl::KickOffLookupMechanism(
         /*is_safe_synchronously=*/true,
         /*did_check_url_real_time_allowlist=*/false,
         /*matched_high_confidence_allowlist=*/absl::nullopt);
+  } else if (hash_real_time_lookup_enabled_ &&
+             HashRealTimeService::CanCheckUrl(url, request_destination_)) {
+    lookup_mechanism = std::make_unique<HashRealTimeMechanism>(
+        url, url_checker_delegate_->GetThreatTypes(), database_manager_,
+        ui_task_runner_, hash_realtime_service_on_ui_,
+        MechanismExperimentHashDatabaseCache::kNoExperiment);
   } else {
     lookup_mechanism = std::make_unique<HashDatabaseMechanism>(
         url, url_checker_delegate_->GetThreatTypes(), database_manager_,
         MechanismExperimentHashDatabaseCache::kNoExperiment);
+    *out_hash_database_check_was_performed = true;
   }
   lookup_mechanism_runner_ =
       std::make_unique<SafeBrowsingLookupMechanismRunner>(

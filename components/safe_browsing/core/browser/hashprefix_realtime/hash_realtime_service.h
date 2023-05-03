@@ -71,6 +71,12 @@ class HashRealTimeService : public KeyedService {
   // it).
   bool IsEnhancedProtectionEnabled();
 
+  // Returns whether the |url| is eligible for hash-prefix real-time checks.
+  // It's never eligible if the |request_destination| is not mainframe.
+  static bool CanCheckUrl(
+      const GURL& url,
+      network::mojom::RequestDestination request_destination);
+
   // Start the lookup for |url|, and call |response_callback| on
   // |callback_task_runner| when response is received.
   virtual void StartLookup(

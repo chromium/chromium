@@ -32,14 +32,6 @@ HashRealTimeMechanism::~HashRealTimeMechanism() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-// static
-bool HashRealTimeMechanism::CanCheckUrl(
-    const GURL& url,
-    network::mojom::RequestDestination request_destination) {
-  return request_destination == network::mojom::RequestDestination::kDocument &&
-         CanGetReputationOfUrl(url);
-}
-
 SafeBrowsingLookupMechanism::StartCheckResult
 HashRealTimeMechanism::StartCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

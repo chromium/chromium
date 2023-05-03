@@ -70,8 +70,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
   // indicates whether or not the profile has enabled real time URL lookups, as
-  // computed by the RealTimePolicyEngine. This must be computed in advance,
-  // since this class only exists on the IO thread.
+  // computed by the RealTimePolicyEngine. |hash_real_time_lookup_enabled|
+  // indicates whether the profile is eligible for hash-prefix real-time
+  // lookups. These two must be computed in advance, since this class only
+  // exists on the IO thread.
   // |can_urt_check_subresource_url| indicates whether or not the profile has
   // enabled real time URL lookups for subresource URLs. If this value is true,
   // then |url_real_time_lookup_enabled| must also be true.
@@ -104,7 +106,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
-      bool is_mechanism_experiment_allowed);
+      bool is_mechanism_experiment_allowed,
+      bool hash_real_time_lookup_enabled);
 
   // Constructor that takes only a RequestDestination, a UrlCheckerDelegate, and
   // real-time lookup-related arguments, omitting other arguments that never
@@ -209,7 +212,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // eligible.
   SafeBrowsingLookupMechanism::StartCheckResult KickOffLookupMechanism(
       const GURL& url,
-      bool can_perform_full_url_lookup);
+      bool* out_hash_database_check_was_performed);
 
   SBThreatType CheckWebUIUrls(const GURL& url);
 
@@ -348,6 +351,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // copies of the cache for use by the experiment. See comments defined above
   // MechanismExperimentHashDatabaseCache for more details.
   bool is_mechanism_experiment_allowed_ = false;
+
+  // Whether the hash-prefix real-time lookup is enabled for this request.
+  bool hash_real_time_lookup_enabled_ = false;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

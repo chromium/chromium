@@ -127,7 +127,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
       base::WeakPtr<HashRealTimeService> hash_realtime_service_on_ui,
       scoped_refptr<SafeBrowsingLookupMechanismExperimenter>
           mechanism_experimenter,
-      bool is_mechanism_experiment_allowed)
+      bool is_mechanism_experiment_allowed,
+      bool hash_real_time_lookup_enabled)
       : SafeBrowsingUrlCheckerImpl(headers,
                                    load_flags,
                                    request_destination,
@@ -148,7 +149,8 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
                                    webui_delegate,
                                    hash_realtime_service_on_ui,
                                    mechanism_experimenter,
-                                   is_mechanism_experiment_allowed) {}
+                                   is_mechanism_experiment_allowed,
+                                   hash_real_time_lookup_enabled) {}
 
   // Returns the CallbackInfo that was previously added in |AddCallbackInfo|.
   // It will crash if |AddCallbackInfo| was not called.
@@ -248,7 +250,8 @@ class SBBrowserUrlLoaderThrottleTest : public ::testing::Test {
             /*webui_delegate_=*/nullptr,
             /*hash_realtime_service_on_ui=*/nullptr,
             /*mechanism_experimenter=*/nullptr,
-            /*is_mechanism_experiment_allowed=*/false);
+            /*is_mechanism_experiment_allowed=*/false,
+            /*hash_real_time_lookup_enabled=*/false);
     url_checker_ = url_checker.get();
 
     throttle_->GetSBCheckerForTesting()->SetUrlCheckerForTesting(

@@ -75,7 +75,8 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
         base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service,
         base::WeakPtr<HashRealTimeService> hash_realtime_service,
         base::WeakPtr<PingManager> ping_manager,
-        bool is_mechanism_experiment_allowed);
+        bool is_mechanism_experiment_allowed,
+        bool hash_real_time_lookup_enabled);
 
     ~CheckerOnSB();
 
@@ -138,6 +139,7 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
     base::WeakPtr<HashRealTimeService> hash_realtime_service_;
     base::WeakPtr<PingManager> ping_manager_;
     bool is_mechanism_experiment_allowed_ = false;
+    bool hash_real_time_lookup_enabled_ = false;
     base::TimeTicks creation_time_;
   };
 
@@ -203,6 +205,10 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Destroys |sb_checker_| on the IO thread, or UI thread if
   // kSafeBrowsingOnUIThread is enabled.
   void DeleteCheckerOnSB();
+
+  // Whether the hash-prefix real-time lookup is enabled. For now, this is
+  // always disabled.
+  bool IsHashRealTimeLookupEnabled();
 
   size_t pending_checks_ = 0;
   // How many slow checks that haven't received results.
