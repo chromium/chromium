@@ -8,8 +8,8 @@
  * #css_wrapper_metadata_end */
 
 /*
-Style Module that defines color overrides for cr-elements on ChromeOS. This
-file plumbs semantic colors into cr-elements.
+Style Module that defines overrides for cr-elements on ChromeOS. This file
+plumbs semantic colors and fonts into cr-elements.
 
 To get ChromeOS System colors, an element must:
 - be beneath a <html> element with a "cros" attribute
@@ -176,6 +176,10 @@ To get ChromeOS Jelly colors, an element must:
 
   /* TODO(b/266837484) Replace with cros.sys.app-elevation3 when available */
   box-shadow: 0 0 12px 0 var(--cros-sys-shadow);
+}
+
+:host-context(body.jelly-enabled) cr-dialog > [slot='title'] {
+  font: var(--cros-display-7-font);
 }
 
 /* Icon button */
