@@ -19,7 +19,9 @@ export function helpContentTestSuite() {
   let helpContentElement = null;
 
   const noContentImgSelector = 'img[alt="Help content isn\'t available"]';
+  const noContentSvgSelector = '#noContentSvg';
   const offlineImgSelector = 'img[alt="Device is offline"]';
+  const offlineSvgSelector = '#offlineSvg';
 
   setup(() => {
     document.body.innerHTML = '';
@@ -257,7 +259,6 @@ export function helpContentTestSuite() {
   // Test that the correct SVG appears when jelly colors enabled.
   test('OfflineMessage_JellyEnabled', async () => {
     loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': true});
-    const offlineSvgSelector = '#offlineSvg';
     await initializeHelpContentElement(
         fakePopularHelpContentList, /* isQueryEmpty= */ true,
         /* isPopularContent= */ true);
@@ -267,7 +268,7 @@ export function helpContentTestSuite() {
     // Offline-only content should exist in the DOM when offline.
     assertTrue(isVisible(getElement(offlineSvgSelector)));
     // Content not available image should be invisible.
-    assertFalse(isVisible(getElement(noContentImgSelector)));
+    assertFalse(isVisible(getElement(noContentSvgSelector)));
 
     // Online-only content should *not* exist in the DOM when offline.
     assertFalse(isVisible(getElement('.help-item-icon')));
@@ -280,7 +281,7 @@ export function helpContentTestSuite() {
     // Online-only content should exist in the DOM when online.
     assertTrue(isVisible(getElement('.help-item-icon')));
     // Content not available image should be invisible.
-    assertFalse(isVisible(getElement(noContentImgSelector)));
+    assertFalse(isVisible(getElement(noContentSvgSelector)));
   });
 
   /**
@@ -348,6 +349,7 @@ export function helpContentTestSuite() {
    */
   // TODO(crbug.com/1401615): Flaky.
   test.skip('TopHelpContentNotAvailable', async () => {
+    loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': false});
     // Initialize element with no content and empty query.
     await initializeHelpContentElement(
         /* contentList= */[], /* isQueryEmpty= */ true,
@@ -368,6 +370,31 @@ export function helpContentTestSuite() {
     assertTrue(isVisible(getElement(offlineImgSelector)));
     // Content not available image should be invisible.
     assertFalse(isVisible(getElement(noContentImgSelector)));
+  });
+
+  // Test that the correct SVG appears when Jelly colors enabled.
+  test('TopHelpContentNotAvailable_JellyEnabled', async () => {
+    loadTimeData.overrideValues({'isJellyEnabledForOsFeedback': true});
+    // Initialize element with no content and empty query.
+    await initializeHelpContentElement(
+        /* contentList= */[], /* isQueryEmpty= */ true,
+        /* isPopularContent= */ true);
+
+    // Verify the title is what we expect when showing top content.
+    const title = getElement('.help-content-label');
+    assertTrue(!!title);
+    assertEquals('Top help content', title.textContent);
+
+    // Content not available image should be visible.
+    assertTrue(isVisible(getElement(noContentSvgSelector)));
+    assertFalse(isVisible(getElement(offlineSvgSelector)));
+
+    await goOffline();
+
+    // When offline, should show offline message.
+    assertTrue(isVisible(getElement(offlineSvgSelector)));
+    // Content not available image should be invisible.
+    assertFalse(isVisible(getElement(noContentSvgSelector)));
   });
 
   /**
