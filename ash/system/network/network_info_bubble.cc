@@ -91,6 +91,11 @@ NetworkInfoBubble::NetworkInfoBubble(base::WeakPtr<Delegate> delegate,
   }
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       info_text.empty() ? ComputeInfoText() : info_text);
+  if (chromeos::features::IsJellyEnabled()) {
+    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *label);
+  }
   label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
   label->SetID(kNetworkInfoBubbleLabelViewId);
   label->SetMultiLine(true);
@@ -158,11 +163,11 @@ std::u16string NetworkInfoBubble::ComputeInfoText() {
 
       if (chromeos::features::IsJellyEnabled()) {
         title_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-        ash::TypographyProvider::Get()->StyleLabel(
-            ash::TypographyToken::kCrosButton2, *title_label);
+        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                              *title_label);
         address_label->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
-        ash::TypographyProvider::Get()->StyleLabel(
-            ash::TypographyToken::kCrosBody2, *address_label);
+        TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                              *address_label);
       }
       container->AddChildView(title_label.release());
       container->AddChildView(address_label.release());

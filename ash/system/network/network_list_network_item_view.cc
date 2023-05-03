@@ -275,8 +275,8 @@ void NetworkListNetworkItemView::UpdateViewForNetwork(
 
   if (text_label() && chromeos::features::IsJellyEnabled()) {
     text_label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
-    ash::TypographyProvider::Get()->StyleLabel(
-        ash::TypographyToken::kCrosButton2, *text_label());
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                          *text_label());
   }
 
   if (IsNetworkDisabled(network_properties)) {
@@ -342,9 +342,16 @@ void NetworkListNetworkItemView::SetupCellularSubtext() {
   }
 
   SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
-  const SkColor sub_text_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorWarning);
-  sub_text_label()->SetEnabledColor(sub_text_color);
+  if (chromeos::features::IsJellyEnabled()) {
+    sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
+                                          *sub_text_label());
+  } else {
+    const SkColor sub_text_color =
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorWarning);
+    sub_text_label()->SetEnabledColor(sub_text_color);
+  }
 }
 
 void NetworkListNetworkItemView::SetupNetworkSubtext() {

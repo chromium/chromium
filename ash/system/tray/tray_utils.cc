@@ -79,10 +79,12 @@ void SetWarningSubText(HoverHighlightView* view, std::u16string subtext) {
 
   view->SetSubText(subtext);
   view->sub_text_label()->SetAutoColorReadabilityEnabled(false);
-  view->sub_text_label()->SetEnabledColorId(kColorAshTextColorWarning);
   if (chromeos::features::IsJellyEnabled()) {
+    view->sub_text_label()->SetEnabledColorId(cros_tokens::kCrosSysWarning);
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosAnnotation1, *view->sub_text_label());
+  } else {
+    view->sub_text_label()->SetEnabledColorId(kColorAshTextColorWarning);
   }
 }
 
