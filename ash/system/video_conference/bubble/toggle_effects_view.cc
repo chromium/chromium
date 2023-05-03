@@ -88,9 +88,11 @@ class ButtonContainer : public views::Button {
     // `icon_` image set in `UpdateColorsAndBackground()`.
     icon_ = AddChildView(std::move(icon));
 
-    // Label is below the button.
-    label_ = AddChildView(std::make_unique<views::Label>(label_text));
-    label_->SetID(video_conference::BubbleViewID::kToggleEffectLabel);
+    auto label = std::make_unique<views::Label>(label_text);
+    label->SetID(video_conference::BubbleViewID::kToggleEffectLabel);
+    // Force the label to use requested colors.
+    label->SetAutoColorReadabilityEnabled(false);
+    label_ = AddChildView(std::move(label));
 
     SetTooltipText(l10n_util::GetStringFUTF16(
         VIDEO_CONFERENCE_TOGGLE_BUTTON_TOOLTIP,
