@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "test_kiosk_extension_builder.h"
 
 using extensions::ExtensionBuilder;
 
@@ -22,16 +23,22 @@ TestKioskExtensionBuilder::TestKioskExtensionBuilder(
     : type_(type), extension_id_(extension_id) {}
 
 TestKioskExtensionBuilder::~TestKioskExtensionBuilder() = default;
+TestKioskExtensionBuilder::TestKioskExtensionBuilder(
+    TestKioskExtensionBuilder&&) = default;
 
-void TestKioskExtensionBuilder::AddSecondaryExtension(const std::string& id) {
+TestKioskExtensionBuilder& TestKioskExtensionBuilder::AddSecondaryExtension(
+    const std::string& id) {
   secondary_extensions_.emplace_back(id, absl::nullopt);
+  return *this;
 }
 
-void TestKioskExtensionBuilder::AddSecondaryExtensionWithEnabledOnLaunch(
+TestKioskExtensionBuilder&
+TestKioskExtensionBuilder::AddSecondaryExtensionWithEnabledOnLaunch(
     const std::string& id,
     bool enabled_on_launch) {
   secondary_extensions_.emplace_back(id,
                                      absl::optional<bool>(enabled_on_launch));
+  return *this;
 }
 
 scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
