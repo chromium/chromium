@@ -15,8 +15,6 @@
 namespace arc::input_overlay {
 namespace {
 // UI specs.
-constexpr SkColor kEditModeBgColorAlpha =
-    SkColorSetA(SK_ColorBLACK, 0x99 /*60%*/);
 constexpr SkColor kEditModeBgColor = SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
 
 // Return true if |v1| is on top than |v2|, or |v1| is on the left side of |v2|
@@ -66,8 +64,7 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
       break;
     case DisplayMode::kEdit:
       SortChildren();
-      SetBackground(views::CreateSolidBackground(
-          AllowReposition() ? kEditModeBgColor : kEditModeBgColorAlpha));
+      SetBackground(views::CreateSolidBackground(kEditModeBgColor));
       break;
     default:
       NOTREACHED();

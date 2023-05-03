@@ -160,11 +160,6 @@ class TouchInjector : public ui::EventRewriter {
   bool enable_mouse_lock() { return enable_mouse_lock_; }
   void set_enable_mouse_lock(bool enable) { enable_mouse_lock_ = true; }
 
-  bool allow_reposition() const { return allow_reposition_; }
-  void set_allow_reposition(bool allow_reposition) {
-    allow_reposition_ = allow_reposition;
-  }
-
   bool beta() const { return beta_; }
   void set_beta(bool beta) { beta_ = beta; }
 
@@ -320,9 +315,6 @@ class TouchInjector : public ui::EventRewriter {
   // post MVP.
   bool enable_mouse_lock_ = false;
 
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_ = false;
   // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.
   bool beta_ = ash::features::IsArcInputOverlayBetaEnabled();

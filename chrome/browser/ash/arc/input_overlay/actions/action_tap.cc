@@ -66,14 +66,9 @@ class ActionTap::ActionTapView : public ActionView {
 
     if (labels_.empty()) {
       // Create new action label when initializing.
-      TapLabelPosition position = allow_reposition_
-                                      ? TapLabelPosition::kNone
-                                      : (action_->on_left_or_middle_side()
-                                             ? TapLabelPosition::kBottomRight
-                                             : TapLabelPosition::kBottomLeft);
-      labels_ = ActionLabel::Show(this, ActionType::TAP, *input_binding,
-                                  action_->GetUIRadius(), allow_reposition_,
-                                  position);
+      labels_ =
+          ActionLabel::Show(this, ActionType::TAP, *input_binding,
+                            action_->GetUIRadius(), TapLabelPosition::kNone);
     } else if (!IsInputBound(*input_binding)) {
       // Action label exists but without any bindings.
       labels_[0]->SetTextActionLabel(
@@ -154,13 +149,7 @@ class ActionTap::ActionTapView : public ActionView {
 
   void ChildPreferredSizeChanged(View* child) override {
     DCHECK_EQ(1u, labels_.size());
-    if (allow_reposition_) {
-      MayUpdateLabelPosition(false);
-    } else {
-      int radius = action_->GetUIRadius();
-      int width = std::max(radius * 2, GetBoundingBoxOfChildren(this).width());
-      SetSize(gfx::Size(width, radius * 2));
-    }
+    MayUpdateLabelPosition(false);
     SetPositionFromCenterPosition(action_->GetUICenterPosition());
   }
 

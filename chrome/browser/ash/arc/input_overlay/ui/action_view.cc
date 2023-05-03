@@ -50,8 +50,6 @@ ActionView::ActionView(Action* action,
     : views::View(),
       action_(action),
       display_overlay_controller_(display_overlay_controller),
-      allow_reposition_(
-          display_overlay_controller->touch_injector()->allow_reposition()),
       beta_(display_overlay_controller->touch_injector()->beta()) {}
 ActionView::~ActionView() = default;
 
@@ -83,15 +81,11 @@ void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
     if (!IsInputBound(action_->GetCurrentDisplayedInput())) {
       SetVisible(false);
     }
-    if (allow_reposition_) {
-      RemoveTouchPoint();
-    }
+    RemoveTouchPoint();
   }
   if (mode == DisplayMode::kEdit) {
     display_mode_ = DisplayMode::kEdit;
-    if (allow_reposition_) {
-      AddTouchPoint();
-    }
+    AddTouchPoint();
     if (!IsInputBound(*action_->current_input())) {
       SetVisible(true);
     }
@@ -203,21 +197,15 @@ void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
 }
 
 bool ActionView::ApplyMousePressed(const ui::MouseEvent& event) {
-  if (!allow_reposition_) {
-    return false;
-  }
   OnDragStart(event);
   return true;
 }
 
 bool ActionView::ApplyMouseDragged(const ui::MouseEvent& event) {
-  return allow_reposition_ ? OnDragUpdate(event) : false;
+  return OnDragUpdate(event);
 }
 
 void ActionView::ApplyMouseReleased(const ui::MouseEvent& event) {
-  if (!allow_reposition_) {
-    return;
-  }
   OnDragEnd();
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
@@ -226,9 +214,6 @@ void ActionView::ApplyMouseReleased(const ui::MouseEvent& event) {
 }
 
 void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
-  if (!allow_reposition_) {
-    return;
-  }
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       OnDragStart(*event);
@@ -255,8 +240,7 @@ void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
 
 bool ActionView::ApplyKeyPressed(const ui::KeyEvent& event) {
   auto target_location = origin();
-  if (!allow_reposition_ ||
-      !UpdatePositionByArrowKey(event.key_code(), target_location)) {
+  if (!UpdatePositionByArrowKey(event.key_code(), target_location)) {
     return View::OnKeyPressed(event);
   }
   ClampPosition(target_location, size(), parent()->size());
@@ -266,7 +250,7 @@ bool ActionView::ApplyKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
-  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event)) {
+  if (!ash::IsArrowKeyEvent(event)) {
     return View::OnKeyReleased(event);
   }
   DCHECK(touch_point_center_);
@@ -356,11 +340,6 @@ void ActionView::OnDragEnd() {
 }
 
 void ActionView::ChangePositionBinding(const gfx::Point& new_touch_center) {
-  DCHECK(allow_reposition_);
-  if (!allow_reposition_) {
-    return;
-  }
-
   action_->PrepareToBindPosition(new_touch_center);
 }
 

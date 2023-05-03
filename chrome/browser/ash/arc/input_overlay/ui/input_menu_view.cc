@@ -51,7 +51,6 @@ constexpr int kParentWidthThreshold = 376;
 constexpr int kMenuWidth = 328;
 constexpr int kMenuWidthSmall = 280;
 constexpr int kMenuHeight = 244;
-constexpr int kMenuMarginRight = 32;
 constexpr int kMenuMarginSmall = 24;
 
 // Individual entries and header.
@@ -104,11 +103,6 @@ GURL GetAssembleUrl(std::string package_name) {
 
 int GetMenuWidth(int parent_width) {
   return parent_width < kParentWidthThreshold ? kMenuWidthSmall : kMenuWidth;
-}
-
-int GetMenuMarginRight(int parent_width) {
-  return parent_width < kParentWidthThreshold ? kMenuMarginSmall
-                                              : kMenuMarginRight;
 }
 
 int GetTitleFontSize(int parent_width) {
@@ -359,32 +353,22 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
   int x;
   int y = entry_view_->y();
 
-  if (AllowReposition()) {
-    x = entry_view_->x();
-    // If the menu entry view is on the right side of the screen, bias toward
-    // the center.
-    if (x > parent_size.width() / 2) {
-      x -= width() - entry_view_->width();
-    }
-    // Set the menu at the middle if there is not enough margin on the right
-    // or left side.
-    if (x + width() > parent_size.width() || x < 0) {
-      x = std::max(0, parent_size.width() - width() - kMenuMarginSmall);
-    }
+  x = entry_view_->x();
+  // If the menu entry view is on the right side of the screen, bias toward
+  // the center.
+  if (x > parent_size.width() / 2) {
+    x -= width() - entry_view_->width();
+  }
+  // Set the menu at the middle if there is not enough margin on the right
+  // or left side.
+  if (x + width() > parent_size.width() || x < 0) {
+    x = std::max(0, parent_size.width() - width() - kMenuMarginSmall);
+  }
 
-    // If the menu entry is at the bottom side of the screen, bias towards the
-    // center.
-    if (y > parent_size.height() / 2) {
-      y -= height() - entry_view_->height();
-    }
-  } else {
-    int menu_margin_right = GetMenuMarginRight(parent_size.width());
-    x = std::max(0, parent_size.width() - width() - menu_margin_right);
-    // Set the menu in the middle if there is not enough margin on the left
-    // side.
-    if (x < menu_margin_right) {
-      x = std::max(0, (parent_size.width() - width()) / 2);
-    }
+  // If the menu entry is at the bottom side of the screen, bias towards the
+  // center.
+  if (y > parent_size.height() / 2) {
+    y -= height() - entry_view_->height();
   }
 
   // Set the menu at the bottom if there is not enough margin on the bottom

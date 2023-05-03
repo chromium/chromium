@@ -168,8 +168,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // window is moved back to the front of task stack on ARC side for view mode.
   void EnsureTaskWindowToFrontForViewMode(views::Widget* overlay_widget);
 
-  bool ShowingNudge();
-
   void UpdateForBoundsChanged();
 
   // For test:
@@ -188,9 +186,6 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
   raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  raw_ptr<ash::PillButton> nudge_view_alpha_ = nullptr;
   raw_ptr<NudgeView> nudge_view_ = nullptr;
   // TODO(b/250900717): Below are temporary UIs for editor feature.
   raw_ptr<ash::PillButton> add_action_tap_ = nullptr;

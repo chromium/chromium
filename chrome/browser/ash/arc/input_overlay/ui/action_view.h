@@ -136,10 +136,6 @@ class ActionView : public views::View {
   raw_ptr<TouchPoint> touch_point_ = nullptr;
   DisplayMode display_mode_ = DisplayMode::kView;
 
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_;
-
  private:
   void AddEditButton();
   void RemoveEditButton();

@@ -51,11 +51,8 @@ namespace arc::input_overlay {
 namespace {
 // UI specs.
 constexpr int kMenuEntrySize = 48;
-// Menu entry size for alpha.
-constexpr int kMenuEntrySizeAlpha = 56;
 constexpr int kMenuEntrySideMargin = 24;
 constexpr int kNudgeVerticalAlign = 8;
-constexpr int kNudgeHeight = 40;
 
 }  // namespace
 
@@ -143,49 +140,18 @@ void DisplayOverlayController::AddNudgeView(views::Widget* overlay_widget) {
   DCHECK(overlay_widget);
   auto* parent = overlay_widget->GetContentsView();
   DCHECK(parent);
-  if (AllowReposition()) {
-    if (nudge_view_) {
-      return;
-    }
+  if (!nudge_view_) {
     nudge_view_ = NudgeView::Show(parent, menu_entry_);
-    return;
   }
-
-  if (nudge_view_alpha_) {
-    return;
-  }
-  auto nudge_view = std::make_unique<ash::PillButton>(
-      base::BindRepeating(&DisplayOverlayController::OnNudgeDismissed,
-                          base::Unretained(this)),
-      l10n_util::GetStringUTF16(AllowReposition()
-                                    ? IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHAV2
-                                    : IDS_INPUT_OVERLAY_SETTINGS_NUDGE_ALPHA),
-      ash::PillButton::Type::kDefaultWithIconLeading, &kTipIcon);
-  nudge_view->SetSize(
-      gfx::Size(nudge_view->GetPreferredSize().width(), kNudgeHeight));
-  nudge_view->SetButtonTextColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kNudgeLabelColor, IsDarkModeEnabled()));
-  nudge_view->SetBackgroundColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kNudgeBackgroundColor, IsDarkModeEnabled()));
-  nudge_view->SetIconColor(cros_styles::ResolveColor(
-      cros_styles::ColorName::kNudgeIconColor, IsDarkModeEnabled()));
-  nudge_view->SetPosition(CalculateNudgePosition(nudge_view->width()));
-
-  nudge_view_alpha_ = parent->AddChildView(std::move(nudge_view));
 }
 
 void DisplayOverlayController::RemoveNudgeView() {
-  if (!ShowingNudge()) {
+  if (!nudge_view_) {
     return;
   }
 
-  if (nudge_view_alpha_) {
-    nudge_view_alpha_->parent()->RemoveChildViewT(nudge_view_alpha_);
-    nudge_view_alpha_ = nullptr;
-  } else {
-    nudge_view_->parent()->RemoveChildViewT(nudge_view_);
-    nudge_view_ = nullptr;
-  }
+  nudge_view_->parent()->RemoveChildViewT(nudge_view_);
+  nudge_view_ = nullptr;
 }
 
 void DisplayOverlayController::OnNudgeDismissed() {
@@ -374,8 +340,7 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
 }
 
 gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
-  if (touch_injector_->allow_reposition() &&
-      touch_injector_->menu_entry_location()) {
+  if (touch_injector_->menu_entry_location()) {
     auto normalized_location = touch_injector_->menu_entry_location();
     auto content_bounds = touch_injector_->content_bounds();
 
@@ -393,9 +358,9 @@ gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
       return gfx::Point();
     }
 
-    auto size = AllowReposition() ? kMenuEntrySize : kMenuEntrySizeAlpha;
-    return gfx::Point(std::max(0, view->width() - size - kMenuEntrySideMargin),
-                      std::max(0, view->height() / 2 - size / 2));
+    return gfx::Point(
+        std::max(0, view->width() - kMenuEntrySize - kMenuEntrySideMargin),
+        std::max(0, view->height() / 2 - kMenuEntrySize / 2));
   }
 }
 
@@ -609,7 +574,7 @@ void DisplayOverlayController::OnActionRemoved(Action* action) {
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
-  if ((display_mode_ == DisplayMode::kView && !ShowingNudge()) ||
+  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
       event->type() != ui::ET_MOUSE_PRESSED) {
     return;
   }
@@ -618,7 +583,7 @@ void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
 }
 
 void DisplayOverlayController::OnTouchEvent(ui::TouchEvent* event) {
-  if ((display_mode_ == DisplayMode::kView && !ShowingNudge()) ||
+  if ((display_mode_ == DisplayMode::kView && !nudge_view_) ||
       event->type() != ui::ET_TOUCH_PRESSED) {
     return;
   }
@@ -703,7 +668,7 @@ bool DisplayOverlayController::GetTouchInjectorEnable() {
 
 void DisplayOverlayController::ProcessPressedEvent(
     const ui::LocatedEvent& event) {
-  if (!action_edit_menu_ && !message_ && !input_menu_view_ && !ShowingNudge()) {
+  if (!action_edit_menu_ && !message_ && !input_menu_view_ && !nudge_view_) {
     return;
   }
 
@@ -735,7 +700,7 @@ void DisplayOverlayController::ProcessPressedEvent(
   }
 
   // Dismiss the nudge, regardless where the click was.
-  if (ShowingNudge()) {
+  if (nudge_view_) {
     OnNudgeDismissed();
   }
 }
@@ -768,10 +733,6 @@ void DisplayOverlayController::EnsureTaskWindowToFrontForViewMode(
   } else {
     host_window->Focus();
   }
-}
-
-bool DisplayOverlayController::ShowingNudge() {
-  return nudge_view_ || nudge_view_alpha_;
 }
 
 void DisplayOverlayController::UpdateForBoundsChanged() {

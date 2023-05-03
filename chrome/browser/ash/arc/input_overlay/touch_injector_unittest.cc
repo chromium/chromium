@@ -874,7 +874,6 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
-  injector_->set_allow_reposition(true);
   injector_->ParseActions(json_value->GetDict());
   // Simulate a menu entry position change.
   auto menu_entry_location_point = gfx::Point(5, 5);
@@ -921,7 +920,6 @@ TEST_F(TouchInjectorTest, TestProtoConversion) {
       *widget_->GetNativeWindow()->GetProperty(ash::kArcPackageNameKey),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<AppDataProto>, std::string) {}));
-  injector->set_allow_reposition(true);
   injector->ParseActions(json_value->GetDict());
   injector->OnProtoDataAvailable(*proto);
   EXPECT_EQ(injector_->actions().size(), injector->actions().size());

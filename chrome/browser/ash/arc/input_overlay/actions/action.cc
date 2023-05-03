@@ -147,9 +147,7 @@ absl::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
 }
 
 Action::Action(TouchInjector* touch_injector)
-    : touch_injector_(touch_injector),
-      allow_reposition_(touch_injector->allow_reposition()),
-      beta_(touch_injector->beta()) {}
+    : touch_injector_(touch_injector), beta_(touch_injector->beta()) {}
 
 Action::~Action() = default;
 
@@ -199,9 +197,7 @@ bool Action::ParseFromJson(const base::Value::Dict& value) {
       original_positions_ = parsed_pos;
       on_left_or_middle_side_ =
           (original_positions_.front().anchor().x() <= kHalf);
-      if (allow_reposition_) {
-        current_positions_ = std::move(parsed_pos);
-      }
+      current_positions_ = std::move(parsed_pos);
     }
   }
   // Parse action radius.
@@ -227,7 +223,7 @@ bool Action::ParseFromProto(const ActionProto& proto) {
   original_input_ = InputElement::ConvertFromProto(proto.input_element());
   current_input_ = std::make_unique<InputElement>(*original_input_);
 
-  if (allow_reposition_ && !proto.positions().empty()) {
+  if (!proto.positions().empty()) {
     std::vector<Position> positions;
     for (const auto& pos_proto : proto.positions()) {
       auto position = Position::ConvertFromProto(pos_proto);
@@ -250,7 +246,7 @@ void Action::OverwriteFromProto(const ActionProto& proto) {
       current_input_ = std::move(input_element);
     }
   }
-  if (allow_reposition_ && !proto.positions().empty()) {
+  if (!proto.positions().empty()) {
     auto position = Position::ConvertFromProto(proto.positions()[0]);
     DCHECK(position);
     if (position) {
@@ -301,7 +297,7 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
 
 void Action::BindPending() {
   // Check whether position is adjusted.
-  if (allow_reposition_ && pending_position_) {
+  if (pending_position_) {
     current_positions_[0] = *pending_position_;
     pending_position_.reset();
     UpdateTouchDownPositions();
@@ -320,7 +316,7 @@ void Action::BindPending() {
 void Action::CancelPendingBind() {
   // Clear the pending positions.
   bool canceled = false;
-  if (allow_reposition_ && pending_position_) {
+  if (pending_position_) {
     pending_position_.reset();
     canceled = true;
   }
@@ -338,9 +334,7 @@ void Action::CancelPendingBind() {
 }
 
 void Action::ResetPendingBind() {
-  if (allow_reposition_) {
-    pending_position_.reset();
-  }
+  pending_position_.reset();
   pending_input_.reset();
 }
 
@@ -372,8 +366,7 @@ void Action::RestoreToDefault() {
     pending_input_ = std::make_unique<InputElement>(*original_input_);
     restored = true;
   }
-  if (allow_reposition_ &&
-      GetCurrentDisplayedPosition() != original_positions_[0]) {
+  if (GetCurrentDisplayedPosition() != original_positions_[0]) {
     pending_position_.reset();
     pending_position_ = std::make_unique<Position>(original_positions_[0]);
     restored = true;
@@ -547,7 +540,7 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
       customized = true;
     }
 
-    if (allow_reposition_ && original_positions_ != current_positions_) {
+    if (original_positions_ != current_positions_) {
       // Now only supports changing and saving the first touch position.
       auto pos_proto = current_positions_[0].ConvertToProto();
       *proto->add_positions() = *pos_proto;
@@ -586,9 +579,7 @@ void Action::UpdateTouchDownPositions() {
   touch_down_positions_.clear();
   const auto& content_bounds = touch_injector_->content_bounds();
   for (size_t i = 0; i < original_positions_.size(); i++) {
-    auto point = allow_reposition_
-                     ? current_positions_[i].CalculatePosition(content_bounds)
-                     : original_positions_[i].CalculatePosition(content_bounds);
+    auto point = current_positions_[i].CalculatePosition(content_bounds);
     const auto calculated_point = point.ToString();
     point.Offset(content_bounds.origin().x(), content_bounds.origin().y());
     const auto root_point = point.ToString();

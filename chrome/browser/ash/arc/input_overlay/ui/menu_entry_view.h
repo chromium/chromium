@@ -39,9 +39,6 @@ class MenuEntryView : public views::ImageButton {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
 
-  // Used for testing.
-  void set_allow_reposition(bool allow) { allow_reposition_ = allow; }
-
  private:
   // Drag operations.
   void OnDragStart(const ui::LocatedEvent& event);
@@ -72,11 +69,6 @@ class MenuEntryView : public views::ImageButton {
 
   // The current hover state for the menu entry.
   bool hover_state_ = false;
-
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_ = ash::features::IsArcInputOverlayAlphaV2Enabled() ||
-                           ash::features::IsArcInputOverlayBetaEnabled();
 };
 
 }  // namespace arc::input_overlay

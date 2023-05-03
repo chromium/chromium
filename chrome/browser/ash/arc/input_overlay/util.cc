@@ -118,9 +118,8 @@ void ClampPosition(gfx::Point& position,
   position.set_y(std::clamp(position.y(), lo, hi));
 }
 
-absl::optional<std::string> GetCurrentSystemVersion() {
-  return AllowReposition() ? absl::make_optional(kSystemVersionAlphaV2)
-                           : absl::nullopt;
+std::string GetCurrentSystemVersion() {
+  return kSystemVersionAlphaV2;
 }
 
 void ResetFocusTo(views::View* view) {
@@ -130,11 +129,6 @@ void ResetFocusTo(views::View* view) {
     return;
   }
   focus_manager->SetFocusedView(view);
-}
-
-bool AllowReposition() {
-  return ash::features::IsArcInputOverlayAlphaV2Enabled() ||
-         ash::features::IsArcInputOverlayBetaEnabled();
 }
 
 }  // namespace arc::input_overlay

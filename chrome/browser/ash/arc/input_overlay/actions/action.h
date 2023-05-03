@@ -229,9 +229,6 @@ class Action {
   // Mainly for default action to mark if it is deleted.
   bool deleted_ = false;
 
-  // TODO(b/260937747): Update or remove when removing flags
-  // |kArcInputOverlayAlphaV2| or |kArcInputOverlayBeta|.
-  bool allow_reposition_;
   // Corresponds to |kArcInputOverlayBeta| flag to turn on/off the editor
   // feature of adding or removing actions.
   bool beta_;

@@ -46,14 +46,6 @@ constexpr float kHaloInset = -5;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 3;
 
-// GIO Alpha specs:
-// Menu entry size for alpha.
-constexpr int kMenuEntrySizeAlpha = 56;
-// Gap between focus ring outer edge to label.
-constexpr float kHaloInsetAlpha = -4;
-// Thickness of focus ring.
-constexpr float kHaloThicknessAlpha = 2;
-
 }  // namespace
 
 MenuEntryView::MenuEntryView(
@@ -64,21 +56,15 @@ MenuEntryView::MenuEntryView(
       on_position_changed_callback_(on_position_changed_callback),
       display_overlay_controller_(display_overlay_controller) {
   auto game_icon = ui::ImageModel::FromVectorIcon(
-      allow_reposition_ ? kGameControlsGamepadIcon
-                        : vector_icons::kVideogameAssetOutlineIcon,
-      SK_ColorBLACK, kMenuEntryIconSize);
+      kGameControlsGamepadIcon, SK_ColorBLACK, kMenuEntryIconSize);
   SetImageModel(views::Button::STATE_NORMAL, game_icon);
   SetBackground(views::CreateRoundedRectBackground(kDefaultColor,
                                                    kMenuEntryCornerRadius));
 
-  if (allow_reposition_) {
-    SetBorder(views::CreateRoundedRectBorder(
-        kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
-  }
+  SetBorder(views::CreateRoundedRectBorder(
+      kMenuEntryBorderThickness, kMenuEntryCornerRadius, kBorderColor));
 
-  SetSize(allow_reposition_
-              ? gfx::Size(kMenuEntrySize, kMenuEntrySize)
-              : gfx::Size(kMenuEntrySizeAlpha, kMenuEntrySizeAlpha));
+  SetSize(gfx::Size(kMenuEntrySize, kMenuEntrySize));
   SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   // Set up focus ring for |menu_entry_|.
@@ -88,21 +74,15 @@ MenuEntryView::MenuEntryView(
                                         /*highlight_on_hover=*/true,
                                         /*highlight_on_focus=*/true);
   auto* focus_ring = views::FocusRing::Get(this);
-  if (allow_reposition_) {
-    focus_ring->SetHaloInset(kHaloInset);
-    focus_ring->SetHaloThickness(kHaloThickness);
-    focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
-  } else {
-    focus_ring->SetHaloInset(kHaloInsetAlpha);
-    focus_ring->SetHaloThickness(kHaloThicknessAlpha);
-    focus_ring->SetColorId(ui::kColorAshFocusRing);
-  }
+  focus_ring->SetHaloInset(kHaloInset);
+  focus_ring->SetHaloThickness(kHaloThickness);
+  focus_ring->SetColorId(ui::kColorAshInputOverlayFocusRing);
 }
 
 MenuEntryView::~MenuEntryView() = default;
 
 void MenuEntryView::ChangeHoverState(bool is_hovered) {
-  if (!allow_reposition_ || is_hovered == hover_state_) {
+  if (is_hovered == hover_state_) {
     return;
   }
 
@@ -115,22 +95,18 @@ void MenuEntryView::ChangeHoverState(bool is_hovered) {
 }
 
 bool MenuEntryView::OnMousePressed(const ui::MouseEvent& event) {
-  if (allow_reposition_) {
-    OnDragStart(event);
-  }
+  OnDragStart(event);
   return views::Button::OnMousePressed(event);
 }
 
 bool MenuEntryView::OnMouseDragged(const ui::MouseEvent& event) {
-  if (allow_reposition_) {
-    SetCursor(ui::mojom::CursorType::kGrabbing);
-    OnDragUpdate(event);
-  }
+  SetCursor(ui::mojom::CursorType::kGrabbing);
+  OnDragUpdate(event);
   return views::Button::OnMouseDragged(event);
 }
 
 void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!allow_reposition_ || !is_dragging_) {
+  if (!is_dragging_) {
     views::Button::OnMouseReleased(event);
     MayCancelLocatedEvent(event);
   } else {
@@ -144,12 +120,6 @@ void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
 }
 
 void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
-  if (!allow_reposition_) {
-    views::Button::OnGestureEvent(event);
-    MayCancelLocatedEvent(*event);
-    return;
-  }
-
   switch (event->type()) {
     case ui::ET_GESTURE_SCROLL_BEGIN:
       OnDragStart(*event);
@@ -176,8 +146,7 @@ void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
 
 bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
   auto target_position = origin();
-  if (!allow_reposition_ ||
-      !UpdatePositionByArrowKey(event.key_code(), target_position)) {
+  if (!UpdatePositionByArrowKey(event.key_code(), target_position)) {
     return views::ImageButton::OnKeyPressed(event);
   }
   ClampPosition(target_position, size(), parent()->size(), kParentPadding);
@@ -186,7 +155,7 @@ bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
 }
 
 bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (!allow_reposition_ || !ash::IsArrowKeyEvent(event)) {
+  if (!ash::IsArrowKeyEvent(event)) {
     return views::ImageButton::OnKeyReleased(event);
   }
 

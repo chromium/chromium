@@ -133,8 +133,7 @@ bool ProcessKeyEventOnFocusedMenuEntry(const ui::KeyEvent& event) {
   const auto key_code = event.key_code();
   // If it is allowed to move, the arrow key event moves the position
   // instead of getting back to view mode.
-  if ((AllowReposition() && ash::IsArrowKey(key_code)) ||
-      key_code == ui::KeyboardCode::VKEY_SPACE ||
+  if (ash::IsArrowKey(key_code) || key_code == ui::KeyboardCode::VKEY_SPACE ||
       key_code == ui::KeyboardCode::VKEY_RETURN ||
       event.type() != ui::ET_KEY_PRESSED) {
     return true;
@@ -194,8 +193,7 @@ TouchInjector::TouchInjector(aura::Window* top_level_window,
     : window_(top_level_window),
       package_name_(package_name),
       content_bounds_(CalculateWindowContentBounds(window_)),
-      save_file_callback_(save_file_callback),
-      allow_reposition_(AllowReposition()) {}
+      save_file_callback_(save_file_callback) {}
 
 TouchInjector::~TouchInjector() {
   UnRegisterEventRewriter();
@@ -876,22 +874,12 @@ void TouchInjector::LoadMenuEntryFromProto(AppDataProto& proto) {
 }
 
 void TouchInjector::AddSystemVersionToProto(AppDataProto& proto) {
-  auto system_version = GetCurrentSystemVersion();
-  if (!system_version) {
-    return;
-  }
-
-  proto.set_system_version(*system_version);
+  proto.set_system_version(GetCurrentSystemVersion());
 }
 
 void TouchInjector::LoadSystemVersionFromProto(AppDataProto& proto) {
-  auto system_version = GetCurrentSystemVersion();
-  if (!system_version) {
-    return;
-  }
-
   if (!proto.has_system_version() ||
-      system_version->compare(proto.system_version()) > 0) {
+      GetCurrentSystemVersion().compare(proto.system_version()) > 0) {
     show_nudge_ = true;
   }
 }
