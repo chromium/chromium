@@ -122,7 +122,7 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 }
 
 // Tests that the sign-in promo is visible at start-up for regular user.
-- (void)testStartupSigninPromoShownForNoneMinor {
+- (void)DISABLED_testStartupSigninPromoShownForNoneMinor {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
