@@ -89,5 +89,16 @@ absl::optional<span<uint8_t>> PlatformSharedMemoryRegion::MapAt(
   return result;
 }
 
+void PlatformSharedMemoryRegion::Unmap(span<uint8_t> mapping,
+                                       SharedMemoryMapper* mapper) {
+  if (!mapper) {
+    mapper = SharedMemoryMapper::GetDefaultInstance();
+  }
+
+  mapper->Unmap(mapping);
+
+  SharedMemorySecurityPolicy::ReleaseReservationForMapping(mapping.size());
+}
+
 }  // namespace subtle
 }  // namespace base

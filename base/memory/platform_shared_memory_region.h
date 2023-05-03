@@ -198,6 +198,10 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
                                       size_t size,
                                       SharedMemoryMapper* mapper) const;
 
+  // Unmaps the provided shared memory mapping, which must have previously been
+  // created by calling |MapAt()| above.
+  static void Unmap(span<uint8_t> mapping, SharedMemoryMapper* mapper);
+
   const UnguessableToken& GetGUID() const { return guid_; }
 
   size_t GetSize() const { return size_; }
