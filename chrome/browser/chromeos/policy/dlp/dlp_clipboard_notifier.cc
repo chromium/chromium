@@ -14,14 +14,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/scoped_clipboard_history_pause.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
@@ -45,12 +49,6 @@ ui::DataTransferEndpoint CloneEndpoint(
 }
 
 void SynthesizePaste() {
-  ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
-                             /*code=*/static_cast<ui::DomCode>(0),
-                             /*flags=*/0);
-  if (!display::Screen::GetScreen())  // Doesn't exist in unittests.
-    return;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* host = ash::GetWindowTreeHostForDisplay(
       display::Screen::GetScreen()->GetDisplayForNewWindows().id());
@@ -59,6 +57,11 @@ void SynthesizePaste() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DCHECK(host);
+
+  ui::KeyEvent control_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_CONTROL,
+                             /*code=*/static_cast<ui::DomCode>(0),
+                             /*flags=*/0);
+
   host->DeliverEventToSink(&control_press);
 
   ui::KeyEvent v_press(/*type=*/ui::ET_KEY_PRESSED, ui::VKEY_V,
@@ -193,9 +196,22 @@ void DlpClipboardNotifier::WarnOnPaste(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  std::unique_ptr<ui::ClipboardData> warned_clipboard_data;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ui::DataTransferEndpoint dte(ui::EndpointType::kClipboardHistory);
+  auto* data_ptr =
+      ui::ClipboardNonBacked::GetForCurrentThread()->GetClipboardData(&dte);
+  if (data_ptr) {  // dlp_clipboard_notifier_unittests do not set the clipboard
+                   // before calling WarnOnPaste.
+    warned_clipboard_data = std::make_unique<ui::ClipboardData>(*data_ptr);
+  }
+#endif
+
   auto proceed_cb = base::BindRepeating(
       &DlpClipboardNotifier::ProceedPressed, base::Unretained(this),
-      CloneEndpoint(data_dst), std::move(reporting_cb));
+      // The proceed callback is run once only, base::Passed is safe here.
+      base::Passed(std::move(warned_clipboard_data)), CloneEndpoint(data_dst),
+      std::move(reporting_cb));
   auto cancel_cb =
       base::BindRepeating(&DlpClipboardNotifier::CancelWarningPressed,
                           base::Unretained(this), CloneEndpoint(data_dst));
@@ -243,13 +259,47 @@ bool DlpClipboardNotifier::DidUserCancelDst(
 }
 
 void DlpClipboardNotifier::ProceedPressed(
+    std::unique_ptr<ui::ClipboardData> data,
     const ui::DataTransferEndpoint& data_dst,
     base::RepeatingCallback<void()> reporting_cb,
     views::Widget* widget) {
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
   approved_dsts_.push_back(data_dst);
-  SynthesizePaste();
+
   std::move(reporting_cb).Run();
+
+  if (!display::Screen::GetScreen()) {  // Clipboard related elements do not
+                                        // exist in unittests.
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Temporarily ignore clipboard events because we are going to replace the
+  // system clipboard and this would otherwise trigger a call to
+  // `OnClipboardDataChanged` that resets the user warn selection.
+  ignore_clipboard_events_ = true;
+
+  // Pause clipboard history since we are temporarily replacing the system
+  // clipboard data with a non user-initiated action.
+  auto scoped_clipboard_history_pause =
+      ash::ClipboardHistoryController::Get()->CreateScopedPause();
+
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  CHECK(clipboard);
+
+  std::unique_ptr<ui::ClipboardData> current_clipboard_data =
+      clipboard->WriteClipboardData(std::move(data));
+#endif
+
+  SynthesizePaste();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Restore the original system clipboard data.
+  ui::ClipboardNonBacked::GetForCurrentThread()->WriteClipboardData(
+      std::move(current_clipboard_data));
+
+  ignore_clipboard_events_ = false;
+#endif
 }
 
 void DlpClipboardNotifier::BlinkProceedPressed(
@@ -289,6 +339,9 @@ void DlpClipboardNotifier::ShowToast(const std::string& id,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void DlpClipboardNotifier::OnClipboardDataChanged() {
+  if (ignore_clipboard_events_) {
+    return;
+  }
   ResetUserWarnSelection();
 }
 

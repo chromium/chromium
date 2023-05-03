@@ -39,6 +39,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
@@ -59,10 +60,11 @@ class FakeClipboardNotifier : public DlpClipboardNotifier {
  public:
   views::Widget* GetWidget() { return widget_.get(); }
 
-  void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
+  void ProceedPressed(std::unique_ptr<ui::ClipboardData> data,
+                      const ui::DataTransferEndpoint& data_dst,
                       base::RepeatingCallback<void()> reporting_cb) {
-    DlpClipboardNotifier::ProceedPressed(data_dst, std::move(reporting_cb),
-                                         GetWidget());
+    DlpClipboardNotifier::ProceedPressed(std::move(data), data_dst,
+                                         std::move(reporting_cb), GetWidget());
   }
 
   void BlinkProceedPressed(const ui::DataTransferEndpoint& data_dst) {
