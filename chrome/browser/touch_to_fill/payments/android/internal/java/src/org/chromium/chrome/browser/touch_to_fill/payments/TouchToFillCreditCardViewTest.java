@@ -146,14 +146,17 @@ public class TouchToFillCreditCardViewTest {
 
         assertThat(getCreditCardNameAt(0).getText(), is(VISA.getCardNameForAutofillDisplay()));
         assertThat(getCreditCardNumberAt(0).getText(), is(VISA.getObfuscatedLastFourDigits()));
-        assertThat(getCreditCardExpirationAt(0).getText(), is(createExpirationDateString(VISA)));
+        assertThat(getCreditCardExpirationAt(0).getText(),
+                is(VISA.getFormattedExpirationDateWithTwoDigitYear(
+                        ContextUtils.getApplicationContext())));
 
         assertThat(
                 getCreditCardNameAt(1).getText(), is(MASTER_CARD.getCardNameForAutofillDisplay()));
         assertThat(
                 getCreditCardNumberAt(1).getText(), is(MASTER_CARD.getObfuscatedLastFourDigits()));
         assertThat(getCreditCardExpirationAt(1).getText(),
-                is(createExpirationDateString(MASTER_CARD)));
+                is(MASTER_CARD.getFormattedExpirationDateWithTwoDigitYear(
+                        ContextUtils.getApplicationContext())));
 
         assertThat(
                 getCreditCardNameAt(2).getText(), is(VIRTUAL_CARD.getCardNameForAutofillDisplay()));
@@ -317,16 +320,10 @@ public class TouchToFillCreditCardViewTest {
         } else {
             creditCardModelBuilder.with(
                     TouchToFillCreditCardProperties.CreditCardProperties.CARD_EXPIRATION,
-                    createExpirationDateString(card));
+                    card.getFormattedExpirationDateWithTwoDigitYear(
+                            ContextUtils.getApplicationContext()));
         }
         return creditCardModelBuilder.build();
-    }
-
-    private static String createExpirationDateString(CreditCard card) {
-        return ContextUtils.getApplicationContext()
-                .getString(R.string.autofill_credit_card_two_line_label_from_card_number)
-                .replace("$1",
-                        card.getFormattedExpirationDate(ContextUtils.getApplicationContext()));
     }
 
     private static String getVirtualCardLabel() {
