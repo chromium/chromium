@@ -264,6 +264,13 @@ group("common_deps") {
       public_deps += [ "//build/config/fuchsia:asan_runtime_library" ]
     }
   }
+
+  if (is_win) {
+    # The CRT runtime is dynamically linked in component builds and needs to
+    # be present on bots that run exes or load DLLs. This also includes
+    # debugging DLLs in all builds.
+    data_deps = [ "//build/win:runtime_libs" ]
+  }
 }
 
 # Only the executable template in BUILDCONFIG.gn should reference this.

@@ -1919,8 +1919,6 @@ component("base") {
 
     deps += [ "//base/win:base_win_buildflags" ]
 
-    data_deps += [ "//build/win:runtime_libs" ]
-
     if (com_init_check_hook_disabled) {
       defines += [ "COM_INIT_CHECK_HOOK_DISABLED" ]
     }
