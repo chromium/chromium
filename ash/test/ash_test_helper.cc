@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/rgbkbd/rgbkbd_client.h"
+#include "chromeos/ash/components/dbus/typecd/typecd_client.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -181,6 +182,8 @@ void AshTestHelper::TearDown() {
 
   LoginState::Shutdown();
 
+  TypecdClient::Shutdown();
+
   if (create_global_cras_audio_handler_) {
     CrasAudioHandler::Shutdown();
     CrasAudioClient::Shutdown();
@@ -307,6 +310,11 @@ void AshTestHelper::SetUp(InitParams init_params) {
     power_policy_controller_initializer_ =
         std::make_unique<PowerPolicyControllerInitializer>();
   }
+
+  if (!TypecdClient::Get()) {
+    TypecdClient::InitializeFake();
+  }
+
   if (!NewWindowDelegate::GetInstance()) {
     new_window_delegate_provider_ =
         std::make_unique<TestNewWindowDelegateProvider>(
