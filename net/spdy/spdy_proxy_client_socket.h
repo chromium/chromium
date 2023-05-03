@@ -121,9 +121,9 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
     STATE_CLOSED
   };
 
-  // Calls |callback.Run(result)|. Used to run a callback posted to the
+  // Calls `write_callback_(result)`. Used to run a callback posted to the
   // message loop.
-  void RunWriteCallback(CompletionOnceCallback callback, int result) const;
+  void RunWriteCallback(int result);
 
   void OnIOComplete(int result);
 
@@ -195,13 +195,7 @@ class NET_EXPORT_PRIVATE SpdyProxyClientSocket : public ProxyClientSocket,
   };
   EndStreamState end_stream_state_ = EndStreamState::kNone;
 
-  // The default weak pointer factory.
   base::WeakPtrFactory<SpdyProxyClientSocket> weak_factory_{this};
-
-  // Only used for posting write callbacks. Weak pointers created by this
-  // factory are invalidated in Disconnect().
-  base::WeakPtrFactory<SpdyProxyClientSocket> write_callback_weak_factory_{
-      this};
 };
 
 }  // namespace net
