@@ -72,6 +72,8 @@ class CrosHotspotConfig : public mojom::CrosHotspotConfig,
   // HotspotConfigurationHandler::Observer:
   void OnHotspotConfigurationChanged() override;
 
+  void NotifyObservers();
+
   raw_ptr<HotspotCapabilitiesProvider, ExperimentalAsh>
       hotspot_capabilities_provider_;
   raw_ptr<HotspotStateHandler, ExperimentalAsh> hotspot_state_handler_;

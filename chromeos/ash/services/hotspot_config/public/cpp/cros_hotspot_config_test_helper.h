@@ -6,36 +6,36 @@
 #define CHROMEOS_ASH_SERVICES_HOTSPOT_CONFIG_PUBLIC_CPP_CROS_HOTSPOT_CONFIG_TEST_HELPER_H_
 
 #include <memory>
-#include "chromeos/ash/services/hotspot_config/cros_hotspot_config.h"
+
+#include "chromeos/ash/services/hotspot_config/public/mojom/cros_hotspot_config.mojom.h"
 
 namespace ash {
 
 namespace hotspot_config {
 
-class CrosHotspotConfig;
-
 // Helper for tests which need a CrosHotspotConfig service interface.
 class CrosHotspotConfigTestHelper {
  public:
   // Default constructor for unit tests.
-  CrosHotspotConfigTestHelper();
-
+  explicit CrosHotspotConfigTestHelper(bool use_fake_implementation);
   CrosHotspotConfigTestHelper(const CrosHotspotConfigTestHelper&) = delete;
   CrosHotspotConfigTestHelper& operator=(const CrosHotspotConfigTestHelper&) =
       delete;
-
   ~CrosHotspotConfigTestHelper();
 
   void EnableHotspot();
-
+  void DisableHotspot();
   void SetHotspotConfig(hotspot_config::mojom::HotspotConfigPtr hotspot_config);
+  // Only call this function when using FakeCrosHotspotConfig.
+  void SetFakeHotspotInfo(mojom::HotspotInfoPtr hotspot_info);
 
  protected:
   // Called in |~CrosHotspotConfigTestHelper()| to destroy
   // cros_hotspot_config_impl_.
   void Shutdown();
 
-  std::unique_ptr<CrosHotspotConfig> cros_hotspot_config_impl_;
+  bool use_fake_implementation_ = false;
+  std::unique_ptr<mojom::CrosHotspotConfig> cros_hotspot_config_impl_;
 };
 
 }  // namespace hotspot_config
