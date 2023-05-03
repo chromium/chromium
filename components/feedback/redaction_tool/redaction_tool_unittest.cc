@@ -622,9 +622,13 @@ TEST_F(RedactionToolTest, RedactAndKeepSelected) {
 }
 
 TEST_F(RedactionToolTest, RedactUid) {
-  EXPECT_EQ("(UID: 1)",
+  EXPECT_EQ("UID: (UID: 1)",
             redactor_.RedactAndKeepSelected(
-                "B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+                "UID: B3mcFTkQAHofv94DDTUuVJGGEI/BbzsyDncplMCR2P4=", {}));
+  // base64-encoded 33 bytes should not be treated as UID.
+  EXPECT_EQ("MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==",
+            redactor_.RedactAndKeepSelected(
+                "MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNDU2Nzg5MDEyCg==", {}));
 }
 
 TEST_F(RedactionToolTest, RedactAndKeepSelectedHashes) {

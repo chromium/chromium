@@ -449,6 +449,7 @@ CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
      PIIType::kStableIdentifier},
     // Eche UID which is a base64 conversion of a 32 bytes public key.
     {"UID",
+     "(?:[^A-Za-z0-9+/])"
      "((?:[A-Za-z0-9+/]{4}){10}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=))",
      PIIType::kStableIdentifier},
 };
