@@ -1,3 +1,6 @@
+// For use in situations when the recordreplay:: namespace isn't available
+// due to build dependency ordering.
+
 #if !BUILDFLAG(IS_WIN)
 #include <dlfcn.h>
 #else
