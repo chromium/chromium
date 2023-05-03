@@ -22,6 +22,7 @@ source_set("tests") {
     "container_test_util.h",
     "data_view_unittest.cc",
     "default_construct_unittest.cc",
+    "direct_receiver_unittest.cc",
     "enum_default_unittest.cc",
     "enum_headers_unittest.cc",
     "equals_unittest.cc",
@@ -83,6 +84,7 @@ source_set("tests") {
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
     "//mojo/public/interfaces/bindings/tests:test_struct_traits_interfaces",
     "//testing/gtest",
+    "//third_party/ipcz/src:ipcz_test_support_chromium",
   ]
 
   if (is_ios) {
@@ -162,6 +164,7 @@ mojom("test_mojom") {
     "binder_map_unittest.test-mojom",
     "connection_group_unittest.test-mojom",
     "default_construct_unittest.test-mojom",
+    "direct_receiver_unittest.test-mojom",
     "enum_default_unittest.test-mojom",
     "enum_headers_unittest.test-mojom",
     "flush_async_unittest.test-mojom",

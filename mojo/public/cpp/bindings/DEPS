@@ -1,4 +1,5 @@
 include_rules = [
+  "+mojo/core",
   "+third_party/blink/public/platform/web_vector.h",
   "+third_party/blink/renderer/platform/wtf",
 ]
