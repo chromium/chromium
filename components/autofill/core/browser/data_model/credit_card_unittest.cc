@@ -308,7 +308,7 @@ TEST(CreditCardTest,
   EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardNameAndLastFourDigits());
 }
 
 // Test that card identifier string falls back to issuer network when nickname
@@ -329,7 +329,7 @@ TEST(
   EXPECT_FALSE(credit_card.HasNonEmptyValidNickname());
   EXPECT_EQ(UTF8ToUTF16(std::string("Mastercard  ") +
                         test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardNameAndLastFourDigits());
 }
 
 // Test that card identifier string falls back to product description when
@@ -352,7 +352,7 @@ TEST(CreditCardTest,
   EXPECT_EQ(product_description +
                 UTF8ToUTF16(std::string("  ") +
                             test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardNameAndLastFourDigits());
 }
 
 // Test that card identifier string falls back to product description when
@@ -377,7 +377,7 @@ TEST(
   EXPECT_EQ(product_description +
                 UTF8ToUTF16(std::string("  ") +
                             test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-            credit_card.CardIdentifierStringForAutofillDisplay());
+            credit_card.CardNameAndLastFourDigits());
 }
 
 // Test that card identifier string shows nickname when it is valid.
@@ -400,7 +400,7 @@ TEST(CreditCardTest,
   EXPECT_EQ(
       valid_nickname + UTF8ToUTF16(std::string("  ") +
                                    test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-      credit_card.CardIdentifierStringForAutofillDisplay());
+      credit_card.CardNameAndLastFourDigits());
 }
 
 // Test that customized nickname takes precedence over credit card's nickname.
@@ -420,11 +420,10 @@ TEST(CreditCardTest,
   credit_card.SetNickname(u"My Visa Card");
   credit_card.set_product_description(u"ABC bank XYZ card");
   EXPECT_TRUE(credit_card.HasNonEmptyValidNickname());
-  EXPECT_EQ(
-      customized_nickname +
-          UTF8ToUTF16(std::string("  ") +
-                      test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
-      credit_card.CardIdentifierStringForAutofillDisplay(customized_nickname));
+  EXPECT_EQ(customized_nickname +
+                UTF8ToUTF16(std::string("  ") +
+                            test::ObfuscatedCardDigitsAsUTF8("5100", 4)),
+            credit_card.CardNameAndLastFourDigits(customized_nickname));
 }
 
 // Test that the card number is formatted as per the obfuscation length.
@@ -444,8 +443,7 @@ TEST(CreditCardTest,
   EXPECT_EQ(
       UTF8ToUTF16(std::string("Mastercard  ") +
                   test::ObfuscatedCardDigitsAsUTF8("5100", obfuscation_length)),
-      credit_card.CardIdentifierStringForAutofillDisplay(u"",
-                                                         obfuscation_length));
+      credit_card.CardNameAndLastFourDigits(u"", obfuscation_length));
 }
 
 TEST(CreditCardTest, AssignmentOperator) {

@@ -208,7 +208,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 #endif
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_SECURITY_CODE,
-        card_.CardIdentifierStringForAutofillDisplay());
+        card_.CardNameAndLastFourDigits());
   }
 
   // Title for expired cards.
@@ -222,7 +222,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
 #endif
     return l10n_util::GetStringFUTF16(
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_EXPIRED_TITLE,
-        card_.CardIdentifierStringForAutofillDisplay());
+        card_.CardNameAndLastFourDigits());
   }
 
   // Default title.
@@ -233,9 +233,8 @@ std::u16string CardUnmaskPromptControllerImpl::GetWindowTitle() const {
         IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE_DEFAULT);
   }
 #endif
-  return l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
-      card_.CardIdentifierStringForAutofillDisplay());
+  return l10n_util::GetStringFUTF16(IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE,
+                                    card_.CardNameAndLastFourDigits());
 #endif  // BUILDFLAG(IS_IOS)
 }
 
@@ -251,8 +250,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   }
   // The iOS UI shows the card details in the instructions text since they
   // don't fit in the title.
-  return l10n_util::GetStringFUTF16(
-      ids, card_.CardIdentifierStringForAutofillDisplay());
+  return l10n_util::GetStringFUTF16(ids, card_.CardNameAndLastFourDigits());
 #else
   // If the challenge option is present, return the challenge option instruction
   // information.

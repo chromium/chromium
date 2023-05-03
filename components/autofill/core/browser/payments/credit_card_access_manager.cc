@@ -122,7 +122,7 @@ bool CreditCardAccessManager::GetDeletionConfirmationText(
     return false;
 
   if (title)
-    title->assign(card->CardIdentifierStringForAutofillDisplay());
+    title->assign(card->CardNameAndLastFourDigits());
   if (body) {
     body->assign(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));

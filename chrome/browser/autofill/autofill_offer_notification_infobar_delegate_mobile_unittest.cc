@@ -22,7 +22,7 @@ TEST(AutofillOfferNotificationInfoBarDelegateMobileTest,
           offer_details_url, card);
 
   EXPECT_EQ(delegate->credit_card_identifier_string(),
-            card.CardIdentifierStringForAutofillDisplay());
+            card.CardNameAndLastFourDigits());
   EXPECT_EQ(offer_details_url, delegate->deep_link_url());
 }
 

@@ -59,7 +59,7 @@ std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetCardLabel() const {
   return virtual_card_enroll_bubble_controller_
       ->GetVirtualCardEnrollmentFields()
-      .credit_card.CardIdentifierStringForAutofillDisplay();
+      .credit_card.CardNameAndLastFourDigits();
 }
 
 LegalMessageLines

@@ -35,7 +35,7 @@ void CardExpirationDateFixFlowControllerImpl::Show(
   DCHECK(!callback.is_null());
   DCHECK(card_expiration_date_fix_flow_view);
 
-  card_label_ = card.CardIdentifierStringForAutofillDisplay();
+  card_label_ = card.CardNameAndLastFourDigits();
 
   MaybeDestroyExpirationDateFixFlowView(false);
   card_expiration_date_fix_flow_view_ = card_expiration_date_fix_flow_view;

@@ -126,7 +126,7 @@ base::flat_map<std::u16string, CreditCard*>
 AutofillContextMenuManager::GetCreditCardProfilesWithTitles() {
   std::vector<std::pair<std::u16string, CreditCard*>> cards;
   for (CreditCard* card : personal_data_manager_->GetCreditCards())
-    cards.emplace_back(card->CardIdentifierStringForAutofillDisplay(), card);
+    cards.emplace_back(card->CardNameAndLastFourDigits(), card);
 
   return base::flat_map<std::u16string, CreditCard*>(std::move(cards));
 }

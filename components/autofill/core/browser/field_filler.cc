@@ -569,7 +569,7 @@ std::u16string GetVirtualCardNumberForPreviewInput(
   std::u16string value =
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
-      u" " + virtual_card.CardIdentifierStringForAutofillDisplay();
+      u" " + virtual_card.CardNameAndLastFourDigits();
 
   // |field|'s max_length truncates the credit card number to fit within.
   if (field.credit_card_number_offset() < value.length()) {

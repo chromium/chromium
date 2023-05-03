@@ -243,7 +243,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   AutofillCardItem* item = [[AutofillCardItem alloc] initWithType:ItemTypeCard];
   item.text = creditCardName;
-  item.leadingDetailText = autofill::GetCreditCardIdentifierString(creditCard);
+  item.leadingDetailText =
+      autofill::GetCreditCardNameAndLastFourDigits(creditCard);
   item.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   item.accessibilityIdentifier = creditCardName;
   item.deletable = autofill::IsCreditCardLocal(creditCard);

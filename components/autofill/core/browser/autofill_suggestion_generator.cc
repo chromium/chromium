@@ -554,8 +554,8 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
       minor_text = credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
           GetObfuscationLength());
     } else {
-      main_text = credit_card.CardIdentifierStringForAutofillDisplay(
-          nickname, GetObfuscationLength());
+      main_text = credit_card.CardNameAndLastFourDigits(nickname,
+                                                        GetObfuscationLength());
     }
   } else {
     main_text = credit_card.GetInfo(type, app_locale);
@@ -635,8 +635,7 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 #elif BUILDFLAG(IS_ANDROID)
   // On Android dropdown, the label is formatted as
   // "Nickname/Network  ••••1234".
-  return {Suggestion::Text(
-      credit_card.CardIdentifierStringForAutofillDisplay(nickname))};
+  return {Suggestion::Text(credit_card.CardNameAndLastFourDigits(nickname))};
 #else
   // On Desktop, the label is formatted as
   // "Product Description/Nickname/Network  ••••1234, expires on 01/25".

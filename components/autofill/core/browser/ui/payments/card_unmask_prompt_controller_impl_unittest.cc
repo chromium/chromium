@@ -318,8 +318,7 @@ TEST_P(CardUnmaskPromptContentTest, DisplayCardInformation) {
   ShowPrompt();
 #if BUILDFLAG(IS_IOS)
   EXPECT_TRUE(controller_->GetInstructionsMessage().find(
-                  card_.CardIdentifierStringForAutofillDisplay()) !=
-              std::string::npos);
+                  card_.CardNameAndLastFourDigits()) != std::string::npos);
 #else
   if (touch_to_fill_for_credit_cards_enabled()) {
 #if BUILDFLAG(IS_ANDROID)
@@ -329,8 +328,7 @@ TEST_P(CardUnmaskPromptContentTest, DisplayCardInformation) {
 #endif
   } else {
     EXPECT_TRUE(controller_->GetWindowTitle().find(
-                    card_.CardIdentifierStringForAutofillDisplay()) !=
-                std::string::npos);
+                    card_.CardNameAndLastFourDigits()) != std::string::npos);
   }
 #endif
 }
@@ -341,17 +339,15 @@ TEST_P(CardUnmaskPromptContentTest, TitleAndInstructionMessage) {
 #if BUILDFLAG(IS_IOS)
   EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
   EXPECT_EQ(controller_->GetInstructionsMessage(),
-            u"Enter the CVC for " +
-                card_.CardIdentifierStringForAutofillDisplay() +
+            u"Enter the CVC for " + card_.CardNameAndLastFourDigits() +
                 u". After you confirm, card details from your Google Account "
                 u"will be shared with this site.");
 #else
   if (touch_to_fill_for_credit_cards_enabled()) {
     EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
   } else {
-    EXPECT_EQ(
-        controller_->GetWindowTitle(),
-        u"Enter the CVC for " + card_.CardIdentifierStringForAutofillDisplay());
+    EXPECT_EQ(controller_->GetWindowTitle(),
+              u"Enter the CVC for " + card_.CardNameAndLastFourDigits());
   }
   // On Desktop/Android, if the issuer is not Amex, the instructions message
   // prompts users to enter the CVC located on the back of the card.
@@ -368,17 +364,15 @@ TEST_P(CardUnmaskPromptContentTest, TitleAndInstructionMessage) {
 #if BUILDFLAG(IS_IOS)
   EXPECT_EQ(controller_->GetWindowTitle(), u"Confirm Card");
   EXPECT_EQ(controller_->GetInstructionsMessage(),
-            u"Enter the CVC for " +
-                card_.CardIdentifierStringForAutofillDisplay() +
+            u"Enter the CVC for " + card_.CardNameAndLastFourDigits() +
                 u". After you confirm, card details from your Google Account "
                 u"will be shared with this site.");
 #else
   if (touch_to_fill_for_credit_cards_enabled()) {
     EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your CVC");
   } else {
-    EXPECT_EQ(
-        controller_->GetWindowTitle(),
-        u"Enter the CVC for " + card_.CardIdentifierStringForAutofillDisplay());
+    EXPECT_EQ(controller_->GetWindowTitle(),
+              u"Enter the CVC for " + card_.CardNameAndLastFourDigits());
   }
   // On Desktop/Android, if the issuer is Amex, the instructions message prompts
   // users to enter the CVC located on the front of the card.
@@ -399,7 +393,7 @@ TEST_P(CardUnmaskPromptContentTest, ExpiredCardTitleAndInstructionMessage) {
   EXPECT_EQ(
       controller_->GetInstructionsMessage(),
       u"Enter the expiration date and CVC for " +
-          card_.CardIdentifierStringForAutofillDisplay() +
+          card_.CardNameAndLastFourDigits() +
           u" to update your card details. After you confirm, card details from "
           u"your Google Account will be shared with this site.");
 #else
@@ -408,7 +402,7 @@ TEST_P(CardUnmaskPromptContentTest, ExpiredCardTitleAndInstructionMessage) {
   } else {
     EXPECT_EQ(controller_->GetWindowTitle(),
               u"Enter the expiration date and CVC for " +
-                  card_.CardIdentifierStringForAutofillDisplay());
+                  card_.CardNameAndLastFourDigits());
   }
   EXPECT_EQ(controller_->GetInstructionsMessage(),
             u"Enter your new expiration date and CVC on the back of your card");
@@ -453,9 +447,9 @@ TEST_P(CardUnmaskPromptContentTest,
   if (touch_to_fill_for_credit_cards_enabled()) {
     EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your security code");
   } else {
-    EXPECT_EQ(controller_->GetWindowTitle(),
-              u"Enter your security code for " +
-                  card_.CardIdentifierStringForAutofillDisplay());
+    EXPECT_EQ(
+        controller_->GetWindowTitle(),
+        u"Enter your security code for " + card_.CardNameAndLastFourDigits());
   }
   EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
   controller_->OnUnmaskDialogClosed();
@@ -473,9 +467,9 @@ TEST_P(CardUnmaskPromptContentTest,
   if (touch_to_fill_for_credit_cards_enabled()) {
     EXPECT_EQ(controller_->GetWindowTitle(), u"Enter your security code");
   } else {
-    EXPECT_EQ(controller_->GetWindowTitle(),
-              u"Enter your security code for " +
-                  card_.CardIdentifierStringForAutofillDisplay());
+    EXPECT_EQ(
+        controller_->GetWindowTitle(),
+        u"Enter your security code for " + card_.CardNameAndLastFourDigits());
   }
   EXPECT_EQ(controller_->GetExpectedCvcLength(), 3);
   controller_->OnUnmaskDialogClosed();

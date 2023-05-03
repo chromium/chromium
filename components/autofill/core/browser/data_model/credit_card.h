@@ -332,16 +332,14 @@ class CreditCard : public AutofillDataModel {
   // The string used to represent the icon to be used for the autofill
   // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
   std::string CardIconStringForAutofillSuggestion() const;
-  // A label for this card formatted as 'IssuerNetwork - ****2345'. By default,
+  // A label for this card formatted as 'IssuerNetwork ****2345'. By default,
   // the `obfuscation_length` is set to 4 which would add **** to the last four
   // digits of the card.
   std::u16string NetworkAndLastFourDigits(int obfuscation_length = 4) const;
-  // A label for this card formatted as 'Nickname - ****2345' if nickname is
-  // available and valid;  otherwise, formatted as 'IssuerNetwork - ****2345'.
-  // Google-issued cards have their own specific identifier, instead of
-  // displaying the issuer network name. By default, the `obfuscation_length` is
-  // set to 4 which would add **** to the last four digits of the card.
-  std::u16string CardIdentifierStringForAutofillDisplay(
+  // A label for this card formatted as 'CardName ****2345', where the name is
+  // that returned by |CardNameForAutofillDisplay|. If the last four digits are
+  // unavailable returns just the card name, and vice-versa.
+  std::u16string CardNameAndLastFourDigits(
       std::u16string customized_nickname = std::u16string(),
       int obfuscation_length = 4) const;
   // A name to identify this card. It is the nickname if available, or the

@@ -20,9 +20,8 @@ NSString* GetCreditCardName(const CreditCard& credit_card,
       autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL), locale));
 }
 
-NSString* GetCreditCardIdentifierString(const CreditCard& credit_card) {
-  return base::SysUTF16ToNSString(
-      credit_card.CardIdentifierStringForAutofillDisplay());
+NSString* GetCreditCardNameAndLastFourDigits(const CreditCard& credit_card) {
+  return base::SysUTF16ToNSString(credit_card.CardNameAndLastFourDigits());
 }
 
 NSString* GetCreditCardNicknameString(const CreditCard& credit_card) {
