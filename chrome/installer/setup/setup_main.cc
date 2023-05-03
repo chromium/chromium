@@ -1446,9 +1446,6 @@ InstallStatus InstallProductsHelper(InstallationState& original_state,
   // If the installation completed successfully...
   if (InstallUtil::GetInstallReturnCode(install_status) == 0) {
     // Update the DisplayVersion created by an MSI-based install.
-    base::FilePath initial_preferences_file(
-        installer_state.target_path().AppendASCII(
-            installer::kLegacyInitialPrefs));
     std::string install_id;
     if (prefs.GetString(installer::initial_preferences::kMsiProductId,
                         &install_id)) {
