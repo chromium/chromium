@@ -5,7 +5,7 @@ arc_support: This policy also controls access to Android Developer Options. If y
   app.
 caption: Control where Developer Tools can be used
 desc: |-
-  Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't access developer tools, and you can't inspect website elements.
+  Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy or, since version 114 and if this is a managed user, extensions built into the browser. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't access developer tools, and you can't inspect website elements.
 
         This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.
 
@@ -18,8 +18,9 @@ future_on:
 - fuchsia
 items:
 - caption: Disallow usage of the Developer Tools on apps and extensions
-    installed by enterprise policy, allow usage of the Developer Tools in other
-    contexts
+    installed by enterprise policy or, since version 114 and if this is a
+    managed user, extensions built into the browser. Allow usage of the
+    Developer Tools in other contexts
   name: DeveloperToolsDisallowedForForceInstalledExtensions
   value: 0
 - caption: Allow usage of the Developer Tools
@@ -29,8 +30,8 @@ items:
   name: DeveloperToolsDisallowed
   value: 2
 owners:
-- file://components/policy/OWNERS
-- pmarko@chromium.org
+- file://extensions/OWNERS
+- extensions-core@chromium.org
 schema:
   enum:
   - 0

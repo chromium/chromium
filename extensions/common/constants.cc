@@ -205,6 +205,7 @@ bool IsDemoModeChromeApp(base::StringPiece extension_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSigninProfileTestExtensionId[] = "mecfefiddjlmabpeilblgegnbioikfmp";
 const char kGuestModeTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
+const char kChromeOSXKB[] = "jkghodnilhceideoidjikpgommlajknk";
 
 bool IsSystemUIApp(base::StringPiece extension_id) {
   static const char* const kApps[] = {

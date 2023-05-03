@@ -341,6 +341,9 @@ EXTENSIONS_EXPORT extern const char kSigninProfileTestExtensionId[];
 // The id of the testing extension allowed in guest mode.
 EXTENSIONS_EXPORT extern const char kGuestModeTestExtensionId[];
 
+// The id of the Chrome OS XKB extension.
+EXTENSIONS_EXPORT extern const char kChromeOSXKB[];
+
 // Returns true if this app is part of the "system UI". Generally this is UI
 // that that on other operating systems would be considered part of the OS,
 // for example the file manager.
