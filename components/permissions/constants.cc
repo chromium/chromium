@@ -38,6 +38,10 @@ extern const char kPermissionsPromptSurveyDisplayTimeKey[] =
 extern const char kPermissionPromptSurveyOneTimePromptsDecidedBucketKey[] =
     "OneTimePromptsDecidedBucket";
 
+// The key in `Product Specific String Data` under which the URL on which the
+// prompt HaTS survey was triggered is recorded.
+extern const char kPermissionPromptSurveyUrlKey[] = "PromptSurveyUrl";
+
 // The key in `Product Specific Bits Data` under which whether the prompt
 // was triggered by a user gestured is recorded in the prompt HaTS survey.
 const char kPermissionsPromptSurveyHadGestureKey[] = "HadGesture";

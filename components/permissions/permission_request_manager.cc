@@ -884,6 +884,7 @@ void PermissionRequestManager::ShowPrompt() {
         absl::nullopt, DetermineCurrentRequestUIDisposition(),
         DetermineCurrentRequestUIDispositionReasonForUMA(),
         requests_[0]->GetGestureType(), absl::nullopt, false,
+        web_contents()->GetLastCommittedURL(),
         hats_shown_callback_.has_value()
             ? std::move(hats_shown_callback_.value())
             : base::DoNothing());

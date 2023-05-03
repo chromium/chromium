@@ -262,6 +262,7 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
     permissions::PermissionRequestGestureType gesture_type,
     absl::optional<base::TimeDelta> prompt_display_duration,
     bool is_post_prompt,
+    const GURL& gurl,
     base::OnceCallback<void()> hats_shown_callback) {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -273,7 +274,8 @@ void ChromePermissionsClient::TriggerPromptHatsSurveyIfEnabled(
                          : permissions::kOnPromptAppearing,
           prompt_display_duration,
           permissions::PermissionHatsTriggerHelper::
-              GetOneTimePromptsDecidedBucket(profile->GetPrefs()));
+              GetOneTimePromptsDecidedBucket(profile->GetPrefs()),
+          gurl);
 
   if (!permissions::PermissionHatsTriggerHelper::
           ArePromptTriggerCriteriaSatisfied(prompt_parameters)) {
@@ -372,7 +374,8 @@ void ChromePermissionsClient::OnPromptResolved(
       web_contents->GetBrowserContext(), request_type,
       absl::make_optional(action), prompt_disposition,
       prompt_disposition_reason, gesture_type,
-      absl::make_optional(prompt_display_duration), true, base::DoNothing());
+      absl::make_optional(prompt_display_duration), true,
+      web_contents->GetLastCommittedURL(), base::DoNothing());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
