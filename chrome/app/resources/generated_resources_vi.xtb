@@ -2670,7 +2670,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3341699307020049241">Mã PIN không chính xác. Bạn còn <ph name="RETRIES" /> lần thử.</translation>
 <translation id="3341703758641437857">Cho phép truy cập vào các URL của tệp</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" muốn xóa tiện ích này.</translation>
-<translation id="3343046414300263892">Tăng kích thước phông chữ</translation>
+<translation id="3343046414300263892">Tăng cỡ chữ</translation>
 <translation id="3343977377045378693">Đang thiết lập</translation>
 <translation id="3345634917232014253">Tính năng kiểm tra an toàn đã hoạt động vài phút trước</translation>
 <translation id="3345886924813989455">Không tìm thấy trình duyệt được hỗ trợ</translation>
@@ -6851,7 +6851,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7167486101654761064">&amp;Luôn mở loại tệp này</translation>
 <translation id="716775164025088943">Dấu trang, nhật ký, mật khẩu và một số dữ liệu khác của bạn sẽ không được đồng bộ hoá nữa.</translation>
 <translation id="716810439572026343">Đang tải xuống <ph name="FILE_NAME" /></translation>
-<translation id="7168109975831002660">Kích thước phông chữ tối thiểu</translation>
+<translation id="7168109975831002660">Cỡ chữ tối thiểu</translation>
 <translation id="7169122689956315694">Bật thông báo khi có thiết bị ở gần</translation>
 <translation id="7170236477717446850">Ảnh hồ sơ</translation>
 <translation id="7171000599584840888">Thêm hồ sơ...</translation>
@@ -8543,7 +8543,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8699188901396699995">Tệp PPD cho <ph name="PRINTER_NAME" /></translation>
 <translation id="8702278591052316269">Trình đơn chứa các nhóm thẻ đã lưu bị ẩn</translation>
 <translation id="8702825062053163569"><ph name="DEVICE_TYPE" /> của bạn đã bị khóa.</translation>
-<translation id="8703166594516496633">Giảm kích thước phông chữ</translation>
+<translation id="8703166594516496633">Giảm cỡ chữ</translation>
 <translation id="8703346390800944767">Bỏ qua quảng cáo</translation>
 <translation id="8705331520020532516">Số Sê-ri</translation>
 <translation id="8705580154597116082">Wi-Fi khả dụng qua điện thoại</translation>
