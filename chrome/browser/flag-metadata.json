@@ -7410,11 +7410,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "use-lens-to-search-for-image",
-    "owners": [ "bernsteine", "hujasonx" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "use-load-simulated-request-for-error-page-navigation",
     "owners": [ "gambard", "bling-flags@google.com" ],
     "expiry_milestone": 115

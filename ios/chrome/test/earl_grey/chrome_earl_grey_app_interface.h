@@ -529,9 +529,6 @@
 // Returns whether the NewOverflowMenu feature is enabled.
 + (BOOL)isNewOverflowMenuEnabled;
 
-// Returns whether the UseLensToSearchForImage feature is enabled.
-+ (BOOL)isUseLensToSearchForImageEnabled;
-
 // Returns whether the Thumbstrip feature is enabled for window with given
 // number.
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber;
