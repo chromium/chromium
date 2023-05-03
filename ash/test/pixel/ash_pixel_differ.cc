@@ -11,38 +11,10 @@
 #include "base/strings/strcat.h"
 
 namespace ash {
-namespace {
-
-// The names of the pixel tests that use the "positive if only" algorithm.
-// This list should be removed when all existing tests are migrated.
-// NOTE: maintain the array in the alphabetical order.
-const std::array<std::string, 17> kMigratedTests = {
-    {"AccessibilityDetailedView", "AmbientInfoViewTest", "AppList",
-     "AshNotificationView", "BluetoothDetailedView", "CalendarUpNextView",
-     "CastDetailedView", "CastZeroStateView",
-     "ChannelIndicatorQuickSettingsView", "DemoAshPixelDiffTest", "Fullscreen",
-     "HelpBubbleView", "LoginShelf", "ScreenCaptureNotification",
-     "ScrollableShelf", "ShelfLayoutManager", "Wm"}};
-
-// Returns true if the test specified by `screenshot_prefix` should use the
-// "positive if only" algorithm.
-bool ShouldUsePositiveIfOnlyAlgorithm(const std::string& screenshot_prefix) {
-  for (const auto& migrated_test : kMigratedTests) {
-    if (screenshot_prefix.find(migrated_test) != screenshot_prefix.npos) {
-      return true;
-    }
-  }
-  return false;
-}
-
-}  // namespace
 
 AshPixelDiffer::AshPixelDiffer(const std::string& screenshot_prefix,
                                const std::string& corpus) {
   pixel_diff_.Init(screenshot_prefix, corpus);
-  if (ShouldUsePositiveIfOnlyAlgorithm(screenshot_prefix)) {
-    positive_if_only_algorithm_.emplace();
-  }
 }
 
 AshPixelDiffer::~AshPixelDiffer() = default;
@@ -64,8 +36,7 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
       std::numeric_limits<float>::epsilon()) {
     return pixel_diff_.CompareNativeWindowScreenshotInRects(
         full_name, primary_root_window, primary_root_window->bounds(),
-        positive_if_only_algorithm_ ? &*positive_if_only_algorithm_ : nullptr,
-        rects_in_screen);
+        &positive_if_only_algorithm_, rects_in_screen);
   }
 
   // Convert rects from screen coordinates to pixel coordinates.
@@ -82,8 +53,7 @@ bool AshPixelDiffer::ComparePrimaryScreenshotInRects(
 
   return pixel_diff_.CompareNativeWindowScreenshotInRects(
       full_name, primary_root_window, primary_root_window->bounds(),
-      positive_if_only_algorithm_ ? &*positive_if_only_algorithm_ : nullptr,
-      rects_in_pixel);
+      &positive_if_only_algorithm_, rects_in_pixel);
 }
 
 }  // namespace ash

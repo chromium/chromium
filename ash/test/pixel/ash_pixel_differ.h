@@ -76,10 +76,7 @@ class AshPixelDiffer {
       size_t revision_number,
       const std::vector<gfx::Rect>& rects_in_screen);
 
-  // Set only when the "positive if only" algorithm should be used instead of
-  // the exact matching algorithm.
-  absl::optional<ui::test::PositiveIfOnlyImageAlgorithm>
-      positive_if_only_algorithm_;
+  ui::test::PositiveIfOnlyImageAlgorithm positive_if_only_algorithm_;
 
   // Used to take screenshots and upload images to the Skia Gold server to
   // perform pixel comparison.
