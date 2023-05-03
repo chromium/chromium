@@ -377,6 +377,12 @@ NET_EXPORT BASE_DECLARE_FEATURE(kMigrateSessionsOnNetworkChangeV2);
 NET_EXPORT BASE_DECLARE_FEATURE(kAddressTrackerLinuxIsProxied);
 #endif  // BUILDFLAG(IS_LINUX)
 
+// Enables binding of cookies to the port that originally set them by default.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnablePortBoundCookies);
+
+// Enables binding of cookies to the scheme that originally set them.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

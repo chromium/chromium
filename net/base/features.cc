@@ -354,4 +354,15 @@ BASE_FEATURE(kAddressTrackerLinuxIsProxied,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
+// Enables binding of cookies to the port that originally set them by default.
+BASE_FEATURE(kEnablePortBoundCookies,
+             "EnablePortBoundCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables binding of cookies to the scheme that originally set them.
+NET_EXPORT BASE_DECLARE_FEATURE(kEnableSchemeBoundCookies);
+BASE_FEATURE(kEnableSchemeBoundCookies,
+             "EnableSchemeBoundCookies",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features
