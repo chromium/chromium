@@ -35,6 +35,9 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
 
   switch (entry_point) {
     case LensEntrypoint::ContextMenu:
+      if (!base::FeatureList::IsEnabled(kUseLensToSearchForImage)) {
+        flag_enabled = NO;
+      }
       availability_metric_name = kIOSLensContextMenuSupportStatusHistogramName;
       break;
     case LensEntrypoint::Keyboard:

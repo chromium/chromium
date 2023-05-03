@@ -978,6 +978,12 @@ const char kToolbarContainerDescription[] =
     "When enabled, the toolbars and their fullscreen animations will be "
     "managed by the toolbar container coordinator rather than BVC.";
 
+const char kUseLensToSearchForImageName[] =
+    "Use Google Lens to Search for images";
+const char kUseLensToSearchForImageDescription[] =
+    "When enabled, use Lens to search for images from the long press context "
+    "menu when Google is the selected search engine. iPhone only.";
+
 const char kEnableLensInHomeScreenWidgetName[] =
     "Enable Google Lens in the Home Screen Widget";
 const char kEnableLensInHomeScreenWidgetDescription[] =

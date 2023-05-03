@@ -1157,6 +1157,16 @@ NSString* SerializedValue(const base::Value* value) {
   return IsNewOverflowMenuEnabled();
 }
 
++ (BOOL)isUseLensToSearchForImageEnabled {
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  return base::FeatureList::IsEnabled(kUseLensToSearchForImage) &&
+         ios::provider::IsLensSupported() &&
+         ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET &&
+         search_engines::SupportsSearchImageWithLens(service);
+}
+
 + (BOOL)isThumbstripEnabledForWindowWithNumber:(int)windowNumber {
   return ShowThumbStripInTraitCollection(
       [self windowWithNumber:windowNumber].traitCollection);
