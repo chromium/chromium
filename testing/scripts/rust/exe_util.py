@@ -7,11 +7,12 @@
 import os
 import subprocess
 import re
+import sys
 
 # Regex for matching 7-bit and 8-bit C1 ANSI sequences.
 # Credit: https://stackoverflow.com/a/14693789/4692014
 _ANSI_ESCAPE_8BIT_REGEX = re.compile(
-    br"""
+    r"""
     (?: # either 7-bit C1, two bytes, ESC Fe (omitting CSI)
         \x1B
         [@-Z\\-_]
@@ -37,8 +38,17 @@ def run_and_tee_output(args):
     Returns:
         The full executable output as an UTF-8 string.
     """
-    output_bytes = subprocess.check_output(args)
-    # Strip ANSI / terminal escapes.
-    output_bytes = _ANSI_ESCAPE_8BIT_REGEX.sub(b'', output_bytes)
+    # Capture stdout (where test results are written), but inherit stderr. This
+    # way errors related to invalid arguments are printed normally.
+    proc = subprocess.Popen(args, stdout=subprocess.PIPE)
+    captured_output = b''
+    while proc.poll() is None:
+        buf = proc.stdout.read()
+        # Write captured output directly, so escape sequences are preserved.
+        sys.stdout.buffer.write(buf)
+        captured_output += buf
 
-    return output_bytes.decode('utf-8')
+    captured_output = _ANSI_ESCAPE_8BIT_REGEX.sub(
+        '', captured_output.decode('utf-8'))
+
+    return captured_output
