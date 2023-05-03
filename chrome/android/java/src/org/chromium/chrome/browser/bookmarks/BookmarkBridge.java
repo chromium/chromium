@@ -380,11 +380,6 @@ class BookmarkBridge {
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType());
     }
 
-    /** TODO(https://crbug.com/1435552): Delete this method. */
-    public List<BookmarkId> getChildIDs(BookmarkId id) {
-        return getChildIds(id);
-    }
-
     /**
      * Reads sub-folder IDs, sub-bookmark IDs, or both of the given folder.
      *
