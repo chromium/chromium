@@ -223,6 +223,9 @@ LayoutUnit NGLineInfo::ComputeTrailingSpaceWidth(
     unsigned end_offset = item_result.EndOffset();
     DCHECK(end_offset);
     if (item.Type() == NGInlineItem::kText) {
+      if (!item.Length()) {
+        continue;  // Skip empty items. See `NGLineBreaker::HandleEmptyText`.
+      }
       const String& text = items_data_->text_content;
       if (end_offset && text[end_offset - 1] == kSpaceCharacter) {
         do {
