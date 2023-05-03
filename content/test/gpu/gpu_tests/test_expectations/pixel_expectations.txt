@@ -306,12 +306,13 @@ crbug.com/974380 [ mac no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DG
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # WebGL drawingBufferStorage does not work on Google Pixel devices, Samsung
-# devices or Lacros FYI x64 Release (Intel) yet.
+# devices or kevin yet.
 crbug.com/1230619 [ android android-pixel-2 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-pixel-4 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-pixel-6 angle-disabled no-passthrough ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A135M ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android android-SM-A235M ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ chromeos chromeos-board-kevin ] Pixel_WebGLFloat [ Failure ]
 
 # Flakes on gpu-fyi-try-chromeos-amd64-generic, times out.
 crbug.com/1338173 [ chromeos chromeos-board-amd64-generic ] Pixel_PrecisionRoundedCorner [ Failure ]
