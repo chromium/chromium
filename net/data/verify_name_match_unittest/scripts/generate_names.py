@@ -72,11 +72,16 @@ def generate(s, fn):
   conf_tempfile.write(str(s))
   conf_tempfile.flush()
   der_tmpfile = tempfile.NamedTemporaryFile()
-  description_tmpfile = tempfile.NamedTemporaryFile()
-  subprocess.check_call(['openssl', 'asn1parse', '-genconf', conf_tempfile.name,
-                         '-i', '-out', der_tmpfile.name],
-                        stdout=description_tmpfile)
+  subprocess.check_call([
+      'openssl', 'asn1parse', '-genconf', conf_tempfile.name, '-i', '-out',
+      der_tmpfile.name
+  ],
+                        stdout=subprocess.DEVNULL)
   conf_tempfile.close()
+
+  description_tmpfile = tempfile.NamedTemporaryFile()
+  subprocess.check_call(['der2ascii', '-i', der_tmpfile.name],
+                        stdout=description_tmpfile)
 
   output_file = open(out_fn, 'wb')
   description_tmpfile.seek(0)
