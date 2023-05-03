@@ -91,8 +91,11 @@ void CompanionMetricsLogger::RecordUiSurfaceShown(
   // Clamped to record as having max 10 child elements.
   surface.child_element_count = std::clamp(child_element_count, 0u, 10u);
 
-  base::UmaHistogramBoolean(
-      "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown", true);
+  if (child_element_count > 0) {
+    base::UmaHistogramBoolean(
+        "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown",
+        true);
+  }
 }
 
 void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface) {

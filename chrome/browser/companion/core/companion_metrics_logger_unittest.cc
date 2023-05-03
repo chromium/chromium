@@ -45,7 +45,7 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
 
   // Verify histograms for click and shown events.
   histogram_tester.ExpectBucketCount("Companion.PH.Shown",
-                                     /*sample=*/true, /*expected_count=*/1);
+                                     /*sample=*/true, /*expected_count=*/0);
   histogram_tester.ExpectBucketCount("Companion.CQ.Shown",
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.CQ.Clicked",

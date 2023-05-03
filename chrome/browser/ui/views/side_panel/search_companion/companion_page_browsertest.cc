@@ -59,6 +59,8 @@ struct CompanionScriptBuilder {
   absl::optional<bool> is_exps_opted_in;
   absl::optional<UiSurface> ui_surface;
   absl::optional<size_t> child_element_count;
+  absl::optional<std::string> text_directive;
+  absl::optional<std::vector<std::string>> cq_text_directives;
 
   // Constructor.
   explicit CompanionScriptBuilder(MethodType type) : method_type(type) {}
@@ -96,6 +98,18 @@ struct CompanionScriptBuilder {
     if (child_element_count.has_value()) {
       ss << "message['childElementCount'] = "
          << base::NumberToString(child_element_count.value()) << ";";
+    }
+
+    if (text_directive.has_value()) {
+      ss << "message['cqJumptagText'] = '" << text_directive.value() << "';";
+    }
+
+    if (cq_text_directives.has_value()) {
+      std::string joined_text;
+      for (const auto& text : cq_text_directives.value()) {
+        joined_text.append("'" + text + "',");
+      }
+      ss << "message['cqTextDirectives'] = [" << joined_text << "];";
     }
 
     ss << "window.parent.postMessage(message, '*');";
@@ -358,4 +372,46 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
   histogram_tester_->ExpectBucketCount("Companion.PromoEvent",
                                        companion::PromoEvent::kMsbbRejected,
                                        /*expected_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       PostMessageForCqCandidatesAvailable) {
+  // Load a page on the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  CompanionScriptBuilder builder(MethodType::kOnCqCandidatesAvailable);
+  builder.ui_surface = UiSurface::kCQ;
+  builder.cq_text_directives = std::vector<std::string>{"abc", "def"};
+  EXPECT_TRUE(ExecJs(builder.Build()));
+}
+
+// TODO(junzou,shaktisahu): Verify UKM metrics (b/280453152).
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       PostMessageForCqJumptagClicked) {
+  // Load a page on the active tab.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Click a cq jumptag.
+  CompanionScriptBuilder builder(MethodType::kOnCqJumptagClicked);
+  builder.ui_surface = UiSurface::kCQ;
+  builder.text_directive = "abc";
+  EXPECT_TRUE(ExecJs(builder.Build()));
 }
