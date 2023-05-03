@@ -2897,11 +2897,6 @@ crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failur
 crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.html [ Failure Timeout ]
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
-# Note: This test only crashes on CQ builders, not `*-blink-rel` ones, because
-# it fails a DCHECK:
-#   https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/layout/ng/ng_length_utils.cc;l=290;drc=07111ed630788923689d2e250bdebb4ad213c41e;bpv=0;bpt=0
-crbug.com/626703 external/wpt/css/css-multicol/file-control-crash.html [ Crash ]
-
 # ====== New tests from wpt-importer added here ======
 crbug.com/626703 [ Mac13 ] external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure ]
 crbug.com/626703 [ Mac13 ] external/wpt/css/css-content/quotes-020.html [ Failure ]
