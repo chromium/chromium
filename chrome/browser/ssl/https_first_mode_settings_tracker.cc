@@ -26,11 +26,26 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
+
+using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
+
 const char kHttpsFirstModeServiceName[] = "HttpsFirstModeService";
 const char kHttpsFirstModeSyntheticFieldTrialName[] =
     "HttpsFirstModeClientSetting";
 const char kHttpsFirstModeSyntheticFieldTrialEnabledGroup[] = "Enabled";
 const char kHttpsFirstModeSyntheticFieldTrialDisabledGroup[] = "Disabled";
+
+// Minimum score of an HTTPS origin to enable HFM on its hostname.
+// TODO(crbug.com/1435222): Convert these into feature params.
+constexpr double kHttpsAddThreshold = 40;
+
+// Maximum score of an HTTP origin to enable HFM on its hostname.
+constexpr double kHttpAddThreshold = 5;
+
+// If HTTPS score goes below kHttpsRemoveThreshold or HTTP score goes above
+// kHttpRemoveThreshold, disable HFM on this hostname.
+constexpr double kHttpsRemoveThreshold = 30;
+constexpr double kHttpRemoveThreshold = 10;
 
 // Returns the HTTP URL from `http_url` using the test port numbers, if any.
 // TODO(crbug.com/1435222): Refactor and merge with UpgradeUrlToHttps().
@@ -50,7 +65,7 @@ GURL GetHttpUrlFromHttps(const GURL& https_url) {
     // Only reached in testing, where the original URL will always have a
     // non-default port. One of the tests navigates to Google support pages, so
     // exclude that.
-    // TODO(meacer): Remove this exception.
+    // TODO(crbug.com/1435222): Remove this exception.
     if (https_url != GURL(security_interstitials::HttpsOnlyModeBlockingPage::
                               kLearnMoreLink)) {
       DCHECK(!https_url.port().empty());
@@ -84,24 +99,6 @@ GURL GetHttpsUrlFromHttp(const GURL& http_url) {
   }
 
   return http_url.ReplaceComponents(upgrade_url);
-}
-
-// Minimum score of an HTTPS origin to enable HFM on its hostname.
-const double kHttpsAddThreshold = 40;
-
-// Maximum score of an HTTP origin to enable HFM on its hostname.
-const double kHttpAddThreshold = 5;
-
-bool ShouldEnforceHttpsFirstModeForUrl(Profile* profile, const GURL& url) {
-  GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
-  GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
-
-  auto* engagement_svc = site_engagement::SiteEngagementService::Get(profile);
-
-  double https_score = engagement_svc->GetScore(https_url);
-  double http_score = engagement_svc->GetScore(http_url);
-
-  return https_score > kHttpsAddThreshold && http_score < kHttpAddThreshold;
 }
 
 std::unique_ptr<KeyedService> BuildService(content::BrowserContext* context) {
@@ -180,17 +177,48 @@ void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
 
 void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
                                                             const GURL& url) {
-  if (ShouldEnforceHttpsFirstModeForUrl(profile, url)) {
-    StatefulSSLHostStateDelegate* state =
-        static_cast<StatefulSSLHostStateDelegate*>(
-            profile_->GetSSLHostStateDelegate());
-    // StatefulSSLHostStateDelegate can be null during tests.
-    if (state) {
-      state->EnforceHttpsForHost(url.host(),
-                                 profile->GetDefaultStoragePartition());
-    }
+  StatefulSSLHostStateDelegate* state =
+      static_cast<StatefulSSLHostStateDelegate*>(
+          profile_->GetSSLHostStateDelegate());
+  static_assert(kHttpsAddThreshold > kHttpsRemoveThreshold);
+  static_assert(kHttpAddThreshold < kHttpRemoveThreshold);
+
+  // StatefulSSLHostStateDelegate can be null during tests. In that case, we
+  // can't save the site setting.
+  if (!state) {
+    return;
   }
-  // TODO(crbug.com/1435222): Implement un-enforce HTTPS.
+
+  bool enforced = state->IsHttpsEnforcedForHost(
+      url.host(), profile->GetDefaultStoragePartition());
+
+  GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
+  GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
+
+  auto* engagement_svc = site_engagement::SiteEngagementService::Get(profile);
+
+  double https_score = engagement_svc->GetScore(https_url);
+  double http_score = engagement_svc->GetScore(http_url);
+  bool should_enable =
+      https_score >= kHttpsAddThreshold && http_score <= kHttpAddThreshold;
+  if (!enforced && should_enable) {
+    RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState::kEnabled);
+    state->SetHttpsEnforcementForHost(url.host(),
+                                      /*enforced=*/true,
+                                      profile->GetDefaultStoragePartition());
+    return;
+  }
+
+  bool should_disable = https_score <= kHttpsRemoveThreshold ||
+                        http_score >= kHttpRemoveThreshold;
+  if (enforced && should_disable) {
+    RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState::kDisabled);
+    state->SetHttpsEnforcementForHost(url.host(),
+                                      /*enforced=*/false,
+                                      profile->GetDefaultStoragePartition());
+    return;
+  }
+  // Don't change the state otherwise.
 }
 
 // static

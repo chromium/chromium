@@ -32,6 +32,11 @@ class HttpsOnlyModeEnforcelist {
   // Adds host to the list of sites not allowed to load over HTTP.
   void EnforceForHost(const std::string& host, bool is_nondefault_storage);
 
+  // Marks host so that HTTPS-First Mode isn't enabled on it. Doesn't actually
+  // remove the website setting for the host, so that we can record metrics
+  // about accumulated host count.
+  void UnenforceForHost(const std::string& host, bool is_nondefault_storage);
+
   // Returns true if host is not allowed to be loaded over HTTP.
   bool IsEnforcedForHost(const std::string& host,
                          bool is_nondefault_storage) const;

@@ -75,8 +75,9 @@ bool AwSSLHostStateDelegate::IsHttpAllowedForHost(
   return false;
 }
 
-void AwSSLHostStateDelegate::EnforceHttpsForHost(
+void AwSSLHostStateDelegate::SetHttpsEnforcementForHost(
     const std::string& host,
+    bool enforce,
     content::StoragePartition* storage_partition) {
   // Intentional no-op for Android WebView.
 }

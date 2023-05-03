@@ -43,8 +43,9 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
   bool IsHttpAllowedForHost(const std::string& host,
                             StoragePartition* storage_partition) override;
 
-  void EnforceHttpsForHost(const std::string& host,
-                           StoragePartition* storage_partition) override;
+  void SetHttpsEnforcementForHost(const std::string& host,
+                                  bool enforce,
+                                  StoragePartition* storage_partition) override;
   bool IsHttpsEnforcedForHost(const std::string& host,
                               StoragePartition* storage_partition) override;
 

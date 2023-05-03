@@ -84,9 +84,11 @@ class SSLHostStateDelegate {
   // |host|.
   virtual void RevokeUserAllowExceptions(const std::string& host) = 0;
 
-  // Enables HTTPS-First Mode for the given `host`.
-  virtual void EnforceHttpsForHost(const std::string& host,
-                                   StoragePartition* storage_partition) = 0;
+  // Sets HTTPS-First Mode enforcement for the given `host`.
+  virtual void SetHttpsEnforcementForHost(
+      const std::string& host,
+      bool enforce,
+      StoragePartition* storage_partition) = 0;
   // Returns whether HTTPS-First Mode is enabled for the given `host`.
   virtual bool IsHttpsEnforcedForHost(const std::string& host,
                                       StoragePartition* storage_partition) = 0;

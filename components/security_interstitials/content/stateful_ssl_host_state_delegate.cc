@@ -373,13 +373,18 @@ bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
                                                          is_nondefault_storage);
 }
 
-void StatefulSSLHostStateDelegate::EnforceHttpsForHost(
+void StatefulSSLHostStateDelegate::SetHttpsEnforcementForHost(
     const std::string& host,
+    bool enforced,
     content::StoragePartition* storage_partition) {
   bool is_nondefault_storage =
       !storage_partition ||
       storage_partition != browser_context_->GetDefaultStoragePartition();
-  https_only_mode_enforcelist_.EnforceForHost(host, is_nondefault_storage);
+  if (enforced) {
+    https_only_mode_enforcelist_.EnforceForHost(host, is_nondefault_storage);
+  } else {
+    https_only_mode_enforcelist_.UnenforceForHost(host, is_nondefault_storage);
+  }
 }
 
 bool StatefulSSLHostStateDelegate::IsHttpsEnforcedForHost(
