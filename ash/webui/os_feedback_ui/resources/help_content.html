@@ -99,6 +99,11 @@
     --paper-tooltip-delay-in: 100ms;
     --paper-tooltip-text-color: var(--cros-tooltip-label-color);
   }
+
+  svg {
+    /* Max height before SVG causes scrolling in page. */
+    height: 158px;
+  }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
   query-matches="{{isDarkModeEnabled_}}">
@@ -118,8 +123,21 @@
   </div>
   <template is="dom-if" if="[[!isOnline_]]">
     <div class="no-help-content-details">
-      <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]"
-           alt="[[i18n('helpContentOfflineAltText')]]">
+      <!-- TODO(b/276493287): After the Jelly experiment is launched, remove
+                              unused image elements and SVGs. -->
+      <template is="dom-if" if="[[isJellyEnabled_]]">
+        <svg id="offlineSvg" preserveAspectRatio="xMidYMid meet" role="img"
+            viewBox="0 0 400 168">
+          <title>[[i18n('helpContentOfflineAltText')]]</title>
+          <use href=
+              "//os-feedback/illustrations/illo_network_unavailable.svg#offline">
+          </use>
+        </svg>
+      </template>
+      <template is="dom-if" if="[[!isJellyEnabled_]]">
+        <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]"
+            alt="[[i18n('helpContentOfflineAltText')]]">
+      </template>
       <div class="no-help-content-text">
         [[i18n('helpContentOfflineMessage')]]
       </div>

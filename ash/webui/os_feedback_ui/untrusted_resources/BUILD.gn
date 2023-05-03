@@ -16,6 +16,7 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
   input_files = [
+    "illustrations/illo_network_unavailable.svg",
     "illustrations/load_content_error_darkmode.svg",
     "illustrations/load_content_error_lightmode.svg",
     "illustrations/network_unavailable_darkmode.svg",

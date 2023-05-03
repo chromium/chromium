@@ -13,6 +13,7 @@ import '//resources/cr_elements/policy/cr_tooltip_icon.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -63,6 +64,12 @@ export class HelpContentElement extends HelpContentElementBase {
     return {
       searchResult: {type: SearchResult},
       isDarkModeEnabled_: {type: Boolean},
+      isJellyEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isJellyEnabledForOsFeedback');
+        },
+      },
       isOnline_: {type: Boolean},
     };
   }
