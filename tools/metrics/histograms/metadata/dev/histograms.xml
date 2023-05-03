@@ -297,8 +297,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
-    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2023-06-11">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2024-03-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
     Records the ways in which the Memory Inspector panel was opened.
@@ -306,8 +306,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.LinearMemoryInspector.Target"
-    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2023-06-11">
-  <owner>yangguo@chromium.org</owner>
+    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2024-03-01">
+  <owner>bmeurer@chromium.org</owner>
   <owner>kimanh@chromium.org</owner>
   <summary>
     Records the inspection target via which the Memory Inspector was opened.
