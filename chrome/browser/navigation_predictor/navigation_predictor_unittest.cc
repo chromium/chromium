@@ -1063,8 +1063,9 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   ASSERT_EQ(0u, entries.size());
 }
 
+// TODO(crbug.com/1442258): Flaky on Android.
 TEST_F(NavigationPredictorUserInteractionsTest,
-       UserInteractionMetricsIgnoresUpdatesForInvalidUkmSourceId) {
+       DISABLED_UserInteractionMetricsIgnoresUpdatesForInvalidUkmSourceId) {
   mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
   auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
       main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
