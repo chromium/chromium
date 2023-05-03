@@ -9,6 +9,7 @@
 #include <linux/rtnetlink.h>
 #include <stdint.h>
 
+#include <cstddef>
 #include <vector>
 
 bool operator==(const struct ifaddrmsg& lhs, const struct ifaddrmsg& rhs);
