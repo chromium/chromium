@@ -140,6 +140,13 @@ AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileDiff() const {
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {
+  if (address_profile_save_prompt_callback_.is_null()) {
+    // From the crash logs in crbug.com/1408890, it appears that there are
+    // multiple calls to this method when the edit button is pressed so return
+    // early if the callback has already been executed.
+    return;
+  }
+
   user_decision_ =
       AutofillClient::SaveAddressProfileOfferUserDecision::kEditAccepted;
   RunSaveAddressProfilePromptCallback();
