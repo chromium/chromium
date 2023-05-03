@@ -196,7 +196,6 @@
               }
             ]
           },
-          "quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cc_unittests",
@@ -689,7 +688,6 @@
               }
             ]
           },
-          "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -1031,7 +1029,6 @@
               }
             ]
           },
-          "quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -1079,7 +1076,6 @@
               }
             ]
           },
-          "quickrun_shards": 60,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 24
         },
@@ -1134,7 +1130,6 @@
               }
             ]
           },
-          "quickrun_shards": 40,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },
@@ -4005,7 +4000,6 @@
               "os": "Ubuntu-22.04"
             }
           ],
-          "quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "exo_unittests",

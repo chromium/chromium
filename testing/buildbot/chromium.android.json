@@ -8004,7 +8004,6 @@
               "pool": "chromium.tests.avd"
             }
           ],
-          "inverse_quickrun_shards": 6,
           "named_caches": [
             {
               "name": "generic_android31",
@@ -9541,7 +9540,6 @@
               "pool": "chromium.tests.avd"
             }
           ],
-          "inverse_quickrun_shards": 6,
           "named_caches": [
             {
               "name": "generic_android31",
@@ -10647,7 +10645,6 @@
               "pool": "chromium.tests.avd"
             }
           ],
-          "inverse_quickrun_shards": 14,
           "named_caches": [
             {
               "name": "generic_android31",
@@ -27175,7 +27172,6 @@
               "pool": "chromium.tests.avd"
             }
           ],
-          "inverse_quickrun_shards": 12,
           "named_caches": [
             {
               "name": "generic_android24",
@@ -27941,7 +27937,6 @@
               "pool": "chromium.tests.avd"
             }
           ],
-          "inverse_quickrun_shards": 12,
           "named_caches": [
             {
               "name": "generic_android24",
@@ -29848,7 +29843,6 @@
               "pool": "chromium.tests.avd"
             }
           ],
-          "inverse_quickrun_shards": 4,
           "named_caches": [
             {
               "name": "generic_android24",
@@ -32403,7 +32397,6 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "quickrun_shards": 6,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
         },
@@ -32791,7 +32784,6 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "quickrun_shards": 40,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 20
         },

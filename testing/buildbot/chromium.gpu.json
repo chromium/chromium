@@ -2887,7 +2887,6 @@
             }
           ],
           "idempotent": false,
-          "quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -3900,7 +3899,6 @@
             }
           ],
           "idempotent": false,
-          "quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
@@ -4012,7 +4010,6 @@
             }
           ],
           "idempotent": false,
-          "quickrun_shards": 4,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },

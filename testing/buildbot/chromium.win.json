@@ -578,7 +578,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "inverse_quickrun_shards": 2,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_unittests",
@@ -618,7 +617,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "quickrun_shards": 18,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -2009,7 +2007,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "inverse_quickrun_shards": 24,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 12
         },
@@ -2050,7 +2047,6 @@
               "os": "Windows-10-19045"
             }
           ],
-          "inverse_quickrun_shards": 36,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
         },
@@ -4447,7 +4443,6 @@
               "os": "Windows-11-22000"
             }
           ],
-          "quickrun_shards": 30,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
