@@ -20,10 +20,7 @@ export class InjectedScriptLoader {
     const code =
         await new Promise(resolve => loader.fetchCode_(listOfFiles, resolve));
     for (const tab of tabs) {
-      // Set a variable so that Closure deps work correctly.
-      loader.execute_('window.CLOSURE_NO_DEPS = true', tab);
-
-      // Now inject the ChromeVox content script code into the tab.
+      // Inject the ChromeVox content script code into the tab.
       listOfFiles.forEach(file => loader.execute_(code[file], tab));
     }
   }
