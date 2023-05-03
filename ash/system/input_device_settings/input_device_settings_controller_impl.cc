@@ -225,10 +225,10 @@ void InputDeviceSettingsControllerImpl::InitializePolicyHandler() {
       base::BindRepeating(
           &InputDeviceSettingsControllerImpl::OnMousePoliciesChanged,
           base::Unretained(this)));
-
-  // Only initialize the policy handler when in an active user session.
-  if (active_pref_service_) {
-    policy_handler_->Initialize(active_pref_service_);
+  // Only initialize if we have either local state or pref service.
+  // `local_state` can be null in tests.
+  if (local_state_ || active_pref_service_) {
+    policy_handler_->Initialize(local_state_, active_pref_service_);
   }
 }
 

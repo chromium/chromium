@@ -170,6 +170,10 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   else
     TopShortcutsView::RegisterLocalStatePrefs(registry);
   KeyboardBacklightColorController::RegisterPrefs(registry);
+
+  if (for_test) {
+    registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);
+  }
 }
 
 void RegisterSigninProfilePrefs(PrefRegistrySimple* registry, bool for_test) {

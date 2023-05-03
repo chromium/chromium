@@ -20,6 +20,7 @@ class InputDeviceSettingsPolicyHandlerTest : public ::testing::Test {
   void SetUp() override {
     num_times_keyboard_policies_changed_ = 0;
     num_times_mouse_policies_changed_ = 0;
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     handler_ = std::make_unique<InputDeviceSettingsPolicyHandler>(
         base::BindRepeating(
@@ -29,6 +30,8 @@ class InputDeviceSettingsPolicyHandlerTest : public ::testing::Test {
             &InputDeviceSettingsPolicyHandlerTest::OnMousePoliciesChanged,
             base::Unretained(this)));
 
+    local_state_->registry()->RegisterBooleanPref(
+        prefs::kOwnerPrimaryMouseButtonRight, false);
     pref_service_->registry()->RegisterBooleanPref(prefs::kSendFunctionKeys,
                                                    false);
     pref_service_->registry()->RegisterBooleanPref(
@@ -43,17 +46,18 @@ class InputDeviceSettingsPolicyHandlerTest : public ::testing::Test {
   int num_times_mouse_policies_changed_ = 0;
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<InputDeviceSettingsPolicyHandler> handler_;
 };
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardNoPolicy) {
-  handler_->Initialize(pref_service_.get());
+  handler_->Initialize(local_state_.get(), pref_service_.get());
   EXPECT_FALSE(handler_->keyboard_policies().top_row_are_fkeys_policy);
 }
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardManagedPolicy) {
   pref_service_->SetManagedPref(prefs::kSendFunctionKeys, base::Value(false));
-  handler_->Initialize(pref_service_.get());
+  handler_->Initialize(local_state_.get(), pref_service_.get());
 
   EXPECT_EQ(
       mojom::PolicyStatus::kManaged,
@@ -72,7 +76,7 @@ TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardManagedPolicy) {
 TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardRecommendedPolicy) {
   pref_service_->SetRecommendedPref(prefs::kSendFunctionKeys,
                                     base::Value(false));
-  handler_->Initialize(pref_service_.get());
+  handler_->Initialize(local_state_.get(), pref_service_.get());
 
   EXPECT_EQ(
       mojom::PolicyStatus::kRecommended,
@@ -90,14 +94,14 @@ TEST_F(InputDeviceSettingsPolicyHandlerTest, KeyboardRecommendedPolicy) {
 }
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseNoPolicy) {
-  handler_->Initialize(pref_service_.get());
+  handler_->Initialize(local_state_.get(), pref_service_.get());
   EXPECT_FALSE(handler_->mouse_policies().swap_right_policy);
 }
 
 TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseManagedPolicy) {
   pref_service_->SetManagedPref(prefs::kPrimaryMouseButtonRight,
                                 base::Value(false));
-  handler_->Initialize(pref_service_.get());
+  handler_->Initialize(local_state_.get(), pref_service_.get());
 
   EXPECT_EQ(mojom::PolicyStatus::kManaged,
             handler_->mouse_policies().swap_right_policy->policy_status);
@@ -115,7 +119,7 @@ TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseManagedPolicy) {
 TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseRecommendedPolicy) {
   pref_service_->SetRecommendedPref(prefs::kPrimaryMouseButtonRight,
                                     base::Value(false));
-  handler_->Initialize(pref_service_.get());
+  handler_->Initialize(local_state_.get(), pref_service_.get());
 
   EXPECT_EQ(mojom::PolicyStatus::kRecommended,
             handler_->mouse_policies().swap_right_policy->policy_status);
@@ -125,6 +129,24 @@ TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseRecommendedPolicy) {
   pref_service_->SetRecommendedPref(prefs::kPrimaryMouseButtonRight,
                                     base::Value(true));
   EXPECT_EQ(mojom::PolicyStatus::kRecommended,
+            handler_->mouse_policies().swap_right_policy->policy_status);
+  EXPECT_TRUE(handler_->mouse_policies().swap_right_policy->value);
+  EXPECT_EQ(1, num_times_mouse_policies_changed_);
+}
+
+TEST_F(InputDeviceSettingsPolicyHandlerTest, MouseLoginScreenPolicy) {
+  local_state_->SetManagedPref(prefs::kOwnerPrimaryMouseButtonRight,
+                               base::Value(false));
+  handler_->Initialize(local_state_.get(), nullptr);
+
+  EXPECT_EQ(mojom::PolicyStatus::kManaged,
+            handler_->mouse_policies().swap_right_policy->policy_status);
+  EXPECT_FALSE(handler_->mouse_policies().swap_right_policy->value);
+  EXPECT_EQ(0, num_times_mouse_policies_changed_);
+
+  local_state_->SetManagedPref(prefs::kOwnerPrimaryMouseButtonRight,
+                               base::Value(true));
+  EXPECT_EQ(mojom::PolicyStatus::kManaged,
             handler_->mouse_policies().swap_right_policy->policy_status);
   EXPECT_TRUE(handler_->mouse_policies().swap_right_policy->value);
   EXPECT_EQ(1, num_times_mouse_policies_changed_);

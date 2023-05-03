@@ -316,6 +316,12 @@ void MousePrefHandlerImpl::InitializeLoginScreenMouseSettings(
     mouse->settings = GetMouseSettingsFromOldLocalStatePrefs(
         local_state, account_id, mouse_policies, *mouse);
   }
+
+  if (mouse_policies.swap_right_policy &&
+      mouse_policies.swap_right_policy->policy_status ==
+          mojom::PolicyStatus::kManaged) {
+    mouse->settings->swap_right = mouse_policies.swap_right_policy->value;
+  }
 }
 
 void MousePrefHandlerImpl::UpdateLoginScreenMouseSettings(
