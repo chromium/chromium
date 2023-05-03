@@ -187,14 +187,6 @@ template("rust_target") {
     _rustenv += invoker.rustenv
   }
 
-  # TODO(danakj): This could be a hash generated from the input crate, such as
-  # from its path, in which case the BUILD.gn would not need to specify
-  # anything. But GN doesn't give us a hash function to make that easy.
-  _metadata = "0"
-  if (defined(invoker.epoch)) {
-    _metadata = invoker.epoch
-  }
-
   # We require that all source files are listed, even though this is
   # not a requirement for rustc. The reason is to ensure that tools
   # such as `gn deps` give the correct answer, and thus we trigger
@@ -224,7 +216,7 @@ template("rust_target") {
                  "_deps",
                  "_aliased_deps",
                  "_is_data_dep",
-                 "_metadata",
+                 "_rustc_metadata",
                  "_out_dir",
                  "_public_deps",
                  "_rustenv",
@@ -235,6 +227,17 @@ template("rust_target") {
                  "_visibility",
                ])
   } else {
+    _rustc_metadata = ""
+    if (defined(invoker.rustc_metadata)) {
+      _rustc_metadata = invoker.rustc_metadata
+    }
+
+    # Add a metadata-influenced suffix to the output name for libraries only.
+    _output_suffix = ""
+    if (invoker.target_type == "rust_library" && _rustc_metadata != "") {
+      _output_suffix = "-${_rustc_metadata}"
+    }
+
     group(_target_name) {
       testonly = _testonly
       if (defined(_visibility)) {
@@ -353,7 +356,7 @@ template("rust_target") {
       not_needed([
                    "_crate_root",
                    "_crate_name",
-                   "_metadata",
+                   "_rustc_metadata",
                    "_test_configs",
                  ])
     }
@@ -384,7 +387,9 @@ template("rust_target") {
       aliased_deps = _rust_aliased_deps
       public_deps = _rust_public_deps
       rustflags = _rustflags
-      rustflags += [ "-Cmetadata=${_metadata}" ]
+      if (_rustc_metadata != "") {
+        rustflags += [ "-Cmetadata=${_rustc_metadata}" ]
+      }
       rustenv = _rustenv
 
       # The Rust tool() declarations, like C++ ones, use the output_name and
@@ -394,7 +399,7 @@ template("rust_target") {
         output_dir = _output_dir
       }
       if (!defined(output_name) || output_name == "") {
-        output_name = crate_name
+        output_name = "${crate_name}${_output_suffix}"
       }
 
       if (compute_inputs_for_analyze) {

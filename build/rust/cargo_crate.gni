@@ -22,7 +22,6 @@ import("//build/rust/rust_target.gni")
 # Arguments:
 #  sources
 #  crate_root
-#  epoch
 #  deps
 #  aliased_deps
 #  features
@@ -32,6 +31,20 @@ import("//build/rust/rust_target.gni")
 #    All just as in rust_static_library.gni
 #  library_configs/executable_configs
 #    All just as in rust_target.gni
+#
+#  epoch (optional)
+#    The major version of the library, which is used to differentiate between
+#    multiple versions of the same library name. This includes all leading 0s
+#    and the first non-zero value in the crate's version. This should be left
+#    as the default, which is "0", for first-party code unless there are
+#    multiple versions of a crate present. For third-party code, the version
+#    epoch (matching the directory it is found in) should be specified.
+#
+#    Examples:
+#      1.0.2 => epoch = "1"
+#      4.2.0 => epoch = "4"
+#      0.2.7 => epoch = "0.2"
+#      0.0.3 => epoch = "0.0.3"
 #
 #  dev_deps
 #    Same meaning as test_deps in rust_static_library.gni, but called
@@ -83,6 +96,15 @@ template("cargo_crate") {
     _crate_name = invoker.crate_name
   }
 
+  # Construct metadata from the crate epoch or an explicitly provided metadata
+  # field.
+  _rustc_metadata = ""
+  if (defined(invoker.rustc_metadata)) {
+    _rustc_metadata = invoker.rustc_metadata
+  } else if (defined(invoker.epoch)) {
+    _rustc_metadata = invoker.epoch
+  }
+
   # Executables need to have unique names. Work out a prefix.
   if (defined(invoker.build_root)) {
     _epochlabel = "vunknown"
@@ -130,6 +152,7 @@ template("cargo_crate") {
                                  "build_sources",
                                  "build_script_inputs",
                                  "build_script_outputs",
+                                 "epoch",
                                  "unit_test_target",
                                  "target_type",
                                  "configs",
@@ -143,6 +166,8 @@ template("cargo_crate") {
     if (defined(invoker.crate_type)) {
       crate_type = invoker.crate_type
     }
+
+    rustc_metadata = _rustc_metadata
 
     # TODO(crbug.com/1422745): don't default to true. This requires changes to
     # third_party.toml and gnrt when generating third-party build targets.
