@@ -326,7 +326,7 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
       *result.logical_cpus[0].c_states[0].time_in_state_since_last_boot_us);
 }
 
-TEST(TelemetryApiConverters, BatteryInfo) {
+TEST(TelemetryApiConverters, BatteryInfoWithoutSerialNumberPermission) {
   constexpr int64_t kCycleCount = 100000000000000;
   constexpr double_t kVoltageNow = 1234567890.123456;
   constexpr char kVendor[] = "Google";
@@ -354,7 +354,8 @@ TEST(TelemetryApiConverters, BatteryInfo) {
           kStatus, kManufacturerDate,
           telemetry_service::UInt64Value::New(kTemperature));
 
-  auto result = ConvertPtr<telemetry_api::BatteryInfo>(std::move(input));
+  auto result = ConvertPtr<telemetry_api::BatteryInfo>(
+      std::move(input), /* has_serial_number_permission= */ false);
   ASSERT_TRUE(result.cycle_count);
   EXPECT_EQ(kCycleCount, static_cast<int64_t>(*result.cycle_count));
 
@@ -363,7 +364,7 @@ TEST(TelemetryApiConverters, BatteryInfo) {
 
   ASSERT_TRUE(result.vendor);
   EXPECT_EQ(kVendor, *result.vendor);
-  // serial_number is not converted in ConvertPtr().
+  // serial_number is not converted in ConvertPtr() without permission.
   EXPECT_FALSE(result.serial_number);
 
   ASSERT_TRUE(result.charge_full_design);
@@ -397,6 +398,20 @@ TEST(TelemetryApiConverters, BatteryInfo) {
 
   ASSERT_TRUE(result.temperature);
   EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
+}
+
+TEST(TelemetryApiConverters, BatteryInfoWithSerialNumberPermission) {
+  constexpr char kSerialNumber[] = "abcdef";
+
+  telemetry_service::ProbeBatteryInfoPtr input =
+      telemetry_service::ProbeBatteryInfo::New();
+  input->serial_number = kSerialNumber;
+
+  auto result = ConvertPtr<telemetry_api::BatteryInfo>(
+      std::move(input), /* has_serial_number_permission= */ true);
+
+  ASSERT_TRUE(result.serial_number);
+  EXPECT_EQ(kSerialNumber, result.serial_number);
 }
 
 TEST(TelemetryApiConverters, NonRemovableBlockDevice) {

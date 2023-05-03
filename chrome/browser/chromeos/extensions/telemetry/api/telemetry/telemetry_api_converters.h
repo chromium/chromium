@@ -45,10 +45,11 @@ chromeos::api::os_telemetry::LogicalCpuInfo UncheckedConvertPtr(
 chromeos::api::os_telemetry::PhysicalCpuInfo UncheckedConvertPtr(
     crosapi::mojom::ProbePhysicalCpuInfoPtr input);
 
-// Note: Battery's serial number is not converted in this function because it is
-// guarded by a permission.
+// `serial_number` field should be converted iff `has_serial_number_permission`
+// is true.
 chromeos::api::os_telemetry::BatteryInfo UncheckedConvertPtr(
-    crosapi::mojom::ProbeBatteryInfoPtr input);
+    crosapi::mojom::ProbeBatteryInfoPtr input,
+    bool has_serial_number_permission);
 
 chromeos::api::os_telemetry::NetworkInfo UncheckedConvertPtr(
     chromeos::network_health::mojom::NetworkPtr input);
@@ -116,10 +117,11 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   return output;
 }
 
-template <class OutputT, class InputT>
-OutputT ConvertPtr(InputT input) {
-  return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
-                            : OutputT();
+template <class OutputT, class InputT, class... Types>
+OutputT ConvertPtr(InputT input, Types... args) {
+  return (!input.is_null())
+             ? unchecked::UncheckedConvertPtr(std::move(input), args...)
+             : OutputT();
 }
 
 }  // namespace converters
