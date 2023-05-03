@@ -198,9 +198,11 @@ if (ios_enable_credential_provider_extension) {
       "//components/keyed_service/core",
       "//ios/chrome/app/application_delegate:app_state_header",
       "//ios/chrome/app/application_delegate:observing_app_state_agent",
+      "//ios/chrome/browser/browser_state",
       "//ios/chrome/browser/credential_provider",
       "//ios/chrome/browser/passwords:store_factory",
       "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+      "//ios/chrome/browser/sync",
       "//ios/chrome/common/app_group",
       "//ios/chrome/common/credential_provider",
     ]

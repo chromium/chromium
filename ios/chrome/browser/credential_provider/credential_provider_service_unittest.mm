@@ -11,11 +11,13 @@
 
 #import "base/memory/scoped_refptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/favicon/core/large_icon_service.h"
 #import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/test_password_store.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -335,15 +337,18 @@ TEST_F(CredentialProviderServiceTest, PasswordCreationPreference) {
 // Tests that the CredentialProviderService has the correct stored email based
 // on the password sync state.
 TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
+  // Start by signing in and turning sync on.
+  CoreAccountInfo account;
+  account.email = "foo@gmail.com";
+  account.gaia = "gaia";
+  account.account_id = CoreAccountId::FromGaiaId("gaia");
+  sync_service_.SetAccountInfo(account);
+  sync_service_.SetHasSyncConsent(true);
+
   CreateCredentialProviderService();
 
-  // Start by signing in and turning sync on.
-  CoreAccountInfo account = identity_test_environment_.SetPrimaryAccount(
-      "foo@gmail.com", signin::ConsentLevel::kSync);
-  sync_service_.FireStateChanged();
-
   EXPECT_NSEQ(
-      base::SysUTF8ToNSString(account.email),
+      @"foo@gmail.com",
       [app_group::GetGroupUserDefaults()
           stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
 
@@ -355,6 +360,60 @@ TEST_F(CredentialProviderServiceTest, PasswordSyncStoredEmail) {
       /*sync_everything=*/false,
       /*types=*/user_selectable_type_set);
   sync_service_.FireStateChanged();
+
+  EXPECT_FALSE([app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
+}
+
+// Tests that the CredentialProviderService has the correct stored email based
+// on the account storage state.
+TEST_F(CredentialProviderServiceTest, SignedInUserStoredEmail) {
+  // Set up a signed in user with the flag enabled.
+  base::test::ScopedFeatureList features(
+      password_manager::features::kEnablePasswordsAccountStorage);
+  CoreAccountInfo account;
+  account.email = "foo@gmail.com";
+  account.gaia = "gaia";
+  account.account_id = CoreAccountId::FromGaiaId("gaia");
+  sync_service_.SetAccountInfo(account);
+  sync_service_.SetHasSyncConsent(false);
+
+  CreateCredentialProviderService();
+
+  EXPECT_NSEQ(
+      [app_group::GetGroupUserDefaults()
+          stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()],
+      @"foo@gmail.com");
+
+  // Disable account storage.
+  syncer::UserSelectableTypeSet user_selectable_type_set =
+      sync_service_.GetUserSettings()->GetSelectedTypes();
+  user_selectable_type_set.Remove(syncer::UserSelectableType::kPasswords);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/user_selectable_type_set);
+  sync_service_.FireStateChanged();
+
+  EXPECT_FALSE([app_group::GetGroupUserDefaults()
+      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
+}
+
+// Similar to SignedInUserStoredEmail but disable the account storage flag.
+TEST_F(CredentialProviderServiceTest,
+       SignedInUserStoredEmailWithFeatureDisabled) {
+  // Set up a signed in user with the flag disabled.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(
+      password_manager::features::kEnablePasswordsAccountStorage);
+  CoreAccountInfo account;
+  account.email = "foo@gmail.com";
+  account.gaia = "gaia";
+  account.account_id = CoreAccountId::FromGaiaId("gaia");
+  sync_service_.SetAccountInfo(account);
+  sync_service_.SetHasSyncConsent(false);
+  sync_service_.FireStateChanged();
+
+  CreateCredentialProviderService();
 
   EXPECT_FALSE([app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()]);
