@@ -4720,6 +4720,26 @@
       },
     },
   },
+  'webview_trichrome_64_cts_tests full_mode': {
+    'modifications': {
+      'android-12-x64-rel': {
+        'args': [
+          # crbug.com/1401476: Test doesn't work with code coverage.
+          '--gtest_filter=-com.android.cts.webkit.WebViewDeviceSideStartupTest.testStrictModeNotViolatedOnStartup',
+        ],
+      }
+    }
+  },
+  'webview_trichrome_64_cts_tests instant_mode': {
+    'modifications': {
+      'android-12-x64-rel': {
+        'args': [
+          # crbug.com/1401476: Test doesn't work with code coverage.
+          '--gtest_filter=-com.android.cts.webkit.WebViewDeviceSideStartupTest.testStrictModeNotViolatedOnStartup',
+        ],
+      }
+    }
+  },
   'webview_ui_test_app_test_apk': {
     'remove_from': [
       'android-11-x86-rel', # crbug.com/1165280
