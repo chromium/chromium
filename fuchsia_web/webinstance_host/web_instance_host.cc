@@ -586,7 +586,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   if (!expected_builder.has_value()) {
     return expected_builder.error();
   }
-  auto& builder = expected_builder.value();
+  auto builder = std::move(expected_builder.value());
 
   if (zx_status_t status = AppendLaunchArgs(params, builder->args());
       status != ZX_OK) {
