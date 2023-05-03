@@ -257097,6 +257097,19 @@
         {}
        ]
       ],
+      "input-checkbox-no-centering.html": [
+       "7dba149c75f298cf40f4ace4ae9496f100f14305",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-no-centering-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "input-date-baseline-min-height.html": [
        "86b552ab809bb77e0edee713daacab8869351941",
        [
@@ -257144,6 +257157,19 @@
          [
           "/html/rendering/widgets/input-radio-disabled-checked-notref.html",
           "!="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "input-radio-no-centering.html": [
+       "6a714f8460016fa3612376f4f234900c65ac95bc",
+       [
+        null,
+        [
+         [
+          "/html/rendering/widgets/input-no-centering-ref.html",
+          "=="
          ]
         ],
         {}
@@ -271268,6 +271294,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "f8d7f18a03fa3b55f1885423fbfd1b51e5446717",
+     []
+    ],
+    "mtime.json": [
+     "76c86ff0e70b1f2680809c557d18bac31f74c27e",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -361819,6 +361855,10 @@
        "18019c56b1bd2535b998c05f301fca3abc8ae1bb",
        []
       ],
+      "input-no-centering-ref.html": [
+       "5b2ea91fe5fa635c221adc8801605f3b14fb66c7",
+       []
+      ],
       "input-radio-disabled-checked-notref.html": [
        "987e03cd92d7824e61cc75bbd723bd9583ab8fe1",
        []
@@ -393904,7 +393944,7 @@
      []
     ],
     "idlharness.https.window-expected.txt": [
-     "8387fe8eb43da25314e8854b0f449bacac592a25",
+     "49f914b9391214df232436c708f4ae935187eb37",
      []
     ],
     "idlharness.https.window.js.ini": [
@@ -396158,7 +396198,23 @@
       "9f9127b22f96da1c8dc84465d33e5c5e476f4262",
       []
      ]
-    }
+    },
+    "streams-echo.https.any-expected.txt": [
+     "85088e50e0fa058b84d13b4589e195c5599ce785",
+     []
+    ],
+    "streams-echo.https.any.serviceworker-expected.txt": [
+     "85088e50e0fa058b84d13b4589e195c5599ce785",
+     []
+    ],
+    "streams-echo.https.any.sharedworker-expected.txt": [
+     "85088e50e0fa058b84d13b4589e195c5599ce785",
+     []
+    ],
+    "streams-echo.https.any.worker-expected.txt": [
+     "85088e50e0fa058b84d13b4589e195c5599ce785",
+     []
+    ]
    },
    "webusb": {
     "DIR_METADATA": [
@@ -599509,7 +599565,7 @@
       ]
      ],
      "animation-timeline-view-functional-notation.tentative.html": [
-      "70891c6ccf8a3aae43e44bdea2655b8969ef8a50",
+      "745d76c72943b4316fd074d8537e41ea82b3d0e2",
       [
        null,
        {}
@@ -636401,7 +636457,7 @@
    },
    "webmidi": {
     "idlharness.https.window.js": [
-     "fabc836fdba582bcd72080da77c7cdd82d20fc82",
+     "8fbd6a903c462948c7b7cc61c5cb3f5c11605a90",
      [
       "webmidi/idlharness.https.window.html",
       {
@@ -636413,6 +636469,14 @@
         [
          "script",
          "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver.js"
+        ],
+        [
+         "script",
+         "/resources/testdriver-vendor.js"
         ],
         [
          "timeout",
@@ -652669,7 +652733,7 @@
      ]
     ],
     "streams-echo.https.any.js": [
-     "3b402d00e08aa0b7b746248835faed37b9b99578",
+     "703318d0e7020af468dc3f4996b1cede78ba9258",
      [
       "webtransport/streams-echo.https.any.html",
       {
