@@ -264,7 +264,10 @@ test("components_unittests") {
   }
 
   if (build_allocation_stack_trace_recorder) {
-    deps += [ "//components/allocation_recorder/crash_client:unit_tests" ]
+    deps += [
+      "//components/allocation_recorder/crash_client:unit_tests",
+      "//components/allocation_recorder/crash_handler:unit_tests",
+    ]
   }
 
   if (!is_ios) {

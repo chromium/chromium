@@ -1,0 +1,19 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("testing") {
+  testonly = true
+  sources = [
+    "crashpad_fake_objects.cc",
+    "crashpad_fake_objects.h",
+    "mock_objects.cc",
+    "mock_objects.h",
+  ]
+
+  deps = [
+    "//components/allocation_recorder/crash_handler:crash_handler",
+    "//testing/gmock",
+    "//third_party/crashpad/crashpad/minidump",
+  ]
+}
