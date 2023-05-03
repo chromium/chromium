@@ -5,14 +5,29 @@
 import os
 import re
 
-_SRC_ROOT = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..'))
-COLOR_PALETTE_RELATIVE_PATH = 'ui/android/java/res/values/color_palette.xml'
-COLOR_PALETTE_PATH = os.path.join(_SRC_ROOT, COLOR_PALETTE_RELATIVE_PATH)
-ONE_OFF_COLORS_RELATIVE_PATH = 'ui/android/java/res/values/one_off_colors.xml'
-ONE_OFF_COLORS_PATH = os.path.join(_SRC_ROOT, ONE_OFF_COLORS_RELATIVE_PATH)
+
+def normpath(path):
+  '''Version of os.path.normpath that also changes backward slashes to
+  forward slashes when not running on Windows.
+  '''
+  # This is safe to always do because the Windows version of os.path.normpath
+  # will replace forward slashes with backward slashes.
+  path = path.replace(os.sep, '/')
+  return os.path.normpath(path)
+
+
+_SRC_ROOT = normpath(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..')))
+COLOR_PALETTE_RELATIVE_PATH = normpath(
+    'ui/android/java/res/values/color_palette.xml')
+COLOR_PALETTE_PATH = normpath(
+    os.path.join(_SRC_ROOT, COLOR_PALETTE_RELATIVE_PATH))
+ONE_OFF_COLORS_RELATIVE_PATH = normpath(
+    'ui/android/java/res/values/one_off_colors.xml')
+ONE_OFF_COLORS_PATH = normpath(
+    os.path.join(_SRC_ROOT, ONE_OFF_COLORS_RELATIVE_PATH))
 BUTTOM_COMPAT_WIDGET_RELATIVE_PATH = (
-    'ui/android/java/src/org/chromium/ui/widget/ButtonCompat.java')
+    normpath('ui/android/java/src/org/chromium/ui/widget/ButtonCompat.java'))
 
 COLOR_PATTERN = re.compile(r'(>|")(#[0-9A-Fa-f]+)(<|")')
 VALID_COLOR_PATTERN = re.compile(
@@ -41,9 +56,9 @@ COLOR_STATE_LIST_DIRS = {
     # Generated with the command below. When color state lists in new folders
     # are added, re-run this command and update.
     # find chrome/ components/ -name *\.xml | grep "/res/color" | xargs grep "<selector" | cut -d: -f1 | xargs dirname | sort | uniq | sed "s/^/'/" | sed "s/$/\/',/"
-    'chrome/browser/feed/android/java/res/color/',
-    'components/browser_ui/styles/android/java/res/color/',
-    'components/browser_ui/styles/android/java/res/color-night/',
-    'components/browser_ui/widget/android/java/res/color/',
-    'components/permissions/android/res/color/',
+    normpath('chrome/browser/feed/android/java/res/color/'),
+    normpath('components/browser_ui/styles/android/java/res/color/'),
+    normpath('components/browser_ui/styles/android/java/res/color-night/'),
+    normpath('components/browser_ui/widget/android/java/res/color/'),
+    normpath('components/permissions/android/res/color/'),
 }
