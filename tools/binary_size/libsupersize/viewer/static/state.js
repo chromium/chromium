@@ -520,9 +520,9 @@ function _makeIconTemplateGetter() {
   };
   const metricsIcons = {
     group: getSymbolIcon('.groupicon'),  // Reuse.
-    elf: getSymbolIcon('.fileicon'),     // Reuse.
-    dex: getSymbolIcon('.dexicon'),      // Reuse.
-    arsc: getSymbolIcon('.arscicon'),    // Reuse.
+    elf: getMetricsIcon('.elficon'),
+    dex: getSymbolIcon('.dexicon'),    // Reuse.
+    arsc: getSymbolIcon('.arscicon'),  // Reuse.
     metrics: getMetricsIcon('.metricsicon'),
     other: getSymbolIcon('.othericon'),  // Reuse.
   };
