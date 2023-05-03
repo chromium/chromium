@@ -3678,12 +3678,17 @@ String AXNodeObject::TextFromDescendants(
 #if defined(AX_FAIL_FAST_BUILD)
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
-  for (AXObject* child : children) {
-    if (!child || child->IsDetached()) {
-      // If this child was destroyed while processing another, the weak member
-      // will become null.
-      continue;
+  wtf_size_t num_children = children.size();
+  for (wtf_size_t index = 0; index < num_children; index++) {
+    DCHECK_EQ(children.size(), num_children);
+    if (index >= children.size()) {
+      // TODO(accessibility) Remove this condition once we solve all causes of
+      // the child list being altered during this loop.
+      break;
     }
+    AXObject* child = children[index];
+    DCHECK(child);
+    DCHECK(!child->IsDetached());
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
