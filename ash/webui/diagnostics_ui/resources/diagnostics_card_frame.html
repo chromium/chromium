@@ -1,4 +1,9 @@
 <style include="diagnostics-shared">
+  :host-context(body.jelly-enabled) .card-wrapper {
+    border-radius: 16px;
+    box-shadow: none;
+  }
+
   ::slotted([slot=chip]) {
     background-color: var(--diagnostics-chip-bg-color);
     border-radius: 16px;

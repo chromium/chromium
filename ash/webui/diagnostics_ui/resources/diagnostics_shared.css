@@ -43,11 +43,19 @@
         0 1px 2px var(--cros-shadow-color-key),
         0 2px 6px var(--cros-shadow-color-ambient);
     --diagnostics-card-bg-color: var(--cros-sys-app_base);
-    --diagnostics-chip-bg-color: var(--cros-sys-app_base);
+    --diagnostics-chip-bg-color: var(--cros-sys-surface_variant);
+  }
+
+  :host-context(body.jelly-enabled) .diagnostics-chip {
+    color: var(--cros-sys-on_surface_variant);
   }
 
   :host-context(body.jelly-enabled) .grey-container {
     background-color: var(--cros-sys-app_base_shaded);
+  }
+
+  :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+    border-radius: 20px;
   }
 
   hr {
