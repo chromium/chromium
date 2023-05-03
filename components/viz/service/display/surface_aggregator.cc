@@ -463,6 +463,25 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     surface_damage_rect_list_->push_back(gfx::Rect());
   }
 
+  // Before assigning a surface damage rect to this quad, make sure that it is
+  // not larger than the quad itself. This is possible when a quad is smaller
+  // than it was last frame, or when it moves. The damage should be the size of
+  // larger rect from last frame because we need to damage what's underneath the
+  // quad. So if we promote the now smaller quad to an overlay this frame we
+  // should not remove this damage rect. i.e. we should not assign the damage
+  // rect to this quad.
+  auto& damage_rect_in_target_space = surface_damage_rect_list_->back();
+  if (!damage_rect_in_target_space.IsEmpty()) {
+    gfx::Transform transform =
+        parent_target_transform *
+        target_quad->shared_quad_state->quad_to_target_transform;
+    gfx::Rect rect_in_target_space =
+        cc::MathUtil::MapEnclosingClippedRect(transform, target_quad->rect);
+    if (!rect_in_target_space.Contains(damage_rect_in_target_space)) {
+      return nullptr;
+    }
+  }
+
   // The latest surface damage rect.
   *overlay_damage_index = surface_damage_rect_list_->size() - 1;
 

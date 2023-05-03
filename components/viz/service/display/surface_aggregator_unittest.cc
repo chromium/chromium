@@ -321,10 +321,12 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
                           desc.intersects_damage_under);
         break;
       case DrawQuad::Material::kYuvVideoContent:
-        AddYUVVideoQuad(pass, desc.rect, desc.per_quad_damage_output);
+        AddYUVVideoQuad(pass, desc.rect, desc.per_quad_damage_output,
+                        desc.to_target_transform);
         break;
       case DrawQuad::Material::kTextureContent:
-        AddTextureDrawQuad(pass, desc.rect, desc.per_quad_damage_output);
+        AddTextureDrawQuad(pass, desc.rect, desc.per_quad_damage_output,
+                           desc.to_target_transform);
         break;
       default:
         NOTREACHED();
@@ -457,9 +459,10 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
   static void AddYUVVideoQuad(CompositorRenderPass* pass,
                               const gfx::Rect& output_rect,
-                              bool per_quad_damage_output) {
+                              bool per_quad_damage_output,
+                              const gfx::Transform& transform) {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
-    shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
+    shared_state->SetAll(transform, output_rect, output_rect,
                          gfx::MaskFilterInfo(), absl::nullopt, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<YUVVideoDrawQuad>();
@@ -475,9 +478,10 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
   static void AddTextureDrawQuad(CompositorRenderPass* pass,
                                  const gfx::Rect& output_rect,
-                                 bool per_quad_damage_output) {
+                                 bool per_quad_damage_output,
+                                 const gfx::Transform& transform) {
     auto* shared_state = pass->CreateAndAppendSharedQuadState();
-    shared_state->SetAll(gfx::Transform(), output_rect, output_rect,
+    shared_state->SetAll(transform, output_rect, output_rect,
                          gfx::MaskFilterInfo(), absl::nullopt, false, 1,
                          SkBlendMode::kSrcOver, 0);
     auto* quad = pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
@@ -7728,6 +7732,208 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassHasPerQuadDamage) {
       }
       i++;
     }
+  }
+}
+
+TEST_F(SurfaceAggregatorValidSurfaceTest, QuadContainsSurfaceDamageRect) {
+  // Video quad
+  gfx::Rect surface_quad_rect = gfx::Rect(0, 0, 100, 100);
+  gfx::Rect video_quad_rect = gfx::Rect(0, 0, 50, 50);
+  auto video_quad = Quad::YUVVideoQuad(video_quad_rect);
+
+  std::vector<Pass> child_surface_passes = {
+      Pass({video_quad}, /*size=*/surface_quad_rect.size(),
+           /*damage_rect=*/video_quad_rect)};
+
+  TestSurfaceIdAllocator child_surface_id(child_sink_->frame_sink_id());
+  {
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    PopulateTransferableResources(child_surface_frame);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+  }
+
+  gfx::PointF child_surface_offset(10.0f, 5.0f);
+  gfx::Transform child_surface_transform = gfx::Transform::MakeTranslation(
+      child_surface_offset.x(), child_surface_offset.y());
+
+  auto apply_offset = [child_surface_offset](const gfx::Rect orig_rect) {
+    auto rtn_rect = orig_rect;
+    rtn_rect.set_x(static_cast<int>(child_surface_offset.x()) + rtn_rect.x());
+    rtn_rect.set_y(static_cast<int>(child_surface_offset.y()) + rtn_rect.y());
+    return rtn_rect;
+  };
+
+  {  // First frame will have full damage for each surface.
+    gfx::Rect red_rect = gfx::Rect(60, 0, 40, 40);
+    // root surface quads
+    std::vector<Quad> root_surface_quads = {
+        Quad::SolidColorQuad(SkColors::kRed, red_rect),
+        Quad::SurfaceQuad(
+            SurfaceRange(absl::nullopt, child_surface_id), SkColors::kWhite,
+            /*primary_surface_rect*/ surface_quad_rect,
+            /*opacity*/ 1.f, child_surface_transform,
+            /*stretch_content_to_fill_bounds=*/false, gfx::MaskFilterInfo(),
+            /*is_fast_rounded_corner=*/false)};
+    std::vector<Pass> root_passes = {Pass(root_surface_quads,
+                                          /*size=*/gfx::Size(200, 200),
+                                          /*damage_rect=*/red_rect)};
+
+    CompositorFrame root_frame = MakeEmptyCompositorFrame();
+    AddPasses(&root_frame.render_pass_list, root_passes,
+              &root_frame.metadata.referenced_surfaces);
+    root_sink_->SubmitCompositorFrame(root_surface_id_.local_surface_id(),
+                                      std::move(root_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(gfx::Rect(0, 0, 200, 200), output_root_pass->damage_rect);
+    EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
+              aggregated_frame.surface_damage_rect_list_[0]);
+    EXPECT_EQ(apply_offset(surface_quad_rect),
+              aggregated_frame.surface_damage_rect_list_[1]);
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+    // Surface damage is larger than the video quad.
+    ASSERT_FALSE(video_sqs->overlay_damage_index.has_value());
+  }
+
+  {  // Same frame submitted to child surface.
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(apply_offset(video_quad_rect), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+
+    // Surface damage can be assigned to the video quad.
+    ASSERT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(0U, index);
+    EXPECT_EQ(apply_offset(video_quad_rect),
+              aggregated_frame.surface_damage_rect_list_[index]);
+  }
+
+  gfx::Rect scaled_video_rect = gfx::Rect(0, 0, 55, 55);
+
+  {  // Video quad on child surface scales to 110%
+    auto scaled_video_quad = Quad::YUVVideoQuad(video_quad_rect);
+    scaled_video_quad.to_target_transform.Scale(1.1f);
+
+    child_surface_passes = std::vector<Pass>(
+        {Pass({scaled_video_quad}, /*size=*/surface_quad_rect.size(),
+              /*damage_rect=*/scaled_video_rect)});
+
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto& output_root_pass = aggregated_frame.render_pass_list.back();
+
+    EXPECT_EQ(apply_offset(scaled_video_rect), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+
+    ASSERT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(0U, index);
+    EXPECT_EQ(apply_offset(scaled_video_rect),
+              aggregated_frame.surface_damage_rect_list_[index]);
+  }
+
+  {  // Video quad scales back to 100%
+    child_surface_passes =
+        std::vector<Pass>({Pass({video_quad}, /*size=*/surface_quad_rect.size(),
+                                /*damage_rect=*/scaled_video_rect)});
+
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(apply_offset(scaled_video_rect), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+    // The damage is still the size of the scale rect, which is larger than the
+    // video quad this frame, so damage is not assigned to this quad.
+    ASSERT_FALSE(video_sqs->overlay_damage_index.has_value());
+  }
+
+  auto moved_video_quad = Quad::YUVVideoQuad(video_quad_rect);
+  moved_video_quad.to_target_transform.Translate(gfx::Vector2dF(3, 0));
+
+  {  // Video moves 3px right
+    gfx::Rect moved_damage = gfx::Rect(0, 0, 53, 50);
+    child_surface_passes = std::vector<Pass>(
+        {Pass({moved_video_quad}, /*size=*/surface_quad_rect.size(),
+              /*damage_rect=*/moved_damage)});
+
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(apply_offset(moved_damage), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+    // The damage from moving the video is wider than the video quad.
+    ASSERT_FALSE(video_sqs->overlay_damage_index.has_value());
+  }
+
+  {  // Stays at 3px right
+    gfx::Rect moved_video_rect = gfx::Rect(3, 0, 50, 50);
+    child_surface_passes = std::vector<Pass>(
+        {Pass({moved_video_quad}, /*size=*/surface_quad_rect.size(),
+              /*damage_rect=*/moved_video_rect)});
+
+    CompositorFrame child_surface_frame = MakeEmptyCompositorFrame();
+    AddPasses(&child_surface_frame.render_pass_list, child_surface_passes,
+              &child_surface_frame.metadata.referenced_surfaces);
+    child_sink_->SubmitCompositorFrame(child_surface_id.local_surface_id(),
+                                       std::move(child_surface_frame));
+    auto aggregated_frame = AggregateFrame(root_surface_id_);
+    auto* output_root_pass = aggregated_frame.render_pass_list.back().get();
+
+    EXPECT_EQ(apply_offset(moved_video_rect), output_root_pass->damage_rect);
+    EXPECT_EQ(output_root_pass->damage_rect,
+              DamageListUnion(aggregated_frame.surface_damage_rect_list_));
+
+    const SharedQuadState* video_sqs =
+        output_root_pass->quad_list.back()->shared_quad_state;
+    // The damage is now the same rect as the video, and can be assigned.
+    ASSERT_TRUE(video_sqs->overlay_damage_index.has_value());
+    auto index = video_sqs->overlay_damage_index.value();
+    EXPECT_EQ(0U, index);
+    EXPECT_EQ(apply_offset(moved_video_rect),
+              aggregated_frame.surface_damage_rect_list_[index]);
   }
 }
 
