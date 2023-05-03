@@ -11,10 +11,12 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/video_capture_service.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -73,6 +75,10 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 
  protected:
   void SetUp() override {
+    // Those tests are incompatible with the automatic retry with safe mode on
+    // macOS.
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kRetryGetVideoCaptureDeviceInfos);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     provider_ = std::make_unique<ServiceVideoCaptureProvider>(
         base::BindRepeating([]() {
@@ -150,6 +156,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
       video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback>
       service_cb_;
   base::RunLoop wait_for_connection_to_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that if connection to the service is lost during an outstanding call
