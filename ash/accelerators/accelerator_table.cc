@@ -34,11 +34,7 @@ namespace ash {
 // 5- Don't forget to update the keyboard_shortcut_viewer_metadata.cc and
 //    shortcut_viewer_strings.grdp.
 const AcceleratorData kDeprecatedAccelerators[] = {
-    {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN, SHOW_TASK_MANAGER},
-
-    // Deprecated in M59.
-    {true, ui::VKEY_K, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN,
-     TOGGLE_IME_MENU_BUBBLE}};
+    {true, ui::VKEY_ESCAPE, ui::EF_SHIFT_DOWN, SHOW_TASK_MANAGER}};
 
 const size_t kDeprecatedAcceleratorsLength = std::size(kDeprecatedAccelerators);
 
@@ -47,12 +43,7 @@ const DeprecatedAcceleratorData kDeprecatedAcceleratorsData[] = {
     // completely in M94.
     {SHOW_TASK_MANAGER, "Ash.Accelerators.Deprecated.ShowTaskManager",
      IDS_DEPRECATED_SHOW_TASK_MANAGER_MSG, IDS_SHORTCUT_TASK_MANAGER_OLD,
-     IDS_SHORTCUT_TASK_MANAGER_NEW, false},
-    // The action for the old shortcut was stopped in M92. Delete
-    // completely in M94.
-    {TOGGLE_IME_MENU_BUBBLE, "Ash.Accelerators.Deprecated.ShowImeMenuBubble",
-     IDS_DEPRECATED_SHOW_IME_BUBBLE_MSG, IDS_SHORTCUT_IME_BUBBLE_OLD,
-     IDS_SHORTCUT_IME_BUBBLE_NEW, false}};
+     IDS_SHORTCUT_TASK_MANAGER_NEW, false}};
 
 const size_t kDeprecatedAcceleratorsDataLength =
     std::size(kDeprecatedAcceleratorsData);

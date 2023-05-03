@@ -106,16 +106,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Accelerators.Deprecated.ShowImeMenuBubble"
-    enum="DeprecatedAcceleratorUsage" expires_after="M77">
-  <owner>afakhry@chromium.org</owner>
-  <summary>
-    Showing the IME menu bubble has two accelerators: - Alt+Shift+K which is
-    deprecated. - Search+Shift+K which is new. This histogram shows the number
-    of times each accelerator (deprecated and new) is used.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Accelerators.Deprecated.ShowTaskManager"
     enum="DeprecatedAcceleratorUsage" expires_after="2022-01-23">
   <owner>zentaro@chromium.org</owner>
