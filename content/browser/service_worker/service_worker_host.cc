@@ -145,17 +145,14 @@ void ServiceWorkerHost::BindUsbService(
 }
 
 net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
-  // TODO(https://crbug.com/1147281): This is the NetworkIsolationKey of a
-  // top-level browsing context, which shouldn't be use for ServiceWorkers used
-  // in iframes.
-  return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
-      version_->key().origin());
+  return version_->key().ToPartialNetIsolationInfo().network_isolation_key();
 }
 
 net::NetworkAnonymizationKey ServiceWorkerHost::GetNetworkAnonymizationKey()
     const {
-  return net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
-      version_->key().origin());
+  return version_->key()
+      .ToPartialNetIsolationInfo()
+      .network_anonymization_key();
 }
 
 const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {

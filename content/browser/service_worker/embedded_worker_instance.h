@@ -257,7 +257,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   CreateFactoryBundle(
       RenderProcessHost* rph,
       int routing_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       network::mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,

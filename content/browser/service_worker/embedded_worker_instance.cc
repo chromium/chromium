@@ -334,11 +334,9 @@ void EmbeddedWorkerInstance::Start(
           storage_partition->GetWeakPtr(), params->script_url,
           coep->reporting_endpoint, coep->report_only_reporting_endpoint,
           owner_version_->reporting_source(),
-          // TODO(https://crbug.com/1147281): This is the
-          // NetworkAnonymizationKey of a top-level browsing context, which
-          // shouldn't be use for ServiceWorkers used in iframes.
-          net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
-              url::Origin::Create(params->script_url)));
+          owner_version_->key()
+              .ToPartialNetIsolationInfo()
+              .network_anonymization_key());
       coep_reporter_->BindObserver(std::move(reporting_observer_remote));
 
       coep_reporter_->Clone(
@@ -379,7 +377,7 @@ void EmbeddedWorkerInstance::Start(
     // reaches the 'installed' state.
     if (!params->is_installed) {
       factory_bundle_for_new_scripts = CreateFactoryBundle(
-          rph, routing_id, origin, client_security_state.Clone(),
+          rph, routing_id, owner_version_->key(), client_security_state.Clone(),
           std::move(coep_reporter_for_scripts),
           ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
           params->devtools_worker_token.ToString());
@@ -391,7 +389,8 @@ void EmbeddedWorkerInstance::Start(
     // service worker terminates itself when the connection breaks, so a new
     // instance can be started.
     factory_bundle_for_renderer = CreateFactoryBundle(
-        rph, routing_id, origin, std::move(client_security_state),
+        rph, routing_id, owner_version_->key(),
+        std::move(client_security_state),
         std::move(coep_reporter_for_subresources),
         ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
         params->devtools_worker_token.ToString());
@@ -822,7 +821,7 @@ std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
 EmbeddedWorkerInstance::CreateFactoryBundle(
     RenderProcessHost* rph,
     int routing_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     network::mojom::ClientSecurityStatePtr client_security_state,
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter,
@@ -841,12 +840,11 @@ EmbeddedWorkerInstance::CreateFactoryBundle(
     client_security_state = network::mojom::ClientSecurityState::New();
   }
 
+  const url::Origin& origin = storage_key.origin();
+
   network::mojom::URLLoaderFactoryParamsPtr factory_params =
       URLLoaderFactoryParamsHelper::CreateForWorker(
-          rph, origin,
-          net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
-                                     origin, origin,
-                                     net::SiteForCookies::FromOrigin(origin)),
+          rph, origin, storage_key.ToPartialNetIsolationInfo(),
           std::move(coep_reporter),
           static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
               ->CreateAuthCertObserverForServiceWorker(),
