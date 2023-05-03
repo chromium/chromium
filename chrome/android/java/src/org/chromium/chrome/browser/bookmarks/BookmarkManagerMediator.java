@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -844,13 +843,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
             index++;
         }
 
-        // TODO(https://crbug.com/1441191): Move this into the query handler.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST) && topLevelFoldersShowing()
-                && !BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            updateOrAdd(index++, buildDividerListItem());
-            updateOrAdd(index++, buildShoppingFilterListItem());
-        }
-
         if (mModelList.size() > index) {
             mModelList.removeRange(index, mModelList.size() - index);
         }
@@ -1035,20 +1027,11 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         boolean isHighlighted = Objects.equals(bookmarkId, mHighlightedBookmark);
         propertyModel.set(BookmarkManagerProperties.IS_HIGHLIGHTED, isHighlighted);
         propertyModel.set(BookmarkManagerProperties.CLEAR_HIGHLIGHT, this::clearHighlight);
-        return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
-    }
 
-    private ListItem buildDividerListItem() {
-        BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createDivider();
-        PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
-        propertyModel.set(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY, bookmarkListEntry);
-        return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
-    }
+        if (bookmarkListEntry.getViewType() == ViewType.SHOPPING_FILTER) {
+            propertyModel.set(BookmarkManagerProperties.OPEN_FOLDER, this::openFolder);
+        }
 
-    private ListItem buildShoppingFilterListItem() {
-        BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createShoppingFilter();
-        PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
-        propertyModel.set(BookmarkManagerProperties.OPEN_FOLDER, this::openFolder);
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
 

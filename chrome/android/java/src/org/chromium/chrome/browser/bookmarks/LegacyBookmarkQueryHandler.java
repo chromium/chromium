@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -61,6 +62,12 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
                     BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
             bookmarkListEntries.add(bookmarkListEntry);
         }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHOPPING_LIST)) {
+            bookmarkListEntries.add(BookmarkListEntry.createDivider());
+            bookmarkListEntries.add(BookmarkListEntry.createShoppingFilter());
+        }
+
         return bookmarkListEntries;
     }
 
