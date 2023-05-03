@@ -87,8 +87,25 @@ void TriggerTabList() {
   [super tearDown];
 }
 
+// Tests that all tabs are opened when no tab is deselected from the list.
+- (void)testOpenAllTabs {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+  TriggerTabList();
+  [[EarlGrey selectElementWithMatcher:OpenButtonMatcher()]
+      performAction:grey_tap()];
+  int expectedTabCountFromDistantSessions = [BringAndroidTabsAppInterface
+      tabsCountForSession:BringAndroidTabsAppInterfaceForeignSession::
+                              kRecentFromAndroidPhone];
+  // New tab page already exists in the tab grid.
+  [ChromeEarlGrey waitForMainTabCount:expectedTabCountFromDistantSessions + 1];
+  VerifyTabListPromptVisibility(NO);
+  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
+}
+
 // Deselects a tab and tests that the remaining tab is opened.
-- (void)testOpenTabs {
+- (void)testDeselectAndOpenTabs {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
@@ -104,6 +121,7 @@ void TriggerTabList() {
                               kRecentFromAndroidPhone];
   [ChromeEarlGrey waitForMainTabCount:expectedTabCountFromDistantSessions];
   VerifyTabListPromptVisibility(NO);
+  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
 }
 
 // Tests that swiping down on the list dismisses the view and does not open any
@@ -118,6 +136,7 @@ void TriggerTabList() {
   // New tab page is in the tab grid.
   [ChromeEarlGrey waitForMainTabCount:1];
   VerifyTabListPromptVisibility(NO);
+  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
 }
 
 // Tests that tapping cancel dismisses the view and does not open any tabs.
@@ -133,6 +152,7 @@ void TriggerTabList() {
   // New tab page is in the tab grid.
   [ChromeEarlGrey waitForMainTabCount:1];
   VerifyTabListPromptVisibility(NO);
+  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
 }
 
 // Tests that the open tabs button is disabled when all of the tabs are
@@ -142,7 +162,7 @@ void TriggerTabList() {
     EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
   }
   TriggerTabList();
-  // Select all of the tabs in the list.
+  // Deselect all of the tabs in the list.
   [[EarlGrey selectElementWithMatcher:ChromiumTestPageTitle()]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:GoogleTestPageTitle()]
@@ -150,6 +170,7 @@ void TriggerTabList() {
   [[EarlGrey selectElementWithMatcher:OpenButtonMatcher()]
       assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
                                    grey_sufficientlyVisible(), nil)];
+  VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/NO);
 }
 
 @end
