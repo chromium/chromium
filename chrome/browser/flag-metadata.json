@@ -7087,16 +7087,6 @@
     "expiry_milestone": 115
   },
   {
-    "name": "sync-trusted-vault-passphrase-promo",
-    "owners": [ "mastiz", "mmoskvitin" ],
-    "expiry_milestone": 110
-  },
-  {
-    "name": "sync-trusted-vault-passphrase-recovery",
-    "owners": [ "mastiz", "mmoskvitin" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "synthesized-restore-session",
     "owners": [ "justincohen", "ajuma" ],
     "expiry_milestone": 120
