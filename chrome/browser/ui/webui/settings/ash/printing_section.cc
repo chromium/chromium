@@ -293,6 +293,8 @@ void PrintingSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isViewPpdEnabled", features::IsViewPpdEnabled());
   html_source->AddBoolean("isPrinterSettingsRevampEnabled",
                           features::IsPrinterSettingsRevampEnabled());
+  html_source->AddBoolean("isPrinterSettingsPrinterStatusEnabled",
+                          features::IsPrinterSettingsPrinterStatusEnabled());
 }
 
 void PrintingSection::AddHandlers(content::WebUI* web_ui) {

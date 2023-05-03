@@ -241,8 +241,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['CellularNetworksList', 'cellular_networks_list_test.js'],
  ['CellularRoamingToggleButton', 'cellular_roaming_toggle_button_test.js'],
  [
-   'CupsPrinterEntry', 'cups_printer_entry_tests.js',
-   {enabled: ['ash::features::kPrinterSettingsRevamp']}
+   'CupsPrinterEntry', 'cups_printer_entry_tests.js', {
+     enabled: [
+       'ash::features::kPrinterSettingsRevamp',
+       'ash::features::kPrinterSettingsPrinterStatus'
+     ]
+   }
  ],
  ['CupsPrinterLandingPage', 'cups_printer_landing_page_tests.js'],
  [

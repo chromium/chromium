@@ -58,12 +58,14 @@ export class SettingsCupsPrintersEntryElement extends
       },
 
       /**
-       * True when the "printer-settings-revamp" feature flag is enabled.
+       * True when the "printer-settings-printer-status" feature flag is
+       * enabled.
        */
-      isPrinterSettingsRevampEnabled_: {
+      isPrinterSettingsPrinterStatusEnabled_: {
         type: Boolean,
         value: () => {
-          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
+          return loadTimeData.getBoolean(
+              'isPrinterSettingsPrinterStatusEnabled');
         },
         readOnly: true,
       },
@@ -75,6 +77,7 @@ export class SettingsCupsPrintersEntryElement extends
   subtext: string;
   userPrintersAllowed: boolean;
   private isPrinterSettingsRevampEnabled_: boolean;
+  private isPrinterSettingsPrinterStatusEnabled_: boolean;
 
   /**
    * Fires a custom event when the menu button is clicked. Sends the details of
@@ -157,7 +160,8 @@ export class SettingsCupsPrintersEntryElement extends
   }
 
   private showPrinterStatusIcon_(): boolean {
-    return this.isSavedPrinter_() && this.isPrinterSettingsRevampEnabled_;
+    return this.isSavedPrinter_() &&
+        this.isPrinterSettingsPrinterStatusEnabled_;
   }
 
   private getPrinterStatusIcon_(): string {
