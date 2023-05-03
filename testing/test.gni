@@ -189,7 +189,6 @@ template("mixed_test") {
 #      job_policy_ambient_mark_vmo_exec.
 #   fuchsia_package_deps: (Fuchsia, optional) List of fuchsia_component()
 #      targets that this test package contains.
-#   # TODO(crbug/1280705): remove when all tests are migrated to CFv2.
 #   is_xctest: (iOS, optional) whether to build the executable as XCTest.
 #      Similar to the GN arg 'enable_run_ios_unittests_with_xctest' but
 #      for build targets.
