@@ -907,6 +907,7 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
       error.ResolveToFailure(AuthFailure::TPM_ERROR);
       break;
     case user_data_auth::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
+    case user_data_auth::CRYPTOHOME_ERROR_CREDENTIAL_LOCKED:
       // PIN is locked out, for now mark it as auth failure, and pin lockout
       // would be detected by PinStorageCryptohome.
       error.ResolveToFailure(default_error);
