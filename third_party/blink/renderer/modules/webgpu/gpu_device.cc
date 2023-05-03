@@ -188,12 +188,15 @@ void GPUDevice::InjectError(WGPUErrorType type, const char* message) {
 }
 
 void GPUDevice::AddConsoleWarning(const char* message) {
+  AddConsoleWarning(StringFromASCIIAndUTF8(message));
+}
+
+void GPUDevice::AddConsoleWarning(const String& message) {
   ExecutionContext* execution_context = GetExecutionContext();
   if (execution_context && allowed_console_warnings_remaining_ > 0) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
-        mojom::blink::ConsoleMessageLevel::kWarning,
-        StringFromASCIIAndUTF8(message));
+        mojom::blink::ConsoleMessageLevel::kWarning, message);
     execution_context->AddConsoleMessage(console_message);
 
     allowed_console_warnings_remaining_--;

@@ -151,6 +151,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   ExecutionContext* GetExecutionContext() const override;
 
   void InjectError(WGPUErrorType type, const char* message);
+  void AddConsoleWarning(const String& message);
   void AddConsoleWarning(const char* message);
   void AddSingletonWarning(GPUSingletonWarning type);
 
