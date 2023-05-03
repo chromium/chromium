@@ -169,6 +169,12 @@ class CONTENT_EXPORT DevToolsAgentHost
   // represented by |frame_host|.
   virtual void InspectElement(RenderFrameHost* frame_host, int x, int y) = 0;
 
+  using GetUniqueFormControlIdCallback = base::OnceCallback<void(uint64_t)>;
+  // Resolves a backendNodeId to a form control ID.
+  virtual void GetUniqueFormControlId(
+      int node_id,
+      GetUniqueFormControlIdCallback callback) = 0;
+
   // Returns the unique id of the agent.
   virtual std::string GetId() = 0;
 

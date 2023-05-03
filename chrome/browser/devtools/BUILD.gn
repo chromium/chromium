@@ -17,6 +17,8 @@ if (!is_android) {
   import("$_inspector_protocol/inspector_protocol.gni")
 
   _protocol_generated = [
+    "protocol/autofill.cc",
+    "protocol/autofill.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/cast.cc",
@@ -106,6 +108,9 @@ static_library("devtools") {
 
     # Similar bandaid as the above. Since we cannot depend on
     # //chrome/browser:browser, we include indirect dependencies here.
+    "//chrome/browser/autofill:autofill",
+    "//components/autofill/content/browser:browser",
+    "//components/autofill/core/browser:browser",
     "//components/paint_preview/buildflags:buildflags",
     "//content/public/browser",
     "//net",
@@ -249,6 +254,8 @@ static_library("devtools") {
       "//third_party/inspector_protocol:crdtp",
     ]
     sources += [
+      "protocol/autofill_handler.cc",
+      "protocol/autofill_handler.h",
       "protocol/browser_handler.cc",
       "protocol/browser_handler.h",
       "protocol/cast_handler.cc",

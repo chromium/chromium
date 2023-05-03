@@ -114,6 +114,13 @@ void DevToolsRendererChannel::InspectElement(const gfx::Point& point) {
     associated_agent_remote_->InspectElement(point);
 }
 
+void DevToolsRendererChannel::GetUniqueFormControlId(
+    int node_id,
+    GetUniqueFormCallback callback) {
+  associated_agent_remote_->GetUniqueFormControlId(node_id,
+                                                   std::move(callback));
+}
+
 void DevToolsRendererChannel::SetReportChildTargets(
     ChildTargetCreatedCallback report_callback,
     bool wait_for_debugger,

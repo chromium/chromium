@@ -46,6 +46,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
                                base::span<const uint8_t> message) override;
   bool IsAttached() override;
   void InspectElement(RenderFrameHost* frame_host, int x, int y) override;
+  void GetUniqueFormControlId(int node_id,
+                              GetUniqueFormControlIdCallback callback) override;
   std::string GetId() override;
   std::string CreateIOStreamFromData(
       scoped_refptr<base::RefCountedMemory> data) override;

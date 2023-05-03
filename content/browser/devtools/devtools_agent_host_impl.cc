@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "content/browser/devtools/auction_worklet_devtools_agent_host.h"
 #include "content/browser/devtools/devtools_http_handler.h"
@@ -26,6 +27,7 @@
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 #include "content/browser/devtools/web_contents_devtools_agent_host.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
@@ -282,6 +284,12 @@ bool DevToolsAgentHostImpl::IsAttached() {
 void DevToolsAgentHostImpl::InspectElement(RenderFrameHost* frame_host,
                                            int x,
                                            int y) {}
+
+void DevToolsAgentHostImpl::GetUniqueFormControlId(
+    int node_id,
+    GetUniqueFormControlIdCallback callback) {
+  NOTREACHED();
+}
 
 std::string DevToolsAgentHostImpl::GetId() {
   return id_;

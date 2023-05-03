@@ -42,6 +42,9 @@
                 "domain": "Storage",
                 "include": ["runBounceTrackingMitigations"],
                 "async": ["runBounceTrackingMitigations"]
+            }, {
+                "domain": "Autofill",
+                "async": [ "trigger" ]
             }
         ]
     },
