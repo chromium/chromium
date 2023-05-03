@@ -19,7 +19,8 @@ namespace {
 
 using TabGroupsApiTest = ExtensionApiTest;
 
-IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
+// TODO(crbug.com/1441814): Test is flaky.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, DISABLED_TestTabGroupsWorks) {
   ASSERT_TRUE(RunExtensionTest("tab_groups")) << message_;
 }
 
