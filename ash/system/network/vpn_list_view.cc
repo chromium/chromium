@@ -14,10 +14,12 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/rounded_container.h"
+#include "ash/style/typography.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/network_icon.h"
 #include "ash/system/network/network_icon_animation.h"
@@ -37,6 +39,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/network/network_connect.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
@@ -45,6 +48,9 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -130,10 +136,11 @@ bool IsVpnConfigAllowed() {
 views::ImageView* GetPolicyIndicatorIcon() {
   views::ImageView* policy_indicator_icon =
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false);
-  policy_indicator_icon->SetImage(gfx::CreateVectorIcon(
+  policy_indicator_icon->SetImage(ui::ImageModel::FromVectorIcon(
       kSystemMenuBusinessIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+          : kColorAshIconColorPrimary));
   policy_indicator_icon->SetAccessibleName(l10n_util::GetStringFUTF16(
       IDS_ASH_ACCESSIBILITY_FEATURE_MANAGED,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_VPN_BUILT_IN_PROVIDER)));
@@ -250,9 +257,15 @@ class VPNListProviderEntryRevamp : public ActionableView {
     // Add the VPN label with the provider name.
     views::Label* label = TrayPopupUtils::CreateDefaultLabel();
     label->SetText(base::UTF8ToUTF16(name));
-    // TODO(b/252873172): Set correct font for label.
-    TrayPopupUtils::SetLabelFontList(
-        label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+    const bool is_jelly_enabled = chromeos::features::IsJellyEnabled();
+    if (is_jelly_enabled) {
+      label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
+                                            *label);
+    } else {
+      TrayPopupUtils::SetLabelFontList(
+          label, TrayPopupUtils::FontStyle::kDetailedViewLabel);
+    }
     tri_view->AddView(TriView::Container::CENTER, label);
 
     // Add the VPN policy indicator if this provider is disabled.
@@ -263,7 +276,21 @@ class VPNListProviderEntryRevamp : public ActionableView {
     auto add_vpn_button = std::make_unique<SystemMenuButton>(
         base::BindRepeating(&ShowAddVpnDialog, vpn_provider_type_,
                             vpn_provider_app_id_),
-        kSystemMenuPlusIcon, IDS_ASH_STATUS_TRAY_ADD_CONNECTION);
+        gfx::ImageSkia(), gfx::ImageSkia(), IDS_ASH_STATUS_TRAY_ADD_CONNECTION);
+    add_vpn_button->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(
+            kSystemMenuPlusIcon,
+            is_jelly_enabled
+                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+                : kColorAshButtonIconColor));
+    add_vpn_button->SetImageModel(
+        views::Button::STATE_DISABLED,
+        ui::ImageModel::FromVectorIcon(
+            kSystemMenuPlusIcon,
+            is_jelly_enabled
+                ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
+                : kColorAshButtonIconDisabledColor));
 
     // Update enabled state for the whole row and the button.
     bool add_vpn_enabled =
