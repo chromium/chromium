@@ -289,6 +289,7 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
     RunErrorCallbackAndDestroy(public_key.error());
     return;
   }
+  signature_stack_entry->public_key = *public_key;
 
   // Keep track of the raw CBOR bytes of both the complete signature stack entry
   // and its attributes.
@@ -298,8 +299,6 @@ void IntegrityBlockParser::ReadSignatureStackEntryAttributesPublicKeyValue(
   signature_stack_entry->attributes_cbor.insert(
       signature_stack_entry->attributes_cbor.end(), public_key_bytes->begin(),
       public_key_bytes->end());
-
-  signature_stack_entry->public_key = *public_key;
 
   offset_in_stream += public_key_bytes->size();
   data_source_->Read(
@@ -368,13 +367,12 @@ void IntegrityBlockParser::ParseSignatureStackEntrySignature(
     RunErrorCallbackAndDestroy(signature.error());
     return;
   }
+  signature_stack_entry->signature = *signature;
 
   // Keep track of the raw CBOR bytes of the complete signature stack entry.
   signature_stack_entry->complete_entry_cbor.insert(
       signature_stack_entry->complete_entry_cbor.end(),
       signature_bytes->begin(), signature_bytes->end());
-
-  signature_stack_entry->signature = *signature;
 
   signature_stack_.emplace_back(std::move(signature_stack_entry));
 

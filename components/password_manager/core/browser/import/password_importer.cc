@@ -177,10 +177,9 @@ CSVPasswordToCredentialUIEntry(const CSVPassword& csv_password,
 
   auto url = csv_password.GetURL();
   if (!url.has_value()) {
-    if (url.error().empty()) {
-      return base::unexpected(with_status(ImportEntry::Status::MISSING_URL));
-    }
-    return base::unexpected(with_status(ImportEntry::Status::INVALID_URL));
+    return base::unexpected(
+        with_status(url.error().empty() ? ImportEntry::Status::MISSING_URL
+                                        : ImportEntry::Status::INVALID_URL));
   }
   if (url->spec().length() > 2048) {
     return base::unexpected(with_status(ImportEntry::Status::LONG_URL));

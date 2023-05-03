@@ -36,9 +36,7 @@ AggregatableDedupKey::FromJSON(base::Value& value) {
   if (!filters.has_value()) {
     return base::unexpected(filters.error());
   }
-
   absl::optional<uint64_t> dedup_key = ParseDeduplicationKey(*dict);
-
   return AggregatableDedupKey(dedup_key, std::move(*filters));
 }
 

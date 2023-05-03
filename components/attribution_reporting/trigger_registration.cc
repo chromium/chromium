@@ -109,7 +109,6 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
     if (!element.has_value()) {
       return base::unexpected(element.error());
     }
-
     vec.push_back(std::move(*element));
   }
 
@@ -156,9 +155,9 @@ std::string SerializeAggregatableSourceRegistrationTime(
 base::expected<TriggerRegistration, TriggerRegistrationError>
 TriggerRegistration::Parse(base::Value::Dict registration) {
   auto filters = FilterPair::FromJSON(registration);
-  if (!filters.has_value())
+  if (!filters.has_value()) {
     return base::unexpected(filters.error());
-
+  }
   auto aggregatable_dedup_keys = ParseList<AggregatableDedupKey>(
       registration.Find(kAggregatableDeduplicationKeys),
       TriggerRegistrationError::kAggregatableDedupKeyListWrongType,
@@ -166,31 +165,30 @@ TriggerRegistration::Parse(base::Value::Dict registration) {
   if (!aggregatable_dedup_keys.has_value()) {
     return base::unexpected(aggregatable_dedup_keys.error());
   }
-
   auto event_triggers = ParseList<EventTriggerData>(
       registration.Find(kEventTriggerData),
       TriggerRegistrationError::kEventTriggerDataListWrongType,
       &EventTriggerData::FromJSON);
-  if (!event_triggers.has_value())
+  if (!event_triggers.has_value()) {
     return base::unexpected(event_triggers.error());
-
+  }
   auto aggregatable_trigger_data = ParseList<AggregatableTriggerData>(
       registration.Find(kAggregatableTriggerData),
       TriggerRegistrationError::kAggregatableTriggerDataListWrongType,
       &AggregatableTriggerData::FromJSON);
-  if (!aggregatable_trigger_data.has_value())
+  if (!aggregatable_trigger_data.has_value()) {
     return base::unexpected(aggregatable_trigger_data.error());
-
+  }
   auto aggregatable_values =
       AggregatableValues::FromJSON(registration.Find(kAggregatableValues));
-  if (!aggregatable_values.has_value())
+  if (!aggregatable_values.has_value()) {
     return base::unexpected(aggregatable_values.error());
-
+  }
   auto aggregation_coordinator = ParseAggregationCoordinator(
       registration.Find(kAggregationCoordinatorIdentifier));
-  if (!aggregation_coordinator.has_value())
+  if (!aggregation_coordinator.has_value()) {
     return base::unexpected(aggregation_coordinator.error());
-
+  }
   absl::optional<uint64_t> debug_key = ParseDebugKey(registration);
   bool debug_reporting = ParseDebugReporting(registration);
 

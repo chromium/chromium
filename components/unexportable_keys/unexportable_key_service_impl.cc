@@ -235,7 +235,6 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     key_id_by_wrapped_key_.erase(pending_entry_it);
     return;
   }
-
   scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
   // `key` must be non-null if `key_or_error` holds a value.
   CHECK(key);

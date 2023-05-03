@@ -180,27 +180,30 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
         SourceRegistrationError::kFilterDataHasSourceTypeKey);
   }
 
+  const auto map_errors = [](FilterValuesError error) {
+    switch (error) {
+      case FilterValuesError::kTooManyKeys:
+        return SourceRegistrationError::kFilterDataTooManyKeys;
+      case FilterValuesError::kKeyTooLong:
+        return SourceRegistrationError::kFilterDataKeyTooLong;
+      case FilterValuesError::kListWrongType:
+        return SourceRegistrationError::kFilterDataListWrongType;
+      case FilterValuesError::kListTooLong:
+        return SourceRegistrationError::kFilterDataListTooLong;
+      case FilterValuesError::kValueWrongType:
+        return SourceRegistrationError::kFilterDataValueWrongType;
+      case FilterValuesError::kValueTooLong:
+        return SourceRegistrationError::kFilterDataValueTooLong;
+      default:
+        NOTREACHED_NORETURN();
+    }
+  };
   auto filter_values = ParseFilterValuesFromJSON(std::move(*dict),
                                                  /*check_sizes=*/true);
-  if (filter_values.has_value())
-    return FilterData(std::move(*filter_values));
-
-  switch (filter_values.error()) {
-    case FilterValuesError::kTooManyKeys:
-      return base::unexpected(SourceRegistrationError::kFilterDataTooManyKeys);
-    case FilterValuesError::kKeyTooLong:
-      return base::unexpected(SourceRegistrationError::kFilterDataKeyTooLong);
-    case FilterValuesError::kListWrongType:
-      return base::unexpected(
-          SourceRegistrationError::kFilterDataListWrongType);
-    case FilterValuesError::kListTooLong:
-      return base::unexpected(SourceRegistrationError::kFilterDataListTooLong);
-    case FilterValuesError::kValueWrongType:
-      return base::unexpected(
-          SourceRegistrationError::kFilterDataValueWrongType);
-    case FilterValuesError::kValueTooLong:
-      return base::unexpected(SourceRegistrationError::kFilterDataValueTooLong);
+  if (!filter_values.has_value()) {
+    return base::unexpected(map_errors(filter_values.error()));
   }
+  return FilterData(std::move(*filter_values));
 }
 
 FilterData::FilterData() = default;
@@ -352,12 +355,10 @@ FilterPair::FromJSON(base::Value::Dict& dict) {
   if (!positive.has_value()) {
     return base::unexpected(positive.error());
   }
-
   auto negative = FiltersFromJSON(dict.Find(kNotFilters));
   if (!negative.has_value()) {
     return base::unexpected(negative.error());
   }
-
   return FilterPair(std::move(*positive), std::move(*negative));
 }
 
