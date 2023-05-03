@@ -870,14 +870,9 @@ void WebTestControlHost::CompositeAllFramesThen(
   // Only allow a single call to CompositeAllFramesThen(), without a call to
   // ResetBrowserAfterWebTest() in between. More than once risks overlapping
   // calls, due to the asynchronous nature of CompositeNodeQueueThen(), which
-  // can lead to use-after-free, e.g.
-  // https://clusterfuzz.com/v2/testcase-detail/4929420383748096
+  // can lead to use-after-free, e.g. crbug.com/899465.
   if (!composite_all_frames_node_storage_.empty() ||
       !composite_all_frames_node_queue_.empty()) {
-    // Using NOTREACHED + return here because we want to disallow the second
-    // call if this happens in release builds, while still catching this
-    // condition in debug builds.
-    NOTREACHED();
     return;
   }
   // Build the frame storage and depth first queue.
