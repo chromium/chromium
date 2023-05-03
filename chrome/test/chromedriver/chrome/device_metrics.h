@@ -19,9 +19,6 @@ struct DeviceMetrics {
   double device_scale_factor = 0;
   bool touch = true;
   bool mobile = true;
-  bool fit_window = false;
-  bool text_autosizing = true;
-  double font_scale_factor = 1;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_DEVICE_METRICS_H_

@@ -24,11 +24,7 @@ Status OverrideDeviceMetricsIfNeeded(DevToolsClient* client,
   params.Set("deviceScaleFactor",
              mobile_device.device_metrics->device_scale_factor);
   params.Set("mobile", mobile_device.device_metrics->mobile);
-  params.Set("fitWindow", mobile_device.device_metrics->fit_window);
-  params.Set("textAutosizing", mobile_device.device_metrics->text_autosizing);
-  params.Set("fontScaleFactor",
-             mobile_device.device_metrics->font_scale_factor);
-  status = client->SendCommand("Page.setDeviceMetricsOverride", params);
+  status = client->SendCommand("Emulation.setDeviceMetricsOverride", params);
   if (status.IsError()) {
     return status;
   }
