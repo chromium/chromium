@@ -98,7 +98,6 @@
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/ui/whats_new/feature_flags.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -725,9 +724,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"webpage-text-zoom-ipad", flag_descriptions::kWebPageTextZoomIPadName,
      flag_descriptions::kWebPageTextZoomIPadDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(web::kWebPageTextZoomIPad)},
-    {"toolbar-container", flag_descriptions::kToolbarContainerName,
-     flag_descriptions::kToolbarContainerDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(toolbar_container::kToolbarContainerEnabled)},
     {"omnibox-ui-max-autocomplete-matches",
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesName,
      flag_descriptions::kOmniboxUIMaxAutocompleteMatchesDescription,

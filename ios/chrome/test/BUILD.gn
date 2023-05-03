@@ -404,7 +404,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/tabs:unit_tests",
     "//ios/chrome/browser/ui/toolbar:unit_tests",
     "//ios/chrome/browser/ui/toolbar/fullscreen:unit_tests",
-    "//ios/chrome/browser/ui/toolbar_container:unit_tests",
     "//ios/chrome/browser/ui/voice:unit_tests",
     "//ios/chrome/browser/ui/whats_new/cells:unit_tests",
     "//ios/chrome/browser/ui/whats_new/data_source:unit_tests",

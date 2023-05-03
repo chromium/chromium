@@ -287,10 +287,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     dependencies.layoutGuideCenter =
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
-    dependencies.secondaryToolbarContainerCoordinator =
-        [[ToolbarContainerCoordinator alloc]
-            initWithBrowser:browser_.get()
-                       type:ToolbarContainerType::kSecondary];
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
 

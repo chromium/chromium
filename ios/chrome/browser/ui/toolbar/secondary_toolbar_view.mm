@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/toolbar_container/toolbar_collapsing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/gfx/ios/uikit_util.h"
@@ -24,7 +23,7 @@ namespace {
 const CGFloat kToolsMenuOffset = -7;
 }  // namespace
 
-@interface SecondaryToolbarView ()<ToolbarCollapsing>
+@interface SecondaryToolbarView ()
 // Factory used to create the buttons.
 @property(nonatomic, strong) ToolbarButtonFactory* buttonFactory;
 

@@ -894,10 +894,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.webStateList =
       self.browser->GetWebStateList()->AsWeakPtr();
   _viewControllerDependencies.voiceSearchController = _voiceSearchController;
-  _viewControllerDependencies.secondaryToolbarContainerCoordinator =
-      [[ToolbarContainerCoordinator alloc]
-          initWithBrowser:self.browser
-                     type:ToolbarContainerType::kSecondary];
   _viewControllerDependencies.safeAreaProvider =
       [[SafeAreaProvider alloc] initWithBrowser:self.browser];
   _viewControllerDependencies.pagePlaceholderBrowserAgent =
@@ -965,7 +961,6 @@ enum class ToolbarKind {
   _viewControllerDependencies.browserCoordinatorCommandsHandler = nil;
   _viewControllerDependencies.findInPageCommandsHandler = nil;
   _viewControllerDependencies.voiceSearchController = nil;
-  _viewControllerDependencies.secondaryToolbarContainerCoordinator = nil;
   _viewControllerDependencies.safeAreaProvider = nil;
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
 

@@ -77,8 +77,6 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar_container/toolbar_container_coordinator.h"
-#import "ios/chrome/browser/ui/toolbar_container/toolbar_container_features.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web/page_placeholder_browser_agent.h"
@@ -372,8 +370,6 @@ enum HeaderBehaviour {
 // TODO(crbug.com/880656): Convert to a container coordinator.
 @property(nonatomic, strong) UIView* secondaryToolbarContainerView;
 // Coordinator used to manage the secondary toolbar view.
-@property(nonatomic, strong)
-    ToolbarContainerCoordinator* secondaryToolbarContainerCoordinator;
 
 // Vertical offset for the primary toolbar, used for fullscreen.
 @property(nonatomic, strong) NSLayoutConstraint* primaryToolbarOffsetConstraint;
@@ -460,8 +456,6 @@ enum HeaderBehaviour {
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
     _voiceSearchController = dependencies.voiceSearchController;
-    self.secondaryToolbarContainerCoordinator =
-        dependencies.secondaryToolbarContainerCoordinator;
     self.safeAreaProvider = dependencies.safeAreaProvider;
     _pagePlaceholderBrowserAgent = dependencies.pagePlaceholderBrowserAgent;
 
@@ -903,8 +897,6 @@ enum HeaderBehaviour {
 
   [self.primaryToolbarCoordinator stop];
   self.primaryToolbarCoordinator = nil;
-  [self.secondaryToolbarContainerCoordinator stop];
-  self.secondaryToolbarContainerCoordinator = nil;
   [self.secondaryToolbarCoordinator stop];
   self.secondaryToolbarCoordinator = nil;
   _sideSwipeController = nil;
@@ -1095,8 +1087,6 @@ enum HeaderBehaviour {
     _voiceSearchController.dispatcher = nil;
     [self.primaryToolbarCoordinator stop];
     self.primaryToolbarCoordinator = nil;
-    [self.secondaryToolbarContainerCoordinator stop];
-    self.secondaryToolbarContainerCoordinator = nil;
     [self.secondaryToolbarCoordinator stop];
     self.secondaryToolbarCoordinator = nil;
     _toolbarUIState = nil;
@@ -1424,15 +1414,7 @@ enum HeaderBehaviour {
 - (void)buildToolbarAndTabStrip {
   DCHECK([self isViewLoaded]);
 
-  // TODO(crbug.com/880672): Finish ToolbarContainer work.
-  if (base::FeatureList::IsEnabled(
-          toolbar_container::kToolbarContainerEnabled)) {
-    self.secondaryToolbarContainerCoordinator.toolbarCoordinators =
-        @[ self.secondaryToolbarCoordinator ];
-    [self.secondaryToolbarContainerCoordinator start];
-  } else {
-    [self.secondaryToolbarCoordinator start];
-  }
+  [self.secondaryToolbarCoordinator start];
 
   [self updateBroadcastState];
   if (_voiceSearchController) {
@@ -1587,31 +1569,11 @@ enum HeaderBehaviour {
   }
 }
 
-// Adds constraints to the secondary toolbar container anchoring it to the
-// bottom of the browser view.
-- (void)addConstraintsToSecondaryToolbarContainer {
-  if (!self.secondaryToolbarContainerCoordinator)
-    return;
-
-  // Constrain the container to the bottom of the view.
-  UIView* containerView =
-      self.secondaryToolbarContainerCoordinator.viewController.view;
-  AddSameConstraintsToSides(
-      self.view, containerView,
-      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-}
-
 // Adds constraints to the primary and secondary toolbars, anchoring them to the
 // top and bottom of the browser view.
 - (void)addConstraintsToToolbar {
   [self addConstraintsToPrimaryToolbar];
-  // TODO(crbug.com/880672): Finish ToolbarContainer work.
-  if (base::FeatureList::IsEnabled(
-          toolbar_container::kToolbarContainerEnabled)) {
-    [self addConstraintsToSecondaryToolbarContainer];
-  } else {
-    [self addConstraintsToSecondaryToolbar];
-  }
+  [self addConstraintsToSecondaryToolbar];
   [[self view] layoutIfNeeded];
 }
 
@@ -1636,15 +1598,8 @@ enum HeaderBehaviour {
     // Add the toolbars as child view controllers.
     [self addChildViewController:self.primaryToolbarCoordinator.viewController];
     if (self.secondaryToolbarCoordinator) {
-      // TODO(crbug.com/880672): Finish ToolbarContainer work.
-      if (base::FeatureList::IsEnabled(
-              toolbar_container::kToolbarContainerEnabled)) {
-        [self addChildViewController:self.secondaryToolbarContainerCoordinator
-                                         .viewController];
-      } else {
-        [self addChildViewController:self.secondaryToolbarCoordinator
-                                         .viewController];
-      }
+      [self addChildViewController:self.secondaryToolbarCoordinator
+                                       .viewController];
     }
 
     // Add the primary toolbar. On iPad, it should be in front of the tab strip
@@ -1667,23 +1622,14 @@ enum HeaderBehaviour {
 
     // Add the secondary toolbar.
     if (self.secondaryToolbarCoordinator) {
-      // TODO(crbug.com/880672): Finish ToolbarContainer work.
-      if (base::FeatureList::IsEnabled(
-              toolbar_container::kToolbarContainerEnabled)) {
-        // Add the container view to the hierarchy.
-        UIView* containerView =
-            self.secondaryToolbarContainerCoordinator.viewController.view;
-        [self.view insertSubview:containerView aboveSubview:primaryToolbarView];
-      } else {
-        // Create the container view for the secondary toolbar and add it to
-        // the hierarchy
-        UIView* container = [[LegacyToolbarContainerView alloc] init];
-        container.translatesAutoresizingMaskIntoConstraints = NO;
-        [container
-            addSubview:self.secondaryToolbarCoordinator.viewController.view];
-        [self.view insertSubview:container aboveSubview:primaryToolbarView];
-        self.secondaryToolbarContainerView = container;
-      }
+      // Create the container view for the secondary toolbar and add it to
+      // the hierarchy
+      UIView* container = [[LegacyToolbarContainerView alloc] init];
+      container.translatesAutoresizingMaskIntoConstraints = NO;
+      [container
+          addSubview:self.secondaryToolbarCoordinator.viewController.view];
+      [self.view insertSubview:container aboveSubview:primaryToolbarView];
+      self.secondaryToolbarContainerView = container;
     }
 
     // Create the NamedGuides and add them to the browser view.
@@ -1736,15 +1682,8 @@ enum HeaderBehaviour {
     [self.primaryToolbarCoordinator.viewController
         didMoveToParentViewController:self];
     if (self.secondaryToolbarCoordinator) {
-      // TODO(crbug.com/880672): Finish ToolbarContainer work.
-      if (base::FeatureList::IsEnabled(
-              toolbar_container::kToolbarContainerEnabled)) {
-        [self.secondaryToolbarContainerCoordinator.viewController
-            didMoveToParentViewController:self];
-      } else {
-        [self.secondaryToolbarCoordinator.viewController
-            didMoveToParentViewController:self];
-      }
+      [self.secondaryToolbarCoordinator.viewController
+          didMoveToParentViewController:self];
     }
   }
 
@@ -2550,19 +2489,12 @@ enum HeaderBehaviour {
   self.footerFullscreenProgress = progress;
 
   CGFloat height = 0.0;
-  // TODO(crbug.com/880672): Finish ToolbarContainer work.
-  if (base::FeatureList::IsEnabled(
-          toolbar_container::kToolbarContainerEnabled)) {
-    height = [self.secondaryToolbarContainerCoordinator
-        toolbarStackHeightForFullscreenProgress:progress];
-  } else {
-    // Update the height constraint and force a layout on the container view
-    // so that the update is animatable.
-    height = [self secondaryToolbarHeightWithInset] * progress;
-    self.secondaryToolbarHeightConstraint.constant = height;
-    [self.secondaryToolbarContainerView setNeedsLayout];
-    [self.secondaryToolbarContainerView layoutIfNeeded];
-  }
+  // Update the height constraint and force a layout on the container view
+  // so that the update is animatable.
+  height = [self secondaryToolbarHeightWithInset] * progress;
+  self.secondaryToolbarHeightConstraint.constant = height;
+  [self.secondaryToolbarContainerView setNeedsLayout];
+  [self.secondaryToolbarContainerView layoutIfNeeded];
 }
 
 // Updates the browser container view such that its viewport is the space
