@@ -196,10 +196,11 @@ bool IsAutofillableElement(const blink::WebFormControlElement& element);
 // Returns true if |element| can be edited (enabled and not read only).
 bool IsElementEditable(const blink::WebInputElement& element);
 
-// True if this node can take focus. If the layout is blocked, then the function
-// checks if the element takes up space in the layout, i.e., this element or a
-// descendant has a non-empty bounding client rect.
-bool IsWebElementFocusable(const blink::WebElement& element);
+// True if this element can take focus. If the layout is blocked, then the
+// function checks if the element takes up space in the layout, i.e., this
+// element or a descendant has a non-empty bounding client rect. If this element
+// is a selectmenu, checks whether a child of the selectmenu can take focus.
+bool IsWebElementFocusableForAutofill(const blink::WebElement& element);
 
 // A heuristic visibility detection. See crbug.com/1335257 for an overview of
 // relevant aspects.

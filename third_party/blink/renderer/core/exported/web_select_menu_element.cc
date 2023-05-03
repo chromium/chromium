@@ -21,6 +21,10 @@ WebVector<WebElement> WebSelectMenuElement::GetListItems() const {
   return items;
 }
 
+bool WebSelectMenuElement::HasFocusableChild() const {
+  return blink::To<HTMLSelectMenuElement>(private_.Get())->GetFocusableArea();
+}
+
 WebSelectMenuElement::WebSelectMenuElement(HTMLSelectMenuElement* element)
     : WebFormControlElement(element) {}
 

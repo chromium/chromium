@@ -5,10 +5,6 @@
 </head>
 <body>
 <selectmenu id="selectmenu" tabindex="0">
-     <button type="button" slot="button" behavior="button"
-             id="selectmenu-button">
-       Button
-     </button>
     <option>Canada</option>
     <option>Spain</option>
     <option disabled>United Arab Emirates</option>
@@ -27,9 +23,8 @@ function keyDown(key)
 }
 
 var selectmenu = document.getElementById("selectmenu");
-var button = document.getElementById("selectmenu-button");
 
-button.focus();
+selectmenu.focus();
 selectmenu.value = "Canada";
 // Should skip disabled "United Arab Emirates" <option>
 keyDown('U');

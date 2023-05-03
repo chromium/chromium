@@ -6,7 +6,6 @@ TEST COMPLETE
 
 Test that selection box scrolls to where the focus jumps when pressing an alphanumeric key.
 
-Button
 aardvark
 blue
 navy

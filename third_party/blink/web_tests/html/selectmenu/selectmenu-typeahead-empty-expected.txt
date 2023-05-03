@@ -1,4 +1,3 @@
 Check that selectmenu does not crash on search when it's empty.
 
-Button
 Cannot run interactively.

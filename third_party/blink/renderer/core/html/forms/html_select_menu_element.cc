@@ -238,6 +238,8 @@ const HTMLSelectMenuElement::ListItems& HTMLSelectMenuElement::GetListItems()
 void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   DCHECK(IsShadowHost(this));
 
+  root.SetDelegatesFocus(true);
+
   Document& document = GetDocument();
 
   button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
@@ -317,6 +319,14 @@ void HTMLSelectMenuElement::DidMoveToNewDocument(Document& old_document) {
       GetDocument().View()->RegisterForLifecycleNotifications(this);
     else
       queued_check_for_missing_parts_ = false;
+  }
+}
+
+void HTMLSelectMenuElement::DisabledAttributeChanged() {
+  HTMLFormControlElementWithState::DisabledAttributeChanged();
+  if (GetShadowRoot()) {
+    // Clear "delegates focus" property to make selectmenu unfocusable.
+    GetShadowRoot()->SetDelegatesFocus(!IsDisabledFormControl());
   }
 }
 

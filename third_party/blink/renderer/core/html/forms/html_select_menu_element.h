@@ -98,6 +98,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
 
   void DidAddUserAgentShadowRoot(ShadowRoot&) override;
   void DidMoveToNewDocument(Document& old_document) override;
+  void DisabledAttributeChanged() override;
   void OpenListbox();
   void CloseListbox();
   bool TypeAheadFind(const KeyboardEvent& event, int charCode);
@@ -157,7 +158,7 @@ class CORE_EXPORT HTMLSelectMenuElement final
   bool MayTriggerVirtualKeyboard() const override;
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
   void AppendToFormData(FormData&) override;
-  bool SupportsFocus() const override { return HTMLElement::SupportsFocus(); }
+  bool SupportsFocus() const override { return false; }
   FormControlState SaveFormControlState() const override;
   void RestoreFormControlState(const FormControlState&) override;
 

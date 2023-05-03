@@ -524,8 +524,10 @@ TEST_F(FormAutofillUtilsTest, IsFocusable) {
   control_elements.push_back(
       GetFormControlElementById(web_frame->GetDocument(), "name2"));
 
-  EXPECT_TRUE(autofill::form_util::IsWebElementFocusable(control_elements[0]));
-  EXPECT_FALSE(autofill::form_util::IsWebElementFocusable(control_elements[1]));
+  EXPECT_TRUE(autofill::form_util::IsWebElementFocusableForAutofill(
+      control_elements[0]));
+  EXPECT_FALSE(autofill::form_util::IsWebElementFocusableForAutofill(
+      control_elements[1]));
 
   std::vector<WebElement> iframe_elements;
 

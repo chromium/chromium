@@ -1090,7 +1090,8 @@ std::vector<WebFormControlElement> ForEachMatchingFormFieldCommon(
     if (((filters & FILTER_DISABLED_ELEMENTS) && !element.IsEnabled()) ||
         ((filters & FILTER_READONLY_ELEMENTS) && element.IsReadOnly()) ||
         // See description for FILTER_NON_FOCUSABLE_ELEMENTS.
-        ((filters & FILTER_NON_FOCUSABLE_ELEMENTS) && !element.IsFocusable() &&
+        ((filters & FILTER_NON_FOCUSABLE_ELEMENTS) &&
+         !IsWebElementFocusableForAutofill(element) &&
          !IsSelectElement(element))) {
       continue;
     }
@@ -1830,8 +1831,8 @@ bool IsVisibleIframe(const WebElement& element) {
   // positive bounds. The threshold of 10 pixels is chosen rather arbitrarily.
   constexpr int kMinPixelSize = 10;
   gfx::Rect bounds = element.BoundsInWidget();
-  return element.IsFocusable() && bounds.width() > kMinPixelSize &&
-         bounds.height() > kMinPixelSize;
+  return IsWebElementFocusableForAutofill(element) &&
+         bounds.width() > kMinPixelSize && bounds.height() > kMinPixelSize;
 }
 
 bool IsAdIframe(const WebElement& element) {
@@ -1962,7 +1963,7 @@ bool IsSomeControlElementVisible(
       [&](const WebVector<WebFormControlElement>& fields) {
         return base::ranges::any_of(
             fields, [&](const WebFormControlElement& field) {
-              return IsWebElementFocusable(field) &&
+              return IsWebElementFocusableForAutofill(field) &&
                      base::Contains(control_elements,
                                     GetFieldRendererId(field));
             });
@@ -2052,8 +2053,16 @@ bool IsElementEditable(const WebInputElement& element) {
   return element.IsEnabled() && !element.IsReadOnly();
 }
 
-bool IsWebElementFocusable(const blink::WebElement& element) {
-  return element.IsFocusable();
+bool IsWebElementFocusableForAutofill(const WebElement& element) {
+  if (element.IsFocusable()) {
+    return true;
+  }
+
+  if (IsSelectMenuElement(element.DynamicTo<WebFormControlElement>())) {
+    // The <selectmenu> shadow root is not focusable.
+    return element.To<WebSelectMenuElement>().HasFocusableChild();
+  }
+  return false;
 }
 
 bool IsWebElementVisible(const blink::WebElement& element) {
@@ -2061,7 +2070,7 @@ bool IsWebElementVisible(const blink::WebElement& element) {
     constexpr int kMinPixelSize = 10;
     return size.width() >= kMinPixelSize && size.height() >= kMinPixelSize;
   };
-  return !element.IsNull() && IsWebElementFocusable(element) &&
+  return !element.IsNull() && IsWebElementFocusableForAutofill(element) &&
          (IsCheckableElement(element) || HasMinSize(element.GetClientSize()) ||
           HasMinSize(element.GetScrollSize()));
 }
@@ -2213,7 +2222,7 @@ void WebFormControlElementToFormField(
       IsSelectOrSelectMenuElement(element)) {
     // The browser doesn't need to differentiate between preview and autofill.
     field->is_autofilled = element.IsAutofilled();
-    field->is_focusable = IsWebElementFocusable(element);
+    field->is_focusable = IsWebElementFocusableForAutofill(element);
     field->is_visible = IsWebElementVisible(element);
     field->should_autocomplete =
         element.AutoComplete() &&

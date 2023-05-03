@@ -15,7 +15,6 @@ PASS successfullyParsed is true
 
 TEST COMPLETE
 
-Button
 Canada
 Spain
 United Arab Emirates

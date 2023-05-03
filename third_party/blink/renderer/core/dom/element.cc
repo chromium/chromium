@@ -4970,7 +4970,7 @@ void Element::DefaultEventHandler(Event& event) {
 }
 
 bool Element::DelegatesFocus() const {
-  return AuthorShadowRoot() && AuthorShadowRoot()->delegatesFocus();
+  return GetShadowRoot() && GetShadowRoot()->delegatesFocus();
 }
 
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
@@ -4988,7 +4988,9 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
     return nullptr;
   }
   Document& doc = GetDocument();
-  UseCounter::Count(doc, WebFeature::kDelegateFocus);
+  if (AuthorShadowRoot()) {
+    UseCounter::Count(doc, WebFeature::kDelegateFocus);
+  }
 
   Element* focused_element = doc.FocusedElement();
   if (focused_element &&
@@ -4996,7 +4998,7 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
     return focused_element;
   }
 
-  DCHECK(AuthorShadowRoot());
+  DCHECK(GetShadowRoot());
   if (RuntimeEnabledFeatures::DialogNewFocusBehaviorEnabled()) {
     return GetFocusDelegate(/*autofocus_only=*/false, in_descendant_traversal);
   } else {
@@ -5006,13 +5008,14 @@ Element* Element::GetFocusableArea(bool in_descendant_traversal) const {
 
 Element* Element::GetFocusDelegate(bool autofocus_only,
                                    bool in_descendant_traversal) const {
-  ShadowRoot* shadowroot = AuthorShadowRoot();
-  if (shadowroot && !shadowroot->delegatesFocus()) {
+  ShadowRoot* shadowroot = GetShadowRoot();
+  if (shadowroot && !shadowroot->IsUserAgent() &&
+      !shadowroot->delegatesFocus()) {
     return nullptr;
   }
 
   const ContainerNode* where_to_look = this;
-  if (shadowroot) {
+  if (shadowroot && shadowroot->delegatesFocus()) {
     where_to_look = shadowroot;
   }
 

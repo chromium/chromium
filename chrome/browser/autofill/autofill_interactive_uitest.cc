@@ -180,23 +180,13 @@ std::string GenerateTestShippingFormWithSelectMenu() {
 
   // TODO(crbug.com/1422650): Remove "autocomplete" attributes once they are no
   // longer necessary.
-  // TODO(crbug.com/1422370): Remove <button> inside <selectmenu> once button
-  // slot is focused by default.
   std::string form_suffix = R"(
-   <selectmenu id="state" tabindex="0" autocomplete="address-level1">
-     <button type="button" slot="button" behavior="button"
-             id="selectmenu-button-state">
-       Button
-     </button>
+   <selectmenu id="state" autocomplete="address-level1">
      <option value="" selected="yes">--</option>
      <option value="CA">California</option>
      <option value="TX">Texas</option>
    </selectmenu><br>
-   <selectmenu id="country" tabindex="1" autocomplete="country">
-     <button type="button" slot="button" behavior="button"
-             id="selectmenu-button-country">
-       Button
-     </button>
+   <selectmenu id="country" autocomplete="country">
      <option value="" selected="yes">--</option>
      <option value="CA">Canada</option>
      <option value="US">United States</option>
@@ -348,21 +338,6 @@ bool IsFocusedField(const ElementExpr& e,
       return r;
   }
   return TriggerAndWaitForEvent(e, "focus", execution_target);
-}
-
-[[nodiscard]] AssertionResult FocusSelectOrSelectMenu(
-    const std::string& id,
-    bool is_selectmenu,
-    content::ToRenderFrameHost execution_target) {
-  // TODO(crbug.com/1422370): Focus <selectmenu> instead of button slot in
-  // <selectmenu> once button slot is focused by default when <selectmenu> is
-  // focused.
-  std::string dom_id_to_focus = id;
-  if (is_selectmenu) {
-    dom_id_to_focus = "selectmenu-button-" + id;
-  }
-
-  return FocusField(GetElementById(dom_id_to_focus), execution_target);
 }
 
 // Types the characters of `value` after focusing field `e`.
@@ -1020,18 +995,6 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
     return GetFieldValues(ElementExpr(*form + ".elements"), GetWebContents());
   }
 
-  std::vector<FieldValue> GetFormValuesIgnoringSelectMenuButtonSlot(
-      const ElementExpr& form = GetElementById("shipping")) {
-    std::vector<FieldValue> values = GetFormValues(form);
-    std::vector<FieldValue> out;
-    for (const FieldValue& value : values) {
-      if (!base::StartsWith(value.id, "selectmenu-button")) {
-        out.push_back(value);
-      }
-    }
-    return out;
-  }
-
   base::RepeatingClosure ExpectValues(
       const std::vector<FieldValue>& expected_values,
       const ElementExpr& form = GetElementById("shipping")) {
@@ -1456,8 +1419,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
                        DisableSelectMenuAutofilling) {
   // TODO(crbug.com/1422650): Remove "autocomplete" attribute once it is no
   // longer necessary.
-  // TODO(crbug.com/1422370): Remove <button> inside <selectmenu> once button
-  // slot is focused by default.
   const char kFormWithSelectMenuString[] = R"(
     <!-- Disable extra network request for /favicon.ico -->
     <link rel="icon" href="data:,">
@@ -1465,11 +1426,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
       <label for="firstname">First name:</label>
       <input type="text" id="firstname" autocomplete="given-name"><br>
       <label for="state">State:</label>
-      <selectmenu id="state" tabindex="0" autocomplete="address-level1">
-        <button type="button" slot="button" behavior="button"
-                id="selectmenu-button-state">
-          Button
-        </button>
+      <selectmenu id="state" autocomplete="address-level1">
         <option value="" selected="yes">--</option>
         <option value="CA">California</option>
         <option value="TX">Texas</option>
@@ -1482,7 +1439,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
-  EXPECT_THAT(GetFormValuesIgnoringSelectMenuButtonSlot(),
+  EXPECT_THAT(GetFormValues(),
               ValuesAre({{"firstname", kDefaultAddressValues.first_name},
                          {"state", ""}}));
 }
@@ -1589,13 +1546,12 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
       ui_test_utils::NavigateToURL(test->browser(), test->GetTestUrl()));
 
   // Modify a field.
-  ASSERT_TRUE(FocusSelectOrSelectMenu("state", should_test_selectmenu,
-                                      test->GetWebContents()));
+  ASSERT_TRUE(FocusField(GetElementById("state"), test->GetWebContents()));
   ASSERT_NE(kDefaultAddressValues.state_short, base::StringPiece("CA"));
   test->FillElementWithValue("state", "CA");
 
   ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), test));
-  EXPECT_THAT(test->GetFormValuesIgnoringSelectMenuButtonSlot(),
+  EXPECT_THAT(test->GetFormValues(),
               ValuesAre(MergeValue(kDefaultAddress, {"state", "CA"})));
 }
 

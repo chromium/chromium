@@ -1333,7 +1333,6 @@ Element* FocusController::NextFocusableElementForImeAndAutofill(
 // https://html.spec.whatwg.org/C/#get-the-focusable-area
 Element* FocusController::FindFocusableElementInShadowHost(
     const Element& shadow_host) {
-  DCHECK(shadow_host.AuthorShadowRoot());
   // We have no behavior difference by focus trigger. Skip step 2.1.
 
   // 2.2. Otherwise, let possible focus delegates be the list of all

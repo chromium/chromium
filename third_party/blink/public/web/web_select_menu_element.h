@@ -33,6 +33,10 @@ class BLINK_EXPORT WebSelectMenuElement final : public WebFormControlElement {
   // WebSelectMenuElement.
   WebVector<WebElement> GetListItems() const;
 
+  // Returns whether a child element in one of the selectmenu's slots is
+  // focusable.
+  bool HasFocusableChild() const;
+
 #if INSIDE_BLINK
   explicit WebSelectMenuElement(HTMLSelectMenuElement*);
   WebSelectMenuElement& operator=(HTMLSelectMenuElement*);

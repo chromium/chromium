@@ -3,10 +3,6 @@
     Check that type-to-select in unopened popups works with Hebrew</i>.
 </p>
 <selectmenu id="selectmenu">
-    <button type="button" slot="button" behavior="button"
-            id="selectmenu-button">
-        Button
-    </button>
     <option>&#x05e9;</option>
     <option>&#x05d3;</option>
     <option>&#x05d2;</option>
@@ -18,8 +14,7 @@
     if (window.testRunner) {
         testRunner.dumpAsText();
         var selectmenu = document.getElementById("selectmenu");
-        var button = document.getElementById("selectmenu-button");
-        button.focus();
+        selectmenu.focus();
         eventSender.keyDown("\u05d2");
         var result = document.getElementById("result");
         result.innerText = selectmenu.value == "\u05d2" ? "SUCCESS" : "FAIL";

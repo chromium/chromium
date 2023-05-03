@@ -8,10 +8,6 @@
 <body>
     <p>This test verifies a selectmenu can refine the selection when we send keydown events consisting of Greek small characters.</p>
     <selectmenu id="selectmenu">
-       <button type="button" slot="button" behavior="button"
-               id="selectmenu-button">
-          Button
-        </button>
         <option value="-1">should not see me</option>
         <option value="0">&#x0391;</option>
         <option value="1">&#x0391;&#x0392;</option>
@@ -43,8 +39,7 @@
 <script>
 // Set the input focus to the <select> element.
 var selectmenu = document.getElementById("selectmenu");
-var button = document.getElementById("selectmenu-button");
-button.focus();
+selectmenu.focus();
 
 var base = 0x03B1;
 for (var i = base; i <= 0x03C9; i++) {

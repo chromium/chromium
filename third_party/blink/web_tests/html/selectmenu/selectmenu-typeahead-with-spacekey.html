@@ -4,11 +4,7 @@
 <script src="../../resources/js-test.js"></script>
 </head>
 <body>
-<selectmenu id="selectmenu" tabindex="0">
-    <button type="button" slot="button" behavior="button"
-             id="selectmenu-button">
-        Button
-    </button>
+<selectmenu id="selectmenu">
     <option>Canada</option>
     <option>Spain</option>
     <option>United Arab Emirates</option>
@@ -27,11 +23,10 @@ function keyDown(key, modifiers)
 }
 
 var popup = document.getElementById("selectmenu");
-var button = document.getElementById("selectmenu-button");
 
 function test1() {
     debug('1. space key as part of search string.');
-    button.focus();
+    popup.focus();
     popup.value = "Canada";
     keyDown('U');
     keyDown('n');
@@ -43,10 +38,10 @@ function test1() {
     keyDown('S');
     shouldBeFalse('popup.open');
     shouldBeEqualToString('popup.value', 'United States');
-    button.blur();
+    popup.blur();
 
     debug('2. space key as part of search string with some delay.');
-    button.focus();
+    popup.focus();
     popup.value = "Canada";
     keyDown('U');
     keyDown('n');
@@ -59,10 +54,10 @@ function test1() {
     keyDown('S');
     shouldBeFalse('popup.open');
     shouldBeEqualToString('popup.value', 'Spain');
-    button.blur();
+    popup.blur();
 
     debug('3. space key to open popup menu.');
-    button.focus();
+    popup.focus();
     popup.value = "Canada";
     keyDown('U');
     keyDown('n');
@@ -74,7 +69,7 @@ function test1() {
     keyDown(' ');
     shouldBeTrue('popup.open');
     shouldBeEqualToString('popup.value', 'United Arab Emirates');
-    button.blur();
+    popup.blur();
 
     finishJSTest();
 }
