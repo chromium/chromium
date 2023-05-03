@@ -5488,6 +5488,219 @@ class NavigationLogger : public WebContentsObserver {
 
 }  // namespace
 
+class UndoCommitNavigationBrowserTest : public NavigationBrowserTest {
+ public:
+  UndoCommitNavigationBrowserTest() {
+    std::map<std::string, std::string> parameters = {
+        {"level", "none"},
+    };
+    feature_list_.InitAndEnableFeatureWithParameters(
+        kQueueNavigationsWhileWaitingForCommit, parameters);
+  }
+
+  void SetUpOnMainThread() override {
+    // These navigation tests require full site isolation since they test races
+    // with committing a navigation in a speculative RenderFrameHost..
+    if (!AreAllSitesIsolatedForTesting()) {
+      GTEST_SKIP() << "Site isolation is not enabled!";
+    }
+
+    NavigationBrowserTest::SetUpOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NavigationBrowserTest::SetUpCommandLine(command_line);
+
+    // PerformanceManager maintains its own parallel frame tree and has
+    // sometimes been confused by things like `UndoCommitNavigation()`.
+    // Force-enable it for test coverage; otherwise, by default,
+    // PerformanceManager uses the dummy implementation.
+    //
+    // TODO(https://crbug.com/1222647): Enable this by default in content_shell.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "PerformanceManagerInstrumentation");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
+                       PerformanceManagerFrameTreeConsistency) {
+  // PerformanceManager reports when a remote frame is attached to a local
+  // parent, and it was previously getting confused by the fact that a
+  // `blink::RemoteFrame` with matching RemoteFrameTokens was being reported as
+  // attached twice: once by the initial page loaded in the next statement, and
+  // the next when the browser needs to send a `UndoCommitNavigation()` to the
+  // a.com renderer.
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* first_subframe_node =
+      web_contents->GetPrimaryMainFrame()->child_at(0);
+  RenderProcessHost* const a_com_render_process_host =
+      web_contents->GetPrimaryFrameTree()
+          .root()
+          ->render_manager()
+          ->current_frame_host()
+          ->GetProcess();
+
+  NavigationLogger logger(web_contents);
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for a.com.
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("a.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
+                                             infinitely_loading_url));
+
+  // Ensure the speculative RFH is in the expected process.
+  RenderFrameHostImpl* speculative_render_frame_host =
+      first_subframe_node->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(a_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Simulates a race where a new navigation to c.com begins after the browser
+  // sends `CommitNavigation() to the a.com renderer, but before
+  // `DidCommitNavigation()` has been received from the a.com renderer.
+  //
+  // Note that the actual race is only triggered when the browser process
+  // receives the `DidCommitProvisionalLoad()` IPC from the renderer, which has
+  // not occurred yet. However, the interceptor needs to be installed now,
+  // before the `ExecJs()` call below, since `ExecJs()` runs the message loop,
+  // and the `DidCommitProvisionalLoad()` message could be received inside that
+  // message loop.
+  const GURL final_url =
+      embedded_test_server()->GetURL("c.com", "/title1.html");
+  BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
+                                                         final_url);
+  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
+      &interceptor);
+
+  // Update the id attribute to exercise a PerformanceManager-specific code
+  // path: when the renderer swaps in a `blink::RemoteFrame` to undo the
+  // `CommitNavigation()`, it will report the iframe attribution data again.
+  // PerformanceManager should not complain that V8ContextTracker already has
+  // the iframe attribution data, nor should it update the iframe attribution
+  // data, to preserve existing behavior (unfortunately, the latter part is not
+  // really tested in this browser test).
+  EXPECT_TRUE(ExecJs(web_contents,
+                     "document.querySelector('iframe').id = 'new-name';"));
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, first_subframe_node->render_manager()
+                           ->current_frame_host()
+                           ->GetLastCommittedURL());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  EXPECT_FALSE(results[0].committed);
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(final_url, results[1].url);
+}
+
+// Helper that ignores a request from the renderer to commit a navigation and
+// detaches the nth child (0-indexed) of `frame_tree_node` instead.
+class DetachChildFrameInCommitCallbackInterceptor
+    : public RenderFrameHostImpl::CommitCallbackInterceptor {
+ public:
+  DetachChildFrameInCommitCallbackInterceptor(FrameTreeNode* frame_tree_node,
+                                              int child_to_detach)
+      : frame_tree_node_(frame_tree_node), child_to_detach_(child_to_detach) {}
+
+  bool WillProcessDidCommitNavigation(
+      NavigationRequest* request,
+      mojom::DidCommitProvisionalLoadParamsPtr* params,
+      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
+      override {
+    request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
+        nullptr);
+    // At this point, the renderer has already committed the RenderFrame, but
+    // on the browser side, the RenderFrameHost is still speculative.
+
+    // Intentionally do not wait for script completion here. This runs an event
+    // loop that pumps incoming messages, but that would cause us to process
+    // IPCs from b.com out of order (since process DidCommitNavigation has been
+    // interrupted by this hook).
+    ExecuteScriptAsync(
+        frame_tree_node_.get(),
+        JsReplace("document.querySelectorAll('iframe')[$1].remove()",
+                  child_to_detach_));
+
+    // However, since it's not possible to wait for `remove()` to take effect,
+    // the test must cheat a little and directly call the Mojo IPC that the JS
+    // above would eventually trigger.
+    frame_tree_node_->child_at(child_to_detach_)
+        ->render_manager()
+        ->current_frame_host()
+        ->Detach();
+
+    // Ignore the commit message and pretend it never arrived.
+    return false;
+  }
+
+ private:
+  const raw_ptr<FrameTreeNode> frame_tree_node_;
+  const int child_to_detach_;
+};
+
+// Regression test for https://crbug.com/1223837. Previously, if a child frame
+// was in the middle of committing a navigation to a provisional frame in render
+// process B while render process A simultaneously detaches that child frame,
+// the detach message would never be received by render process B.
+IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
+                       DetachAfterCommitNavigationInSubFrame) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b,a)")));
+
+  WebContentsImpl* const web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* const first_subframe_node =
+      web_contents->GetPrimaryMainFrame()->child_at(0);
+  FrameTreeNode* const second_subframe_node =
+      web_contents->GetPrimaryMainFrame()->child_at(1);
+  RenderProcessHost* const b_com_render_process_host =
+      first_subframe_node->render_manager()->current_frame_host()->GetProcess();
+
+  // Start a navigation in the second child frame that will create a speculative
+  // RFH in the existing render process for b.com. The first child frame is
+  // already hosted in the render process for b.com: this is to ensure the
+  // render process remains live even after the second child frame is detached
+  // later in this test.
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
+      second_subframe_node,
+      embedded_test_server()->GetURL("b.com", "/title1.html")));
+
+  // Ensure the speculative RFH is in the expected process.
+  RenderFrameHostImpl* speculative_render_frame_host =
+      second_subframe_node->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Simulates a race where the a.com renderer detaches the second child frame
+  // after the browser sends `CommitNavigation()` to the b.com renderer.
+  DetachChildFrameInCommitCallbackInterceptor interceptor(
+      web_contents->GetPrimaryFrameTree().root(), 1);
+  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
+      &interceptor);
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  // Validate that render process for b.com has handled the detach message for
+  // the provisional frame that was committing. Before the fix, the render
+  // process for b.com still had the proxy for the second child frame, because
+  // the browser process's request to delete it was sent via a broken message
+  // pipe. Thus, the frame tree in the render process for b.com incorrectly
+  // thought there were still two child frames.
+  EXPECT_EQ(1, EvalJs(first_subframe_node, "top.length"));
+}
+
 class CommitNavigationRaceBrowserTest
     : public NavigationBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -5508,19 +5721,6 @@ class CommitNavigationRaceBrowserTest
     }
 
     NavigationBrowserTest::SetUpOnMainThread();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    NavigationBrowserTest::SetUpCommandLine(command_line);
-
-    // PerformanceManager maintains its own parallel frame tree and has
-    // sometimes been confused by things like `UndoCommitNavigation()`.
-    // Force-enable it for test coverage; otherwise, by default,
-    // PerformanceManager uses the dummy implementation.
-    //
-    // TODO(https://crbug.com/1222647): Enable this by default in content_shell.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PerformanceManagerInstrumentation");
   }
 
   static std::string DescribeParams(
@@ -5602,16 +5802,9 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
                        BeginNewNavigationAfterCommitNavigationInSubFrame) {
-  // This test's process layout is structured a bit differently from the main
-  // frame case. PerformanceManager reports when a remote frame is attached to
-  // a local parent, and it was previously getting confused by the fact that
-  // a `blink::RemoteFrame` with matching RemoteFrameTokens was being reported
-  // as attached twice: once by the initial page loaded in the next statement,
-  // and the next when the browser needs to send a `UndoCommitNavigation()` to
-  // the a.com renderer.
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
-                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+                   "b.com", "/cross_site_iframe_factory.html?b(a)")));
 
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -5627,9 +5820,9 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   NavigationLogger logger(web_contents);
 
   // Start a navigation that will create a speculative RFH in the existing
-  // render process for a.com.
+  // render process for b.com.
   const GURL infinitely_loading_url =
-      embedded_test_server()->GetURL("a.com", "/infinitely_loading_image.html");
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
   ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
                                              infinitely_loading_url));
 
@@ -5640,19 +5833,9 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   EXPECT_EQ(a_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
-  // Update the id attribute to exercise a PerformanceManager-specific code
-  // path: when the renderer swaps in a `blink::RemoteFrame` to undo the
-  // `CommitNavigation()`, it will report the iframe attribution data again. The
-  // PerformanceManager should not complain that V8ContextTracker already has
-  // the iframe attribution data, nor should it update the iframe attribution
-  // data, to preserve existing behavior (unfortunately, the latter part is not
-  // really tested in this browser test).
-  EXPECT_TRUE(ExecJs(web_contents,
-                     "document.querySelector('iframe').id = 'new-name';"));
-
   // Simulates a race where a new navigation to c.com begins after the browser
-  // sends `CommitNavigation() to the a.com renderer, but before
-  // `DidCommitNavigation()` has been received from the a.com renderer.
+  // sends `CommitNavigation() to the b.com renderer, but before
+  // `DidCommitNavigation()` has been received from the b.com renderer.
   const GURL final_url =
       embedded_test_server()->GetURL("c.com", "/title1.html");
   BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
@@ -5679,109 +5862,6 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   EXPECT_EQ(infinitely_loading_url, results[0].url);
   EXPECT_TRUE(results[1].committed);
   EXPECT_EQ(final_url, results[1].url);
-}
-
-// Helper that ignores a request from the renderer to commit a navigation and
-// detaches the nth child (0-indexed) of `frame_tree_node` instead.
-class DetachChildFrameInCommitCallbackInterceptor
-    : public RenderFrameHostImpl::CommitCallbackInterceptor {
- public:
-  DetachChildFrameInCommitCallbackInterceptor(FrameTreeNode* frame_tree_node,
-                                              int child_to_detach)
-      : frame_tree_node_(frame_tree_node), child_to_detach_(child_to_detach) {}
-
-  bool WillProcessDidCommitNavigation(
-      NavigationRequest* request,
-      mojom::DidCommitProvisionalLoadParamsPtr* params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
-      override {
-    request->GetRenderFrameHost()->SetCommitCallbackInterceptorForTesting(
-        nullptr);
-    // At this point, the renderer has already committed the RenderFrame, but
-    // on the browser side, the RenderFrameHost is still speculative.
-
-    // Intentionally do not wait for script completion here. This runs an event
-    // loop that pumps incoming messages, but that would cause us to process
-    // IPCs from b.com out of order (since process DidCommitNavigation has been
-    // interrupted by this hook).
-    ExecuteScriptAsync(
-        frame_tree_node_.get(),
-        JsReplace("document.querySelectorAll('iframe')[$1].remove()",
-                  child_to_detach_));
-
-    // However, since it's not possible to wait for `remove()` to take effect,
-    // the test must cheat a little and directly call the Mojo IPC that the JS
-    // above would eventually trigger.
-    frame_tree_node_->child_at(child_to_detach_)
-        ->render_manager()
-        ->current_frame_host()
-        ->Detach();
-
-    // Ignore the commit message and pretend it never arrived.
-    return false;
-  }
-
- private:
-  const raw_ptr<FrameTreeNode> frame_tree_node_;
-  const int child_to_detach_;
-};
-
-// Regression test for https://crbug.com/1223837. Previously, if a child frame
-// was in the middle of committing a navigation to a provisional frame in render
-// process B while render process A simultaneously detaches that child frame,
-// the detach message would never be received by render process B.
-IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
-                       DetachAfterCommitNavigationInSubFrame) {
-  // This test checks an edge case that is only relevant when using
-  // `UndoCommitNavigation()`.
-  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
-    GTEST_SKIP();
-  }
-
-  ASSERT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL(
-                   "a.com", "/cross_site_iframe_factory.html?a(b,a)")));
-
-  WebContentsImpl* const web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  FrameTreeNode* const first_subframe_node =
-      web_contents->GetPrimaryMainFrame()->child_at(0);
-  FrameTreeNode* const second_subframe_node =
-      web_contents->GetPrimaryMainFrame()->child_at(1);
-  RenderProcessHost* const b_com_render_process_host =
-      first_subframe_node->render_manager()->current_frame_host()->GetProcess();
-
-  // Start a navigation in the second child frame that will create a speculative
-  // RFH in the existing render process for b.com. The first child frame is
-  // already hosted in the render process for b.com: this is to ensure the
-  // render process remains live even after the second child frame is detached
-  // later in this test.
-  ASSERT_TRUE(BeginNavigateToURLFromRenderer(
-      second_subframe_node,
-      embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // Ensure the speculative RFH is in the expected process.
-  RenderFrameHostImpl* speculative_render_frame_host =
-      second_subframe_node->render_manager()->speculative_frame_host();
-  ASSERT_TRUE(speculative_render_frame_host);
-  EXPECT_EQ(b_com_render_process_host,
-            speculative_render_frame_host->GetProcess());
-
-  // Simulates a race where the a.com renderer detaches the second child frame
-  // after the browser sends `CommitNavigation()` to the b.com renderer.
-  DetachChildFrameInCommitCallbackInterceptor interceptor(
-      web_contents->GetPrimaryFrameTree().root(), 1);
-  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
-      &interceptor);
-
-  EXPECT_TRUE(WaitForLoadStop(web_contents));
-  // Validate that render process for b.com has handled the detach message for
-  // the provisional frame that was committing. Before the fix, the render
-  // process for b.com still had the proxy for the second child frame, because
-  // the browser process's request to delete it was sent via a broken message
-  // pipe. Thus, the frame tree in the render process for b.com incorrectly
-  // thought there were still two child frames.
-  EXPECT_EQ(1, EvalJs(first_subframe_node, "top.length"));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
