@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -89,6 +90,7 @@ bool MatchesPNGFile(const SkBitmap& gen_bmp,
     LOG(ERROR) << "Cannot read reference image: " << ref_img_path.value();
     return false;
   }
+  LOG(ERROR) << "Using reference image path " << ref_img_path;
 
   return MatchesBitmap(gen_bmp, ref_bmp, comparator);
 }
