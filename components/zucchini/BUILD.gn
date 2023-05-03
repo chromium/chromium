@@ -123,6 +123,13 @@ static_library("zucchini_io") {
     ":zucchini_lib",
     "//base",
   ]
+
+  if (is_win) {
+    sources += [
+      "exception_filter_helper_win.cc",
+      "exception_filter_helper_win.h",
+    ]
+  }
 }
 
 executable("zucchini") {
@@ -231,6 +238,10 @@ test("zucchini_unittests") {
     "//base/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    sources += [ "exception_filter_helper_win_unittest.cc" ]
+  }
 }
 
 test("zucchini_integration_test") {
