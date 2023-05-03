@@ -218,6 +218,18 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
           views::Builder<views::BoxLayoutView>()
               .SetOrientation(views::BoxLayout::Orientation::kVertical)
               .AddChildren(
+                  // Site access section.
+                  views::Builder<views::Separator>(),
+                  views::Builder<views::Label>()
+                      .SetText(l10n_util::GetStringUTF16(
+                          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_LABEL))
+                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
+                  create_radio_button_builder(
+                      PermissionsManager::UserSiteAccess::kOnClick),
+                  create_radio_button_builder(
+                      PermissionsManager::UserSiteAccess::kOnSite),
+                  create_radio_button_builder(
+                      PermissionsManager::UserSiteAccess::kOnAllSites),
                   // Requests in toolbar toggle.
                   views::Builder<views::Separator>(),
                   views::Builder<views::FlexLayoutView>()
@@ -234,18 +246,6 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                   &ExtensionsMenuSitePermissionsPageView::
                                       OnShowRequestsTogglePressed,
                                   base::Unretained(this)))),
-                  // Site access section.
-                  views::Builder<views::Separator>(),
-                  views::Builder<views::Label>()
-                      .SetText(l10n_util::GetStringUTF16(
-                          IDS_EXTENSIONS_MENU_SITE_PERMISSIONS_PAGE_SITE_ACCESS_LABEL))
-                      .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-                  create_radio_button_builder(
-                      PermissionsManager::UserSiteAccess::kOnClick),
-                  create_radio_button_builder(
-                      PermissionsManager::UserSiteAccess::kOnSite),
-                  create_radio_button_builder(
-                      PermissionsManager::UserSiteAccess::kOnAllSites),
                   // Settings button.
                   views::Builder<views::Separator>(),
                   views::Builder<HoverButton>(std::make_unique<HoverButton>(
