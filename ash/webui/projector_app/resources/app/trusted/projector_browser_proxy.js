@@ -60,13 +60,6 @@ export class ProjectorBrowserProxy {
       accountEmail) {}
 
   /**
-   * Opens the Chrome feedback dialog. The returned promise will be rejected if
-   * the dialog open is not successful.
-   * @return {!Promise}
-   */
-  openFeedbackDialog() {}
-
-  /**
    * Gets information about the specified video from DriveFS.
    * @param {string} videoFileId The Drive item id of the video file.
    * @param {string|undefined} resourceKey The Drive item resource key.
@@ -129,10 +122,6 @@ export class ProjectorBrowserProxyImpl {
     ]);
   }
 
-  /** @override */
-  openFeedbackDialog() {
-    return sendWithPromise('openFeedbackDialog');
-  }
   /** @override */
   getVideo(videoFileId, resourceKey) {
     return sendWithPromise('getVideo', [videoFileId, resourceKey]);

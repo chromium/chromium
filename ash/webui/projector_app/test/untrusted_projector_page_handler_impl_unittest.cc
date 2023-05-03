@@ -240,4 +240,11 @@ TEST_F(UntrustedProjectorPageHandlerImplUnitTest, TestPrefs) {
                /*value=*/base::Value(4));
 }
 
+TEST_F(UntrustedProjectorPageHandlerImplUnitTest, OpenFeedbackDialog) {
+  EXPECT_CALL(mock_app_client(), OpenFeedbackDialog()).Times(1);
+  base::test::TestFuture<void> open_feedback_future;
+  page().page_handler()->OpenFeedbackDialog(open_feedback_future.GetCallback());
+  EXPECT_TRUE(open_feedback_future.Wait());
+}
+
 }  // namespace ash

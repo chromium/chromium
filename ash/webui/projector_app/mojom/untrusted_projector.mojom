@@ -34,6 +34,9 @@ interface UntrustedProjectorPageHandler {
   // Requested by the Projector SWA to get the value of a user pref.
   SetUserPref(PrefsThatProjectorCanAskFor pref, mojo_base.mojom.Value value)
     => ();
+
+  // Requested by the Projector SWA to open the Chrome feedback dialog.
+  OpenFeedbackDialog() => ();
 };
 
 // Implemented in Javascript to handle requests from the browser process.

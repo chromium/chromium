@@ -191,8 +191,7 @@ const CLIENT_DELEGATE = {
    * @return {!Promise}
    */
   openFeedbackDialog() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'openFeedbackDialog', []);
+    return browserProxy.openFeedbackDialog();
   },
 
   /**

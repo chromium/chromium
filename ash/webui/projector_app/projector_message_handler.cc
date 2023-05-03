@@ -105,10 +105,7 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "sendXhr", base::BindRepeating(&ProjectorMessageHandler::SendXhr,
                                      base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "openFeedbackDialog",
-      base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
-                          base::Unretained(this)));
+
   web_ui()->RegisterMessageCallback(
       "getVideo", base::BindRepeating(&ProjectorMessageHandler::GetVideo,
                                       base::Unretained(this)));
@@ -232,13 +229,6 @@ void ProjectorMessageHandler::SendXhr(const base::Value::List& args) {
 void ProjectorMessageHandler::OnError(const base::Value::List& args) {
   // TODO(b/195113693): Get the SWA dialog associated with this WebUI and close
   // it.
-}
-
-void ProjectorMessageHandler::OpenFeedbackDialog(
-    const base::Value::List& args) {
-  AllowJavascript();
-  ProjectorAppClient::Get()->OpenFeedbackDialog();
-  ResolveJavascriptCallback(args[0], base::Value());
 }
 
 void ProjectorMessageHandler::OnAccessTokenRequestCompleted(

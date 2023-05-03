@@ -74,9 +74,6 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   // Called by the Projector SWA when an error occurred.
   void OnError(const base::Value::List& args);
 
-  // Requested by the Projector SWA to open the Chrome feedback dialog.
-  void OpenFeedbackDialog(const base::Value::List& args);
-
   // Called when OAuth token fetch request is completed by
   // ProjectorOAuthTokenFetcher. Resolves the javascript promise created by
   // ProjectorBrowserProxy.getOAuthTokenForAccount by calling the

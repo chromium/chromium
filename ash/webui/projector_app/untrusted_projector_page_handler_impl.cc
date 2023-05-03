@@ -164,4 +164,11 @@ void UntrustedProjectorPageHandlerImpl::SetUserPref(
   std::move(callback).Run();
 }
 
+void UntrustedProjectorPageHandlerImpl::OpenFeedbackDialog(
+    projector::mojom::UntrustedProjectorPageHandler::OpenFeedbackDialogCallback
+        callback) {
+  ProjectorAppClient::Get()->OpenFeedbackDialog();
+  std::move(callback).Run();
+}
+
 }  // namespace ash

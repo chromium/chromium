@@ -45,8 +45,6 @@ const char kGetOAuthTokenCallback[] = "getOAuthTokenCallback";
 const char kSendXhrCallback[] = "sendXhrCallback";
 const char kGetVideoCallback[] = "getVideoCallback";
 
-const char kOpenFeedbackDialogCallback[] = "openFeedbackDialog";
-
 }  // namespace
 
 namespace ash {
@@ -368,17 +366,6 @@ TEST_F(ProjectorMessageHandlerUnitTest, SendXhrWithUnSupportedUrl) {
   // Verify error is UNSUPPORTED_URL.
   const std::string* error = arg3_dict.FindString(kXhrResponseErrorPath);
   EXPECT_EQ("UNSUPPORTED_URL", *error);
-}
-
-TEST_F(ProjectorMessageHandlerUnitTest, OpenFeedbackDialog) {
-  base::Value::List list_args;
-  list_args.Append(base::Value(kOpenFeedbackDialogCallback));
-
-  web_ui().HandleReceivedMessage("openFeedbackDialog", list_args);
-
-  const content::TestWebUI::CallData& call_data = FetchCallData(0);
-  EXPECT_EQ(call_data.function_name(), kWebUIResponse);
-  EXPECT_EQ(call_data.arg1()->GetString(), kOpenFeedbackDialogCallback);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, GetVideo) {

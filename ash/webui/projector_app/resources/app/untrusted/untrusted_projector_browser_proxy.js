@@ -115,6 +115,11 @@ export class UntrustedProjectorBrowserProxyImpl {
     await this.pageHandlerRemote.setUserPref(mojoPref, mojoValue);
     return true;
   }
+
+  async openFeedbackDialog() {
+    await this.pageHandlerRemote.openFeedbackDialog();
+    return;
+  }
 }
 
 /**

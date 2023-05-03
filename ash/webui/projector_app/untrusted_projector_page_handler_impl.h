@@ -45,25 +45,16 @@ class UntrustedProjectorPageHandlerImpl
 
   //  projector::mojom::UntrustedProjectorPageHandler:
   void GetNewScreencastPrecondition(
-      projector::mojom::UntrustedProjectorPageHandler::
-          GetNewScreencastPreconditionCallback callback) override;
-  void ShouldDownloadSoda(projector::mojom::UntrustedProjectorPageHandler::
-                              ShouldDownloadSodaCallback callback) override;
-  void InstallSoda(
-      projector::mojom::UntrustedProjectorPageHandler::InstallSodaCallback
-          callback) override;
-  void GetPendingScreencasts(
-      projector::mojom::UntrustedProjectorPageHandler::
-          GetPendingScreencastsCallback callback) override;
-  void GetUserPref(
-      projector::mojom::PrefsThatProjectorCanAskFor pref,
-      projector::mojom::UntrustedProjectorPageHandler::GetUserPrefCallback
-          callback) override;
-  void SetUserPref(
-      projector::mojom::PrefsThatProjectorCanAskFor pref,
-      base::Value value,
-      projector::mojom::UntrustedProjectorPageHandler::SetUserPrefCallback
-          callback) override;
+      GetNewScreencastPreconditionCallback callback) override;
+  void ShouldDownloadSoda(ShouldDownloadSodaCallback callback) override;
+  void InstallSoda(InstallSodaCallback callback) override;
+  void GetPendingScreencasts(GetPendingScreencastsCallback callback) override;
+  void GetUserPref(projector::mojom::PrefsThatProjectorCanAskFor pref,
+                   GetUserPrefCallback callback) override;
+  void SetUserPref(projector::mojom::PrefsThatProjectorCanAskFor pref,
+                   base::Value value,
+                   SetUserPrefCallback callback) override;
+  void OpenFeedbackDialog(OpenFeedbackDialogCallback callback) override;
 
  private:
   mojo::Receiver<projector::mojom::UntrustedProjectorPageHandler> receiver_;
