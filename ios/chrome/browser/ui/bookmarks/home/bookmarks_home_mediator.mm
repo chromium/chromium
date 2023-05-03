@@ -224,12 +224,8 @@ bool IsABookmarkNodeSectionForIdentifier(
   if (!self.displayedNode) {
     return;
   }
-  bookmarks::BookmarkModel* currentModel =
-      bookmark_utils_ios::GetBookmarkModelForNode(self.displayedNode,
-                                                  _profileBookmarkModel.get(),
-                                                  _accountBookmarkModel.get());
-  BOOL shouldDisplayCloudSlashIcon =
-      [self shouldDisplayCloudSlashIconWithBookmarkModel:currentModel];
+  BOOL shouldDisplayCloudSlashIcon = [self
+      shouldDisplayCloudSlashIconWithBookmarkModel:self.displayedBookmarkModel];
   // Add all bookmarks and folders of the currently displayed node to the table.
   for (const auto& child : self.displayedNode->children()) {
     BookmarksHomeNodeItem* nodeItem = [[BookmarksHomeNodeItem alloc]
@@ -450,6 +446,27 @@ bool IsABookmarkNodeSectionForIdentifier(
   _selectedNodesForEditMode.clear();
   [self.consumer mediatorDidClearEditNodes:self];
   [self.consumer.tableView setEditing:currentlyInEditMode animated:YES];
+}
+
+- (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
+    (bookmarks::BookmarkModel*)bookmarkModel {
+  if (bookmarkModel == _profileBookmarkModel.get()) {
+    return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
+        _syncSetupService);
+  }
+  CHECK_EQ(bookmarkModel, _accountBookmarkModel.get())
+      << "bookmarkModel: " << bookmarkModel
+      << ", profileBookmarkModel: " << _profileBookmarkModel.get()
+      << ", accountBookmarkModel: " << _accountBookmarkModel.get();
+  return NO;
+}
+
+#pragma mark - Properties
+
+- (bookmarks::BookmarkModel*)displayedBookmarkModel {
+  return bookmark_utils_ios::GetBookmarkModelForNode(
+      self.displayedNode, _profileBookmarkModel.get(),
+      _accountBookmarkModel.get());
 }
 
 #pragma mark - BookmarkModelBridgeObserver Callbacks
@@ -698,21 +715,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   bool syncTypesDisabledPolicy = IsManagedSyncDataType(
       self.syncService, syncer::UserSelectableType::kBookmarks);
   return syncDisabledPolicy || syncTypesDisabledPolicy;
-}
-
-// Returns weather the slashed cloud icon should be displayed for
-// `bookmarkModel`.
-- (BOOL)shouldDisplayCloudSlashIconWithBookmarkModel:
-    (bookmarks::BookmarkModel*)bookmarkModel {
-  if (bookmarkModel == _profileBookmarkModel.get()) {
-    return bookmark_utils_ios::ShouldDisplayCloudSlashIconForProfileModel(
-        _syncSetupService);
-  }
-  CHECK_EQ(bookmarkModel, _accountBookmarkModel.get())
-      << "bookmarkModel: " << bookmarkModel
-      << ", profileBookmarkModel: " << _profileBookmarkModel.get()
-      << ", accountBookmarkModel: " << _accountBookmarkModel.get();
-  return NO;
 }
 
 // Populates the table view model with BookmarksHomeNodeItem based on the search
