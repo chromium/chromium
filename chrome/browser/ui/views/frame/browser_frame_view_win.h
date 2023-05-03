@@ -58,6 +58,7 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {}
   void ResetWindowControls() override;
   void SizeConstraintsChanged() override {}
+  void OnThemeChanged() override;
 
   // TabIconViewModel:
   bool ShouldTabIconViewAnimate() const override;
@@ -138,6 +139,9 @@ class BrowserFrameViewWin : public BrowserNonClientFrameView,
   // Returns whether or not the window should display a title of the specified
   // |type|.
   bool ShouldShowWindowTitle(TitlebarType type) const;
+
+  // Sets DWM attributes for rendering the system-drawn titlebar.
+  void SetSystemTitlebarAttributes();
 
   // Paint various sub-components of this view.
   void PaintTitlebar(gfx::Canvas* canvas) const;

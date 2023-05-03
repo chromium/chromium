@@ -399,6 +399,13 @@ void BrowserFrameViewWin::ResetWindowControls() {
   caption_button_container_->ResetWindowControls();
 }
 
+void BrowserFrameViewWin::OnThemeChanged() {
+  BrowserNonClientFrameView::OnThemeChanged();
+  if (!ShouldCustomDrawSystemTitlebar()) {
+    SetSystemTitlebarAttributes();
+  }
+}
+
 bool BrowserFrameViewWin::ShouldTabIconViewAnimate() const {
   if (!ShouldShowWindowIcon(TitlebarType::kCustom)) {
     return false;
@@ -612,6 +619,15 @@ bool BrowserFrameViewWin::ShouldShowWindowTitle(TitlebarType type) const {
     return false;
   }
   return browser_view()->ShouldShowWindowTitle();
+}
+
+void BrowserFrameViewWin::SetSystemTitlebarAttributes() {
+  if (SystemTitlebarSupportsDarkMode()) {
+    const BOOL dark_titlebar_enabled = GetNativeTheme()->ShouldUseDarkColors();
+    DwmSetWindowAttribute(views::HWNDForWidget(frame()),
+                          DWMWA_USE_IMMERSIVE_DARK_MODE, &dark_titlebar_enabled,
+                          sizeof(dark_titlebar_enabled));
+  }
 }
 
 SkColor BrowserFrameViewWin::GetTitlebarColor() const {

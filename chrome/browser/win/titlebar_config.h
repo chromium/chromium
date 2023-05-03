@@ -13,4 +13,7 @@ BASE_DECLARE_FEATURE(kWindows10CustomTitlebar);
 // native frame.
 bool ShouldCustomDrawSystemTitlebar();
 
+// Returns whether the system-drawn titlebar can be drawn in dark mode.
+bool SystemTitlebarSupportsDarkMode();
+
 #endif  // CHROME_BROWSER_WIN_TITLEBAR_CONFIG_H_

@@ -5,6 +5,7 @@
 #include "chrome/browser/win/titlebar_config.h"
 
 #include "base/command_line.h"
+#include "base/win/windows_version.h"
 #include "chrome/common/chrome_switches.h"
 
 bool ShouldCustomDrawSystemTitlebar() {
@@ -15,4 +16,8 @@ bool ShouldCustomDrawSystemTitlebar() {
           switches::kDisableWindows10CustomTitlebar);
 
   return !custom_titlebar_disabled;
+}
+
+bool SystemTitlebarSupportsDarkMode() {
+  return base::win::GetVersion() >= base::win::Version::WIN11;
 }
