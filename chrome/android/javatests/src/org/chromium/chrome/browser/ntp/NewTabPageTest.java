@@ -974,11 +974,11 @@ public class NewTabPageTest {
                 singleTabCardView.getVisibility());
 
         TabObserver tabObserver = ntp.getTabObserverForTesting();
-        ntp.setShownAsHomeSurfaceForTesting(false);
-        Assert.assertFalse(
+        ntp.setIsHiddenForTesting(true);
+        Assert.assertTrue(
                 "The variable controlling whether to show the single tab card hasn't been "
                         + "set to false.",
-                ntp.getShownAsHomeSurfaceForTesting());
+                ntp.getIsHiddenForTesting());
         ntpLayout.setMostVisitedTilesCoordinatorForTesting(null);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { tabObserver.onShown(newTab, TabSelectionType.FROM_NEW); });
@@ -1078,13 +1078,6 @@ public class NewTabPageTest {
         assertEquals("The single tab card is still visible after updating with the new tab "
                         + "page information.",
                 View.GONE, singleTabCardView.getVisibility());
-        TextView new_title = singleTabCardView.findViewById(R.id.tab_title_view);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            String newMostRecentTabTitleForCheck = "";
-            assertEquals("The title of the single tab card is wrong after updating with "
-                            + "the new tab page information.",
-                    newMostRecentTabTitleForCheck, new_title.getText());
-        });
     }
 
     private void captureThumbnail() {

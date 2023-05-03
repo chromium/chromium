@@ -49,20 +49,22 @@ public class SingleTabSwitcherOnTabletMediator {
     /**
      * Set the visibility of the single tab card of the {@link NewTabPageLayout} on tablet.
      * @param isVisible Whether the single tab card is visible.
-     * @return Whether the single tab card has been set visible.
      */
-    boolean setVisibility(boolean isVisible) {
+    void setVisibility(boolean isVisible) {
+        if (isVisible == mPropertyModel.get(IS_VISIBLE)) return;
+
         if (!isVisible || mMostRecentTab == null) {
             mPropertyModel.set(IS_VISIBLE, false);
-            return false;
+            mMostRecentTab = null;
+            return;
         }
+
         if (!mInitialized) {
             mInitialized = true;
             updateTitle();
             updateFavicon();
         }
         mPropertyModel.set(IS_VISIBLE, true);
-        return true;
     }
 
     boolean isVisible() {
@@ -72,22 +74,25 @@ public class SingleTabSwitcherOnTabletMediator {
     /**
      * Update the most recent tab to track in the single tab card.
      * @param tabToTrack The tab to track as the most recent tab.
+     * @return Whether has a Tab to track. Returns false if the Tab to track is set as null.
      */
-    void setTab(Tab tabToTrack) {
-        if (UrlUtilities.isNTPUrl(tabToTrack.getUrl())) {
+    boolean setTab(Tab tabToTrack) {
+        if (tabToTrack != null && UrlUtilities.isNTPUrl(tabToTrack.getUrl())) {
             tabToTrack = null;
         }
 
-        if (mMostRecentTab == tabToTrack) return;
+        if (mMostRecentTab == tabToTrack) return tabToTrack != null;
 
         if (tabToTrack == null) {
             mMostRecentTab = null;
             mPropertyModel.set(TITLE, "");
             mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
+            return false;
         } else {
             mMostRecentTab = tabToTrack;
             updateTitle();
             updateFavicon();
+            return true;
         }
     }
 

@@ -167,6 +167,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
+import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.JourneyManager;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil.ReturnToChromeBackPressHandler;
@@ -369,6 +370,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
     private ReadingListBackPressHandler mReadingListBackPressHandler;
     private MinimizeAppAndCloseTabBackPressHandler mMinimizeAppAndCloseTabBackPressHandler;
+
+    private HomeSurfaceTracker mHomeSurfaceTracker;
 
     // ID assigned to each ChromeTabbedActivity instance in Android S+ where multi-instance feature
     // is supported. This can be explicitly set in the incoming Intent or internally assigned.
@@ -1234,7 +1237,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private void setInitialOverviewState() {
         ReturnToChromeUtil.setInitialOverviewStateOnResumeOnTablet(
                 mTabModelSelector.isIncognitoSelected(), shouldShowNtpHomeSurfaceOnStartup(),
-                getCurrentTabModel(), getTabCreator(false));
+                getCurrentTabModel(), getTabCreator(false), mHomeSurfaceTracker);
     }
 
     private void logMainIntentBehavior(Intent intent) {
@@ -1315,6 +1318,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // from disk is an NTP that can be reused for Start.
                 Callback<String> onStandardActiveIndexRead = null;
                 shouldShowHomeSurfaceAtStartupOnTablet = shouldShowNtpHomeSurfaceOnStartup();
+                boolean skipSavingNonActiveNtps = skipSavingNonActiveNtps();
+                if (skipSavingNonActiveNtps) {
+                    mHomeSurfaceTracker = new HomeSurfaceTracker();
+                }
                 if (shouldShowHomeSurfaceAtStartupOnTablet) {
                     onStandardActiveIndexRead = url -> {
                         mLastActiveTabUrl = url;
@@ -1325,7 +1332,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     };
                 }
                 mTabModelOrchestrator.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
-                mTabModelOrchestrator.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps());
+                mTabModelOrchestrator.setSkipSavingNonActiveNtps(skipSavingNonActiveNtps);
             }
 
             mInactivityTracker.register(this.getLifecycleDispatcher());
@@ -1370,8 +1377,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 // one, and set it as the active Tab. |mLastActiveTabUrl| is null when there isn't
                 // any Tab.
                 if (!isActiveUrlNTP.get() && mLastActiveTabUrl != null) {
-                    ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(
-                            getTabCreator(false), mTabModelSelector, mLastActiveTabUrl, null);
+                    ReturnToChromeUtil.createNewTabAndShowHomeSurfaceUi(getTabCreator(false),
+                            mHomeSurfaceTracker, mTabModelSelector, mLastActiveTabUrl, null);
                     activeTabBeingRestored = false;
                     mCreatedTabOnStartup = true;
                     mLastActiveTabUrl = null;
@@ -2008,7 +2015,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     /* TabCreatorManager */ this, getTabModelSelectorSupplier(),
                     getCompositorViewHolderSupplier(), getModalDialogManagerSupplier(),
                     this::getSnackbarManager, getBrowserControlsManager(), getActivityTabProvider(),
-                    getLifecycleDispatcher(), getWindowAndroid(), getToolbarManager()::getToolbar);
+                    getLifecycleDispatcher(), getWindowAndroid(), getToolbarManager()::getToolbar, mHomeSurfaceTracker);
         }
         return mTabDelegateFactory;
     }

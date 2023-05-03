@@ -162,6 +162,31 @@ public class StartSurfaceOnTabletTest {
         Assert.assertTrue(mvTilesLayout instanceof MostVisitedTilesGridLayout);
     }
 
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({START_SURFACE_ON_TABLET_TEST_PARAMS})
+    public void testSingleTabCardGoneAfterTabClosed() throws IOException {
+        StartSurfaceTestUtils.prepareTabStateMetadataFile(new int[] {0}, new String[] {TAB_URL}, 0);
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForTabModel(cta);
+
+        // Verifies that a new NTP is created and set as the active Tab.
+        verifyTabCountAndActiveTabUrl(
+                cta, 2, UrlConstants.NTP_URL, true /* expectHomeSurfaceUiShown */);
+        waitForNtpLoaded(cta.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) cta.getActivityTab().getNativePage();
+        Assert.assertTrue(ntp.isSingleTabCardVisibleForTesting());
+
+        Tab lastActiveTab = cta.getCurrentTabModel().getTabAt(0);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { cta.getCurrentTabModel().closeTab(lastActiveTab); });
+        Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
+        Assert.assertFalse(ntp.isSingleTabCardVisibleForTesting());
+    }
+
     private void verifyTabCountAndActiveTabUrl(
             ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
         Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
