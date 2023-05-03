@@ -2640,7 +2640,7 @@ class ComputedStyle : public ComputedStyleBase,
                                 const LayoutBox* box,
                                 const gfx::RectF& bounding_box,
                                 gfx::Transform&) const;
-  PointAndTangent CalculatePointAndTangentOnCircleOrEllipse(
+  PointAndTangent CalculatePointAndTangentOnBasicShape(
       const LayoutBox* box,
       const gfx::RectF& bounding_box) const;
   PointAndTangent CalculatePointAndTangentOnRay(

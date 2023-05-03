@@ -1472,25 +1472,28 @@ gfx::PointF GetStartingPointOfThePath(const LayoutBox* box,
 
 }  // namespace
 
-PointAndTangent ComputedStyle::CalculatePointAndTangentOnCircleOrEllipse(
+PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
     const LayoutBox* box,
     const gfx::RectF& bounding_box) const {
-  const auto& shape = To<BasicShapeWithCenterAndRadii>(*OffsetPath());
+  const BasicShape& shape = *OffsetPath();
   const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, bounding_box);
   Path path;
-  if (shape.HasExplicitCenter()) {
-    shape.GetPath(path, gfx::RectF(reference_box_size), EffectiveZoom());
-  } else {
+  if (const auto* circle_or_ellipse =
+          DynamicTo<BasicShapeWithCenterAndRadii>(shape);
+      circle_or_ellipse && !circle_or_ellipse->HasExplicitCenter()) {
     // If circle() or ellipse() is used, and an explicit center position is not
     // given, they default to using the offset starting position, rather than
     // their standard default.
     const gfx::PointF starting_point =
         GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
-    shape.GetPathFromCenter(path, starting_point,
-                            gfx::RectF(reference_box_size), EffectiveZoom());
+    circle_or_ellipse->GetPathFromCenter(
+        path, starting_point, gfx::RectF(reference_box_size), EffectiveZoom());
+  } else {
+    shape.GetPath(path, gfx::RectF(reference_box_size), EffectiveZoom());
   }
   float shape_length = path.length();
   float path_length = FloatValueForLength(OffsetDistance(), shape_length);
+  // All the shapes are closed at this point.
   if (shape_length > 0) {
     path_length = fmod(path_length, shape_length);
     if (path_length < 0) {
@@ -1584,8 +1587,11 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       break;
     case BasicShape::kBasicShapeCircleType:
     case BasicShape::kBasicShapeEllipseType:
-      path_position =
-          CalculatePointAndTangentOnCircleOrEllipse(box, bounding_box);
+    case BasicShape::kBasicShapeInsetType:
+    case BasicShape::kBasicShapeXYWHType:
+    case BasicShape::kBasicShapeRectType:
+    case BasicShape::kBasicShapePolygonType:
+      path_position = CalculatePointAndTangentOnBasicShape(box, bounding_box);
       break;
     default:
       NOTREACHED();

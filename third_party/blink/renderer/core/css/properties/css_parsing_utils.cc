@@ -6528,6 +6528,12 @@ bool IsBasicShapeSupportedByOffsetPath(const CSSValueID& id) {
     case CSSValueID::kEllipse:
       return RuntimeEnabledFeatures::
           CSSOffsetPathBasicShapesCircleAndEllipseEnabled();
+    case CSSValueID::kInset:
+    case CSSValueID::kXywh:
+    case CSSValueID::kRect:
+    case CSSValueID::kPolygon:
+      return RuntimeEnabledFeatures::
+          CSSOffsetPathBasicShapesRectanglesAndPolygonEnabled();
     default:
       return false;
   }
