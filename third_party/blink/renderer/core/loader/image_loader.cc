@@ -161,7 +161,6 @@ ImageLoader::ImageLoader(Element* element)
     : element_(element),
       image_complete_(true),
       suppress_error_events_(false),
-      was_deferred_explicitly_(false),
       lazy_image_load_state_(LazyImageLoadState::kNone) {
   RESOURCE_LOADING_DVLOG(1) << "new ImageLoader " << this;
 }
@@ -544,14 +543,10 @@ void ImageLoader::DoUpdateFromElement(
     if (update_behavior != kUpdateForcedReload &&
         lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
       if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
-        LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
-            html_image->FastGetAttribute(html_names::kLoadingAttr));
         switch (LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
             *frame, html_image, params.Url())) {
           case LazyImageHelper::Eligibility::kEnabledFullyDeferred:
             lazy_image_load_state_ = LazyImageLoadState::kDeferred;
-            was_deferred_explicitly_ =
-                (loading_attr == LoadingAttributeValue::kLazy);
             params.SetLazyImageDeferred();
             break;
           case LazyImageHelper::Eligibility::kDisabled:
@@ -562,8 +557,7 @@ void ImageLoader::DoUpdateFromElement(
 
     // If we're now loading in a once-deferred image, make sure it doesn't block
     // the load event.
-    if (was_deferred_explicitly_ &&
-        lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
+    if (lazy_image_load_state_ == LazyImageLoadState::kFullImage &&
         !force_blocking) {
       params.SetLazyImageNonBlocking();
     }

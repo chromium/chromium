@@ -118,7 +118,6 @@ void FetchParameters::SetLazyImageDeferred() {
 }
 
 void FetchParameters::SetLazyImageNonBlocking() {
-  // TODO(domfarolino): [Before merging]: can we DCHECK here.
   image_request_behavior_ = ImageRequestBehavior::kNonBlockingImage;
 }
 
