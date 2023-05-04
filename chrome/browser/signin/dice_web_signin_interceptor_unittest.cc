@@ -444,10 +444,6 @@ class DiceWebSigninInterceptorManagedAccountTest
         sync_promo_enabled_(std::get<1>(GetParam())) {
     if (sync_promo_enabled_) {
       scoped_feature_list_.InitAndEnableFeature(kSyncPromoAfterSigninIntercept);
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              kSigninInterceptBubbleV2, kSyncPromoAfterSigninIntercept});
     }
   }
 
@@ -742,10 +738,6 @@ class DiceWebSigninInterceptorWithManagedDisclaimerForSyncPromoTest
       : sync_promo_enabled_(GetParam()) {
     if (sync_promo_enabled_) {
       scoped_feature_list_.InitAndEnableFeature(kSyncPromoAfterSigninIntercept);
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{}, /*disabled_features=*/{
-              kSigninInterceptBubbleV2, kSyncPromoAfterSigninIntercept});
     }
   }
 

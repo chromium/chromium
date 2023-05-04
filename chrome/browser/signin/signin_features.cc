@@ -65,17 +65,16 @@ BASE_FEATURE(kProcessGaiaRemoveLocalAccountHeader,
              "ProcessGaiaRemoveLocalAccountHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the sync promo after the sign-in intercept. Fully rolled out on
-// Desktop.
+// Enables the sync promo after the sign-in intercept.
 BASE_FEATURE(kSyncPromoAfterSigninIntercept,
              "SyncPromoAfterSigninIntercept",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables using new style (strings, illustration, and disclaimer if needed)
-// for the sign-in intercept bubble. Fully rolled out on Desktop.
+// for the sign-in intercept bubble.
 BASE_FEATURE(kSigninInterceptBubbleV2,
              "SigninInterceptBubbleV2",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables showing the enterprise dialog after every signin into a managed
 // account.
