@@ -850,9 +850,6 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
     bool is_federated,
     const url::Origin& federated_origin,
     const std::u16string& login_user_name) const {
-  if (!base::FeatureList::IsEnabled(policy::features::kLoginEventReporting))
-    return;
-
   extensions::SafeBrowsingPrivateEventRouter* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           profile_);
@@ -866,11 +863,6 @@ void ChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
 
 void ChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
     const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-  if (!base::FeatureList::IsEnabled(
-          policy::features::kPasswordBreachEventReporting)) {
-    return;
-  }
-
   extensions::SafeBrowsingPrivateEventRouter* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           profile_);

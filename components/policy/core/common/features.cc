@@ -10,14 +10,6 @@ namespace policy {
 
 namespace features {
 
-BASE_FEATURE(kLoginEventReporting,
-             "LoginEventReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPasswordBreachEventReporting,
-             "PasswordBreachEventReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher,
              "UserCloudSigninRestrictionPolicyFetcher",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -14,14 +14,6 @@
 namespace policy {
 namespace features {
 
-// Enable reporting Login events to the reporting connector when the Password
-// Manager detects that the user logged in to a web page.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kLoginEventReporting);
-
-// Enable reporting password leaks to the reporting connector when the Password
-// Manager's Leak Detector has found some compromised credentials.
-POLICY_EXPORT BASE_DECLARE_FEATURE(kPasswordBreachEventReporting);
-
 // Enable the UserCloudSigninRestrictionPolicyFetcher to get the
 // ManagedAccountsSigninRestriction policy for a dasher account.
 POLICY_EXPORT BASE_DECLARE_FEATURE(
