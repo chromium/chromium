@@ -150,8 +150,8 @@ class PredictionModelStore {
 
   // Local state that stores the prefs across all profiles. Not owned and
   // outlives |this|.
-  raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_) =
-      nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_
+      GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 
   // The base dir where the prediction model dirs are saved.
   base::FilePath base_store_dir_ GUARDED_BY_CONTEXT(sequence_checker_);

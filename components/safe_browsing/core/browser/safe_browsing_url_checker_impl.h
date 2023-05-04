@@ -330,7 +330,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // May be null on certain platforms that don't support chrome://safe-browsing
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
-  raw_ptr<UrlRealTimeMechanism::WebUIDelegate> webui_delegate_ = nullptr;
+  raw_ptr<UrlRealTimeMechanism::WebUIDelegate, DanglingUntriaged>
+      webui_delegate_ = nullptr;
 
   // This object is used to perform the hash-prefix real-time lookup. It can
   // only be accessed on the UI thread.

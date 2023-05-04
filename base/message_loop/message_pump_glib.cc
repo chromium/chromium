@@ -252,7 +252,7 @@ bool RunningOnMainThread() {
 //        this case.
 
 struct WorkSource : public GSource {
-  raw_ptr<MessagePumpGlib> pump;
+  raw_ptr<MessagePumpGlib, DanglingUntriaged> pump;
 };
 
 gboolean WorkSourcePrepare(GSource* source, gint* timeout_ms) {
@@ -281,7 +281,7 @@ GSourceFuncs g_work_source_funcs = {WorkSourcePrepare, WorkSourceCheck,
                                     WorkSourceDispatch, nullptr};
 
 struct ObserverSource : public GSource {
-  raw_ptr<MessagePumpGlib> pump;
+  raw_ptr<MessagePumpGlib, DanglingUntriaged> pump;
 };
 
 gboolean ObserverPrepare(GSource* gsource, gint* timeout_ms) {

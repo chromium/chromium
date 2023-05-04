@@ -101,7 +101,7 @@ class OOMKillsMonitor {
   static const char kDailyEventHistogramName[];
 
   // A raw pointer to the PrefService used to read and write the statistics.
-  raw_ptr<PrefService> pref_service_;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
 };
 
 }  // namespace memory

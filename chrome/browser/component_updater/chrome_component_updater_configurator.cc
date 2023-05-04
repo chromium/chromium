@@ -95,7 +95,7 @@ class ChromeConfigurator : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<ChromeConfigurator>;
 
   ConfiguratorImpl configurator_impl_;
-  raw_ptr<PrefService>
+  raw_ptr<PrefService, DanglingUntriaged>
       pref_service_;  // This member is not owned by this class.
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;

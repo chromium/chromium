@@ -80,7 +80,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(browser_creator_.Start(
         base::CommandLine(base::CommandLine::NO_PROGRAM), base::FilePath(),
-        {raw_ptr(profile_.get()), StartupProfileMode::kBrowserWindow},
+        {profile_, StartupProfileMode::kBrowserWindow},
         g_browser_process->profile_manager()->GetLastOpenedProfiles()));
     ASSERT_EQ(1U, BrowserList::GetInstance()->size());
   }

@@ -222,7 +222,7 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
   RepeatingClosure primary_task_;
 
   const TimeTicks ready_time_;
-  raw_ptr<PooledTaskRunnerDelegate> delegate_;
+  raw_ptr<PooledTaskRunnerDelegate, DanglingUntriaged> delegate_;
 };
 
 }  // namespace internal

@@ -159,7 +159,7 @@ class NCNLinuxMockedNetlinkTestUtil {
   }
 
  private:
-  raw_ptr<net::NetworkChangeNotifierLinux> ncn_linux_;
+  raw_ptr<net::NetworkChangeNotifierLinux, DanglingUntriaged> ncn_linux_;
   base::ScopedFD fake_netlink_fd_;
 
   bool initialized_ = false;

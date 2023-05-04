@@ -59,7 +59,7 @@ class ColorProvider;
 
   // The profile last used by a Browser. It is this profile that was used to
   // build the user-data specific main menu items.
-  raw_ptr<Profile> _lastProfile;
+  raw_ptr<Profile, DanglingUntriaged> _lastProfile;
 
   // The ProfileObserver observes the ProfileAttrbutesStorage and gets notified
   // when a profile has been deleted.

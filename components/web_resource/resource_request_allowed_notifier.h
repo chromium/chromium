@@ -122,7 +122,7 @@ class ResourceRequestAllowedNotifier
   const char* disable_network_switch_;
 
   // The local state this class is observing.
-  raw_ptr<PrefService> local_state_;
+  raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   // Tracks whether or not the observer/service depending on this class actually
   // requested permission to make a request or not. If it did not, then this

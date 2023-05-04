@@ -48,7 +48,8 @@ void BrowserLauncher::LaunchForFullRestore(bool skip_crash_restore) {
   base::AutoReset<bool> resetter(&is_launching_for_full_restore_, true);
 
   // Ensure that we do not start with the profile picker.
-  StartupProfileInfo profile_info{profile_, StartupProfileMode::kBrowserWindow};
+  StartupProfileInfo profile_info{profile_.get(),
+                                  StartupProfileMode::kBrowserWindow};
 
   // Get the last opened profiles from the last session. This is only valid
   // before any browsers have been opened for the current session as opening /

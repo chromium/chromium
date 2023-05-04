@@ -95,7 +95,7 @@ class PepperRendererConnection : public BrowserMessageFilter {
   // information (like the plugin name) won't be available.
   std::unique_ptr<BrowserPpapiHostImpl> in_process_host_;
 
-  const raw_ptr<PluginServiceImpl> plugin_service_;
+  const raw_ptr<PluginServiceImpl, DanglingUntriaged> plugin_service_;
   const base::FilePath profile_data_directory_;
 };
 

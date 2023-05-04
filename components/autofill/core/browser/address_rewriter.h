@@ -29,7 +29,7 @@ class AddressRewriter {
 
  private:
   // A handle to the internal rewrite rules this instance is using.
-  raw_ptr<const void> impl_ = nullptr;
+  raw_ptr<const void, DanglingUntriaged> impl_ = nullptr;
 };
 
 }  // namespace autofill

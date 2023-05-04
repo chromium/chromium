@@ -108,7 +108,7 @@ struct StartupProfilePathInfo {
 // TODO(https://crbug.com/1150326): return a guest profile for the Guest mode
 // and return nullptr for kProfilePicker.
 struct StartupProfileInfo {
-  raw_ptr<Profile> profile;
+  raw_ptr<Profile, DanglingUntriaged> profile;
   StartupProfileMode mode;
 };
 

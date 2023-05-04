@@ -140,7 +140,7 @@ class COMPONENTS_PREFS_EXPORT PrefMemberBase : public PrefObserver {
   // Ordered the members to compact the class instance.
   std::string pref_name_;
   NamedChangeCallback observer_;
-  raw_ptr<PrefService> prefs_;
+  raw_ptr<PrefService, DanglingUntriaged> prefs_;
 
  protected:
   bool setting_value_;

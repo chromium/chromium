@@ -47,10 +47,11 @@ class ChromeRenderViewTest : public content::RenderViewTest {
 
   void WaitForAutofillDidAddOrRemoveFormRelatedElements();
 
-  raw_ptr<autofill::TestPasswordAutofillAgent> password_autofill_agent_ =
-      nullptr;
-  raw_ptr<autofill::PasswordGenerationAgent> password_generation_ = nullptr;
-  raw_ptr<autofill::AutofillAgent> autofill_agent_ = nullptr;
+  raw_ptr<autofill::TestPasswordAutofillAgent, DanglingUntriaged>
+      password_autofill_agent_ = nullptr;
+  raw_ptr<autofill::PasswordGenerationAgent, DanglingUntriaged>
+      password_generation_ = nullptr;
+  raw_ptr<autofill::AutofillAgent, DanglingUntriaged> autofill_agent_ = nullptr;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;

@@ -101,8 +101,8 @@ class StatusIconLinuxDbus : public ui::StatusIconLinux,
   scoped_refptr<dbus::Bus> bus_;
 
   int service_id_ = 0;
-  raw_ptr<dbus::ObjectProxy> watcher_ = nullptr;
-  raw_ptr<dbus::ExportedObject> item_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, DanglingUntriaged> watcher_ = nullptr;
+  raw_ptr<dbus::ExportedObject, DanglingUntriaged> item_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 

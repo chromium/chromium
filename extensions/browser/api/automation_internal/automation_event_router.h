@@ -168,7 +168,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
 
   std::map<WorkerId, std::string> keepalive_request_uuid_for_worker_;
 
-  raw_ptr<content::BrowserContext> active_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> active_context_;
 
   // The caller of RegisterRemoteRouter is responsible for ensuring that this
   // pointer is valid. The remote router must be unregistered with
