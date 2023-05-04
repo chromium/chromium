@@ -292,6 +292,11 @@ class VPNListProviderEntryRevamp : public ActionableView {
                 ? static_cast<ui::ColorId>(cros_tokens::kCrosSysDisabled)
                 : kColorAshButtonIconDisabledColor));
 
+    // The tooltip says "Add connection" which is fine for users who can see the
+    // label with the provider name, but ChromeVox users need to hear the name.
+    add_vpn_button->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_STATUS_TRAY_ADD_VPN_CONNECTION_WITH, base::UTF8ToUTF16(name)));
+
     // Update enabled state for the whole row and the button.
     bool add_vpn_enabled =
         enabled && CanAddVpnButtonBeEnabled(

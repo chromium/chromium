@@ -3181,6 +3181,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_ADD_CONNECTION" desc="Title for control to add a new network connection." >
         Add connection
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_ADD_VPN_CONNECTION_WITH" desc="Accessibility label for a button that adds a new VPN connection using a company's VPN provider software." >
+        Add connection with <ph name="PROVIDER">$1<ex>Pulse Secure</ex></ph>
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_MONITORED_WARNING" desc="The label used in the tray popup to warn users their network may be monitored." >
         Network may be monitored
       </message>
