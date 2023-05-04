@@ -281,7 +281,7 @@ GPUExternalTexture* GPUExternalTexture::FromHTMLVideoElement(
   // active list. Listen to HTMLVideoElement and insert the texture into active
   // list for management.
   if (external_texture) {
-    external_texture->ListenToHTMLVideoElement(video);
+    external_texture->SetVideo(video);
     cache->Add(video, external_texture);
   }
 
@@ -308,14 +308,11 @@ GPUExternalTexture* GPUExternalTexture::FromVideoFrame(
   // from active list. Listen to the VideoFrame and insert the texture into
   // active list for management.
   if (external_texture) {
-    external_texture->ListenToVideoFrame(frame);
-
-    // VideoFrame maybe closed when GPUExternalTexture trying to listen to.
-    // In that case GPUExternalTexture is not active and GPUDevice
-    // doesn't need to manage it.
-    if (external_texture->active()) {
-      cache->Add(frame, external_texture);
+    if (!external_texture->ListenToVideoFrame(frame)) {
+      return nullptr;
     }
+
+    cache->Add(frame, external_texture);
   }
 
   return external_texture;
@@ -332,6 +329,9 @@ GPUExternalTexture::GPUExternalTexture(
       is_zero_copy_(is_zero_copy),
       media_video_frame_unique_id_(media_video_frame_unique_id),
       cache_(cache) {
+  task_runner_ =
+      device()->GetExecutionContext()->GetTaskRunner(TaskType::kWebGPU);
+
   // Mark GPUExternalTexture without back resources as destroyed because no need
   // to do real resource releasing.
   if (!mailbox_texture_)
@@ -362,34 +362,9 @@ void GPUExternalTexture::Destroy() {
   mailbox_texture_.reset();
 }
 
-void GPUExternalTexture::ListenToHTMLVideoElement(HTMLVideoElement* video) {
+void GPUExternalTexture::SetVideo(HTMLVideoElement* video) {
   CHECK(video);
-  video->GetDocument()
-      .GetScriptedAnimationController()
-      .WebGPURegisterVideoFrameStateCallback(WTF::BindRepeating(
-          &GPUExternalTexture::ContinueCheckingCurrentVideoFrame,
-          WrapPersistent(this)));
-
   video_ = video;
-  task_runner_ =
-      device()->GetExecutionContext()->GetTaskRunner(TaskType::kWebGPU);
-
-  status_ = Status::Active;
-}
-
-bool GPUExternalTexture::ContinueCheckingCurrentVideoFrame() {
-  CHECK(media_video_frame_unique_id_.has_value());
-
-  if (destroyed() || !video_) {
-    return false;
-  }
-
-  if (!IsCurrentFrameFromHTMLVideoElementValid()) {
-    OnSourceInvalidated();
-    return false;
-  }
-
-  return true;
 }
 
 bool GPUExternalTexture::NeedsToUpdate() {
@@ -473,20 +448,16 @@ void GPUExternalTexture::RemoveFromCache() {
   Destroy();
 }
 
-void GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
-  bool success = frame->handle()->WebGPURegisterExternalTextureExpireCallback(
-      CrossThreadBindOnce(&GPUExternalTexture::OnVideoFrameClosed,
-                          WrapCrossThreadWeakPersistent(this)));
-  if (!success) {
-    Destroy();
-    return;
+bool GPUExternalTexture::ListenToVideoFrame(VideoFrame* frame) {
+  if (!frame->handle()->WebGPURegisterExternalTextureExpireCallback(
+          CrossThreadBindOnce(&GPUExternalTexture::OnVideoFrameClosed,
+                              WrapCrossThreadWeakPersistent(this)))) {
+    OnSourceInvalidated();
+    return false;
   }
 
   frame_ = frame;
-  task_runner_ =
-      device()->GetExecutionContext()->GetTaskRunner(TaskType::kWebGPU);
-
-  status_ = Status::Active;
+  return true;
 }
 
 void GPUExternalTexture::OnVideoFrameClosed() {
@@ -499,7 +470,7 @@ void GPUExternalTexture::OnVideoFrameClosed() {
   // being used again (because WebGPU runs on the main thread). Expiring the
   // texture later in ExpireExternalTextureFromVideoFrame() could occur on a
   // worker thread and cause a race condition.
-  status_ = Status::Expired;
+  Expire();
 
   if (task_runner_->BelongsToCurrentThread()) {
     OnSourceInvalidated();

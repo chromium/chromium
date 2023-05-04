@@ -139,11 +139,6 @@ void PageAnimator::ServiceScriptedAnimations(
         }
       };
 
-  // https://gpuweb.github.io/gpuweb/#abstract-opdef-expire-stale-external-textures
-  run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
-    active_controllers[i]->WebGPUCheckStateToExpireVideoFrame();
-  });
-
   // https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model
 
   // 6. For each fully active Document in docs, flush autofocus

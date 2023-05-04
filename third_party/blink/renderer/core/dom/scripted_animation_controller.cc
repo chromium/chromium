@@ -244,23 +244,4 @@ LocalDOMWindow* ScriptedAnimationController::GetWindow() const {
   return To<LocalDOMWindow>(GetExecutionContext());
 }
 
-void ScriptedAnimationController::WebGPURegisterVideoFrameStateCallback(
-    WebGPUVideoFrameStateCallback webgpu_video_frame_state_callback) {
-  webgpu_video_frame_state_callbacks_.push_back(
-      std::move(webgpu_video_frame_state_callback));
-}
-
-// If a callback |IsCancelled| or returns false, remove that callback
-// from the list. Otherwise, keep it to be checked again later.
-void ScriptedAnimationController::WebGPUCheckStateToExpireVideoFrame() {
-  for (auto* it = webgpu_video_frame_state_callbacks_.begin();
-       it != webgpu_video_frame_state_callbacks_.end();) {
-    if (it->IsCancelled() || !it->Run()) {
-      it = webgpu_video_frame_state_callbacks_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-}
-
 }  // namespace blink
