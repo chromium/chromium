@@ -4,15 +4,17 @@
 
 #include "sql/sql_features.h"
 
-namespace sql {
+namespace sql::features {
 
-namespace features {
+// Clears the Database.db_ member if sqlite3_open_v2() fails.
+// TODO(https://crbug.com/1441955): Remove this flag eventually.
+BASE_FEATURE(kClearDbIfCloseFails,
+             "ClearDbIfCloseFails",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable WAL mode for all SQLite databases.
 BASE_FEATURE(kEnableWALModeByDefault,
              "EnableWALModeByDefault",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace features
-
-}  // namespace sql
+}  // namespace sql::features

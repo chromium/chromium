@@ -8,14 +8,15 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 
-namespace sql {
+namespace sql::features {
 
-namespace features {
+// All features in alphabetical order, grouped by buildflag. The features should
+// be documented alongside the definition of their values in the .cc file.
 
+// Alphabetical:
+COMPONENT_EXPORT(SQL) BASE_DECLARE_FEATURE(kClearDbIfCloseFails);
 COMPONENT_EXPORT(SQL) BASE_DECLARE_FEATURE(kEnableWALModeByDefault);
 
-}  // namespace features
-
-}  // namespace sql
+}  // namespace sql::features
 
 #endif  // SQL_SQL_FEATURES_H_
