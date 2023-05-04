@@ -26,6 +26,9 @@ class SeedLocator:
 
   def get_seed(self, name : SeedName = SeedName.DEFAULT):
     seed_file = self.all_seed_files.get(name, None)
+    assert os.path.isabs(seed_file), (
+      f'{seed_file} for name {name.name} is not an absolute path.'
+    )
     assert os.path.exists(seed_file), (
       f'seed file not found for {name.name}, '
       f'all available seeds are: {self.all_seed_files}'
@@ -46,9 +49,7 @@ def seed_locator(pytestconfig) -> SeedLocator:
   about seed locations and files for different platforms/channels and
   experiments groups.
   """
-
-  crash_seed = os.path.join(TEST_DATA_DIR, 'crash_seed.json')
   return SeedLocator(all_seed_files={
-    SeedName.DEFAULT: pytestconfig.getoption('seed_file'),
-    SeedName.CRASH: crash_seed,
+    SeedName.DEFAULT: os.path.abspath(pytestconfig.getoption('seed_file')),
+    SeedName.CRASH: os.path.join(TEST_DATA_DIR, 'crash_seed.json'),
   })
