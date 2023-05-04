@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/numerics/checked_math.h"
+#include "base/power_monitor/power_monitor.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
@@ -80,11 +81,15 @@ static constexpr uint32_t kAllowedMailboxTextureUsages =
 WGPUAdapterType PowerPreferenceToDawnAdapterType(
     WGPUPowerPreference power_preference) {
   switch (power_preference) {
-    case WGPUPowerPreference_LowPower:
-    // Currently for simplicity we always choose integrated GPU as the device
-    // related to default power preference. This avoids websites starting
-    // WebGPU just for feature detection from powering up the discrete GPU.
     case WGPUPowerPreference_Undefined:
+      // If on battery power, default to the integrated GPU.
+      if (!base::PowerMonitor::IsInitialized() ||
+          base::PowerMonitor::IsOnBatteryPower()) {
+        return WGPUAdapterType_IntegratedGPU;
+      } else {
+        return WGPUAdapterType_DiscreteGPU;
+      }
+    case WGPUPowerPreference_LowPower:
       return WGPUAdapterType_IntegratedGPU;
     case WGPUPowerPreference_HighPerformance:
       return WGPUAdapterType_DiscreteGPU;
@@ -439,7 +444,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   bool enable_unsafe_webgpu_ = false;
   WebGPUAdapterName use_webgpu_adapter_ = WebGPUAdapterName::kDefault;
   WebGPUPowerPreference use_webgpu_power_preference_ =
-      WebGPUPowerPreference::kDefaultLowPower;
+      WebGPUPowerPreference::kNone;
   std::vector<std::string> require_enabled_toggles_;
   std::vector<std::string> require_disabled_toggles_;
   bool allow_unsafe_apis_;
@@ -1594,6 +1599,8 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
   } else {
     WGPUPowerPreference adjusted_power_preference = power_preference;
     switch (use_webgpu_power_preference_) {
+      case WebGPUPowerPreference::kNone:
+        break;
       case WebGPUPowerPreference::kDefaultLowPower:
         if (adjusted_power_preference == WGPUPowerPreference_Undefined) {
           adjusted_power_preference = WGPUPowerPreference_LowPower;
@@ -1609,8 +1616,6 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
         break;
       case WebGPUPowerPreference::kForceHighPerformance:
         adjusted_power_preference = WGPUPowerPreference_HighPerformance;
-        break;
-      default:
         break;
     }
     preferred_adapter_type =

@@ -134,6 +134,8 @@ struct GPU_EXPORT
   static gpu::mojom::WebGPUPowerPreference ToMojom(
       gpu::WebGPUPowerPreference input) {
     switch (input) {
+      case gpu::WebGPUPowerPreference::kNone:
+        return gpu::mojom::WebGPUPowerPreference::kNone;
       case gpu::WebGPUPowerPreference::kDefaultLowPower:
         return gpu::mojom::WebGPUPowerPreference::kDefaultLowPower;
       case gpu::WebGPUPowerPreference::kDefaultHighPerformance:
@@ -144,12 +146,15 @@ struct GPU_EXPORT
         return gpu::mojom::WebGPUPowerPreference::kForceHighPerformance;
     }
     NOTREACHED();
-    return gpu::mojom::WebGPUPowerPreference::kDefaultHighPerformance;
+    return gpu::mojom::WebGPUPowerPreference::kNone;
   }
 
   static bool FromMojom(gpu::mojom::WebGPUPowerPreference input,
                         gpu::WebGPUPowerPreference* out) {
     switch (input) {
+      case gpu::mojom::WebGPUPowerPreference::kNone:
+        *out = gpu::WebGPUPowerPreference::kNone;
+        return true;
       case gpu::mojom::WebGPUPowerPreference::kDefaultLowPower:
         *out = gpu::WebGPUPowerPreference::kDefaultLowPower;
         return true;

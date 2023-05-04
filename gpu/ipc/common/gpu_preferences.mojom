@@ -28,10 +28,11 @@ enum WebGPUAdapterName {
 
 // Corresponds to gpu::WebGPUPowerPreference.
 enum WebGPUPowerPreference {
-  kDefaultLowPower = 0,
-  kDefaultHighPerformance = 1,
-  kForceLowPower = 2,
-  kForceHighPerformance = 3,
+  kNone = 0,
+  kDefaultLowPower = 1,
+  kDefaultHighPerformance = 2,
+  kForceLowPower = 3,
+  kForceHighPerformance = 4,
 };
 
 // Corresponds to gpu::GrContextType.
