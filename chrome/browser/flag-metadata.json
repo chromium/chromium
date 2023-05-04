@@ -5316,7 +5316,7 @@
   {
     "name": "ntp-reduced-logo-space",
     "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "ntp-safe-browsing-module",
