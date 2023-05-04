@@ -1787,6 +1787,12 @@
       },
       'Linux TSan Tests': {
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1412588): Move the rest of the tests to Jammy.
+              'os': 'Ubuntu-22.04',
+            },
+          ],
           'shards': 30,
         },
       },
