@@ -500,6 +500,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecutor.ExecutionThreadTimeMicroseconds.{OptimizationTarget}"
+    units="microseconds" expires_after="M117">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Same as OptimizationGuide.ModelExecutor.ExecutionThreadTime, but recorded in
+    microseconds to enable high precision timing of fast models.
+
+    Note: This metric is dropped for clients without high-precision clocks.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecutor.ModelAvailableToLoad.{OptimizationTarget}"
     enum="BooleanAvailable" expires_after="M117">
   <owner>robertogden@chromium.org</owner>

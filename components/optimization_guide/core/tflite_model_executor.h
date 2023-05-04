@@ -237,6 +237,10 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
           "OptimizationGuide.ModelExecutor.ExecutionThreadTime." +
               GetStringNameForOptimizationTarget(optimization_target_),
           execution_timer.Elapsed());
+      base::UmaHistogramMicrosecondsTimes(
+          "OptimizationGuide.ModelExecutor.ExecutionThreadTimeMicroseconds." +
+              GetStringNameForOptimizationTarget(optimization_target_),
+          execution_timer.Elapsed());
     }
     if (watchdog_) {
       watchdog_->DisarmOnExecutionComplete();
