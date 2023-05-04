@@ -607,7 +607,7 @@ void LoadVulkanLibraries() {
   // Try to preload Vulkan libraries. Failure is not an error as not all may be
   // present.
   dlopen("libvulkan.so.1", dlopen_flag);
-  dlopen("libvulkan_radeon.so ", dlopen_flag);
+  dlopen("libvulkan_radeon.so", dlopen_flag);
   dlopen("libvulkan_intel.so", dlopen_flag);
   dlopen("libGLX_nvidia.so.0", dlopen_flag);
 }
