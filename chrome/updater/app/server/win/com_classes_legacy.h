@@ -43,27 +43,22 @@ using WrlRuntimeDispatchClass = Microsoft::WRL::RuntimeClass<
 
 }  // namespace
 
-// Implements `IDispatch` for interface `TDualInterface`, where `TDualInterface`
-// is a dual interface. The IDispatch implementation relies on the
-// typelib/typeinfo for interface `TDualInterface`.
+// The `IDispatchImpl*` classes implement `IDispatch` for interface
+// `TDualInterface`, where `TDualInterface` is a dual interface. The IDispatch
+// implementation relies on the typelib/typeinfo for interface `TDualInterface`.
 //
-// The REFIIDs `iid_user` and `iid_system` is to allow for distinct TypeLibs to
-// be registered and marshaled for user/system.
+// If the class supports more interfaces other than `TDualInterface`, these
+// interfaces (up to 2 more interfaces) can be passed in via inheriting from the
+// `IDispatchImpl2` and `IDispatchImpl3` classes.
 //
-// If the class needs to support multiple interfaces, the other interfaces can
-// be passed in via the `TInterfaces` template parameter. However, note
-// that:
-// * `IDispatchImpl` only implements the `IDispatch` methods for the
-//   `TDualInterface` interface.
-// * If the `TInterfaces` need marshaling support for user/system, override
-//   the `QueryInterface` method and use code similar to the corresponding
-//   `IDispatchImpl` implementation to support the additional interfaces.
+// The REFIIDs `iid_*_user` and `iid_*_system` are to allow for distinct
+// TypeLibs to be registered and marshaled for user/system.
 //
-// Usage: derive your COM class that implements interface `TDualInterface` from
-// `IDispatchImpl<TDualInterface, iid_user, iid_system, TInterfaces...>`.
+// Note that the `IDispatchImpl*` classes only implement the `IDispatch` methods
+// for the `TDualInterface` interface.
 template <typename TDualInterface,
-          REFIID iid_user,
-          REFIID iid_system,
+          REFIID iid_dual_interface_user,
+          REFIID iid_dual_interface_system,
           typename... TInterfaces>
 class IDispatchImpl
     : public WrlRuntimeDispatchClass<TDualInterface, TInterfaces...> {
@@ -76,7 +71,8 @@ class IDispatchImpl
   // IUnknown override.
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return WrlRuntimeDispatchClass<TDualInterface, TInterfaces...>::
-        QueryInterface(riid == (IsSystemInstall() ? iid_system : iid_user)
+        QueryInterface(riid == (IsSystemInstall() ? iid_dual_interface_system
+                                                  : iid_dual_interface_user)
                            ? __uuidof(TDualInterface)
                            : riid,
                        object);
@@ -171,6 +167,74 @@ class IDispatchImpl
  private:
   Microsoft::WRL::ComPtr<ITypeInfo> type_info_;
   const HRESULT hr_load_typelib_;
+};
+
+template <typename TDualInterface,
+          REFIID iid_dual_interface_user,
+          REFIID iid_dual_interface_system,
+          typename TInterface2,
+          REFIID iid_user2,
+          REFIID iid_system2,
+          typename... TInterfaces>
+class IDispatchImpl2 : public IDispatchImpl<TDualInterface,
+                                            iid_dual_interface_user,
+                                            iid_dual_interface_system,
+                                            TInterface2,
+                                            TInterfaces...> {
+ public:
+  IDispatchImpl2() = default;
+  IDispatchImpl2(const IDispatchImpl2&) = delete;
+  IDispatchImpl2& operator=(const IDispatchImpl2&) = delete;
+  ~IDispatchImpl2() override = default;
+
+  // IUnknown override.
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    return IDispatchImpl<
+        TDualInterface, iid_dual_interface_user, iid_dual_interface_system,
+        TInterface2, TInterfaces...>::QueryInterface(riid == (IsSystemInstall()
+                                                                  ? iid_system2
+                                                                  : iid_user2)
+                                                         ? __uuidof(TInterface2)
+                                                         : riid,
+                                                     object);
+  }
+};
+
+template <typename TDualInterface,
+          REFIID iid_dual_interface_user,
+          REFIID iid_dual_interface_system,
+          typename TInterface2,
+          REFIID iid_user2,
+          REFIID iid_system2,
+          typename TInterface3,
+          REFIID iid_user3,
+          REFIID iid_system3,
+          typename... TInterfaces>
+class IDispatchImpl3 : public IDispatchImpl2<TDualInterface,
+                                             iid_dual_interface_user,
+                                             iid_dual_interface_system,
+                                             TInterface2,
+                                             iid_user2,
+                                             iid_system2,
+                                             TInterface3,
+                                             TInterfaces...> {
+ public:
+  IDispatchImpl3() = default;
+  IDispatchImpl3(const IDispatchImpl3&) = delete;
+  IDispatchImpl3& operator=(const IDispatchImpl3&) = delete;
+  ~IDispatchImpl3() override = default;
+
+  // IUnknown override.
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    return IDispatchImpl2<
+        TDualInterface, iid_dual_interface_user, iid_dual_interface_system,
+        TInterface2, iid_user2, iid_system2, TInterface3,
+        TInterfaces...>::QueryInterface(riid == (IsSystemInstall() ? iid_system3
+                                                                   : iid_user3)
+                                            ? __uuidof(TInterface3)
+                                            : riid,
+                                        object);
+  }
 };
 
 // This class implements the legacy Omaha3 IGoogleUpdate3Web interface as
@@ -310,22 +374,21 @@ class LegacyAppCommandWebImpl
 // and device management.
 //
 // This class is used by chrome://policy to show the current updater policies.
-class PolicyStatusImpl : public IDispatchImpl<IPolicyStatus3,
-                                              __uuidof(IPolicyStatus3User),
-                                              __uuidof(IPolicyStatus3System),
-                                              IPolicyStatus,
-                                              IPolicyStatus2> {
+class PolicyStatusImpl : public IDispatchImpl3<IPolicyStatus3,
+                                               __uuidof(IPolicyStatus3User),
+                                               __uuidof(IPolicyStatus3System),
+                                               IPolicyStatus2,
+                                               __uuidof(IPolicyStatus2User),
+                                               __uuidof(IPolicyStatus2System),
+                                               IPolicyStatus,
+                                               __uuidof(IPolicyStatusUser),
+                                               __uuidof(IPolicyStatusSystem)> {
  public:
   PolicyStatusImpl();
   PolicyStatusImpl(const PolicyStatusImpl&) = delete;
   PolicyStatusImpl& operator=(const PolicyStatusImpl&) = delete;
 
   HRESULT RuntimeClassInitialize();
-
-  // This `QueryInterface` override adds marshaling support for `IPolicyStatus`
-  // and `IPolicyStatus2`, using code similar to the corresponding
-  // `IDispatchImpl` implementation to support the additional interfaces.
-  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override;
 
   // IPolicyStatus/IPolicyStatus2/IPolicyStatus3. See
   // `updater_legacy_idl.template` for the description of the properties below.

@@ -934,21 +934,6 @@ HRESULT PolicyStatusImpl::RuntimeClassInitialize() {
   return S_OK;
 }
 
-STDMETHODIMP PolicyStatusImpl::QueryInterface(REFIID riid, void** object) {
-  return IDispatchImpl<IPolicyStatus3, __uuidof(IPolicyStatus3User),
-                       __uuidof(IPolicyStatus3System), IPolicyStatus,
-                       IPolicyStatus2>::
-      QueryInterface(
-          riid == (IsSystemInstall() ? __uuidof(IPolicyStatus2System)
-                                     : __uuidof(IPolicyStatus2User))
-              ? __uuidof(IPolicyStatus2)
-              : (riid == (IsSystemInstall() ? __uuidof(IPolicyStatusSystem)
-                                            : __uuidof(IPolicyStatusUser))
-                     ? __uuidof(IPolicyStatus)
-                     : riid),
-          object);
-}
-
 // IPolicyStatus.
 STDMETHODIMP PolicyStatusImpl::get_lastCheckPeriodMinutes(DWORD* minutes) {
   CHECK(minutes);
