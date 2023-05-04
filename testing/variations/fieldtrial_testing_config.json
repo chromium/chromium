@@ -6888,6 +6888,28 @@
             ]
         }
     ],
+    "IOSInactiveTabs": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "NoCount-Creation-TwoWeeks",
+                    "params": {
+                        "variant": "tab-inactivity-threshold-two-weeks"
+                    },
+                    "enable_features": [
+                        "TabInactivityThreshold"
+                    ],
+                    "disable_features": [
+                        "ShowInactiveTabsCount",
+                        "TabGridRecencySort"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [

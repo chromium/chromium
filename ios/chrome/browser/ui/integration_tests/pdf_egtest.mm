@@ -40,6 +40,11 @@ const char kGreenPDFPath[] = "/green.pdf";
                             @"toolbar to change tabs, which is a compact-"
                             @"only feature.");
   }
+  if ([ChromeEarlGrey isSortingTabsByRecency]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
+                            @"on swiping in the toolbar to change tabs, which "
+                            @"is disabled when sorting tabs by recency.");
+  }
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 

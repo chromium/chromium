@@ -29,11 +29,23 @@
         @"This tests should only be tested if the secondary toolbar is "
         @"present");
   }
+  if ([ChromeEarlGrey isSortingTabsByRecency]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
+                            @"on swiping in the toolbar to change tabs, which "
+                            @"is disabled when sorting tabs by recency.");
+  }
+
   [self checkSideSwipeOnToolbarClassName:@"SecondaryToolbarView"];
 }
 
 // Tests that swiping horizontally on the top toolbar is changing tab.
 - (void)testSideSwipeTopToolbar {
+  if ([ChromeEarlGrey isSortingTabsByRecency]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled when sorting tabs by recency -- depends "
+                            @"on swiping in the toolbar to change tabs, which "
+                            @"is disabled when sorting tabs by recency.");
+  }
+
   [self checkSideSwipeOnToolbarClassName:@"PrimaryToolbarView"];
 }
 

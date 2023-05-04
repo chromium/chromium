@@ -548,6 +548,9 @@
 // Returns whether UIButtonConfiguration changes are enabled.
 + (BOOL)isUIButtonConfigurationEnabled;
 
+// Returns whether TabGrid is sorted by recency (#tab-grid-recency-sort).
++ (BOOL)isSortingTabsByRecency;
+
 #pragma mark - ContentSettings
 
 // Gets the current value of the popup content setting preference for the

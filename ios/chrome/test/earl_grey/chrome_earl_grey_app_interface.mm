@@ -1191,6 +1191,11 @@ NSString* SerializedValue(const base::Value* value) {
 + (BOOL)isUIButtonConfigurationEnabled {
   return IsUIButtonConfigurationEnabled();
 }
+
++ (BOOL)isSortingTabsByRecency {
+  return IsTabGridSortedByRecency();
+}
+
 #pragma mark - ContentSettings
 
 + (ContentSetting)popupPrefValue {
