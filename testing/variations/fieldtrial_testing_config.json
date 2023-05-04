@@ -12824,21 +12824,6 @@
             ]
         }
     ],
-    "TabSwitchMetrics2Android": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OnShowWithPageVisibility"
-                    ]
-                }
-            ]
-        }
-    ],
     "TailoredSecurityIntegration": [
         {
             "platforms": [

@@ -1135,13 +1135,8 @@ void RenderWidgetHostViewAndroid::ShowWithVisibility(
     PageVisibilityState page_visibility) {
   // We can transition from `PageVisibilityState::kHiddenButPainting` to
   // `PageVisibilityState::kVisible` while `is_showing_`. We only want to
-  // support updating visibility requests for this transition. So for the non
-  // `features::kOnShowWithPageVisibility` path, still exit early based on
-  // `is_showing_` to prevent non-request work from being re-ran.
-  if (base::FeatureList::IsEnabled(kOnShowWithPageVisibility) &&
-      page_visibility_ == page_visibility) {
-    return;
-  } else if (is_showing_) {
+  // support updating visibility requests for this transition.
+  if (page_visibility_ == page_visibility) {
     return;
   }
 
@@ -1975,13 +1970,7 @@ void RenderWidgetHostViewAndroid::ShowInternal() {
   if (!show)
     return;
 
-  if (base::FeatureList::IsEnabled(kOnShowWithPageVisibility)) {
-    OnShowWithPageVisibility(page_visibility_);
-  } else {
-    if (!host() || !host()->is_hidden())
-      return;
-    NotifyHostAndDelegateOnWasShown(TakeContentToVisibleTimeRequest(host()));
-  }
+  OnShowWithPageVisibility(page_visibility_);
 }
 
 void RenderWidgetHostViewAndroid::HideInternal() {
