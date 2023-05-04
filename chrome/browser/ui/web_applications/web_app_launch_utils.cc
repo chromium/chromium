@@ -488,7 +488,8 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     // TODO(crbug.com/1425284): Cover other app launch paths (e.g. restore
     // apps).
     auto partition_config = content::StoragePartitionConfig::Create(
-        nav_params.browser->profile(), /*partition_domain=*/"goldfish",
+        nav_params.browser->profile(),
+        /*partition_domain=*/kExperimentalWebAppStorageParitionDomain,
         /*partition_name=*/app_id, /*in_memory=*/false);
 
     auto guest_site_instance = content::SiteInstance::CreateForGuest(

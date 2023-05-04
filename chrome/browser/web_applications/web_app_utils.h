@@ -150,6 +150,11 @@ void SetSkipMainProfileCheckForTesting(bool skip_check);
 
 bool IsMainProfileCheckSkippedForTesting();
 
+// The storage partitions' domain name for the experimental web app isolation.
+// TODO(crbug.com/1425284): use a better domain name, or maybe use a unique
+// domain for each app.
+constexpr char kExperimentalWebAppStorageParitionDomain[] = "goldfish";
+
 // Generates an appropriate path for a new web app profile. This does not create
 // the profile.
 base::FilePath GenerateWebAppProfilePath(const AppId& app_id);
