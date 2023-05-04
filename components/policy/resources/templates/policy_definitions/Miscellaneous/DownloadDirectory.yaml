@@ -9,6 +9,8 @@ desc: |-
 
         Leaving the policy unset means Chrome uses the default download directory, and users can change it.
 
+        On <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> it's possible to set it only to Google Drive directories.
+
         Note: See a list of variables you can use ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).
 example_value: /home/${user_name}/Downloads
 features:
