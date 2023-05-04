@@ -28,6 +28,7 @@ class QRCodeGenerator {
    public:
     GeneratedCode();
     GeneratedCode(GeneratedCode&&);
+    GeneratedCode& operator=(GeneratedCode&&);
 
     GeneratedCode(const GeneratedCode&) = delete;
     GeneratedCode& operator=(const GeneratedCode&) = delete;

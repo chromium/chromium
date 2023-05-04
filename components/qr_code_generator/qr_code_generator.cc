@@ -576,6 +576,8 @@ QRCodeGenerator::~QRCodeGenerator() = default;
 QRCodeGenerator::GeneratedCode::GeneratedCode() = default;
 QRCodeGenerator::GeneratedCode::GeneratedCode(
     QRCodeGenerator::GeneratedCode&&) = default;
+QRCodeGenerator::GeneratedCode& QRCodeGenerator::GeneratedCode::operator=(
+    QRCodeGenerator::GeneratedCode&&) = default;
 QRCodeGenerator::GeneratedCode::~GeneratedCode() = default;
 
 absl::optional<QRCodeGenerator::GeneratedCode> QRCodeGenerator::Generate(

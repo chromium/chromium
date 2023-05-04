@@ -8,7 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "components/qr_code_generator/dino_image.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 #include "components/vector_icons/vector_icons.h"
@@ -284,12 +286,19 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
     return;
   }
 
-  QRCodeGenerator qr;
-  // The QR version (i.e. size) must be >= 5 because otherwise the dino painted
-  // over the middle covers too much of the code to be decodable.
-  constexpr int kMinimumQRVersion = 5;
-  absl::optional<QRCodeGenerator::GeneratedCode> qr_data = qr.Generate(
-      base::as_bytes(base::make_span(request->data)), kMinimumQRVersion);
+  absl::optional<QRCodeGenerator::GeneratedCode> qr_data;
+  {
+    base::TimeTicks start_time = base::TimeTicks::Now();
+    // The QR version (i.e. size) must be >= 5 because otherwise the dino
+    // painted over the middle covers too much of the code to be decodable.
+    constexpr int kMinimumQRVersion = 5;
+    QRCodeGenerator qr;
+    qr_data = qr.Generate(base::as_bytes(base::make_span(request->data)),
+                          kMinimumQRVersion);
+    base::UmaHistogramTimes("Sharing.QRCodeGeneration.Duration.BytesToQrPixels",
+                            base::TimeTicks::Now() - start_time);
+  }
+
   if (!qr_data || qr_data->data.data() == nullptr ||
       qr_data->data.size() == 0) {
     // The above check should have caught the too-long-URL case.
@@ -306,8 +315,15 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
 
   response->data_size = {qr_data->qr_size, qr_data->qr_size};
   response->error_code = mojom::QRCodeGeneratorError::NONE;
-  RenderBitmap(base::make_span(qr_data->data), response->data_size, request,
-               &response);
+
+  {
+    base::TimeTicks start_time = base::TimeTicks::Now();
+    RenderBitmap(base::make_span(qr_data->data), response->data_size, request,
+                 &response);
+    base::UmaHistogramTimes(
+        "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage",
+        base::TimeTicks::Now() - start_time);
+  }
 
   std::move(callback).Run(std::move(response));
 }

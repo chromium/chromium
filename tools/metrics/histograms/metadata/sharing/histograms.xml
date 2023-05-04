@@ -198,7 +198,48 @@ chromium-metrics-reviews@google.com.
   <owner>danakj@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
-  <summary>The time to encode a QR code</summary>
+  <summary>
+    The end-to-end time to encode a QR image.
+
+    This metric captures end-to-end time which may include the overhead of
+    spawning a utility process as well as the time needed to translate input
+    bytes into QR pixels (see also the &quot;BytesToQrPixels&quot; metric) and
+    into QR image (see also the &quot;QrPixelsToQrImage&quot; metric).
+
+    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
+    For example: when using the omnibox to share the URL via QR code, when using
+    WebAuthn, or when generating an RMA.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.QRCodeGeneration.Duration.BytesToQrPixels" units="ms"
+    expires_after="M117">
+  <owner>danakj@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>petewil@chromium.org</owner>
+  <summary>
+    The time to translate the sequence of input bytes into a vector of QR pixels
+    (this is not a QR _image_ just yet - see QrPixelsToQrImage metric for that).
+
+    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
+    For example: when using the omnibox to share the URL via QR code, when using
+    WebAuthn, or when generating an RMA.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage"
+    units="ms" expires_after="M117">
+  <owner>danakj@chromium.org</owner>
+  <owner>lukasza@chromium.org</owner>
+  <owner>petewil@chromium.org</owner>
+  <summary>
+    The time to translate QR pixels (a vector of light/dark QR pixels) into a QR
+    image (an upscaled `SkBitmap` with an optional Dino painted in the middle).
+
+    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
+    For example: when using the omnibox to share the URL via QR code, when using
+    WebAuthn, or when generating an RMA.
+  </summary>
 </histogram>
 
 <histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
