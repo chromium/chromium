@@ -176,6 +176,10 @@ body.check-select #list-container li[selected] [file-type-icon],
   background-size: 48px;
 }
 
+.no-thumbnail[generic-thumbnail='encrypted'] {
+  -webkit-mask-image: url(../images/files/ui/encrypted.svg);
+}
+
 .no-thumbnail[generic-thumbnail='audio'] {
   -webkit-mask-image: url(../images/filetype/filetype_audio.svg);
 }

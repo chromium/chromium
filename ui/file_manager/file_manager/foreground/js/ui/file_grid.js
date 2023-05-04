@@ -1061,6 +1061,8 @@ export class FileGrid extends Grid {
       if (!util.isJellyEnabled()) {
         box.setAttribute('generic-thumbnail', 'folder');
       }
+    } else if (FileType.isEncrypted(entry, opt_mimeType)) {
+      box.setAttribute('generic-thumbnail', 'encrypted');
     } else {
       box.classList.toggle('no-thumbnail', true);
       const locationInfo = this.volumeManager_.getLocationInfo(entry);

@@ -1977,7 +1977,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("showGridViewMouseSelectionA11y")
             .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
         TestCase("showGridViewDocumentsProvider")
-            .EnableGenericDocumentsProvider()));
+            .EnableGenericDocumentsProvider(),
+        TestCase("showGridViewEncryptedFile")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Providers, /* providers.js */
