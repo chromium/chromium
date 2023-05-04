@@ -20,6 +20,8 @@ class Separator;
 
 namespace ash {
 
+class CaptureModeBehavior;
+
 // Defines a view that will host the capture button which when pressed, the
 // screen capture operation will be performed. In the case of video recording,
 // if multiple recording formats are supported, it will display a drop down
@@ -30,7 +32,7 @@ class CaptureButtonView : public views::View {
 
   CaptureButtonView(views::Button::PressedCallback on_capture_button_pressed,
                     views::Button::PressedCallback on_drop_down_pressed,
-                    bool is_in_projector_mode);
+                    CaptureModeBehavior* active_behavior);
   CaptureButtonView(const CaptureButtonView&) = delete;
   CaptureButtonView& operator=(const CaptureButtonView&) = delete;
   ~CaptureButtonView() override = default;

@@ -4300,6 +4300,7 @@ TEST_F(ProjectorCaptureModeCameraTest,
   EXPECT_TRUE(camera_controller->selected_camera().is_valid());
   StartVideoRecordingImmediately();
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+  WaitForCaptureFileToBeSaved();
 
   // Starts the capture mode session again and the camera selection settings
   // will be restored.

@@ -84,9 +84,9 @@ void ToggleAnnotatorCanvas() {
   // |CaptureModeController| asserts all invariants via DCHECKs, and those
   // tests would crash. Remove any unnecessary mocks and test the real thing
   // if possible.
-  if (capture_mode_controller->is_recording_in_progress())
+  if (capture_mode_controller->is_recording_in_progress()) {
     capture_mode_controller->ToggleRecordingOverlayEnabled();
-  return;
+  }
 }
 
 // Shows a Projector-related notification to the user with the given parameters.

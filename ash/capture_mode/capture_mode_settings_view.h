@@ -22,6 +22,7 @@ class Separator;
 namespace ash {
 
 class CaptureModeBarView;
+class CaptureModeBehavior;
 class CaptureModeMenuGroup;
 class CaptureModeSession;
 class CaptureModeMenuToggleButton;
@@ -48,7 +49,7 @@ class ASH_EXPORT CaptureModeSettingsView
   METADATA_HEADER(CaptureModeSettingsView);
 
   CaptureModeSettingsView(CaptureModeSession* session,
-                          bool is_in_projector_mode);
+                          CaptureModeBehavior* active_behavior);
   CaptureModeSettingsView(const CaptureModeSettingsView&) = delete;
   CaptureModeSettingsView& operator=(const CaptureModeSettingsView&) = delete;
   ~CaptureModeSettingsView() override;
@@ -128,6 +129,8 @@ class ASH_EXPORT CaptureModeSettingsView
   // containing widget.
   const raw_ptr<CaptureModeSession, ExperimentalAsh>
       capture_mode_session_;  // Not null;
+
+  const raw_ptr<CaptureModeBehavior, ExperimentalAsh> active_behavior_;
 
   // "Audio input" menu group that users can select an audio input from for
   // screen capture recording. It has "Off" and "Microphone" options for now.

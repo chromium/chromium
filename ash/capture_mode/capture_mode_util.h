@@ -205,10 +205,6 @@ ASH_EXPORT gfx::Rect CalculateHighlightLayerBounds(
     const gfx::PointF& center_point,
     int highlight_layer_radius);
 
-// Returns the number of currently supported recording types. The value may
-// differ based on whether `is_in_projector_mode` is true or false.
-int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode);
-
 // Sets a highlight border to the `view` with given rounded corner radius and
 // type.
 void SetHighlightBorder(views::View* view,

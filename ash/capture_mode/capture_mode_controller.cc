@@ -42,6 +42,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
@@ -612,12 +613,18 @@ void CaptureModeController::Start(CaptureModeEntryType entry_type) {
 }
 
 void CaptureModeController::Stop() {
-  DCHECK(IsActive());
+  CHECK(IsActive());
   capture_mode_session_->ReportSessionHistograms();
   capture_mode_session_->Shutdown();
   capture_mode_session_.reset();
 
   delegate_->OnSessionStateChanged(/*started=*/false);
+}
+
+void CaptureModeController::NotifyRecordingStartAborted() {
+  for (auto& observer : observers_) {
+    observer.OnRecordingStartAborted();
+  }
 }
 
 void CaptureModeController::SetUserCaptureRegion(const gfx::Rect& region,
@@ -802,8 +809,9 @@ void CaptureModeController::RefreshContentProtection() {
 }
 
 void CaptureModeController::ToggleRecordingOverlayEnabled() {
-  DCHECK(is_recording_in_progress());
-  DCHECK(video_recording_watcher_->is_in_projector_mode());
+  CHECK(is_recording_in_progress());
+  CHECK(video_recording_watcher_);
+  CHECK(video_recording_watcher_->is_in_projector_mode());
 
   video_recording_watcher_->ToggleRecordingOverlayEnabled();
 }
@@ -988,6 +996,10 @@ void CaptureModeController::OnRecordedWindowChangingRoot(
   capture_mode_util::SetStopRecordingButtonVisibility(window->GetRootWindow(),
                                                       false);
   capture_mode_util::SetStopRecordingButtonVisibility(new_root, true);
+
+  for (auto& observer : observers_) {
+    observer.OnRecordedWindowChangingRoot(new_root);
+  }
 
   recording_service_remote_->OnRecordedWindowChangingRoot(
       new_root->GetFrameSinkId(), new_root->GetBoundsInRootWindow().size(),
@@ -1248,6 +1260,10 @@ void CaptureModeController::TerminateRecordingUiElements() {
   camera_controller_->MaybeRevertAutoCameraSelection();
 
   video_recording_watcher_->ShutDown();
+
+  for (auto& observer : observers_) {
+    observer.OnRecordingEnded();
+  }
 
   // GIF files take a while to finalize and fully get written to disk. Therefore
   // we show a notification to the user to let them know that the file will be
@@ -1562,9 +1578,9 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void CaptureModeController::OnProjectorContainerFolderCreated(
+void CaptureModeController::OnCaptureFolderCreated(
     const CaptureParams& capture_params,
-    const base::FilePath& file_path_no_extension) {
+    const base::FilePath& capture_file_full_path) {
   if (!IsActive()) {
     // This function gets called asynchronously, and until it gets called, the
     // session could end due e.g. locking the screen, suspending, or switching
@@ -1573,24 +1589,21 @@ void CaptureModeController::OnProjectorContainerFolderCreated(
   }
 
   // An empty path is sent to indicate an error.
-  if (file_path_no_extension.empty()) {
+  if (capture_file_full_path.empty()) {
     Stop();
     return;
   }
 
-  // Note that the extension `webm` is used here directly, since projector
-  // doesn't work with any other format.
   BeginVideoRecording(capture_params, /*for_projector=*/true,
-                      file_path_no_extension.AddExtension("webm"));
+                      capture_file_full_path);
 }
 
 void CaptureModeController::BeginVideoRecording(
     const CaptureParams& capture_params,
     bool for_projector,
     const base::FilePath& video_file_path) {
-  DCHECK_EQ(capture_mode_session_->is_in_projector_mode(), for_projector);
-  DCHECK(!video_file_path.empty());
-  DCHECK(IsVideoFileExtensionSupported(video_file_path));
+  CHECK(!video_file_path.empty());
+  CHECK(IsVideoFileExtensionSupported(video_file_path));
 
   if (!IsActive()) {
     // This function gets called asynchronously, and until it gets called, the
@@ -1635,6 +1648,11 @@ void CaptureModeController::BeginVideoRecording(
       this, active_behavior, capture_params.window,
       std::move(cursor_capture_overlay), for_projector, should_record_audio);
 
+  aura::Window* root_window = capture_params.window->GetRootWindow();
+  for (auto& observer : observers_) {
+    observer.OnRecordingStarted(root_window);
+  }
+
   // We only paint the recorded area highlight for window and region captures.
   if (source_ != CaptureModeSource::kFullscreen)
     video_recording_watcher_->Reset(std::move(session_layer));
@@ -1656,8 +1674,7 @@ void CaptureModeController::BeginVideoRecording(
   // if any of them was overridden in projector-initiated capture mode session.
   MaybeRestoreCachedCaptureConfigurations();
 
-  capture_mode_util::SetStopRecordingButtonVisibility(
-      capture_params.window->GetRootWindow(), true);
+  capture_mode_util::SetStopRecordingButtonVisibility(root_window, true);
 
   delegate_->StartObservingRestrictedContent(
       capture_params.window, capture_params.bounds,
@@ -1763,25 +1780,27 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
   // session at this point, since we don't want to create that folder in vain.
   capture_mode_session_->set_can_exit_on_escape(false);
 
-  if (capture_mode_session_->is_in_projector_mode()) {
-    // Before creating the DriveFS folder for the screencast, check if audio
-    // recording cannot be done due to admin policy. In this case we just abort
-    // the recording by stopping the capture mode session without starting any
-    // recording. This will eventually call
-    // `ProjectorControllerImpl::OnRecordingStartAborted()` which should take
-    // care of cleaning up the Projector state, and updating the preconditions
-    // for the "New screencast" button.
-    if (!GetAudioRecordingEnabled()) {
-      Stop();
-      return;
-    }
-
-    ProjectorControllerImpl::Get()->CreateScreencastContainerFolder(
-        base::BindOnce(
-            &CaptureModeController::OnProjectorContainerFolderCreated,
-            weak_ptr_factory_.GetWeakPtr(), *capture_params));
+  CaptureModeBehavior* active_behavior =
+      capture_mode_session_->active_behavior();
+  if (active_behavior->IsAudioRecordingRequired() &&
+      !GetAudioRecordingEnabled()) {
+    // Before asking the client to create a folder to host the video file, we
+    // check if they require audio recording to be enabled, but it can't be
+    // allowed due to admin policy. In this case we just abort the recording by
+    // stopping the capture mode session without starting any recording. This
+    // will eventually call `CaptureModeObserver::OnRecordingStartAborted()`
+    // which should let clients do any necessary clean ups.
+    Stop();
     return;
   }
+
+  if (active_behavior->RequiresCaptureFolderCreation()) {
+    active_behavior->CreateCaptureFolder(
+        base::BindOnce(&CaptureModeController::OnCaptureFolderCreated,
+                       weak_ptr_factory_.GetWeakPtr(), *capture_params));
+    return;
+  }
+
   const base::FilePath current_path = BuildVideoPath();
 
   // If the current capture folder is not the default `Downloads` folder, we
@@ -1894,9 +1913,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
                      in_projector_mode);
   }
 
-  if (features::IsProjectorEnabled()) {
-    ProjectorControllerImpl::Get()->OnDlpRestrictionCheckedAtVideoEnd(
-        in_projector_mode, should_delete_file, video_thumbnail);
+  for (auto& observer : observers_) {
+    observer.OnVideoFileFinalized(should_delete_file, video_thumbnail);
   }
 
   low_disk_space_threshold_reached_ = false;

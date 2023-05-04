@@ -548,22 +548,6 @@ gfx::Rect CalculateHighlightLayerBounds(const gfx::PointF& center_point,
                    highlight_layer_radius * 2, highlight_layer_radius * 2);
 }
 
-int GetNumberOfSupportedRecordingTypes(bool is_in_projector_mode) {
-  int total = 0;
-  for (const auto& type : {RecordingType::kGif, RecordingType::kWebM}) {
-    switch (type) {
-      case RecordingType::kGif:
-        total +=
-            features::IsGifRecordingEnabled() && !is_in_projector_mode ? 1 : 0;
-        break;
-      case RecordingType::kWebM:
-        total += 1;
-        break;
-    }
-  }
-  return total;
-}
-
 void SetHighlightBorder(views::View* view,
                         int corner_radius,
                         views::HighlightBorder::Type type) {

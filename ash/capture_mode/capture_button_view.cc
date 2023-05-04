@@ -90,7 +90,7 @@ CaptureButtonState GetCaptureButtonState() {
 CaptureButtonView::CaptureButtonView(
     views::Button::PressedCallback on_capture_button_pressed,
     views::Button::PressedCallback on_drop_down_pressed,
-    bool is_in_projector_mode)
+    CaptureModeBehavior* active_behavior)
     : capture_button_(AddChildView(std::make_unique<views::LabelButton>(
           std::move(on_capture_button_pressed),
           std::u16string()))) {
@@ -107,8 +107,7 @@ CaptureButtonView::CaptureButtonView(
   // Only show the drop down button if there are more than one recording types
   // that are currently supported in the current mode (i.e. we don't bother to
   // show a drop down for a single item).
-  if (capture_mode_util::GetNumberOfSupportedRecordingTypes(
-          is_in_projector_mode) > 1) {
+  if (active_behavior->GetSupportedRecordingTypes().size() > 1u) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
     separator_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
     drop_down_button_ = AddChildView(

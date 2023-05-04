@@ -4642,7 +4642,7 @@ TEST_F(CaptureModeTest, CaptureModeDefaultBehavior) {
     EXPECT_TRUE(active_behavior->ShouldFulscreenCaptureSourceBeAllowed());
     EXPECT_TRUE(active_behavior->ShouldRegionCaptureSourceBeAllowed());
     EXPECT_TRUE(active_behavior->ShouldWindowCaptureSourceBeAllowed());
-    EXPECT_TRUE(active_behavior->ShouldAudioInputSettingsBeIncluded());
+    EXPECT_FALSE(active_behavior->IsAudioRecordingRequired());
     EXPECT_TRUE(active_behavior->ShouldCameraSelectionSettingsBeIncluded());
     EXPECT_TRUE(active_behavior->ShouldDemoToolsSettingsBeIncluded());
     EXPECT_TRUE(active_behavior->ShouldSaveToSettingsBeIncluded());
@@ -5707,8 +5707,7 @@ TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
         projector_active_behavior->ShouldRegionCaptureSourceBeAllowed());
     EXPECT_TRUE(
         projector_active_behavior->ShouldWindowCaptureSourceBeAllowed());
-    EXPECT_TRUE(
-        projector_active_behavior->ShouldAudioInputSettingsBeIncluded());
+    EXPECT_TRUE(projector_active_behavior->IsAudioRecordingRequired());
     EXPECT_TRUE(
         projector_active_behavior->ShouldCameraSelectionSettingsBeIncluded());
     EXPECT_TRUE(projector_active_behavior->ShouldDemoToolsSettingsBeIncluded());

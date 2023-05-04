@@ -67,7 +67,7 @@ CaptureModeController* StartCaptureSession(CaptureModeSource source,
   controller->SetSource(source);
   controller->SetType(type);
   controller->Start(CaptureModeEntryType::kQuickSettings);
-  DCHECK(controller->IsActive());
+  CHECK(controller->IsActive());
   return controller;
 }
 

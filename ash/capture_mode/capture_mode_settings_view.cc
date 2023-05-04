@@ -65,9 +65,11 @@ CaptureModeController::CaptureFolder GetCurrentCaptureFolder() {
 
 }  // namespace
 
-CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
-                                                 bool is_in_projector_mode)
+CaptureModeSettingsView::CaptureModeSettingsView(
+    CaptureModeSession* session,
+    CaptureModeBehavior* active_behavior)
     : capture_mode_session_(session),
+      active_behavior_(active_behavior),
       shadow_(SystemShadow::CreateShadowOnNinePatchLayerForView(
           this,
           SystemShadow::Type::kElevation12)) {
@@ -76,7 +78,8 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
     const bool audio_capture_managed_by_policy =
         controller->IsAudioCaptureDisabledByPolicy();
 
-    DCHECK(!audio_capture_managed_by_policy || !is_in_projector_mode)
+    DCHECK(!audio_capture_managed_by_policy ||
+           !active_behavior->IsAudioRecordingRequired())
         << "A projector session should not be allowed to begin if audio "
            "recording is diabled by policy.";
 
@@ -86,7 +89,8 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT),
             audio_capture_managed_by_policy));
 
-    if (!is_in_projector_mode) {
+    if (!active_behavior->IsAudioRecordingRequired()) {
+      // Disallow the user to turn off audio recording if it is required.
       audio_input_menu_group_->AddOption(
           /*option_icon=*/nullptr,
           l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
@@ -134,7 +138,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(CaptureModeSession* session,
                 base::Unretained(this))));
   }
 
-  if (!is_in_projector_mode) {
+  if (active_behavior->ShouldSaveToSettingsBeIncluded()) {
     separator_3_ = AddChildView(std::make_unique<views::Separator>());
     separator_3_->SetColorId(ui::kColorAshSystemUIMenuSeparator);
 
@@ -311,7 +315,7 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
   switch (option_id) {
     case kAudioOff:
       return !audio_capture_managed_by_policy &&
-             !capture_mode_session_->is_in_projector_mode();
+             !active_behavior_->IsAudioRecordingRequired();
     case kAudioMicrophone:
       return !audio_capture_managed_by_policy;
     case kCustomFolder:

@@ -584,27 +584,26 @@ void CaptureModeSession::Shutdown() {
     // starting any recording. Note that we need to kill the camera preview
     // before aborting the projector session to avoid repareting the camera
     // preview widget which will lead to crash.
-    if (!controller_->is_recording_in_progress())
+    if (!controller_->is_recording_in_progress()) {
       controller_->camera_controller()->SetShouldShowPreview(false);
-
-    // Stopping the session for any reason other than starting video recording
-    // means a cancellation to an ongoing projector session (if any).
-    if (is_in_projector_mode_) {
-      ProjectorControllerImpl::Get()->OnRecordingStartAborted();
-
-      // Reset the camera selection if it was auto-selected in the
-      // projector-initiated capture mode session when the capture mode session
-      // ended before video recording starts to avoid the camera selection
-      // settings of the normal capture mode session being overridden by the
-      // projector-initiated capture mode session.
-      controller_->camera_controller()->MaybeRevertAutoCameraSelection();
-
-      // Restore the capture mode configurations that include the `type_`,
-      // `source_` and `enable_audio_recording_` when the projector-initiated
-      // session ends without starting a new recording, in case any of them were
-      // overwritten by projector.
-      controller_->MaybeRestoreCachedCaptureConfigurations();
     }
+
+    if (controller_->type() == CaptureModeType::kVideo) {
+      controller_->NotifyRecordingStartAborted();
+    }
+
+    // Reset the camera selection if it was auto-selected in the
+    // projector-initiated capture mode session when the capture mode session
+    // ended before video recording starts to avoid the camera selection
+    // settings of the normal capture mode session being overridden by the
+    // projector-initiated capture mode session.
+    controller_->camera_controller()->MaybeRevertAutoCameraSelection();
+
+    // Restore the capture mode configurations that include the `type_`,
+    // `source_` and `enable_audio_recording_` when the projector-initiated
+    // session ends without starting a new recording, in case any of them were
+    // overwritten by projector.
+    controller_->MaybeRestoreCachedCaptureConfigurations();
   }
 
   Shell::Get()->RemoveShellObserver(this);
@@ -743,8 +742,7 @@ void CaptureModeSession::SetSettingsMenuShown(bool shown, bool by_key_event) {
         "CaptureModeSettingsWidget"));
     capture_mode_settings_view_ =
         capture_mode_settings_widget_->SetContentsView(
-            std::make_unique<CaptureModeSettingsView>(this,
-                                                      is_in_projector_mode_));
+            std::make_unique<CaptureModeSettingsView>(this, active_behavior_));
     OnCaptureFolderMayHaveChanged();
 
     parent->layer()->StackAtTop(capture_mode_settings_widget_->GetLayer());

@@ -34,6 +34,7 @@ class CursorManager;
 
 namespace ash {
 
+class CaptureModeBehavior;
 class CaptureModeController;
 class CaptureModeDemoToolsController;
 class RecordingOverlayController;
@@ -77,6 +78,7 @@ class ASH_EXPORT VideoRecordingWatcher
   bool should_paint_layer() const { return should_paint_layer_; }
   bool is_shutting_down() const { return is_shutting_down_; }
   CaptureModeSource recording_source() const { return recording_source_; }
+  CaptureModeBehavior* active_behavior() { return active_behavior_; }
 
   // Toggles the Projector mode's overlay widget on or off. Can only be called
   // if |is_in_projector_mode()| is true.
