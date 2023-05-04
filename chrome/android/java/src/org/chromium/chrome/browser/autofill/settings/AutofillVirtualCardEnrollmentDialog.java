@@ -120,7 +120,12 @@ public class AutofillVirtualCardEnrollmentDialog {
         ((TextView) customView.findViewById(R.id.credit_card_identifier))
                 .setText(mVirtualCardEnrollmentFields.getCardIdentifierString());
         ((ImageView) customView.findViewById(R.id.credit_card_issuer_icon))
-                .setImageBitmap(mVirtualCardEnrollmentFields.getIssuerCardArt());
+                .setImageDrawable(AutofillUiUtils.getCardIcon(mContext,
+                        mVirtualCardEnrollmentFields.getCardArtUrl(),
+                        mVirtualCardEnrollmentFields.getNetworkIconId(),
+                        R.dimen.virtual_card_enrollment_dialog_card_art_width,
+                        R.dimen.virtual_card_enrollment_dialog_card_art_height,
+                        R.dimen.card_art_corner_radius, /* showCustomIcon= */ true));
         return customView;
     }
 }

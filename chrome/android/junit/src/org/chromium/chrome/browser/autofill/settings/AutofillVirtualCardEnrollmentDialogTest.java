@@ -11,7 +11,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
 import android.text.SpannableString;
 import android.view.View;
 import android.widget.TextView;
@@ -39,6 +38,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,8 +64,8 @@ public class AutofillVirtualCardEnrollmentDialogTest {
     @Before
     public void setUp() {
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
-        mVirtualCardEnrollmentFields = VirtualCardEnrollmentFields.create(
-                "card label", Bitmap.createBitmap(100, 100, Bitmap.Config.ALPHA_8));
+        mVirtualCardEnrollmentFields =
+                VirtualCardEnrollmentFields.create("card label", 0, new GURL(""));
         mVirtualCardEnrollmentFields.mGoogleLegalMessages.add(createLegalMessageLine("google"));
         mVirtualCardEnrollmentFields.mIssuerLegalMessages.add(createLegalMessageLine("issuer"));
         mDialog =
