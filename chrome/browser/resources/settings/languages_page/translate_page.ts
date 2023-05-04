@@ -98,12 +98,14 @@ export class SettingsTranslatePageElement extends
   }
 
   /**
+   * Checks if a Chrome language code is equal to the translate language code.
    * Used in the translate language selector. If the item matches the translate
    * target language, it will set that item as selected.
    */
-  private translateLanguageEqual_(itemCode: string, translateTarget: string):
-      boolean {
-    return itemCode === translateTarget;
+  private translateLanguageEqual_(
+      chromeItemCode: string, translateTarget: string): boolean {
+    return chromeItemCode ===
+        this.languageHelper.convertLanguageCodeForChrome(translateTarget);
   }
 
   /**
