@@ -847,6 +847,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="562289928968387744">Tepkileri yönetin</translation>
 <translation id="5626134646977739690">Adı:</translation>
 <translation id="5628604359369369630">Okunmadı; Çevrimdışı kullanılabilir</translation>
+<translation id="5635091213277904818">Chrome 30 günden daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak siler. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Alternatif olarak bir sitenin size reklam önermesini de engelleyebilirsiniz.</translation>
 <translation id="5639724618331995626">Tüm sitelere izin ver</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Arama geçmişi<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />diğer etkinlik biçimleri<ph name="END_LINK2" /> Google Hesabınıza kaydedilmiş olabilir</translation>
 <translation id="564667659802381754">Gizlilik Rehberi <ph name="BEGIN_NEW" />Yeni<ph name="END_NEW" /></translation>
@@ -1255,6 +1256,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="7682724950699840886">Şu ipuçlarını deneyin: Cihazınızda yeterli alan bulunduğundan emin olun, daha sonra dışa aktarmayı tekrar deneyin.</translation>
 <translation id="7686086654630106285">Site tarafından önerilen reklamlar hakkında daha fazla bilgi</translation>
 <translation id="768618399695552958">Ziyaret ettiğiniz sayfaların bazıları önceden yüklenir. Bir Google sitesinden bağlantı verildiğinde sayfalar Google sunucuları aracılığıyla önceden yüklenebilir.</translation>
+<translation id="7690596512217303514">Cihazınız Chrome'u açamadı. Sorunu düzeltmek için uygulama mağazanızdan en son Chrome güncellemesini indirin.</translation>
 <translation id="7691043218961417207">Takip edilecek içerikleri keşfedin</translation>
 <translation id="7697383401610880082">Sürükleme tutamacı</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" /> adlı uygulamada e-posta oluşturun</translation>
@@ -1366,6 +1368,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="8209050860603202033">Resmi aç</translation>
 <translation id="8216351761227087153">İzle</translation>
 <translation id="8218622182176210845">Hesabınızı yönetin</translation>
+<translation id="8221401890884589479">İstemediğiniz siteleri engelleyebilirsiniz. Chrome 30 günden daha uzun süre önce ziyaret edilmiş siteleri de otomatik olarak siler. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Akış kartı menüsü</translation>
 <translation id="8236097722223016103">Yer işaretlerine ekle</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>

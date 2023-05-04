@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
 <translation id="2085089206770112532">Zmanjšanje svetlosti zaslona</translation>
-<translation id="209751264101900360">Od zore do mraka – premik oblakov</translation>
 <translation id="2102231663024125441">Urejanje besedila</translation>
 <translation id="2105810540595158374">Naprava je krmilnik za igre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, različica: <ph name="MILESTONE_VERSION" /></translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3969602104473960991">Geslo za Chrome OS je posodobljeno</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
-<translation id="3974175076798940554">Ekskluzivni elementi Chromebook Plus so zdaj na voljo</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="3993704782688964914">Naprava <ph name="DEVICE_NAME" /> je posodobljena.</translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">Predstavnost</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4289849978083912975">Diaprojekcija</translation>
-<translation id="4293621540182258188">Od zore do mraka – premik Zemlje</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4311195029067684288">V celoti</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">Povečanje svetlosti zaslona</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5784136236926853061">Velika zakasnitev HTTP</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">O likovnem izdelku</translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="583281660410589416">Neznano</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">barva tipk</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
-<translation id="5918201491776799918">Izberite ekskluzivna umetniška dela v Chromebooku Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Datoteke ni bilo mogoče najti</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
@@ -799,7 +794,6 @@
 <translation id="7656388927906093505">Naprava je miška.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7665800271478495366">Spremeni avatar</translation>
-<translation id="7675241868020048622">Aurora (izključno pri Plus)</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +851,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izberite: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Orodja za razvijalce</translation>
-<translation id="8153923300383192510">Samo za Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Vpetje</translation>
 <translation id="8206859287963243715">Prenosni</translation>

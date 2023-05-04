@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ການຕັ້ງຄ່າເພີ່ມເຕີມ</translation>
 <translation id="2085089206770112532">ຫຼຸດຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
-<translation id="209751264101900360">ຮຸ່ງອາລຸນຫາຄວາມມືດ - Cloud Flow</translation>
 <translation id="2102231663024125441">ການແກ້ໄຂຂໍ້ຄວາມ</translation>
 <translation id="2105810540595158374">ອຸປະກອນແມ່ນມືເກມ.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ເວີຊັນ <ph name="MILESTONE_VERSION" /></translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">ດາວ​ໂຫຼດ​ສຳ​ເລັດ</translation>
 <translation id="3969602104473960991">ອັບເດດລະຫັດຜ່ານ ChromeOS ແລ້ວ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
-<translation id="3974175076798940554">ຕອນນີ້ເນື້ອຫາພິເສດຂອງ Chromebook Plus ພ້ອມໃຫ້ນຳໃຊ້ແລ້ວ</translation>
 <translation id="39823212440917567">ວຽກພິມທີ່ເກົ່າກວ່າ <ph name="NUMBER_OF_DAYS" /> ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="3993704782688964914">ຕອນນີ້ອັບເດດ <ph name="DEVICE_NAME" /> ຂອງທ່ານແລ້ວ</translation>
 <translation id="4003384961948020559">ບໍ່ສຳເລັດ, ເອົ້າພຸດເຕັມ</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">ມີເດຍ</translation>
 <translation id="4289540628985791613">ພາບ​ລວມ</translation>
 <translation id="4289849978083912975">​ສະ​ໄລ້​ໂຊ</translation>
-<translation id="4293621540182258188">ຮຸ່ງອາລຸນຫາຄວາມມືດ - Earth Flow</translation>
 <translation id="4297501883039923494">ຢຸດພິມ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ຮູບ</translation>
 <translation id="4311195029067684288">ເຕັມ</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">ເພີ່ມຄວາມສະຫວ່າງການສະແດງຜົນ</translation>
 <translation id="57838592816432529">ປິດສຽງ</translation>
 <translation id="5784136236926853061">ການຕອບສະໜອງ HTTP ສູງ</translation>
-<translation id="5809090008577139505">ແສງອາລຸນ</translation>
 <translation id="5826644637650799838">ກ່ຽວກັບສິນລະປະ</translation>
 <translation id="5832805196449965646">ເພີ່ມບຸກຄົນ</translation>
 <translation id="583281660410589416">ບໍ່​ຮູ້ຈັກ</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">ສີຂອງປຸ່ມ</translation>
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
-<translation id="5918201491776799918">ເລືອກໜ້າປົກ Chromebook Plus ສຸດພິເສດ</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
@@ -800,7 +795,6 @@
 <translation id="7656388927906093505">ອຸປະກອນແມ່ນເມົ້າ.</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7665800271478495366">ປ່ຽນຮູບແທນຕົວ</translation>
-<translation id="7675241868020048622">Aurora (ສະເພາະ Plus)</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -858,7 +852,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">ເລືອກ <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">ເຄື່ອງ​ມື​ຜູ້ພັດ​ທະ​ນາ</translation>
-<translation id="8153923300383192510">Chromebook Plus ສຸດພິເສດ</translation>
 <translation id="8179976553408161302">ປ້ອນເຂົ້າ</translation>
 <translation id="8183974620058026102">ແນບໄຟລ໌</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>

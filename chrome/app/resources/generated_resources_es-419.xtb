@@ -3234,6 +3234,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3760460896538743390">Inspeccionar página &amp;de fondo</translation>
 <translation id="37613671848467444">Abrir en una ventana de &amp;incógnito</translation>
 <translation id="3761556954875533505">¿Quieres permitir que el sitio edite archivos?</translation>
+<translation id="3763433740586298940">Puedes bloquear los sitios que no quieres que aparezcan en la lista. Chrome también borra los sitios de la lista que tienen más de 30 días de forma automática.</translation>
 <translation id="3763549179847864476">Botón Atrás de la Guía de privacidad</translation>
 <translation id="3764314093345384080">Información detallada sobre la compilación</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicarse con un dispositivo USB}other{Comunicarse con # dispositivos USB}}</translation>
@@ -5325,6 +5326,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5633149627228920745">Más información sobre los requisitos del sistema</translation>
 <translation id="563371367637259496">Móvil</translation>
 <translation id="5634446357546764049">Ver recuerdos de tus viajes recientes y más</translation>
+<translation id="5635091213277904818">Chrome borra los sitios de forma automática luego de 30 días. Es posible que, si vuelves a visitar un sitio, aparezca en la lista otra vez. También puedes bloquear un sitio para que no te sugiera anuncios.</translation>
 <translation id="5635312199252507107">Permitir en sitios específicos</translation>
 <translation id="563535393368633106">Preguntar antes de acceder (recomendado)</translation>
 <translation id="5636012309446422">¿Deseas quitar tu <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
@@ -8843,6 +8845,9 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8725178340343806893">Favoritos/Favoritos</translation>
 <translation id="87254326763805752">Confirmar la clave de acceso</translation>
 <translation id="8726206820263995930">Se produjo un error al recuperar la configuración de la política del servidor: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Enviar <ph name="BEGIN_LINK1" />metadatos de Autocompletar<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (no se compartirán tus datos de Autocompletar)</translation>
 <translation id="8728351286589123703">Se restablecerán los permisos que hayas elegido</translation>
 <translation id="8729133765463465108">Usar la cámara para escanear el código QR</translation>
 <translation id="8730621377337864115">Listo</translation>

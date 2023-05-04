@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4 / IPv6</translation>
 <translation id="2080070583977670716">詳細設定</translation>
 <translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
-<translation id="209751264101900360">夜明けから夜更けまで - 雲の流れ</translation>
 <translation id="2102231663024125441">テキスト編集</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3969602104473960991">Chrome OS のパスワードが更新されました</translation>
 <translation id="397105322502079400">計算しています...</translation>
-<translation id="3974175076798940554">Chromebook Plus 専用のアセットが利用可能に</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
 <translation id="3993704782688964914">お使いの「<ph name="DEVICE_NAME" />」は最新の状態です</translation>
 <translation id="4003384961948020559">失敗 - 出力がいっぱいです</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">メディア</translation>
 <translation id="4289540628985791613">概要</translation>
 <translation id="4289849978083912975">スライドショー</translation>
-<translation id="4293621540182258188">夜明けから夜更けまで - 地球の動き</translation>
 <translation id="4297501883039923494">停止 - 不明なエラー</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 件の画像</translation>
 <translation id="4311195029067684288">100%</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">ディスプレイの明るさを上げる</translation>
 <translation id="57838592816432529">ミュート</translation>
 <translation id="5784136236926853061">HTTP レイテンシが高くなっています</translation>
-<translation id="5809090008577139505">オーロラ</translation>
 <translation id="5826644637650799838">アートについて</translation>
 <translation id="5832805196449965646">ユーザーを追加</translation>
 <translation id="583281660410589416">不明</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">キーの色</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">オン</translation>
-<translation id="5918201491776799918">Chromebook Plus 限定のアートワークを選択する</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
 <translation id="5939518447894949180">リセット</translation>
@@ -799,7 +794,6 @@
 <translation id="7656388927906093505">デバイスの種類はマウスです。</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7665800271478495366">アバターを変更</translation>
-<translation id="7675241868020048622">Aurora（Plus 限定）</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
 <translation id="7701040980221191251">なし</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +851,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> を選択</translation>
 <translation id="8151185429379586178">デベロッパー ツール</translation>
-<translation id="8153923300383192510">Chromebook Plus 限定</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">添付</translation>
 <translation id="8206859287963243715">携帯電話</translation>

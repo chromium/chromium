@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Chế độ cài đặt khác</translation>
 <translation id="2085089206770112532">Giảm độ sáng màn hình</translation>
-<translation id="209751264101900360">Sáng đến tối – Luồng đám mây</translation>
 <translation id="2102231663024125441">Chỉnh sửa văn bản</translation>
 <translation id="2105810540595158374">Thiết bị là tay điều khiển trò chơi.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" /></translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">Đã tải xuống xong</translation>
 <translation id="3969602104473960991">Đã cập nhật mật khẩu ChromeOS</translation>
 <translation id="397105322502079400">Đang tính...</translation>
-<translation id="3974175076798940554">Đã có nội dung dành riêng cho Chromebook Plus</translation>
 <translation id="39823212440917567">Các lệnh in quá <ph name="NUMBER_OF_DAYS" /> ngày sẽ bị xóa</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> của bạn hiện đã cập nhật</translation>
 <translation id="4003384961948020559">Không thành công – Khay đầu ra đã đầy</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">Truyền thông</translation>
 <translation id="4289540628985791613">Tổng quan</translation>
 <translation id="4289849978083912975">Bản trình chiếu</translation>
-<translation id="4293621540182258188">Sáng đến tối – Luồng trái đất</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> hình ảnh</translation>
 <translation id="4311195029067684288">Toàn màn hình</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">Tăng độ sáng màn hình</translation>
 <translation id="57838592816432529">Tắt tiếng</translation>
 <translation id="5784136236926853061">Yêu cầu HTTP có độ trễ cao</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Giới thiệu về hình nền</translation>
 <translation id="5832805196449965646">Thêm người</translation>
 <translation id="583281660410589416">Không xác định</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">màu phím</translation>
 <translation id="5916084858004523819">Bị cấm</translation>
 <translation id="5916664084637901428">Bật</translation>
-<translation id="5918201491776799918">Chọn hình minh hoạ độc quyền cho Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
 <translation id="5939518447894949180">Đặt lại</translation>
@@ -799,7 +794,6 @@
 <translation id="7656388927906093505">Thiết bị là chuột.</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7665800271478495366">Thay đổi hình đại diện</translation>
-<translation id="7675241868020048622">Aurora (Dành riêng cho Aurora Plus)</translation>
 <translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +851,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Chọn <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Công cụ dành cho nhà phát triển</translation>
-<translation id="8153923300383192510">Dành riêng cho Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Đính kèm</translation>
 <translation id="8206859287963243715">Di động</translation>

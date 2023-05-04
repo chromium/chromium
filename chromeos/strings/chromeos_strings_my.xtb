@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">ဆက်တင်များ ပိုမိုပြရန်</translation>
 <translation id="2085089206770112532">ဖန်သားပြင်တောက်ပမှု လျှော့ရန်</translation>
-<translation id="209751264101900360">အရုဏ်တက်မှ မှောင်ချိန်အထိ - တိမ်ရွေ့လျားမှုပုံစံ</translation>
 <translation id="2102231663024125441">စာသား တည်းဖြတ်ခြင်း</translation>
 <translation id="2105810540595158374">ကိရိယာသည် ဂိမ်းခလုတ်ဖြစ်သည်။</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />၊ ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3969602104473960991">ChromeOS စကားဝှက် အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
-<translation id="3974175076798940554">အထူး Chromebook Plus အစိတ်အပိုင်းများကို ယခု ရနိုင်ပြီ</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="3993704782688964914">ယခု သင့် <ph name="DEVICE_NAME" /> အပ်ဒိတ်ဖြစ်နေပါပြီ</translation>
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">မီဒီယာ</translation>
 <translation id="4289540628985791613">အကျဉ်းချုပ်</translation>
 <translation id="4289849978083912975">ဆလိုက်ရှိုး</translation>
-<translation id="4293621540182258188">အရုဏ်တက်မှ မှောင်ချိန်အထိ - ကမ္ဘာမြေလည်ပတ်မှုပုံစံ</translation>
 <translation id="4297501883039923494">ရပ်သွားသည် - အမည်မသိ အမှား</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ပုံ</translation>
 <translation id="4311195029067684288">အပြည့်</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">ဖန်သားပြင်တောက်ပမှု တိုးရန်</translation>
 <translation id="57838592816432529">တိတ်ရန်</translation>
 <translation id="5784136236926853061">HTTP တုံ့ပြန်ချိန် ကြာနေသည်</translation>
-<translation id="5809090008577139505">ဝင်ရိုးစွန်း အလင်းတန်းများ</translation>
 <translation id="5826644637650799838">နောက်ခံပုံ အကြောင်း</translation>
 <translation id="5832805196449965646">လူကို ထည့်ပေးရန်</translation>
 <translation id="583281660410589416">မသိရ</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">ကီးအရောင်</translation>
 <translation id="5916084858004523819">တားမြစ်ထားသည်</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
-<translation id="5918201491776799918">Chromebook Plus အထူးပိုစတာပုံ ရွေးချယ်ရန်</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{သင်၏ဖိုင်ကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}other{သင်၏ဖိုင်များကို စကင်ဖတ်ပြီး <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> တွင် သိမ်းပြီးပြီ။}}</translation>
 <translation id="5931523347251946569">ဖိုင်ကို ရှာမတွေ့ပါ</translation>
 <translation id="5939518447894949180">ပြင်ဆင်သတ်မှတ်ရန်</translation>
@@ -799,7 +794,6 @@
 <translation id="7656388927906093505">ကိရိယာသည် မောက်စ်ဖြစ်သည်။</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7665800271478495366">ချန်နယ်ပုံပြောင်းရန်</translation>
-<translation id="7675241868020048622">ဝင်ရိုးစွန်း အလင်းတန်းများ (ထပ်ပေါင်း အထူး)</translation>
 <translation id="7690294790491645610">စကားဝှက်အသစ်ကို အတည်ပြုပါ</translation>
 <translation id="7701040980221191251">မရှိ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +851,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ကို ရွေးပါ</translation>
 <translation id="8151185429379586178">ပြုစုသူ ကိရိယာများ</translation>
-<translation id="8153923300383192510">Chromebook Plus အထူး</translation>
 <translation id="8179976553408161302">အင်တာ</translation>
 <translation id="8183974620058026102">ပူးတွဲရန်</translation>
 <translation id="8206859287963243715">ဆဲလ်လူလာ</translation>

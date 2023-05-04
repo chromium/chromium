@@ -8868,6 +8868,9 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8725178340343806893">Mga Paborito/Bookmark</translation>
 <translation id="87254326763805752">Kumpirmahin ang passkey</translation>
 <translation id="8726206820263995930">Error kapag kumukuha ng mga setting ng patakaran mula sa server: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Ipadala ang <ph name="BEGIN_LINK1" />metadata ng autofill<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (hindi ishe-share ang iyong data ng autofill)</translation>
 <translation id="8728351286589123703">Ire-reset ang iyong mga napiling pahintulot</translation>
 <translation id="8729133765463465108">Gamitin ang camera para mag-scan ng QR Code</translation>
 <translation id="8730621377337864115">Tapos na</translation>

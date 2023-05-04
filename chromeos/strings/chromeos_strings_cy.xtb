@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Rhagor o osodiadau</translation>
 <translation id="2085089206770112532">Disgleirdeb y sgrîn i lawr</translation>
-<translation id="209751264101900360">Gwawr i dywyllwch - Llif Cwmwl</translation>
 <translation id="2102231663024125441">Golygu testun</translation>
 <translation id="2105810540595158374">Mae'r ddyfais yn rheolydd gêm.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, fersiwn <ph name="MILESTONE_VERSION" /></translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">Lawrlwytho wedi'i gwblhau</translation>
 <translation id="3969602104473960991">Cyfrinair ChromeOS wedi'i ddiweddaru</translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
-<translation id="3974175076798940554">Mae asedau unigryw Chromebook Plus ar gael nawr</translation>
 <translation id="39823212440917567">Bydd tasgau argraffu sy'n hŷn na <ph name="NUMBER_OF_DAYS" /> o ddyddiau yn cael eu tynnu</translation>
 <translation id="3993704782688964914">Mae eich <ph name="DEVICE_NAME" /> bellach yn gyfredol</translation>
 <translation id="4003384961948020559">Wedi methu - Mae'r allbwn yn llawn</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">Cyfryngau</translation>
 <translation id="4289540628985791613">Trosolwg</translation>
 <translation id="4289849978083912975">Sioe sleidiau</translation>
-<translation id="4293621540182258188">Gwawr i dywyllwch - Llif y Ddaear</translation>
 <translation id="4297501883039923494">Wedi stopio - Gwall anhysbys</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Llun</translation>
 <translation id="4311195029067684288">Llawn</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">Disgleirdeb y sgrîn i fyny</translation>
 <translation id="57838592816432529">Distewi</translation>
 <translation id="5784136236926853061">Cuddni HTTP uchel</translation>
-<translation id="5809090008577139505">Awrora</translation>
 <translation id="5826644637650799838">Ynghylch y gelf</translation>
 <translation id="5832805196449965646">Ychwanegu Person</translation>
 <translation id="583281660410589416">Anhysbys</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">lliw bysell</translation>
 <translation id="5916084858004523819">Gwaharddedig</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
-<translation id="5918201491776799918">Dewiswch gelfwaith unigryw Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Mae eich ffeil wedi'i sganio a'i chadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Mae eich ffeiliau wedi'u sganio a'u cadw i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Ni chanfuwyd y ffeil</translation>
 <translation id="5939518447894949180">Ailosod</translation>
@@ -799,7 +794,6 @@
 <translation id="7656388927906093505">Mae'r ddyfais yn llygoden.</translation>
 <translation id="7658239707568436148">Canslo</translation>
 <translation id="7665800271478495366">Newid rhithffurf</translation>
-<translation id="7675241868020048622">Aurora (yn unigryw i Plus)</translation>
 <translation id="7690294790491645610">Cadarnhau cyfrinair newydd</translation>
 <translation id="7701040980221191251">Dim</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +851,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Dewiswch <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Offer datblygwyr</translation>
-<translation id="8153923300383192510">Unigryw i Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Atodi</translation>
 <translation id="8206859287963243715">Symudol</translation>

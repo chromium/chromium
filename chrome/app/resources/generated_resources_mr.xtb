@@ -897,7 +897,7 @@
 <translation id="1741314857973421784">सुरू ठेवा</translation>
 <translation id="1743970419083351269">डाउनलोड बार बंद करा</translation>
 <translation id="1744060673522309905">डिव्हाइस डोमेनशी जोडू शकत नाही. तुम्हाला जोडता येऊ शकणाऱ्या डिव्हाइसची संख्या तुम्ही ओलांडलेली नाही याची खात्री करा.</translation>
-<translation id="1744108098763830590">पार्श्वभूमी पृष्ठ</translation>
+<translation id="1744108098763830590">बॅकग्राउंड पेज</translation>
 <translation id="1745732479023874451">संपर्क व्यवस्थापित करा</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{या वेब अ‍ॅपमध्ये # फाइल उघडून संपादित करायच्या आहेत का?}}</translation>
 <translation id="1748329107062243374"><ph name="WEBSITE" /> मध्ये साइन इन करण्यासाठी <ph name="DEVICE_NAME" /> वरील पासकी वापरा</translation>
@@ -3437,7 +3437,7 @@
 <translation id="3909701002594999354">सर्व नियंत्रणे दाखवा</translation>
 <translation id="3909791450649380159">क&amp;ट करा</translation>
 <translation id="39103738135459590">अ‍ॅक्टिव्हेशन कोड</translation>
-<translation id="3911824782900911339">नवीन टॅब पृष्‍ठ</translation>
+<translation id="3911824782900911339">नवीन टॅब पेज</translation>
 <translation id="3914173277599553213">आवश्यक</translation>
 <translation id="3914568430265141791"><ph name="FOLDER_TITLE" /> फोल्डर उघडा</translation>
 <translation id="3915280005470252504">व्हॉइसनुसार शोधा</translation>
@@ -4805,7 +4805,7 @@
 <translation id="5154702632169343078">विषय</translation>
 <translation id="5155327081870541046">तुम्हाला शोधायच्या असलेल्या साइटचा शॉर्टकट अ‍ॅड्रेस बारमध्ये एंटर करा जसे की, "@bookmarks". त्यानंतर, तुमचा प्राधान्य दिलेला कीबोर्ड शॉर्टकट प्रेस करा आणि तुमची शोध संज्ञा एंटर करा.</translation>
 <translation id="5156638757840305347">तो दिसतो किंवा हलतो तेव्हा कर्सर हायलाइट केला जातो</translation>
-<translation id="5157635116769074044">हे पृष्ठ सुरू स्क्रीनवर पिन करा...</translation>
+<translation id="5157635116769074044">स्टार्ट स्क्रीनवर हे पेज पिन करा...</translation>
 <translation id="5158206172605340248">अ‍ॅक्सेंटच्या खुणांचा मेनू डिसमिस केला आहे.</translation>
 <translation id="5159094275429367735">Crostini सेट करा</translation>
 <translation id="5159419673777902220">तुमच्या पालकाने एक्स्टेंशन परवानग्या बंद केल्या आहेत</translation>
@@ -7048,7 +7048,7 @@
 <translation id="7149893636342594995">शेवटच्या 72 तासांमधील</translation>
 <translation id="7152478047064750137">या एक्स्टेंशनला कोणत्याही विशिष्ट परवानग्यांची आवश्यकता नाही</translation>
 <translation id="7153309176431047193">इमेज मजकुरात रूपांतरित करा</translation>
-<translation id="7154130902455071009">तुमचे सुरू पृष्ठ यावर बदला: <ph name="START_PAGE" /></translation>
+<translation id="7154130902455071009">तुमचे स्टार्ट पेज यावर बदला: <ph name="START_PAGE" /></translation>
 <translation id="7156231244155528270">इमेज ही मजकूरामध्ये रूपांतरित करा</translation>
 <translation id="7159953856712257647">बाय डीफॉल्ट इंस्टॉल केले</translation>
 <translation id="7160182524506337403">तुम्ही आता तुमच्या फोनमधील सूचना पाहू शकता</translation>
@@ -7350,7 +7350,7 @@
 <translation id="7424153922653300265">एनर्जी सेव्हर सुरू केला</translation>
 <translation id="7424818322350938336">नेटवर्क जोडले</translation>
 <translation id="7427315069950454694">तुमची आजची मेमरी</translation>
-<translation id="7427348830195639090">पार्श्वभूमी पृष्ठ: <ph name="BACKGROUND_PAGE_URL" /></translation>
+<translation id="7427348830195639090">बॅकग्राउंड पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129"><ph name="DEVICE_NAME" /> चा कॉल</translation>
 <translation id="7429415133937917139">स्क्रीनच्या वरच्या बाजूला ChromeVox पॅनलमध्ये
     रिफ्रेश करता येण्यासारख्या ब्रेल डिस्प्लेचे आउटपुट सिम्युलेट करते</translation>

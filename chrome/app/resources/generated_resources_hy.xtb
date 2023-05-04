@@ -8850,6 +8850,9 @@
 <translation id="8725178340343806893">Ընտրանի/Էջանիշներ</translation>
 <translation id="87254326763805752">Հաստատեք անցաբառը</translation>
 <translation id="8726206820263995930">Կանոնի կարգավորումները սերվերից քաշելիս սխալ առաջացավ` <ph name="CLIENT_ERROR" />:</translation>
+<translation id="8727751378406387165">Ուղարկել <ph name="BEGIN_LINK1" />ինքնալրացման մետատվյալները<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (ինքնալրացման ձեր տվյալները չեն փոխանցվի)</translation>
 <translation id="8728351286589123703">Ձեր ընտրած թույլտվությունները կվերակայվեն</translation>
 <translation id="8729133765463465108">Սկանավորել QR կոդը տեսախցիկի միջոցով</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

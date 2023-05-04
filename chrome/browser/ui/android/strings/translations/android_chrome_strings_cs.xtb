@@ -847,6 +847,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="562289928968387744">Spravovat reakce</translation>
 <translation id="5626134646977739690">Jméno:</translation>
 <translation id="5628604359369369630">Nepřečteno – k dispozici offline</translation>
+<translation id="5635091213277904818">Weby, které jsou starší než 30 dní, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam můžete webu také zablokovat.</translation>
 <translation id="5639724618331995626">Povolit všechny weby</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historie vyhledávání<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />další typy aktivity<ph name="END_LINK2" /> se mohou ukládat do vašeho účtu Google</translation>
 <translation id="564667659802381754">Průvodce ochranou soukromí <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
@@ -1255,6 +1256,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7682724950699840886">Vyzkoušejte tyto tipy: Zajistěte, aby v zařízení byl dostatek místa a zkuste export zopakovat.</translation>
 <translation id="7686086654630106285">Další informace o reklamách navrhovaných weby</translation>
 <translation id="768618399695552958">Některé stránky, které navštěvujete, se načítají předběžně. Pokud na stránky odkazuje web Google, mohou se předběžně načíst prostřednictvím serverů Google.</translation>
+<translation id="7690596512217303514">Vaše zařízení nemohlo Chrome otevřít. Tento problém vyřešíte stažením nejnovější aktualizace Chromu z obchodu s aplikacemi.</translation>
 <translation id="7691043218961417207">Objevte obsah ke sledování</translation>
 <translation id="7697383401610880082">Úchyt pro přetažení</translation>
 <translation id="7698359219371678927">Vytvořit e-mail v aplikaci <ph name="APP_NAME" /></translation>
@@ -1366,6 +1368,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8209050860603202033">Otevřít obrázek</translation>
 <translation id="8216351761227087153">Sledovat</translation>
 <translation id="8218622182176210845">Správa účtu</translation>
+<translation id="8221401890884589479">Nežádoucí weby můžete zablokovat. Chrome z tohoto seznamu také automaticky odstraňuje weby, které jsou starší než 30 dní. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Nabídka karty informačního kanálu</translation>
 <translation id="8236097722223016103">Přidat do záložek</translation>
 <translation id="8250920743982581267">Dokumenty</translation>

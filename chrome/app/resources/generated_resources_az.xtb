@@ -3236,6 +3236,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3760460896538743390">Arxa fonu ispeksiya edin</translation>
 <translation id="37613671848467444">Gizli Pəncərədə Açın</translation>
 <translation id="3761556954875533505">Sayta faylları redaktə etmək üçün icazə verilsin?</translation>
+<translation id="3763433740586298940">İstəmədiyiniz saytları bloklaya bilərsiniz. Chrome 30 gündən əvvələ aid saytları siyahıdan avtomatik silir.</translation>
 <translation id="3763549179847864476">Məxfilik Bələdçisi geri düyməsi</translation>
 <translation id="3764314093345384080">Mənbə haqqında ətraflı məlumat</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{USB cihaz ilə ünsiyyətdə olun}other{# USB cihaz ilə ünsiyyətdə olun}}</translation>
@@ -5325,6 +5326,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5633149627228920745">Sistem tələbləri haqqında ətraflı məlumat</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Son səfərləriniz barədə xatirələrə və digər məlumatlara baxın</translation>
+<translation id="5635091213277904818">Chrome 30 gündən əvvələ aid saytları avtomatik silir. Yenidən daxil olduğunuz sayt siyahıda təkrar görünə bilər. Saytın reklam təklif etməsini bloklaya bilərsiniz.</translation>
 <translation id="5635312199252507107">Müəyyən saytlarda icazə verin</translation>
 <translation id="563535393368633106">Giriş etmədən öncə soruşun (tövsiyə olunur)</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> hesabından silinsin?</translation>

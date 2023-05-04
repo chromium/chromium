@@ -610,6 +610,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="4979397965658815378">Accede con tu cuenta de Google para obtener tus favoritos, contraseñas, historial y otras opciones de configuración en todos tus dispositivos</translation>
 <translation id="4986678885919050584">Quitar de este dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, accede a Chrome en ambos dispositivos.</translation>
+<translation id="4996567535980789550">Activa la sincronización para administrar el contenido que ves</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5016420433031926653">Enviar a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Recordarme más tarde</translation>
@@ -1237,6 +1238,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="9034759925968272072">No saldrás de tu cuenta de Google. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
+<translation id="9043368763795653245">Para personalizar Chrome y tu feed de Descubre, activa la sincronización.</translation>
 <translation id="9055772144595778347">Error al acceder</translation>
 <translation id="9055960261314198756">Se desactivó la Protección mejorada</translation>
 <translation id="9057972802061533987">No se puede seguir. Se produjo un error.</translation>

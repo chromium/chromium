@@ -3235,6 +3235,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3760460896538743390">&amp;Arka Plan Sayfasını İncele</translation>
 <translation id="37613671848467444">&amp;Gizli Pencerede Aç</translation>
 <translation id="3761556954875533505">Siteye dosyaları düzenleme izni verilsin mi?</translation>
+<translation id="3763433740586298940">İstemediğiniz siteleri engelleyebilirsiniz. Chrome 30 günden daha uzun süre önce ziyaret edilmiş siteleri de otomatik olarak siler.</translation>
 <translation id="3763549179847864476">Gizlilik Rehberi geri düğmesi</translation>
 <translation id="3764314093345384080">Ayrıntılı derleme bilgileri</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Bir USB cihazla iletişim kurma}other{# USB cihazla iletişim kurma}}</translation>
@@ -5327,6 +5328,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5633149627228920745">Sistem gereksinimleri hakkında daha fazla bilgi</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Son seyahatlerinizden anılarınızı ve daha fazlasını görün</translation>
+<translation id="5635091213277904818">Chrome 30 günden daha uzun süre önce ziyaret edilmiş siteleri otomatik olarak siler. Tekrar ziyaret ettiğiniz siteler yine listede görünebilir. Alternatif olarak bir sitenin size reklam önermesini de engelleyebilirsiniz.</translation>
 <translation id="5635312199252507107">Belirli sitelerde izin ver</translation>
 <translation id="563535393368633106">Erişmeden önce sor (önerilir)</translation>
 <translation id="5636012309446422"><ph name="DEVICE" />, <ph name="PRIMARY_EMAIL" /> hesabından kaldırılsın mı?</translation>
@@ -8844,6 +8846,9 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8725178340343806893">Sık Kullanılanlar/Yer İşaretleri</translation>
 <translation id="87254326763805752">Şifre anahtarını onaylayın</translation>
 <translation id="8726206820263995930">Sunucudan politika ayarları alınırken hata oluştu: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165"><ph name="BEGIN_LINK1" />Otomatik doldurma meta verilerini<ph name="END_LINK1" /> gönder
+          <ph name="LINE_BREAK" />
+          (otomatik doldurma verileriniz paylaşılmaz)</translation>
 <translation id="8728351286589123703">Seçili izinleriniz sıfırlanır</translation>
 <translation id="8729133765463465108">QR Kodunu taramak için kamerayı kullan</translation>
 <translation id="8730621377337864115">Bitti</translation>

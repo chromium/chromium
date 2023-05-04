@@ -847,6 +847,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="562289928968387744">Manage reactions</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5628604359369369630">Unread – available offline</translation>
+<translation id="5635091213277904818">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="5639724618331995626">Allow all sites</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account</translation>
 <translation id="564667659802381754">Privacy Guide <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1255,6 +1256,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7682724950699840886">Try the following tips: make sure that there is enough space on your device; try to export again.</translation>
 <translation id="7686086654630106285">More about site-suggested ads</translation>
 <translation id="768618399695552958">Some of the pages that you visit are preloaded. Pages may be preloaded through Google servers when linked from a Google site.</translation>
+<translation id="7690596512217303514">Your device couldn't open Chrome. To fix the issue, download the latest Chrome update from your app store.</translation>
 <translation id="7691043218961417207">Explore content to follow</translation>
 <translation id="7697383401610880082">Drag handle</translation>
 <translation id="7698359219371678927">Create email in <ph name="APP_NAME" /></translation>
@@ -1366,6 +1368,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8209050860603202033">Open image</translation>
 <translation id="8216351761227087153">Watch</translation>
 <translation id="8218622182176210845">Manage your account</translation>
+<translation id="8221401890884589479">You can block sites that you don't want. Chrome also auto-deletes sites that are older than 30 days from the list. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="8236097722223016103">Add to bookmarks</translation>
 <translation id="8250920743982581267">Documents</translation>

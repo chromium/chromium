@@ -3236,6 +3236,7 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3760460896538743390">Inspeccionar &amp;páxina en segundo plano</translation>
 <translation id="37613671848467444">Abrir nunha ventá de &amp;incógnito</translation>
 <translation id="3761556954875533505">Queres permitir que o sitio edite os ficheiros?</translation>
+<translation id="3763433740586298940">Podes bloquear os sitios que non che interesen. Chrome tamén elimina automaticamente da lista os sitios que teñan máis de 30 días de antigüidade.</translation>
 <translation id="3763549179847864476">Botón Atrás da Guía de privacidade</translation>
 <translation id="3764314093345384080">Información detallada da compilación</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Comunicar cun dispositivo USB}other{Comunicar con # dispositivos USB}}</translation>
@@ -5325,6 +5326,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5633149627228920745">Máis información sobre os requisitos do sistema</translation>
 <translation id="563371367637259496">Móbil</translation>
 <translation id="5634446357546764049">Mira as lembranzas das túas viaxes recentes e moito máis</translation>
+<translation id="5635091213277904818">Chrome elimina automaticamente os sitios que teñan máis de 30 días de antigüidade. Se volves visitar un sitio, é posible que apareza na lista outra vez. Tamén podes impedir que un sitio che suxira anuncios.</translation>
 <translation id="5635312199252507107">Permitir en sitios específicos</translation>
 <translation id="563535393368633106">Preguntar antes de acceder (recomendado)</translation>
 <translation id="5636012309446422">Queres quitar o dispositivo (<ph name="DEVICE" />) de <ph name="PRIMARY_EMAIL" />?</translation>
@@ -7919,7 +7921,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7923564237306226146">Completouse a actualización de Linux</translation>
 <translation id="7924075559900107275">candidata a asistencia a longo prazo</translation>
 <translation id="7924358170328001543">Produciuse un erro co encamiñamento do porto</translation>
-<translation id="7925108652071887026">Autocompletar datos</translation>
+<translation id="7925108652071887026">Datos de Autocompletar</translation>
 <translation id="792514962475806987">Nivel de zoom da lupa ancorada:</translation>
 <translation id="7925285046818567682">Esperando por <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">Non era eu.</translation>
@@ -8841,6 +8843,9 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8725178340343806893">Favoritos/Marcadores</translation>
 <translation id="87254326763805752">Confirmar a clave de acceso</translation>
 <translation id="8726206820263995930">Produciuse un erro ao obter a configuración da política do servidor: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Enviar <ph name="BEGIN_LINK1" />metadatos de Autocompletar<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (os teus datos de Autocompletar non se compartirán)</translation>
 <translation id="8728351286589123703">Restableceranse os permisos escollidos</translation>
 <translation id="8729133765463465108">Utilizar cámara para escanear código QR</translation>
 <translation id="8730621377337864115">Feito</translation>

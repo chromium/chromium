@@ -610,6 +610,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4979397965658815378">Mag-sign in gamit ang Google Account mo para makuha ang iyong mga bookmark, password, history at iba pang mga setting sa lahat ng device mo</translation>
 <translation id="4986678885919050584">Alisin sa Device na ito</translation>
 <translation id="498985224078955265">Para ipadala ang tab na ito sa ibang device, mag-sign in sa Chrome sa dalawang device.</translation>
+<translation id="4996567535980789550">I-on ang pag-sync para pamahalaan ang content na nakikita mo</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5016420433031926653">Ipadala sa <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Paalalahanan Ako Sa Ibang Pagkakataon</translation>
@@ -1237,6 +1238,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="9034759925968272072">Hindi ka masa-sign out sa iyong Google Account. Maaaring mayroong ibang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Ipakita Ang Orihinal</translation>
 <translation id="9039373489628511875">Bandwidth</translation>
+<translation id="9043368763795653245">Para i-personalize ang iyong feed ng Discover at Chrome, i-on ang pag-sync.</translation>
 <translation id="9055772144595778347">Di Makapag-sign In</translation>
 <translation id="9055960261314198756">Naka-off ang Pinaigting na Proteksyon</translation>
 <translation id="9057972802061533987">Hindi masubaybayan. Nagkaproblema.</translation>

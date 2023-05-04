@@ -188,6 +188,7 @@
 <translation id="2242467532204595597">‏يمكنك فتح Chrome عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="22508856139286506">التحذيرات التي تم إغلاقها (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
+<translation id="2252674110805316998">بحث الويب</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
@@ -489,6 +490,7 @@
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
+<translation id="4293080268407233932">بحث</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="430793432425771671">مزامنة جميع البيانات</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
@@ -747,6 +749,7 @@
 <translation id="5951816930277761335">شارِك الرابط.</translation>
 <translation id="5955891643922670672">عرض النسخة بلا إنترنت</translation>
 <translation id="5957613098218939406">خيارات إضافية</translation>
+<translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="5965679971710331625">تم تسجيل الدخول</translation>
 <translation id="5979837087407522202">بحث عن كلمات المرور</translation>

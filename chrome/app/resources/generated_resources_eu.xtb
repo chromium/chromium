@@ -3237,6 +3237,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3760460896538743390">Ikuskatu &amp;atzeko planoko orria</translation>
 <translation id="37613671848467444">Ireki &amp;ezkutuko nabigazio-leihoan</translation>
 <translation id="3761556954875533505">Fitxategiak editatzeko baimena eman nahi diozu webguneari?</translation>
+<translation id="3763433740586298940">Nahi ez dituzun webguneak blokea ditzakezu. Gainera, Chrome-k automatikoki ezabatzen ditu zerrendatik 30 egun baino gehiago dituzten webguneak.</translation>
 <translation id="3763549179847864476">Pribatutasun-gidan atzera egiteko botoia</translation>
 <translation id="3764314093345384080">Konpilazioari buruzko informazio xehatua</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Komunikatu USB bidezko gailu batekin}other{Komunikatu USB bidezko # gailurekin}}</translation>
@@ -5326,6 +5327,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5633149627228920745">Lortu sistemaren eskakizunei buruzko informazio gehiago</translation>
 <translation id="563371367637259496">Sare mugikorra</translation>
 <translation id="5634446357546764049">Ikusi berriki egindako bidaiei buruzko oroitzapenak eta beste gauza batzuk</translation>
+<translation id="5635091213277904818">30 egun baino gehiago dituzten webguneak automatikoki ezabatzen ditu Chrome-k. Baliteke beste behin bisitatzen duzun webgune bat berriro ere zerrendan agertzea. Era berean, webgune bat blokeatuta, zuretzako iragarkiak iradokitzea galaraz diezaiokezu.</translation>
 <translation id="5635312199252507107">Eman webgune jakin batzuetako datuak irakurri eta aldatzeko baimena</translation>
 <translation id="563535393368633106">Galdetu atzitu aurretik (gomendatua)</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> gailua <ph name="PRIMARY_EMAIL" /> kontutik kendu nahi duzu?</translation>
@@ -8841,6 +8843,9 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8725178340343806893">Gogokoak/Laster-markak</translation>
 <translation id="87254326763805752">Berretsi sarbide-gakoa</translation>
 <translation id="8726206820263995930">Errore bat gertatu da gidalerroen ezarpenak zerbitzaritik eskuratzean: <ph name="CLIENT_ERROR" />.</translation>
+<translation id="8727751378406387165">Bidali <ph name="BEGIN_LINK1" />betetze automatikoaren metadatuak<ph name="END_LINK1" />
+          <ph name="LINE_BREAK" />
+          (betetze automatikoaren datuak ez dira partekatuko)</translation>
 <translation id="8728351286589123703">Aukeratu dituzun baimenak berrezarri egingo dira.</translation>
 <translation id="8729133765463465108">Erabili kamera QR kodea eskaneatzeko</translation>
 <translation id="8730621377337864115">Eginda</translation>

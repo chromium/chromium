@@ -8835,6 +8835,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8725178340343806893">Ulubione/Zakładki</translation>
 <translation id="87254326763805752">Potwierdź klucz</translation>
 <translation id="8726206820263995930">Podczas pobierania ustawień zasad z serwera wystąpił błąd: <ph name="CLIENT_ERROR" /></translation>
+<translation id="8727751378406387165">Wyślij <ph name="BEGIN_LINK1" />metadane autouzupełniania<ph name="END_LINK1" /><ph name="LINE_BREAK" />(dane autouzupełniania nie będą udostępniane)</translation>
 <translation id="8728351286589123703">Wybrane uprawnienia zostaną zresetowane</translation>
 <translation id="8729133765463465108">Użyj aparatu, aby zeskanować kod QR</translation>
 <translation id="8730621377337864115">Gotowe</translation>

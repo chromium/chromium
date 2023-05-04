@@ -3252,6 +3252,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3760460896538743390">Inspect &amp;Background Page</translation>
 <translation id="37613671848467444">Open in &amp;Incognito Window</translation>
 <translation id="3761556954875533505">Let site edit files?</translation>
+<translation id="3763433740586298940">You can block sites that you don't want. Chrome also auto-deletes sites that are older than 30 days from the list.</translation>
 <translation id="3763549179847864476">Privacy Guide back button</translation>
 <translation id="3764314093345384080">Detailed build information</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communicate with a USB device}other{Communicate with # USB devices}}</translation>
@@ -5344,6 +5345,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5633149627228920745">Learn more about system requirements</translation>
 <translation id="563371367637259496">Mobile</translation>
 <translation id="5634446357546764049">See memories of your recent trips and more</translation>
+<translation id="5635091213277904818">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you.</translation>
 <translation id="5635312199252507107">Allow on specific sites</translation>
 <translation id="563535393368633106">Ask before accessing (recommended)</translation>
 <translation id="5636012309446422">Remove <ph name="DEVICE" /> from <ph name="PRIMARY_EMAIL" />?</translation>

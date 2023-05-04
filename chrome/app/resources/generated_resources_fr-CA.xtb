@@ -3229,6 +3229,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3760460896538743390">Inspecter la page d'&amp;arrière-plan</translation>
 <translation id="37613671848467444">Ouvrir dans une fenêtre de &amp;navigation privée</translation>
 <translation id="3761556954875533505">Autoriser le site à modifier les fichiers?</translation>
+<translation id="3763433740586298940">Vous pouvez bloquer les sites que vous ne voulez pas. En outre, Chrome supprime automatiquement les sites de la liste datant de plus de 30 jours.</translation>
 <translation id="3763549179847864476">Bouton Précédent du Guide sur la confidentialité</translation>
 <translation id="3764314093345384080">Renseignements détaillés sur la version</translation>
 <translation id="3764583730281406327">{NUM_DEVICES,plural, =1{Communique avec un appareil USB}one{Communique avec # appareil USB}other{Communique avec # appareils USB}}</translation>
@@ -5319,6 +5320,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5633149627228920745">En savoir plus sur la configuration système requise</translation>
 <translation id="563371367637259496">Cellulaire</translation>
 <translation id="5634446357546764049">Découvrez des souvenirs de vos voyages récents et plus encore</translation>
+<translation id="5635091213277904818">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d’empêcher un site de vous suggérer des annonces.</translation>
 <translation id="5635312199252507107">Autoriser sur des sites particuliers</translation>
 <translation id="563535393368633106">Demander avant d'accéder (recommandé)</translation>
 <translation id="5636012309446422">Retirer <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>

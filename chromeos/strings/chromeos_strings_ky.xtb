@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Дагы параметрлер</translation>
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
-<translation id="209751264101900360">Таңдан баштап караңгыга чейин - Булут</translation>
 <translation id="2102231663024125441">Текстти оңдоо</translation>
 <translation id="2105810540595158374">Түзмөк — оюнду көзөмөлдөгүч.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
@@ -346,7 +345,6 @@
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3969602104473960991">ChromeOS сырсөзү өзгөрдү</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
-<translation id="3974175076798940554">Эми эксклюзивдүү Chromebook Plus объекттери жеткиликтүү</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңыртылды</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
@@ -387,7 +385,6 @@
 <translation id="4275663329226226506">Медиа</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
-<translation id="4293621540182258188">Таңдан баштап караңгыга чейин - Жер</translation>
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сүрөт</translation>
 <translation id="4311195029067684288">Толук</translation>
@@ -571,7 +568,6 @@
 <translation id="576835345334454681">Дисплейдин жарыктыгын көбөйтүү</translation>
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5784136236926853061">HTTP күтүү убакыты жогору</translation>
-<translation id="5809090008577139505">Уюл шооласы</translation>
 <translation id="5826644637650799838">Көркөм өнөр жөнүндө</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
 <translation id="583281660410589416">Белгисиз</translation>
@@ -590,7 +586,6 @@
 <translation id="5907649332524363701">баскычтын түсү</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
-<translation id="5918201491776799918">Chromebook Plus үчүн эксклюзивдүү сүрөттү тандоо</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>
 <translation id="5931523347251946569">Файл табылган жок</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
@@ -799,7 +794,6 @@
 <translation id="7656388927906093505">Түзмөк — чычкан.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7665800271478495366">Аватарды өзгөртүү</translation>
-<translation id="7675241868020048622">Aurora (Plus үчүн)</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +851,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> тандоо</translation>
 <translation id="8151185429379586178">Иштеп чыгуучунун куралдары</translation>
-<translation id="8153923300383192510">Chromebook Plus үчүн эксклюзивдүү</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Тиркөө</translation>
 <translation id="8206859287963243715">Уюктук</translation>

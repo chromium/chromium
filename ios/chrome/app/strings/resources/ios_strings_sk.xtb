@@ -610,6 +610,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="4979397965658815378">Prihláste sa účtom Google a používajte svoje záložky, heslá, históriu a ďalšie nastavenia vo všetkých svojich zariadeniach</translation>
 <translation id="4986678885919050584">Odstrániť účet z tohto zariadenia</translation>
 <translation id="498985224078955265">Ak chcete túto kartu odoslať do iného zariadenia, prihláste sa v oboch zariadeniach do Chromu.</translation>
+<translation id="4996567535980789550">Ak chcete spravovať zobrazovaný obsah, zapnite synchronizáciu</translation>
 <translation id="5005498671520578047">Kopírovanie hesla</translation>
 <translation id="5016420433031926653">Pošlite na <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Pripomenúť neskôr</translation>
@@ -1237,6 +1238,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9034759925968272072">Neodhlásime vás z účtu Google. Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Zobraziť originál</translation>
 <translation id="9039373489628511875">Rýchlosť pripojenia</translation>
+<translation id="9043368763795653245">Ak si chcete prispôsobiť kanál Objaviť a Chrome, zapnite synchronizáciu.</translation>
 <translation id="9055772144595778347">Nedá sa prihlásiť</translation>
 <translation id="9055960261314198756">Rozšírená ochrana je vypnutá</translation>
 <translation id="9057972802061533987">Nedá sa sledovať. Niečo sa pokazilo.</translation>

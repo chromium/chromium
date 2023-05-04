@@ -610,6 +610,7 @@ Dữ liệu của bạn đã được mã hóa bằng cụm mật khẩu đồng
 <translation id="4979397965658815378">Đăng nhập bằng Tài khoản Google để nhận dấu trang, mật khẩu, lịch sử và các cài đặt khác trên tất cả thiết bị của bạn</translation>
 <translation id="4986678885919050584">Xoá khỏi thiết bị này</translation>
 <translation id="498985224078955265">Để gửi thẻ này tới một thiết bị khác, hãy đăng nhập vào Chrome trên cả hai thiết bị.</translation>
+<translation id="4996567535980789550">Bật tính năng đồng bộ hoá để quản lý nội dung mà bạn thấy</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5016420433031926653">Gửi tới <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Nhắc tôi sau</translation>
@@ -1237,6 +1238,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="9034759925968272072">Bạn sẽ không bị đăng xuất khỏi Tài khoản Google của mình. Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Hiển thị văn bản gốc</translation>
 <translation id="9039373489628511875">Băng thông</translation>
+<translation id="9043368763795653245">Để cá nhân hoá thẻ Khám phá và Chrome, hãy bật tính năng đồng bộ hoá.</translation>
 <translation id="9055772144595778347">Không thể đăng nhập</translation>
 <translation id="9055960261314198756">Chế độ Bảo vệ nâng cao đang Tắt</translation>
 <translation id="9057972802061533987">Không theo dõi được. Đã xảy ra lỗi.</translation>
