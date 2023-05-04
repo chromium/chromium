@@ -1570,8 +1570,15 @@ void ResourceLoader::RequestAsynchronously(const ResourceRequestHead& request) {
                           network_resource_request.get());
 
   recordreplay::Assert(
-      "[RUN-1725-1852] ResourceLoader::RequestAsynchronously %s",
-       network_resource_request->devtools_request_id ? network_resource_request->devtools_request_id->c_str() : "");
+      "[RUN-1725-1852] ResourceLoader::RequestAsynchronously %zu %zu %zu %zu",
+      network_resource_request->method.size(),
+      network_resource_request->fetch_integrity.size(),
+      network_resource_request->devtools_request_id
+          ? network_resource_request->devtools_request_id->size()
+          : 0,
+      network_resource_request->devtools_stack_id
+          ? network_resource_request->devtools_stack_id->size()
+          : 0);
 
   if (form_body)
     request_body_ = ResourceRequestBody(std::move(form_body));
