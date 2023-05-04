@@ -874,7 +874,9 @@ void NodeChannel::OfferChannelUpgrade() {
 }
 
 void NodeChannel::Release() {
-  recordreplay::Assert("[RUN-1050-1830] NodeChannel::Release %d", HasOneRef());
+  recordreplay::Assert("[RUN-1307-1830] NodeChannel::Release %d %d",
+                       HasOneRef(),
+                       owning_task_runner()->RunsTasksInCurrentSequence());
   base::RefCountedDeleteOnSequence<NodeChannel>::Release();
 }
 
