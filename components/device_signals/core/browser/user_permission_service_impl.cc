@@ -38,49 +38,41 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() {
              prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
 }
 
-void UserPermissionServiceImpl::CanUserCollectSignals(
-    const UserContext& user_context,
-    UserPermissionService::CanCollectCallback callback) {
+UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
+    const UserContext& user_context) {
   // Return "unknown user" if no user ID was given.
   if (user_context.user_id.empty()) {
-    std::move(callback).Run(UserPermission::kMissingUser);
-    return;
+    return UserPermission::kMissingUser;
   }
 
   if (!user_delegate_->IsSameUser(user_context.user_id)) {
-    std::move(callback).Run(UserPermission::kUnknownUser);
-    return;
+    return UserPermission::kUnknownUser;
   }
 
   if (!user_delegate_->IsManaged()) {
-    std::move(callback).Run(UserPermission::kConsumerUser);
-    return;
+    return UserPermission::kConsumerUser;
   }
 
   // User consent is required on Cloud-unmanaged devices. Collection of the
   // user's consent happens via its own flow and hooks, so only the resulting
   // value needs to be evaluated here.
   if (!IsDeviceCloudManaged()) {
-    std::move(callback).Run(HasUserConsented()
-                                ? UserPermission::kGranted
-                                : UserPermission::kMissingConsent);
-    return;
+    return HasUserConsented() ? UserPermission::kGranted
+                              : UserPermission::kMissingConsent;
   }
 
   if (!user_delegate_->IsAffiliated()) {
-    std::move(callback).Run(UserPermission::kUnaffiliated);
-    return;
+    return UserPermission::kUnaffiliated;
   }
 
   // At this point, the given user is:
   // - The same user as the browser user,
   // - Is managed by an org affiliated with the org managing the browser.
   // They are, therefore, allowed to collect signals.
-  std::move(callback).Run(UserPermission::kGranted);
+  return UserPermission::kGranted;
 }
 
-void UserPermissionServiceImpl::CanCollectSignals(
-    UserPermissionService::CanCollectCallback callback) {
+UserPermission UserPermissionServiceImpl::CanCollectSignals() {
   // For now, the only condition that is required is that the current
   // browser is Cloud-managed. The rationale being that signals can be
   // collected on managed devices by their managing organization, but
@@ -88,10 +80,9 @@ void UserPermissionServiceImpl::CanCollectSignals(
   // getting user consent). However, support for unmanaged browsers is
   // not required yet.
   if (!IsDeviceCloudManaged()) {
-    std::move(callback).Run(UserPermission::kMissingConsent);
-    return;
+    return UserPermission::kMissingConsent;
   }
-  std::move(callback).Run(UserPermission::kGranted);
+  return UserPermission::kGranted;
 }
 
 bool UserPermissionServiceImpl::HasUserConsented() const {

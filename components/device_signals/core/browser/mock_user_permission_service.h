@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_USER_PERMISSION_SERVICE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_MOCK_USER_PERMISSION_SERVICE_H_
 
-#include "base/functional/callback.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,12 +16,12 @@ class MockUserPermissionService : public UserPermissionService {
   ~MockUserPermissionService() override;
 
   MOCK_METHOD(bool, ShouldCollectConsent, (), (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(UserPermission,
               CanUserCollectSignals,
-              (const UserContext&, CanCollectCallback),
+              (const UserContext&),
               (override));
 
-  MOCK_METHOD(void, CanCollectSignals, (CanCollectCallback), (override));
+  MOCK_METHOD(UserPermission, CanCollectSignals, (), (override));
 };
 
 }  // namespace device_signals

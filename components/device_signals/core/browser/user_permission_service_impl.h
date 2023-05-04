@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 
 class PrefService;
@@ -35,9 +34,9 @@ class UserPermissionServiceImpl : public UserPermissionService {
 
   // UserPermissionService:
   bool ShouldCollectConsent() override;
-  void CanUserCollectSignals(const UserContext& user_context,
-                             CanCollectCallback callback) override;
-  void CanCollectSignals(CanCollectCallback callback) override;
+  UserPermission CanUserCollectSignals(
+      const UserContext& user_context) override;
+  UserPermission CanCollectSignals() override;
 
  private:
   // Returns whether the user has explicitly agreed to device signals being
@@ -47,11 +46,9 @@ class UserPermissionServiceImpl : public UserPermissionService {
   // Returns true if the device is Cloud-managed.
   bool IsDeviceCloudManaged() const;
 
-  raw_ptr<policy::ManagementService> management_service_;
-  std::unique_ptr<UserDelegate> user_delegate_;
-  base::raw_ptr<PrefService> user_prefs_;
-
-  base::WeakPtrFactory<UserPermissionServiceImpl> weak_factory_{this};
+  const raw_ptr<policy::ManagementService> management_service_;
+  const std::unique_ptr<UserDelegate> user_delegate_;
+  const raw_ptr<PrefService> user_prefs_;
 };
 
 }  // namespace device_signals

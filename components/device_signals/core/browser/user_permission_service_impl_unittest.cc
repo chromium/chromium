@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
 #include "components/device_signals/core/browser/mock_user_delegate.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
@@ -118,11 +117,9 @@ TEST_F(UserPermissionServiceImplTest, ShouldCollectConsent) {
 TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
   SetDeviceAsCloudManaged();
 
-  base::test::TestFuture<UserPermission> future;
   UserContext user_context;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kMissingUser);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kMissingUser);
 }
 
 // Tests CanUserCollectSignals with a user ID that does not represent the
@@ -138,10 +135,8 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
       .WillOnce(Return(false));
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kUnknownUser);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kUnknownUser);
 }
 
 // Tests CanUserCollectSignals with a user ID that represents the browser user,
@@ -156,10 +151,8 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(false));
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kConsumerUser);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kConsumerUser);
 }
 
 // Tests CanUserCollectSignals with a managed user ID but the browser is not
@@ -175,10 +168,8 @@ TEST_F(UserPermissionServiceImplTest,
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(true));
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kMissingConsent);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kMissingConsent);
 }
 
 // Tests CanUserCollectSignals with a managed user ID but the browser is not
@@ -195,10 +186,8 @@ TEST_F(UserPermissionServiceImplTest,
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(true));
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kGranted);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kGranted);
 }
 
 // Tests CanUserCollectSignals with a managed user ID and the browser is
@@ -216,10 +205,8 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(false));
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kUnaffiliated);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kUnaffiliated);
 }
 
 // Tests CanUserCollectSignals with a managed user ID and the browser is
@@ -237,10 +224,8 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsAffiliated()).WillOnce(Return(true));
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanUserCollectSignals(user_context,
-                                             future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kGranted);
+  EXPECT_EQ(permission_service_->CanUserCollectSignals(user_context),
+            UserPermission::kGranted);
 }
 
 // Tests that consent is required before allowing to collect signals from an
@@ -248,18 +233,14 @@ TEST_F(UserPermissionServiceImplTest,
 TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserNotManaged) {
   SetDeviceAsCloudUnmanaged();
 
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanCollectSignals(future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kMissingConsent);
+  EXPECT_EQ(permission_service_->CanCollectSignals(),
+            UserPermission::kMissingConsent);
 }
 
 // Tests that signals can be collected from a managed browser.
 TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserManaged) {
   SetDeviceAsCloudManaged();
-
-  base::test::TestFuture<UserPermission> future;
-  permission_service_->CanCollectSignals(future.GetCallback());
-  EXPECT_EQ(future.Get(), UserPermission::kGranted);
+  EXPECT_EQ(permission_service_->CanCollectSignals(), UserPermission::kGranted);
 }
 
 }  // namespace device_signals

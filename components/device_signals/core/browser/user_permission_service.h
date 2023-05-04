@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 
-#include "base/functional/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace device_signals {
@@ -47,24 +46,22 @@ enum class UserPermission {
 // validating the affiliation of the user's organization.
 class UserPermissionService : public KeyedService {
  public:
-  using CanCollectCallback = base::OnceCallback<void(UserPermission)>;
-
   ~UserPermissionService() override = default;
 
   // Returns true if consent is required based on the current context and is
   // missing.
   virtual bool ShouldCollectConsent() = 0;
 
-  // Will asynchronously verify whether context-aware signals can be collected
-  // on behalf of the user represented by `user_context`. The determined user
-  // permission is returned via `callback`.
-  virtual void CanUserCollectSignals(const UserContext& user_context,
-                                     CanCollectCallback callback) = 0;
+  // Will verify whether context-aware signals can be collected
+  // on behalf of the user represented by `user_context`. Returns `kGranted` if
+  // collection is allowed.
+  virtual UserPermission CanUserCollectSignals(
+      const UserContext& user_context) = 0;
 
-  // Will asynchronously verify whether context-aware signals can be collected
+  // Will verify whether context-aware signals can be collected
   // based on the current context (e.g. browser-wide management, user logged-in
-  // to a Profile). The determined user permission is returned via `callback`.
-  virtual void CanCollectSignals(CanCollectCallback callback) = 0;
+  // to a Profile). Returns `kGranted` if collection is allowed.
+  virtual UserPermission CanCollectSignals() = 0;
 };
 
 }  // namespace device_signals

@@ -36,9 +36,9 @@ class SignalsAggregatorImpl : public SignalsAggregator {
                   GetSignalsCallback callback) override;
 
  private:
-  void OnUserPermissionChecked(const SignalsAggregationRequest& request,
-                               GetSignalsCallback callback,
-                               const UserPermission user_permission);
+  void GetSignalsWithPermission(const UserPermission user_permission,
+                                const SignalsAggregationRequest& request,
+                                GetSignalsCallback callback);
 
   raw_ptr<UserPermissionService> permission_service_;
   std::vector<std::unique_ptr<SignalsCollector>> collectors_;
