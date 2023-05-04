@@ -331,15 +331,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     modelForFolder->SetTitle(_folder, folderTitle,
                              bookmarks::metrics::BookmarkEditSource::kUser);
     if (_folder->parent() != _parentFolder) {
-      // Currently `MoveBookmarksWithUndoToast(...)` doesn't support moving node
-      // between models.
-      // TODO(crbug.com/1416567): Revise after nodes can move between models.
-      DCHECK_EQ(modelForFolder, modelForParentFolder);
       base::AutoReset<BOOL> autoReset(&_ignoresOwnMove, YES);
       [self.snackbarCommandsHandler
           showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                                   std::set<const BookmarkNode*>{_folder},
-                                  modelForParentFolder, _parentFolder,
+                                  _profileBookmarkModel.get(),
+                                  _accountBookmarkModel.get(), _parentFolder,
                                   _browserState)];
     }
   } else {

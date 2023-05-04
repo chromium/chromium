@@ -25,7 +25,7 @@
 // height.
 + (NSError*)setupBookmarksWhichExceedsScreenHeightUsingURL:(NSString*)URL;
 
-// Waits for the Bookmark model to be loaded.
+// Waits for both LocalOrSyncable and Account bookmark models to be loaded.
 + (BOOL)waitForBookmarkModelLoaded;
 
 // Asserts that `expectedCount` bookmarks exist with the corresponding `title`

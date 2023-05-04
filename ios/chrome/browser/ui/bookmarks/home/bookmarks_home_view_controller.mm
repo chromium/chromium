@@ -1109,7 +1109,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   [self.snackbarCommandsHandler
       showSnackbarMessage:bookmark_utils_ios::MoveBookmarksWithUndoToast(
                               std::move(editedNodes),
-                              _profileBookmarkModel.get(), folder,
+                              _profileBookmarkModel.get(),
+                              _accountBookmarkModel.get(), folder,
                               self.browserState)];
 }
 
