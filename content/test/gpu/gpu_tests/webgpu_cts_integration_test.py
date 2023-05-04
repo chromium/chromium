@@ -495,14 +495,11 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'window.setupWebsocket("%s")' %
         WebGpuCtsIntegrationTest.websocket_server.server_port)
     WebGpuCtsIntegrationTest.websocket_server.WaitForConnection()
-    try:
-      response = WebGpuCtsIntegrationTest.websocket_server.Receive(
-          MESSAGE_TIMEOUT_CONNECTION_ACK)
-      assert json.loads(response)['type'] == MESSAGE_TYPE_CONNECTION_ACK
-    except websocket_server.WebsocketReceiveMessageTimeoutError:
-      # for now, ignore any timeouts because the test page doesn't send
-      # CONNECTION_ACK yet
-      pass
+
+    # Wait for the page to set up the websocket.
+    response = WebGpuCtsIntegrationTest.websocket_server.Receive(
+        MESSAGE_TIMEOUT_CONNECTION_ACK)
+    assert json.loads(response)['type'] == MESSAGE_TYPE_CONNECTION_ACK
 
     WebGpuCtsIntegrationTest._page_loaded = True
     return True
