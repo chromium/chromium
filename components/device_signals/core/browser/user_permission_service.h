@@ -51,6 +51,10 @@ class UserPermissionService : public KeyedService {
 
   ~UserPermissionService() override = default;
 
+  // Returns true if consent is required based on the current context and is
+  // missing.
+  virtual bool ShouldCollectConsent() = 0;
+
   // Will asynchronously verify whether context-aware signals can be collected
   // on behalf of the user represented by `user_context`. The determined user
   // permission is returned via `callback`.

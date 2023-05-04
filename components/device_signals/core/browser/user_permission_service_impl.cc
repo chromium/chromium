@@ -27,6 +27,17 @@ UserPermissionServiceImpl::UserPermissionServiceImpl(
 
 UserPermissionServiceImpl::~UserPermissionServiceImpl() = default;
 
+bool UserPermissionServiceImpl::ShouldCollectConsent() {
+  if (HasUserConsented()) {
+    // Already have the user consent, so no need to collect.
+    return false;
+  }
+
+  return !IsDeviceCloudManaged() &&
+         user_prefs_->GetBoolean(
+             prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
+}
+
 void UserPermissionServiceImpl::CanUserCollectSignals(
     const UserContext& user_context,
     UserPermissionService::CanCollectCallback callback) {
@@ -46,11 +57,10 @@ void UserPermissionServiceImpl::CanUserCollectSignals(
     return;
   }
 
-  // User consent is required on unmanaged devices. Collection of the user's
-  // consent happens via its own flow and hooks, so only the resulting value
-  // needs to be evaluated here.
-  if (!management_service_->HasManagementAuthority(
-          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+  // User consent is required on Cloud-unmanaged devices. Collection of the
+  // user's consent happens via its own flow and hooks, so only the resulting
+  // value needs to be evaluated here.
+  if (!IsDeviceCloudManaged()) {
     std::move(callback).Run(HasUserConsented()
                                 ? UserPermission::kGranted
                                 : UserPermission::kMissingConsent);
@@ -77,8 +87,7 @@ void UserPermissionServiceImpl::CanCollectSignals(
   // would require more scrutiny for unmanaged browsers (including
   // getting user consent). However, support for unmanaged browsers is
   // not required yet.
-  if (!management_service_->HasManagementAuthority(
-          policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
+  if (!IsDeviceCloudManaged()) {
     std::move(callback).Run(UserPermission::kMissingConsent);
     return;
   }
@@ -87,6 +96,11 @@ void UserPermissionServiceImpl::CanCollectSignals(
 
 bool UserPermissionServiceImpl::HasUserConsented() const {
   return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived);
+}
+
+bool UserPermissionServiceImpl::IsDeviceCloudManaged() const {
+  return management_service_->HasManagementAuthority(
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
 }
 
 }  // namespace device_signals

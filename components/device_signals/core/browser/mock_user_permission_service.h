@@ -16,6 +16,7 @@ class MockUserPermissionService : public UserPermissionService {
   MockUserPermissionService();
   ~MockUserPermissionService() override;
 
+  MOCK_METHOD(bool, ShouldCollectConsent, (), (override));
   MOCK_METHOD(void,
               CanUserCollectSignals,
               (const UserContext&, CanCollectCallback),

@@ -18,6 +18,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using policy::EnterpriseManagementAuthority;
 using policy::ScopedManagementServiceOverrideForTesting;
@@ -47,9 +48,7 @@ class TestManagementService : public policy::ManagementService {
 
 class UserPermissionServiceImplTest : public testing::Test {
  protected:
-  UserPermissionServiceImplTest()
-      : scoped_override_(&management_service_,
-                         EnterpriseManagementAuthority::CLOUD_DOMAIN) {
+  UserPermissionServiceImplTest() {
     RegisterProfilePrefs(test_prefs_.registry());
 
     auto mock_user_delegate =
@@ -60,18 +59,65 @@ class UserPermissionServiceImplTest : public testing::Test {
         &management_service_, std::move(mock_user_delegate), &test_prefs_);
   }
 
+  void SetDeviceAsCloudManaged() {
+    scoped_override_.emplace(&management_service_,
+                             EnterpriseManagementAuthority::CLOUD_DOMAIN);
+  }
+
+  void SetDeviceAsCloudUnmanaged() {
+    scoped_override_.emplace(&management_service_,
+                             EnterpriseManagementAuthority::CLOUD);
+  }
+
+  void SetUserConsentGiven() {
+    // Fake as if user has given consent.
+    test_prefs_.SetBoolean(prefs::kDeviceSignalsConsentReceived, true);
+  }
+
   base::test::TaskEnvironment task_environment_;
 
   TestManagementService management_service_;
-  ScopedManagementServiceOverrideForTesting scoped_override_;
+  absl::optional<ScopedManagementServiceOverrideForTesting> scoped_override_;
   raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
   TestingPrefServiceSimple test_prefs_;
 
   std::unique_ptr<UserPermissionServiceImpl> permission_service_;
 };
 
+// Tests that consent does not need to be collected if it was already given.
+TEST_F(UserPermissionServiceImplTest, ShouldCollectConsent_ConsentGiven) {
+  SetUserConsentGiven();
+  EXPECT_FALSE(permission_service_->ShouldCollectConsent());
+}
+
+// Tests that consent does not need to be collected if the device is cloud
+// managed.
+TEST_F(UserPermissionServiceImplTest, ShouldCollectConsent_DeviceCloudManaged) {
+  SetDeviceAsCloudManaged();
+  EXPECT_FALSE(permission_service_->ShouldCollectConsent());
+}
+
+// Tests that consent does not need to be collected if the device is not cloud
+// managed but the "enable consent flow" policy is not enabled.
+TEST_F(UserPermissionServiceImplTest,
+       ShouldCollectConsent_NoEnableConsentFlowPolicy) {
+  SetDeviceAsCloudUnmanaged();
+  EXPECT_FALSE(permission_service_->ShouldCollectConsent());
+}
+
+// Tests that consent needs to be collected if the device is not cloud managed
+// and the "enable consent flow" policy is enabled.
+TEST_F(UserPermissionServiceImplTest, ShouldCollectConsent) {
+  SetDeviceAsCloudUnmanaged();
+  test_prefs_.SetBoolean(prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
+                         true);
+  EXPECT_TRUE(permission_service_->ShouldCollectConsent());
+}
+
 // Tests CanUserCollectSignals with a missing user ID.
 TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
+  SetDeviceAsCloudManaged();
+
   base::test::TestFuture<UserPermission> future;
   UserContext user_context;
   permission_service_->CanUserCollectSignals(user_context,
@@ -83,6 +129,8 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_EmptyUserId) {
 // current browser user.
 TEST_F(UserPermissionServiceImplTest,
        CanUserCollectSignals_UserId_NotSameUser) {
+  SetDeviceAsCloudManaged();
+
   UserContext user_context;
   user_context.user_id = kUserGaiaId;
 
@@ -99,6 +147,8 @@ TEST_F(UserPermissionServiceImplTest,
 // Tests CanUserCollectSignals with a user ID that represents the browser user,
 // but that user is not managed.
 TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
+  SetDeviceAsCloudManaged();
+
   UserContext user_context;
   user_context.user_id = kUserGaiaId;
 
@@ -116,9 +166,7 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
 // managed and the user has not given consent.
 TEST_F(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserNotManaged_NoConsent) {
-  // Set management to something other than CLOUD_DOMAIN.
-  ScopedManagementServiceOverrideForTesting another_scope(
-      &management_service_, EnterpriseManagementAuthority::CLOUD);
+  SetDeviceAsCloudUnmanaged();
 
   UserContext user_context;
   user_context.user_id = kUserGaiaId;
@@ -137,9 +185,8 @@ TEST_F(UserPermissionServiceImplTest,
 // managed and the user has given consent.
 TEST_F(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserNotManaged_WithConsent) {
-  // Set management to something other than CLOUD_DOMAIN.
-  ScopedManagementServiceOverrideForTesting another_scope(
-      &management_service_, EnterpriseManagementAuthority::CLOUD);
+  SetDeviceAsCloudUnmanaged();
+  SetUserConsentGiven();
 
   UserContext user_context;
   user_context.user_id = kUserGaiaId;
@@ -147,9 +194,6 @@ TEST_F(UserPermissionServiceImplTest,
   EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(true));
-
-  // Fake as if user has given consent.
-  test_prefs_.SetBoolean(prefs::kDeviceSignalsConsentReceived, true);
 
   base::test::TestFuture<UserPermission> future;
   permission_service_->CanUserCollectSignals(user_context,
@@ -162,6 +206,8 @@ TEST_F(UserPermissionServiceImplTest,
 // affiliated with the browser's org.
 TEST_F(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserManaged_ProfileUser_Unaffiliated) {
+  SetDeviceAsCloudManaged();
+
   UserContext user_context;
   user_context.user_id = kUserGaiaId;
 
@@ -181,6 +227,8 @@ TEST_F(UserPermissionServiceImplTest,
 // with the browser's org.
 TEST_F(UserPermissionServiceImplTest,
        CanUserCollectSignals_BrowserManaged_ProfileUser_Affiliated) {
+  SetDeviceAsCloudManaged();
+
   UserContext user_context;
   user_context.user_id = kUserGaiaId;
 
@@ -198,9 +246,7 @@ TEST_F(UserPermissionServiceImplTest,
 // Tests that consent is required before allowing to collect signals from an
 // unmanaged browser.
 TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserNotManaged) {
-  // Set management to something other than CLOUD_DOMAIN.
-  ScopedManagementServiceOverrideForTesting another_scope(
-      &management_service_, EnterpriseManagementAuthority::CLOUD);
+  SetDeviceAsCloudUnmanaged();
 
   base::test::TestFuture<UserPermission> future;
   permission_service_->CanCollectSignals(future.GetCallback());
@@ -209,6 +255,8 @@ TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserNotManaged) {
 
 // Tests that signals can be collected from a managed browser.
 TEST_F(UserPermissionServiceImplTest, CanCollectSignals_BrowserManaged) {
+  SetDeviceAsCloudManaged();
+
   base::test::TestFuture<UserPermission> future;
   permission_service_->CanCollectSignals(future.GetCallback());
   EXPECT_EQ(future.Get(), UserPermission::kGranted);

@@ -34,6 +34,7 @@ class UserPermissionServiceImpl : public UserPermissionService {
   ~UserPermissionServiceImpl() override;
 
   // UserPermissionService:
+  bool ShouldCollectConsent() override;
   void CanUserCollectSignals(const UserContext& user_context,
                              CanCollectCallback callback) override;
   void CanCollectSignals(CanCollectCallback callback) override;
@@ -42,6 +43,9 @@ class UserPermissionServiceImpl : public UserPermissionService {
   // Returns whether the user has explicitly agreed to device signals being
   // shared or not.
   bool HasUserConsented() const;
+
+  // Returns true if the device is Cloud-managed.
+  bool IsDeviceCloudManaged() const;
 
   raw_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<UserDelegate> user_delegate_;
