@@ -27,7 +27,8 @@ const CGFloat kIconSize = 56;
 @synthesize countLabel = _countLabel;
 
 - (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame placeholder:NO];
+  self = [super initWithFrame:frame
+                     tileType:ContentSuggestionsTileType::kShortcuts];
   if (self) {
     _iconView = [[UIImageView alloc] initWithFrame:self.bounds];
     _iconView.translatesAutoresizingMaskIntoConstraints = NO;

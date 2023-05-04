@@ -81,6 +81,8 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
     ContentSuggestionsReturnToRecentTabView* returnToRecentTabTile;
 // StackView holding all of `mostVisitedViews`.
 @property(nonatomic, strong) UIStackView* mostVisitedStackView;
+// Module Container for the `mostVisitedViews` when being shown in Magic Stack.
+@property(nonatomic, strong) ActionListModule* mostVisitedModuleContainer;
 // Width Anchor of the Most Visited Tiles container.
 @property(nonatomic, strong)
     NSLayoutConstraint* mostVisitedContainerWidthAnchor;
@@ -174,18 +176,20 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
     self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
     self.mostVisitedStackView.spacing = horizontalSpacing;
     self.mostVisitedStackView.alignment = UIStackViewAlignmentTop;
-    [self addUIElement:self.mostVisitedStackView
-        withCustomBottomSpacing:kMostVisitedBottomMargin];
-    CGFloat width =
-        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGFloat height =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
-            .height;
-    [NSLayoutConstraint activateConstraints:@[
-      [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-      [self.mostVisitedStackView.heightAnchor
-          constraintGreaterThanOrEqualToConstant:height]
-    ]];
+    if (!IsMagicStackEnabled()) {
+      [self addUIElement:self.mostVisitedStackView
+          withCustomBottomSpacing:kMostVisitedBottomMargin];
+      CGFloat width =
+          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+      CGFloat height =
+          MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory)
+              .height;
+      [NSLayoutConstraint activateConstraints:@[
+        [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
+        [self.mostVisitedStackView.heightAnchor
+            constraintGreaterThanOrEqualToConstant:height]
+      ]];
+    }
     [self populateMostVisitedModule];
   }
   if (self.shortcutsViews) {
@@ -519,24 +523,41 @@ const float kMagicStackMinimumPaginationScrollVelocity = 0.2f;
     self.mostVisitedStackView.distribution = UIStackViewDistributionFillEqually;
     self.mostVisitedStackView.spacing =
         ContentSuggestionsTilesHorizontalSpacing(self.traitCollection);
-    // Find correct insertion position in the stack.
-    int insertionIndex = 0;
-    if (self.returnToRecentTabTile) {
-      insertionIndex++;
+
+    if (IsMagicStackEnabled()) {
+      self.mostVisitedModuleContainer = [[ActionListModule alloc]
+          initWithContentView:self.mostVisitedStackView
+                         type:ContentSuggestionsModuleType::kMostVisited];
+      // Find correct insertion position in the stack.
+      int insertionIndex = 0;
+      if (self.returnToRecentTabTile) {
+        insertionIndex++;
+      }
+      [self.verticalStackView
+          insertArrangedSubview:self.mostVisitedModuleContainer
+                        atIndex:insertionIndex];
+      [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
+                                     afterView:self.mostVisitedModuleContainer];
+    } else {
+      // Find correct insertion position in the stack.
+      int insertionIndex = 0;
+      if (self.returnToRecentTabTile) {
+        insertionIndex++;
+      }
+      [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
+                                            atIndex:insertionIndex];
+      [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
+                                     afterView:self.mostVisitedStackView];
+      CGFloat width =
+          MostVisitedTilesContentHorizontalSpace(self.traitCollection);
+      CGSize size = MostVisitedCellSize(
+          self.traitCollection.preferredContentSizeCategory);
+      [NSLayoutConstraint activateConstraints:@[
+        [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
+        [self.mostVisitedStackView.heightAnchor
+            constraintEqualToConstant:size.height]
+      ]];
     }
-    [self.verticalStackView insertArrangedSubview:self.mostVisitedStackView
-                                          atIndex:insertionIndex];
-    [self.verticalStackView setCustomSpacing:kMostVisitedBottomMargin
-                                   afterView:self.mostVisitedStackView];
-    CGFloat width =
-        MostVisitedTilesContentHorizontalSpace(self.traitCollection);
-    CGSize size =
-        MostVisitedCellSize(self.traitCollection.preferredContentSizeCategory);
-    [NSLayoutConstraint activateConstraints:@[
-      [self.mostVisitedStackView.widthAnchor constraintEqualToConstant:width],
-      [self.mostVisitedStackView.heightAnchor
-          constraintEqualToConstant:size.height]
-    ]];
   }
   for (ContentSuggestionsMostVisitedTileView* view in self.mostVisitedViews) {
     view.menuProvider = self.menuProvider;

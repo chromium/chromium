@@ -20,6 +20,7 @@ namespace {
 const NSInteger kLabelNumLines = 2;
 const CGFloat kSpaceIconTitle = 10;
 const CGFloat kIconSize = 56;
+const CGFloat kMagicStackIconSize = 52;
 // Standard width of tiles.
 const CGFloat kPreferredMaxWidth = 74;
 
@@ -33,7 +34,8 @@ const CGFloat kPreferredMaxWidth = 74;
 
 @implementation ContentSuggestionsTileView
 
-- (instancetype)initWithFrame:(CGRect)frame placeholder:(BOOL)isPlaceholder {
+- (instancetype)initWithFrame:(CGRect)frame
+                     tileType:(ContentSuggestionsTileType)type {
   self = [super initWithFrame:frame];
   if (self) {
     _titleLabel = [[UILabel alloc] init];
@@ -41,41 +43,48 @@ const CGFloat kPreferredMaxWidth = 74;
     _titleLabel.font = [self titleLabelFont];
     _titleLabel.textAlignment = NSTextAlignmentCenter;
     _titleLabel.preferredMaxLayoutWidth = kPreferredMaxWidth;
-
     _titleLabel.numberOfLines = kLabelNumLines;
-    _imageContainerView = [[UIView alloc] init];
     _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+    _imageContainerView = [[UIView alloc] init];
     _imageContainerView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self addSubview:_titleLabel];
+    // Use original rounded-square background image for Shorcuts regardless of
+    // if it is in the Magic Stack.
+    if (!IsMagicStackEnabled() ||
+        type == ContentSuggestionsTileType::kShortcuts) {
+      [self addSubview:_titleLabel];
 
-    // The squircle background view.
-    UIImageView* backgroundView =
-        [[UIImageView alloc] initWithFrame:self.bounds];
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    UIImage* backgroundImage = [[UIImage imageNamed:@"ntp_most_visited_tile"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-    backgroundView.image = backgroundImage;
-    backgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
-    [self addSubview:backgroundView];
-    [self addSubview:_imageContainerView];
+      // The squircle background view.
+      UIImageView* backgroundView =
+          [[UIImageView alloc] initWithFrame:self.bounds];
+      backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      UIImage* backgroundImage = [[UIImage imageNamed:@"ntp_most_visited_tile"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      backgroundView.image = backgroundImage;
+      backgroundView.tintColor = [UIColor colorNamed:kGrey100Color];
+      [self addSubview:backgroundView];
+      [self addSubview:_imageContainerView];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [backgroundView.widthAnchor constraintEqualToConstant:kIconSize],
-      [backgroundView.heightAnchor
-          constraintEqualToAnchor:backgroundView.widthAnchor],
-      [backgroundView.centerXAnchor
-          constraintEqualToAnchor:_titleLabel.centerXAnchor],
-    ]];
-    AddSameCenterConstraints(_imageContainerView, backgroundView);
-    UIView* containerView = backgroundView;
+      // Use smaller icon size when Shorcuts are put in Magic Stack.`
+      CGFloat width = IsMagicStackEnabled() ? kMagicStackIconSize : kIconSize;
+      [NSLayoutConstraint activateConstraints:@[
+        [backgroundView.widthAnchor constraintEqualToConstant:width],
+        [backgroundView.heightAnchor
+            constraintEqualToAnchor:backgroundView.widthAnchor],
+        [backgroundView.centerXAnchor
+            constraintEqualToAnchor:_titleLabel.centerXAnchor],
+      ]];
+      AddSameCenterConstraints(_imageContainerView, backgroundView);
+      UIView* containerView = backgroundView;
 
-    ApplyVisualConstraintsWithMetrics(
-        @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
-        @{@"container" : containerView, @"title" : _titleLabel},
-        @{@"space" : @(kSpaceIconTitle)});
+      ApplyVisualConstraintsWithMetrics(
+          @[ @"V:|[container]-(space)-[title]|", @"H:|[title]|" ],
+          @{@"container" : containerView, @"title" : _titleLabel},
+          @{@"space" : @(kSpaceIconTitle)});
 
-    _imageBackgroundView = backgroundView;
+      _imageBackgroundView = backgroundView;
+    }
 
     _pointerInteraction = [[UIPointerInteraction alloc] initWithDelegate:self];
     [self addInteraction:self.pointerInteraction];
