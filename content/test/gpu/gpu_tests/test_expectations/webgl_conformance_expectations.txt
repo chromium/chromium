@@ -396,10 +396,6 @@ crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/t
 # Anti-aliasing disabled on Fuchsia
 [ fuchsia ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
-# Slow enough that Slow expectations are not currently sufficient.
-crbug.com/1427243 [ fuchsia fuchsia-board-astro ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
-crbug.com/1427243 [ fuchsia fuchsia-board-sherlock ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
-
 ####################
 # Win failures     #
 ####################
