@@ -5601,6 +5601,7 @@ source_set("unit_tests") {
     "printing/specifics_translation_unittest.cc",
     "printing/synced_printers_manager_unittest.cc",
     "printing/usb_printer_detector_unittest.cc",
+    "printing/usb_printer_util_unittest.cc",
     "printing/zeroconf_printer_detector_unittest.cc",
     "process_snapshot_server_unittest.cc",
     "proxy_config_service_impl_unittest.cc",

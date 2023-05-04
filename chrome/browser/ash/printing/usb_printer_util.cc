@@ -243,7 +243,14 @@ std::u16string GetProductName(const UsbDeviceInfo& device_info) {
 }
 
 std::u16string GetSerialNumber(const UsbDeviceInfo& device_info) {
-  return device_info.serial_number.value_or(std::u16string());
+  // If the device does not have a serial number or has an empty serial number,
+  // use '?' so this matches the convention that CUPS uses for 'no serial
+  // number'.
+  if (!device_info.serial_number.has_value() ||
+      device_info.serial_number.value().empty()) {
+    return u"?";
+  }
+  return device_info.serial_number.value();
 }
 
 bool UsbDeviceIsPrinter(const UsbDeviceInfo& device_info) {
