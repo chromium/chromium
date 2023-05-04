@@ -10,8 +10,6 @@ static_library("invalidations") {
     "fcm_handler.h",
     "fcm_registration_token_observer.h",
     "interested_data_types_handler.h",
-    "interested_data_types_manager.cc",
-    "interested_data_types_manager.h",
     "invalidations_listener.h",
     "sync_invalidations_service.h",
     "sync_invalidations_service_impl.cc",

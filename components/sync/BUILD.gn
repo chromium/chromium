@@ -239,7 +239,7 @@ source_set("unit_tests") {
     "engine/syncer_proto_util_unittest.cc",
     "engine/syncer_unittest.cc",
     "invalidations/fcm_handler_unittest.cc",
-    "invalidations/interested_data_types_manager_unittest.cc",
+    "invalidations/sync_invalidations_service_impl_unittest.cc",
     "model/client_tag_based_model_type_processor_unittest.cc",
     "model/client_tag_based_remote_update_handler_unittest.cc",
     "model/in_memory_metadata_change_list_unittest.cc",
