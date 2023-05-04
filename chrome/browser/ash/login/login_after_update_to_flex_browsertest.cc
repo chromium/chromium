@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -92,7 +93,7 @@ class LoginAfterUpdateToFlexTest : public LoginManagerTest,
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
-IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DISABLED_DeviceOwner) {
+IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DeviceOwner) {
   LoginUser(GetOwnerAccountId());
   EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kRevenOobeConsolidatedConsentAccepted));
@@ -105,11 +106,12 @@ IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DISABLED_DeviceOwner) {
       prefs::kRevenOobeConsolidatedConsentAccepted));
 
   OobeScreenWaiter(HWDataCollectionView::kScreenId).Wait();
-  test::OobeJS().TapOnPath(kAcceptHWDataCollectionButton);
+  ash::test::TapOnPathAndWaitForOobeToBeDestroyed(
+      kAcceptHWDataCollectionButton);
   test::WaitForPrimaryUserSessionStart();
 }
 
-IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DISABLED_RegularUser) {
+IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, RegularUser) {
   LoginUser(GetRegularAccountId());
   EXPECT_FALSE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kRevenOobeConsolidatedConsentAccepted));
@@ -117,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(LoginAfterUpdateToFlexTest, DISABLED_RegularUser) {
   test::OobeJS()
       .CreateVisibilityWaiter(true, kConsolidatedConsentDialog)
       ->Wait();
-  test::OobeJS().TapOnPath(kAcceptConsolidatedConsentButton);
+  ash::test::TapOnPathAndWaitForOobeToBeDestroyed(
+      kAcceptConsolidatedConsentButton);
   EXPECT_TRUE(ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
       prefs::kRevenOobeConsolidatedConsentAccepted));
   test::WaitForPrimaryUserSessionStart();
