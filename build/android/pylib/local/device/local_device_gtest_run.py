@@ -31,6 +31,7 @@ from pylib.gtest import gtest_test_instance
 from pylib.local import local_test_server_spawner
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
+from pylib.symbols import stack_symbolizer
 from pylib.utils import google_storage_helper
 from pylib.utils import logdog_helper
 from py_trace_event import trace_event
@@ -772,14 +773,18 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     try:
       with self._env.output_manager.ArchivedTempfile(stream_name,
                                                      'logcat') as logcat_file:
-        with logcat_monitor.LogcatMonitor(
-            device.adb,
-            filter_specs=local_device_environment.LOGCAT_FILTERS,
-            output_file=logcat_file.name,
-            check_error=False) as logmon:
-          with contextlib_ext.Optional(trace_event.trace(str(test)),
-                                       self._env.trace_output):
-            yield logcat_file
+        symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
+            device.product_cpu_abi)
+        with symbolizer:
+          with logcat_monitor.LogcatMonitor(
+              device.adb,
+              filter_specs=local_device_environment.LOGCAT_FILTERS,
+              output_file=logcat_file.name,
+              transform_func=symbolizer.TransformLines,
+              check_error=False) as logmon:
+            with contextlib_ext.Optional(trace_event.trace(str(test)),
+                                         self._env.trace_output):
+              yield logcat_file
     finally:
       if logmon:
         logmon.Close()

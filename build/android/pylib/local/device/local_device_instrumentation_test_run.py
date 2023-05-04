@@ -41,6 +41,7 @@ from pylib.instrumentation import instrumentation_test_instance
 from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
 from pylib.output import remote_output_manager
+from pylib.symbols import stack_symbolizer
 from pylib.utils import chrome_proxy_utils
 from pylib.utils import gold_utils
 from pylib.utils import instrumentation_tracing
@@ -1230,15 +1231,19 @@ class LocalDeviceInstrumentationTestRun(
     try:
       with self._env.output_manager.ArchivedTempfile(stream_name,
                                                      'logcat') as logcat_file:
-        with logcat_monitor.LogcatMonitor(
-            device.adb,
-            filter_specs=local_device_environment.LOGCAT_FILTERS,
-            output_file=logcat_file.name,
-            transform_func=self._test_instance.MaybeDeobfuscateLines,
-            check_error=False) as logmon:
-          with contextlib_ext.Optional(trace_event.trace(test_name),
-                                       self._env.trace_output):
-            yield logcat_file
+        symbolizer = stack_symbolizer.PassThroughSymbolizerPool(
+            device.product_cpu_abi)
+        with symbolizer:
+          with logcat_monitor.LogcatMonitor(
+              device.adb,
+              filter_specs=local_device_environment.LOGCAT_FILTERS,
+              output_file=logcat_file.name,
+              transform_func=lambda lines: symbolizer.TransformLines(
+                  self._test_instance.MaybeDeobfuscateLines(lines)),
+              check_error=False) as logmon:
+            with contextlib_ext.Optional(trace_event.trace(test_name),
+                                         self._env.trace_output):
+              yield logcat_file
     finally:
       if logmon:
         logmon.Close()
