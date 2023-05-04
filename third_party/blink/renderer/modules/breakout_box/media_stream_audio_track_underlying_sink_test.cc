@@ -16,8 +16,12 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
+#include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
 #include "third_party/blink/renderer/modules/breakout_box/pushable_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -25,21 +29,31 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
-#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 
 using testing::_;
 using testing::StrictMock;
+
+namespace WTF {
+template <>
+struct CrossThreadCopier<
+    std::unique_ptr<blink::WritableStreamTransferringOptimizer>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = std::unique_ptr<blink::WritableStreamTransferringOptimizer>;
+  static Type Copy(Type pointer) { return pointer; }
+};
+}  // namespace WTF
 
 namespace blink {
 
 class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
  public:
-  MediaStreamAudioTrackUnderlyingSinkTest() {
-    // Use the IO thread for testing purposes, instead of an audio task runner.
+  MediaStreamAudioTrackUnderlyingSinkTest() : testing_thread_("TestingThread") {
+    testing_thread_.Start();
     auto pushable_audio_source =
         std::make_unique<PushableMediaStreamAudioSource>(
             scheduler::GetSingleThreadTaskRunnerForTesting(),
-            platform_->GetIOTaskRunner());
+            testing_thread_.task_runner());
     pushable_audio_source_ = pushable_audio_source.get();
     media_stream_source_ = MakeGarbageCollected<MediaStreamSource>(
         "dummy_source_id", MediaStreamSource::kTypeAudio, "dummy_source_name",
@@ -47,8 +61,8 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   }
 
   ~MediaStreamAudioTrackUnderlyingSinkTest() override {
-    platform_->RunUntilIdle();
     WebHeap::CollectAllGarbageForTesting();
+    testing_thread_.Stop();
   }
 
   MediaStreamAudioTrackUnderlyingSink* CreateUnderlyingSink(
@@ -82,7 +96,7 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
   }
 
  protected:
-  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+  base::Thread testing_thread_;
   Persistent<MediaStreamSource> media_stream_source_;
   Persistent<MediaStreamComponent> media_stream_component_;
 
@@ -187,6 +201,90 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {
   EXPECT_TRUE(dummy_exception_state.HadException());
   EXPECT_EQ(dummy_exception_state.Code(),
             static_cast<ExceptionCode>(DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, DeserializeWithOptimizer) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  auto transfer_optimizer = underlying_sink->GetTransferringOptimizer();
+  auto* writable_stream = WritableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_sink, 1u);
+
+  // Transfer the stream using a message port on the main thread.
+  auto* channel =
+      MakeGarbageCollected<MessageChannel>(v8_scope.GetExecutionContext());
+  writable_stream->Serialize(script_state, channel->port1(),
+                             ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(writable_stream->IsLocked(writable_stream));
+
+  // Deserialize the stream using the transfer optimizer.
+  auto* transferred_stream = WritableStream::Deserialize(
+      script_state, channel->port2(), std::move(transfer_optimizer),
+      ASSERT_NO_EXCEPTION);
+  EXPECT_TRUE(transferred_stream);
+  EXPECT_TRUE(pushable_audio_source_->GetBroker()
+                  ->ShouldDeliverAudioOnAudioTaskRunner());
+}
+
+TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, TransferToWorkerWithOptimizer) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* underlying_sink = CreateUnderlyingSink(script_state);
+  auto transfer_optimizer = underlying_sink->GetTransferringOptimizer();
+  EXPECT_TRUE(pushable_audio_source_->GetBroker()
+                  ->ShouldDeliverAudioOnAudioTaskRunner());
+
+  // Start a worker.
+  WorkerReportingProxy proxy;
+  WorkerThreadForTest worker_thread(proxy);
+  worker_thread.StartWithSourceCode(v8_scope.GetWindow().GetSecurityOrigin(),
+                                    "/* no worker script */");
+
+  // Create a transferred writable stream on the worker. The optimizer has all
+  // the state needed to create the transferred stream.
+  // Intentionally keep a reference to the worker task runner on this thread
+  // while this occurs.
+  scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner =
+      worker_thread.GetWorkerBackingThread().BackingThread().GetTaskRunner();
+  PostCrossThreadTask(
+      *worker_task_runner, FROM_HERE,
+      CrossThreadBindOnce(
+          [](WorkerThread* worker_thread,
+             std::unique_ptr<WritableStreamTransferringOptimizer>
+                 transfer_optimizer) {
+            auto* worker_global_scope = worker_thread->GlobalScope();
+            auto* script_controller = worker_global_scope->ScriptController();
+            EXPECT_TRUE(script_controller->IsContextInitialized());
+
+            ScriptState* worker_script_state =
+                script_controller->GetScriptState();
+            ScriptState::Scope worker_scope(worker_script_state);
+
+            // Deserialize using the optimizer.
+            auto* transferred_stream = WritableStream::Deserialize(
+                worker_script_state,
+                MakeGarbageCollected<MessageChannel>(worker_global_scope)
+                    ->port2(),
+                std::move(transfer_optimizer), ASSERT_NO_EXCEPTION);
+            EXPECT_TRUE(transferred_stream);
+          },
+          CrossThreadUnretained(&worker_thread),
+          std::move(transfer_optimizer)));
+
+  // Wait for another task on the worker to finish to ensure that the Oilpan
+  // references held by the first task are dropped.
+  base::WaitableEvent done;
+  PostCrossThreadTask(*worker_task_runner, FROM_HERE,
+                      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                                          CrossThreadUnretained(&done)));
+  done.Wait();
+  EXPECT_FALSE(pushable_audio_source_->GetBroker()
+                   ->ShouldDeliverAudioOnAudioTaskRunner());
+
+  // Shut down the worker thread.
+  worker_thread.Terminate();
+  worker_thread.WaitForShutdownForTesting();
 }
 
 }  // namespace blink
