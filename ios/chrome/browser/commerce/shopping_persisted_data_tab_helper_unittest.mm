@@ -124,7 +124,8 @@ class ShoppingPersistedDataTabHelperTest : public PlatformTest {
     auth_service_ = static_cast<AuthenticationService*>(
         AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
             browser_state_.get()));
-    auth_service_->SignIn(fake_identity_);
+    auth_service_->SignIn(fake_identity_,
+                          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   void MockOptimizationGuideResponse(
