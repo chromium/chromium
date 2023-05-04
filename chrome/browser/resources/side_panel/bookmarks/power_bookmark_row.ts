@@ -11,11 +11,17 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import {CrUrlListItemElement, CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './power_bookmark_row.html.js';
+
+export interface PowerBookmarkRowElement {
+  $: {
+    crUrlListItem: CrUrlListItemElement,
+  };
+}
 
 export class PowerBookmarkRowElement extends PolymerElement {
   static get is() {
@@ -96,19 +102,28 @@ export class PowerBookmarkRowElement extends PolymerElement {
   trailingIconTooltip: string;
   imageUrls: string[];
 
-  constructor() {
-    super();
-
-    // The row has a [tabindex] attribute on it to move focus using iron-list
-    // but the row itself should not be focusable. By setting `delegatesFocus`
-    // to true, the browser will automatically move focus to the focusable
-    // elements within it when the row itself tries to gain focus.
-    this.attachShadow({mode: 'open', delegatesFocus: true});
-  }
-
   override connectedCallback() {
     super.connectedCallback();
     this.onInputDisplayChange_();
+    this.addEventListener('keydown', this.onKeydown_);
+    this.addEventListener('focus', this.onFocus_);
+  }
+
+  private onKeydown_(e: KeyboardEvent) {
+    if (e.shiftKey && e.key === 'Tab' &&
+        this.shadowRoot!.activeElement === this.$.crUrlListItem) {
+      // Hitting shift tab from CrUrlListItem to traverse focus backwards will
+      // attempt to move focus to this element, which is responsible for
+      // delegating focus but should itself not be focusable. So when the user
+      // hits shift tab, immediately hijack focus onto itself so that the
+      // browser moves focus to the focusable element before it once it
+      // processes the shift tab.
+      this.focus();
+    }
+  }
+
+  private onFocus_() {
+    this.$.crUrlListItem.focus();
   }
 
   private getItemSize_() {

@@ -26,6 +26,7 @@ export interface CrUrlListItemElement {
   $: {
     badges: HTMLSlotElement,
     description: HTMLSlotElement,
+    title: HTMLButtonElement,
   };
 }
 
@@ -121,6 +122,12 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
   override connectedCallback() {
     super.connectedCallback();
     this.resetFirstImageLoaded_();
+  }
+
+  override focus() {
+    // This component itself is not focusable, so override its focus method
+    // to focus its main focusable child, the title button.
+    this.$.title.focus();
   }
 
   private resetFirstImageLoaded_() {
