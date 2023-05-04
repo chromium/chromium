@@ -1398,10 +1398,6 @@ crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-pres
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-collapse-discard-001.xht [ Failure ]
 crbug.com/1219041 external/wpt/css/css-text/white-space/text-space-trim-trim-inner-001.xht [ Failure ]
 
-# Turning `white-space` to a shorthand, can be enabled by `CSSWhiteSpaceShorthand`.
-crbug.com/1417543 external/wpt/css/css-text/parsing/white-space-collapse-computed.html [ Failure ]
-crbug.com/1417543 external/wpt/css/css-text/parsing/white-space-collapse-valid.html [ Failure ]
-crbug.com/1417543 external/wpt/css/css-text/parsing/white-space-shorthand.html [ Failure ]
 
 # LayoutNG ref-tests that need to be updated (cannot be rebaselined).
 crbug.com/591099 [ Win ] virtual/text-antialias/ellipsis-with-self-painting-layer.html [ Failure ]
@@ -2935,7 +2931,6 @@ crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/genera
 crbug.com/626703 [ Mac10.15 ] external/wpt/font-access/font_access_query_select.tentative.https.window.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/html/semantics/forms/form-submission-0/multipart-formdata.window.html [ Timeout ]
-crbug.com/626703 [ Linux ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-webrtc.https.html [ Timeout ]
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
@@ -4800,7 +4795,11 @@ crbug.com/1072022 http/tests/security/frameNavigation/xss-ALLOWED-parent-navigat
 crbug.com/1189976 http/tests/devtools/sources/debugger-breakpoints/dom-breakpoints.js [ Failure Pass Timeout ]
 crbug.com/1190176 [ Linux ] fast/peerconnection/RTCPeerConnection-addMultipleTransceivers.html [ Crash Failure Pass ]
 
-crbug.com/1176039 [ Mac ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
+crbug.com/1176039 [ Debug Mac13-arm64 ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
+crbug.com/1176039 [ Mac10.14 Release ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
+crbug.com/1176039 [ Mac10.15 Release ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
+crbug.com/1176039 [ Mac11 Release ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
+crbug.com/1176039 [ Mac12 ] virtual/stable/media/stable/video-object-fit-stable.html [ Failure Pass ]
 
 crbug.com/1190905 [ Mac ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Failure Pass ]
 crbug.com/1190905 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-list.js [ Failure Pass ]
@@ -5361,7 +5360,13 @@ crbug.com/1268594 [ Win ] css3/filters/composited-layer-bounds-after-sw-blur-ani
 crbug.com/1270355 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/009.html [ Timeout ]
 
 # Sheriff 2021-11-19
-crbug.com/1186771 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Debug Mac13-arm64 ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Mac10.14 Release ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Mac10.15 Release ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Mac11 Release ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Mac11-arm64 Release ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Mac12 ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
+crbug.com/1186771 [ Mac12-arm64 Release ] fast/scroll-snap/snaps-after-scrollbar-scrolling-track.html [ Crash ]
 crbug.com/894077 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure Pass ]
 
 # Sheriff 2021-11-22
@@ -6737,7 +6742,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] media/video-source.html [ Failure ]
 [ Debug Mac12 ] media/video-source-none-supported.html [ Failure ]
 [ Debug Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/event-level-trigger-filter-data.sub.https.html?input=filters_empty_filter_data [ Failure ]
-[ Debug Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/event-level-trigger-filter-data.sub.https.html?input=not_filters_implicit_matching_event_source_type [ Failure ]
 [ Debug Mac12 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/event-level-trigger-filter-data.sub.https.html?input=not_filters_no_matching [ Failure ]
 [ Debug Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-load-api.https.html [ Failure ]
 [ Debug Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-all.https.html [ Failure ]
