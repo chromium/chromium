@@ -943,10 +943,17 @@ void NativeInputMethodEngineObserver::HandleOnFocusAsyncForNativeMojoEngine(
 
   // TODO(b/200611333): Make input_method_->OnFocus return the overriding
   // XKB layout instead of having the logic here in Chromium.
-  ime::mojom::InputMethodSettingsPtr settings = WithAutocorrectOverride(
-      /*base_settings=*/CreateSettingsFromPrefs(*prefs_, engine_id),
-      /*autocorrect_enabled=*/!autocorrect_manager_
-          ->DisabledByInvalidExperimentContext());
+  ime::mojom::InputMethodSettingsPtr settings =
+      CreateSettingsFromPrefs(*prefs_, engine_id);
+  // TODO(b/280539785): Simplify AC enabling logic and avoid redundant checks.
+  if (IsUsEnglishEngine(engine_id) &&
+      GetPhysicalKeyboardAutocorrectPref(*prefs_, engine_id) ==
+          AutocorrectPreference::kEnabledByDefault) {
+    settings = WithAutocorrectOverride(
+        /*base_settings=*/std::move(settings),
+        /*autocorrect_enabled=*/!autocorrect_manager_
+            ->DisabledByInvalidExperimentContext());
+  }
   OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
                             settings);
 
