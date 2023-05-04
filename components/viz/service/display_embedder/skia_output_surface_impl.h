@@ -46,6 +46,7 @@ struct SwapBuffersCompleteParams;
 
 namespace skgpu::graphite {
 class Recorder;
+class Recording;
 }  // namespace skgpu::graphite
 
 namespace viz {
@@ -272,7 +273,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   gpu::Mailbox last_swapped_mailbox_;
 
   gfx::Size size_;
-  gfx::BufferFormat format_;
+  SharedImageFormat format_;
   int sample_count_ = 1;
   SkColorType color_type_ = kUnknown_SkColorType;
   SkAlphaType alpha_type_ = kUnknown_SkAlphaType;
@@ -282,23 +283,43 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
 
   class ScopedPaint {
    public:
+    // Ganesh root surface
     explicit ScopedPaint(SkDeferredDisplayListRecorder* root_ddl_recorder);
-    explicit ScopedPaint(SkSurfaceCharacterization characterization);
-    ScopedPaint(SkSurfaceCharacterization characterization,
-                gpu::Mailbox mailbox);
+    // Ganesh render pass (root or non-root)
+    ScopedPaint(const SkSurfaceCharacterization& characterization,
+                const gpu::Mailbox& mailbox);
+    // Graphite (root or non-root)
+    ScopedPaint(skgpu::graphite::Recorder* recorder,
+                const SkImageInfo& image_info,
+                skgpu::graphite::TextureInfo texture_info,
+                const gpu::Mailbox& mailbox = gpu::Mailbox());
     ~ScopedPaint();
 
-    SkDeferredDisplayListRecorder* ddl_recorder() { return ddl_recorder_; }
-    gpu::Mailbox mailbox() { return mailbox_; }
+    // SkCanvas for the current paint, retrieved from the DDL recorder for
+    // Ganesh, or from the Graphite recorder.
+    SkCanvas* canvas() const { return canvas_; }
+
+    // Mailbox for the render pass for the current paint (if present).
+    const gpu::Mailbox& mailbox() const { return mailbox_; }
+
+    // Detach DDL and reset the SkCanvas pointer.
+    sk_sp<SkDeferredDisplayList> DetachDDL();
+
+    // Snap Graphite recording and reset the SkCanvas pointer.
+    std::unique_ptr<skgpu::graphite::Recording> SnapRecording();
 
    private:
-    // This is recorder being used for current paint
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #union
-    RAW_PTR_EXCLUSION SkDeferredDisplayListRecorder* ddl_recorder_;
+    // This is the DDL recorder being used for current paint when using Ganesh.
+    raw_ptr<SkDeferredDisplayListRecorder> ddl_recorder_ = nullptr;
     // If we need new recorder for this Paint (i.e. it's not root render pass),
     // it's stored here
     absl::optional<SkDeferredDisplayListRecorder> ddl_recorder_storage_;
+    // Graphite recorder used for current paint.
+    raw_ptr<skgpu::graphite::Recorder> graphite_recorder_ = nullptr;
+    // SkCanvas for the current paint, retrieved from the DDL recorder for
+    // Ganesh, or from the Graphite recorder.
+    raw_ptr<SkCanvas> canvas_ = nullptr;
+    // Mailbox for the render pass for the current paint (if present).
     const gpu::Mailbox mailbox_;
   };
 

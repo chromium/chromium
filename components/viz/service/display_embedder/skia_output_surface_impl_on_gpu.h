@@ -48,12 +48,12 @@ namespace mojom {
 class DelegatedInkPointRenderer;
 }  // namespace mojom
 class ColorSpace;
-}
+}  // namespace gfx
 
 namespace gl {
 class GLSurface;
 class Presenter;
-}
+}  // namespace gl
 
 namespace gpu {
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
@@ -61,6 +61,11 @@ class SharedImageRepresentationFactory;
 class SharedImageFactory;
 class SyncPointClientState;
 }  // namespace gpu
+
+namespace skgpu::graphite {
+class Context;
+class Recording;
+}  // namespace skgpu::graphite
 
 namespace ui {
 #if BUILDFLAG(IS_OZONE)
@@ -155,6 +160,7 @@ class SkiaOutputSurfaceImplOnGpu
   void FinishPaintCurrentFrame(
       sk_sp<SkDeferredDisplayList> ddl,
       sk_sp<SkDeferredDisplayList> overdraw_ddl,
+      std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
@@ -181,6 +187,7 @@ class SkiaOutputSurfaceImplOnGpu
       const gpu::Mailbox& mailbox,
       sk_sp<SkDeferredDisplayList> ddl,
       sk_sp<SkDeferredDisplayList> overdraw_ddl,
+      std::unique_ptr<skgpu::graphite::Recording> graphite_recording,
       std::vector<ImageContextImpl*> image_contexts,
       std::vector<gpu::SyncToken> sync_tokens,
       base::OnceClosure on_finished,
@@ -314,7 +321,11 @@ class SkiaOutputSurfaceImplOnGpu
   void SwapBuffersInternal(absl::optional<OutputSurfaceFrame> frame);
   void PostSubmit(absl::optional<OutputSurfaceFrame> frame);
 
-  GrDirectContext* gr_context() { return context_state_->gr_context(); }
+  GrDirectContext* gr_context() const { return context_state_->gr_context(); }
+
+  skgpu::graphite::Context* graphite_context() const {
+    return context_state_->graphite_context();
+  }
 
   bool is_using_vulkan() const {
     return !!vulkan_context_provider_ &&
