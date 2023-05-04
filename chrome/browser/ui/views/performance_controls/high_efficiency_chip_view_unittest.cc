@@ -39,7 +39,6 @@
 
 constexpr int kMemorySavingsKilobytes = 100 * 1024;
 constexpr int kHighMemorySavingsKilobytes = 300 * 1024;
-constexpr int kSmallMemorySavingsKilobytes = 10;
 
 class DiscardMockNavigationHandle : public content::MockNavigationHandle {
  public:
@@ -63,12 +62,14 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
             base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
+    feature_list_.InitAndDisableFeature(
         performance_manager::features::kMemorySavingsReportingImprovements);
     TestWithBrowserView::SetUp();
 
     AddNewTab(kMemorySavingsKilobytes,
               ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+    SetHighEfficiencyModeEnabled(true);
   }
 
   // Creates a new tab at index 0 that would report the given memory savings and
@@ -123,24 +124,6 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
         ->GetIconView(PageActionIconType::kHighEfficiency);
   }
 
-  template <class T>
-  T* GetDialogLabel(ui::ElementIdentifier identifier) {
-    const ui::ElementContext context =
-        views::ElementTrackerViews::GetContextForWidget(
-            GetPageActionIconView()->GetBubble()->anchor_widget());
-    return views::ElementTrackerViews::GetInstance()->GetFirstMatchingViewAs<T>(
-        identifier, context);
-  }
-
-  void ClickPageActionChip() {
-    PageActionIconView* view = GetPageActionIconView();
-
-    ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                     ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi test_api(view);
-    test_api.NotifyClick(e);
-  }
-
   base::HistogramTester histogram_tester_;
 
  private:
@@ -150,15 +133,12 @@ class HighEfficiencyChipViewTest : public TestWithBrowserView {
 // When the previous page has a tab discard state of true, when the icon is
 // updated it should be visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldShowChipForProactivelyDiscardedPage) {
-  SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionIconView()->GetVisible());
 }
 
 TEST_F(HighEfficiencyChipViewTest,
        ShouldNotShowChipWhenNonProactivelyDiscardPage) {
-  SetHighEfficiencyModeEnabled(true);
-
   // Add a new tab that was discarded through extensions
   AddNewTab(kMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::EXTERNAL);
@@ -186,7 +166,6 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotShowWhenPrefIsFalse) {
 // When the collapsed chip is shown, UMA metrics should be logged.
 TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCollapsedChip) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(0, true);
 
   histogram_tester_.ExpectUniqueSample(
@@ -196,8 +175,7 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCollapsedChip) {
 
 // When the educational expanded chip is shown, UMA metrics should be logged.
 TEST_F(HighEfficiencyChipViewTest,
-       ShouldLogMetricsForCInformationalExpandedChip) {
-  SetHighEfficiencyModeEnabled(true);
+       ShouldLogMetricsForInformationalExpandedChip) {
   SetTabDiscardState(0, true);
 
   histogram_tester_.ExpectUniqueSample(
@@ -208,18 +186,90 @@ TEST_F(HighEfficiencyChipViewTest,
 // When the previous page was not previously discarded, the icon should not be
 // visible.
 TEST_F(HighEfficiencyChipViewTest, ShouldNotShowForRegularPage) {
-  SetHighEfficiencyModeEnabled(true);
   SetTabDiscardState(0, false);
 
   PageActionIconView* view = GetPageActionIconView();
   EXPECT_FALSE(view->GetVisible());
 }
 
+// When kMemorySavingsReportingImprovements is disabled, the chip should not
+// expand.
+TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenFeatureIsDisabled) {
+  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
+  AddNewTab(kHighMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+  task_environment()->AdvanceClock(base::Hours(8));
+  SetTabDiscardState(0, true);
+
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_TRUE(view->GetVisible());
+  EXPECT_FALSE(view->ShouldShowLabel());
+}
+
+// When the previous page was not previously discarded, the icon should not be
+// visible.
+TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
+  // Open the tab the max number of times for the label to be visible
+  for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
+    SetTabDiscardState(0, true);
+    EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+    SetTabDiscardState(0, false);
+  }
+
+  // The label should be hidden on subsequent discards
+  SetTabDiscardState(0, true);
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+}
+
+TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
+  AddNewTab(kMemorySavingsKilobytes,
+            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+
+  SetTabDiscardState(0, true);
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+
+  tab_strip_model->SelectNextTab();
+  PageActionIconView* view = GetPageActionIconView();
+  EXPECT_FALSE(view->GetVisible());
+
+  SetTabDiscardState(1, true);
+  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
+
+  tab_strip_model->SelectPreviousTab();
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+
+  tab_strip_model->SelectNextTab();
+  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
+}
+
+class HighEfficiencyChipViewMemorySavingsImprovementsTest
+    : public HighEfficiencyChipViewTest {
+ public:
+  HighEfficiencyChipViewMemorySavingsImprovementsTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        performance_manager::features::kMemorySavingsReportingImprovements);
+    TestWithBrowserView::SetUp();
+
+    AddNewTab(kMemorySavingsKilobytes,
+              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
+
+    SetHighEfficiencyModeEnabled(true);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // When the savings are above the FeatureParam threshold then the chip is
 // eligible to expand.
-TEST_F(HighEfficiencyChipViewTest, ShouldExpandChipWhenConditionsAreMet) {
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
+       ShouldExpandChipWhenConditionsAreMet) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
@@ -233,9 +283,9 @@ TEST_F(HighEfficiencyChipViewTest, ShouldExpandChipWhenConditionsAreMet) {
 
 // When the savings are below the FeatureParam threshold then the chip won't
 // expand.
-TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandForSavingsBelowThreshold) {
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
+       ShouldNotExpandForSavingsBelowThreshold) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
 
   task_environment()->AdvanceClock(base::Hours(8));
   SetTabDiscardState(0, true);
@@ -247,9 +297,9 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandForSavingsBelowThreshold) {
 
 // When the savings chip has been expanded recently then it does not show in
 // the expanded mode.
-TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
+       ShouldNotExpandWhenChipHasExpandedRecently) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
   SetChipExpandedTimeToNow();
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
@@ -264,9 +314,9 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenChipHasExpandedRecently) {
 
 // When the tab has been expanded recently then the chip does not show in the
 // expanded mode.
-TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
+       ShouldNotExpandWhenTabWasDiscardedRecently) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
@@ -278,9 +328,9 @@ TEST_F(HighEfficiencyChipViewTest, ShouldNotExpandWhenTabWasDiscardedRecently) {
 }
 
 // When the celebratory expanded chip is shown, UMA metrics should be logged.
-TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCelebratoryExpandedChip) {
+TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsTest,
+       ShouldLogMetricsForCelebratoryExpandedChip) {
   SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
   AddNewTab(kHighMemorySavingsKilobytes,
             ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
@@ -290,235 +340,4 @@ TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsForCelebratoryExpandedChip) {
   histogram_tester_.ExpectUniqueSample(
       "PerformanceControls.HighEfficiency.ChipState",
       HighEfficiencyChipState::kExpandedWithSavings, 1);
-}
-
-// When the page action chip is clicked, the dialog should open.
-TEST_F(HighEfficiencyChipViewTest, ShouldOpenDialogOnClick) {
-  SetHighEfficiencyModeEnabled(true);
-  SetTabDiscardState(0, true);
-
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_EQ(view->GetBubble(), nullptr);
-
-  ClickPageActionChip();
-
-  EXPECT_NE(view->GetBubble(), nullptr);
-}
-
-// When the dialog is closed, UMA metrics should be logged.
-TEST_F(HighEfficiencyChipViewTest, ShouldLogMetricsOnDialogDismiss) {
-  SetTabDiscardState(0, true);
-
-  // Open bubble
-  ClickPageActionChip();
-  // Close bubble
-  ClickPageActionChip();
-
-  histogram_tester_.ExpectUniqueSample(
-      "PerformanceControls.HighEfficiency.BubbleAction",
-      HighEfficiencyBubbleActionType::kDismiss, 1);
-}
-
-// A link should be rendered within the dialog.
-TEST_F(HighEfficiencyChipViewTest, ShouldRenderLinkInDialog) {
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
-  EXPECT_TRUE(
-      label->GetText().find(u"You can change this anytime in Settings") !=
-      std::string::npos);
-}
-
-// The memory savings should be rendered within the dialog.
-TEST_F(HighEfficiencyChipViewTest, ShouldRenderMemorySavingsInDialog) {
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::Label* label = GetDialogLabel<views::Label>(
-      HighEfficiencyResourceView::
-          kHighEfficiencyResourceViewMemorySavingsElementId);
-  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
-                  kMemorySavingsKilobytes * 1024)) != std::string::npos);
-}
-
-//  When the memory savings are lower than 1Mb then they shouldn't be rendered
-//  in the dialog.
-TEST_F(HighEfficiencyChipViewTest, ShouldNotRenderSmallMemorySavingsInDialog) {
-  // Add a new tab with small memory savings.
-  AddNewTab(kSmallMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  // Mark the new tab as discarded.
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
-  EXPECT_TRUE(
-      label->GetText().find(u"Memory Saver freed up memory for other tasks") !=
-      std::string::npos);
-}
-
-// When the previous page was not previously discarded, the icon should not be
-// visible.
-TEST_F(HighEfficiencyChipViewTest, ShouldHideLabelAfterMultipleDiscards) {
-  SetHighEfficiencyModeEnabled(true);
-  // Open the tab the max number of times for the label to be visible
-  for (int i = 0; i < HighEfficiencyChipView::kChipAnimationCount; i++) {
-    SetTabDiscardState(0, true);
-    EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
-    SetTabDiscardState(0, false);
-  }
-
-  // The label should be hidden on subsequent discards
-  SetTabDiscardState(0, true);
-  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
-}
-
-TEST_F(HighEfficiencyChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
-  SetHighEfficiencyModeEnabled(true);
-  AddNewTab(kMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  EXPECT_EQ(2, tab_strip_model->GetTabCount());
-
-  SetTabDiscardState(0, true);
-  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
-
-  tab_strip_model->SelectNextTab();
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_FALSE(view->GetVisible());
-
-  SetTabDiscardState(1, true);
-  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
-
-  tab_strip_model->SelectPreviousTab();
-  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
-
-  tab_strip_model->SelectNextTab();
-  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
-}
-
-TEST_F(HighEfficiencyChipViewTest,
-       ShouldCollapseChipAfterNavigatingTabsWithDialogOpen) {
-  SetHighEfficiencyModeEnabled(true);
-  AddNewTab(kMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  EXPECT_EQ(2, tab_strip_model->GetTabCount());
-
-  SetTabDiscardState(0, true);
-  SetTabDiscardState(1, true);
-
-  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
-  tab_strip_model->SelectNextTab();
-
-  EXPECT_TRUE(GetPageActionIconView()->ShouldShowLabel());
-  ClickPageActionChip();
-
-  tab_strip_model->SelectPreviousTab();
-  EXPECT_FALSE(GetPageActionIconView()->ShouldShowLabel());
-}
-
-TEST_F(HighEfficiencyChipViewTest, ShowDialogWithSavingsInGuestMode) {
-  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
-  EXPECT_TRUE(testprofile);
-  testprofile->SetGuestSession(true);
-
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::Label* label = GetDialogLabel<views::Label>(
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
-
-  EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
-            std::string::npos);
-
-  views::Label* memory_label = GetDialogLabel<views::Label>(
-      HighEfficiencyResourceView::
-          kHighEfficiencyResourceViewMemorySavingsElementId);
-
-  EXPECT_NE(memory_label->GetText().find(
-                ui::FormatBytes(kMemorySavingsKilobytes * 1024)),
-            std::string::npos);
-}
-
-TEST_F(HighEfficiencyChipViewTest, ShowDialogWithoutSavingsInGuestMode) {
-  // Add a new tab with small memory savings.
-  AddNewTab(kSmallMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  TestingProfile* testprofile = browser()->profile()->AsTestingProfile();
-  EXPECT_TRUE(testprofile);
-  testprofile->SetGuestSession(true);
-
-  SetTabDiscardState(0, true);
-  ClickPageActionChip();
-
-  // Since there is no placeholders in the bubble text in guest mode and without
-  // savings, the text is created with views::Label instead of
-  // views::StyledLabel
-  views::Label* label = GetDialogLabel<views::Label>(
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
-
-  EXPECT_EQ(label->GetText().find(u"You can change this anytime in Settings"),
-            std::string::npos);
-
-  EXPECT_NE(
-      label->GetText().find(u"Memory Saver freed up memory for other tasks"),
-      std::string::npos);
-}
-
-class HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest
-    : public HighEfficiencyChipViewTest {
- public:
-  HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest() = default;
-
-  void SetUp() override {
-    feature_list_.InitAndDisableFeature(
-        performance_manager::features::kMemorySavingsReportingImprovements);
-    TestWithBrowserView::SetUp();
-
-    AddNewTab(kMemorySavingsKilobytes,
-              ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// When kMemorySavingsReportingImprovements is disabled, the chip should not
-// expand.
-TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest,
-       ShouldNotExpandWhenFeatureIsDisabled) {
-  SetChipExpandedCount(HighEfficiencyChipView::kChipAnimationCount);
-  SetHighEfficiencyModeEnabled(true);
-  AddNewTab(kHighMemorySavingsKilobytes,
-            ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  task_environment()->AdvanceClock(base::Hours(8));
-  SetTabDiscardState(0, true);
-
-  PageActionIconView* view = GetPageActionIconView();
-  EXPECT_TRUE(view->GetVisible());
-  EXPECT_FALSE(view->ShouldShowLabel());
-}
-
-// The memory savings should be rendered within the dialog.
-TEST_F(HighEfficiencyChipViewMemorySavingsImprovementsDisabledTest,
-       ShouldRenderMemorySavingsInDialog) {
-  SetTabDiscardState(0, true);
-
-  ClickPageActionChip();
-
-  views::StyledLabel* label = GetDialogLabel<views::StyledLabel>(
-      HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId);
-  EXPECT_TRUE(label->GetText().find(ui::FormatBytes(
-                  kMemorySavingsKilobytes * 1024)) != std::string::npos);
 }
