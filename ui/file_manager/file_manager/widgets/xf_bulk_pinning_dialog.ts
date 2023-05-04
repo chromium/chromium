@@ -5,7 +5,7 @@
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
-import {str} from '../common/js/util.js';
+import {str, strf, util} from '../common/js/util.js';
 
 import {css, customElement, html, query, XfBase} from './xf_base.js';
 
@@ -31,7 +31,10 @@ export class XfBulkPinningDialog extends XfBase {
   @query('#error-footer') private $errorFooter_!: HTMLElement;
   @query('#offline-footer') private $offlineFooter_!: HTMLElement;
 
-  public set state(s: State) {
+  requiredBytes = 0;
+  freeBytes = 0;
+
+  set state(s: State) {
     // Show the footer matching the given state.
     this.$normalFooter_.style.display = s === State.NORMAL ? 'flex' : 'none';
     this.$errorFooter_.style.display = s === State.ERROR ? 'flex' : 'none';
@@ -42,6 +45,9 @@ export class XfBulkPinningDialog extends XfBase {
 
   show() {
     this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
+    this.$normalFooter_.innerText = strf(
+        'BULK_PINNING_SPACE', util.bytesToString(this.requiredBytes),
+        util.bytesToString(this.freeBytes - this.requiredBytes));
     this.$dialog_.showModal();
   }
 
@@ -87,9 +93,7 @@ export class XfBulkPinningDialog extends XfBase {
               ${str('BULK_PINNING_POINT_2')}
             </li>
           </ul>
-          <div id="normal-footer">
-            ${str('BULK_PINNING_SPACE')}
-          </div>
+          <div id="normal-footer"></div>
           <div id="error-footer">
             ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
             &ensp;
