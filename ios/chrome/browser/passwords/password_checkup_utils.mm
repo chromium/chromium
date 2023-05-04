@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_utils.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"

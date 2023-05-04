@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_UTILS_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_UTILS_H_
+#ifndef IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CHECKUP_UTILS_H_
+#define IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CHECKUP_UTILS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -19,12 +19,16 @@ namespace password_manager {
 struct CredentialUIEntry;
 
 // Enum which represents possible warnings of Password Checkup on UI.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class WarningType {
-  kCompromisedPasswordsWarning,
-  kReusedPasswordsWarning,
-  kWeakPasswordsWarning,
-  kDismissedWarningsWarning,
-  kNoInsecurePasswordsWarning,
+  kCompromisedPasswordsWarning = 0,
+  kReusedPasswordsWarning = 1,
+  kWeakPasswordsWarning = 2,
+  kDismissedWarningsWarning = 3,
+  kNoInsecurePasswordsWarning = 4,
+  kMaxValue = kNoInsecurePasswordsWarning,
 };
 
 // Struct used to obtain the password counts associated with the different
@@ -84,4 +88,4 @@ NSString* FormatElapsedTimeSinceLastCheck(
 
 }  // namespace password_manager
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_CHECKUP_PASSWORD_CHECKUP_UTILS_H_
+#endif  // IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_CHECKUP_UTILS_H_

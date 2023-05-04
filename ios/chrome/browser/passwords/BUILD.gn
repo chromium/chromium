@@ -188,18 +188,35 @@ source_set("public") {
   deps = [ "//base" ]
 }
 
+source_set("password_checkup_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_utils.h",
+    "password_checkup_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:features",
+    "//ios/chrome/app/strings",
+    "//ui/base",
+  ]
+}
+
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
     "ios_chrome_password_check_manager_unittest.mm",
     "ios_chrome_password_manager_client_unittest.mm",
+    "password_checkup_utils_unittest.mm",
     "password_controller_js_unittest.mm",
     "password_controller_unittest.mm",
     "password_tab_helper_unittest.mm",
     "well_known_change_password_tab_helper_unittest.mm",
   ]
   deps = [
+    ":password_checkup_utils",
     ":passwords",
     "//base",
     "//base/test:test_support",
