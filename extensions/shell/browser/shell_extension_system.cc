@@ -159,11 +159,4 @@ bool ShellExtensionSystem::FinishDelayedInstallationIfReady(
   return false;
 }
 
-void ShellExtensionSystem::OnExtensionRegisteredWithRequestContexts(
-    scoped_refptr<Extension> extension) {
-  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  registry->AddReady(extension);
-  registry->TriggerOnReady(extension.get());
-}
-
 }  // namespace extensions

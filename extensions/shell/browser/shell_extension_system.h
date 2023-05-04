@@ -94,8 +94,6 @@ class ShellExtensionSystem : public ExtensionSystem {
                                         bool install_immediately) override;
 
  private:
-  void OnExtensionRegisteredWithRequestContexts(
-      scoped_refptr<Extension> extension);
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 
   std::unique_ptr<ServiceWorkerManager> service_worker_manager_;
