@@ -2059,21 +2059,20 @@ bool TestRecipeReplayer::GetElementProperty(
     const std::string& element_xpath,
     const std::string& get_property_function_body,
     std::string* property) {
-  *property =
-      content::EvalJs(
-          frame, base::StringPrintf(
-                     "(function() {"
-                     "  try {"
-                     "    var element = function() {"
-                     "      return automation_helper.getElementByXpath(`%s`);"
-                     "    }();"
-                     "    return function(target){%s}(element);"
-                     "  } catch (ex) {}"
-                     "  return 'Exception encountered';"
-                     "})();",
-                     element_xpath.c_str(), get_property_function_body.c_str()))
-          .ExtractString();
-  return true;
+  content::EvalJsResult result = content::EvalJs(
+      frame, base::StringPrintf(
+                 "(function() {"
+                 "    var element = function() {"
+                 "      return automation_helper.getElementByXpath(`%s`);"
+                 "    }();"
+                 "    return function(target){%s}(element);})();",
+                 element_xpath.c_str(), get_property_function_body.c_str()));
+  if (result.error.empty() && result.value.is_string()) {
+    *property = result.ExtractString();
+    return true;
+  }
+  *property = result.error;
+  return false;
 }
 
 bool TestRecipeReplayer::ExpectElementPropertyEqualsAnyOf(
@@ -2134,35 +2133,26 @@ bool TestRecipeReplayer::PlaceFocusOnElement(
   if (!ScrollElementIntoView(element_xpath, frame))
     return false;
 
-  const std::string focus_on_target_field_js(base::StringPrintf(
-      "new Promise(resolve => {"
-      "  try {"
-      "    function onFocusHandler(event) {"
-      "      event.target.removeEventListener(event.type, arguments.callee);"
-      "      resolve(true);"
-      "    }"
-      "    const element = automation_helper.getElementByXpath(`%s`);"
-      "    if (document.activeElement === element) {"
-      "      resolve(true);"
-      "    } else {"
-      "      element.addEventListener('focus', onFocusHandler);"
-      "      element.focus();"
-      "    }"
-      "    setTimeout(() => {"
-      "      element.removeEventListener('focus', onFocusHandler);"
-      "      resolve(false);"
-      "    }, 1000);"
-      "  } catch(ex) {"
-      "    resolve(false);"
-      "  }"
-      "});",
-      element_xpath.c_str()));
+  const std::string focus_on_target_field_js(
+      base::StringPrintf("(function() {const element = "
+                         "automation_helper.getElementByXpath(`%s`);"
+                         "    if (document.activeElement !== element) {"
+                         "      element.focus();"
+                         "    }"
+                         "    return document.activeElement === element;})();",
+                         element_xpath.c_str()));
 
-  bool focused = EvalJs(frame, focus_on_target_field_js).ExtractBool();
-
-  if (focused) {
+  content::EvalJsResult result =
+      content::EvalJs(frame, focus_on_target_field_js);
+  if (result.error.empty() && result.value.is_bool() && result.ExtractBool()) {
     return true;
   } else {
+    VLOG(1) << "Failed to focus element through script:"
+            << (result.error.empty()
+                    ? (result.value.is_bool() ? "Not a valid bool"
+                                              : "Returned false")
+                    : result.error);
+
     // Failing focusing on an element through script, use the less preferred
     // method of left mouse clicking the element.
     gfx::Rect rect;
