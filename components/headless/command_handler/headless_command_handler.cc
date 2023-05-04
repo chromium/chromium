@@ -51,6 +51,11 @@ const char kChromeHeadlessURL[] = "chrome://headless/";
 const char kHeadlessCommandHtml[] = "headless_command.html";
 const char kHeadlessCommandJs[] = "headless_command.js";
 
+HeadlessCommandHandler::DoneCallback& GetGlobalDoneCallback() {
+  static HeadlessCommandHandler::DoneCallback done_callback;
+  return done_callback;
+}
+
 void EnsureHeadlessCommandResources() {
   // Check if our resources are already loaded and bail out early. This happens
   // when running Chrome with --headless switch and headless command resources
@@ -228,17 +233,6 @@ void WriteFileTask(base::FilePath file_path, std::string file_data) {
   }
 }
 
-void WriteFile(base::FilePath file_path,
-               std::string base64_file_data,
-               scoped_refptr<base::SequencedTaskRunner> io_task_runner) {
-  std::string file_data;
-  CHECK(base::Base64Decode(base64_file_data, &file_data));
-
-  io_task_runner->PostTask(FROM_HERE,
-                           base::BindOnce(&WriteFileTask, std::move(file_path),
-                                          std::move(file_data)));
-}
-
 }  // namespace
 
 HeadlessCommandHandler::HeadlessCommandHandler(
@@ -371,17 +365,42 @@ void HeadlessCommandHandler::OnCommandsResult(base::Value::Dict result) {
 
   if (std::string* base64_data = result.FindStringByDottedPath(
           "result.result.value.screenshotResult")) {
-    WriteFile(std::move(screenshot_file_path_), std::move(*base64_data),
-              io_task_runner_);
+    WriteFile(std::move(screenshot_file_path_), std::move(*base64_data));
   }
 
   if (std::string* base64_data = result.FindStringByDottedPath(
           "result.result.value.printToPdfResult")) {
-    WriteFile(std::move(pdf_file_path_), std::move(*base64_data),
-              io_task_runner_);
+    WriteFile(std::move(pdf_file_path_), std::move(*base64_data));
   }
 
-  Done();
+  if (!write_file_tasks_in_flight_) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HeadlessCommandHandler::Done, base::Unretained(this)));
+  }
+}
+
+void HeadlessCommandHandler::WriteFile(base::FilePath file_path,
+                                       std::string base64_file_data) {
+  std::string file_data;
+  CHECK(base::Base64Decode(base64_file_data, &file_data));
+
+  if (io_task_runner_->PostTaskAndReply(
+          FROM_HERE,
+          base::BindOnce(&WriteFileTask, std::move(file_path),
+                         std::move(file_data)),
+          base::BindOnce(&HeadlessCommandHandler::OnWriteFileDone,
+                         base::Unretained(this)))) {
+    ++write_file_tasks_in_flight_;
+  }
+}
+
+void HeadlessCommandHandler::OnWriteFileDone() {
+  DCHECK_GT(write_file_tasks_in_flight_, 0) << write_file_tasks_in_flight_;
+
+  if (!--write_file_tasks_in_flight_) {
+    Done();
+  }
 }
 
 void HeadlessCommandHandler::Done() {
@@ -391,6 +410,16 @@ void HeadlessCommandHandler::Done() {
   DoneCallback done_callback(std::move(done_callback_));
   delete this;
   std::move(done_callback).Run();
+
+  if (GetGlobalDoneCallback()) {
+    std::move(GetGlobalDoneCallback()).Run();
+  }
+}
+
+// static
+void HeadlessCommandHandler::SetDoneCallbackForTesting(
+    DoneCallback done_callback) {
+  GetGlobalDoneCallback() = std::move(done_callback);
 }
 
 }  // namespace headless
