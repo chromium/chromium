@@ -21,7 +21,7 @@ source_set("language") {
     "//components/language/core/language_model",
     "//components/pref_registry",
     "//components/prefs",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
   ]
 }

@@ -9,7 +9,7 @@
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/ukm/debug/ukm_debug_data_extractor.h"
 #import "components/ukm/ukm_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_resources.h"

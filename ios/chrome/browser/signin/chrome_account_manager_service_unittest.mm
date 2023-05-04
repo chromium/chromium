@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 
 #import "components/signin/public/base/signin_pref_names.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"

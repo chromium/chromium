@@ -8,8 +8,8 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

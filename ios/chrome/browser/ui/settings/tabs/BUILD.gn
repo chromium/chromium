@@ -14,9 +14,9 @@ source_set("tabs") {
     ":tabs_ui",
     "//components/prefs",
     "//components/prefs/ios",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/tabs/inactive_tabs:features",
     "//ios/chrome/browser/ui/settings/tabs/inactive_tabs",
   ]

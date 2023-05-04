@@ -15,9 +15,9 @@ source_set("start_suggest") {
     "//components/keyed_service/ios",
     "//components/prefs",
     "//components/search:start_suggest",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/url:constants",
     "//services/network/public/cpp",
@@ -64,7 +64,6 @@ source_set("content_suggestions") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/default_browser:utils",
     "//ios/chrome/browser/discover_feed",
     "//ios/chrome/browser/discover_feed:discover_feed_factory",
@@ -85,6 +84,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -381,9 +381,9 @@ source_set("eg_app_support+eg2") {
     "//base/test:test_support",
     "//components/keyed_service/ios",
     "//components/search_engines",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/search_engines",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/ntp:constants",
@@ -406,6 +406,6 @@ source_set("feature_flags") {
   public_deps = [ "//base" ]
   deps = [
     "//components/prefs",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
   ]
 }

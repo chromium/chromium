@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/variations/scoped_variations_ids_provider.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"

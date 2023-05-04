@@ -10,7 +10,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
 #import "components/variations/variations_test_utils.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

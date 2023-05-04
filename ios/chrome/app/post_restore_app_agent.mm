@@ -5,9 +5,9 @@
 #import "ios/chrome/app/post_restore_app_agent.h"
 
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/post_restore_signin/features.h"

@@ -29,8 +29,8 @@ source_set("features") {
   public_deps = [ "//base" ]
   deps = [
     "//components/prefs",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ui/base",
   ]
 }

@@ -18,7 +18,7 @@ source_set("supervised_user") {
     "//components/keyed_service/ios",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/signin",
     "//ios/net",

@@ -16,7 +16,7 @@
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"

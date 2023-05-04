@@ -12,12 +12,12 @@
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/enterprise_loading_screen_view_controller.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_ios.h"
 #import "ios/chrome/browser/policy/chrome_browser_cloud_management_controller_observer_bridge.h"
 #import "ios/chrome/browser/policy/cloud_policy_client_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -4,6 +4,9 @@
 
 source_set("application_context") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "application_context.h" ]
-  public_deps = [ "//ios/chrome/browser/application_context" ]
+  sources = [
+    "application_context.h",
+    "application_context.mm",
+  ]
+  deps = [ "//base" ]
 }

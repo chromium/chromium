@@ -4,7 +4,7 @@
 
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
 
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/test/testing_application_context.h"
 

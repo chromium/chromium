@@ -6,12 +6,12 @@
 
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/credential_provider_promo/features.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -9,7 +9,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/constants.h"
 #import "ios/chrome/browser/signin/signin_util.h"

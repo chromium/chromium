@@ -9,7 +9,7 @@
 #import "components/autofill/core/browser/autofill_data_util.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

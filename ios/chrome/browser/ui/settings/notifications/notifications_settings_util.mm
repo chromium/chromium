@@ -6,11 +6,11 @@
 
 #import "components/commerce/core/pref_names.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

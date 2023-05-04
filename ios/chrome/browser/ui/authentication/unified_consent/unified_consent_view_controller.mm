@@ -12,7 +12,7 @@
 #import "base/notreached.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_constants.h"

@@ -7,9 +7,9 @@
 #import "base/check.h"
 #import "base/values.h"
 #import "components/policy/core/browser/policy_conversions_client.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/browser_state_policy_connector.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 

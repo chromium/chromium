@@ -12,7 +12,7 @@
 
 #import "base/strings/utf_string_conversions.h"
 #import "components/signin/public/identity_manager/account_info.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 

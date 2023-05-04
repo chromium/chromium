@@ -8,7 +8,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
 #import "components/autofill/core/browser/geo/country_names.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
 

@@ -10,7 +10,7 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/pref_names.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

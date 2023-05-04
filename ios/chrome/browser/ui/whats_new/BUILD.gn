@@ -70,10 +70,10 @@ source_set("util") {
     ":constants",
     ":feature_flags",
     "//base",
-    "//ios/chrome/browser/application_context",
     "//ios/chrome/browser/promos_manager",
     "//ios/chrome/browser/promos_manager:constants",
     "//ios/chrome/browser/promos_manager:features",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
   ]
 }

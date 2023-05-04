@@ -16,7 +16,7 @@ source_set("variations") {
     "//components/variations",
     "//components/variations/service",
     "//components/version_info",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/common",
     "//ios/web",
   ]
@@ -108,7 +108,7 @@ source_set("eg_app_support+eg2") {
     "//components/prefs",
     "//components/variations",
     "//components/variations:test_support",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/test/app:test_support",
   ]
 }

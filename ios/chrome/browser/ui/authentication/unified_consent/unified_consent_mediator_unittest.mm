@@ -8,8 +8,8 @@
 
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"

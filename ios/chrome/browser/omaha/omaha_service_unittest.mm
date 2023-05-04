@@ -16,7 +16,7 @@
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/version_info/version_info.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/browser/upgrade/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/upgrade_recommended_details.h"

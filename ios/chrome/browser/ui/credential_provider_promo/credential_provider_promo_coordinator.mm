@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/ui/credential_provider_promo/credential_provider_promo_coordinator.h"
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/promos_manager/promos_manager_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"

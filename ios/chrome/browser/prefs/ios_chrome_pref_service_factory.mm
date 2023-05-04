@@ -22,8 +22,8 @@
 #import "components/proxy_config/proxy_config_pref_names.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/pref_service_syncable_factory.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/prefs/ios_chrome_pref_model_associator_client.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

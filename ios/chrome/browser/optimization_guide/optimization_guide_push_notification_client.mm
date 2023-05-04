@@ -9,10 +9,10 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/optimization_guide/core/hints_manager.h"
 #import "components/optimization_guide/proto/push_notification.pb.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 

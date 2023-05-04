@@ -44,7 +44,7 @@ source_set("util") {
   ]
   deps = [
     "//components/google/core/common",
-    "//ios/chrome/browser/application_context",
+    "//ios/chrome/browser/shared/model/application_context",
   ]
   public_deps = [ "//url:url" ]
 }

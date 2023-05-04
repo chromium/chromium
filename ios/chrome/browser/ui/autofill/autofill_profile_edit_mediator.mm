@@ -8,7 +8,7 @@
 #import "components/autofill/core/browser/geo/autofill_country.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/ui/country_combobox_model.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_consumer.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"

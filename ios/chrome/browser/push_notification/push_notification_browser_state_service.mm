@@ -7,11 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/push_notification_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 

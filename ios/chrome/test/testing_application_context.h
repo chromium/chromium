@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/threading/thread_checker.h"
-#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 namespace network {
 class TestNetworkConnectionTracker;

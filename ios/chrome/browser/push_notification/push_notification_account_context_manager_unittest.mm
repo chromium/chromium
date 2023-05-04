@@ -6,9 +6,9 @@
 
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/application_context/application_context.h"
 #import "ios/chrome/browser/push_notification/push_notification_account_context_manager+testing.h"
 #import "ios/chrome/browser/push_notification/push_notification_client_id.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
