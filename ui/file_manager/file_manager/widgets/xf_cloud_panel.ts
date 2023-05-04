@@ -192,7 +192,7 @@ export class XfCloudPanel extends XfBase {
         <div class="divider"></div>
         <div class="menu">
           <button class="action" @click=${this.onSettingsClicked_}>${
-        str('GOOGLE_DRIVE_SETTINGS_LINK')}</div>
+        str('GOOGLE_DRIVE_SETTINGS_LINK')}</button>
         </div>
       </div>
     </cr-action-menu>`;
@@ -307,6 +307,10 @@ function getCSS() {
       background-color: var(--cros-sys-base_elevated);
       border: 0;
       text-align: left;
+    }
+
+    :host-context([dir='rtl']) button.action {
+      text-align: right;
     }
 
     .action {
