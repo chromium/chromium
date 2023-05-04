@@ -38,6 +38,10 @@ struct CoreAccountInfo {
 
   CoreAccountId account_id;
   std::string gaia;
+
+  // Displaying the `email` in display fields (e.g. Android View) can be
+  // restricted. Please verify displayability using
+  // `AccountInfo::CanHaveEmailAddressDisplayed()`.
   std::string email;
 
   bool is_under_advanced_protection = false;
@@ -92,6 +96,11 @@ struct AccountInfo : public CoreAccountInfo {
   bool IsMemberOfFlexOrg() const;
 
   bool IsManaged() const;
+
+  // Returns true if the account email can be used in display fields.
+  // If `capabilities.can_have_email_address_displayed()` is unknown at the time
+  // this function is called, the email address will be considered displayable.
+  bool CanHaveEmailAddressDisplayed() const;
 };
 
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r);

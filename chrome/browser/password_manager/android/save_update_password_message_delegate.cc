@@ -26,7 +26,6 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -158,8 +157,7 @@ void SaveUpdatePasswordMessageDelegate::DisplaySaveUpdatePasswordPromptInternal(
   }
 
   if (account_info.has_value()) {
-    if (account_info->capabilities.can_have_email_address_displayed() ==
-            signin::Tribool::kFalse &&
+    if (!account_info->CanHaveEmailAddressDisplayed() &&
         base::FeatureList::IsEnabled(
             chrome::android::kHideNonDisplayableAccountEmail)) {
       account_email_ = account_info.value().full_name;

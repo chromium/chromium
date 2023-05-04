@@ -143,6 +143,13 @@ bool AccountInfo::IsManaged() const {
   return IsManaged(hosted_domain);
 }
 
+bool AccountInfo::CanHaveEmailAddressDisplayed() const {
+  return capabilities.can_have_email_address_displayed() ==
+             signin::Tribool::kTrue ||
+         capabilities.can_have_email_address_displayed() ==
+             signin::Tribool::kUnknown;
+}
+
 bool operator==(const CoreAccountInfo& l, const CoreAccountInfo& r) {
   return l.account_id == r.account_id && l.gaia == r.gaia &&
          gaia::AreEmailsSame(l.email, r.email) &&
