@@ -2073,15 +2073,8 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
       personal_data_->GetDefaultCountryCodeForNewAddress();
   EXPECT_EQ(2U, default_country.size());
 
-  AutofillProfile moose;
-  moose.set_origin(kSettingsOrigin);
-  test::SetProfileInfo(&moose, "Moose", "P", "McMahon", "mpm@example.com", "",
-                       "1 Taiga TKTR", "", "Calgary", "AB", "T2B 2K2", "CA",
-                       "(800) 555-9000");
-  AddProfileToPersonalDataManager(moose);
-
-  // Make sure everything is set up correctly.
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
+  AutofillProfile profile = test::GetFullProfile();
+  AddProfileToPersonalDataManager(profile);
 
   // The value is cached and doesn't change even after adding an address.
   EXPECT_EQ(default_country,
@@ -2099,107 +2092,54 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // Enabling Autofill blows away the cached value and should reflect the new
   // value (accounting for profiles).
   prefs::SetAutofillProfileEnabled(prefs_.get(), true);
-  EXPECT_EQ(base::UTF16ToUTF8(moose.GetRawInfo(ADDRESS_HOME_COUNTRY)),
+  EXPECT_EQ(base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)),
             personal_data_->GetDefaultCountryCodeForNewAddress());
 }
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromProfiles) {
-  AutofillProfile moose;
-  moose.set_origin(kSettingsOrigin);
-  test::SetProfileInfo(&moose, "Moose", "P", "McMahon", "mpm@example.com", "",
-                       "1 Taiga TKTR", "", "Calgary", "AB", "T2B 2K2", "CA",
-                       "(800) 555-9000");
-  AddProfileToPersonalDataManager(moose);
+  AutofillProfile canadian_profile = test::GetFullCanadianProfile();
+  ASSERT_EQ(canadian_profile.GetRawInfo(ADDRESS_HOME_COUNTRY), u"CA");
+  AddProfileToPersonalDataManager(canadian_profile);
   ResetPersonalDataManager(USER_MODE_NORMAL);
   EXPECT_EQ("CA", personal_data_->GetDefaultCountryCodeForNewAddress());
 
   // Multiple profiles cast votes.
-  AutofillProfile armadillo;
-  armadillo.set_origin(kSettingsOrigin);
-  test::SetProfileInfo(&armadillo, "Armin", "Dill", "Oh", "ado@example.com", "",
-                       "1 Speed Bump", "", "Lubbock", "TX", "77500", "MX",
-                       "(800) 555-9000");
-  AutofillProfile armadillo2;
-  armadillo2.set_origin(kSettingsOrigin);
-  test::SetProfileInfo(&armadillo2, "Armin", "Dill", "Oh", "ado@example.com",
-                       "", "2 Speed Bump", "", "Lubbock", "TX", "77500", "MX",
-                       "(800) 555-9000");
-  AddProfileToPersonalDataManager(armadillo);
-  AddProfileToPersonalDataManager(armadillo2);
+  AutofillProfile us_profile1 = test::GetFullProfile();
+  AutofillProfile us_profile2 = test::GetFullProfile2();
+  ASSERT_EQ(us_profile1.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
+  ASSERT_EQ(us_profile2.GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
+  AddProfileToPersonalDataManager(us_profile1);
+  AddProfileToPersonalDataManager(us_profile2);
   ResetPersonalDataManager(USER_MODE_NORMAL);
-  EXPECT_EQ("MX", personal_data_->GetDefaultCountryCodeForNewAddress());
-
-  RemoveByGUIDFromPersonalDataManager(armadillo.guid());
-  RemoveByGUIDFromPersonalDataManager(armadillo2.guid());
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-  // Verified profiles count more.
-  armadillo.set_origin("http://randomwebsite.com");
-  armadillo2.set_origin("http://randomwebsite.com");
-  AddProfileToPersonalDataManager(armadillo);
-  AddProfileToPersonalDataManager(armadillo2);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-  EXPECT_EQ("CA", personal_data_->GetDefaultCountryCodeForNewAddress());
-
-  RemoveByGUIDFromPersonalDataManager(armadillo.guid());
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-  // But unverified profiles can be a tie breaker.
-  armadillo.set_origin(kSettingsOrigin);
-  AddProfileToPersonalDataManager(armadillo);
-  ResetPersonalDataManager(USER_MODE_NORMAL);
-  EXPECT_EQ("MX", personal_data_->GetDefaultCountryCodeForNewAddress());
+  EXPECT_EQ("US", personal_data_->GetDefaultCountryCodeForNewAddress());
 }
 
 TEST_F(PersonalDataManagerTest, DefaultCountryCodeComesFromVariations) {
   const std::string expected_country_code = "DE";
-  const std::string unepected_country_code = "FR";
+  const std::string unexpected_country_code = "FR";
 
   // Normally, the variation country code is passed to the constructor.
   personal_data_->set_variations_country_code_for_testing(
       expected_country_code);
 
-  // Verify that there are no profiles set.
-  EXPECT_EQ(0u, personal_data_->GetProfiles().size());
-
   // Since there are no profiles set, the country code supplied buy variations
   // should be used get get a default country code.
+  ASSERT_EQ(0u, personal_data_->GetProfiles().size());
   std::string actual_country_code =
       personal_data_->GetDefaultCountryCodeForNewAddress();
-
-  // Verify the the correct country code was retrieved.
   EXPECT_EQ(expected_country_code, actual_country_code);
 
   // Set a new country code.
-  personal_data_->set_variations_country_code_for_testing(
-      unepected_country_code);
-
   // The default country code retrieved before should have been cached.
+  personal_data_->set_variations_country_code_for_testing(
+      unexpected_country_code);
   actual_country_code = personal_data_->GetDefaultCountryCodeForNewAddress();
-
-  // Verify the expectations newly set country code is actually different.
-  EXPECT_NE(expected_country_code, unepected_country_code);
-
-  // Verify that it was actually set.
-  EXPECT_EQ(unepected_country_code,
-            personal_data_->variations_country_code_for_testing());
-
-  // Verify that the retrieved country code is the initial one.
   EXPECT_EQ(expected_country_code, actual_country_code);
 
-  // Now a profile is set and the correctcaching of the country code is verified
-  // once more.
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  AddProfileToPersonalDataManager(profile);
-
-  // Once more, retrieve the defaultcountry code.
+  // Now a profile is set and the correct caching of the country code is
+  // verified once more.
+  AddProfileToPersonalDataManager(test::GetFullProfile());
   actual_country_code = personal_data_->GetDefaultCountryCodeForNewAddress();
-
-  // Verify that the profile was actually set.
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-
-  // Verify that the country code is still the initial one.
   EXPECT_EQ(actual_country_code, expected_country_code);
 }
 

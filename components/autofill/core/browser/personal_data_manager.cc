@@ -2231,18 +2231,14 @@ std::string PersonalDataManager::MostCommonCountryCodeFromProfiles() const {
 
   // Count up country codes from existing profiles.
   std::map<std::string, int> votes;
-  // TODO(estade): can we make this GetProfiles() instead? It seems to cause
-  // errors in tests on mac trybots. See http://crbug.com/57221
   const std::vector<AutofillProfile*>& profiles = GetProfiles();
   const std::vector<std::string>& country_codes =
       CountryDataMap::GetInstance()->country_codes();
   for (auto* profile : profiles) {
     std::string country_code = base::ToUpperASCII(
         base::UTF16ToASCII(profile->GetRawInfo(ADDRESS_HOME_COUNTRY)));
-
     if (base::Contains(country_codes, country_code)) {
-      // Verified profiles count 100x more than unverified ones.
-      votes[country_code] += profile->IsVerified() ? 100 : 1;
+      votes[country_code]++;
     }
   }
 
