@@ -15,13 +15,77 @@
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_polling_service.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/idle_bubble.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace enterprise_idle {
+
+#if !BUILDFLAG(IS_ANDROID)
+// Observes OnBrowserSetLastActive(). If the kIdleTimeoutShowBubbleOnStartup
+// pref is true, it shows a bubble when a browser comes into focus. See
+// ShowBubbleAction.
+class IdleService::BrowserObserver : public BrowserListObserver {
+ public:
+  explicit BrowserObserver(Profile* profile) : profile_(profile) {
+    CHECK_EQ(profile_->GetOriginalProfile(), profile_);
+  }
+
+  void StartObserving() {
+    if (!observation_.IsObserving()) {
+      observation_.Observe(BrowserList::GetInstance());
+      if (Browser* last_active = BrowserList::GetInstance()->GetLastActive()) {
+        OnBrowserSetLastActive(last_active);
+      }
+    }
+  }
+
+  void StopObserving() { observation_.Reset(); }
+
+  // BrowserListObserver:
+  void OnBrowserSetLastActive(Browser* browser) override {
+    Profile* profile = browser->profile();
+    auto* prefs = profile->GetPrefs();
+    if (profile == profile_ &&
+        prefs->GetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup)) {
+      ShowIdleBubble(browser, base::Minutes(5), GetActionSet(prefs));
+      prefs->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup, false);
+    }
+  }
+
+ private:
+  IdleDialog::ActionSet GetActionSet(PrefService* prefs) {
+    std::vector<ActionType> actions;
+    base::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
+                            std::back_inserter(actions),
+                            [](const base::Value& action) {
+                              return static_cast<ActionType>(action.GetInt());
+                            });
+    return ActionsToActionSet(base::flat_set<ActionType>(std::move(actions)));
+  }
+
+  const raw_ptr<Profile> profile_;
+  base::ScopedObservation<BrowserList, BrowserListObserver> observation_{this};
+};
+#else
+// BrowserObserver for Android, to minimize #ifdef hell.
+class IdleService::BrowserObserver {
+ public:
+  explicit BrowserObserver(Profile* profile) {}
+  void StartObserving() {}
+  void StopObserving() {}
+};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IdleService::IdleService(Profile* profile)
     : profile_(profile),
       action_runner_(
           std::make_unique<ActionRunner>(profile_,
                                          ActionFactory::GetInstance())) {
+  browser_observer_ = std::make_unique<BrowserObserver>(profile);
   DCHECK_EQ(profile_->GetOriginalProfile(), profile_);
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
@@ -43,10 +107,12 @@ void IdleService::OnIdleTimeoutPrefChanged() {
       polling_service_observation_.Observe(
           ui::IdlePollingService::GetInstance());
     }
+    browser_observer_->StartObserving();
   } else {
     is_idle_ = false;
     idle_threshold_ = base::TimeDelta();
     polling_service_observation_.Reset();
+    browser_observer_->StopObserving();
   }
 }
 

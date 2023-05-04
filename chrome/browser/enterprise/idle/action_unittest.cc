@@ -18,13 +18,16 @@ TEST(IdleActionTest, Build) {
   auto queue = factory->Build(
       nullptr, {ActionType::kCloseBrowsers, ActionType::kShowProfilePicker});
   EXPECT_EQ(2u, queue.size());
-  EXPECT_EQ(0, queue.top()->priority());  // CloseBrowsersAction
+  EXPECT_EQ(static_cast<int>(ActionType::kCloseBrowsers),
+            queue.top()->priority());
   queue.pop();
-  EXPECT_EQ(1, queue.top()->priority());  // ShowProfilePickerAction
+  EXPECT_EQ(static_cast<int>(ActionType::kShowProfilePicker),
+            queue.top()->priority());
 
   queue = factory->Build(nullptr, {ActionType::kCloseBrowsers});
   EXPECT_EQ(1u, queue.size());
-  EXPECT_EQ(0, queue.top()->priority());  // CloseBrowsersAction
+  EXPECT_EQ(static_cast<int>(ActionType::kCloseBrowsers),
+            queue.top()->priority());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -40,7 +43,8 @@ TEST(IdleActionTest, ClearBrowsingDataIsSingleAction) {
        ActionType::kClearAutofill, ActionType::kClearSiteSettings,
        ActionType::kClearHostedAppData});
   EXPECT_EQ(1u, queue.size());
-  EXPECT_EQ(2, queue.top()->priority());  // ClearBrowsingDataAction
+  EXPECT_EQ(static_cast<int>(ActionType::kClearBrowsingHistory),
+            queue.top()->priority());
 }
 
 }  // namespace enterprise_idle

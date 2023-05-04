@@ -1691,6 +1691,10 @@ const char kIdleTimeout[] = "idle_timeout";
 // IdleTimeoutActions policy.
 const char kIdleTimeoutActions[] = "idle_timeout_actions";
 
+// If true, show the IdleTimeout bubble when Chrome starts.
+const char kIdleTimeoutShowBubbleOnStartup[] =
+    "idle_timeout_show_bubble_on_startup";
+
 // *************** LOCAL STATE ***************
 // These are attached to the machine/installation
 

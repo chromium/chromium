@@ -6401,6 +6401,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         usage statistics
       </message>
 
+      <!-- IdleTimeout policy bubble -->
+      <message name="IDS_IDLE_BUBBLE_TITLE_CLEAR" desc="Title of a bubble that informs the user that Chrome cleared data automatically, because they were away from the computer for X minutes.">
+        Browsing data was automatically deleted
+      </message>
+
       <!-- Storage Pressure Notification Infobar/Bubble -->
       <message name="IDS_SETTINGS_STORAGE_PRESSURE_BUBBLE_VIEW_TITLE" desc="The title for the notification warning users that they are low on disk space.">
         Free up space to continue

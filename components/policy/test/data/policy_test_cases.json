@@ -21137,7 +21137,7 @@
         },
         "prefs": {
           "idle_timeout_actions": {
-            "value": [4, 5]
+            "value": [5, 6]
           }
         }
       }

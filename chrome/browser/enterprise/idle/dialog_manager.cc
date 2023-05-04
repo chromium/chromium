@@ -17,34 +17,6 @@ namespace {
 
 constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 
-IdleDialog::ActionSet ActionsToActionSet(
-    const base::flat_set<ActionType>& action_types) {
-  IdleDialog::ActionSet action_set = {.close = false, .clear = false};
-  for (ActionType action_type : action_types) {
-    switch (action_type) {
-      case ActionType::kCloseBrowsers:
-        action_set.close = true;
-        break;
-
-      case ActionType::kShowProfilePicker:
-        break;
-
-      case ActionType::kClearBrowsingHistory:
-      case ActionType::kClearDownloadHistory:
-      case ActionType::kClearCookiesAndOtherSiteData:
-      case ActionType::kClearCachedImagesAndFiles:
-      case ActionType::kClearPasswordSignin:
-      case ActionType::kClearAutofill:
-      case ActionType::kClearSiteSettings:
-      case ActionType::kClearHostedAppData:
-      case ActionType::kReloadPages:
-        action_set.clear = true;
-        break;
-    }
-  }
-  return action_set;
-}
-
 }  // namespace
 
 DialogManager::DialogManager() = default;
