@@ -88,6 +88,13 @@ const CGFloat kSpringDamping = 1.0;
 const CGFloat kInitialSpringVelocity = 1.0;
 const CGFloat kDimming = 0.2;
 const CGFloat kParallaxDisplacement = 100;
+// The minimum horizontal velocity to the trailing edge that will dismiss the
+// view controller, no matter it's current swiped position.
+const CGFloat kMinForwardVelocityToDismiss = 100;
+// The minimum horizontal velocity to the leading edge that will cancel the
+// dismissal of the view controller, when the swiped position is already more
+// than half of the screen's width.
+const CGFloat kMinBackwardVelocityToCancelDismiss = 10;
 
 // NSUserDefaults key to check whether the user education screen has ever been
 // shown. The associated value in user defaults is a BOOL.
@@ -108,9 +115,8 @@ NSString* const kInactiveTabsUserEducationShownOnce =
 // The mediator handling the inactive tabs.
 @property(nonatomic, strong) InactiveTabsMediator* mediator;
 
-// The mutually exclusive constraints for placing `viewController`.
-@property(nonatomic, strong) NSLayoutConstraint* hiddenConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* visibleConstraint;
+// The constraints for placing `viewController` horizontally.
+@property(nonatomic, strong) NSLayoutConstraint* horizontalPosition;
 
 // Whether the view controller is shown. It is true inbetween calls to `-show`
 // and `-hide`.
@@ -179,6 +185,13 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   self.viewController.delegate = self;
   self.viewController.gridViewController.delegate = self;
 
+  UIScreenEdgePanGestureRecognizer* edgeSwipeRecognizer =
+      [[UIScreenEdgePanGestureRecognizer alloc]
+          initWithTarget:self
+                  action:@selector(onEdgeSwipe:)];
+  edgeSwipeRecognizer.edges = UIRectEdgeLeft;
+  [self.viewController.view addGestureRecognizer:edgeSwipeRecognizer];
+
   // Create the mediator.
   SessionRestorationBrowserAgent* sessionRestorationBrowserAgent =
       SessionRestorationBrowserAgent::FromBrowser(self.browser);
@@ -214,15 +227,14 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   [self.viewController didMoveToParentViewController:self.baseViewController];
 
   // Place the Inactive Tabs view controller.
-  self.hiddenConstraint =
-      [baseView.trailingAnchor constraintEqualToAnchor:view.leadingAnchor];
-  self.visibleConstraint =
-      [baseView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor];
+  self.horizontalPosition = [view.leadingAnchor
+      constraintEqualToAnchor:baseView.leadingAnchor
+                     constant:CGRectGetWidth(baseView.bounds)];
   [NSLayoutConstraint activateConstraints:@[
-    [baseView.topAnchor constraintEqualToAnchor:view.topAnchor],
-    [baseView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
-    [baseView.widthAnchor constraintEqualToAnchor:view.widthAnchor],
-    self.hiddenConstraint,
+    [view.topAnchor constraintEqualToAnchor:baseView.topAnchor],
+    [view.bottomAnchor constraintEqualToAnchor:baseView.bottomAnchor],
+    [view.widthAnchor constraintEqualToAnchor:baseView.widthAnchor],
+    self.horizontalPosition,
   ]];
 
   // Add the dimmable snapshot of the base view.
@@ -242,48 +254,13 @@ NSString* const kInactiveTabsUserEducationShownOnce =
     self.baseViewSnapshotHorizontalPosition,
   ]];
 
-  // Trigger a layout, to take into account the changes to the hierarchy prior
-  // to animating.
-  [baseView layoutIfNeeded];
-
-  // Animate.
-  [UIView animateWithDuration:kDuration
-      delay:0
-      usingSpringWithDamping:kSpringDamping
-      initialSpringVelocity:kInitialSpringVelocity
-      options:0
-      animations:^{
-        // Make the Inactive Tabs view controller appear.
-        self.hiddenConstraint.active = NO;
-        self.visibleConstraint.active = YES;
-
-        // Make the dimmable snapshot move a little, to give the parallax
-        // effect.
-        self.baseViewSnapshotHorizontalPosition.constant =
-            -kParallaxDisplacement;
-        // And dim the snapshot.
-        snapshot.dimming = kDimming;
-
-        // Trigger a layout, to animate constraints changes.
-        [baseView layoutIfNeeded];
-      }
-      completion:^(BOOL finished) {
-        // Hide the snapshot. The snapshot is supposed to be overlaid by the
-        // Inactive Tabs view controller, but it happened sometimes that the
-        // animation of the Inactive Tabs view controller left it just 1 pixel
-        // off of the edge, letting the snapshot visible underneath.
-        snapshot.hidden = YES;
-
-        // Once appeared, potentially display the user education screen.
-        [self startUserEducationIfNeeded];
-      }];
+  [self animateIn];
 }
 
 - (void)hide {
   if (!self.showing) {
     return;
   }
-  self.showing = NO;
 
   [self.userEducationCoordinator stop];
   self.userEducationCoordinator = nil;
@@ -292,43 +269,10 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   }
   [self.viewController.gridViewController dismissModals];
 
-  UIView* baseView = self.baseViewController.view;
-
-  // Trigger a layout, to take into account the changes to the hierarchy prior
-  // to animating.
-  [baseView layoutIfNeeded];
-
   // Unhide the snapshot.
   self.baseViewSnapshot.hidden = NO;
 
-  // Animate.
-  [UIView animateWithDuration:kDuration
-      delay:0
-      usingSpringWithDamping:kSpringDamping
-      initialSpringVelocity:kInitialSpringVelocity
-      options:0
-      animations:^{
-        // Make the Inactive Tabs view controller appear.
-        self.visibleConstraint.active = NO;
-        self.hiddenConstraint.active = YES;
-
-        // Reset the dimmable snapshot position.
-        self.baseViewSnapshotHorizontalPosition.constant = 0;
-        // And undim the snapshot.
-        self.baseViewSnapshot.dimming = 0;
-
-        // Trigger a layout, to animate constraints changes.
-        [baseView layoutIfNeeded];
-      }
-      completion:^(BOOL success) {
-        [self.viewController willMoveToParentViewController:nil];
-        [self.viewController.view removeFromSuperview];
-        [self.viewController removeFromParentViewController];
-        self.visibleConstraint = nil;
-        self.hiddenConstraint = nil;
-        [self.baseViewSnapshot removeFromSuperview];
-        self.baseViewSnapshot = nil;
-      }];
+  [self animateOut];
 }
 
 - (void)stop {
@@ -340,8 +284,6 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   [self.mediator disconnect];
   self.mediator = nil;
   self.viewController = nil;
-  self.visibleConstraint = nil;
-  self.hiddenConstraint = nil;
 }
 
 #pragma mark - GridViewControllerDelegate
@@ -546,7 +488,128 @@ NSString* const kInactiveTabsUserEducationShownOnce =
   return nil;
 }
 
+#pragma mark - Actions
+
+- (void)onEdgeSwipe:(UIScreenEdgePanGestureRecognizer*)edgeSwipeRecognizer {
+  UIView* baseView = self.baseViewController.view;
+  CGFloat horizontalPosition =
+      [edgeSwipeRecognizer translationInView:baseView].x;
+  CGFloat horizontalVelocity = [edgeSwipeRecognizer velocityInView:baseView].x;
+  CGFloat fractionComplete =
+      horizontalPosition / CGRectGetWidth(baseView.bounds);
+
+  switch (edgeSwipeRecognizer.state) {
+    case UIGestureRecognizerStateBegan:
+      // Unhide the snapshot.
+      self.baseViewSnapshot.hidden = NO;
+      break;
+    case UIGestureRecognizerStateChanged:
+      self.horizontalPosition.constant = horizontalPosition;
+      self.baseViewSnapshotHorizontalPosition.constant =
+          -kParallaxDisplacement * (1 - fractionComplete);
+      self.baseViewSnapshot.dimming = kDimming * (1 - fractionComplete);
+      break;
+    case UIGestureRecognizerStateEnded:
+      if (horizontalVelocity > kMinForwardVelocityToDismiss) {
+        [self animateOut];
+      } else {
+        if (horizontalVelocity < -kMinBackwardVelocityToCancelDismiss) {
+          [self animateIn];
+        } else {
+          if (horizontalPosition > CGRectGetWidth(baseView.bounds) / 2) {
+            [self animateOut];
+          } else {
+            [self animateIn];
+          }
+        }
+      }
+      break;
+    case UIGestureRecognizerStateCancelled:
+      [self animateIn];
+      break;
+    default:
+      break;
+  }
+}
+
 #pragma mark - Private
+
+// Called to make the Inactive Tabs grid appear in an animation.
+- (void)animateIn {
+  UIView* baseView = self.baseViewController.view;
+
+  // Trigger a layout, to take into account the changes to the hierarchy prior
+  // to animating.
+  [baseView layoutIfNeeded];
+
+  // Animate.
+  [UIView animateWithDuration:kDuration
+      delay:0
+      usingSpringWithDamping:kSpringDamping
+      initialSpringVelocity:kInitialSpringVelocity
+      options:0
+      animations:^{
+        // Make the Inactive Tabs view controller appear.
+        self.horizontalPosition.constant = 0;
+
+        // Make the dimmable snapshot move a little, to give the parallax
+        // effect.
+        self.baseViewSnapshotHorizontalPosition.constant =
+            -kParallaxDisplacement;
+        // And dim the snapshot.
+        self.baseViewSnapshot.dimming = kDimming;
+
+        // Trigger a layout, to animate constraints changes.
+        [baseView layoutIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        // Hide the snapshot. The snapshot is supposed to be overlaid by the
+        // Inactive Tabs view controller, but it happened sometimes that the
+        // animation of the Inactive Tabs view controller left it just 1 pixel
+        // off of the edge, letting the snapshot visible underneath.
+        self.baseViewSnapshot.hidden = YES;
+
+        // Once appeared, potentially display the user education screen.
+        [self startUserEducationIfNeeded];
+      }];
+}
+
+// Called to make the Inactive Tabs grid disappear in an animation.
+- (void)animateOut {
+  UIView* baseView = self.baseViewController.view;
+
+  // Trigger a layout, to take into account the changes to the hierarchy prior
+  // to animating.
+  [baseView layoutIfNeeded];
+
+  // Animate.
+  [UIView animateWithDuration:kDuration
+      delay:0
+      usingSpringWithDamping:kSpringDamping
+      initialSpringVelocity:kInitialSpringVelocity
+      options:0
+      animations:^{
+        // Make the Inactive Tabs view controller disappear.
+        self.horizontalPosition.constant = CGRectGetWidth(baseView.bounds);
+
+        // Reset the dimmable snapshot position.
+        self.baseViewSnapshotHorizontalPosition.constant = 0;
+        // And undim the snapshot.
+        self.baseViewSnapshot.dimming = 0;
+
+        // Trigger a layout, to animate constraints changes.
+        [baseView layoutIfNeeded];
+      }
+      completion:^(BOOL success) {
+        [self.viewController willMoveToParentViewController:nil];
+        [self.viewController.view removeFromSuperview];
+        [self.viewController removeFromParentViewController];
+        self.horizontalPosition = nil;
+        [self.baseViewSnapshot removeFromSuperview];
+        self.baseViewSnapshot = nil;
+        self.showing = NO;
+      }];
+}
 
 // Called when the Inactive Tabs grid is shown, to start the user education
 // coordinator. If the user education screen was ever presented, this is a
