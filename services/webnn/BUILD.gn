@@ -20,6 +20,8 @@ source_set("webnn") {
       "dml/adapter.h",
       "dml/command_queue.cc",
       "dml/command_queue.h",
+      "dml/command_recorder.cc",
+      "dml/command_recorder.h",
       "dml/platform_functions.cc",
       "dml/platform_functions.h",
     ]
@@ -41,6 +43,7 @@ source_set("tests") {
     sources += [
       "dml/adapter_test.cc",
       "dml/command_queue_test.cc",
+      "dml/command_recorder_test.cc",
       "dml/platform_functions_test.cc",
       "dml/test_base.cc",
       "dml/test_base.h",
