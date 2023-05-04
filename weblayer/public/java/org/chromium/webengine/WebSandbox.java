@@ -26,6 +26,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.webengine.interfaces.IBooleanCallback;
 import org.chromium.webengine.interfaces.ICookieManagerDelegate;
+import org.chromium.webengine.interfaces.IProfileManagerDelegate;
 import org.chromium.webengine.interfaces.IStringCallback;
 import org.chromium.webengine.interfaces.ITabManagerDelegate;
 import org.chromium.webengine.interfaces.IWebEngineDelegate;
@@ -67,6 +68,9 @@ public class WebSandbox {
 
     @NonNull
     private SandboxConnection mConnection;
+
+    @NonNull
+    private ProfileManager mProfileManager;
 
     @NonNull
     private Map<String, WebEngine> mActiveWebEngines = new HashMap<String, WebEngine>();
@@ -130,8 +134,10 @@ public class WebSandbox {
             try {
                 mWebSandboxService.initializeBrowserProcess(new IWebSandboxCallback.Stub() {
                     @Override
-                    public void onBrowserProcessInitialized() {
-                        sInstance = new WebSandbox(SandboxConnection.this, mWebSandboxService);
+                    public void onBrowserProcessInitialized(
+                            IProfileManagerDelegate profileManagerDelegate) {
+                        sInstance = new WebSandbox(
+                                SandboxConnection.this, mWebSandboxService, profileManagerDelegate);
 
                         mCompleter.set(sInstance);
                         mCompleter = null;
@@ -206,9 +212,11 @@ public class WebSandbox {
         public void onServiceDisconnected(ComponentName name) {}
     }
 
-    private WebSandbox(SandboxConnection connection, IWebSandboxService service) {
+    private WebSandbox(SandboxConnection connection, IWebSandboxService service,
+            IProfileManagerDelegate profileManagerDelegate) {
         mConnection = connection;
         mWebSandboxService = service;
+        mProfileManager = new ProfileManager(profileManagerDelegate);
     }
 
     /**
@@ -408,14 +416,14 @@ public class WebSandbox {
         if (mWebSandboxService == null) {
             throw new IllegalStateException("WebSandbox has been destroyed");
         }
-        ListenableFuture<WebEngine> futureWebEngine =
+        ListenableFuture<WebEngine> webEngineFuture =
                 CallbackToFutureAdapter.getFuture(completer -> {
                     mWebSandboxService.createWebEngineDelegate(
                             params.getParcelable(), new WebEngineDelegateClient(completer, tag));
 
                     return "WebEngineClient Future";
                 });
-        return futureWebEngine;
+        return webEngineFuture;
     }
 
     /**
@@ -489,6 +497,9 @@ public class WebSandbox {
         }
         mWebSandboxService = null;
 
+        mProfileManager.invalidate();
+        mProfileManager = null;
+
         for (WebEngine engine : mActiveWebEngines.values()) {
             // This will shut down the WebEngine, its fragment, and remove {@code engine} from
             // {@code mActiveWebEngines}.
@@ -497,5 +508,10 @@ public class WebSandbox {
         mActiveWebEngines.clear();
 
         mConnection.unbind();
+    }
+
+    @NonNull
+    public ProfileManager getProfileManager() {
+        return mProfileManager;
     }
 }
