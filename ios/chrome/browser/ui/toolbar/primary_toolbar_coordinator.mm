@@ -101,7 +101,8 @@
 
   // Button factory requires that the omnibox commands are set up, which is
   // done by the location bar.
-  self.viewController.buttonFactory = [self buttonFactoryWithType:PRIMARY];
+  self.viewController.buttonFactory =
+      [self buttonFactoryWithType:ToolbarType::kPrimary];
 
   self.viewController.locationBarViewController =
       self.locationBarCoordinator.locationBarViewController;

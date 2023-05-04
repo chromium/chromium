@@ -28,7 +28,8 @@
 
 - (void)start {
   self.viewController = [[SecondaryToolbarViewController alloc] init];
-  self.viewController.buttonFactory = [self buttonFactoryWithType:SECONDARY];
+  self.viewController.buttonFactory =
+      [self buttonFactoryWithType:ToolbarType::kSecondary];
   self.viewController.omniboxCommandsHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), OmniboxCommands);
   self.viewController.popupMenuCommandsHandler = HandlerForProtocol(
