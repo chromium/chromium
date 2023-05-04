@@ -59,6 +59,8 @@ using security_interstitials::https_only_mode::
 using security_interstitials::https_only_mode::
     kSiteEngagementHeuristicAccumulatedHostCountHistogram;
 using security_interstitials::https_only_mode::
+    kSiteEngagementHeuristicEnforcementDurationHistogram;
+using security_interstitials::https_only_mode::
     kSiteEngagementHeuristicHostCountHistogram;
 using security_interstitials::https_only_mode::
     kSiteEngagementHeuristicStateHistogram;
@@ -496,12 +498,26 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     HttpsUpgradesBrowserTest,
     MAYBE_UrlWithHttpScheme_BrokenSSL_ShouldInterstitial_SiteEngagement) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
+  content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
+
+  // Set test clock.
+  auto clock = std::make_unique<base::SimpleTestClock>();
+  auto* clock_ptr = clock.get();
+  StatefulSSLHostStateDelegate* chrome_state =
+      static_cast<StatefulSSLHostStateDelegate*>(state);
+  chrome_state->SetClockForTesting(std::move(clock));
+
+  // Start the clock at standard system time.
+  clock_ptr->SetNow(base::Time::NowFromSystemTime());
+
   GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
   GURL https_url = https_server()->GetURL("bad-https.com", "/simple.html");
   SetSiteEngagementScore(http_url, 2);
   SetSiteEngagementScore(https_url, 95);
 
-  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
   NavigateAndWaitForFallback(contents, http_url);
   EXPECT_EQ(http_url, contents->GetLastCommittedURL());
 
@@ -530,11 +546,17 @@ IN_PROC_BROWSER_TEST_P(
                                       Event::kUpgradeFailed, 1);
       histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                       Event::kUpgradeCertError, 1);
+    } else {
+      histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
     }
 
   } else {
     histograms()->ExpectTotalCount(kEventHistogram, 1);
     histograms()->ExpectBucketCount(kEventHistogram,
+                                    Event::kUpgradeNotAttempted, 1);
+
+    histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 1);
+    histograms()->ExpectBucketCount(kEventHistogramWithEngagementHeuristic,
                                     Event::kUpgradeNotAttempted, 1);
   }
 
@@ -544,18 +566,61 @@ IN_PROC_BROWSER_TEST_P(
   histograms()->ExpectBucketCount(kSiteEngagementHeuristicStateHistogram,
                                   SiteEngagementHeuristicState::kEnabled, 1);
 
+  // Check host count.
   histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 1);
   histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 0,
-                                  0);
+                                  /*count=*/0);
   histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 1,
-                                  1);
-
+                                  /*count=*/1);
+  // Check accumulated host count.
   histograms()->ExpectTotalCount(
       kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1);
   histograms()->ExpectBucketCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, 0);
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, /*count=*/0);
   histograms()->ExpectBucketCount(
-      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, 1);
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, /*count=*/1);
+  // Check enforcement duration. Since the host isn't removed from HFM
+  // enforcement list, no duration should be recorded yet.
+  histograms()->ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 0);
+
+  // Lower HTTPS engagement score. This disabled HFM on the site. Also advance
+  // the clock.
+  SetSiteEngagementScore(https_url, 5);
+  clock_ptr->Advance(base::Hours(1));
+  NavigateAndWaitForFallback(contents, http_url);
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  // Event histogram shouldn't change.
+  if (IsHttpUpgradingEnabled()) {
+    if (!IsHttpInterstitialEnabled()) {
+      histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 3);
+    } else {
+      histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 0);
+    }
+  } else {
+    histograms()->ExpectTotalCount(kEventHistogramWithEngagementHeuristic, 1);
+  }
+
+  // Check host count.
+  histograms()->ExpectTotalCount(kSiteEngagementHeuristicHostCountHistogram, 2);
+  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 0,
+                                  /*count=*/1);
+  histograms()->ExpectBucketCount(kSiteEngagementHeuristicHostCountHistogram, 1,
+                                  /*count=*/1);
+  // Check accumulated host count.
+  histograms()->ExpectTotalCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 2);
+  histograms()->ExpectBucketCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, /*count=*/0);
+  histograms()->ExpectBucketCount(
+      kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, /*count=*/2);
+  // Check enforcement duration. Since the host isn't removed from HFM
+  // enforcement list, no duration should be recorded yet.
+  histograms()->ExpectTotalCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, 1);
+  histograms()->ExpectTimeBucketCount(
+      kSiteEngagementHeuristicEnforcementDurationHistogram, base::Hours(1), 1);
 }
 
 // Regression test for crbug.com/1441276. Sequence of events:

@@ -206,6 +206,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.HttpsFirstModeWithEngagementHeuristic.Duration"
+    units="seconds" expires_after="2023-09-10">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Records the duration a host has HFM enabled due to the site engagement
+    heuristic. Only recorded for hosts removed from the HFM list. Recorded at
+    the time of navigation when HFM upgrades trigger.
+  </summary>
+</histogram>
+
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.HostCount"
     units="hostnames" expires_after="2023-09-10">
   <owner>meacer@chromium.org</owner>
