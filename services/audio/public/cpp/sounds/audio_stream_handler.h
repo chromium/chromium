@@ -5,15 +5,11 @@
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
 
-#include <stddef.h>
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
-#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_codecs.h"
@@ -81,8 +77,8 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
   class AudioStreamContainer;
 
   base::TimeDelta duration_;
-  std::unique_ptr<AudioStreamContainer> stream_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  base::SequenceBound<AudioStreamContainer> stream_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace audio
