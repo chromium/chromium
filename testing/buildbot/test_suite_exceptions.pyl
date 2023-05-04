@@ -1502,6 +1502,11 @@
     },
   },
   'chrome_public_test_apk_with_playstore': {
+    # TODO(crbug.com/1442470): This test suite fails on these builders.
+    'remove_from': [
+      'android-12-x64-rel',
+      'android-pie-x86-rel',
+    ],
     'modifications': {
       'android-11-x86-rel': {
         'args': [
