@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -30,6 +32,23 @@ class CourseWorkItem {
     kOther,
   };
 
+  // Joined due date and due time of the course work item.
+  struct DueDateTime {
+    // [1,9999], or 0 to specify a date without a year.
+    int year;
+
+    // [1,12], or 0 to specify a year without a month and day.
+    int month;
+
+    // [1,31], or 0 to specify a year by itself or a year and month where the
+    // day isn't significant.
+    int day;
+
+    // Due time of this course work item ([0-24h) interval relative to the
+    // year/month/day above). Expected to be set if the date part is presented.
+    base::TimeDelta time_of_day;
+  };
+
   CourseWorkItem();
   CourseWorkItem(const CourseWorkItem&) = delete;
   CourseWorkItem& operator=(const CourseWorkItem&) = delete;
@@ -40,10 +59,18 @@ class CourseWorkItem {
   static void RegisterJSONConverter(
       base::JSONValueConverter<CourseWorkItem>* converter);
 
+  // Custom conversion entrypoint. Needed to join `dueDate` and `dueTime` JSON
+  // fields located at the root level into `due_date_time_`.
+  static bool ConvertCourseWorkItem(const base::Value* input,
+                                    CourseWorkItem* output);
+
   const std::string& id() const { return id_; }
   const std::string& title() const { return title_; }
   State state() const { return state_; }
   const GURL& alternate_link() const { return alternate_link_; }
+  const absl::optional<DueDateTime>& due_date_time() const {
+    return due_date_time_;
+  }
 
  private:
   // Classroom-assigned identifier of this course work, unique per course.
@@ -57,6 +84,14 @@ class CourseWorkItem {
 
   // Absolute link to this course work in the Classroom web UI.
   GURL alternate_link_;
+
+  // Optional due date and time in UTC of this course work item.
+  // There could be a `base::Time` instead (because Classroom web UI supports
+  // concrete/exact dates only), but the API uses a data structure that allows
+  // specifying zeroes in different date components (e.g. a month and day with
+  // a zero year means a repeating annual assignment). That is why it was safer,
+  // more flexible and forward compatible to use the same approach here.
+  absl::optional<DueDateTime> due_date_time_ = absl::nullopt;
 };
 
 // Container for multiple `CourseWorkItem`s.
