@@ -61,6 +61,7 @@ class ASH_EXPORT VPNListView : public NetworkStateListDetailedView,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
+  friend class VPNListViewPixelTest;
   friend class VPNListViewTest;
 
   using NetworkStateList =

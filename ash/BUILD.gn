@@ -3781,6 +3781,7 @@ test("ash_pixeltests") {
     "system/locale/locale_detailed_view_pixeltest.cc",
     "system/message_center/ash_notification_view_pixeltest.cc",
     "system/network/network_feature_tile_pixeltest.cc",
+    "system/network/vpn_list_view_pixeltest.cc",
     "system/time/calendar_unittest_utils.cc",
     "system/time/calendar_unittest_utils.h",
     "system/time/calendar_up_next_pixeltest.cc",
