@@ -1436,6 +1436,7 @@
         },
       },
       'android-12-x64-rel': {
+        'ci_only': True,
         'args': [
           '--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb',
         ],
@@ -1457,6 +1458,7 @@
         },
       },
       'android-pie-x86-rel': {
+        'ci_only': True,
         'args': [
           '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
         ],
