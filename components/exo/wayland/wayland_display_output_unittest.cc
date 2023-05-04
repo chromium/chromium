@@ -39,7 +39,13 @@ class WaylandDisplayOutputTest : public test::WaylandServerTest {
 
 }  // namespace
 
-TEST_F(WaylandDisplayOutputTest, DelayedSelfDestruct) {
+// TODO(crbug.com/1442265): Flaky on ChromeOS ASAN
+#if BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER)
+#define MAYBE_DelayedSelfDestruct DISABLED_DelayedSelfDestruct
+#else
+#define MAYBE_DelayedSelfDestruct DelayedSelfDestruct
+#endif
+TEST_F(WaylandDisplayOutputTest, MAYBE_DelayedSelfDestruct) {
   class ClientData : public test::TestClient::CustomData {
    public:
     raw_ptr<wl_output, ExperimentalAsh> output = nullptr;
