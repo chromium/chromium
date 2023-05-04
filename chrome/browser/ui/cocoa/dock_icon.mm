@@ -119,10 +119,12 @@ constexpr int64_t kUpdateFrequencyMs = 200;
                                   clockwise:YES];
     }
     [strokePath setLineWidth:kBadgeStrokeWidth];
-    [[NSColor colorWithCalibratedRed:0x42 / 255.0
-                               green:0x85 / 255.0
-                                blue:0xf4 / 255.0
-                               alpha:1] setStroke];
+    // This color is GoogleBlue600, which matches the stroke color for the
+    // progress ring of the download toolbar icon in a light theme.
+    [[NSColor colorWithSRGBRed:0x1a / 255.0
+                         green:0x73 / 255.0
+                          blue:0xe8 / 255.0
+                         alpha:1] setStroke];
     [strokePath stroke];
   }
 
