@@ -83,6 +83,8 @@ const char kDiscoverFeedSRSPreloadTemplatesEnabled[] =
 const char kDiscoverFeedTopSyncPromoStyle[] = "DiscoverFeedTopSyncPromoStyle";
 const char kDiscoverFeedTopSyncPromoAutodismissImpressions[] =
     "autodismissImpressions";
+const char kDiscoverFeedTopSyncPromoIgnoreEngagementCondition[] =
+    "IgnoreFeedEngagementConditionForTopSyncPromo";
 
 // EnableFollowingFeedDefaultSortType parameters.
 const char kFollowingFeedDefaultSortTypeSortByLatest[] = "SortByLatest";
@@ -127,6 +129,13 @@ SigninPromoViewStyle GetTopOfFeedPromoStyle() {
   // Defaults to Compact Titled (Unpersonalized).
   return (SigninPromoViewStyle)base::GetFieldTrialParamByFeatureAsInt(
       kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle, 1);
+}
+
+bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {
+  CHECK(IsDiscoverFeedTopSyncPromoEnabled());
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableDiscoverFeedTopSyncPromo,
+      kDiscoverFeedTopSyncPromoIgnoreEngagementCondition, false);
 }
 
 int FeedSyncPromoAutodismissCount() {
