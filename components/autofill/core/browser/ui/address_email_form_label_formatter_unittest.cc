@@ -42,25 +42,21 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsWithMissingProfiles) {
 }
 
 TEST(AddressEmailFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "John", "F", "Kennedy", "jfk@gmail.com", "",
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Jackie", "", "Kennedy", "", "",
                        "151 Irving Ave", "", "Hyannis", "MA", "02601", "US",
                        "");
 
-  AutofillProfile profile3 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "Paul", "", "Revere", "paul1775@gmail.com",
                        "", "", "", "", "", "", "US", "");
 
-  AutofillProfile profile4 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile4;
   test::SetProfileInfo(&profile4, "John", "", "Adams", "", "", "", "", "Quincy",
                        "MA", "02169", "US", "");
 
@@ -77,25 +73,21 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForUSProfilesAndFocusedName) {
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForUSProfilesAndFocusedStreetAddress) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "John", "F", "Kennedy", "jfk@gmail.com", "",
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Jackie", "", "Kennedy", "", "",
                        "151 Irving Ave", "", "Hyannis", "MA", "02601", "US",
                        "");
 
-  AutofillProfile profile3 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "", "", "", "paul1775@gmail.com", "", "", "",
                        "", "", "", "US", "");
 
-  AutofillProfile profile4 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile4;
   test::SetProfileInfo(&profile4, "", "", "", "", "", "141 Franklin St", "",
                        "Quincy", "MA", "02169", "US", "");
 
@@ -112,25 +104,21 @@ TEST(AddressEmailFormLabelFormatterTest,
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForUSProfilesAndFocusedNonStreetAddress) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "John", "F", "Kennedy", "jfk@gmail.com", "",
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Jackie", "", "Kennedy", "", "",
                        "151 Irving Ave", "", "Hyannis", "MA", "02601", "US",
                        "");
 
-  AutofillProfile profile3 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "", "", "", "paul1775@gmail.com", "", "", "",
                        "", "", "", "US", "");
 
-  AutofillProfile profile4 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile4;
   test::SetProfileInfo(&profile4, "", "", "", "", "", "", "", "Quincy", "MA",
                        "02169", "US", "");
 
@@ -147,24 +135,20 @@ TEST(AddressEmailFormLabelFormatterTest,
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForUSProfilesAndFocusedEmail) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "John", "F", "Kennedy", "jfk@gmail.com", "",
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Jackie", "", "Kennedy", "jackie@outlook.com",
                        "", "", "", "Hyannis", "MA", "02601", "US", "");
 
-  AutofillProfile profile3 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile3;
   test::SetProfileInfo(&profile3, "", "", "", "paul1775@gmail.com", "", "", "",
                        "", "", "", "US", "");
 
-  AutofillProfile profile4 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile4;
   test::SetProfileInfo(&profile4, "", "", "", "", "", "141 Franklin St", "",
                        "Quincy", "MA", "02169", "US", "");
 
@@ -180,15 +164,13 @@ TEST(AddressEmailFormLabelFormatterTest,
 }
 
 TEST(AddressEmailFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Tarsila", "do", "Amaral", "tarsila@aol.com",
                        "", "Av. Pedro Álvares Cabral, 1301", "", "Vila Mariana",
                        "São Paulo", "SP", "04094-050", "BR",
                        "+55 11 2648-0254");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Artur", "", "Avila", "aavila@uol.com.br", "",
                        "Estr. Dona Castorina, 110", "", "Jardim Botânico",
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
@@ -207,15 +189,13 @@ TEST(AddressEmailFormLabelFormatterTest, GetLabelsForBRProfilesAndFocusedName) {
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForBRProfilesAndFocusedStreetAddress) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Tarsila", "do", "Amaral", "tarsila@aol.com",
                        "", "Av. Pedro Álvares Cabral, 1301", "", "Vila Mariana",
                        "São Paulo", "SP", "04094-050", "BR",
                        "+55 11 2648-0254");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Artur", "", "Avila", "aavila@uol.com.br", "",
                        "Estr. Dona Castorina, 110", "", "Jardim Botânico",
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
@@ -234,15 +214,13 @@ TEST(AddressEmailFormLabelFormatterTest,
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForBRProfilesAndFocusedNonStreetAddress) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Tarsila", "do", "Amaral", "tarsila@aol.com",
                        "", "Av. Pedro Álvares Cabral, 1301", "", "Vila Mariana",
                        "São Paulo", "SP", "04094-050", "BR",
                        "+55 11 2648-0254");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Artur", "", "Avila", "aavila@uol.com.br", "",
                        "Estr. Dona Castorina, 110", "", "Jardim Botânico",
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
@@ -261,15 +239,13 @@ TEST(AddressEmailFormLabelFormatterTest,
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForBRProfilesAndFocusedEmail) {
-  AutofillProfile profile1 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile1;
   test::SetProfileInfo(&profile1, "Tarsila", "do", "Amaral", "tarsila@aol.com",
                        "", "Av. Pedro Álvares Cabral, 1301", "", "Vila Mariana",
                        "São Paulo", "SP", "04094-050", "BR",
                        "+55 11 2648-0254");
 
-  AutofillProfile profile2 = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile2;
   test::SetProfileInfo(&profile2, "Artur", "", "Avila", "aavila@uol.com.br", "",
                        "Estr. Dona Castorina, 110", "", "Jardim Botânico",
                        "Rio de Janeiro", "RJ", "22460-320", "BR",
@@ -289,8 +265,7 @@ TEST(AddressEmailFormLabelFormatterTest,
 
 TEST(AddressEmailFormLabelFormatterTest,
      GetLabelsForFormWithAddressFieldsMinusStreetAddress) {
-  AutofillProfile profile = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "John", "F", "Kennedy", "jfk@gmail.com", "",
                        "333 Washington St", "", "Brookline", "MA", "02445",
                        "US", "16177302000");
@@ -307,8 +282,7 @@ TEST(AddressEmailFormLabelFormatterTest,
 }
 
 TEST(AddressEmailFormLabelFormatterTest, GetLabelsForFormWithoutName) {
-  AutofillProfile profile = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "Sarah", "", "Revere", "sarah.revere@aol.com",
                        "", "19 North Sq", "", "Boston", "MA", "02113", "US",
                        "16175232338");

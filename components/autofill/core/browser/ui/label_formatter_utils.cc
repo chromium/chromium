@@ -149,7 +149,7 @@ std::vector<ServerFieldType> TypesWithoutFocusedField(
 AutofillProfile MakeTrimmedProfile(const AutofillProfile& profile,
                                    const std::string& app_locale,
                                    const std::vector<ServerFieldType>& types) {
-  AutofillProfile trimmed_profile(profile.guid(), profile.origin());
+  AutofillProfile trimmed_profile(profile.guid());
   trimmed_profile.set_language_code(profile.language_code());
 
   const AutofillType country_code_type(HtmlFieldType::kCountryCode,

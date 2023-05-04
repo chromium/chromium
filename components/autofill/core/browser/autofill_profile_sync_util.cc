@@ -255,8 +255,8 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
     return nullptr;
   }
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), specifics.origin(),
-      AutofillProfile::Source::kLocalOrSyncable);
+      specifics.guid(), AutofillProfile::Source::kLocalOrSyncable);
+  profile->set_origin(specifics.origin());
 
   // Set info that has a default value (and does not distinguish whether it is
   // set or not).

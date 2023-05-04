@@ -455,8 +455,7 @@ inline void check_and_set(
 }
 
 AutofillProfile GetFullValidProfileForCanada() {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "Alice", "", "Wonderland", "alice@wonderland.ca",
                  "Fiction", "666 Notre-Dame Ouest", "Apt 8", "Montreal", "QC",
                  "H3B 2T9", "CA", "15141112233");
@@ -464,8 +463,7 @@ AutofillProfile GetFullValidProfileForCanada() {
 }
 
 AutofillProfile GetFullProfile() {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                  "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
                  "91111", "US", "16502111111");
@@ -473,8 +471,7 @@ AutofillProfile GetFullProfile() {
 }
 
 AutofillProfile GetFullProfile2() {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "Jane", "A.", "Smith", "jsmith@example.com", "ACME",
                  "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "13105557889");
@@ -482,8 +479,7 @@ AutofillProfile GetFullProfile2() {
 }
 
 AutofillProfile GetFullCanadianProfile() {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "Wayne", "", "Gretzky", "wayne@hockey.com", "NHL",
                  "123 Hockey rd.", "Apt 8", "Moncton", "New Brunswick",
                  "E1A 0A6", "CA", "15068531212");
@@ -491,8 +487,7 @@ AutofillProfile GetFullCanadianProfile() {
 }
 
 AutofillProfile GetIncompleteProfile1() {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "John", "H.", "Doe", "jsmith@example.com", "ACME",
                  "123 Main Street", "Unit 1", "Greensdale", "MI", "48838", "US",
                  "");
@@ -500,8 +495,7 @@ AutofillProfile GetIncompleteProfile1() {
 }
 
 AutofillProfile GetIncompleteProfile2() {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kEmptyOrigin);
+  AutofillProfile profile;
   SetProfileInfo(&profile, "", "", "", "jsmith@example.com", "", "", "", "", "",
                  "", "", "");
   return profile;

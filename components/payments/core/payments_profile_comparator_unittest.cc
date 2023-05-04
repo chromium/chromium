@@ -51,8 +51,7 @@ class MockPaymentOptionsProvider : public PaymentOptionsProvider {
 AutofillProfile CreateProfileWithContactInfo(const char* name,
                                              const char* email,
                                              const char* phone) {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "http://www.example.test/");
+  AutofillProfile profile;
   autofill::test::SetProfileInfo(&profile, name, "", "", email, "", "", "", "",
                                  "", "", "", phone);
   return profile;
@@ -60,8 +59,7 @@ AutofillProfile CreateProfileWithContactInfo(const char* name,
 
 AutofillProfile CreateProfileWithCompleteAddress(const char* name,
                                                  const char* phone) {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "http://www.example.test/");
+  AutofillProfile profile;
   autofill::test::SetProfileInfo(&profile, name, "", "", "", "", "123 Fake St.",
                                  "", "Fakesville", "MN", "54000", "US", phone);
   return profile;
@@ -69,8 +67,7 @@ AutofillProfile CreateProfileWithCompleteAddress(const char* name,
 
 AutofillProfile CreateProfileWithPartialAddress(const char* name,
                                                 const char* phone) {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "http://www.example.test/");
+  AutofillProfile profile;
   autofill::test::SetProfileInfo(&profile, name, "", "", "", "", "123 Fake St.",
                                  "", "", "", "54000", "", phone);
   return profile;

@@ -45,9 +45,7 @@ class SaveAddressProfileInfobarBannerOverlayMediatorTest : public PlatformTest {
 // Tests that a SaveAddressProfileInfobarBannerOverlayMediator correctly sets up
 // its consumer.
 TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
-  autofill::AutofillProfile profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      "https://www.example.com/");
+  autofill::AutofillProfile profile;
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
@@ -87,9 +85,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
 // Tests that the modal is shown when infobar button is pressed.
 TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
        PresentModalWhenInfobarButtonIsPressed) {
-  autofill::AutofillProfile profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      "https://www.example.com/");
+  autofill::AutofillProfile profile;
   std::unique_ptr<autofill::AutofillSaveUpdateAddressProfileDelegateIOS>
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(

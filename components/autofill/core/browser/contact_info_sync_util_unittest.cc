@@ -24,8 +24,7 @@ const auto kModificationDate = base::Time::FromDoubleT(456);
 // Returns a profile with all fields set. Contains identical data to the data
 // returned from `ConstructCompleteSpecifics()`.
 AutofillProfile ConstructCompleteProfile() {
-  AutofillProfile profile(kGuid, /*origin=*/"",
-                          AutofillProfile::Source::kAccount);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kAccount);
 
   profile.set_use_count(123);
   profile.set_use_date(kUseDate);
@@ -233,8 +232,7 @@ TEST(ContactInfoSyncUtilTest, CreateContactInfoEntityDataFromAutofillProfile) {
 // Test that only profiles with valid GUID are converted.
 TEST(ContactInfoSyncUtilTest,
      CreateContactInfoEntityDataFromAutofillProfile_InvalidGUID) {
-  AutofillProfile profile(kInvalidGuid, /*origin=*/"",
-                          AutofillProfile::Source::kAccount);
+  AutofillProfile profile(kInvalidGuid, AutofillProfile::Source::kAccount);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);
@@ -243,8 +241,7 @@ TEST(ContactInfoSyncUtilTest,
 // Test that AutofillProfiles with invalid source are not converted.
 TEST(ContactInfoSyncUtilTest,
      CreateContactInfoEntityDataFromAutofillProfile_InvalidSource) {
-  AutofillProfile profile(kGuid, /*origin=*/"",
-                          AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable);
   EXPECT_EQ(CreateContactInfoEntityDataFromAutofillProfile(
                 profile, /*base_contact_info_specifics=*/{}),
             nullptr);

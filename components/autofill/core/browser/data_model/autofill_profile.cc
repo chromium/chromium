@@ -208,10 +208,11 @@ void GetFieldsForDistinguishingProfiles(
 
 }  // namespace
 
-AutofillProfile::AutofillProfile(const std::string& guid,
-                                 const std::string& origin,
-                                 Source source)
-    : AutofillDataModel(guid, origin),
+AutofillProfile::AutofillProfile()
+    : AutofillProfile(Source::kLocalOrSyncable) {}
+
+AutofillProfile::AutofillProfile(const std::string& guid, Source source)
+    : AutofillDataModel(guid, /*origin=*/""),
       company_(this),
       phone_number_(this),
       record_type_(LOCAL_PROFILE),
@@ -220,10 +221,14 @@ AutofillProfile::AutofillProfile(const std::string& guid,
       initial_creator_id_(kInitialCreatorOrModifierChrome),
       last_modifier_id_(kInitialCreatorOrModifierChrome) {}
 
+AutofillProfile::AutofillProfile(Source source)
+    : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+                      source) {}
+
 // TODO(crbug.com/1177366): Remove this constructor.
 AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
     : AutofillDataModel(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                        std::string()),
+                        /*origin=*/""),
       company_(this),
       phone_number_(this),
       server_id_(server_id),
@@ -233,16 +238,8 @@ AutofillProfile::AutofillProfile(RecordType type, const std::string& server_id)
   DCHECK(type == SERVER_PROFILE);
 }
 
-AutofillProfile::AutofillProfile(Source source)
-    : AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                      std::string(),
-                      source) {}
-
-AutofillProfile::AutofillProfile()
-    : AutofillProfile(Source::kLocalOrSyncable) {}
-
 AutofillProfile::AutofillProfile(const AutofillProfile& profile)
-    : AutofillDataModel(std::string(), std::string()),
+    : AutofillDataModel(/*guid=*/"", /*origin=*/""),
       company_(this),
       phone_number_(this) {
   operator=(profile);
@@ -841,7 +838,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
 
   // A copy of |this| pruned down to contain only data for the address fields in
   // |included_fields|.
-  AutofillProfile trimmed_profile(guid(), origin());
+  AutofillProfile trimmed_profile(guid());
   trimmed_profile.SetInfo(region_code_type, profile_region_code, app_locale);
   trimmed_profile.set_language_code(language_code());
   AutofillCountry country(address_region_code);

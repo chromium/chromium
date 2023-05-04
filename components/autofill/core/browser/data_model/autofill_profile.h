@@ -58,9 +58,9 @@ class AutofillProfile : public AutofillDataModel {
   // `last_modifier_id()`.
   static constexpr int kInitialCreatorOrModifierChrome = 70073;
 
-  AutofillProfile(const std::string& guid,
-                  const std::string& origin,
-                  Source source = Source::kLocalOrSyncable);
+  AutofillProfile();
+  explicit AutofillProfile(const std::string& guid,
+                           Source source = Source::kLocalOrSyncable);
   explicit AutofillProfile(Source source);
 
   // Server profile constructor. The type must be SERVER_PROFILE (this serves
@@ -68,8 +68,6 @@ class AutofillProfile : public AutofillDataModel {
   // callers should invoke GenerateServerProfileIdentifier after setting data.
   AutofillProfile(RecordType type, const std::string& server_id);
 
-  // For use in STL containers.
-  AutofillProfile();
   AutofillProfile(const AutofillProfile& profile);
   ~AutofillProfile() override;
 

@@ -24,10 +24,7 @@
 class SaveAddressProfileInfobarModalInteractionHandlerTest
     : public PlatformTest {
  public:
-  SaveAddressProfileInfobarModalInteractionHandlerTest()
-      : delegate_factory_(),
-        profile_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                 "https://www.example.com/") {
+  SaveAddressProfileInfobarModalInteractionHandlerTest() : delegate_factory_() {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::

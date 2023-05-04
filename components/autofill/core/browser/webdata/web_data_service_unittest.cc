@@ -342,13 +342,11 @@ TEST_F(WebDataServiceAutofillTest, ProfileRemove) {
 
 TEST_F(WebDataServiceAutofillTest, ProfileUpdate) {
   // The GUIDs are alphabetical for easier testing.
-  AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B",
-                           std::string());
+  AutofillProfile profile1("6141084B-72D7-4B73-90CF-3D6AC154673B");
   profile1.SetRawInfo(NAME_FIRST, u"Abe");
   profile1.FinalizeAfterImport();
 
-  AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15",
-                           std::string());
+  AutofillProfile profile2("087151C8-6AB1-487C-9095-28E80BE5DA15");
   profile2.SetRawInfo(NAME_FIRST, u"Alice");
   profile2.FinalizeAfterImport();
 

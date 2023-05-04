@@ -1137,7 +1137,7 @@ std::unique_ptr<AutofillProfile> GetAutofillProfileFromContactInfoTable(
     return nullptr;
   }
   auto profile = std::make_unique<AutofillProfile>(
-      guid, /*origin=*/"", AutofillProfile::Source::kAccount);
+      guid, AutofillProfile::Source::kAccount);
   int index = 0;
   profile->set_use_count(s.ColumnInt64(index++));
   profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
@@ -1741,8 +1741,8 @@ std::unique_ptr<AutofillProfile> AutofillTable::GetAutofillProfile(
   }
 
   auto profile = std::make_unique<AutofillProfile>(
-      guid, /*origin=*/s.ColumnString(0),
-      AutofillProfile::Source::kLocalOrSyncable);
+      guid, AutofillProfile::Source::kLocalOrSyncable);
+  profile->set_origin(s.ColumnString(0));
   DCHECK(base::Uuid::ParseCaseInsensitive(profile->guid()).is_valid());
 
   // Get associated name info using guid.

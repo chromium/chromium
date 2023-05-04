@@ -173,8 +173,7 @@ class AutofillTableProfileTest
 
   // Creates an `AutofillProfile` with `profile_source()` as its source.
   AutofillProfile CreateAutofillProfile() const {
-    return AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           /*origin=*/std::string(), profile_source());
+    return AutofillProfile(profile_source());
   }
 
   // Depending on the `profile_source()`, the AutofillProfiles are stored in a
@@ -994,12 +993,8 @@ TEST_P(AutofillTableProfileTest, AutofillProfile) {
 // Not part of the `AutofillTableProfileTest` fixture, as it doesn't benefit
 // from parameterization on the `profile_source()`.
 TEST_F(AutofillTableTest, GetAutofillProfiles) {
-  AutofillProfile local_profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), "",
-      AutofillProfile::Source::kLocalOrSyncable);
-  AutofillProfile account_profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), "",
-      AutofillProfile::Source::kAccount);
+  AutofillProfile local_profile(AutofillProfile::Source::kLocalOrSyncable);
+  AutofillProfile account_profile(AutofillProfile::Source::kAccount);
   EXPECT_TRUE(table_->AddAutofillProfile(local_profile));
   EXPECT_TRUE(table_->AddAutofillProfile(account_profile));
 
@@ -1015,8 +1010,7 @@ TEST_F(AutofillTableTest, GetAutofillProfiles) {
 // Tests that `RemoveAllAutofillProfiles()` cleares all kAccount profiles.
 TEST_F(AutofillTableTest, RemoveAllAutofillProfiles_kAccount) {
   EXPECT_TRUE(table_->AddAutofillProfile(
-      AutofillProfile(base::Uuid::GenerateRandomV4().AsLowercaseString(), "",
-                      AutofillProfile::Source::kAccount)));
+      AutofillProfile(AutofillProfile::Source::kAccount)));
 
   EXPECT_TRUE(
       table_->RemoveAllAutofillProfiles(AutofillProfile::Source::kAccount));

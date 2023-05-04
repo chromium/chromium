@@ -1634,8 +1634,8 @@ TEST_P(FormDataImporterTest, ImportAddressProfiles_MissingName) {
 TEST_P(FormDataImporterTest,
        ImportAddressProfiles_ExistingVerifiedProfileWithConflict) {
   // Start with a verified profile.
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kSettingsOrigin);
+  AutofillProfile profile;
+  profile.set_origin(kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1704,8 +1704,8 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        IncorporateStructuredNameInformationInVerifiedProfile) {
   // Start with a verified profile.
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kSettingsOrigin);
+  AutofillProfile profile;
+  profile.set_origin(kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1787,8 +1787,8 @@ TEST_P(FormDataImporterTest,
 TEST_P(FormDataImporterTest,
        IncorporateStructuredAddressInformationInVerififedProfile) {
   // Start with a verified profile.
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          kSettingsOrigin);
+  AutofillProfile profile;
+  profile.set_origin(kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -1912,8 +1912,7 @@ TEST_P(FormDataImporterTest,
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   ExtractAddressProfiles(/*extraction_successful=*/true, form_structure);
 
-  AutofillProfile expected(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
+  AutofillProfile expected;
   test::SetProfileInfo(&expected, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr,
                        "No. 43 Bo Aung Gyaw Street", nullptr, "Yangon", "",
@@ -3024,8 +3023,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressOneCreditCard) {
   WaitForOnPersonalDataChanged();
 
   // Test that the address has been saved.
-  AutofillProfile expected_address(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile expected_address;
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "US", nullptr);
@@ -3343,8 +3341,7 @@ TEST_P(FormDataImporterTest, ExtractFormData_OneAddressCreditCardDisabled) {
   WaitForOnPersonalDataChanged();
 
   // Test that the address has been saved.
-  AutofillProfile expected_address(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile expected_address;
   test::SetProfileInfo(&expected_address, "George", nullptr, "Washington",
                        "theprez@gmail.com", nullptr, "21 Laussat St", nullptr,
                        "San Francisco", "California", "94102", "US", nullptr);
@@ -3946,8 +3943,7 @@ TEST_P(FormDataImporterTest, SilentlyUpdateExistingProfileByIncompleteProfile) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -4003,8 +3999,7 @@ TEST_P(
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
@@ -4060,8 +4055,7 @@ TEST_P(FormDataImporterTest, UnusableIncompleteProfile) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAutofillSilentProfileUpdateForInsufficientImport);
 
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");

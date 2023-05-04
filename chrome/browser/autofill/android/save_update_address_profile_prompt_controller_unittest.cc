@@ -78,8 +78,7 @@ class SaveUpdateAddressProfilePromptControllerTest
 
   // Profile with verified data as it is returned from Java.
   AutofillProfile GetFullProfileWithVerifiedData() {
-    AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                            test::kEmptyOrigin);
+    AutofillProfile profile;
     profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"Mona J. Liza",
                                              VerificationStatus::kUserVerified);
     test::SetProfileInfo(&profile, "", "", "", "email@example.com",

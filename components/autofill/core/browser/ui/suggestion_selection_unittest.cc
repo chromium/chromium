@@ -76,9 +76,7 @@ class SuggestionSelectionTest : public testing::Test {
       const char* first_name,
       const char* last_name = "Morrison") {
     std::unique_ptr<AutofillProfile> profile_ptr =
-        std::make_unique<AutofillProfile>(
-            base::Uuid::GenerateRandomV4().AsLowercaseString(),
-            test::kEmptyOrigin);
+        std::make_unique<AutofillProfile>();
     test::SetProfileInfo(profile_ptr.get(), first_name, "Mitchell", last_name,
                          "johnwayne@me.xyz", "Fox",
                          "123 Zoo St.\nSecond Line\nThird line", "unit 5",
@@ -322,9 +320,7 @@ TEST_F(SuggestionSelectionTest, RemoveProfilesNotUsedSinceTimestamp) {
   // by decreasing last use date.
   std::vector<std::unique_ptr<AutofillProfile>> all_profile_data;
   for (size_t i = 0; i < kNumProfiles; ++i) {
-    all_profile_data.push_back(std::make_unique<AutofillProfile>(
-        base::Uuid::GenerateRandomV4().AsLowercaseString(),
-        "https://example.com"));
+    all_profile_data.push_back(std::make_unique<AutofillProfile>());
     all_profile_data[i]->set_use_date(kCurrentTime - (i * k30Days));
   }
 

@@ -106,8 +106,7 @@ TEST(AddressI18nTest, UnconvertableServerFields) {
 }
 
 TEST(AddressI18nTest, CreateAddressDataFromAutofillProfile) {
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "http://www.example.com/");
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "John", "H.", "Doe", "johndoe@hades.com",
                        "Underworld", "666 Erebus St.", "Apt 8", "Elysium", "CA",
                        "91111", "US", "16502111111");

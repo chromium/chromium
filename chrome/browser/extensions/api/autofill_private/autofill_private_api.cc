@@ -176,9 +176,9 @@ autofill::AutofillProfile CreateNewAutofillProfile(
     // filtering.
     source = autofill::AutofillProfile::Source::kLocalOrSyncable;
   }
-  return autofill::AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), kSettingsOrigin,
-      source);
+  autofill::AutofillProfile profile(source);
+  profile.set_origin(kSettingsOrigin);
+  return profile;
 }
 
 }  // namespace

@@ -64,8 +64,7 @@ std::vector<AutofillProfile> ExtractAutofillProfilesFromDataBatch(
 }
 
 AutofillProfile TestProfile(base::StringPiece guid) {
-  return AutofillProfile(std::string(guid), /*origin=*/"",
-                         AutofillProfile::Source::kAccount);
+  return AutofillProfile(std::string(guid), AutofillProfile::Source::kAccount);
 }
 
 }  // namespace

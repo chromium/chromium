@@ -83,9 +83,7 @@ NSError* PrepareAutofillProfileWithValues(
         @"Unable to find autofill profile in parsed JSON value.");
   }
 
-  autofill::AutofillProfile profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      "https://www.example.com/");
+  autofill::AutofillProfile profile;
   autofill::CreditCard credit_card(
       base::Uuid::GenerateRandomV4().AsLowercaseString(),
       "https://www.example.com/");

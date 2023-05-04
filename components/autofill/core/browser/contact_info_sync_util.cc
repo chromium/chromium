@@ -249,7 +249,7 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
     return nullptr;
 
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
-      specifics.guid(), /*origin=*/"", AutofillProfile::Source::kAccount);
+      specifics.guid(), AutofillProfile::Source::kAccount);
 
   profile->set_use_count(specifics.use_count());
   profile->set_use_date(

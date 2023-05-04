@@ -473,9 +473,7 @@ TEST_F(PaymentRequestStateTest, JaLatnShippingAddress) {
 
   // Select an address, nothing should happen until the normalization is
   // completed and the merchant has validated the address.
-  autofill::AutofillProfile profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      "https://example.test");
+  autofill::AutofillProfile profile;
   autofill::test::SetProfileInfo(&profile, "Jon", "V.", "Doe",
                                  "jon.doe@exampl.com", "Example Inc",
                                  "Roppongi", "6 Chrome-10-1", "Tokyo", "",

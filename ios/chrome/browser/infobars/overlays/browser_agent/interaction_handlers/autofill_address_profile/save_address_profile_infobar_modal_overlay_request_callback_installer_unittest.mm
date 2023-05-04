@@ -41,10 +41,7 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest
     : public PlatformTest {
  public:
   SaveAddressProfileInfobarModalOverlayRequestCallbackInstallerTest()
-      : profile_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                 "https://www.example.com/"),
-        installer_(&mock_handler_),
-        delegate_factory_() {
+      : installer_(&mock_handler_), delegate_factory_() {
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());

@@ -22,9 +22,7 @@ class SaveAddressProfileInfobarBannerInteractionHandlerTest
     : public PlatformTest {
  public:
   SaveAddressProfileInfobarBannerInteractionHandlerTest()
-      : delegate_factory_(),
-        profile_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                 "https://www.example.com/") {
+      : delegate_factory_() {
     infobar_ = std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::

@@ -67,8 +67,7 @@ std::vector<ServerFieldType> GetAddressPlusContactFieldTypes() {
 }
 
 AutofillProfile GetProfileA() {
-  AutofillProfile profile = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "firstA", "middleA", "lastA",
                        "emailA@gmail.com", "", "address1A", "address2A",
                        "cityA", "MA", "02113", "US", "16176660000");
@@ -76,8 +75,7 @@ AutofillProfile GetProfileA() {
 }
 
 AutofillProfile GetProfileB() {
-  AutofillProfile profile = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profile;
   test::SetProfileInfo(&profile, "firstB", "middleB", "lastB",
                        "emailB@gmail.com", "", "address1B", "address2B",
                        "cityB", "NY", "12224", "US", "15185550000");
@@ -102,8 +100,7 @@ TEST(MobileLabelFormatterTest, GetLabelsForUnfocusedAddress_ShowOne) {
 
   AutofillProfile profileA = GetProfileA();
   AutofillProfile profileB = GetProfileB();
-  AutofillProfile profileC = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profileC;
   test::SetProfileInfo(&profileC, "firstC", "middleC", "lastC", "", "", "", "",
                        "", "", "", "US", "");
   const std::vector<AutofillProfile*> profiles{&profileA, &profileB, &profileC};
@@ -289,8 +286,7 @@ TEST(MobileLabelFormatterTest, GetLabels_DistinctProfiles_ShowAll) {
 
   AutofillProfile profileA = GetProfileA();
   AutofillProfile profileB = GetProfileB();
-  AutofillProfile profileC = AutofillProfile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(), test::kEmptyOrigin);
+  AutofillProfile profileC;
   test::SetProfileInfo(&profileC, "firstC", "middleC", "lastC", "", "", "", "",
                        "", "", "", "US", "");
   const std::vector<AutofillProfile*> profiles{&profileA, &profileB, &profileC};

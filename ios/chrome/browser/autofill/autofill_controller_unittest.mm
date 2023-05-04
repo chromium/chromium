@@ -506,8 +506,7 @@ void AutofillControllerTest::SetUpForSuggestions(
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(browser_state_.get()));
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "https://www.example.com/");
+  AutofillProfile profile;
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
@@ -578,8 +577,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   personal_data_manager->SetSyncServiceForTest(nullptr);
   PersonalDataManagerFinishedProfileTasksWaiter waiter(personal_data_manager);
 
-  AutofillProfile profile(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                          "https://www.example.com/");
+  AutofillProfile profile;
   profile.SetRawInfo(NAME_FULL, u"Homer Simpson");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Main Street");
   profile.SetRawInfo(ADDRESS_HOME_CITY, u"Springfield");
@@ -591,8 +589,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   waiter.Wait();
 
   EXPECT_EQ(1U, personal_data_manager->GetProfiles().size());
-  AutofillProfile profile2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           "https://www.example.com/");
+  AutofillProfile profile2;
   profile2.SetRawInfo(NAME_FULL, u"Larry Page");
   profile2.SetRawInfo(ADDRESS_HOME_LINE1, u"1600 Amphitheatre Parkway");
   profile2.SetRawInfo(ADDRESS_HOME_CITY, u"Mountain View");

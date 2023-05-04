@@ -32,9 +32,7 @@ MockAutofillSaveUpdateAddressProfileDelegateIOS::
 #pragma mark - MockAutofillSaveUpdateAddressProfileDelegateIOSFactory
 
 MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
-    MockAutofillSaveUpdateAddressProfileDelegateIOSFactory()
-    : profile_(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-               "https://www.example.com/") {}
+    MockAutofillSaveUpdateAddressProfileDelegateIOSFactory() = default;
 
 MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::
     ~MockAutofillSaveUpdateAddressProfileDelegateIOSFactory() = default;

@@ -165,10 +165,7 @@ TEST_F(DefaultInfobarOverlayRequestFactoryTest, Translate) {
 
 // Tests that the factory creates a save address profile request.
 TEST_F(DefaultInfobarOverlayRequestFactoryTest, SaveAddressProfile) {
-  autofill::AutofillProfile profile(
-      base::Uuid::GenerateRandomV4().AsLowercaseString(),
-      "https://www.example.com/");
-
+  autofill::AutofillProfile profile;
   InfoBarIOS infobar(
       InfobarType::kInfobarTypeSaveAutofillAddressProfile,
       MockAutofillSaveUpdateAddressProfileDelegateIOSFactory::

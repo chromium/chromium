@@ -32,8 +32,6 @@ using testing::IsEmpty;
 // Some guids for testing.
 const char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
 const char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-const char kHttpOrigin[] = "http://www.example.com/";
-const char kHttpsOrigin[] = "https://www.example.com/";
 const char kLocaleString[] = "en-US";
 const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
 
@@ -146,13 +144,13 @@ class AutofillProfileSyncDifferenceTrackerTest
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldOverwriteProfileWithSameKey) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile is completely different but it has the same key.
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile remote(kSmallerGuid);
   remote.SetRawInfo(NAME_FIRST, u"Tom");
   remote.FinalizeAfterImport();
 
@@ -167,13 +165,14 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldOverwriteUnverifiedProfileByVerified) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile has the same key but it is not verified.
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile remote(kSmallerGuid);
+  remote.set_origin(kSettingsOrigin);
   remote.SetRawInfo(NAME_FIRST, u"Tom");
   remote.FinalizeAfterImport();
 
@@ -188,13 +187,14 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldNotOverwriteVerifiedProfileByUnverified) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile local(kSmallerGuid);
+  local.set_origin(kSettingsOrigin);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile has the same key but it is not verified.
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile remote(kSmallerGuid);
   remote.SetRawInfo(NAME_FIRST, u"Tom");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
@@ -208,13 +208,13 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldNotOverwriteFullNameByEmptyString) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(NAME_FULL, u"John");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile has the same key.
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile remote(kSmallerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2st st");
 
   AutofillProfile merged(remote);
@@ -233,7 +233,7 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepRemoteKeyWhenMergingDuplicateProfileWithBiggerKey) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
@@ -241,7 +241,7 @@ TEST_F(
 
   // The remote profile is identical to the local one, except that the guids and
   // origins are different.
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kHttpsOrigin);
+  AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfo(NAME_FIRST, u"John");
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.FinalizeAfterImport();
@@ -258,7 +258,8 @@ TEST_F(
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepRemoteKeyAndLocalOriginWhenMergingDuplicateProfileWithBiggerKey) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile local(kSmallerGuid);
+  local.set_origin(kSettingsOrigin);
   local.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                          VerificationStatus::kObserved);
   local.SetRawInfoWithVerificationStatus(
@@ -267,7 +268,7 @@ TEST_F(
   AddAutofillProfilesToTable({local});
 
   // The remote profile has the same key.
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kHttpsOrigin);
+  AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                           VerificationStatus::kObserved);
   remote.SetRawInfoWithVerificationStatus(
@@ -291,7 +292,7 @@ TEST_F(
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepLocalKeyWhenMergingDuplicateProfileWithSmallerKey) {
-  AutofillProfile local = AutofillProfile(kBiggerGuid, kHttpOrigin);
+  AutofillProfile local(kBiggerGuid);
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
@@ -299,7 +300,7 @@ TEST_F(
 
   // The remote profile is identical to the local one, except that the guids and
   // origins are different.
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile remote(kSmallerGuid);
   remote.SetRawInfo(NAME_FIRST, u"John");
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.FinalizeAfterImport();
@@ -316,7 +317,7 @@ TEST_F(
 TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepLocalKeyAndRemoteOriginWhenMergingDuplicateProfileWithSmallerKey) {
-  AutofillProfile local = AutofillProfile(kBiggerGuid, kHttpsOrigin);
+  AutofillProfile local(kBiggerGuid);
   local.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                          VerificationStatus::kUserVerified);
   local.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
@@ -326,7 +327,8 @@ TEST_F(
   AddAutofillProfilesToTable({local});
 
   // The remote profile has the same key.
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile remote(kSmallerGuid);
+  remote.set_origin(kSettingsOrigin);
   remote.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                           VerificationStatus::kUserVerified);
   remote.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
@@ -358,7 +360,8 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileDeleted) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile local(kSmallerGuid);
+  local.set_origin(kSettingsOrigin);
   AddAutofillProfilesToTable({local});
 
   EXPECT_EQ(absl::nullopt, tracker()->IncorporateRemoteDelete(kSmallerGuid));
@@ -374,7 +377,8 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileAdded) {
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile remote(kSmallerGuid);
+  remote.set_origin(kSettingsOrigin);
   IncorporateRemoteProfile(remote);
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
@@ -388,10 +392,10 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileUpdated) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile local(kSmallerGuid);
   AddAutofillProfilesToTable({local});
 
-  AutofillProfile remote = AutofillProfile(kSmallerGuid, kHttpsOrigin);
+  AutofillProfile remote(kSmallerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);
@@ -433,22 +437,20 @@ class AutofillProfileInitialSyncDifferenceTrackerTest
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncShouldSyncUpChanges) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.set_use_count(27);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile matches the local one (except for origin and use count).
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kHttpsOrigin);
+  AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.set_use_count(13);
   remote.FinalizeAfterImport();
   // The remote profile wins (as regards the storage key).
   AutofillProfile merged(remote);
-  // The local origin wins when merging.
-  merged.set_origin(kHttpOrigin);
   // Merging two profile takes their max use count.
   merged.set_use_count(27);
 
@@ -464,14 +466,14 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncShouldNotSyncUpWhenNotNeeded) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.set_use_count(13);
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile matches the local one and has some additional data.
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kHttpOrigin);
+  AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Merging two profile takes their max use count, so use count of 27 is taken.
@@ -489,14 +491,14 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncNotMatchNonsimilarEntries) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile has a different street address.
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kHttpOrigin);
+  AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
@@ -514,13 +516,14 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncDoesNotMatchLocalVerifiedEntry) {
   // The local entry is verified, should not get merged.
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kSettingsOrigin);
+  AutofillProfile local(kSmallerGuid);
+  local.set_origin(kSettingsOrigin);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile is similar to the local one.
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kHttpOrigin);
+  AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
@@ -537,14 +540,15 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
 
 TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
        MergeSimilarEntriesForInitialSyncDoesNotMatchRemoteVerifiedEntry) {
-  AutofillProfile local = AutofillProfile(kSmallerGuid, kHttpOrigin);
+  AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
   AddAutofillProfilesToTable({local});
 
   // The remote profile is similar to the local one but is verified and thus it
   // should not get merged.
-  AutofillProfile remote = AutofillProfile(kBiggerGuid, kSettingsOrigin);
+  AutofillProfile remote(kBiggerGuid);
+  remote.set_origin(kSettingsOrigin);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
