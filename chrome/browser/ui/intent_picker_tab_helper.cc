@@ -315,7 +315,7 @@ void IntentPickerTabHelper::DidFinishNavigation(
     bool is_valid_page = navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() &&
                          !navigation_handle->IsErrorPage();
     if (is_valid_page) {
-      apps::MaybeShowIntentPicker(navigation_handle);
+      apps::MaybeShowIntentPicker(web_contents());
     } else {
       ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
     }

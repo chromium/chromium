@@ -8,16 +8,10 @@
 #include "url/gurl.h"
 
 namespace content {
-class NavigationHandle;
 class WebContents;
 }  // namespace content
 
 namespace apps {
-
-// Displays the intent picker icon in the omnibox if the last committed URL
-// has corresponding apps that can open the page.
-// On Chrome OS, this may also display the Intent Picker bubble automatically.
-void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle);
 
 // Displays the intent picker icon in the omnibox, based on the last committed
 // URL in |web_contents|.

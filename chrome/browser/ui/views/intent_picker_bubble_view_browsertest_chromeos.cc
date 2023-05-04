@@ -269,6 +269,14 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
     EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   }
 
+  void NavigateAndWaitForIconUpdate(const GURL& url) {
+    DoAndWaitForIntentPickerIconUpdate([this, url]() {
+      NavigateParams params(browser(), url,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+      ui_test_utils::NavigateToURL(&params);
+    });
+  }
+
   // Dummy method to be called upon bubble closing.
   void OnBubbleClosed(const std::string& selected_app_package,
                       apps::PickerEntryType entry_type,
@@ -373,16 +381,16 @@ class IntentPickerBubbleViewBrowserTestChromeOS : public InProcessBrowserTest,
   base::OnceClosure on_browser_added_callback_;
 };
 
-// Test that the intent picker bubble will pop out for ARC apps.
+// Test that the intent picker bubble will show for ARC apps.
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_BubblePopOut DISABLED_BubblePopOut
+#define MAYBE_ArcOnlyShowBubble Disabled_ArcOnlyShowBubble
 #else
-#define MAYBE_BubblePopOut BubblePopOut
+#define MAYBE_ArcOnlyShowBubble ArcOnlyShowBubble
 #endif
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       MAYBE_BubblePopOut) {
+                       MAYBE_ArcOnlyShowBubble) {
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
@@ -392,20 +400,9 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
@@ -430,28 +427,19 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   EXPECT_FALSE(intent_picker_view->GetVisible());
 }
 
-// Test that intent picker bubble pops up if there is only PWA as candidates.
+// Test that intent picker bubble shows if there is only PWA as candidates.
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                        PWAOnlyShowBubble) {
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = InstallWebApp(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
   EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
@@ -467,100 +455,6 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Launch the app.
   intent_picker_bubble()->AcceptDialog();
   EXPECT_TRUE(VerifyPWALaunched(app_id));
-}
-
-// Test that intent picker bubble will not pop up for non-link navigation.
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       NotLinkDoesNotShowBubble) {
-  GURL test_url(InScopeAppUrl());
-  std::string app_name = "test_name";
-  auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
-
-  chrome::NewTab(browser());
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  EXPECT_FALSE(intent_picker_bubble());
-
-  ClickIconToShowBubble();
-  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
-  auto& app_info = intent_picker_bubble()->app_info_for_testing();
-  ASSERT_EQ(1U, app_info.size());
-  EXPECT_EQ(app_id, app_info[0].launch_name);
-  EXPECT_EQ(app_name, app_info[0].display_name);
-
-  // Launch the default selected app.
-  EXPECT_EQ(0U, launched_arc_apps().size());
-  intent_picker_bubble()->AcceptDialog();
-  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
-}
-
-// Test that dismiss the bubble for 2 times for the same origin will not show
-// the bubble again.
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       DismissBubble) {
-  GURL test_url(InScopeAppUrl());
-  std::string app_name = "test_name";
-  auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
-
-  chrome::NewTab(browser());
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
-  auto& app_info = intent_picker_bubble()->app_info_for_testing();
-  ASSERT_EQ(1U, app_info.size());
-  EXPECT_EQ(app_id, app_info[0].launch_name);
-  EXPECT_EQ(app_name, app_info[0].display_name);
-  EXPECT_TRUE(intent_picker_bubble()->Close());
-
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  EXPECT_TRUE(intent_picker_bubble()->Close());
-
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  EXPECT_FALSE(intent_picker_bubble());
-
-  ClickIconToShowBubble();
-  EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
-  auto& new_app_info = intent_picker_bubble()->app_info_for_testing();
-  ASSERT_EQ(1U, new_app_info.size());
-  EXPECT_EQ(app_id, new_app_info[0].launch_name);
-  EXPECT_EQ(app_name, new_app_info[0].display_name);
-
-  // Launch the default selected app.
-  EXPECT_EQ(0U, launched_arc_apps().size());
-  intent_picker_bubble()->AcceptDialog();
-  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
 
 // Test that show intent picker bubble multiple times without closing doesn't
@@ -602,25 +496,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
       embedded_test_server()->GetURL("/intent_picker/push_state_test.html");
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(1U, app_info.size());
@@ -643,14 +526,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  WaitForAppService();
+  NavigateAndWaitForIconUpdate(test_url);
   EXPECT_FALSE(intent_picker_view->GetVisible());
 
   std::string app_name = "test_name";
@@ -682,22 +558,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = InstallWebApp(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
   ASSERT_NO_FATAL_FAILURE(CheckStayInChrome());
 }
@@ -713,16 +580,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
   ASSERT_NO_FATAL_FAILURE(CheckStayInChrome());
 }
@@ -738,26 +597,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto app_id_pwa = InstallWebApp(app_name_pwa, test_url);
   std::string app_name_arc = "arc_test_name";
   auto app_id_arc = AddArcAppWithIntentFilter(app_name_arc, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(2U, app_info.size());
@@ -827,26 +674,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   auto app_id_pwa = InstallWebApp(app_name_pwa, test_url);
   std::string app_name_arc = "arc_test_name";
   auto app_id_arc = AddArcAppWithIntentFilter(app_name_arc, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  ASSERT_TRUE(intent_picker_bubble());
-  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
   EXPECT_EQ(2U, GetItemContainerSize(intent_picker_bubble()));
   auto& app_info = intent_picker_bubble()->app_info_for_testing();
   ASSERT_EQ(2U, app_info.size());
@@ -898,65 +733,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
   ASSERT_NO_FATAL_FAILURE(CheckStayInChrome());
 }
 
-// Test that remember by choice checkbox works for stay in chrome option for ARC
-// app.
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       RememberStayInChromeARC) {
-  GURL test_url(InScopeAppUrl());
-  std::string app_name = "test_name";
-  auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
-
-  chrome::NewTab(browser());
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-
-  // Check "Remember my choice" and choose "Stay in Chrome".
-  ASSERT_TRUE(remember_selection_checkbox());
-  ASSERT_TRUE(remember_selection_checkbox()->GetEnabled());
-  remember_selection_checkbox()->SetChecked(true);
-  ASSERT_TRUE(intent_picker_bubble());
-  intent_picker_bubble()->CancelDialog();
-
-  // Navigate to the same site again, and see there will be no bubble
-  // pop out, and no app will be launched.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  EXPECT_FALSE(intent_picker_bubble());
-  EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), browser());
-  EXPECT_EQ(launched_arc_apps().size(), 0U);
-}
-
-// Test that remember by choice checkbox works for open ARC app option.
+// Test that remember this choice checkbox works for open ARC app option.
 //
 // TODO(https://crbug.com/1361934): Fix timeouts under MSAN.
 #if defined(MEMORY_SANITIZER)
@@ -969,23 +752,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
   // Check "Remember my choice" and choose "Open App".
   ASSERT_TRUE(remember_selection_checkbox());
@@ -998,54 +771,14 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   // Navigate to the same site again, and verify the app is automatically
   // launched.
   clear_launched_arc_apps();
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  ui_test_utils::NavigateToURL(&params);
-  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
-}
 
-// Test that remember by choice checkbox works for stay in chrome option for
-// PWA.
-IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
-                       RememberStayInChromePWA) {
-  GURL test_url(InScopeAppUrl());
-  std::string app_name = "test_name";
-  auto app_id = InstallWebApp(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
-
-  chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
   NavigateParams params(browser(), test_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
   ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-
-  // Check "Remember my choice" and choose "Stay in Chrome".
-  ASSERT_TRUE(remember_selection_checkbox());
-  ASSERT_TRUE(remember_selection_checkbox()->GetEnabled());
-  remember_selection_checkbox()->SetChecked(true);
-  ASSERT_TRUE(intent_picker_bubble());
-  intent_picker_bubble()->CancelDialog();
-
-  // Navigate to the same site again, and see there will be no bubble
-  // pop out, and no app will be launched.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
-  ui_test_utils::NavigateToURL(&params);
-  WaitForAppService();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
-  EXPECT_FALSE(intent_picker_bubble());
-  EXPECT_EQ(BrowserList::GetInstance()->GetLastActive(), browser());
-  EXPECT_EQ(launched_arc_apps().size(), 0U);
+  ASSERT_NO_FATAL_FAILURE(VerifyArcAppLaunched(app_name, test_url));
 }
 
 // Test that remember by choice checkbox works for open PWA option.
@@ -1057,23 +790,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = InstallWebApp(app_name, test_url);
-  PageActionIconView* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser());
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  // Navigate from a link.
-  NavigateParams params(browser(), test_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
-
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       IntentPickerBubbleView::kViewClassName);
-  // Navigates and waits for loading to finish.
-  ui_test_utils::NavigateToURL(&params);
-
-  waiter.WaitIfNeededAndGet();
-  EXPECT_TRUE(intent_picker_view->GetVisible());
+  NavigateAndWaitForIconUpdate(test_url);
+  ClickIconToShowBubble();
 
   // Check "Remember my choice" and choose "Open App".
   ASSERT_TRUE(remember_selection_checkbox());
@@ -1091,9 +814,9 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  NavigateParams params_new(browser(), test_url,
-                            ui::PageTransition::PAGE_TRANSITION_LINK);
-  Navigate(&params_new);
+  NavigateParams params(browser(), test_url,
+                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  Navigate(&params);
   WaitForBrowserAdded();
 
   EXPECT_TRUE(VerifyPWALaunched(app_id));
@@ -1148,18 +871,8 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewPrerenderingBrowserTestChromeOS,
   // Setup: navigate to the app URL and persist the "Open App" setting. Then
   // close the app.
   {
-    // Navigate from a link.
-    NavigateParams params(browser(), kAppUrl,
-                          ui::PageTransition::PAGE_TRANSITION_LINK);
-
-    views::NamedWidgetShownWaiter waiter(
-        views::test::AnyWidgetTestPasskey{},
-        IntentPickerBubbleView::kViewClassName);
-    // Navigates and waits for loading to finish.
-    ui_test_utils::NavigateToURL(&params);
-
-    waiter.WaitIfNeededAndGet();
-    EXPECT_TRUE(GetIntentPickerIcon()->GetVisible());
+    NavigateAndWaitForIconUpdate(kAppUrl);
+    ClickIconToShowBubble();
 
     // Check "Remember my choice" and choose "Open App".
     ASSERT_TRUE(remember_selection_checkbox());

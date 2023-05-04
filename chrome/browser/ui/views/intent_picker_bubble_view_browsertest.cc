@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_EQ(nullptr, intent_picker_bubble());
 }
 
-// TODO(crbug.com/1252812): Enable the following two tests on Lacros.
+// TODO(crbug.com/1252812): Enable the following test on Lacros.
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Tests that clicking a link from a tabbed browser to within the scope of an
 // installed app shows the intent picker icon in Omnibox.
@@ -167,44 +167,6 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconBrowserTest,
   EXPECT_TRUE(intent_picker_icon->GetVisible());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Tests that clicking a link from an app browser to either within or outside
-// the scope of an installed app does not show the intent picker, even when an
-// outside of scope link is opened within the context of the PWA.
-IN_PROC_BROWSER_TEST_P(
-    IntentPickerIconBrowserTest,
-    NavigationInAppWindowToInScopeLinkDoesNotShowIntentPicker) {
-  InstallTestWebApp();
-
-  // No intent picker should be seen when first opening the web app.
-  Browser* app_browser = OpenTestWebApp();
-  EXPECT_EQ(nullptr, intent_picker_bubble());
-
-  {
-    const GURL in_scope_url =
-        https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-    TestActionDoesNotOpenAppWindow(
-        app_browser, in_scope_url,
-        base::BindOnce(&ClickLinkAndWait,
-                       app_browser->tab_strip_model()->GetActiveWebContents(),
-                       in_scope_url, LinkTarget::SELF, GetParam()));
-
-    EXPECT_EQ(nullptr, intent_picker_bubble());
-  }
-
-  {
-    const GURL out_of_scope_url =
-        https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-    TestActionDoesNotOpenAppWindow(
-        app_browser, out_of_scope_url,
-        base::BindOnce(&ClickLinkAndWait,
-                       app_browser->tab_strip_model()->GetActiveWebContents(),
-                       out_of_scope_url, LinkTarget::SELF, GetParam()));
-
-    EXPECT_EQ(nullptr, intent_picker_bubble());
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // TODO(crbug.com/1395393): This test is flaky on Mac.

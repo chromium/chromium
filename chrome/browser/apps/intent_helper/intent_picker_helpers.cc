@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "components/feature_engagement/public/tracker.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/favicon_size.h"
 
@@ -159,9 +158,8 @@ void OnIntentPickerClosed(base::WeakPtr<content::WebContents> web_contents,
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  OnIntentPickerClosedChromeOs(web_contents, PickerShowState::kOmnibox, url,
-                               launch_name, entry_type, close_reason,
-                               should_persist);
+  OnIntentPickerClosedChromeOs(web_contents, url, launch_name, entry_type,
+                               close_reason, should_persist);
 #else
   const bool should_launch_app =
       close_reason == apps::IntentPickerCloseReason::OPEN_APP;
@@ -244,45 +242,6 @@ void ShowIntentPickerOrLaunchAppImpl(content::WebContents* web_contents,
 }
 
 }  // namespace
-
-void MaybeShowIntentPicker(content::NavigationHandle* navigation_handle) {
-  content::WebContents* web_contents = navigation_handle->GetWebContents();
-  IntentPickerTabHelper* helper =
-      IntentPickerTabHelper::FromWebContents(web_contents);
-  int commit_count = helper->commit_count();
-
-  auto task = [](base::WeakPtr<content::WebContents> web_contents,
-#if BUILDFLAG(IS_CHROMEOS)
-                 NavigationInfo navigation_info,
-#endif  // BUILDFLAG(IS_CHROMEOS)
-                 IntentPickerTabHelper* helper, int commit_count,
-                 std::vector<IntentPickerAppInfo> apps) {
-    if (!web_contents)
-      return;
-    if (helper->commit_count() != commit_count)
-      return;
-
-    helper->ShowIconForApps(apps);
-#if BUILDFLAG(IS_CHROMEOS)
-    MaybeShowIntentPickerBubble(navigation_info, std::move(apps));
-#endif  // BUILDFLAG(IS_CHROMEOS)
-  };
-
-#if BUILDFLAG(IS_CHROMEOS)
-  NavigationInfo navigation_info = {
-      .web_contents = web_contents,
-      .url = navigation_handle->GetURL(),
-      .starting_url = GetStartingGURL(navigation_handle),
-      .is_navigate_from_link = IsNavigateFromLink(navigation_handle)};
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  GetAppsForIntentPicker(web_contents,
-                         base::BindOnce(task, web_contents->GetWeakPtr(),
-#if BUILDFLAG(IS_CHROMEOS)
-                                        navigation_info,
-#endif  // BUILDFLAG(IS_CHROMEOS)
-                                        helper, commit_count));
-}
 
 void MaybeShowIntentPicker(content::WebContents* web_contents) {
   IntentPickerTabHelper* helper =
