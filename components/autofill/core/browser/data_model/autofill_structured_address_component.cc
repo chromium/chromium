@@ -99,9 +99,10 @@ std::string AddressComponent::GetStorageTypeName() const {
 }
 
 void AddressComponent::CopyFrom(const AddressComponent& other) {
-  DCHECK(GetStorageType() == other.GetStorageType());
-  if (this == &other)
+  CHECK(GetStorageType() == other.GetStorageType());
+  if (this == &other) {
     return;
+  }
 
   if (other.IsValueAssigned()) {
     value_ = other.value_;
@@ -112,7 +113,6 @@ void AddressComponent::CopyFrom(const AddressComponent& other) {
   }
 
   CHECK(other.subcomponents_.size() == subcomponents_.size());
-
   for (size_t i = 0; i < other.subcomponents_.size(); i++)
     subcomponents_[i]->CopyFrom(*other.subcomponents_[i]);
 
@@ -130,8 +130,7 @@ bool AddressComponent::SameAs(const AddressComponent& other) const {
       value_verification_status_ != other.value_verification_status_) {
     return false;
   }
-
-  DCHECK(other.subcomponents_.size() == subcomponents_.size());
+  CHECK(other.subcomponents_.size() == subcomponents_.size());
   for (size_t i = 0; i < other.subcomponents_.size(); i++) {
     if (!(subcomponents_[i]->SameAs(*other.subcomponents_[i]))) {
       return false;
@@ -231,7 +230,7 @@ void AddressComponent::UnsetValue() {
 void AddressComponent::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {
   // A proper AddressComponent tree contains every type only once.
-  DCHECK(supported_types->find(storage_type_) == supported_types->end())
+  CHECK(supported_types->find(storage_type_) == supported_types->end())
       << "The AddressComponent already contains a node that supports this "
          "type: "
       << storage_type_;
@@ -466,12 +465,11 @@ bool AddressComponent::ParseValueAndAssignSubcomponentsByRegularExpression(
       if (field_type == GetStorageTypeName()) {
         continue;
       }
-      bool success = SetValueForType(TypeNameToFieldType(field_type),
-                                     base::UTF8ToUTF16(field_value),
-                                     VerificationStatus::kParsed);
       // Setting the value should always work unless the regular expression is
       // invalid.
-      DCHECK(success);
+      CHECK(SetValueForType(TypeNameToFieldType(field_type),
+                            base::UTF8ToUTF16(field_value),
+                            VerificationStatus::kParsed));
     }
     return true;
   }
@@ -499,11 +497,10 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
     // If there are no tokens left, parsing is done.
     if (token_iterator == space_separated_tokens.end())
       return;
-    // Set the current token to the type and advance the token iterator.
-    bool success = SetValueForType(subcomponent_types[i], *token_iterator,
-                                   VerificationStatus::kParsed);
-    // By design, setting the value should never fail.
-    DCHECK(success);
+    // Set the current token to the type and advance the token iterator. By
+    // design, this should never fail.
+    CHECK(SetValueForType(subcomponent_types[i], *token_iterator,
+                          VerificationStatus::kParsed));
     token_iterator++;
   }
 
@@ -513,9 +510,8 @@ void AddressComponent::ParseValueAndAssignSubcomponentsByFallbackMethod() {
       u" ");
   // By design, it should be possible to assign the value unless the regular
   // expression is wrong.
-  bool success = SetValueForType(subcomponent_types.back(), remaining_tokens,
-                                 VerificationStatus::kParsed);
-  DCHECK(success);
+  CHECK(SetValueForType(subcomponent_types.back(), remaining_tokens,
+                        VerificationStatus::kParsed));
 }
 
 bool AddressComponent::AllDescendantsAreEmpty() const {
@@ -620,7 +616,7 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
 
       std::vector<std::u16string> placeholder_tokens = base::SplitString(
           placeholder, u";", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      DCHECK(placeholder_tokens.size() > 0);
+      CHECK(!placeholder_tokens.empty());
 
       // By convention, the first token is the type of the placeholder.
       std::u16string type_name = placeholder_tokens.at(0);
@@ -766,8 +762,7 @@ void AddressComponent::MergeVerificationStatuses(
       HasNewerValuePrecedenceInMerging(newer_component)) {
     value_verification_status_ = newer_component.GetVerificationStatus();
   }
-
-  DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+  CHECK(newer_component.subcomponents_.size() == subcomponents_.size());
   for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
     subcomponents_[i]->MergeVerificationStatuses(
         *newer_component.subcomponents_.at(i));
@@ -879,7 +874,7 @@ bool AddressComponent::IsMergeableWithComponent(
   // Checks if all child nodes are mergeable.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
     bool is_mergeable = true;
-    DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+    CHECK(newer_component.subcomponents_.size() == subcomponents_.size());
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
       if (!subcomponents_[i]->IsMergeableWithComponent(
               *newer_component.subcomponents_[i])) {
@@ -1077,12 +1072,13 @@ bool AddressComponent::MergeWithComponent(
   // If the corresponding mode is active, ignore this mode and pair-wise merge
   // the child tokens. Reformat this nodes from its children after the merge.
   if (merge_mode_ & kMergeChildrenAndReformatIfNeeded) {
-    DCHECK(newer_component.subcomponents_.size() == subcomponents_.size());
+    CHECK(newer_component.subcomponents_.size() == subcomponents_.size());
     for (size_t i = 0; i < newer_component.subcomponents_.size(); i++) {
-      bool success = subcomponents_[i]->MergeWithComponent(
-          *newer_component.subcomponents_[i], newer_was_more_recently_used);
-      if (!success)
+      if (!subcomponents_[i]->MergeWithComponent(
+              *newer_component.subcomponents_[i],
+              newer_was_more_recently_used)) {
         return false;
+      }
     }
     // If the two values are already token equivalent, use the value of the
     // component with the better verification status, or if both are the same,
@@ -1153,16 +1149,14 @@ bool AddressComponent::MergeTokenEquivalentComponent(
 
   const std::vector<AddressComponent*> other_subcomponents =
       newer_component.Subcomponents();
-  DCHECK(subcomponents_.size() == other_subcomponents.size());
-
+  CHECK(subcomponents_.size() == other_subcomponents.size());
   if (HasNewerValuePrecedenceInMerging(newer_component)) {
     SetValue(newer_component.GetValue(),
              newer_component.GetVerificationStatus());
   }
-
-  if (IsAtomic())
+  if (IsAtomic()) {
     return true;
-
+  }
   // If the other component has subtree, just keep this one.
   if (newer_component.AllDescendantsAreEmpty()) {
     return true;
@@ -1206,9 +1200,8 @@ bool AddressComponent::MergeTokenEquivalentComponent(
   unmerged_indices.reserve(subcomponents_.size());
 
   for (size_t i = 0; i < subcomponents_.size(); i++) {
-    DCHECK(subcomponents_[i]->GetStorageType() ==
-           other_subcomponents.at(i)->GetStorageType());
-
+    CHECK(subcomponents_[i]->GetStorageType() ==
+          other_subcomponents.at(i)->GetStorageType());
     // If the components can't be merged directly, store the unmerged index and
     // sum the verification scores to decide which component's substructure to
     // use.
@@ -1261,9 +1254,8 @@ void AddressComponent::ConsumeAdditionalToken(
 bool AddressComponent::MergeSubsetComponent(
     const AddressComponent& subset_component,
     const SortedTokenComparisonResult& token_comparison_result) {
-  DCHECK(token_comparison_result.IsSingleTokenSuperset());
-  DCHECK(token_comparison_result.additional_tokens.size() == 1);
-
+  CHECK(token_comparison_result.IsSingleTokenSuperset());
+  CHECK(token_comparison_result.additional_tokens.size() == 1);
   std::u16string token_to_consume =
       token_comparison_result.additional_tokens.back().value;
 
@@ -1280,9 +1272,8 @@ bool AddressComponent::MergeSubsetComponent(
   unmerged_indices.reserve(subcomponents_.size());
 
   for (size_t i = 0; i < subcomponents_.size(); i++) {
-    DCHECK(subcomponents_[i]->GetStorageType() ==
-           subset_subcomponents.at(i)->GetStorageType());
-
+    CHECK(subcomponents_[i]->GetStorageType() ==
+          subset_subcomponents.at(i)->GetStorageType());
     AddressComponent* subcomponent = subcomponents_[i];
     const AddressComponent* subset_subcomponent = subset_subcomponents.at(i);
 
