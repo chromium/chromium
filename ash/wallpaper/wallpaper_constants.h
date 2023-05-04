@@ -18,6 +18,10 @@ constexpr float kOverviewBlur = ColorProvider::kBackgroundBlurSigma;
 // Blur sigma in lock/login screen.
 constexpr float kLockLoginBlur = 30.0f;
 
+// The ID of the time of day wallpaper collection served by backdrop server.
+constexpr char kTimeOfDayWallpaperCollectionId[] =
+    "_time_of_day_chromebook_collection";
+
 }  // namespace wallpaper_constants
 
 }  // namespace ash

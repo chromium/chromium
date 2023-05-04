@@ -25,6 +25,7 @@
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
@@ -701,6 +702,10 @@ void PersonalizationAppWallpaperProviderImpl::SetDailyRefreshCollectionId(
   DCHECK(wallpaper_controller);
   if (!wallpaper_controller->CanSetUserWallpaper(GetAccountId(profile_))) {
     wallpaper_receiver_.ReportBadMessage("Invalid request to set wallpaper");
+    return;
+  }
+  if (collection_id == wallpaper_constants::kTimeOfDayWallpaperCollectionId) {
+    wallpaper_receiver_.ReportBadMessage("Unsupported wallpaper collection");
     return;
   }
   wallpaper_controller->SetDailyRefreshCollectionId(GetAccountId(profile_),

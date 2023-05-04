@@ -67,7 +67,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
       },
       {
         descriptionContent: '',
-        id: 'id_3',
+        id: loadTimeData.getString('timeOfDayWallpaperCollectionId'),
         name: 'time-of-day',
         previews: [
           {url: 'https://collections.googleusercontent.com/tod'},
