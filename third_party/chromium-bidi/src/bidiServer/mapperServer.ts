@@ -103,9 +103,13 @@ export class MapperServer {
   }
 
   async #sendBidiMessage(bidiMessageJson: string): Promise<void> {
-    await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
-      expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
-    });
+    try {
+      await this.#mapperCdpClient.sendCommand('Runtime.evaluate', {
+        expression: `onBidiMessage(${JSON.stringify(bidiMessageJson)})`,
+      });
+    } catch (error) {
+      debugInternal('Call to onBidiMessage failed', error);
+    }
   }
 
   #onBidiMessage(bidiMessage: string): void {

@@ -24,6 +24,7 @@ import {CdpMessage} from './cdpMessage.js';
 interface CdpCallbacks {
   resolve: (messageObj: object) => void;
   reject: (errorObj: object) => void;
+  error: Error;
 }
 
 /**
@@ -55,8 +56,8 @@ export class CdpConnection {
    */
   close() {
     this.#transport.close();
-    for (const [, {reject}] of this.#commandCallbacks) {
-      reject(new Error('Disconnected'));
+    for (const [, {reject, error}] of this.#commandCallbacks) {
+      reject(error);
     }
     this.#commandCallbacks.clear();
     this.#sessionCdpClients.clear();
@@ -89,7 +90,15 @@ export class CdpConnection {
   ): Promise<object> {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;
-      this.#commandCallbacks.set(id, {resolve, reject});
+      this.#commandCallbacks.set(id, {
+        resolve,
+        reject,
+        error: new Error(
+          `${method} ${JSON.stringify(
+            params
+          )} ${sessionId} call rejected because the connection has been closed.`
+        ),
+      });
       const messageObj: CdpMessage<CdpMethod> = {id, method, params};
       if (sessionId) {
         messageObj.sessionId = sessionId;
@@ -123,6 +132,7 @@ export class CdpConnection {
     if (parsed.id !== undefined) {
       // Handle command response.
       const callbacks = this.#commandCallbacks.get(parsed.id);
+      this.#commandCallbacks.delete(parsed.id);
       if (callbacks) {
         if (parsed.result) {
           callbacks.resolve(parsed.result);
