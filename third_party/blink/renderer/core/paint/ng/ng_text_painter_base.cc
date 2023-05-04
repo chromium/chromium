@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_painter_base.h"
 
-#include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/applied_decoration_painter.h"
@@ -70,12 +69,14 @@ void NGTextPainterBase::PaintUnderOrOverLineDecorationShadows(
     const cc::PaintFlags* flags,
     const TextPaintStyle& text_style,
     GraphicsContext& context) {
-  const ShadowList* shadow_list = text_style.shadow.get();
-  if (!shadow_list) {
+  if (text_style.shadow == nullptr)
     return;
-  }
 
-  for (const auto& shadow : base::Reversed(shadow_list->Shadows())) {
+  const ShadowList* shadow_list = text_style.shadow.get();
+  if (shadow_list == nullptr)
+    return;
+
+  for (const auto& shadow : shadow_list->Shadows()) {
     const Color& color = shadow.GetColor().Resolve(text_style.current_color,
                                                    text_style.color_scheme);
     // Detect when there's no effective shadow.
