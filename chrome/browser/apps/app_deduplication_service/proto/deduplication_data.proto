@@ -21,11 +21,16 @@ message Application {
 }
 
 message DeduplicateData {
-  // The list of Application Groups corresponding to the requested applications.
-  repeated Group app_group = 1;
+  // An Application Group representing a set of "duplicate" apps.
+  message AppGroup {
+    optional string app_group_uuid = 1;
 
-  message Group {
     // Applications which belong to the App Group.
-    repeated Application app = 1;
+    repeated string package_id = 2;
+
+    repeated Application app = 3;
   }
+
+  // The list of Application Groups corresponding to the requested applications.
+  repeated AppGroup app_group = 1;
 }

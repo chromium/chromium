@@ -485,6 +485,11 @@ TEST_F(AppDeduplicationServiceAlmanacTest, DeduplicateDataToEntries) {
   proto::DeduplicateData data;
 
   auto* skype_group = data.add_app_group();
+  skype_group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  skype_group->add_package_id();
+  skype_group->set_package_id(0, "phonehub:com.skype.raider");
+  skype_group->add_package_id();
+  skype_group->set_package_id(1, "website:https://web.skype.com/");
   auto* skype_app_1 = skype_group->add_app();
   skype_app_1->set_app_id("com.skype.raider");
   skype_app_1->set_platform("phonehub");
@@ -493,6 +498,11 @@ TEST_F(AppDeduplicationServiceAlmanacTest, DeduplicateDataToEntries) {
   skype_app_2->set_platform("website");
 
   auto* duo_group = data.add_app_group();
+  duo_group->set_app_group_uuid("1d460a2b-d6d5-471d-b1e6-bbfc87971ea8");
+  duo_group->add_package_id();
+  duo_group->set_package_id(0, "arc:com.google.android.apps.tachyon");
+  duo_group->add_package_id();
+  duo_group->set_package_id(1, "web:https://duo.google.com/?lfhs=2");
   auto* duo_app_1 = duo_group->add_app();
   duo_app_1->set_app_id("com.google.android.apps.tachyon");
   duo_app_1->set_platform("arc");
@@ -567,7 +577,11 @@ TEST_F(AppDeduplicationServiceAlmanacTest, PrefUnchangedAfterServerError) {
 
 TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
   proto::DeduplicateData data;
-  auto* app = data.add_app_group()->add_app();
+  auto* group = data.add_app_group();
+  group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  group->add_package_id();
+  group->set_package_id(0, "phonehub:com.skype.raider");
+  auto* app = group->add_app();
   app->set_app_id("com.skype.raider");
   app->set_platform("phonehub");
 

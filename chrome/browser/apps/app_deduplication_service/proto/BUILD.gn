@@ -5,8 +5,11 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
+  proto_in_dir = "//"
   sources = [
     "app_deduplication.proto",
     "deduplication_data.proto",
   ]
+
+  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }

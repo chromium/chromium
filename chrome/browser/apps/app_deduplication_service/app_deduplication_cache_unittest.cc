@@ -43,7 +43,11 @@ class AppDeduplicationCacheTest : public testing::Test {
 
 TEST_F(AppDeduplicationCacheTest, WriteAndReadDataSuccess) {
   proto::DeduplicateData data;
-  auto* app = data.add_app_group()->add_app();
+  auto* group = data.add_app_group();
+  group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  group->add_package_id();
+  group->set_package_id(0, "phonehub:com.skype.raidar");
+  auto* app = group->add_app();
   app->set_app_id("com.skype.raidar");
   app->set_platform("phonehub");
 
@@ -78,7 +82,11 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataSuccess) {
     EXPECT_TRUE(data_read.has_value());
     EXPECT_EQ(data_read->app_group_size(), 1);
 
-    auto observed_app = data_read->app_group(0).app(0);
+    auto observed_group = data.app_group(0);
+    EXPECT_EQ(observed_group.app_group_uuid(),
+              "15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+    EXPECT_EQ(observed_group.package_id(0), "phonehub:com.skype.raidar");
+    auto observed_app = data.app_group(0).app(0);
     EXPECT_EQ(observed_app.app_id(), "com.skype.raidar");
     EXPECT_EQ(observed_app.platform(), "phonehub");
   }
@@ -86,7 +94,11 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataSuccess) {
 
 TEST_F(AppDeduplicationCacheTest, WriteAndReadDataExistingPath) {
   proto::DeduplicateData data;
-  auto* app = data.add_app_group()->add_app();
+  auto* group = data.add_app_group();
+  group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+  group->add_package_id();
+  group->set_package_id(0, "phonehub:com.skype.raidar");
+  auto* app = group->add_app();
   app->set_app_id("com.skype.raidar");
   app->set_platform("phonehub");
 
@@ -121,7 +133,11 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataExistingPath) {
     EXPECT_TRUE(data_read.has_value());
     EXPECT_EQ(data_read->app_group_size(), 1);
 
-    auto observed_app = data_read->app_group(0).app(0);
+    auto observed_group = data.app_group(0);
+    EXPECT_EQ(observed_group.app_group_uuid(),
+              "15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
+    EXPECT_EQ(observed_group.package_id(0), "phonehub:com.skype.raidar");
+    auto observed_app = data.app_group(0).app(0);
     EXPECT_EQ(observed_app.app_id(), "com.skype.raidar");
     EXPECT_EQ(observed_app.platform(), "phonehub");
   }
