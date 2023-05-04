@@ -512,7 +512,7 @@ public class AwSettings {
      * See {@link android.webkit.WebSettings#setNeedInitialFocus}.
      */
     public void setShouldFocusFirstNode(boolean flag) {
-        if (TRACE) Log.i(TAG, "setNeedInitialFocusNode=" + flag);
+        if (TRACE) Log.i(TAG, "setNeedInitialFocus=" + flag);
         synchronized (mAwSettingsLock) {
             mShouldFocusFirstNode = flag;
         }
