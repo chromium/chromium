@@ -47,11 +47,7 @@ class NameInfo : public FormGroup {
   // conflicting iff they are on the same root-to-leaf path.
   // For example, NAME_FIRST is child of NAME_LAST and if both are set, the tree
   // cannot be completed.
-  // |profile_is_verified| indicates that the profile is already verified.
-  bool FinalizeAfterImport(bool profile_is_verified);
-
-  // Convenience wrapper to invoke finalization for unverified profiles.
-  bool FinalizeAfterImport() { return FinalizeAfterImport(false); }
+  bool FinalizeAfterImport();
 
   // Returns true if the structured-name information in |this| and |newer| are
   // mergeable. Note, returns false if |newer| is variant of |this| or vice

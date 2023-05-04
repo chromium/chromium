@@ -149,7 +149,7 @@ NameHonorificPrefix::NameHonorificPrefix(AddressComponent* parent)
 
 NameHonorificPrefix::~NameHonorificPrefix() = default;
 
-void NameFull::MigrateLegacyStructure(bool is_verified_profile) {
+void NameFull::MigrateLegacyStructure() {
   // Only if the name was imported from a legacy structure, the component has no
   if (GetVerificationStatus() != VerificationStatus::kNoStatus)
     return;
@@ -157,12 +157,7 @@ void NameFull::MigrateLegacyStructure(bool is_verified_profile) {
   // If the value of the component is set, use this value as a basis to migrate
   // the name.
   if (!GetValue().empty()) {
-    // If the profile is verified, set the verification status to accordingly
-    // and reset all the subcomponents.
-    VerificationStatus status = is_verified_profile
-                                    ? VerificationStatus::kUserVerified
-                                    : VerificationStatus::kObserved;
-    SetValue(GetValue(), status);
+    SetValue(GetValue(), VerificationStatus::kObserved);
 
     // Set the verification status of all subcomponents to |kParsed|.
     for (auto* subcomponent : Subcomponents()) {
@@ -264,14 +259,14 @@ NameFullWithPrefix::GetParseRegularExpressionsByRelevance() const {
   return {pattern_provider->GetRegEx(RegEx::kParsePrefixedName)};
 }
 
-void NameFullWithPrefix::MigrateLegacyStructure(bool is_verified_profile) {
+void NameFullWithPrefix::MigrateLegacyStructure() {
   // If a verification status is set, the structure is already migrated.
   if (GetVerificationStatus() != VerificationStatus::kNoStatus) {
     return;
   }
 
   // If it is not migrated, continue with migrating the full name.
-  name_full_.MigrateLegacyStructure(is_verified_profile);
+  name_full_.MigrateLegacyStructure();
 
   // Check if the tree is already in a completed state.
   // If yes, build the root node from the subcomponents.

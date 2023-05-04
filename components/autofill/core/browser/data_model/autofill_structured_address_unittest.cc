@@ -437,7 +437,7 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
 
   // Invoke the migration. This should only change the verification statuses of
   // the set values.
-  address.MigrateLegacyStructure(/*is_verified_profile=*/false);
+  address.MigrateLegacyStructure();
 
   AddressComponentTestValues expectation_after_migration = {
       {.type = ADDRESS_HOME_STREET_ADDRESS,
@@ -489,47 +489,6 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
   VerifyTestValues(&address, expectation_after_completion);
 }
 
-// Tests the migration of a structured address in a verified profile.
-TEST(AutofillStructuredAddress, TestMigrationOfVerifiedProfile) {
-  AddressNode address;
-  AddressComponentTestValues test_values = {
-      {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "123 Street name",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_STATE,
-       .value = "CA",
-       .status = VerificationStatus::kNoStatus}};
-
-  SetTestValues(&address, test_values, /*finalize=*/false);
-
-  // Invoke the migration. All non-empty fields should be marked as
-  // user-verified.
-  address.MigrateLegacyStructure(/*is_verified_profile=*/true);
-
-  AddressComponentTestValues expectation_after_migration = {
-      {.type = ADDRESS_HOME_STREET_ADDRESS,
-       .value = "123 Street name",
-       .status = VerificationStatus::kUserVerified},
-      {.type = ADDRESS_HOME_COUNTRY,
-       .value = "US",
-       .status = VerificationStatus::kUserVerified},
-      {.type = ADDRESS_HOME_STATE,
-       .value = "CA",
-       .status = VerificationStatus::kUserVerified},
-      {.type = ADDRESS_HOME_ADDRESS,
-       .value = "",
-       .status = VerificationStatus::kNoStatus},
-      {.type = ADDRESS_HOME_CITY,
-       .value = "",
-       .status = VerificationStatus::kNoStatus},
-  };
-
-  VerifyTestValues(&address, expectation_after_migration);
-}
-
 // Tests that the migration does not happen of the root node
 // (ADDRESS_HOME_ADDRESS) already has a verification status.
 TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
@@ -552,7 +511,7 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization_AlreadyMigrated) {
 
   // Invoke the migration. Since the ADDRESS_HOME_ADDRESS node already has a
   // verification status, the address is considered as already migrated.
-  address.MigrateLegacyStructure(/*is_verified_profile=*/false);
+  address.MigrateLegacyStructure();
 
   // Verify that the address was not changed by the migration.
   VerifyTestValues(&address, test_values);

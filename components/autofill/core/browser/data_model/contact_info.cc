@@ -63,8 +63,8 @@ bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
   return name_->IsMergeableWithComponent(newer.GetStructuredName());
 }
 
-bool NameInfo::FinalizeAfterImport(bool profile_is_verified) {
-  name_->MigrateLegacyStructure(profile_is_verified);
+bool NameInfo::FinalizeAfterImport() {
+  name_->MigrateLegacyStructure();
   return name_->CompleteFullTree();
 }
 

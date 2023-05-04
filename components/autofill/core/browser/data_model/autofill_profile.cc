@@ -1162,10 +1162,12 @@ std::ostream& operator<<(std::ostream& os, const AutofillProfile& profile) {
 
 bool AutofillProfile::FinalizeAfterImport() {
   bool success = true;
-  if (!name_.FinalizeAfterImport(IsVerified()))
+  if (!name_.FinalizeAfterImport()) {
     success = false;
-  if (!address_.FinalizeAfterImport(IsVerified()))
+  }
+  if (!address_.FinalizeAfterImport()) {
     success = false;
+  }
 
   return success;
 }

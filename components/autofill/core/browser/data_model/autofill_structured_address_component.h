@@ -152,7 +152,7 @@ class AddressComponent {
 
   // Migrates from a legacy structure in which tokens are imported without
   // a status.
-  virtual void MigrateLegacyStructure(bool is_verified_profile) {}
+  virtual void MigrateLegacyStructure() {}
 
   // Comparison operators are deleted in favor of and |SameAs()|.
   bool operator==(const AddressComponent& right) const = delete;

@@ -229,7 +229,7 @@ class AddressNode : public AddressComponent {
   AddressNode& operator=(const AddressNode& other);
   ~AddressNode() override;
 
-  void MigrateLegacyStructure(bool is_verified_profile) override;
+  void MigrateLegacyStructure() override;
 
   // Checks if the street address contains an invalid structure and wipes it if
   // necessary.

@@ -586,7 +586,7 @@ TEST(AutofillStructuredName, TestPopulationOfNameFullWithPrefix) {
        .value = "Ruiz y Picasso",
        .status = VerificationStatus::kParsed}};
 
-  name_full_with_prefix.MigrateLegacyStructure(true);
+  name_full_with_prefix.MigrateLegacyStructure();
   name_full_with_prefix.CompleteFullTree();
 
   VerifyTestValues(&name_full_with_prefix, expectation);
@@ -822,7 +822,7 @@ TEST(AutofillStructuredName,
   name.SetValueForType(NAME_MIDDLE, u"Neo", VerificationStatus::kNoStatus);
   name.SetValueForType(NAME_LAST, u"Anderson", VerificationStatus::kNoStatus);
 
-  name.MigrateLegacyStructure(false);
+  name.MigrateLegacyStructure();
 
   // Since the full name is set and the profile is not verified it is promoted
   // to observed. All other tokens are reset.
@@ -844,37 +844,6 @@ TEST(AutofillStructuredName,
             VerificationStatus::kParsed);
 }
 
-TEST(AutofillStructuredName,
-     MigrationFromLegacyStructure_WithFullName_Verified) {
-  NameFull name;
-  name.SetValueForType(NAME_FULL, u"Thomas Neo Anderson",
-                       VerificationStatus::kNoStatus);
-  name.SetValueForType(NAME_FIRST, u"Thomas", VerificationStatus::kNoStatus);
-  name.SetValueForType(NAME_MIDDLE, u"Neo", VerificationStatus::kNoStatus);
-  name.SetValueForType(NAME_LAST, u"Anderson", VerificationStatus::kNoStatus);
-
-  name.MigrateLegacyStructure(true);
-
-  // Since the full name is set and the profile is verified, it is promoted to
-  // kUserVerified. All other tokens are reset.
-  EXPECT_EQ(name.GetValueForType(NAME_FULL), u"Thomas Neo Anderson");
-  EXPECT_EQ(name.GetValueForType(NAME_FIRST), u"Thomas");
-  EXPECT_EQ(name.GetValueForType(NAME_MIDDLE), u"Neo");
-  EXPECT_EQ(name.GetValueForType(NAME_LAST), u"Anderson");
-  EXPECT_EQ(name.GetValueForType(NAME_LAST_SECOND), u"Anderson");
-
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_FIRST),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_MIDDLE),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_LAST),
-            VerificationStatus::kParsed);
-  EXPECT_EQ(name.GetVerificationStatusForType(NAME_LAST_SECOND),
-            VerificationStatus::kParsed);
-}
-
 TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
   NameFull name;
   // The first name has an incorrect componentization of the last name, but
@@ -884,7 +853,7 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
   name.SetValueForType(NAME_MIDDLE, u"Neo", VerificationStatus::kNoStatus);
   name.SetValueForType(NAME_LAST, u"Anderson", VerificationStatus::kNoStatus);
 
-  name.MigrateLegacyStructure(false);
+  name.MigrateLegacyStructure();
 
   // Since the full name is not set, the substructure is set to observed.
   // This is an edge case that normally should not happen.

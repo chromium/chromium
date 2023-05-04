@@ -43,8 +43,8 @@ bool Address::operator==(const Address& other) const {
   return structured_address_.SameAs(other.structured_address_);
 }
 
-bool Address::FinalizeAfterImport(bool profile_is_verified) {
-  structured_address_.MigrateLegacyStructure(profile_is_verified);
+bool Address::FinalizeAfterImport() {
+  structured_address_.MigrateLegacyStructure();
   bool result = structured_address_.CompleteFullTree();
   // If the address could not be completed, it is possible that it contains an
   // invalid structure.

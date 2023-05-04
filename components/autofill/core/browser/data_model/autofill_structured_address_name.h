@@ -135,7 +135,7 @@ class NameFull : public AddressComponent {
   NameFull(const NameFull& other);
   ~NameFull() override;
 
-  void MigrateLegacyStructure(bool is_verified_profile) override;
+  void MigrateLegacyStructure() override;
 
  protected:
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
@@ -190,7 +190,7 @@ class NameFullWithPrefix : public AddressComponent {
   NameFullWithPrefix(const NameFullWithPrefix& other);
   ~NameFullWithPrefix() override;
 
-  void MigrateLegacyStructure(bool is_verified_profile) override;
+  void MigrateLegacyStructure() override;
 
  protected:
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
