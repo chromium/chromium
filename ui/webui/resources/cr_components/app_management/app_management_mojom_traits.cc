@@ -110,8 +110,13 @@ bool StructTraits<PermissionDataView, apps::PermissionPtr>::Read(
   if (!data.ReadValue(&value))
     return false;
 
+  absl::optional<std::string> details;
+  if (!data.ReadDetails(&details)) {
+    return false;
+  }
+
   *out = std::make_unique<apps::Permission>(permission_type, std::move(value),
-                                            data.is_managed());
+                                            data.is_managed(), details);
   return true;
 }
 

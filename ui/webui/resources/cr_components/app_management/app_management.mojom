@@ -62,6 +62,7 @@ struct Permission {
   PermissionValue value;
   // If the permission is managed by an enterprise policy.
   bool is_managed;
+  string? details;
 };
 
 // How the app was installed.

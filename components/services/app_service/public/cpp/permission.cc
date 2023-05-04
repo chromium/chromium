@@ -63,17 +63,19 @@ bool PermissionValue::IsPermissionEnabled() const {
 
 Permission::Permission(PermissionType permission_type,
                        PermissionValuePtr value,
-                       bool is_managed)
+                       bool is_managed,
+                       absl::optional<std::string> details)
     : permission_type(permission_type),
       value(std::move(value)),
-      is_managed(is_managed) {}
+      is_managed(is_managed),
+      details(std::move(details)) {}
 
 Permission::~Permission() = default;
 
 bool Permission::operator==(const Permission& other) const {
   return permission_type == other.permission_type &&
          ((!value && !other.value) || (*value == *other.value)) &&
-         is_managed == other.is_managed;
+         is_managed == other.is_managed && details == other.details;
 }
 
 bool Permission::operator!=(const Permission& other) const {
@@ -86,7 +88,7 @@ PermissionPtr Permission::Clone() const {
   }
 
   return std::make_unique<Permission>(permission_type, value->Clone(),
-                                      is_managed);
+                                      is_managed, details);
 }
 
 bool Permission::IsPermissionEnabled() const {
@@ -105,6 +107,9 @@ std::string Permission::ToString() const {
       out << " tristate_value: "
           << EnumToString(absl::get<TriState>(value->value));
     }
+  }
+  if (details.has_value()) {
+    out << "details: " << details.value() << std::endl;
   }
   out << " is_managed: " << (is_managed ? "true" : "false") << std::endl;
   return out.str();

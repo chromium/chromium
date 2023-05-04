@@ -154,6 +154,9 @@
   <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app.">
     Allowed
   </message>
+  <message name="IDS_APP_MANAGEMENT_PERMISSION_ALLOWED_WITH_DETAILS" desc="Label explaining that access to a permission (e.g. camera access) is allowed for an app. The placeholder after the dash provides additional details about what access is allowed.">
+    Allowed – <ph name="PERMISSION_DETAILS">$1<ex>While in use</ex></ph>
+  </message>
   <message name="IDS_APP_MANAGEMENT_PERMISSION_DENIED" desc="Label explaining that access to a permission (e.g. camera access) is denied for an app.">
     Denied
   </message>

@@ -46,6 +46,10 @@ struct StructTraits<PermissionDataView, apps::PermissionPtr> {
 
   static bool is_managed(const apps::PermissionPtr& r) { return r->is_managed; }
 
+  static absl::optional<std::string> details(const apps::PermissionPtr& r) {
+    return r->details;
+  }
+
   static bool Read(PermissionDataView, apps::PermissionPtr* out);
 };
 

@@ -190,6 +190,30 @@ suite('<app-management-arc-detail-view>', () => {
           locationItem.shadowRoot.querySelector('#description')
               .textContent.trim());
     });
+
+    test('Permission display with detail', async () => {
+      const permission = createBoolPermission(
+          PermissionType.kLocation, /*value=*/ true,
+          /*is_managed=*/ false);
+      permission.details = 'While in use';
+
+      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      await flushTasks();
+
+      const locationItem =
+          getPermissionItemByType(arcPermissionView, 'kLocation');
+
+      assertTrue(locationItem.shadowRoot.querySelector('#description')
+                     .textContent.includes('While in use'));
+
+      permission.value.boolValue = false;
+
+      fakeHandler.setPermission(arcPermissionView.app_.id, permission);
+      await flushTasks();
+
+      assertFalse(locationItem.shadowRoot.querySelector('#description')
+                      .textContent.includes('While in use'));
+    });
   });
 
 });
