@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/webrtc-pc/#rtcrtpcodecparameters*
-dictionary RTCRtpCodecParameters {
-    required octet          payloadType;
-    required DOMString      mimeType;
-    required unsigned long  clockRate;
-             unsigned short channels;
-             DOMString      sdpFmtpLine;
+// https://w3c.github.io/webrtc-pc/#rtcrtpcodecparameters
+dictionary RTCRtpCodecParameters : RTCRtpCodec {
+    required octet payloadType;
 };

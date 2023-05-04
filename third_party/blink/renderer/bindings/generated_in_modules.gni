@@ -935,6 +935,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtcp_parameters.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_capabilities.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_capabilities.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec_capability.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec_capability.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec_parameters.cc",
