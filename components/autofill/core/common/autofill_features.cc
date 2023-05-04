@@ -95,13 +95,6 @@ BASE_FEATURE(kAutofillConsiderPhoneNumberSeparatorsValidLabels,
              "AutofillConsiderPhoneNumberSeparatorsValidLabels",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the last blur votes per form signature are sent not the first
-// ones.
-// TODO(crbug.com/1383502): Cleanup when this has proven on stable.
-BASE_FEATURE(kAutofillDelayBlurVotes,
-             "AutofillDelayBlurVotes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // FormStructure::RetrieveFromCache used to preserve an AutofillField's
 // is_autofilled from the cache of previously parsed forms. This makes little
 // sense because the renderer sends us the autofill state and has the most

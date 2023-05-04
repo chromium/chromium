@@ -11027,15 +11027,8 @@ TEST_F(BrowserAutofillManagerClearFieldTest, NoLoggingAfterDelay) {
               base::BucketsInclude(base::Bucket(kEvent, 0)));
 }
 
-class BrowserAutofillManagerVotingTest
-    : public BrowserAutofillManagerTest,
-      public testing::WithParamInterface<bool> {
+class BrowserAutofillManagerVotingTest : public BrowserAutofillManagerTest {
  public:
-  BrowserAutofillManagerVotingTest() {
-    features_.InitWithFeatureState(features::kAutofillDelayBlurVotes,
-                                   GetParam());
-  }
-
   void SetUp() override {
     BrowserAutofillManagerTest::SetUp();
 
@@ -11063,16 +11056,11 @@ class BrowserAutofillManagerVotingTest
   }
 
  protected:
-  base::test::ScopedFeatureList features_;
   FormData form_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         BrowserAutofillManagerVotingTest,
-                         testing::Bool());
-
 // Ensure that a vote is submitted after a regular form submission.
-TEST_P(BrowserAutofillManagerVotingTest, Submission) {
+TEST_F(BrowserAutofillManagerVotingTest, Submission) {
   SimulateTypingFirstNameIntoFirstField();
 
   std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
@@ -11093,29 +11081,12 @@ TEST_P(BrowserAutofillManagerVotingTest, Submission) {
 
 // Test that when modifying the form, a blur vote can be sent for the early
 // version and a submission vote can be sent for the final version.
-TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
+TEST_F(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
   // 1. Simulate typing.
   SimulateTypingFirstNameIntoFirstField();
 
   // 2. Simulate removing focus from the form, which triggers a blur vote.
   FormSignature first_form_signature = CalculateFormSignature(form_);
-  if (!base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
-    // Only if kAutofillDelayBlurVotes is disabled, we expect a blur vote being
-    // sent. If kAutofillDelayBlurVotes is enabled, the next two operations
-    // will override this vote.
-    std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
-        {u"firstname",
-         {ServerFieldType::NAME_FIRST,
-          ServerFieldType::CREDIT_CARD_NAME_FIRST}},
-        {u"lastname", {ServerFieldType::EMPTY_TYPE}},
-    };
-    EXPECT_CALL(
-        *download_manager_,
-        StartUploadRequest(AllOf(SignatureIs(first_form_signature),
-                                 UploadedAutofillTypesAre(expected_vote_types)),
-                           _, _, _, /*observed_submission=*/false, _, _))
-        .Times(1);
-  }
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   // 3. Simulate typing into second field
@@ -11170,7 +11141,7 @@ TEST_P(BrowserAutofillManagerVotingTest, DynamicFormSubmission) {
 }
 
 // Ensure that a blur votes is sent after a navigation.
-TEST_P(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
+TEST_F(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
   SimulateTypingFirstNameIntoFirstField();
 
   // Simulate removing focus from form, which triggers a blur vote.
@@ -11187,14 +11158,13 @@ TEST_P(BrowserAutofillManagerVotingTest, BlurVoteOnNavigation) {
       .Times(1);
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
-  // Simulate a navigation. If kAutofillDelayBlurVotes is enabled, this is when
-  // the vote is sent.
+  // Simulate a navigation. This is when the vote is sent.
   browser_autofill_manager_->Reset();
 }
 
 // Ensure that a submission vote blocks sending a blur vote for the same form
 // signature.
-TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
+TEST_F(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
   SimulateTypingFirstNameIntoFirstField();
 
   std::map<std::u16string, ServerFieldTypeSet> expected_vote_types = {
@@ -11203,20 +11173,8 @@ TEST_P(BrowserAutofillManagerVotingTest, NoBlurVoteOnSubmission) {
       {u"lastname", {ServerFieldType::EMPTY_TYPE}},
   };
 
-  // Simulate removing focus from form, which enqueues a blur vote.
-  if (!base::FeatureList::IsEnabled(features::kAutofillDelayBlurVotes)) {
-    // If AutofillDelayBlurVotes is disabled, the blur vote is actually sent.
-    // Otherwise, it is overridden by the form submission vote.
-    EXPECT_CALL(
-        *download_manager_,
-        StartUploadRequest(AllOf(SignatureIs(CalculateFormSignature(form_)),
-                                 UploadedAutofillTypesAre(expected_vote_types)),
-                           _, _, _, /*observed_submission=*/false, _, _))
-        .Times(1);
-  } else {
-    // If kAutofillDelayBlurVotes is enabled, the blur vote will be ignored and
-    // only the submission will be sent.
-  }
+  // Simulate removing focus from form, which enqueues a blur vote. The blur
+  // vote will be ignored and only the submission will be sent.
   browser_autofill_manager_->OnFocusNoLongerOnForm(true);
 
   EXPECT_CALL(
