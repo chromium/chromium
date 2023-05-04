@@ -303,6 +303,7 @@ bool EnsureWakeLaunchItemPresence(
         [base::mac::CFToNSCast(contents)
             isEqualToDictionary:[NSDictionary
                                     dictionaryWithContentsOfURL:url]]) {
+      VLOG(2) << "Skipping unnecessary update to " << path;
       return true;
     }
 

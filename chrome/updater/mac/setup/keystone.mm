@@ -200,6 +200,11 @@ bool CreateEmptyFileInDirectory(const base::FilePath& dir,
   }
 
   base::FilePath file_path = dir.AppendASCII(file_name);
+  int64_t file_size;
+  if (GetFileSize(file_path, &file_size) && file_size == 0) {
+    VLOG(1) << "Skipping creation of " << file_path << ": file already empty.";
+    return true;
+  }
   base::File file(file_path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   file.Close();

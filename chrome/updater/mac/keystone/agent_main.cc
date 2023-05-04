@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <unistd.h>
+
 #include <iostream>
 #include <map>
 #include <string>
@@ -65,14 +67,7 @@ std::map<std::string, std::string> ParseCommandLine(int argc,
 }
 
 UpdaterScope Scope() {
-  base::FilePath executable_path;
-  if (base::PathService::Get(base::FILE_EXE, &executable_path) &&
-      base::StartsWith(executable_path.value(),
-                       GetKeystoneFolderPath(UpdaterScope::kSystem)->value())) {
-    return UpdaterScope::kSystem;
-  } else {
-    return UpdaterScope::kUser;
-  }
+  return geteuid() == 0 ? UpdaterScope::kSystem : UpdaterScope::kUser;
 }
 
 class KSAgentApp : public App {
@@ -192,7 +187,6 @@ void KSAgentApp::DoUpdate(const std::string& app_id, UpdaterScope scope) {
 }
 
 void KSAgentApp::Wake() {
-  VLOG(0) << "Launching wake processes.";
   for (UpdaterScope scope : {UpdaterScope::kSystem, UpdaterScope::kUser}) {
     absl::optional<base::FilePath> path = GetUpdaterExecutablePath(scope);
     if (!path) {
@@ -205,7 +199,11 @@ void KSAgentApp::Wake() {
     }
     command.AppendSwitch(kEnableLoggingSwitch);
     command.AppendSwitchNative(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
-    base::LaunchProcess(command, {});
+    VLOG(0) << "Launching " << command.GetCommandLineString();
+    base::Process process = base::LaunchProcess(command, {});
+    if (process.IsValid()) {
+      VLOG(0) << "Launched " << process.Pid();
+    }
   }
   Shutdown(0);
 }
