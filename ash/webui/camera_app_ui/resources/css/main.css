@@ -1104,9 +1104,9 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 #tooltip {
-  background: rgba(241, 243, 244, 0.8);
+  background: var(--cros-sys-on_surface);
   border-radius: 2px;
-  color: var(--grey-900);
+  color: var(--cros-sys-inverse_on_surface);
   font-size: 12px;
   left: 0;
   line-height: 22px;
