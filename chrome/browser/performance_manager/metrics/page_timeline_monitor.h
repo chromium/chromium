@@ -10,16 +10,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
-namespace performance_manager {
-
-class SiteDataReader;
-
-namespace metrics {
+namespace performance_manager::metrics {
 
 class PageTimelineMonitorUnitTest;
 
@@ -107,22 +102,6 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
 
   void SetShouldCollectSliceCallbackForTesting(base::RepeatingCallback<bool()>);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // SiteDataRecorder isn't enabled on Android.
-  using SiteDataReaderCallback =
-      base::RepeatingCallback<SiteDataReader*(const PageNode*)>;
-
-  // Sets a callback that will be invoked to create SiteDataReader objects for a
-  // given PageNode in tests.
-  void SetSiteDataReaderCallbackForTesting(SiteDataReaderCallback callback);
-
-  // A callback that is invoked to return a SiteDataReader for a given PageNode.
-  // The default returns the reader associated with SiteDataRecorder::Data, but
-  // this can be overridden to return test data using
-  // SetSiteDataReaderCallbackForTesting().
-  SiteDataReaderCallback site_data_reader_callback_;
-#endif
-
   // Monotonically increasing counters for tabs and slices.
   int slice_id_counter_;
 
@@ -148,8 +127,6 @@ class PageTimelineMonitor : public PageNode::ObserverDefaultImpl,
   base::WeakPtrFactory<PageTimelineMonitor> weak_factory_{this};
 };
 
-}  // namespace metrics
-
-}  // namespace performance_manager
+}  // namespace performance_manager::metrics
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_METRICS_PAGE_TIMELINE_MONITOR_H_

@@ -117,6 +117,8 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
 
   // PageNode::ObserverDefaultImpl implementation:
   void OnMainFrameUrlChanged(const PageNode* page_node) override;
+  void OnTitleUpdated(const PageNode* page_node) override;
+  void OnFaviconUpdated(const PageNode* page_node) override;
 
   void OnContentSettingsReceived(
       const GURL& url,
@@ -152,6 +154,10 @@ class PageLiveStateDecorator::Data {
   virtual bool IsContentSettingTypeAllowed(ContentSettingsType type) const = 0;
   virtual bool IsDevToolsOpen() const = 0;
 
+  // TODO(https://crbug.com/1418410): Add a notifier for this to
+  // PageLiveStateObserver.
+  virtual bool UpdatedTitleOrFaviconInBackground() const = 0;
+
   static const Data* FromPageNode(const PageNode* page_node);
   static Data* GetOrCreateForPageNode(const PageNode* page_node);
 
@@ -169,6 +175,7 @@ class PageLiveStateDecorator::Data {
   virtual void SetContentSettingsForTesting(
       const std::map<ContentSettingsType, ContentSetting>& settings) = 0;
   virtual void SetIsDevToolsOpenForTesting(bool value) = 0;
+  virtual void SetUpdatedTitleOrFaviconInBackgroundForTesting(bool value) = 0;
 
  protected:
   base::ObserverList<PageLiveStateObserver> observers_
