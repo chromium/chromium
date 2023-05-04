@@ -487,6 +487,7 @@ SkColor GetDefaultColorForIconType(const ui::ColorProvider* color_provider,
   switch (icon_type) {
     case ICON_TYPE_TRAY_OOBE:
       return kIconColorInOobe;
+    case ICON_TYPE_TRAY_REGULAR:
     case ICON_TYPE_FEATURE_POD:
     case ICON_TYPE_LIST:
       return use_color_provider
