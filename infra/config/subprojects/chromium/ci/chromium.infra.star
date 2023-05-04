@@ -273,6 +273,11 @@ packager_builder(
                 "sdk_package_name": "system-images;android-TiramisuPrivacySandbox;google_apis_playstore;x86_64",
                 "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-TiramisuPrivacySandbox/google_apis_playstore/x86_64.yaml",
             },
+            # TODO(crbug/1442598): Replace Android-U system images with the finalized API level once available
+            {
+                "sdk_package_name": "system-images;android-UpsideDownCake;google_apis;x86_64",
+                "cipd_yaml": "third_party/android_sdk/cipd/system_images/android-UpsideDownCake/google_apis/x86_64.yaml",
+            },
         ],
     },
 )
