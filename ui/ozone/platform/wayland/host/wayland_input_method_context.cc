@@ -282,7 +282,18 @@ void WaylandInputMethodContext::UpdatePreeditText(
 
 void WaylandInputMethodContext::Reset() {
   character_composer_.Reset();
-  surrounding_text_tracker_.Reset();
+  if (base::FeatureList::IsEnabled(features::kWaylandCancelComposition)) {
+    // TODO(b/269964109): In ChromeOS, 'reset' means to reset the composition
+    // only, excluding surrounding text etc. In Wayland, text-input-v1 doesn't
+    // define what state is reset in a 'reset' call. However, based on the
+    // description in text-input-v3, the state likely includes the surrounding
+    // text. Therefore, the call below is likely not compliant with Wayland's
+    // intentions. Introduce a dedicated extended Wayland API for resetting only
+    // the composition.
+    surrounding_text_tracker_.CancelComposition();
+  } else {
+    surrounding_text_tracker_.Reset();
+  }
   if (text_input_)
     text_input_->Reset();
 }

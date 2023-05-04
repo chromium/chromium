@@ -125,7 +125,7 @@ void TextInput::Resync() {
 }
 
 void TextInput::Reset() {
-  surrounding_text_tracker_.Reset();
+  surrounding_text_tracker_.CancelComposition();
   if (input_method_)
     input_method_->CancelComposition(this);
 }

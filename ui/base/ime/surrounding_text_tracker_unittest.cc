@@ -713,4 +713,18 @@ TEST(SurroundingTextTracker, ExtendSelectionAndDelete) {
   }
 }
 
+TEST(SurroundingTextTracker, CancelCompositionResetsCompositionOnly) {
+  SurroundingTextTracker tracker;
+  ui::CompositionText composition;
+  composition.text = u"abc";
+  composition.selection = gfx::Range(3);  // at the end.
+  tracker.OnSetCompositionText(composition);
+
+  tracker.CancelComposition();
+
+  EXPECT_EQ(u"abc", tracker.predicted_state().surrounding_text);
+  EXPECT_EQ(gfx::Range(3), tracker.predicted_state().selection);
+  EXPECT_TRUE(tracker.predicted_state().composition.is_empty());
+}
+
 }  // namespace ui

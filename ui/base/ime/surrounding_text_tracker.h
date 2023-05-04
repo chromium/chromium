@@ -52,8 +52,15 @@ class COMPONENT_EXPORT(UI_BASE_IME) SurroundingTextTracker {
 
   const State& predicted_state() const { return predicted_state_; }
 
-  // Resets the internal state, including held histories.
+  // Resets the internal state, including composition state, surrounding text
+  // and held histories. Used when the entire state needs to be reset.
+  // TODO(b/267944900): Investigate if this is still needed once
+  // kWaylandCancelComposition flag is enabled by default.
   void Reset();
+
+  // Resets only the composition state and held histories.
+  // Used when only the composition state is cancelled by the input field.
+  void CancelComposition();
 
   enum class UpdateResult {
     // Expected update entry is found in |expected_updates_|.

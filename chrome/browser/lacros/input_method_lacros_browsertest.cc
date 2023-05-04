@@ -48,6 +48,7 @@ struct TestParam {
   // Enables the following feature flags:
   // - WaylandKeepSelectionFix (Lacros),
   // - AlwaysConfirmComposition (Ash).
+  // - WaylandCancelComposition (Lacros).
   bool fix_265853952 = false;
 };
 
@@ -532,6 +533,7 @@ class InputMethodLacrosBrowserTest
     std::vector<base::test::FeatureRef> enabled_lacros_features;
     if (GetParam().fix_265853952) {
       enabled_lacros_features.push_back(features::kWaylandKeepSelectionFix);
+      enabled_lacros_features.push_back(features::kWaylandCancelComposition);
     }
     feature_list_override_.InitWithFeatures(enabled_lacros_features,
                                             /*disabled_features=*/{});
@@ -1614,6 +1616,81 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   input_method_async_waiter.ConfirmComposition();
   input_method_async_waiter.CommitText("b");
 
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "ab", gfx::Range(2)));
+}
+
+// See b/267944900 for more information.
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
+                       EscapeAfterResetKeepsSelection) {
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          GetParam(),
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  ASSERT_TRUE(SetInputFieldText(GetActiveWebContents(browser()), id, "a",
+                                gfx::Range(1)));
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  // Trigger a selection change via JavaScript to reset the IME but retain the
+  // surrounding text and selection.
+  std::ignore = ExecJs(
+      GetActiveWebContents(browser()),
+      content::JsReplace(R"(document.getElementById($1).select();)", id));
+  WaitUntilSurroundingTextIs(input_method_async_waiter, "a", gfx::Range(0, 1));
+
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::ESCAPE, ui::DomCode::ESCAPE)
+          .Build());
+
+  EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
+                                         "a", gfx::Range(0, 1)));
+}
+
+// See crbug.com/1434957 for more information.
+IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
+                       DeleteSurroundingTextAfterResetDeletes) {
+  if (!GetParam().fix_265853952) {
+    return;
+  }
+
+  mojo::Remote<InputMethodTestInterface> input_method =
+      BindInputMethodTestInterface(
+          GetParam(),
+          {InputMethodTestInterface::MethodMinVersions::kWaitForFocusMinVersion,
+           InputMethodTestInterface::MethodMinVersions::
+               kKeyEventHandledMinVersion},
+          {kInputMethodTestCapabilityDeleteSurroundingText});
+  if (!input_method.is_bound()) {
+    GTEST_SKIP() << "Unsupported ash version";
+  }
+  const std::string id = RenderAutofocusedInputFieldInLacros(browser());
+  ASSERT_TRUE(SetInputFieldText(GetActiveWebContents(browser()), id, "abcd",
+                                gfx::Range(3, 4)));
+  InputMethodTestInterfaceAsyncWaiter input_method_async_waiter(
+      input_method.get());
+  input_method_async_waiter.WaitForFocus();
+
+  WaitUntilSurroundingTextIs(input_method_async_waiter, "abcd",
+                             gfx::Range(3, 4));
+  SendKeyEventsSync(
+      input_method_async_waiter,
+      KeySequenceBuilder()
+          .PressAndRelease(ui::DomKey::BACKSPACE, ui::DomCode::BACKSPACE)
+          .Build());
+
+  WaitUntilSurroundingTextIs(input_method_async_waiter, "abc",
+                             gfx::Range(3, 3));
+  input_method_async_waiter.DeleteSurroundingText(1, 0);
   EXPECT_TRUE(WaitUntilInputFieldHasText(GetActiveWebContents(browser()), id,
                                          "ab", gfx::Range(2)));
 }

@@ -442,6 +442,11 @@ BASE_FEATURE(kWaylandKeepSelectionFix,
              "WaylandKeepSelectionFix",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Fixes b/267944900.
+BASE_FEATURE(kWaylandCancelComposition,
+             "WaylandCancelComposition",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kWaylandScreenCoordinatesEnabled,
              "WaylandScreenCoordinatesEnabled",
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

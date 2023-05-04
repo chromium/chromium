@@ -99,6 +99,13 @@ void SurroundingTextTracker::Reset() {
   ResetInternal(u"", 0u, gfx::Range(0));
 }
 
+void SurroundingTextTracker::CancelComposition() {
+  predicted_state_.composition = gfx::Range();
+  // TODO(b/267944900): Determine if the expectations need to be updated as
+  // well.
+  expected_updates_.clear();
+}
+
 SurroundingTextTracker::UpdateResult SurroundingTextTracker::Update(
     const base::StringPiece16 surrounding_text,
     size_t utf16_offset,
