@@ -191,7 +191,6 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
 
   bool enforced = state->IsHttpsEnforcedForHost(
       url.host(), profile->GetDefaultStoragePartition());
-
   GURL https_url = url.SchemeIsCryptographic() ? url : GetHttpsUrlFromHttp(url);
   GURL http_url = !url.SchemeIsCryptographic() ? url : GetHttpUrlFromHttps(url);
 
@@ -202,7 +201,6 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
   bool should_enable =
       https_score >= kHttpsAddThreshold && http_score <= kHttpAddThreshold;
   if (!enforced && should_enable) {
-    RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState::kEnabled);
     state->SetHttpsEnforcementForHost(url.host(),
                                       /*enforced=*/true,
                                       profile->GetDefaultStoragePartition());
@@ -212,7 +210,6 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
   bool should_disable = https_score <= kHttpsRemoveThreshold ||
                         http_score >= kHttpRemoveThreshold;
   if (enforced && should_disable) {
-    RecordSiteEngagementHeuristicState(SiteEngagementHeuristicState::kDisabled);
     state->SetHttpsEnforcementForHost(url.host(),
                                       /*enforced=*/false,
                                       profile->GetDefaultStoragePartition());
