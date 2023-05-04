@@ -740,7 +740,6 @@ body.doc-mode-reviewing #open-settings {
 #view-photo-resolution-settings,
 #view-video-resolution-settings,
 #view-expert-settings,
-#view-message-dialog,
 #view-warning,
 #view-splash {
   bottom: 0;
@@ -768,7 +767,6 @@ body.view-photo-aspect-ratio-settings #view-photo-aspect-ratio-settings,
 body.view-photo-resolution-settings #view-photo-resolution-settings,
 body.view-video-resolution-settings #view-video-resolution-settings,
 body.view-expert-settings #view-expert-settings,
-body.view-message-dialog #view-message-dialog,
 body.view-warning #view-warning,
 body.view-splash #view-splash {
   opacity: 1;
@@ -1317,74 +1315,6 @@ html[dir=rtl] .menu-header .icon {
 
 .dialog {
   background: rgba(0, 0, 0, 0.6);
-}
-
-.dialog-popup {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  transform: translateY(20px);
-  transition: transform var(--fast2-duration);
-}
-
-.dialog .dialog-popup {
-  transform: translateY(0);
-}
-
-.dialog .dialog-msg {
-  color: var(--grey-900);
-  cursor: text;
-  font-size: 14px;
-  max-height: 320px;
-  max-width: 472px;
-  overflow: auto;
-  padding: 20px 0;
-  user-select: text;  /* Allow copying the message. */
-  white-space: pre-wrap;
-}
-
-.dialog .dialog-msg::-webkit-scrollbar {
-  height: 6px;
-  width: 6px;
-}
-
-.dialog .dialog-msg::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.dialog .dialog-msg::-webkit-scrollbar-thumb {
-  background: gray;
-  height: 6px;
-  width: 6px;
-}
-
-.dialog-buttons {
-  align-items: center;
-  display: flex;
-  justify-content: flex-end;
-  margin: 0 -2px;
-}
-
-.dialog-buttons button {
-  background-color: white;
-  border-style: solid;
-  color: var(--blue-600-dark);
-  font-size: 12px;
-  margin: 4px;
-  padding: 6px 18px;
-}
-
-body.keyboard-navigation .dialog-buttons button:focus {
-  background-color: var(--blue-300);
-  border-color: var(--blue-300);
-  color: white;
-}
-
-body.keyboard-navigation .dialog-buttons button:focus::after {
-  border: none;
 }
 
 .spinner {

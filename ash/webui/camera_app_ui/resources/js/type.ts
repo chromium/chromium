@@ -137,7 +137,6 @@ export enum ViewName {
   EXPERT_SETTINGS = 'view-expert-settings',
   FLASH = 'view-flash',
   LOW_STORAGE_DIALOG = 'view-low-storage-dialog',
-  MESSAGE_DIALOG = 'view-message-dialog',
   OPTION_PANEL = 'view-option-panel',
   PHOTO_ASPECT_RATIO_SETTINGS = 'view-photo-aspect-ratio-settings',
   PHOTO_RESOLUTION_SETTINGS = 'view-photo-resolution-settings',
