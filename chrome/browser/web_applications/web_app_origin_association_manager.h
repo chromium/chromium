@@ -42,6 +42,7 @@ class WebAppOriginAssociationManager {
 
   void SetFetcherForTest(
       std::unique_ptr<webapps::WebAppOriginAssociationFetcher> fetcher);
+  webapps::WebAppOriginAssociationFetcher& GetFetcherForTest();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppOriginAssociationManagerTest, RunTasks);

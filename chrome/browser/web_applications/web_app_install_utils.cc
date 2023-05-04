@@ -1231,6 +1231,11 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
   web_app.SetLaunchHandler(web_app_info.launch_handler);
 
   web_app.SetTabStrip(web_app_info.tab_strip);
+
+  if (web_app_info.validated_scope_extensions.has_value()) {
+    web_app.SetValidatedScopeExtensions(
+        web_app_info.validated_scope_extensions.value());
+  }
 }
 
 void MaybeDisableOsIntegration(const WebAppRegistrar* app_registrar,

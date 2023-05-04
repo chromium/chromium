@@ -14,6 +14,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -86,6 +87,12 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock> {
                            IconsDownloadedResult result,
                            IconsMap icons_map,
                            DownloadedIconsHttpResults icons_http_results);
+
+  void ValidateNewScopeExtensions(
+      OnDidGetWebAppOriginAssociations next_step_callback);
+  void StashValidatedScopeExtensions(
+      base::OnceClosure next_step_callback,
+      ScopeExtensions validated_scope_extensions);
 
   // Stage: Loading existing manifest data from disk.
   // (ManifestUpdateCheckStage::kLoadingExistingManifestData)

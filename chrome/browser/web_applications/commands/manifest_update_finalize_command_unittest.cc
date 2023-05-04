@@ -87,6 +87,7 @@ class ManifestUpdateFinalizeCommandTest : public WebAppTest {
     info.scope = app_url().GetWithoutFilename();
     info.user_display_mode = mojom::UserDisplayMode::kStandalone;
     info.title = new_title;
+    info.validated_scope_extensions.emplace();
     return info;
   }
 
@@ -107,8 +108,10 @@ TEST_F(ManifestUpdateFinalizeCommandTest, NameUpdate) {
 }
 
 TEST_F(ManifestUpdateFinalizeCommandTest, UpdateFailsOnUnsuccessfulCode) {
+  WebAppInstallInfo info;
+  info.validated_scope_extensions.emplace();
   ManifestUpdateResult expected_result =
-      RunCommandAndGetResult(app_url(), "RandomAppId", WebAppInstallInfo());
+      RunCommandAndGetResult(app_url(), "RandomAppId", std::move(info));
   EXPECT_EQ(expected_result, ManifestUpdateResult::kAppUpdateFailed);
 }
 

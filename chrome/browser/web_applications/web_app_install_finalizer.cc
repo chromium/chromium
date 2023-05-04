@@ -140,7 +140,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
                      options, std::move(callback), app_id);
 
   if (options.skip_origin_association_validation ||
-      web_app_info.scope_extensions.empty()) {
+      web_app_info.scope_extensions.empty() ||
+      web_app_info.validated_scope_extensions.has_value()) {
     std::move(origin_association_validated_callback).Run(ScopeExtensions());
     return;
   }

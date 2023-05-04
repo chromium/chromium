@@ -67,6 +67,12 @@ void ManifestUpdateFinalizeCommand::StartWithLock(
   // Preserve the user's choice of form factor to open the app with.
   install_info_.user_display_mode =
       lock_->registrar().GetAppUserDisplayMode(app_id_);
+
+  // ManifestUpdateCheckCommand must have already done validation of origin
+  // association data needed by this app and set validated_scope_extensions even
+  // if it is empty.
+  CHECK(install_info_.validated_scope_extensions.has_value());
+
   lock_->install_finalizer().FinalizeUpdate(
       install_info_,
       base::BindOnce(&ManifestUpdateFinalizeCommand::OnInstallationComplete,

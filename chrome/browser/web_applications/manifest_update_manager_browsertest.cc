@@ -84,6 +84,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -4086,6 +4087,309 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
                   .GetAppById(app_id)
                   ->manifest_id()
                   .has_value());
+}
+
+class ManifestUpdateManagerBrowserTest_ScopeExtensions
+    : public ManifestUpdateManagerBrowserTest {
+ public:
+  static constexpr char kScopeExtensionsManifestTemplate[] = R"(
+    {
+      "name": "test app name",
+      "start_url": ".",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $1,
+      "scope_extensions": $2
+    }
+  )";
+
+  void SetUpOnMainThread() override {
+    ManifestUpdateManagerBrowserTest::SetUpOnMainThread();
+
+    auto origin_association_fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+    GetProvider().origin_association_manager().SetFetcherForTest(
+        std::move(origin_association_fetcher));
+  }
+
+  ScopeExtensions GetScopeExtensions(const AppId& app_id) {
+    return GetProvider()
+        .registrar_unsafe()
+        .GetAppById(app_id)
+        ->scope_extensions();
+  }
+
+  ScopeExtensions GetValidatedScopeExtensions(const AppId& app_id) {
+    return GetProvider()
+        .registrar_unsafe()
+        .GetAppById(app_id)
+        ->validated_scope_extensions();
+  }
+
+  std::string OriginAssociationFileFromAppIdentity(const GURL& app_identity) {
+    constexpr char kOriginAssociationTemplate[] = R"(
+    {
+      "web_apps": [
+        {
+          "web_app_identity": "$1"
+        }
+      ]
+    })";
+    return base::ReplaceStringPlaceholders(kOriginAssociationTemplate,
+                                           {app_identity.spec()}, nullptr);
+  }
+
+  void SetOriginAssociationData(
+      const std::map<url::Origin, std::string>& data) {
+    auto& test_fetcher =
+        static_cast<webapps::TestWebAppOriginAssociationFetcher&>(
+            GetProvider().origin_association_manager().GetFetcherForTest());
+    test_fetcher.SetData(data);
+  }
+
+  void OverrideScopeExtensions(const std::string& substitution) {
+    OverrideManifest(kScopeExtensionsManifestTemplate,
+                     {kInstallableIconList, substitution});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      blink::features::kWebAppEnableScopeExtensions};
+};
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       AddedScopeExtensionsWithAssociation) {
+  // Install with no scope_extensions.
+  OverrideScopeExtensions(R"([])");
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetScopeExtensions(app_id), ScopeExtensions());
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+
+  // update with 1 entry in scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension.com"
+            }
+          ]
+      )");
+  // Association file of extension.com confirms association with the installed
+  // app.
+  SetOriginAssociationData({{url::Origin::Create(GURL("https://extension.com")),
+                             OriginAssociationFileFromAppIdentity(
+                                 GetAppURL().GetWithoutFilename())}});
+  // Check that changes in manifest's scope_extensions causes a successful
+  // update.
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // Check that origin association validation succeeded with extension.com.
+  ScopeExtensions expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       AddedScopeExtensionsWithoutAssociation) {
+  // Install with no scope_extensions.
+  OverrideScopeExtensions(R"([])");
+  AppId app_id = InstallWebApp();
+  EXPECT_EQ(GetScopeExtensions(app_id), ScopeExtensions());
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+
+  // Update with 1 entry in scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension.com"
+            }
+          ]
+      )");
+  // Association is not validated by extension.com.
+  SetOriginAssociationData({});
+
+  // Check that changes in manifest's scope_extensions causes a successful
+  // update.
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  ScopeExtensions expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       RemovedScopeExtensions) {
+  // Install app with valid scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension.com"
+            }
+          ]
+      )");
+
+  SetOriginAssociationData({{url::Origin::Create(GURL("https://extension.com")),
+                             OriginAssociationFileFromAppIdentity(
+                                 GetAppURL().GetWithoutFilename())}});
+  AppId app_id = InstallWebApp();
+  ScopeExtensions expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+
+  // Update with empty scope_extensions.
+  OverrideScopeExtensions(R"([])");
+
+  // Check that changes in manifest's scope_extensions caused successful update.
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // Check that origin association validation succeeded with extension.com.
+  EXPECT_EQ(GetScopeExtensions(app_id), ScopeExtensions());
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       AddedAndRemovedScopeExtensions) {
+  // Install app with valid scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension_1.com"
+            }
+          ]
+      )");
+  SetOriginAssociationData(
+      {{url::Origin::Create(GURL("https://extension_1.com")),
+        OriginAssociationFileFromAppIdentity(
+            GetAppURL().GetWithoutFilename())}});
+  AppId app_id = InstallWebApp();
+
+  ScopeExtensions expected_extensions = ScopeExtensions({ScopeExtensionInfo(
+      url::Origin::Create(GURL("https://extension_1.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
+
+  // Update with empty scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension_2.com"
+            }
+          ]
+      )");
+  SetOriginAssociationData(
+      {{url::Origin::Create(GURL("https://extension_2.com")),
+        OriginAssociationFileFromAppIdentity(
+            GetAppURL().GetWithoutFilename())}});
+  // Check that changes in manifest's scope_extensions caused successful update.
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // Check that origin association validation succeeded with extension.com.
+  expected_extensions = ScopeExtensions({ScopeExtensionInfo(
+      url::Origin::Create(GURL("https://extension_2.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       AssociationFailsToValidateDuringUpdate) {
+  // Install app with valid scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension.com"
+            }
+          ]
+      )");
+  SetOriginAssociationData({{url::Origin::Create(GURL("https://extension.com")),
+                             OriginAssociationFileFromAppIdentity(
+                                 GetAppURL().GetWithoutFilename())}});
+
+  AppId app_id = InstallWebApp();
+  ScopeExtensions expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+
+  // Check that failure to validate origin associations caused successful
+  // update.
+  SetOriginAssociationData({});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  // Check that origin association validation succeeded with extension.com.
+  expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       FailedOriginAssociationValidatationPassesDuringUpdate) {
+  // Install app with valid scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension.com"
+            }
+          ]
+      )");
+  // Validation should fail during initial install.
+  SetOriginAssociationData({});
+  AppId app_id = InstallWebApp();
+  ScopeExtensions expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+
+  // Check that successful validation caused successful update.
+  SetOriginAssociationData({{url::Origin::Create(GURL("https://extension.com")),
+                             OriginAssociationFileFromAppIdentity(
+                                 GetAppURL().GetWithoutFilename())}});
+
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 1);
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), expected_extensions);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
+                       UnrelatedAssociationDataDoesNotCauseUpdate) {
+  // Install app with valid scope_extensions.
+  OverrideScopeExtensions(R"(
+          [
+            {
+              "origin": "https://extension.com"
+            }
+          ]
+      )");
+  // Validation should fail during initial install.
+  SetOriginAssociationData({});
+  AppId app_id = InstallWebApp();
+  ScopeExtensions expected_extensions = ScopeExtensions(
+      {ScopeExtensionInfo(url::Origin::Create(GURL("https://extension.com")))});
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
+
+  // Recognize another unrelated app identity.
+  SetOriginAssociationData(
+      {{url::Origin::Create(GURL("https://extension.com")),
+        OriginAssociationFileFromAppIdentity(GURL("https://unrelated.app"))}});
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpToDate);
+  histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
+                                      ManifestUpdateResult::kAppUpdated, 0);
+  EXPECT_EQ(GetScopeExtensions(app_id), expected_extensions);
+  EXPECT_EQ(GetValidatedScopeExtensions(app_id), ScopeExtensions());
 }
 
 class ManifestUpdateManagerAppIdentityBrowserTest
