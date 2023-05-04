@@ -688,7 +688,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
     const GURL& url,
     content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context,
-    std::u16string message) {
+    std::u16string message,
+    std::u16string supplementary_icon) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   WebAppProvider* web_app_provider = WebAppProvider::GetForWebApps(profile);
   if (web_app_provider == nullptr) {
@@ -718,10 +719,14 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
   dict.Set(error_page::kAppShortName,
            web_app_registrar.GetAppShortName(*app_id));
   dict.Set(error_page::kMessage, message);
-  // Android uses kIconUrl to provide the icon url synchronously, but Desktop
-  // sends down a blank image source and then updates it asynchronously once it
-  // is available.
-  dict.Set(error_page::kIconUrl, "''");
+  // Android uses kIconUrl to provide the icon url synchronously, because it
+  // already available, but Desktop sends down a transparent 1x1 pixel instead
+  // and then updates it asynchronously once it is available.
+  dict.Set(error_page::kIconUrl,
+           "data:image/"
+           "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklE"
+           "QVR42mMAAQAABQABoIJXOQAAAABJRU5ErkJggg==");
+  dict.Set(error_page::kSupplementaryIcon, supplementary_icon);
   alternative_error_page_info->alternative_error_page_params = std::move(dict);
   alternative_error_page_info->resource_id = IDR_WEBAPP_ERROR_PAGE_HTML;
   return alternative_error_page_info;

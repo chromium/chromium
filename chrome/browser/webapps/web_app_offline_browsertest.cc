@@ -329,6 +329,10 @@ IN_PROC_BROWSER_TEST_P(WebAppOfflinePageTest, WebAppOfflinePageIconShowing) {
     EXPECT_EQ(kExpectedIconUrl,
               EvalJs(web_contents, "document.getElementById('icon').src")
                   .ExtractString());
+    EXPECT_EQ("inline",
+              EvalJs(web_contents,
+                     "document.getElementById('offlineIcon').style.display")
+                  .ExtractString());
   } else {
     // Expect that the default offline page is not showing.
     EXPECT_TRUE(

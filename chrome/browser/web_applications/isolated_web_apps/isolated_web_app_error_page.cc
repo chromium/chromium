@@ -32,7 +32,8 @@ MaybeGetIsolatedWebAppErrorPageInfo(const GURL& url,
   }
 
   return ConstructWebAppErrorPage(url, render_frame_host, browser_context,
-                                  message);
+                                  message,
+                                  /*supplementary_icon=*/std::u16string());
 }
 
 }  // namespace web_app

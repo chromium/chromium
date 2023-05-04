@@ -8,8 +8,16 @@
   <link rel="stylesheet" href="../security_interstitials/core/common/resources/interstitial_common.css">
   <link rel="stylesheet" href="web_app_error_page.css">
 </head>
-  <body style="font-family: $i18n{fontfamily};font-size:$i18n{fontsize}">
-    <img id="icon" src=$i18n{icon_url} class="center icon" alt="$i18n{app_short_name}">
-    <div id="default-web-app-msg" class="center-bottom message">$i18n{web_app_error_page_message}</div>
+  <body style="font-family: $i18n{fontfamily};font-size:$i18n{fontsize};">
+    <div id="centerContainer">
+      <div id="appIconContainer">
+        <img id="icon" src=$i18n{icon_url} class="app-icon" alt="$i18n{app_short_name}">
+      </div>
+    </div>
+    <div id="errorContainer">
+      <svg id="offlineIcon" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48"><path d="M818 1000 703 885H248q-88 0-148-59T40 679q0-80 50.5-134T217 479q2-14 6.5-31.5T236 416L70 250l42-42 749 749-43 43ZM248 825h397L285 465q-11 15-14.5 34t-3.5 37h-19q-62 0-105 39.5t-43 101q0 61.5 43 105T248 825Zm216-181Zm390 210-47-47q25-17 39-38t14-50q0-43-31-73.5T755 615h-67v-81q0-88-61-147.5T478.473 327Q450 327 417.5 336T358 365l-42-42q36-29 77.5-42.5T478 267q111 0 190.5 79T748 536v21q72-1 122 45t50 117q0 35-16.5 73.5T854 854ZM583 586Z">
+      <span id="default-web-app-msg" class="message">$i18n{web_app_error_page_message}</span>
+    </div>
+    <script src="web_app_error_page.js"></script>
   </body>
 </html>

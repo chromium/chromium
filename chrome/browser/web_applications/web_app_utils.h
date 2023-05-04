@@ -46,6 +46,11 @@ namespace error_page {
 const char kMessage[] = "web_app_error_page_message";
 const char kAppShortName[] = "app_short_name";
 const char kIconUrl[] = "icon_url";
+const char kSupplementaryIcon[] = "supplementary_icon";
+
+// This must match the HTML element id of the svg to show as a supplementary
+// icon on the default offline error page.
+const char16_t kOfflineIconId[] = u"offlineIcon";
 }  // namespace error_page
 
 // These functions return true if the WebApp System or its subset is allowed
@@ -214,7 +219,8 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr ConstructWebAppErrorPage(
     const GURL& url,
     content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context,
-    std::u16string message);
+    std::u16string message,
+    std::u16string supplementary_icon);
 
 }  // namespace web_app
 
