@@ -2834,7 +2834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.FetchLatency{OperationType}" units="microseconds"
-    expires_after="2023-06-25">
+    expires_after="2023-10-31">
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
@@ -2869,7 +2869,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.StoreLatency" units="ms"
-    expires_after="2023-08-27">
+    expires_after="2023-10-31">
   <owner>miketaylr@chromium.org</owner>
   <owner>potassium-katabolism@google.com</owner>
   <summary>
@@ -2879,11 +2879,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.UpdateEventCount" units="count"
-    expires_after="2023-04-30">
-  <owner>yoavweiss@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>mkwst@chromium.org</owner>
-  <owner>aarontag@chromium.org</owner>
+    expires_after="2023-10-31">
+  <owner>victortan@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     Count of events when the client hints needs to be persisted to the disk by
     the browser. Collected while navigation responses are being processed.
@@ -2891,11 +2889,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ClientHints.UpdateSize" units="count"
-    expires_after="2023-07-02">
-  <owner>yoavweiss@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <owner>mkwst@chromium.org</owner>
-  <owner>aarontag@chromium.org</owner>
+    expires_after="2023-10-31">
+  <owner>victortan@chromium.org</owner>
+  <owner>potassium-katabolism@google.com</owner>
   <summary>
     Count of client hints that need to be persisted to the disk. Recorded by the
     renderer. Collected while navigation responses are being processed.
