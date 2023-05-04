@@ -59,7 +59,12 @@ NavigationJavaScriptFeature::GetScriptMessageHandlerName() const {
 void NavigationJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.body()) {
+    // Ignore malformed responses.
+    return;
+  }
+  auto* dict = message.body()->GetIfDict();
+  if (!dict) {
     // Ignore malformed responses.
     return;
   }
@@ -68,12 +73,12 @@ void NavigationJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  const std::string* command = message.body()->FindStringKey("command");
+  const std::string* command = dict->FindString("command");
   if (!command) {
     return;
   }
 
-  const std::string* frame_id = message.body()->FindStringKey("frame_id");
+  const std::string* frame_id = dict->FindString("frame_id");
   if (!frame_id) {
     return;
   }
@@ -95,9 +100,9 @@ void NavigationJavaScriptFeature::ScriptMessageReceived(
   } else if (*command == "willChangeState") {
     [web_controller handleNavigationWillChangeState];
   } else if (*command == "didPushState") {
-    [web_controller handleNavigationDidPushStateMessage:message.body()];
+    [web_controller handleNavigationDidPushStateMessage:dict];
   } else if (*command == "didReplaceState") {
-    [web_controller handleNavigationDidReplaceStateMessage:message.body()];
+    [web_controller handleNavigationDidReplaceStateMessage:dict];
   }
 }
 

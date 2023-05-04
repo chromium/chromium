@@ -804,8 +804,9 @@ TEST_F(ContextMenuJsFindElementAtPointTest, UnsupportedReferrerPolicy) {
   ASSERT_TRUE(LoadHtml(html));
 
   base::Value result = FindElementAtPoint(kPointOnImage);
-  ASSERT_TRUE(result.is_dict());
-  std::string* policy = result.FindStringKey(kContextMenuElementReferrerPolicy);
+  const auto* dict = result.GetIfDict();
+  ASSERT_TRUE(dict);
+  auto* policy = dict->FindString(kContextMenuElementReferrerPolicy);
   ASSERT_TRUE(policy);
   EXPECT_STREQ("never", policy->c_str());
 }

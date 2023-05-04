@@ -955,9 +955,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self.jsNavigationHandler handleNavigationWillChangeState];
 }
 
-- (void)handleNavigationDidPushStateMessage:(base::Value*)message {
+- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict {
   [self.jsNavigationHandler
-      handleNavigationDidPushStateMessage:message
+      handleNavigationDidPushStateMessage:dict
                                  webState:_webStateImpl
                            hasUserGesture:self.isUserInteracting
                      userInteractionState:&_userInteractionState
@@ -965,9 +965,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   [self updateSSLStatusForCurrentNavigationItem];
 }
 
-- (void)handleNavigationDidReplaceStateMessage:(base::Value*)message {
+- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict {
   [self.jsNavigationHandler
-      handleNavigationDidReplaceStateMessage:message
+      handleNavigationDidReplaceStateMessage:dict
                                     webState:_webStateImpl
                               hasUserGesture:self.isUserInteracting
                         userInteractionState:&_userInteractionState

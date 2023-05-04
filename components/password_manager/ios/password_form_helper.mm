@@ -352,8 +352,8 @@ const char kFrameIdKey[] = "frame_id";
 
 - (void)handleFormSubmittedMessage:(const web::ScriptMessage&)message {
   web::WebFrame* frame = nullptr;
-  std::string* frame_id =
-      message.body()->FindStringKey(password_manager::kFrameIdKey);
+  const auto& dict = message.body()->GetDict();
+  const std::string* frame_id = dict.FindString(password_manager::kFrameIdKey);
   if (frame_id) {
     password_manager::PasswordManagerJavaScriptFeature* feature =
         password_manager::PasswordManagerJavaScriptFeature::GetInstance();
@@ -369,8 +369,8 @@ const char kFrameIdKey[] = "frame_id";
   }
 
   FormData form;
-  if (!autofill::ExtractFormData(*message.body(), false, std::u16string(),
-                                 pageURL, pageURL.DeprecatedGetOriginAsURL(),
+  if (!autofill::ExtractFormData(dict, false, std::u16string(), pageURL,
+                                 pageURL.DeprecatedGetOriginAsURL(),
                                  *self.fieldDataManager, &form)) {
     return;
   }

@@ -7,12 +7,9 @@
 
 #import <WebKit/WebKit.h>
 
+#import "base/values.h"
 #import "ios/web/web_state/ui/crw_web_view_handler.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace web {
 class UserInteractionState;
@@ -30,7 +27,7 @@ class WebStateImpl;
 - (void)handleNavigationWillChangeState;
 
 // Handles a navigation did push state message for the current webpage.
-- (void)handleNavigationDidPushStateMessage:(base::Value*)message
+- (void)handleNavigationDidPushStateMessage:(base::Value::Dict*)dict
                                    webState:(web::WebStateImpl*)webStateImpl
                              hasUserGesture:(BOOL)hasUserGesture
                        userInteractionState:
@@ -38,7 +35,7 @@ class WebStateImpl;
                                  currentURL:(GURL)currentURL;
 
 // Handles a navigation did replace state message for the current webpage.
-- (void)handleNavigationDidReplaceStateMessage:(base::Value*)message
+- (void)handleNavigationDidReplaceStateMessage:(base::Value::Dict*)dict
                                       webState:(web::WebStateImpl*)webStateImpl
                                 hasUserGesture:(BOOL)hasUserGesture
                           userInteractionState:

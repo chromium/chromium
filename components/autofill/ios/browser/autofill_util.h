@@ -47,10 +47,10 @@ bool ExtractFormsData(NSString* form_json,
 
 // Converts |form| into |form_data|.
 // Returns false if a form can not be extracted.
-// Returns false if |filtered| == true and |form["name"]| != |formName|.
-// Returns false if |form["origin"]| != |form_frame_origin|.
-// Returns true if the conversion succeeds.
-bool ExtractFormData(const base::Value& form,
+// Returns false if |filtered| == true and |form["name"]| !=
+// |formName|. Returns false if |form["origin"]| !=
+// |form_frame_origin|. Returns true if the conversion succeeds.
+bool ExtractFormData(const base::Value::Dict& form,
                      bool filtered,
                      const std::u16string& form_name,
                      const GURL& main_frame_url,
