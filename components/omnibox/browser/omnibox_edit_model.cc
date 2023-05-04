@@ -907,12 +907,17 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
       OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
                 timestamp);
     } else {
-      DCHECK(timestamp != base::TimeTicks());
       ExecuteAction(selection, disposition, timestamp);
     }
   } else {
-    OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
-              timestamp);
+    // If the match has an action that takes over the match,
+    // execute the action instead of opening the match.
+    if (match.takeover_action) {
+      ExecuteAction(selection, disposition, timestamp);
+    } else {
+      OpenMatch(match, disposition, GURL(), std::u16string(), selection.line,
+                timestamp);
+    }
   }
 }
 
@@ -2242,27 +2247,11 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
   }
 }
 
-bool OmniboxEditModel::ExecuteTakeoverAction(
-    size_t match_index,
-    WindowOpenDisposition disposition,
-    base::TimeTicks match_selection_timestamp) {
-  if (match_selection_timestamp == base::TimeTicks() ||
-      match_index >= result().size()) {
-    return false;
-  }
-  const AutocompleteMatch& match = result().match_at(match_index);
-  if (match.takeover_action) {
-    OmniboxPopupSelection selection(match_index);
-    ExecuteAction(selection, disposition, match_selection_timestamp);
-    return true;
-  }
-  return false;
-}
-
 void OmniboxEditModel::ExecuteAction(
     OmniboxPopupSelection selection,
     WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp) {
+  DCHECK(match_selection_timestamp != base::TimeTicks());
   RecordActionShownForAllActions(result(), selection);
   OmniboxAction::ExecutionContext context(
       *(autocomplete_controller()->autocomplete_provider_client()),
@@ -2270,9 +2259,8 @@ void OmniboxEditModel::ExecuteAction(
                      edit_model_delegate_->AsWeakPtr()),
       match_selection_timestamp, disposition);
   const AutocompleteMatch& match = result().match_at(selection.line);
-  // Execute the takeover action on the selected line, if any. Otherwise execute
-  // the visible action on the selected line and the given index.
-  if (match.takeover_action) {
+  if (selection.state == OmniboxPopupSelection::NORMAL) {
+    DCHECK(match.takeover_action);
     match.takeover_action->Execute(context);
   } else {
     DCHECK_LT(selection.action_index, match.actions.size());
@@ -2294,12 +2282,6 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
                                  const std::u16string& pasted_text,
                                  size_t index,
                                  base::TimeTicks match_selection_timestamp) {
-  // If the match has an action that takes over the match,
-  // execute the action instead of opening the match.
-  if (ExecuteTakeoverAction(index, disposition, match_selection_timestamp)) {
-    return;
-  }
-
   // Invalid URLs such as chrome://history can end up here.
   if (!match.destination_url.is_valid()) {
     return;

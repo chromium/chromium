@@ -529,13 +529,6 @@ class OmniboxEditModel {
       WindowOpenDisposition disposition,
       base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
-  // If the match in result() specified by `match_index` has an
-  // action that takes over the match, this executes that action
-  // with given `disposition` and returns true. Returns false otherwise.
-  bool ExecuteTakeoverAction(size_t match_index,
-                             WindowOpenDisposition disposition,
-                             base::TimeTicks match_selection_timestamp);
-
   // Executes the action associated with match at given `selection`
   // within result(). `disposition` may be used by actions to open
   // in another tab, a new window, etc.
