@@ -13,11 +13,9 @@
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 
 namespace permissions {
-class PredictionModelHandler
-    : public optimization_guide::ModelHandler<
-          GeneratePredictionsResponse,
-          const GeneratePredictionsRequest&,
-          const absl::optional<WebPermissionPredictionsModelMetadata>&> {
+class PredictionModelHandler : public optimization_guide::ModelHandler<
+                                   GeneratePredictionsResponse,
+                                   const PredictionModelExecutorInput&> {
  public:
   explicit PredictionModelHandler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,

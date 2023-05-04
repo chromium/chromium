@@ -72,8 +72,8 @@ class ScopedExecutionStatusResultRecorder {
 // to keep memory usage of the browser process down, but does delay model
 // execution by the time it takes to load the model (about 50ms in practice).
 // See |SetShouldUnloadModelOnComplete| to override this behavior.
-template <class OutputType, class... InputTypes>
-class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
+template <class OutputType, class InputType>
+class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
  public:
   TFLiteModelExecutor()
       : watchdog_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
@@ -103,8 +103,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
       // tasks can safely be executed.
       scoped_refptr<base::SequencedTaskRunner> watchdog_sequence =
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
-      using WatchdogType =
-          ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>;
+      using WatchdogType = ModelExecutionTimeoutWatchdog<OutputType, InputType>;
       watchdog_ = std::unique_ptr<WatchdogType, base::OnTaskRunnerDeleter>(
           new WatchdogType(
               watchdog_sequence, optimization_target_,
@@ -171,7 +170,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
   void SendForExecution(ExecutionCallback callback_on_complete,
                         base::TimeTicks start_time,
-                        InputTypes... args) override {
+                        InputType input) override {
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(reply_task_runner_);
@@ -224,8 +223,8 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
                        optimization_target_));
       base::ElapsedThreadTimer execution_timer;
       base::TimeTicks execute_start_time = base::TimeTicks::Now();
-      output = Execute(loaded_model_.get(), status_recorder.mutable_status(),
-                       args...);
+      output =
+          Execute(loaded_model_.get(), status_recorder.mutable_status(), input);
       DCHECK_NE(status_recorder.status(), ExecutionStatus::kUnknown);
 
       // The max of this histogram is 1 hour because we want to understand
@@ -255,13 +254,13 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
 
  protected:
   using ModelExecutionTask =
-      tflite::task::core::BaseTaskApi<OutputType, InputTypes...>;
+      tflite::task::core::BaseTaskApi<OutputType, InputType>;
 
   // Executes the model using |execution_task| on |args|, returning the model
   // output and setting |out_status| with the status of the execution attempt.
   virtual absl::optional<OutputType> Execute(ModelExecutionTask* execution_task,
                                              ExecutionStatus* out_status,
-                                             InputTypes... args) = 0;
+                                             InputType args) = 0;
 
   // Builds a model execution task using |model_file|.
   virtual std::unique_ptr<ModelExecutionTask> BuildModelExecutionTask(
@@ -336,7 +335,7 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputTypes...> {
 
   bool should_unload_model_on_complete_ = true;
 
-  std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputTypes...>,
+  std::unique_ptr<ModelExecutionTimeoutWatchdog<OutputType, InputType>,
                   base::OnTaskRunnerDeleter>
       watchdog_;
 

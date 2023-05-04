@@ -13,10 +13,8 @@ namespace permissions {
 PredictionModelHandler::PredictionModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     optimization_guide::proto::OptimizationTarget optimization_target)
-    : ModelHandler<
-          GeneratePredictionsResponse,
-          const GeneratePredictionsRequest&,
-          const absl::optional<WebPermissionPredictionsModelMetadata>&>(
+    : ModelHandler<GeneratePredictionsResponse,
+                   const PredictionModelExecutorInput&>(
           model_provider,
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::USER_VISIBLE}),
@@ -30,9 +28,9 @@ void PredictionModelHandler::OnModelUpdated(
     const optimization_guide::ModelInfo& model_info) {
   // First invoke parent to update internal status.
   optimization_guide::ModelHandler<
-      GeneratePredictionsResponse, const GeneratePredictionsRequest&,
-      const absl::optional<WebPermissionPredictionsModelMetadata>&>::
-      OnModelUpdated(optimization_target, model_info);
+      GeneratePredictionsResponse,
+      const PredictionModelExecutorInput&>::OnModelUpdated(optimization_target,
+                                                           model_info);
   model_load_run_loop_.Quit();
 }
 
@@ -47,8 +45,10 @@ PredictionModelHandler::GetModelMetaData() {
 void PredictionModelHandler::ExecuteModelWithMetadata(
     ExecutionCallback callback,
     std::unique_ptr<GeneratePredictionsRequest> proto_request) {
-  ExecuteModelWithInput(std::move(callback), *proto_request,
-                        GetModelMetaData());
+  PredictionModelExecutorInput input;
+  input.request = *proto_request;
+  input.metadata = GetModelMetaData();
+  ExecuteModelWithInput(std::move(callback), input);
 }
 
 void PredictionModelHandler::WaitForModelLoadForTesting() {

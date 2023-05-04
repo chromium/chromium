@@ -31,7 +31,7 @@ namespace optimization_guide {
 // WeakPointers of this class must only be dereferenced on the
 // |execution_task_runner| thread as well. This in turn means that this class
 // must be destroyed on the |execution_task_runner| thread as well.
-template <class OutputType, class... InputTypes>
+template <class OutputType, class InputType>
 class ModelExecutor {
  public:
   ModelExecutor() = default;
@@ -60,7 +60,7 @@ class ModelExecutor {
       base::OnceCallback<void(const absl::optional<OutputType>&)>;
   virtual void SendForExecution(ExecutionCallback callback_on_complete,
                                 base::TimeTicks start_time,
-                                InputTypes... args) = 0;
+                                InputType input) = 0;
 
   // IMPORTANT: These WeakPointers must only be dereferenced on the
   // |execution_task_runner| thread.

@@ -14,11 +14,18 @@
 
 namespace permissions {
 
-class PredictionModelExecutor
-    : public optimization_guide::BaseModelExecutor<
-          GeneratePredictionsResponse,
-          const GeneratePredictionsRequest&,
-          const absl::optional<WebPermissionPredictionsModelMetadata>&> {
+struct PredictionModelExecutorInput {
+  PredictionModelExecutorInput();
+  ~PredictionModelExecutorInput();
+  PredictionModelExecutorInput(const PredictionModelExecutorInput&);
+
+  GeneratePredictionsRequest request;
+  absl::optional<WebPermissionPredictionsModelMetadata> metadata;
+};
+
+class PredictionModelExecutor : public optimization_guide::BaseModelExecutor<
+                                    GeneratePredictionsResponse,
+                                    const PredictionModelExecutorInput&> {
  public:
   // This enum backs up the 'PermissionPredictionThresholdSource` histogram
   // enum.
@@ -41,9 +48,7 @@ class PredictionModelExecutor
  protected:
   // optimization_guide::BaseModelExecutor:
   bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                  const GeneratePredictionsRequest& input,
-                  const absl::optional<WebPermissionPredictionsModelMetadata>&
-                      metadata) override;
+                  const PredictionModelExecutorInput& input) override;
 
   absl::optional<GeneratePredictionsResponse> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
