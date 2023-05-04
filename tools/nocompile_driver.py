@@ -19,7 +19,6 @@ import ast
 import io
 import os
 import re
-import select
 import subprocess
 import sys
 import tempfile
@@ -154,7 +153,7 @@ def ExtractTestConfigs(sourcefile_path, suite_name):
     is actually None, then this specifies a compiler sanity check test, which
     should expect a SUCCESSFUL compilation.
   """
-  sourcefile = open(sourcefile_path, 'r')
+  sourcefile = open(sourcefile_path, 'r', encoding='utf-8')
 
   # Start with at least the compiler sanity test.  You need to always have one
   # sanity test to show that compiler flags and configuration are not just
@@ -183,11 +182,10 @@ def ExtractTestConfigs(sourcefile_path, suite_name):
   return test_configs
 
 
-def StartTest(compiler, sourcefile_path, tempfile_dir, cflags, config):
+def StartTest(compiler, tempfile_dir, cflags, config):
   """Start one negative compile test.
 
   Args:
-    sourcefile_path: The path to the source file.
     tempfile_dir: A directory to store temporary data from tests.
     cflags: An array of strings with all the CFLAGS to give to gcc.
     config: A dictionary describing the test.  See ExtractTestConfigs
@@ -223,10 +221,12 @@ def StartTest(compiler, sourcefile_path, tempfile_dir, cflags, config):
   expectations = config['expectations']
   if expectations is not None:
     cmdline.append('-D%s' % name)
-  cmdline.extend(['-o', '/dev/null', '-c', '-x', 'c++',
-                  sourcefile_path])
-  test_stdout = tempfile.TemporaryFile(dir=tempfile_dir, mode='w+')
-  test_stderr = tempfile.TemporaryFile(dir=tempfile_dir, mode='w+')
+  test_stdout = tempfile.TemporaryFile(dir=tempfile_dir,
+                                       mode='w+',
+                                       encoding='utf-8')
+  test_stderr = tempfile.TemporaryFile(dir=tempfile_dir,
+                                       mode='w+',
+                                       encoding='utf-8')
 
   process = subprocess.Popen(cmdline, stdout=test_stdout, stderr=test_stderr)
   now = time.time()
@@ -275,18 +275,18 @@ def FailTest(resultfile, test, error, stdout=None, stderr=None):
     stdout: The test's output to stdout.
     stderr: The test's output to stderr.
   """
-  resultfile.write('#error "%s Failed: %s"\n' % (test['name'], error))
-  resultfile.write('#error "compile line: %s"\n' % test['cmdline'])
+  resultfile.write('\n')
+  resultfile.write('#error %s Failed: %s\n' % (test['name'], error))
+  resultfile.write('#error compile line: %s\n' % test['cmdline'])
   if stdout and len(stdout) != 0:
-    resultfile.write('#error "%s stdout:"\n' % test['name'])
+    resultfile.write('#error %s stdout:\n' % test['name'])
     for line in stdout.split('\n'):
       resultfile.write('#error "  %s:"\n' % line)
 
   if stderr and len(stderr) != 0:
-    resultfile.write('#error "%s stderr:"\n' % test['name'])
+    resultfile.write('#error %s stderr:"\n' % test['name'])
     for line in stderr.split('\n'):
       resultfile.write('#error "  %s"\n' % line)
-  resultfile.write('\n')
 
 
 def WriteStats(resultlog, suite_name, timings):
@@ -386,15 +386,7 @@ def CompleteAtLeastOneTest(executing_tests):
     # If we don't make progress for too long, assume the code is just dead.
     assert busy_loop_timeout > time.time()
 
-    # Select on the output files to block until we have something to
-    # do. We ignore the return value from select and just poll all
-    # processes.
-    read_set = []
-    for test in executing_tests.values():
-      read_set.extend([test['stdout'], test['stderr']])
-    select.select(read_set, [], read_set, NCTEST_TERMINATE_TIMEOUT_SEC)
-
-    # Now attempt to process results.
+    # Attempt to process results.
     now = time.time()
     for test in executing_tests.values():
       proc = test['proc']
@@ -409,9 +401,8 @@ def CompleteAtLeastOneTest(executing_tests):
         test['aborted_at'] = now
 
     if len(finished_tests) == 0:
-      # We had output from some process but no process had
-      # finished. To avoid busy looping while waiting for a process to
-      # finish, insert a small 100 ms delay here.
+      # To avoid busy looping while waiting for a process to finish, insert a
+      # 100 ms delay here.
       time.sleep(0.1)
 
   for test in finished_tests:
@@ -458,10 +449,8 @@ def main():
   executing_tests = {}
   finished_tests = []
 
-  cflags.extend(['-MMD', '-MF', resultfile_path + '.d', '-MT', resultfile_path])
   test = StartTest(
       compiler,
-      sourcefile_path,
       os.path.dirname(resultfile_path),
       cflags,
       { 'name': 'NCTEST_SANITY',
@@ -480,8 +469,8 @@ def main():
     if config['name'].startswith('DISABLED_'):
       PassTest(resultfile, resultlog, config)
     else:
-      test = StartTest(compiler, sourcefile_path,
-                       os.path.dirname(resultfile_path), cflags, config)
+      test = StartTest(compiler, os.path.dirname(resultfile_path), cflags,
+                       config)
       assert test['name'] not in executing_tests
       executing_tests[test['name']] = test
 
