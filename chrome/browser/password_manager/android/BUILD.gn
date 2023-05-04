@@ -36,19 +36,6 @@ source_set("backend_public") {
   ]
 }
 
-source_set("local_password_migration_warning") {
-  sources = [
-    "local_password_migration_warning_util.cc",
-    "local_password_migration_warning_util.h",
-  ]
-
-  deps = [
-    ":jni_headers",
-    "//ui/android:android",
-    "//ui/gfx:native_widget_types",
-  ]
-}
-
 source_set("backend") {
   visibility = [
     ":backend_public",
@@ -181,7 +168,6 @@ android_library("java") {
 generate_jni("jni_headers") {
   visibility = [
     ":backend",
-    ":local_password_migration_warning",
     ":test_support",
     "//chrome/browser",
   ]
@@ -196,7 +182,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordStoreCredential.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordSyncControllerDelegateBridgeImpl.java",
-    "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningBridge.java",
   ]
 }
 
@@ -461,7 +446,6 @@ source_set("unit_tests") {
   deps = [
     ":backend",
     ":backend_public",
-    ":local_password_migration_warning",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser",
@@ -485,22 +469,5 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base:base",
-  ]
-}
-
-android_library("local_passwords_migration_warning_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-    "//components/browser_ui/bottomsheet/android:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//ui/android:ui_java",
-  ]
-
-  sources = [
-    "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningBridge.java",
-    "local_passwords_migration_warning/java/src/org/chromium/chrome/browser/local_passwords_migration_warning/PasswordMigrationWarningCoordinator.java",
   ]
 }
