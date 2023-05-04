@@ -736,9 +736,7 @@ void DownloadBubbleRowView::UpdateLabels() {
         {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
   }
 
-  if (GetWidget()) {
-    secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
-  }
+  secondary_label_->SetEnabledColorId(ui_info_.GetColorForSecondaryText());
 }
 
 void DownloadBubbleRowView::RecordMetricsOnUpdate() {
