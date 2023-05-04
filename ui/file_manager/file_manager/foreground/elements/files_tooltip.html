@@ -19,8 +19,8 @@ found in the LICENSE file.
     opacity: 100%;
   }
 
-  :host-context([theme='legacy']) #label,
-  :host-context([theme='legacy']) #link.link-label {
+  #label,
+  #link.link-label {
     align-items: center;
     border-radius: 2px;
     display: inline-flex;
@@ -29,14 +29,14 @@ found in the LICENSE file.
     white-space: nowrap;
   }
 
+  :host-context([theme='legacy']) #label,
+  :host-context([theme='legacy']) #link.link-label {
+    font-size: 12px;
+  }
+
   :host-context([theme='refresh23']) #label,
   :host-context([theme='refresh23']) #link.link-label {
-    align-items: center;
-    border-radius: 2px;
-    display: inline-flex;
     font: var(--cros-annotation-1-font);
-    padding: 0 8px;
-    white-space: nowrap;
   }
 
   :host(.card-tooltip) {
