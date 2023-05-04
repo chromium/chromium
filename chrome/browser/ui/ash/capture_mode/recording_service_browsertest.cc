@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/check.h"
@@ -150,7 +151,8 @@ class RecordingServiceBrowserTest : public InProcessBrowserTest {
     // muxer to discard video frames if it expects audio frames but got none,
     // which may cause the produced webm file to be empty. See issues
     // https://crbug.com/1151167 and https://crbug.com/1151418.
-    ash::CaptureModeTestApi().SetAudioRecordingEnabled(false);
+    ash::CaptureModeTestApi().SetAudioRecordingMode(
+        ash::AudioRecordingMode::kOff);
   }
 
   aura::Window* GetBrowserWindow() const {

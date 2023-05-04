@@ -2,7 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_menu_group.h"
+#include "ash/capture_mode/capture_mode_session_test_api.h"
+#include "ash/capture_mode/capture_mode_settings_test_api.h"
+#include "ash/capture_mode/capture_mode_settings_view.h"
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
+#include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 
@@ -16,12 +24,109 @@ class CaptureAudioMixingTest : public AshTestBase {
   CaptureAudioMixingTest& operator=(const CaptureAudioMixingTest&) = delete;
   ~CaptureAudioMixingTest() override = default;
 
+  CaptureModeController* StartSession() {
+    return StartCaptureSession(CaptureModeSource::kFullscreen,
+                               CaptureModeType::kVideo);
+  }
+
+  bool IsAudioOptionChecked(int option_id) const {
+    return CaptureModeSettingsTestApi()
+        .GetAudioInputMenuGroup()
+        ->IsOptionChecked(option_id);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(CaptureAudioMixingTest, Basic) {
-  EXPECT_TRUE(features::IsCaptureModeAudioMixingEnabled());
+TEST_F(CaptureAudioMixingTest, AudioSettingsMenu) {
+  auto* controller = StartSession();
+  auto* event_generator = GetEventGenerator();
+
+  // Open the settings menu, and check the currently selected audio mode.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
+
+  {
+    CaptureModeSettingsTestApi test_api;
+    views::View* microphone_option = test_api.GetMicrophoneOption();
+    views::View* system_option = test_api.GetSystemAudioOption();
+    views::View* system_and_microphone_option =
+        test_api.GetSystemAndMicrophoneAudioOption();
+
+    // All the options should exist, but only the "off" option should be
+    // selected.
+    EXPECT_TRUE(microphone_option);
+    EXPECT_TRUE(system_option);
+    EXPECT_TRUE(system_and_microphone_option);
+    EXPECT_TRUE(IsAudioOptionChecked(kAudioOff));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioMicrophone));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioSystem));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioSystemAndMicrophone));
+
+    // Clicking on the system audio should select that option and update the
+    // controller.
+    ClickOnView(system_option, event_generator);
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioOff));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioMicrophone));
+    EXPECT_TRUE(IsAudioOptionChecked(kAudioSystem));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioSystemAndMicrophone));
+    EXPECT_EQ(AudioRecordingMode::kSystem,
+              controller->GetEffectiveAudioRecordingMode());
+
+    // Likewise for the system+microphone option.
+    ClickOnView(system_and_microphone_option, event_generator);
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioOff));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioMicrophone));
+    EXPECT_FALSE(IsAudioOptionChecked(kAudioSystem));
+    EXPECT_TRUE(IsAudioOptionChecked(kAudioSystemAndMicrophone));
+    EXPECT_EQ(AudioRecordingMode::kSystemAndMicrophone,
+              controller->GetEffectiveAudioRecordingMode());
+  }
+
+  // Exit the session, and start a new one. The most recent audio setting will
+  // be remembered.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  StartSession();
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_FALSE(IsAudioOptionChecked(kAudioOff));
+  EXPECT_FALSE(IsAudioOptionChecked(kAudioMicrophone));
+  EXPECT_FALSE(IsAudioOptionChecked(kAudioSystem));
+  EXPECT_TRUE(IsAudioOptionChecked(kAudioSystemAndMicrophone));
+}
+
+TEST_F(CaptureAudioMixingTest, KeyboardNavigation) {
+  auto* controller = StartSession();
+  using FocusGroup = CaptureModeSessionFocusCycler::FocusGroup;
+  CaptureModeSessionTestApi test_api(controller->capture_mode_session());
+
+  auto* event_generator = GetEventGenerator();
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/6);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(), GetSettingsButton());
+  // Press the space bar, and the settings menu should open, ready for keyboard
+  // navigation.
+  SendKey(ui::VKEY_SPACE, event_generator);
+  EXPECT_EQ(FocusGroup::kPendingSettings, test_api.GetCurrentFocusGroup());
+  CaptureModeSettingsView* settings_menu =
+      test_api.GetCaptureModeSettingsView();
+  ASSERT_TRUE(settings_menu);
+
+  CaptureModeSettingsTestApi settings_test_api;
+  // Tab twice, the current focused view is the "Off" option.
+  SendKey(ui::VKEY_TAB, event_generator, ui::EF_NONE, /*count=*/2);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            settings_test_api.GetAudioOffOption());
+  // Next tabs will go through all the audio options.
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            settings_test_api.GetSystemAudioOption());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            settings_test_api.GetMicrophoneOption());
+  SendKey(ui::VKEY_TAB, event_generator);
+  EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
+            settings_test_api.GetSystemAndMicrophoneAudioOption());
 }
 
 }  // namespace ash

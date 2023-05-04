@@ -794,14 +794,17 @@ IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptureModeSettingsBrowserTest,
                        AudioCaptureDisabledByPolicy) {
   ash::CaptureModeTestApi test_api;
-  test_api.SetAudioRecordingEnabled(true);
-  EXPECT_TRUE(test_api.GetAudioRecordingEnabled());
+  test_api.SetAudioRecordingMode(ash::AudioRecordingMode::kMicrophone);
+  EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
+            test_api.GetEffectiveAudioRecordingMode());
 
   auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   prefs->SetBoolean(prefs::kAudioCaptureAllowed, false);
-  EXPECT_FALSE(test_api.GetAudioRecordingEnabled());
+  EXPECT_EQ(ash::AudioRecordingMode::kOff,
+            test_api.GetEffectiveAudioRecordingMode());
   prefs->SetBoolean(prefs::kAudioCaptureAllowed, true);
-  EXPECT_TRUE(test_api.GetAudioRecordingEnabled());
+  EXPECT_EQ(ash::AudioRecordingMode::kMicrophone,
+            test_api.GetEffectiveAudioRecordingMode());
 }
 
 // This test fixture tests the chromeos-linux path of camera video frames coming

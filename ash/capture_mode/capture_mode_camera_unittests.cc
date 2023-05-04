@@ -4608,7 +4608,7 @@ TEST_F(CaptureModePrivacyIndicatorsTest, DuringRecordingPrivacyIndicators) {
 
   // When the user selects audio recording, the idicators won't change.
   // Recording has to start first.
-  capture_controller->EnableAudioRecording(true);
+  capture_controller->SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
   EXPECT_FALSE(IsMicrophoneIndicatorIconVisible());
 
   StartRecordingFromSource(CaptureModeSource::kFullscreen);

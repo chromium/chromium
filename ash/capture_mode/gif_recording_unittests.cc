@@ -444,7 +444,7 @@ TEST_F(GifRecordingTest, RecordingTypeIsRespected) {
   // Even though audio recording is enabled, when performing a GIF recording,
   // the recording service should not be asked to connect to the audio streaming
   // factory and should not be doing any audio recording.
-  controller->EnableAudioRecording(true);
+  controller->SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
   StartVideoRecordingImmediately();
 
   // Test that the configuration histogram was reported correctly, and that the

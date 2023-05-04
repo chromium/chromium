@@ -13,6 +13,7 @@
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/video_recording_watcher.h"
+#include "ash/constants/ash_features.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/run_loop.h"
@@ -25,6 +26,18 @@ CaptureModeController* GetController() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller);
   return controller;
+}
+
+// Returns true of the given audio recording `mode` is currently supported.
+bool IsAudioRecordingModeSupported(AudioRecordingMode mode) {
+  switch (mode) {
+    case AudioRecordingMode::kOff:
+    case AudioRecordingMode::kMicrophone:
+      return true;
+    case AudioRecordingMode::kSystem:
+    case AudioRecordingMode::kSystemAndMicrophone:
+      return features::IsCaptureModeAudioMixingEnabled();
+  }
 }
 
 }  // namespace
@@ -114,13 +127,14 @@ void CaptureModeTestApi::SetOnVideoRecordCountdownFinishedCallback(
   controller_->on_countdown_finished_callback_for_test_ = std::move(callback);
 }
 
-void CaptureModeTestApi::SetAudioRecordingEnabled(bool enabled) {
+void CaptureModeTestApi::SetAudioRecordingMode(AudioRecordingMode mode) {
   DCHECK(!controller_->is_recording_in_progress());
-  controller_->enable_audio_recording_ = enabled;
+  DCHECK(IsAudioRecordingModeSupported(mode));
+  controller_->audio_recording_mode_ = mode;
 }
 
-bool CaptureModeTestApi::GetAudioRecordingEnabled() const {
-  return controller_->GetAudioRecordingEnabled();
+AudioRecordingMode CaptureModeTestApi::GetEffectiveAudioRecordingMode() const {
+  return controller_->GetEffectiveAudioRecordingMode();
 }
 
 void CaptureModeTestApi::FlushRecordingServiceForTesting() {

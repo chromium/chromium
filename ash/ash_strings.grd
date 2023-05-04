@@ -5668,6 +5668,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE" desc="The label of the menu option button for microphone audio input.">
         Microphone
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_SYSTEM" desc="The label of the menu option button for the device's system audio input.">
+        Device audio
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_SYSTEM_AND_MICROPHONE" desc="The label of the menu option button for mixing the microphone and the device's system audio input together.">
+        Device audio and microphone
+      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_CAMERA" desc="The label of the camera menu group header in capture mode settings.">
         Camera
       </message>

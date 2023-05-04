@@ -289,12 +289,6 @@ class CaptureModeTest : public AshTestBase {
         ->window_toggle_button();
   }
 
-  IconButton* GetSettingsButton() const {
-    auto* controller = CaptureModeController::Get();
-    DCHECK(controller->IsActive());
-    return GetCaptureModeBarView()->settings_button();
-  }
-
   IconButton* GetCloseButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
@@ -5227,13 +5221,15 @@ TEST_F(ProjectorCaptureModeIntegrationTests, EntryPoint) {
   controller->SetType(CaptureModeType::kImage);
   // Also, audio recording is initially disabled. However, the projector flow
   // forces it enabled.
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 
   StartProjectorModeSession();
   EXPECT_TRUE(controller->IsActive());
   auto* session = controller->capture_mode_session();
   EXPECT_TRUE(session->is_in_projector_mode());
-  EXPECT_TRUE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kMicrophone,
+            controller->GetEffectiveAudioRecordingMode());
 
   constexpr char kEntryPointHistogram[] =
       "Ash.CaptureModeController.EntryPoint.ClamshellMode";
@@ -5261,7 +5257,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, CaptureModeSettings) {
   CaptureModeMenuGroup* audio_input_menu_group =
       test_api.GetAudioInputMenuGroup();
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
-  EXPECT_TRUE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kMicrophone,
+            controller->GetEffectiveAudioRecordingMode());
 }
 
 TEST_F(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
@@ -5269,7 +5266,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests, AudioCaptureDisabledByPolicy) {
   auto* delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   delegate->set_is_audio_capture_disabled_by_policy(true);
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 
   // A projector session is not allowed to start when audio recording is
   // disabled by policy.
@@ -5281,7 +5279,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   auto* controller = CaptureModeController::Get();
   auto* delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 
   // At this point, a Projector session is allowed to begin.
   EXPECT_TRUE(projector_helper_.CanStartProjectorSession());
@@ -5443,14 +5442,16 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   EXPECT_TRUE(controller->IsActive());
   EXPECT_EQ(controller->type(), CaptureModeType::kVideo);
   EXPECT_EQ(controller->source(), CaptureModeSource::kFullscreen);
-  EXPECT_TRUE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kMicrophone,
+            controller->GetEffectiveAudioRecordingMode());
 
   // Stop the projector-initiated capture mode session and the original capture
   // mode configurations will be restored.
   controller->Stop();
   EXPECT_EQ(controller->type(), CaptureModeType::kImage);
   EXPECT_EQ(controller->source(), CaptureModeSource::kWindow);
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 
   // Start a new projector-initiated capture mode session and start the region
   // recording.
@@ -5472,7 +5473,8 @@ TEST_F(ProjectorCaptureModeIntegrationTests,
   // session, the capture mode configurations will be restored as what has been
   // set before the projector-initiated capture mode session.
   EXPECT_EQ(controller->type(), CaptureModeType::kImage);
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 }
 
 namespace {
@@ -5689,7 +5691,8 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
 // and during video recording.
 TEST_P(ProjectorCaptureModeIntegrationTests, ProjectorBehavior) {
   CaptureModeController* controller = CaptureModeController::Get();
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
   EXPECT_TRUE(projector_helper_.CanStartProjectorSession());
   StartProjectorModeSession();
   ASSERT_TRUE(controller->IsActive());
@@ -6290,7 +6293,8 @@ TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
 
   // Test that the audio recording preference is defaulted to off.
   ClickOnView(GetSettingsButton(), event_generator);
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 
   CaptureModeSettingsTestApi test_api;
   CaptureModeMenuGroup* audio_input_menu_group =
@@ -6304,13 +6308,15 @@ TEST_F(CaptureModeSettingsTest, AudioInputSettingsMenu) {
   ClickOnView(microphone_option, event_generator);
   EXPECT_TRUE(audio_input_menu_group->IsOptionChecked(kAudioMicrophone));
   EXPECT_FALSE(audio_input_menu_group->IsOptionChecked(kAudioOff));
-  EXPECT_TRUE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kMicrophone,
+            controller->GetEffectiveAudioRecordingMode());
 
   // Test that the user selected audio preference for audio recording is
   // remembered between sessions.
   SendKey(ui::VKEY_ESCAPE, event_generator);
   StartImageRegionCapture();
-  EXPECT_TRUE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kMicrophone,
+            controller->GetEffectiveAudioRecordingMode());
 }
 
 TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
@@ -6318,11 +6324,12 @@ TEST_F(CaptureModeSettingsTest, AudioCaptureDisabledByPolicy) {
 
   // Even if audio recording is set to enabled, the policy setting will
   // overwrite it.
-  controller->EnableAudioRecording(true);
+  controller->SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
   auto* delegate =
       static_cast<TestCaptureModeDelegate*>(controller->delegate_for_testing());
   delegate->set_is_audio_capture_disabled_by_policy(true);
-  EXPECT_FALSE(controller->GetAudioRecordingEnabled());
+  EXPECT_EQ(AudioRecordingMode::kOff,
+            controller->GetEffectiveAudioRecordingMode());
 
   StartImageRegionCapture();
 
@@ -7128,7 +7135,7 @@ TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {
 
   // Perform a video recording with audio off. A false should be recorded.
   StartSessionForVideo();
-  CaptureModeTestApi().SetAudioRecordingEnabled(false);
+  CaptureModeTestApi().SetAudioRecordingMode(AudioRecordingMode::kOff);
   StartRecording();
   histogram_tester.ExpectBucketCount(
       GetCaptureModeHistogramName(kHistogramNameBase), false, 1);
@@ -7146,9 +7153,10 @@ TEST_P(CaptureModeHistogramTest, VideoRecordingAudioVideoMetrics) {
           "Ash.CaptureModeController.ScreenRecordingFileSize"),
       /*expected_count=*/1);
 
-  // Perform a video recording with audio on. A true should be recorded.
+  // Perform a video recording with microphone audio recording on. A true should
+  // be recorded.
   StartSessionForVideo();
-  CaptureModeTestApi().SetAudioRecordingEnabled(true);
+  CaptureModeTestApi().SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
   StartRecording();
   histogram_tester.ExpectBucketCount(
       GetCaptureModeHistogramName(kHistogramNameBase), false, 1);

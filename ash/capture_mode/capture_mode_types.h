@@ -71,6 +71,14 @@ enum class RecordingType {
   kGif,
 };
 
+// Defines the supported audio recording modes.
+enum class AudioRecordingMode {
+  kOff,
+  kSystem,
+  kMicrophone,
+  kSystemAndMicrophone,
+};
+
 // Specifies the capture mode behavior types.
 enum class BehaviorType {
   kDefault,

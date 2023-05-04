@@ -782,9 +782,11 @@ void CaptureModeSession::ReportSessionHistograms() {
   num_capture_region_adjusted_ = 0;
 
   RecordCaptureModeSwitchesFromInitialMode(capture_source_changed_);
-  RecordCaptureModeConfiguration(controller_->type(), source, recording_type,
-                                 controller_->GetAudioRecordingEnabled(),
-                                 is_in_projector_mode_);
+  RecordCaptureModeConfiguration(
+      controller_->type(), source, recording_type,
+      /*audio_on=*/controller_->GetEffectiveAudioRecordingMode() !=
+          AudioRecordingMode::kOff,
+      is_in_projector_mode_);
 }
 
 void CaptureModeSession::StartCountDown(

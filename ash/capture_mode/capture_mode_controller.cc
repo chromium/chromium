@@ -550,8 +550,10 @@ bool CaptureModeController::IsActive() const {
   return capture_mode_session_ && !capture_mode_session_->is_shutting_down();
 }
 
-bool CaptureModeController::GetAudioRecordingEnabled() const {
-  return enable_audio_recording_ && !IsAudioCaptureDisabledByPolicy();
+AudioRecordingMode CaptureModeController::GetEffectiveAudioRecordingMode()
+    const {
+  return IsAudioCaptureDisabledByPolicy() ? AudioRecordingMode::kOff
+                                          : audio_recording_mode_;
 }
 
 bool CaptureModeController::IsAudioCaptureDisabledByPolicy() const {
@@ -957,7 +959,7 @@ void CaptureModeController::MaybeRestoreCachedCaptureConfigurations() {
   type_ = cached_normal_session_configs_->type;
   source_ = cached_normal_session_configs_->source;
   recording_type_ = cached_normal_session_configs_->recording_type;
-  enable_audio_recording_ = cached_normal_session_configs_->audio_on;
+  audio_recording_mode_ = cached_normal_session_configs_->audio_recording_mode;
   enable_demo_tools_ = cached_normal_session_configs_->demo_tools_enabled;
   cached_normal_session_configs_.reset();
 }
@@ -1639,7 +1641,8 @@ void CaptureModeController::BeginVideoRecording(
   Stop();
 
   const bool should_record_audio =
-      SupportsAudioRecording(recording_type_) && GetAudioRecordingEnabled();
+      SupportsAudioRecording(recording_type_) &&
+      GetEffectiveAudioRecordingMode() != AudioRecordingMode::kOff;
   mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
       cursor_capture_overlay;
   auto cursor_overlay_receiver =
@@ -1670,7 +1673,7 @@ void CaptureModeController::BeginVideoRecording(
   RecordRecordingStartsWithDemoTools(enable_demo_tools_, for_projector);
 
   // Restore the capture mode configurations that include the `type_`, `source_`
-  // and `enable_audio_recording_` after projector-inititated recording starts
+  // and `audio_recording_mode` after projector-inititated recording starts
   // if any of them was overridden in projector-initiated capture mode session.
   MaybeRestoreCachedCaptureConfigurations();
 
@@ -1783,7 +1786,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
   CaptureModeBehavior* active_behavior =
       capture_mode_session_->active_behavior();
   if (active_behavior->IsAudioRecordingRequired() &&
-      !GetAudioRecordingEnabled()) {
+      GetEffectiveAudioRecordingMode() == AudioRecordingMode::kOff) {
     // Before asking the client to create a folder to host the video file, we
     // check if they require audio recording to be enabled, but it can't be
     // allowed due to admin policy. In this case we just abort the recording by
@@ -1862,9 +1865,9 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     // restoration when switching to the normal capture mode session if needed.
     cached_normal_session_configs_ =
         CaptureSessionConfigs{type_, source_, recording_type_,
-                              enable_audio_recording_, enable_demo_tools_};
+                              audio_recording_mode_, enable_demo_tools_};
 
-    enable_audio_recording_ = true;
+    audio_recording_mode_ = AudioRecordingMode::kMicrophone;
     enable_demo_tools_ = true;
     SetType(CaptureModeType::kVideo);
     SetSource(CaptureModeSource::kFullscreen);

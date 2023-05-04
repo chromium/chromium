@@ -31,7 +31,9 @@ class SystemShadow;
 // All the options in the CaptureMode settings view.
 enum CaptureSettingsOption {
   kAudioOff = 0,
+  kAudioSystem,
   kAudioMicrophone,
+  kAudioSystemAndMicrophone,
   kDownloadsFolder,
   kCustomFolder,
   kCameraOff,

@@ -35,6 +35,8 @@ class CaptureModeSettingsTestApi {
   CaptureModeMenuGroup* GetAudioInputMenuGroup();
   views::View* GetMicrophoneOption();
   views::View* GetAudioOffOption();
+  views::View* GetSystemAudioOption();
+  views::View* GetSystemAndMicrophoneAudioOption();
 
   // Returns the save-to settings menu group and the views for its options.
   CaptureModeMenuGroup* GetSaveToMenuGroup();

@@ -178,6 +178,12 @@ CaptureModeBarView* GetCaptureModeBarView() {
   return CaptureModeSessionTestApi(session).GetCaptureModeBarView();
 }
 
+IconButton* GetSettingsButton() {
+  auto* controller = CaptureModeController::Get();
+  DCHECK(controller->IsActive());
+  return GetCaptureModeBarView()->settings_button();
+}
+
 IconButton* GetFullscreenToggleButton() {
   auto* controller = CaptureModeController::Get();
   DCHECK(controller->IsActive());

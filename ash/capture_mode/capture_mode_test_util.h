@@ -101,6 +101,8 @@ void ClickOrTapView(const views::View* view,
 
 CaptureModeBarView* GetCaptureModeBarView();
 
+IconButton* GetSettingsButton();
+
 IconButton* GetFullscreenToggleButton();
 
 IconButton* GetRegionToggleButton();
