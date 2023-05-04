@@ -4,32 +4,32 @@ Copyright 2019 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    style="@style/AlertDialogContent">
+    style="@style/AlertDialogContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@android:id/title"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:textAppearance="@style/TextAppearance.Headline.Primary"/>
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@android:id/message"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+        <TextView
+            android:id="@android:id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
-    <CheckBox
-        android:id="@+id/remove_local_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="-6dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginTop="8dp"
-        android:paddingStart="4dp"
-        android:text="@string/remove_local_data"
-        android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
-</LinearLayout>
+        <CheckBox
+            android:id="@+id/remove_local_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="-6dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="8dp"
+            android:paddingStart="4dp"
+            android:text="@string/remove_local_data"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+    </LinearLayout>
+</ScrollView>
