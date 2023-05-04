@@ -791,7 +791,11 @@ class DownloadJob(object):
     assert self.thread, 'DownloadJob must be started before Stop is called.'
     self.quit_event.set()
     self.thread.join()
-    os.unlink(self.zip_file)
+    # If a very small range is requested, with verification, then the same
+    # download may be requested twice, so the second delete will fail. Check for
+    # that.
+    if os.path.exists(self.zip_file):
+      os.unlink(self.zip_file)
 
   def WaitFor(self):
     """Prints a message and waits for the download to complete. The download
