@@ -121,6 +121,7 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
@@ -154,6 +155,7 @@ public final class TabGridViewBinderUnitTest {
 
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, false);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
 
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(false));
@@ -189,6 +191,7 @@ public final class TabGridViewBinderUnitTest {
         // Verify.
         verify(mViewGroup).setMinimumWidth(updatedCardWidth);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.width, equalTo(updatedCardWidth));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
 
@@ -224,6 +227,7 @@ public final class TabGridViewBinderUnitTest {
         // Verify.
         verify(mViewGroup).setMinimumHeight(updatedCardHeight);
         verify(mThumbnailView).setColorThumbnailPlaceHolder(false, true);
+        verify(mThumbnailView).setImageDrawable(null);
         assertThat(mLayoutParams.height, equalTo(updatedCardHeight));
         verify(mFetcher).fetch(mCallbackCaptor.capture(), any(), eq(true));
 

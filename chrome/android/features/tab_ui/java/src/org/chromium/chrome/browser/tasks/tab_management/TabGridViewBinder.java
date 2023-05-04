@@ -286,15 +286,13 @@ class TabGridViewBinder {
         TabGridThumbnailView thumbnail =
                 (TabGridThumbnailView) view.fastFindViewById(R.id.tab_thumbnail);
         final TabListMediator.ThumbnailFetcher fetcher = model.get(TabProperties.THUMBNAIL_FETCHER);
-        // To GC on hide.
-        if (fetcher == null) {
-            thumbnail.setImageDrawable(null);
-            return;
-        }
-
-        // Use placeholder drawable before the real thumbnail is available.
+        // To GC on hide remove the thumbnail and set a background color.
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
         thumbnail.setColorThumbnailPlaceHolder(model.get(TabProperties.IS_INCOGNITO), isSelected);
+        thumbnail.setImageDrawable(null);
+        if (fetcher == null) {
+            return;
+        }
 
         final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
         if (cardSize == null) {
@@ -424,9 +422,7 @@ class TabGridViewBinder {
         titleView.setTextColor(TabUiThemeProvider.getTitleTextColor(
                 titleView.getContext(), isIncognito, isSelected));
 
-        if (thumbnail.isPlaceHolder()) {
-            thumbnail.setColorThumbnailPlaceHolder(isIncognito, isSelected);
-        }
+        thumbnail.setColorThumbnailPlaceHolder(isIncognito, isSelected);
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
             ViewCompat.setBackgroundTintList(backgroundView,

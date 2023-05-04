@@ -10,4 +10,11 @@ found in the LICENSE file.
         <attr name="colorTileBase" format="color" />
         <attr name="elevationTileBase" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="TabGridThumbnailView">
+        <attr name="cornerRadiusTopStart" format="dimension" />
+        <attr name="cornerRadiusTopEnd" format="dimension" />
+        <attr name="cornerRadiusBottomStart" format="dimension" />
+        <attr name="cornerRadiusBottomEnd" format="dimension" />
+    </declare-styleable>
 </resources>

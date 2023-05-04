@@ -135,8 +135,8 @@ public class TabSelectionEditorTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
-                    .setRevision(7)
-                    .setDescription("Use GRID_CARD_SIZE universally")
+                    .setRevision(8)
+                    .setDescription("TabGridThumbnailView update.")
                     .build();
 
     @Mock
