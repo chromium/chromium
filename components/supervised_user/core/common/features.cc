@@ -86,6 +86,11 @@ BASE_FEATURE(kLocalExtensionApprovalsV2,
              "LocalExtensionApprovalsV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Stops creating Supervised User Service for Incognito profile.
+BASE_FEATURE(kUpdateSupervisedUserFactoryCreation,
+             "UpdateSupervisedUserFactoryCreation",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsWebFilterInterstitialRefreshEnabled() {
   CHECK(base::FeatureList::IsEnabled(kWebFilterInterstitialRefresh) ||
         !base::FeatureList::IsEnabled(kLocalWebApprovals));

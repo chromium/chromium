@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
 #include "chrome/browser/ash/child_accounts/family_user_metrics_service.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -30,12 +33,10 @@ FamilyUserMetricsServiceFactory::GetInstance() {
 FamilyUserMetricsServiceFactory::FamilyUserMetricsServiceFactory()
     : ProfileKeyedServiceFactory(
           "FamilyUserMetricsServiceFactory",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {
+          base::FeatureList::IsEnabled(
+              supervised_user::kUpdateSupervisedUserFactoryCreation)
+              ? ProfileSelections::BuildForRegularProfile()
+              : supervised_user::BuildProfileSelectionsLegacy()) {
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
   DependsOn(ChildUserServiceFactory::GetInstance());
   DependsOn(SupervisedUserServiceFactory::GetInstance());

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
@@ -81,7 +83,10 @@ KeyedService* SupervisedUserServiceFactory::BuildInstanceFor(Profile* profile) {
 SupervisedUserServiceFactory::SupervisedUserServiceFactory()
     : ProfileKeyedServiceFactory(
           "SupervisedUserService",
-          ProfileSelections::BuildRedirectedInIncognito()) {
+          base::FeatureList::IsEnabled(
+              supervised_user::kUpdateSupervisedUserFactoryCreation)
+              ? supervised_user::BuildProfileSelectionsForRegularAndGuest()
+              : ProfileSelections::BuildRedirectedInIncognito()) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
       extensions::ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());

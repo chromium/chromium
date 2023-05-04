@@ -104,6 +104,7 @@ void ExtensionEnableFlow::CheckPermissionAndMaybePromptUser() {
   DCHECK(supervised_user_extensions_delegate);
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
+  DCHECK(supervised_user_service);
   if (supervised_user_service->AreExtensionsPermissionsEnabled() && extension &&
 
       // Only ask for parent approval if the extension still requires approval.

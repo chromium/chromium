@@ -4,9 +4,12 @@
 
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_client.h"
+#include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/storage_partition.h"
 
 // static
@@ -26,12 +29,10 @@ KidsChromeManagementClientFactory::GetInstance() {
 KidsChromeManagementClientFactory::KidsChromeManagementClientFactory()
     : ProfileKeyedServiceFactory(
           "KidsChromeManagementClient",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/1418376): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              .Build()) {
+          base::FeatureList::IsEnabled(
+              supervised_user::kUpdateSupervisedUserFactoryCreation)
+              ? supervised_user::BuildProfileSelectionsForRegularAndGuest()
+              : supervised_user::BuildProfileSelectionsLegacy()) {
   DependsOn(IdentityManagerFactory::GetInstance());
 }
 

@@ -9,14 +9,24 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
+class ProfileSelections;
+
 namespace supervised_user {
 
-// Returns true if both the extensions are enabled and the provived
-// url is a Webstore or Download url.
+// Returns true if both the extensions are enabled and the provided url is a
+// Webstore or Download url.
 bool IsSupportedChromeExtensionURL(const GURL& effective_url);
 
 // Returns true if the parent allowlist should be skipped.
 bool ShouldContentSkipParentAllowlistFiltering(content::WebContents* contents);
+
+// Returns how supervised_user factories that are needed in Guest profile
+// should be created.
+ProfileSelections BuildProfileSelectionsForRegularAndGuest();
+
+// Returns how several supervised_user factories are created before the
+// `supervised_user::kUpdateSupervisedUserFactoryCreation` feature is enabled.
+ProfileSelections BuildProfileSelectionsLegacy();
 
 }  // namespace supervised_user
 
