@@ -3778,6 +3778,7 @@ test("ash_pixeltests") {
     "system/cast/cast_detailed_view_pixeltest.cc",
     "system/cast/cast_zero_state_view_pixeltest.cc",
     "system/channel_indicator/channel_indicator_quick_settings_view_pixeltest.cc",
+    "system/ime/ime_detailed_view_pixeltest.cc",
     "system/locale/locale_detailed_view_pixeltest.cc",
     "system/message_center/ash_notification_view_pixeltest.cc",
     "system/network/network_feature_tile_pixeltest.cc",
