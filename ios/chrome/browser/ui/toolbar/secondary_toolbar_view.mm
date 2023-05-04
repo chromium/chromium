@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view.h"
 
 #import "base/check.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
@@ -160,6 +161,22 @@ const CGFloat kToolsMenuOffset = -7;
 
 - (MDCProgressView*)progressBar {
   return nil;
+}
+
+- (UIView*)locationBarContainer {
+  return nil;
+}
+
+- (NSLayoutConstraint*)locationBarContainerHeight {
+  return nil;
+}
+
+- (UIButton*)collapsedToolbarButton {
+  return nil;
+}
+
+- (void)setLocationBarView:(UIView*)locationBarView {
+  NOTREACHED();
 }
 
 #pragma mark - ToolbarCollapsing
