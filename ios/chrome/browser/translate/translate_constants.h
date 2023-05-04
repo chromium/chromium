@@ -21,11 +21,6 @@ typedef NS_OPTIONS(NSUInteger, UserAction) {
 
 // UMA histogram names.
 // Note: These string constants are repeated in TranslateCompactInfoBar.java.
-extern const char kLanguageHistogramTranslate[];
-extern const char kLanguageHistogramMoreLanguages[];
-extern const char kLanguageHistogramPageNotInLanguage[];
-extern const char kLanguageHistogramAlwaysTranslate[];
-extern const char kLanguageHistogramNeverTranslate[];
 extern const char kEventHistogram[];
 extern const char kTranslationCountHistogram[];
 

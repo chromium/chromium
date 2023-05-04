@@ -28,19 +28,6 @@ using translate_infobar_overlays::TranslateBannerRequestConfig;
 using translate_infobar_overlays::PlaceholderRequestCancelHandler;
 using translate_infobar_overlay::ModalRequestCallbackInstaller;
 
-namespace {
-// Records a histogram of `histogram` for `langCode`. This is used to log the
-// language distribution of certain Translate events.
-void RecordLanguageDataHistogram(const std::string& histogram_name,
-                                 const std::string& lang_code) {
-  // TODO(crbug.com/1025440): Use function version of macros here and in
-  // TranslateInfobarController.
-  base::SparseHistogram::FactoryGet(
-      histogram_name, base::HistogramBase::kUmaTargetedHistogramFlag)
-      ->Add(metrics::MetricsLog::Hash(lang_code));
-}
-}
-
 TranslateInfobarModalInteractionHandler::
     TranslateInfobarModalInteractionHandler() = default;
 
@@ -54,8 +41,6 @@ void TranslateInfobarModalInteractionHandler::ToggleAlwaysTranslate(
   translate::TranslateInfoBarDelegate* delegate = GetDelegate(infobar);
   bool enabling_always_translate = !delegate->ShouldAlwaysTranslate();
   delegate->ToggleAlwaysTranslate();
-  RecordLanguageDataHistogram(kLanguageHistogramAlwaysTranslate,
-                              delegate->source_language_code());
   if (enabling_always_translate) {
     StartTranslation(infobar);
   }
@@ -66,8 +51,6 @@ void TranslateInfobarModalInteractionHandler::ToggleNeverTranslateLanguage(
   translate::TranslateInfoBarDelegate* delegate = GetDelegate(infobar);
   bool should_remove_infobar = delegate->IsTranslatableLanguageByPrefs();
   delegate->ToggleTranslatableLanguageByPrefs();
-  RecordLanguageDataHistogram(kLanguageHistogramNeverTranslate,
-                              delegate->source_language_code());
   // Remove infobar if turning it on.
   if (should_remove_infobar)
     infobar->RemoveSelf();
@@ -128,9 +111,6 @@ void TranslateInfobarModalInteractionHandler::PerformMainAction(
   if (delegate->ShouldAutoAlwaysTranslate())
     delegate->ToggleAlwaysTranslate();
   StartTranslation(infobar);
-
-  RecordLanguageDataHistogram(kLanguageHistogramTranslate,
-                              delegate->target_language_code());
 }
 
 #pragma mark - Private

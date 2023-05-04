@@ -48,7 +48,6 @@ public class TranslateOptionsTest {
         Assert.assertTrue(options.getTranslateState(TranslateOptions.Type.ALWAYS_LANGUAGE));
         Assert.assertFalse(options.getTranslateState(TranslateOptions.Type.NEVER_DOMAIN));
         Assert.assertFalse(options.optionsChanged());
-        Assert.assertNull(options.getUMAHashCodeFromCode("en"));
     }
 
     @Test
@@ -66,7 +65,6 @@ public class TranslateOptionsTest {
         Assert.assertEquals("en", options.sourceLanguageCode());
         Assert.assertEquals("fr", options.targetLanguageCode());
         Assert.assertTrue(options.triggeredFromMenu());
-        Assert.assertEquals(Integer.valueOf(10), options.getUMAHashCodeFromCode("en"));
         Assert.assertEquals("English", options.getRepresentationFromCode("en"));
 
         Assert.assertTrue(options.optionsChanged());
@@ -155,14 +153,12 @@ public class TranslateOptionsTest {
                 "Spanish", options.getRepresentationFromCode(options.contentLanguages()[0]));
         Assert.assertEquals(
                 "español", options.getNativeRepresentationFromCode(options.contentLanguages()[0]));
-        Assert.assertTrue(30 == options.getUMAHashCodeFromCode(options.contentLanguages()[0]));
 
         Assert.assertEquals("fr", options.contentLanguages()[1]);
         Assert.assertEquals(
                 "French", options.getRepresentationFromCode(options.contentLanguages()[1]));
         Assert.assertEquals(
                 "français", options.getNativeRepresentationFromCode(options.contentLanguages()[1]));
-        Assert.assertTrue(20 == options.getUMAHashCodeFromCode(options.contentLanguages()[1]));
     }
 
     @Test

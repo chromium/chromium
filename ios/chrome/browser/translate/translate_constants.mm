@@ -8,16 +8,6 @@
 #error "This file requires ARC support."
 #endif
 
-const char kLanguageHistogramTranslate[] =
-    "Translate.CompactInfobar.Language.Translate";
-const char kLanguageHistogramMoreLanguages[] =
-    "Translate.CompactInfobar.Language.MoreLanguages";
-const char kLanguageHistogramPageNotInLanguage[] =
-    "Translate.CompactInfobar.Language.PageNotIn";
-const char kLanguageHistogramAlwaysTranslate[] =
-    "Translate.CompactInfobar.Language.AlwaysTranslate";
-const char kLanguageHistogramNeverTranslate[] =
-    "Translate.CompactInfobar.Language.NeverTranslate";
 const char kEventHistogram[] = "Translate.CompactInfobar.Event";
 const char kTranslationCountHistogram[] =
     "Translate.CompactInfobar.TranslationsPerPage";

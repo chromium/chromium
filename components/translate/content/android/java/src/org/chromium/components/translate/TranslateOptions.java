@@ -31,6 +31,8 @@ public class TranslateOptions {
     public static class TranslateLanguageData {
         public final String mLanguageCode;
         public final String mLanguageRepresentation;
+        // TODO(crbug/1440513): Remove |mLanguageUMAHashCode| as these hashes
+        // are no longer used.
         public final Integer mLanguageUMAHashCode;
 
         public TranslateLanguageData(
@@ -86,9 +88,6 @@ public class TranslateOptions {
     // Conceptually final
     private Map<String, String> mCodeToRepresentation;
 
-    // Language code to its UMA hashcode representation.
-    private Map<String, Integer> mCodeToUMAHashCode;
-
     // Will reflect the state before the object was ever modified
     private final boolean[] mOriginalOptions;
 
@@ -119,10 +118,8 @@ public class TranslateOptions {
         mAllLanguages = allLanguages;
         mContentLanguagesCodes = contentLanguages;
         mCodeToRepresentation = new HashMap<String, String>();
-        mCodeToUMAHashCode = new HashMap<String, Integer>();
         for (TranslateLanguageData language : allLanguages) {
             mCodeToRepresentation.put(language.mLanguageCode, language.mLanguageRepresentation);
-            mCodeToUMAHashCode.put(language.mLanguageCode, language.mLanguageUMAHashCode);
         }
     }
 
@@ -271,22 +268,8 @@ public class TranslateOptions {
         return "";
     }
 
-    /**
-     * Gets the language's UMA hashcode representation from a given language code.
-     * @param languageCode ISO code for the language
-     * @return The UMA hashcode representation of the language, or null if not found.
-     */
-    public Integer getUMAHashCodeFromCode(String languageCode) {
-        return isValidLanguageUMAHashCode(languageCode) ? mCodeToUMAHashCode.get(languageCode)
-                                                        : null;
-    }
-
     private boolean isValidLanguageCode(String languageCode) {
         return !TextUtils.isEmpty(languageCode) && mCodeToRepresentation.containsKey(languageCode);
-    }
-
-    private boolean isValidLanguageUMAHashCode(String languageCode) {
-        return !TextUtils.isEmpty(languageCode) && mCodeToUMAHashCode.containsKey(languageCode);
     }
 
     private boolean canSetLanguage(String sourceCode, String targetCode) {

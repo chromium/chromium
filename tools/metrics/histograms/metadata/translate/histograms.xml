@@ -155,6 +155,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.CompactInfobar.Language.AlwaysTranslate"
     enum="LocaleCodeISO639" expires_after="2023-10-08">
+  <obsolete>
+    This predates the Translate metrics redesign. Metrics are now logged at a
+    translation-level and a page-load level.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -165,6 +169,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.CompactInfobar.Language.MoreLanguages"
     enum="LocaleCodeISO639" expires_after="2023-04-23">
+  <obsolete>
+    This predates the Translate metrics redesign. Metrics are now logged at a
+    translation-level and a page-load level.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -174,6 +182,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.CompactInfobar.Language.NeverTranslate"
     enum="LocaleCodeISO639" expires_after="2023-08-13">
+  <obsolete>
+    This predates the Translate metrics redesign. Metrics are now logged at a
+    translation-level and a page-load level.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -184,6 +196,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.CompactInfobar.Language.PageNotIn"
     enum="LocaleCodeISO639" expires_after="2023-09-17">
+  <obsolete>
+    This predates the Translate metrics redesign. Metrics are now logged at a
+    translation-level and a page-load level.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -194,6 +210,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Translate.CompactInfobar.Language.Translate"
     enum="LocaleCodeISO639" expires_after="2023-08-31">
+  <obsolete>
+    This predates the Translate metrics redesign. Metrics are now logged at a
+    translation-level and a page-load level.
+  </obsolete>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
