@@ -329,6 +329,14 @@ void TabletModeMultitaskMenu::Reset() {
 
 void TabletModeMultitaskMenu::OnNativeFocusChanged(
     gfx::NativeView focused_now) {
+  ui::Layer* view_layer = menu_view_->layer();
+  // Prevent fade out while we are animating to show. This can happen if the
+  // drag goes out of bounds while the menu is animating.
+  if (view_layer->GetAnimator()->is_animating() &&
+      view_layer->GetTargetOpacity() == 1.0f) {
+    return;
+  }
+
   if (widget_->GetNativeView() != focused_now) {
     // Destroys `this` at the end of animation.
     AnimateFadeOut();

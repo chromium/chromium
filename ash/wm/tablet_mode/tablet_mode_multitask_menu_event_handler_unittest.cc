@@ -22,6 +22,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chromeos/ui/frame/multitask_menu/multitask_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_view.h"
 #include "chromeos/ui/frame/multitask_menu/split_button_view.h"
@@ -29,6 +30,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/display/display_switches.h"
 #include "ui/wm/core/window_util.h"
@@ -372,6 +374,27 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseMultitaskMenuOnTap) {
   // Tap outside the menu. Verify that we close the menu.
   GetEventGenerator()->GestureTapAt(window->GetBoundsInScreen().CenterPoint());
   EXPECT_FALSE(GetMultitaskMenu());
+}
+
+// Tests that pressing a button before the show animation ends closes the menu
+// (http://b/279355302).
+TEST_F(TabletModeMultitaskMenuEventHandlerTest,
+       CloseMultitaskMenuOnButtonPress) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Swipe down the menu partially to start an animation.
+  auto window = CreateAppWindow();
+  GenerateScroll(window->bounds().CenterPoint().x(), 0,
+                 /*end_y=*/60);
+  GestureTapOn(
+      GetMultitaskMenuView(GetMultitaskMenu())->float_button_for_testing());
+
+  // Wait for the TabletModeMultitaskMenuView layer to fade out.
+  ui::LayerAnimationStoppedWaiter().Wait(
+      GetMultitaskMenu()->widget()->GetContentsView()->layer());
+
+  ASSERT_FALSE(GetMultitaskMenu());
 }
 
 TEST_F(TabletModeMultitaskMenuEventHandlerTest, CloseOnDoubleTapDivider) {
