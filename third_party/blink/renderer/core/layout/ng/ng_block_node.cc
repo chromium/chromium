@@ -408,6 +408,11 @@ const NGLayoutResult* NGBlockNode::Layout(
     const NGBlockBreakToken* break_token,
     const NGEarlyBreak* early_break,
     const NGColumnSpannerPath* column_spanner_path) const {
+  recordreplay::Assert("[RUN-1855-1862] NGBlockNode::Layout %d space(%s)",
+    RecordReplayId(),
+    constraint_space.ToString().Ascii().c_str()
+  );
+
   // Use the old layout code and synthesize a fragment.
   if (!CanUseNewLayout())
     return RunLegacyLayout(constraint_space);
