@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/browser/ash/crosapi/lacros_selection_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,6 +69,9 @@ class RootfsLacrosLoader : public LacrosSelectionLoader {
   // This is always the same for production code, but may be overridden on
   // testing.
   base::FilePath metadata_path_;
+
+  // Used for DCHECKs to ensure method calls executed in the correct thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<RootfsLacrosLoader> weak_factory_{this};
 };

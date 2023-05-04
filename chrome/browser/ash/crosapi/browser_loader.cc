@@ -140,6 +140,8 @@ void BrowserLoader::Load(LoadCompletionCallback callback) {
 void BrowserLoader::OnLoadStatefulLacros(
     LoadCompletionCallback callback,
     base::Version stateful_lacros_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // If there currently isn't a stateful lacros-chrome binary, proceed to use
   // the rootfs lacros-chrome binary and start the installation of the stateful
   // lacros-chrome binary in the background.
@@ -157,6 +159,8 @@ void BrowserLoader::OnLoadVersionSelection(
     LoadCompletionCallback callback,
     base::Version stateful_lacros_version,
     base::Version rootfs_lacros_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Compare the rootfs vs stateful lacros-chrome binary versions.
   // If the rootfs lacros-chrome is greater than or equal to the stateful
   // lacros-chrome version, prioritize using the rootfs lacros-chrome and let
@@ -222,6 +226,8 @@ void BrowserLoader::OnLoadComplete(LoadCompletionCallback callback,
                                    LacrosSelection selection,
                                    base::Version version,
                                    const base::FilePath& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Bail out on empty `path` which implies there was an error on loading
   // lacros.
   if (path.empty()) {
@@ -248,6 +254,8 @@ void BrowserLoader::FinishOnLoadComplete(LoadCompletionCallback callback,
                                          LacrosSelection selection,
                                          base::Version version,
                                          bool lacros_binary_exists) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (!lacros_binary_exists) {
     LOG(ERROR) << "Failed to find chrome binary at " << path;
     std::move(callback).Run(base::FilePath(), selection, base::Version());

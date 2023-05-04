@@ -92,12 +92,16 @@ void RootfsLacrosLoader::GetVersion(
 void RootfsLacrosLoader::OnGetVersion(
     base::OnceCallback<void(base::Version)> callback,
     base::Version version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   version_ = version;
   std::move(callback).Run(version);
 }
 
 void RootfsLacrosLoader::OnVersionReadyToLoad(LoadCompletionCallback callback,
                                               base::Version version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // `version_` must be already filled by `version`.
   DCHECK(version_.has_value() &&
          ((!version_.value().IsValid() && !version.IsValid()) ||
@@ -114,6 +118,8 @@ void RootfsLacrosLoader::OnVersionReadyToLoad(LoadCompletionCallback callback,
 
 void RootfsLacrosLoader::OnMountCheckToLoad(LoadCompletionCallback callback,
                                             bool already_mounted) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (already_mounted) {
     OnUpstartLacrosMounter(std::move(callback), true);
     return;
@@ -132,6 +138,8 @@ void RootfsLacrosLoader::OnMountCheckToLoad(LoadCompletionCallback callback,
 
 void RootfsLacrosLoader::OnUpstartLacrosMounter(LoadCompletionCallback callback,
                                                 bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   LOG_IF(WARNING, !success) << "Upstart failed to mount rootfs lacros.";
 
   // `version_` must be calculated before coming here.

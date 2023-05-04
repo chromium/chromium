@@ -12,6 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 
@@ -118,6 +119,9 @@ class BrowserLoader {
 
   // Time when the lacros component was loaded.
   base::TimeTicks lacros_start_load_time_;
+
+  // Used for DCHECKs to ensure method calls executed in the correct thread.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BrowserLoader> weak_factory_{this};
 };
