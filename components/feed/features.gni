@@ -5,10 +5,4 @@
 declare_args() {
   # Whether Feed is enabled in the build.
   enable_feed_v2 = !is_ios
-
-  # Whether to include Feed in ChromeModern builds.
-  enable_feed_v2_modern = true
-
-  # Whether to include Feed as a DFM in ChromeModern builds.
-  dfmify_feed_v2_modern = false
 }
