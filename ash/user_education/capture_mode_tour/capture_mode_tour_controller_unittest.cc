@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_types.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
@@ -52,7 +51,7 @@ TEST_F(CaptureModeTourControllerTest, GetTutorialDescriptions) {
   ASSERT_TRUE(capture_mode_tour_controller);
 
   std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
-      static_cast<TutorialController*>(capture_mode_tour_controller)
+      static_cast<UserEducationFeatureController*>(capture_mode_tour_controller)
           ->GetTutorialDescriptions();
 
   // TODO(http://b/275892879): Implement tutorial descriptions.

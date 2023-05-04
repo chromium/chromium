@@ -27,7 +27,6 @@
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/test/test_widget_builder.h"
-#include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_types.h"
 #include "base/pickle.h"
@@ -177,7 +176,8 @@ TEST_F(HoldingSpaceTourControllerTest, GetTutorialDescriptions) {
   ASSERT_TRUE(holding_space_tour_controller);
 
   std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
-      static_cast<TutorialController*>(holding_space_tour_controller)
+      static_cast<UserEducationFeatureController*>(
+          holding_space_tour_controller)
           ->GetTutorialDescriptions();
 
   // TODO(http://b/275909980): Implement tutorial descriptions.

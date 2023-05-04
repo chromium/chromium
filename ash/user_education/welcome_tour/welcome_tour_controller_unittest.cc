@@ -11,7 +11,6 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/user_education/mock_user_education_delegate.h"
-#include "ash/user_education/tutorial_controller.h"
 #include "ash/user_education/user_education_ash_test_base.h"
 #include "ash/user_education/user_education_constants.h"
 #include "ash/user_education/user_education_types.h"
@@ -117,7 +116,7 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
   ASSERT_TRUE(welcome_tour_controller);
 
   std::map<TutorialId, TutorialDescription> tutorial_descriptions_by_id =
-      static_cast<TutorialController*>(welcome_tour_controller)
+      static_cast<UserEducationFeatureController*>(welcome_tour_controller)
           ->GetTutorialDescriptions();
 
   // TODO(http://b/275616974): Implement tutorial descriptions.

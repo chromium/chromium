@@ -21,8 +21,8 @@ class ElementContext;
 namespace ash {
 
 class SessionController;
-class TutorialController;
 class UserEducationDelegate;
+class UserEducationFeatureController;
 
 enum class TutorialId;
 
@@ -57,8 +57,9 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // education services in the browser.
   std::unique_ptr<UserEducationDelegate> delegate_;
 
-  // The collection of controllers responsible for specific feature tutorials.
-  std::set<std::unique_ptr<TutorialController>> tutorial_controllers_;
+  // The set of controllers responsible for specific user education features.
+  std::set<std::unique_ptr<UserEducationFeatureController>>
+      feature_controllers_;
 
   // Sessions are observed only until the primary user session is added at which
   // point tutorials are registered with user education services in the browser.
