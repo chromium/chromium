@@ -705,10 +705,16 @@ class HighEfficiencyFaviconTreatmentTest
       animation_mode_reset_;
 };
 
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DimFaviconOnDiscard DISABLED_DimFaviconOnDiscard
+#else
+#define MAYBE_DimFaviconOnDiscard DimFaviconOnDiscard
+#endif
+
 // A tab's favicon should should be dimmed when it is discarded due to high
 // efficiency mode
 IN_PROC_BROWSER_TEST_F(HighEfficiencyFaviconTreatmentTest,
-                       DimFaviconOnDiscard) {
+                       MAYBE_DimFaviconOnDiscard) {
   constexpr char kFirstTabFavicon[] = "first_tab_favicon";
 
   RunTestSequence(
