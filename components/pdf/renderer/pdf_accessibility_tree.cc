@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/break_iterator.h"
@@ -17,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/pdf/renderer/pdf_ax_action_target.h"
@@ -54,7 +56,31 @@ namespace ranges = base::ranges;
 // images.
 class PdfOcrService final {
  public:
-  explicit PdfOcrService(content::RenderFrame& render_frame) {
+  using OcrServiceCallback = screen_ai::mojom::ScreenAIAnnotator::
+      PerformOcrAndReturnAXTreeUpdateCallback;
+
+  using OnOcrDataReceivedCallback = base::RepeatingCallback<void(
+      const ui::AXNodeID& image_node_id,
+      const chrome_pdf::AccessibilityImageInfo& image,
+      const ui::AXNodeID& parent_node_id,
+      const ui::AXTreeUpdate& tree_update)>;
+
+  struct OcrRequest {
+    OcrRequest(const ui::AXNodeID& image_node_id,
+               const chrome_pdf::AccessibilityImageInfo& image,
+               const ui::AXNodeID& parent_node_id)
+        : image_node_id(image_node_id),
+          image(image),
+          parent_node_id(parent_node_id) {}
+
+    const ui::AXNodeID image_node_id;
+    const chrome_pdf::AccessibilityImageInfo image;
+    const ui::AXNodeID parent_node_id;
+  };
+
+  PdfOcrService(content::RenderFrame& render_frame,
+                OnOcrDataReceivedCallback callback)
+      : callback_(std::move(callback)) {
     if (features::IsPdfOcrEnabled()) {
       render_frame.GetBrowserInterfaceBroker()->GetInterface(
           screen_ai_annotator_.BindNewPipeAndPassReceiver());
@@ -65,20 +91,60 @@ class PdfOcrService final {
   PdfOcrService& operator=(const PdfOcrService&) = delete;
   ~PdfOcrService() = default;
 
-  // Sends the given image to the Screen AIService for processing.
-  bool ScheduleImageProcessing(
-      const chrome_pdf::AccessibilityImageInfo& image,
-      screen_ai::mojom::ScreenAIAnnotator::
-          PerformOcrAndReturnAXTreeUpdateCallback callback) {
-    if (!screen_ai_annotator_.is_bound())
-      return false;
-    screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(image.image_data,
-                                                          std::move(callback));
-    return true;
+  // Schedules the OCR requests to be sent to the Screen AI Service.
+  void ScheduleOcrRequests(base::queue<OcrRequest> requests) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    DCHECK(IsOcrReady());
+
+    if (queued_requests_.empty()) {
+      queued_requests_.swap(requests);
+    } else {
+      while (!requests.empty()) {
+        queued_requests_.push(requests.front());
+        requests.pop();
+      }
+    }
+
+    ScheduleNextQueuedTask();
   }
 
+  bool IsOcrReady() const { return screen_ai_annotator_.is_bound(); }
+
+  bool IsQueueEmpty() const { return queued_requests_.empty(); }
+
  private:
+  void ScheduleNextQueuedTask() {
+    if (queued_requests_.empty()) {
+      return;
+    }
+
+    OcrRequest request = queued_requests_.front();
+    queued_requests_.pop();
+
+    screen_ai_annotator_->PerformOcrAndReturnAXTreeUpdate(
+        request.image.image_data,
+        base::BindOnce(&PdfOcrService::ReceiveOcrResultsForRequest,
+                       weak_ptr_factory_.GetWeakPtr(), request));
+  }
+
+  void ReceiveOcrResultsForRequest(OcrRequest request,
+                                   const ui::AXTreeUpdate& tree_update) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    callback_.Run(request.image_node_id, request.image, request.parent_node_id,
+                  tree_update);
+
+    ScheduleNextQueuedTask();
+  }
+
+  base::queue<OcrRequest> queued_requests_;
+  OnOcrDataReceivedCallback callback_;
+
   mojo::Remote<screen_ai::mojom::ScreenAIAnnotator> screen_ai_annotator_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<PdfOcrService> weak_ptr_factory_{this};
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
@@ -1199,21 +1265,30 @@ class PdfAccessibilityTreeBuilder {
       ui::AXNodeData* link_node = CreateLinkNode(links_[i]);
       para_node->child_ids.push_back(link_node->id);
     }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    base::queue<PdfOcrService::OcrRequest> ocr_requests;
+    bool ocr_available = ocr_service_ && ocr_service_->IsOcrReady();
+#endif
+
     // Push all the images not anchored to any text run to the last paragraph.
     for (size_t i = current_image_index_; i < images_.size(); i++) {
       ui::AXNodeData* image_node = CreateImageNode(images_[i]);
       para_node->child_ids.push_back(image_node->id);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-      if (!images_[i].image_data.drawsNothing() && ocr_service_) {
-        // Keep track of the number of remaining OCR requests that are sent.
-        pdf_accessibility_tree_->IncrementNumberOfRemainingOcrRequests();
-        ocr_service_->ScheduleImageProcessing(
-            images_[i], base::BindOnce(&PdfAccessibilityTree::OnOcrDataReceived,
-                                       pdf_accessibility_tree_, image_node->id,
-                                       images_[i], para_node->id));
+      // TODO(crbug.com/1278249): Consider moving images instead of copying
+      // them.
+      if (ocr_available && !images_[i].image_data.drawsNothing()) {
+        ocr_requests.emplace(image_node->id, images_[i], para_node->id);
       }
 #endif
     }
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    if (!ocr_requests.empty()) {
+      ocr_service_->ScheduleOcrRequests(std::move(ocr_requests));
+    }
+#endif
 
     if (base::FeatureList::IsEnabled(
             chrome_pdf::features::kAccessiblePDFForm)) {
@@ -1864,7 +1939,6 @@ void PdfAccessibilityTree::AccessibilityModeChanged(const ui::AXMode& mode) {
     if (ocr_service_) {
       VLOG(2) << "PDF OCR has been turned off. So, deleting OCR service.";
       ocr_service_.reset();
-      num_remaining_ocr_requests_ = 0;
       // Need to perform LoadAccessibility() again to update PDF accessibility
       // tree without OCR results.
       always_load_or_reload_accessibility = true;
@@ -1907,13 +1981,9 @@ void PdfAccessibilityTree::OnOcrDataReceived(
     return;
   }
 
-  // Check if it finishes running OCR on PDF.
-  DCHECK_NE(num_remaining_ocr_requests_, 0u);
-  bool is_last_ocr_request = --num_remaining_ocr_requests_ == 0u;
-
   // TODO(crbug.com/1393069): Investigate more to understand cases in which
   // OCR gave no results and update the status node with a relevant message.
-  if (is_last_ocr_request) {
+  if (ocr_service_->IsQueueEmpty()) {
     SetOcrCompleteStatus();
   }
 
@@ -2029,13 +2099,12 @@ void PdfAccessibilityTree::OnOcrDataReceived(
   nodes_.clear();
 }
 
-void PdfAccessibilityTree::IncrementNumberOfRemainingOcrRequests() {
-  ++num_remaining_ocr_requests_;
-}
-
 void PdfAccessibilityTree::CreateOcrService() {
   VLOG(2) << "Creating OCR service.";
-  ocr_service_ = std::make_unique<PdfOcrService>(*render_frame_);
+  ocr_service_ = std::make_unique<PdfOcrService>(
+      *render_frame_,
+      base::BindRepeating(&PdfAccessibilityTree::OnOcrDataReceived,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 

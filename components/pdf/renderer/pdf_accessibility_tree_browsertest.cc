@@ -2224,7 +2224,7 @@ TEST_F(PdfAccessibilityTreeTest, TestTransformFromOnOcrDataReceived) {
 
   // Simulate creating a child tree using OCR results.
   pdf_accessibility_tree.CreateOcrService();
-  pdf_accessibility_tree.IncrementNumberOfRemainingOcrRequests();
+
   // Text bounds before applying the transform.
   constexpr gfx::RectF kTextBoundsBeforeTransform1 = {{8.0f, 8.0f},
                                                       {80.0f, 24.0f}};
