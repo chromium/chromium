@@ -1256,7 +1256,8 @@ void PinManager::NotifyProgress() {
 }
 
 void PinManager::LowDiskSpace(const ::user_data_auth::LowDiskSpace& status) {
-  LOG(ERROR) << "Got LowDiskSpace " << status.disk_free_bytes();
+  LOG(ERROR) << "Got LowDiskSpace "
+             << HumanReadableSize(status.disk_free_bytes());
   OnFreeSpaceRetrieved2(status.disk_free_bytes());
 }
 
