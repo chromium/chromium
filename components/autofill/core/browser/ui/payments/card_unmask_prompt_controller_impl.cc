@@ -313,7 +313,7 @@ std::u16string CardUnmaskPromptControllerImpl::GetCardLastFourDigits() const {
 }
 
 std::u16string CardUnmaskPromptControllerImpl::GetCardExpiration() const {
-  return card_.ExpirationDateForDisplay();
+  return card_.AbbreviatedExpirationDateForDisplay(false);
 }
 
 const GURL& CardUnmaskPromptControllerImpl::GetCardArtUrl() const {
