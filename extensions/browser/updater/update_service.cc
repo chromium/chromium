@@ -133,8 +133,7 @@ void UpdateService::OnCrxStateChange(UpdateFoundCallback update_found_callback,
     // Note that it's important to perform actions even if |attributes| is
     // empty, missing values may default to false and have associated logic.
     ExtensionSystem::Get(browser_context_)
-        ->PerformActionBasedOnOmahaAttributes(
-            item.id, base::Value(std::move(attributes)));
+        ->PerformActionBasedOnOmahaAttributes(item.id, attributes);
   }
 }
 

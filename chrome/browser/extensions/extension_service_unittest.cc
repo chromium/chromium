@@ -855,8 +855,9 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
     msg += extension_id + " " + pref_path;
 
     base::Value::List list_value;
-    for (auto iter = value.begin(); iter != value.end(); ++iter)
-      list_value.Append(*iter);
+    for (const auto& item : value) {
+      list_value.Append(item);
+    }
 
     SetPrefList(extension_id, pref_path, list_value, msg);
   }
@@ -3736,8 +3737,7 @@ TEST_F(ExtensionServiceTest, NoUnsetBlocklistInPrefs) {
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good0));
   EXPECT_FALSE(registry()->blocklisted_extensions().Contains(good0));
 
-  base::Value attributes(base::Value::Type::DICT);
-  attributes.SetKey("_malware", base::Value(true));
+  auto attributes = base::Value::Dict().Set("_malware", true);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   service()->PerformActionBasedOnOmahaAttributes(good0, attributes);
@@ -4956,8 +4956,7 @@ TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
 
-  base::Value attributes(base::Value::Type::DICT);
-  attributes.SetKey("_malware", base::Value(true));
+  auto attributes = base::Value::Dict().Set("_malware", true);
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
@@ -4966,7 +4965,7 @@ TEST_F(ExtensionServiceTest, DisableRemotelyForMalware) {
       good_crx, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs));
   EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 
-  attributes.SetKey("_malware", base::Value(false));
+  attributes.Set("_malware", false);
   service()->PerformActionBasedOnOmahaAttributes(good_crx, attributes);
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
   EXPECT_EQ(0, prefs->GetDisableReasons(good_crx));
@@ -4981,15 +4980,14 @@ TEST_F(ExtensionServiceTest, NoEnableRemotelyDisabledExtension) {
   InstallCRX(data_dir().AppendASCII("good.crx"), INSTALL_NEW);
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(good_crx));
 
-  base::Value attributes(base::Value::Type::DICT);
-  attributes.SetKey("_malware", base::Value(true));
+  auto attributes = base::Value::Dict().Set("_malware", true);
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   service()->DisableExtension(good_crx, disable_reason::DISABLE_USER_ACTION);
   EXPECT_TRUE(registry()->disabled_extensions().GetByID(good_crx));
   service()->PerformActionBasedOnOmahaAttributes(good_crx, attributes);
   EXPECT_TRUE(blocklist_prefs::IsExtensionBlocklisted(good_crx, prefs));
 
-  attributes.SetKey("_malware", base::Value(false));
+  attributes.Set("_malware", false);
   service()->PerformActionBasedOnOmahaAttributes(good_crx, attributes);
   EXPECT_TRUE(registry()->disabled_extensions().GetByID(good_crx));
   EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
@@ -5326,7 +5324,7 @@ TEST_F(ExtensionServiceTest, UnpackedRequirements) {
 
 class ExtensionCookieCallback {
  public:
-  ExtensionCookieCallback() : result_(false) {}
+  ExtensionCookieCallback() = default;
 
   void SetCookieCallback(net::CookieAccessResult result) {
     result_ = result.status.IsInclude();
@@ -5337,7 +5335,7 @@ class ExtensionCookieCallback {
     list_ = net::cookie_util::StripAccessResults(list);
   }
   net::CookieList list_;
-  bool result_;
+  bool result_ = false;
 };
 
 namespace {
@@ -7382,14 +7380,12 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
       AddMockExternalProvider(ManifestLocation::kExternalPref);
 
   std::vector<BubbleErrorsTestData> data;
-  data.push_back(BubbleErrorsTestData(
-      updates_from_webstore, "1",
-      temp_dir().GetPath().AppendASCII("webstore.crx"), 1u));
-  data.push_back(BubbleErrorsTestData(
-      updates_from_webstore2, "1",
-      temp_dir().GetPath().AppendASCII("webstore2.crx"), 2u));
-  data.push_back(BubbleErrorsTestData(good_crx, "1.0.0.0",
-                                      data_dir().AppendASCII("good.crx"), 2u));
+  data.emplace_back(updates_from_webstore, "1",
+                    temp_dir().GetPath().AppendASCII("webstore.crx"), 1u);
+  data.emplace_back(updates_from_webstore2, "1",
+                    temp_dir().GetPath().AppendASCII("webstore2.crx"), 2u);
+  data.emplace_back(good_crx, "1.0.0.0", data_dir().AppendASCII("good.crx"),
+                    2u);
 
   PackCRX(data_dir().AppendASCII("update_from_webstore"),
           data_dir().AppendASCII("update_from_webstore.pem"), data[0].crx_path);
@@ -7427,8 +7423,8 @@ TEST_F(ExtensionServiceTest, MultipleExternalInstallBubbleErrors) {
   }
 
   // Cancel all the install prompts.
-  for (size_t i = 0; i < data.size(); ++i) {
-    const std::string& extension_id = data[i].id;
+  for (const auto& item : data) {
+    const std::string& extension_id = item.id;
     EXPECT_TRUE(GetError(extension_id));
     GetError(extension_id)
         ->OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload(
@@ -7489,12 +7485,10 @@ TEST_F(ExtensionServiceTest, BubbleAlertDoesNotHideAnotherAlertFromMenu) {
       AddMockExternalProvider(ManifestLocation::kExternalPref);
 
   std::vector<BubbleErrorsTestData> data;
-  data.push_back(BubbleErrorsTestData(
-      updates_from_webstore, "1",
-      temp_dir().GetPath().AppendASCII("webstore.crx"), 1u));
-  data.push_back(BubbleErrorsTestData(
-      updates_from_webstore2, "1",
-      temp_dir().GetPath().AppendASCII("webstore2.crx"), 2u));
+  data.emplace_back(updates_from_webstore, "1",
+                    temp_dir().GetPath().AppendASCII("webstore.crx"), 1u);
+  data.emplace_back(updates_from_webstore2, "1",
+                    temp_dir().GetPath().AppendASCII("webstore2.crx"), 2u);
 
   PackCRX(data_dir().AppendASCII("update_from_webstore"),
           data_dir().AppendASCII("update_from_webstore.pem"), data[0].crx_path);

@@ -36,8 +36,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
   attributes.Set("_policy_violation", true);
   attributes.Set("_potentially_uws", true);
 
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   histograms.ExpectBucketCount(
       "Extensions.ExtensionDisabledRemotely2",
@@ -65,8 +64,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogMalwareMetrics) {
   base::Value::Dict attributes;
 
   attributes.Set("_malware", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
   // The re-enabled metric should not be logged if the extension is not disabled
   // previously.
   histograms.ExpectBucketCount("Extensions.ExtensionReenabledRemotely",
@@ -77,8 +75,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogMalwareMetrics) {
                                /*expected_count=*/1);
 
   attributes.Set("_malware", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
   histograms.ExpectBucketCount("Extensions.ExtensionDisabledRemotely2",
                                /*sample=*/ExtensionUpdateCheckDataKey::kMalware,
                                /*expected_count=*/1);
@@ -87,8 +84,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, LogMalwareMetrics) {
                                /*expected_count=*/1);
 
   attributes.Set("_malware", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
   histograms.ExpectBucketCount("Extensions.ExtensionReenabledRemotely",
                                /*sample=*/ExtensionUpdateCheckDataKey::kMalware,
                                /*expected_count=*/1);
@@ -108,8 +104,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
 
   base::Value::Dict attributes;
   attributes.Set("_policy_violation", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
@@ -120,8 +115,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPolicyViolation) {
 
   // Remove extensions from greylist.
   attributes.Set("_policy_violation", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension is re-enabled.
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
@@ -149,8 +143,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPotentiallyUws) {
 
   base::Value::Dict attributes;
   attributes.Set("_potentially_uws", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
@@ -161,8 +154,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, DisableRemotelyForPotentiallyUws) {
 
   // Remove extensions from greylist.
   attributes.Set("_potentially_uws", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension is re-enabled.
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
@@ -189,8 +181,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
 
   base::Value::Dict attributes;
   attributes.Set("_policy_violation", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
@@ -201,8 +192,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
 
   // Another greylist state is added to Omaha attribute.
   attributes.Set("_potentially_uws", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension should be disabled again.
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
@@ -210,8 +200,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
 
   // Remove extensions from the first greylist state.
   attributes.Set("_policy_violation", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension should still be disabled, because it is still in the
   // potentially unwanted state.
@@ -227,8 +216,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, MultipleGreylistStates) {
 
   // Remove the other greylist state.
   attributes.Set("_potentially_uws", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension is re-enabled.
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
@@ -246,8 +234,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
 
   auto attributes =
       base::Value::Dict().Set("_malware", true).Set("_policy_violation", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(attributes.Clone()));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
@@ -258,8 +245,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
 
   // Remove malware.
   attributes.Set("_malware", false);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 
   // The extension is not enabled because the policy violation bit is not
   // cleared, but it is no longer blocklisted (instead just disabled).
@@ -281,8 +267,7 @@ TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
   auto attributes = base::Value::Dict().Set("_malware", true);
   // kTestExtensionId is already uninstalled. Performing action on it should
   // not crash. Regression test for https://crbug.com/1305490.
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
 }
 
 // Tests that an extension that was disabled through Omaha won't be re-enabled
@@ -299,8 +284,7 @@ TEST_F(OmahaAttributesHandlerUnitTest,
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
   auto attributes = base::Value::Dict().Set("_malware", true);
-  service()->PerformActionBasedOnOmahaAttributes(
-      kTestExtensionId, base::Value(std::move(attributes)));
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kTestExtensionId));
 
   // Disable SB blocklist by policy and refresh blocklist.

@@ -90,7 +90,7 @@ enum class UnloadedExtensionReason;
 // various classes have on ExtensionService. This allows easy mocking.
 class ExtensionServiceInterface {
  public:
-  virtual ~ExtensionServiceInterface() {}
+  virtual ~ExtensionServiceInterface() = default;
 
   // Gets the object managing the set of pending extensions.
   virtual PendingExtensionManager* pending_extension_manager() = 0;
@@ -315,7 +315,7 @@ class ExtensionService : public ExtensionServiceInterface,
 
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
-                                           const base::Value& attributes);
+                                           const base::Value::Dict& attributes);
 
   // Disables the extension. If the extension is already disabled, just adds
   // the |disable_reasons| (a bitmask of disable_reason::DisableReason - there

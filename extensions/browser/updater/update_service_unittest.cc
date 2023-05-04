@@ -218,13 +218,13 @@ class FakeUpdateClient : public update_client::UpdateClient {
   std::vector<UninstallPing> uninstall_pings_;
   std::vector<Observer*> observers_;
 
-  bool delay_update_;
+  bool delay_update_ = false;
   bool is_malware_update_item_ = false;
   extensions::AllowlistState allowlist_state = extensions::ALLOWLIST_UNDEFINED;
   std::vector<UpdateRequest> delayed_requests_;
 };
 
-FakeUpdateClient::FakeUpdateClient() : delay_update_(false) {}
+FakeUpdateClient::FakeUpdateClient() = default;
 
 void FakeUpdateClient::Update(const std::vector<std::string>& ids,
                               CrxDataCallback crx_data_callback,
@@ -295,8 +295,7 @@ class FakeExtensionSystem : public MockExtensionSystem {
                      bool install_immediately,
                      InstallUpdateCallback install_update_callback) override {
     base::DeletePathRecursively(temp_dir);
-    install_requests_.push_back(
-        InstallUpdateRequest(extension_id, temp_dir, install_immediately));
+    install_requests_.emplace_back(extension_id, temp_dir, install_immediately);
     if (!next_install_callback_.is_null()) {
       std::move(next_install_callback_).Run();
     }
@@ -305,11 +304,10 @@ class FakeExtensionSystem : public MockExtensionSystem {
 
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
-      const base::Value& attributes_value) override {
+      const base::Value::Dict& attributes) override {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context());
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("1").SetVersion("1.2").SetID(extension_id).Build();
-    const base::Value::Dict& attributes = attributes_value.GetDict();
     const bool is_malware = attributes.FindBool("_malware").value_or(false);
     if (is_malware) {
       registry->AddDisabled(extension);

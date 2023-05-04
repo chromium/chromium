@@ -238,7 +238,7 @@ void TestExtensionSystem::InstallUpdate(
 
 void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value& attributes) {}
+    const base::Value::Dict& attributes) {}
 
 bool TestExtensionSystem::FinishDelayedInstallationIfReady(
     const std::string& extension_id,

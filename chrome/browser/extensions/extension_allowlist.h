@@ -70,7 +70,7 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
 
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
-                                           const base::Value& attributes);
+                                           const base::Value::Dict& attributes);
 
   // Whether a warning should be displayed for an extension, `true` if the
   // extension is not allowlisted and the allowlist is enforced.

@@ -133,7 +133,7 @@ class ExtensionSystem : public KeyedService {
   // Perform various actions depending on the Omaga attributes on the extension.
   virtual void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
-      const base::Value& attributes) = 0;
+      const base::Value::Dict& attributes) = 0;
 
   // Attempts finishing installation of an update for an extension with the
   // specified id, when installation of that extension was previously delayed.

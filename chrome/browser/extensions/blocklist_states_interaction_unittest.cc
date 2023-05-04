@@ -59,8 +59,7 @@ class BlocklistStatesInteractionUnitTest : public ExtensionServiceTestBase {
                                           const std::string& omaha_attribute,
                                           bool value) {
     auto attributes = base::Value::Dict().Set(omaha_attribute, value);
-    service()->PerformActionBasedOnOmahaAttributes(
-        extension_id, base::Value(std::move(attributes)));
+    service()->PerformActionBasedOnOmahaAttributes(extension_id, attributes);
   }
 
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }

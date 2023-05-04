@@ -879,7 +879,7 @@ bool ExtensionService::IsExtensionEnabled(
 
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
-    const base::Value& attributes) {
+    const base::Value::Dict& attributes) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   omaha_attributes_handler_.PerformActionBasedOnOmahaAttributes(extension_id,
                                                                 attributes);
@@ -2276,8 +2276,9 @@ void ExtensionService::OnProfileMarkedForPermanentDeletion(Profile* profile) {
     return;
 
   ExtensionIdSet ids_to_unload = registry_->enabled_extensions().GetIDs();
-  for (auto it = ids_to_unload.begin(); it != ids_to_unload.end(); ++it)
-    UnloadExtension(*it, UnloadedExtensionReason::PROFILE_SHUTDOWN);
+  for (const auto& id : ids_to_unload) {
+    UnloadExtension(id, UnloadedExtensionReason::PROFILE_SHUTDOWN);
+  }
 }
 
 void ExtensionService::ManageBlocklist(
