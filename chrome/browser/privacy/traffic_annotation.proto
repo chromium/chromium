@@ -109,6 +109,8 @@ message NetworkTrafficAnnotation {
       GOOGLE_OWNED_SERVICE = 2;
       // Does not go to the network and just fetches a resource locally.
       LOCAL = 3;
+      // A proxy that will forward the traffic to a google owned service.
+      PROXIED_GOOGLE_OWNED_SERVICE = 4;
       // Other endpoints, e.g. a service hosting a PAC script. In case of doubt,
       // use this category. We will audit it in the future to see whether we
       // need more categories.
