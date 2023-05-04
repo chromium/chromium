@@ -432,31 +432,33 @@ export class SearchV2ContentScanner extends ContentScanner {
    * located on Drive.
    * @param {number} modifiedTimestamp
    * @param {chrome.fileManagerPrivate.FileCategory} category
+   * @param {number} maxResults
    * @return {Promise<!Array<Entry>>}
    * @private
    */
-  createDriveSearch_(modifiedTimestamp, category) {
+  createDriveSearch_(modifiedTimestamp, category, maxResults) {
     return new Promise((resolve, reject) => {
       metrics.startInterval('Search.Drive.Latency');
-      chrome.fileManagerPrivate.searchDrive(
+      chrome.fileManagerPrivate.searchDriveMetadata(
           {
             query: this.query_,
             category: category,
-            modifiedTimestamp: modifiedTimestamp,
-            nextFeed: '',
+            types: chrome.fileManagerPrivate.SearchType.ALL,
+            maxResults: maxResults,
+            timestamp: modifiedTimestamp,
           },
-          (entries, nextFeed) => {
+          (results) => {
             if (chrome.runtime.lastError) {
               reject(createDOMError(
                   util.FileError.NOT_READABLE_ERR,
                   chrome.runtime.lastError.message));
             } else if (this.cancelled_) {
               reject(createDOMError(util.FileError.ABORT_ERR));
-            } else if (!entries) {
+            } else if (!results) {
               reject(createDOMError(util.FileError.INVALID_MODIFICATION_ERR));
             } else {
               metrics.recordInterval('Search.Drive.Latency');
-              resolve(entries);
+              resolve(results.map(r => r.entry));
             }
           });
     });
@@ -471,7 +473,7 @@ export class SearchV2ContentScanner extends ContentScanner {
    */
   createDirectorySearch_(modifiedTimestamp, category, maxResults) {
     if (this.rootType_ === VolumeManagerCommon.RootType.DRIVE) {
-      return [this.createDriveSearch_(modifiedTimestamp, category)];
+      return [this.createDriveSearch_(modifiedTimestamp, category, maxResults)];
     }
     if (this.options_.location == SearchLocation.THIS_FOLDER) {
       return this.makeFileSearchPromiseList_(
@@ -494,7 +496,7 @@ export class SearchV2ContentScanner extends ContentScanner {
     return [
       ...this.createMyFilesSearch_(modifiedTimestamp, category, maxResults),
       ...this.createRemovablesSearch_(modifiedTimestamp, category, maxResults),
-      this.createDriveSearch_(modifiedTimestamp, category),
+      this.createDriveSearch_(modifiedTimestamp, category, maxResults),
     ];
   }
 
@@ -519,21 +521,29 @@ export class SearchV2ContentScanner extends ContentScanner {
           `No search promises for options ${JSON.stringify(this.options_)}`);
       successCallback();
     }
-    Promise.allSettled(searchPromises).then((results) => {
-      let resultCount = 0;
-      for (const result of results) {
-        if (result.status === 'rejected') {
-          errorCallback(/** @type {DOMError} */ (result.reason));
-        } else if (result.status === 'fulfilled') {
-          if (result.value) {
-            entriesCallback(result.value);
-            resultCount += result.value.length;
-          }
-        }
+    // The job of entriesCallbackCaller is to call entriesCallback as soon as
+    // entries are available. We call successCallback only once all of them are
+    // settled, but we do not wish to wait for all of promises to be settled
+    // before showing the entries.
+    const entriesCallbackCaller = (entries) => {
+      if (entries && entries.length > 0) {
+        entriesCallback(entries);
       }
-      successCallback();
-      metrics.recordMediumCount('Search.ResultCount', resultCount);
-    });
+      return entries ? entries.length : 0;
+    };
+    Promise.allSettled(searchPromises.map(p => p.then(entriesCallbackCaller)))
+        .then((results) => {
+          let resultCount = 0;
+          for (const result of results) {
+            if (result.status === 'rejected') {
+              errorCallback(/** @type {DOMError} */ (result.reason));
+            } else if (result.status === 'fulfilled') {
+              resultCount += result.value;
+            }
+          }
+          successCallback();
+          metrics.recordMediumCount('Search.ResultCount', resultCount);
+        });
   }
 }
 

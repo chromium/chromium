@@ -724,6 +724,23 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
     query->query_source =
         drivefs::mojom::QueryParameters::QuerySource::kLocalOnly;
   }
+  if (params->search_params.timestamp.has_value()) {
+    query->modified_time =
+        base::Time::FromJsTime(*params->search_params.timestamp);
+    query->modified_time_operator =
+        drivefs::mojom::QueryParameters::DateComparisonOperator::kGreaterThan;
+  }
+  ash::RecentSource::FileType file_type;
+  if (!file_manager::util::ToRecentSourceFileType(
+          params->search_params.category, &file_type)) {
+    return RespondNow(Error("Unable to convert file category"));
+  }
+  auto type_filters = ash::RecentDriveSource::CreateTypeFilters(file_type);
+  if (type_filters.size() == 1) {
+    query->mime_type = type_filters.front();
+  } else if (type_filters.size() > 1) {
+    query->mime_types = std::move(type_filters);
+  }
   query->page_size = params->search_params.max_results;
   bool filter_dirs = false;
   switch (params->search_params.types) {
