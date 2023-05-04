@@ -71,8 +71,24 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kSecureConnectOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kFeedOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kKAnonymityServiceOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kCalendarReadOnlyOAuth2Scope[];
+
+// OAuth 2 scopes for Google Tasks API.
+// https://developers.google.com/identity/protocols/oauth2/scopes#tasks
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kTasksOAuth2Scope[];
+
+// OAuth 2 scopes for Google Classroom API.
+// https://developers.google.com/identity/protocols/oauth2/scopes#classroom
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomReadOnlyCoursesOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope[];
 
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];

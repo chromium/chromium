@@ -174,6 +174,19 @@ const char kTasksReadOnlyOAuth2Scope[] =
     "https://www.googleapis.com/auth/tasks.readonly";
 const char kTasksOAuth2Scope[] = "https://www.googleapis.com/auth/tasks";
 
+// OAuth 2 scopes for Google Classroom API.
+const char kClassroomReadOnlyCoursesOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.courses.readonly";
+const char kClassroomReadOnlyCourseWorkSelfOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.coursework.me.readonly";
+const char kClassroomReadOnlyCourseWorkStudentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.coursework.students.readonly";
+const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly";
+const char kClassroomReadOnlyStudentSubmissionsStudentsOAuth2Scope[] =
+    "https://www.googleapis.com/auth/"
+    "classroom.student-submissions.students.readonly";
+
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up
 // the ClientOAuth endpoint protocol.  The comment above each constant explains
