@@ -490,18 +490,13 @@ void AffiliationDatabase::SQLErrorCallback(int error,
   sql::UmaHistogramSqliteResult("PasswordManager.AffiliationDatabase.Error",
                                 error);
 
-  if (sql::IsErrorCatastrophic(error)) {
+  if (sql::IsErrorCatastrophic(error) && sql_connection_->is_open()) {
     // Normally this will poison the database, causing any subsequent operations
     // to silently fail without any side effects. However, if RazeAndPoison() is
     // called from the error callback in response to an error raised from within
     // sql::Database::Open, opening the now-razed database will be retried.
     sql_connection_->RazeAndPoison();
-    return;
   }
-
-  // The default handling is to assert on debug and to ignore on release.
-  if (!sql::Database::IsExpectedSqliteError(error))
-    DLOG(FATAL) << sql_connection_->GetErrorMessage();
 }
 
 }  // namespace password_manager
