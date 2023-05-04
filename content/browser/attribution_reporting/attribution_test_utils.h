@@ -731,13 +731,11 @@ std::vector<AggregatableHistogramContribution>
 DefaultAggregatableHistogramContributions(
     const std::vector<uint32_t>& histogram_values = {1});
 
-#if BUILDFLAG(IS_ANDROID)
 struct OsRegistration;
 
 bool operator==(const OsRegistration&, const OsRegistration&);
 
 std::ostream& operator<<(std::ostream&, const OsRegistration&);
-#endif
 
 }  // namespace content
 

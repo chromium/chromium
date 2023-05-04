@@ -18,11 +18,8 @@ struct TriggerVerification {
 // See https://github.com/WICG/attribution-reporting-api/blob/main/app_to_web.md.
 enum AttributionSupport {
   kWeb,
-  [EnableIf=is_android]
   kWebAndOs,
-  [EnableIf=is_android]
   kOs,
-  [EnableIf=is_android]
   kNone,
 };
 

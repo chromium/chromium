@@ -191,6 +191,5 @@ interface Renderer {
                      network.mojom.AttributionSupport attribution_support);
 
  // Set whether web or OS-level Attribution Reporting is supported.
-  [EnableIf=is_android]
   SetAttributionReportingSupport(network.mojom.AttributionSupport attribution_support);
 };

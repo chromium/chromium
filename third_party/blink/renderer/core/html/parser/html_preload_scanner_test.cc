@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/web_client_hints_types.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1124,39 +1122,39 @@ TEST_F(HTMLPreloadScannerTest, testAttributionSrc) {
   static constexpr char kInsecureBaseURL[] = "http://example.test";
 
   AttributionSrcTestCase test_cases[] = {
-    // Insecure context
-    {kInsecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    {kInsecureDocumentUrl, kSecureBaseURL,
-     "<script src='/script' attributionsrc></script>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    // No attributionsrc attribute
-    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    // Irrelevant element type
-    {kSecureDocumentUrl, kSecureBaseURL,
-     "<video poster='/image' attributionsrc>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    // Not potentially trustworthy reporting origin
-    {kSecureDocumentUrl, kInsecureBaseURL, "<img src='/image' attributionsrc>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    {kSecureDocumentUrl, kInsecureBaseURL,
-     "<script src='/script' attributionsrc></script>",
-     network::mojom::AttributionReportingEligibility::kUnset},
-    // Secure context, potentially trustworthy reporting origin,
-    // attributionsrc attribute
-    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-     network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
-    {kSecureDocumentUrl, kSecureBaseURL,
-     "<script src='/script' attributionsrc></script>",
-     network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
-#if BUILDFLAG(IS_ANDROID)
-    {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
-     network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger,
-     network::mojom::AttributionSupport::kWebAndOs},
-#endif
+      // Insecure context
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<img src='/image' attributionsrc>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      {kInsecureDocumentUrl, kSecureBaseURL,
+       "<script src='/script' attributionsrc></script>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      // No attributionsrc attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image'>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      {kSecureDocumentUrl, kSecureBaseURL, "<script src='/script'></script>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      // Irrelevant element type
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<video poster='/image' attributionsrc>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      // Not potentially trustworthy reporting origin
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<img src='/image' attributionsrc>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      {kSecureDocumentUrl, kInsecureBaseURL,
+       "<script src='/script' attributionsrc></script>",
+       network::mojom::AttributionReportingEligibility::kUnset},
+      // Secure context, potentially trustworthy reporting origin,
+      // attributionsrc attribute
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
+       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
+      {kSecureDocumentUrl, kSecureBaseURL,
+       "<script src='/script' attributionsrc></script>",
+       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger},
+      {kSecureDocumentUrl, kSecureBaseURL, "<img src='/image' attributionsrc>",
+       network::mojom::AttributionReportingEligibility::kEventSourceOrTrigger,
+       network::mojom::AttributionSupport::kWebAndOs},
   };
 
   for (const auto& test_case : test_cases) {

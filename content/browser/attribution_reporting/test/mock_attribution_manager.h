@@ -14,15 +14,15 @@
 #include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -31,11 +31,6 @@
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
-#include "content/browser/attribution_reporting/os_registration.h"
-#endif
 
 namespace content {
 
@@ -107,12 +102,10 @@ class MockAttributionManager : public AttributionManager {
               (const DataKey&, base::OnceClosure done),
               (override));
 
-#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               HandleOsRegistration,
               (OsRegistration, GlobalRenderFrameHostId),
               (override));
-#endif  // BUILDFLAG(IS_ANDROID)
 
   void AddObserver(AttributionObserver*) override;
   void RemoveObserver(AttributionObserver*) override;
@@ -140,11 +133,9 @@ class MockAttributionManager : public AttributionManager {
   void NotifyDebugReportSent(const AttributionDebugReport&,
                              int status,
                              base::Time);
-#if BUILDFLAG(IS_ANDROID)
   void NotifyOsRegistration(const OsRegistration&,
                             bool is_debug_key_allowed,
                             attribution_reporting::mojom::OsRegistrationResult);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   void SetDataHostManager(std::unique_ptr<AttributionDataHostManager>);
 

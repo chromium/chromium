@@ -36,6 +36,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/attribution_utils.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -49,10 +50,6 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "services/network/public/cpp/attribution_utils.h"
-#endif
 
 namespace content {
 
@@ -296,11 +293,8 @@ bool FencedFrameReporter::SendReport(
       WebContents::FromRenderFrameHost(request_initiator_frame));
   if (attribution_host &&
       request_initiator_frame->IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kAttributionReporting)
-#if BUILDFLAG(IS_ANDROID)
-      && network::HasAttributionSupport(AttributionManager::GetSupport())
-#endif
-  ) {
+          blink::mojom::PermissionsPolicyFeature::kAttributionReporting) &&
+      network::HasAttributionSupport(AttributionManager::GetSupport())) {
     BeaconId beacon_id(unique_id_counter.GetNext());
     attribution_reporting_data.emplace(AttributionReportingData{
         .beacon_id = beacon_id,

@@ -41,6 +41,7 @@
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_report_sender.h"
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
@@ -408,7 +409,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
       AttributionStorageDelegateImpl::CreateForTesting(
           AttributionNoiseMode::kNone, AttributionDelayMode::kDefault, config),
       std::move(fake_cookie_checker), std::make_unique<FakeReportSender>(),
-      storage_partition,
+      std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
       base::ThreadPool::CreateUpdateableSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,

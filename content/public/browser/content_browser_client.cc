@@ -534,11 +534,9 @@ bool ContentBrowserClient::IsAttributionReportingOperationAllowed(
   return true;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 bool ContentBrowserClient::IsWebAttributionReportingAllowed() {
   return true;
 }
-#endif
 
 bool ContentBrowserClient::IsSharedStorageAllowed(
     content::BrowserContext* browser_context,

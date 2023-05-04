@@ -917,11 +917,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin* destination_origin,
       const url::Origin* reporting_origin);
 
-#if BUILDFLAG(IS_ANDROID)
   // Allows the embedder to control if web attribution reporting is allowed.
   // This method must be idempotent.
   virtual bool IsWebAttributionReportingAllowed();
-#endif
 
   // Allows the embedder to control if Shared Storage API operations can happen
   // in a given context.

@@ -1840,12 +1840,10 @@ RenderThreadImpl::GetAttributionReportingSupport() {
   return attribution_support_;
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void RenderThreadImpl::SetAttributionReportingSupport(
     network::mojom::AttributionSupport attribution_support) {
   attribution_support_ = attribution_support;
 }
-#endif
 
 std::unique_ptr<CodecFactory> RenderThreadImpl::CreateMediaCodecFactory(
     scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,

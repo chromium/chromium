@@ -37,10 +37,12 @@
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
+#include "content/browser/attribution_reporting/os_registration.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -59,11 +61,6 @@
 #include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
-#include "content/browser/attribution_reporting/os_registration.h"
-#endif
 
 namespace content {
 
@@ -426,7 +423,6 @@ void AttributionInternalsHandlerImpl::OnFailedSourceRegistration(
   observer_->OnSourceHandled(std::move(web_ui_source));
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void AttributionInternalsHandlerImpl::OnOsRegistration(
     base::Time time,
     const OsRegistration& registration,
@@ -443,7 +439,6 @@ void AttributionInternalsHandlerImpl::OnOsRegistration(
 
   observer_->OnOsRegistration(std::move(web_ui_os_registration));
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 

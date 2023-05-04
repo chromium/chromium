@@ -26,12 +26,10 @@ interface AttributionDataHost {
   // Called when OS source data from the renderer is available for a given
   // attributionsrc request. The OS will make a subsequent request to
   // `registration_url` to obtain the actual registration.
-  [EnableIf=is_android]
   OsSourceDataAvailable(url.mojom.Url registration_url);
 
   // Called when OS trigger data from the renderer is available for a given
   // attributionsrc request. The OS will make a subsequent request to
   // `registration_url` to obtain the actual registration.
-  [EnableIf=is_android]
   OsTriggerDataAvailable(url.mojom.Url registration_url);
 };

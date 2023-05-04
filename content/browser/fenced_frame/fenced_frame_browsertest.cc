@@ -19,6 +19,8 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/fenced_frame/fenced_frame.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
@@ -67,11 +69,6 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
-#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
-#endif
 
 namespace content {
 
@@ -5756,7 +5753,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
                        AttributionNoneSupported_EligibleHeaderNotSet) {
   MockAttributionReportingContentBrowserClientBase<
@@ -5836,7 +5832,6 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   EXPECT_FALSE(base::Contains(response.http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
-#endif
 
 class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
     : public FencedFrameReportEventBrowserTest {
@@ -5853,11 +5848,8 @@ class FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest
 IN_PROC_BROWSER_TEST_F(
     FencedFrameReportEventAttributionCrossAppWebEnabledBrowserTest,
     ReportEventSameOriginSetsSupportHeader) {
-#if BUILDFLAG(IS_ANDROID)
-  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
-      scoped_api_state_setting(
-          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
-#endif
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
 
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       kReportingURL);
@@ -5930,15 +5922,9 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       response.http_request()->headers.at("Attribution-Reporting-Eligible"),
       "event-source");
-#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(
       response.http_request()->headers.at("Attribution-Reporting-Support"),
       "os, web");
-#else
-  EXPECT_EQ(
-      response.http_request()->headers.at("Attribution-Reporting-Support"),
-      "web");
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -5519,16 +5519,16 @@ void RenderProcessHostImpl::ProvideSwapFileForRenderer() {
           std::move(allocator)));
 }
 
+void RenderProcessHostImpl::SetAttributionReportingSupport(
+    network::mojom::AttributionSupport attribution_support) {
+  GetRendererInterface()->SetAttributionReportingSupport(attribution_support);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 
 void RenderProcessHostImpl::NotifyMemoryPressureToRenderer(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   child_process_->OnMemoryPressure(level);
-}
-
-void RenderProcessHostImpl::SetAttributionReportingSupport(
-    network::mojom::AttributionSupport attribution_support) {
-  GetRendererInterface()->SetAttributionReportingSupport(attribution_support);
 }
 
 #endif

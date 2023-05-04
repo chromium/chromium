@@ -11,8 +11,6 @@
 #include <vector>
 
 #include "base/run_loop.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
@@ -74,8 +72,6 @@ void MockDataHost::TriggerDataAvailable(
   wait_loop_.Quit();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-
 void MockDataHost::OsSourceDataAvailable(const GURL& registration_url) {
   os_sources_.push_back(registration_url);
   if (os_sources_.size() < min_os_sources_count_) {
@@ -107,8 +103,6 @@ void MockDataHost::WaitForOsTriggers(size_t num_os_triggers) {
   }
   wait_loop_.Run();
 }
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<MockDataHost> GetRegisteredDataHost(
     mojo::PendingReceiver<blink::mojom::AttributionDataHost> data_host) {

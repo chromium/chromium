@@ -17,8 +17,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -515,8 +513,6 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
     return false;
   }
 
-// TODO(linnan): Consider introducing helper functions to reduce #ifdef's.
-#if BUILDFLAG(IS_ANDROID)
   if (!network::HasAttributionSupport(GetSupport())) {
     if (log_issues) {
       LogAuditIssue(local_frame_->DomWindow(),
@@ -526,7 +522,6 @@ bool AttributionSrcLoader::CanRegister(const KURL& url,
     }
     return false;
   }
-#endif
 
   return true;
 }
@@ -764,12 +759,10 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   }
 
   if (!headers.web_source.IsNull()) {
-#if BUILDFLAG(IS_ANDROID)
     if (!network::HasAttributionWebSupport(loader_->GetSupport())) {
       headers.LogSourceIgnored(loader_->local_frame_->DomWindow());
       return;
     }
-#endif
     auto source_data = attribution_reporting::SourceRegistration::Parse(
         StringUTF8Adaptor(headers.web_source).AsStringPiece());
     if (!source_data.has_value()) {
@@ -792,7 +785,6 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-#if BUILDFLAG(IS_ANDROID)
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
@@ -807,9 +799,6 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
   }
   data_host_->OsSourceDataAvailable(KURL(registration_url));
   ++num_registrations_;
-#else
-  NOTREACHED();
-#endif
 }
 
 void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
@@ -825,12 +814,10 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   }
 
   if (!headers.web_trigger.IsNull()) {
-#if BUILDFLAG(IS_ANDROID)
     if (!network::HasAttributionWebSupport(loader_->GetSupport())) {
       headers.LogTriggerIgnored(loader_->local_frame_->DomWindow());
       return;
     }
-#endif
     auto trigger_data = attribution_reporting::TriggerRegistration::Parse(
         StringUTF8Adaptor(headers.web_trigger).AsStringPiece());
     if (!trigger_data.has_value()) {
@@ -855,7 +842,6 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
     return;
   }
 
-#if BUILDFLAG(IS_ANDROID)
   UseCounter::Count(loader_->local_frame_->DomWindow(),
                     mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
@@ -871,9 +857,6 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
   }
   data_host_->OsTriggerDataAvailable(KURL(registration_url));
   ++num_registrations_;
-#else
-  NOTREACHED();
-#endif
 }
 
 }  // namespace blink

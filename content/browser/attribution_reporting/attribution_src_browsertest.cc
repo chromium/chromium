@@ -14,8 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/aggregation_service/aggregation_service.mojom.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
@@ -27,8 +25,10 @@
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_host.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/attribution_reporting/test/mock_data_host.h"
 #include "content/browser/attribution_reporting/test/source_observer.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
@@ -58,12 +59,6 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
-#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
-#include "content/public/test/content_browser_test_content_browser_client.h"
-#endif
 
 namespace content {
 
@@ -768,7 +763,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_EQ(trigger_data.front().event_triggers.front().data, 7u);
 }
 
-#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
                        ImgNoneSupported_EligibleHeaderNotSet) {
   MockAttributionReportingContentBrowserClientBase<
@@ -807,7 +801,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
   EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
-#endif
 
 class AttributionSrcMultipleBackgroundRequestTest
     : public AttributionSrcBrowserTest,
@@ -1206,8 +1199,6 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcCrossAppWebEnabledBrowserTest,
             "web");
 }
 
-#if BUILDFLAG(IS_ANDROID)
-
 class AttributionSrcCrossAppWebEnabledSubresourceBrowserTest
     : public AttributionSrcCrossAppWebEnabledBrowserTest,
       public ::testing::WithParamInterface<
@@ -1246,9 +1237,8 @@ IN_PROC_BROWSER_TEST_P(AttributionSrcCrossAppWebEnabledSubresourceBrowserTest,
           https_server.get(), "/register_source2");
   ASSERT_TRUE(https_server->Start());
 
-  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
-      scoped_api_state_setting(
-          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1302,9 +1292,8 @@ IN_PROC_BROWSER_TEST_F(
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), page_url));
 
-  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
-      scoped_api_state_setting(
-          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
 
   GURL register_url = https_server->GetURL("d.test", "/register_source1");
   ASSERT_TRUE(ExecJs(web_contents(),
@@ -1385,9 +1374,8 @@ IN_PROC_BROWSER_TEST_P(
           https_server.get(), "/register");
   ASSERT_TRUE(https_server->Start());
 
-  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
-      scoped_api_state_setting(
-          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
 
   GURL page_url =
       https_server->GetURL("b.test", "/page_with_impression_creator.html");
@@ -1413,7 +1401,5 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(data_host->os_sources(), test_case.expected_os_sources);
   EXPECT_EQ(data_host->os_triggers(), test_case.expected_os_triggers);
 }
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

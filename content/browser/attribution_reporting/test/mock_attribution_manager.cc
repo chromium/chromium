@@ -18,13 +18,10 @@
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
-#include "content/browser/attribution_reporting/storable_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "content/browser/attribution_reporting/os_registration.h"
-#endif
+#include "content/browser/attribution_reporting/storable_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -106,7 +103,6 @@ void MockAttributionManager::NotifyDebugReportSent(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
 void MockAttributionManager::NotifyOsRegistration(
     const OsRegistration& registration,
     bool is_debug_key_allowed,
@@ -116,7 +112,6 @@ void MockAttributionManager::NotifyOsRegistration(
     observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
   }
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 void MockAttributionManager::SetDataHostManager(
     std::unique_ptr<AttributionDataHostManager> manager) {

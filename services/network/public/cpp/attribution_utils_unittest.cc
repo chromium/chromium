@@ -5,8 +5,6 @@
 #include "services/network/public/cpp/attribution_utils.h"
 
 #include "base/strings/string_piece.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,12 +16,10 @@ TEST(AttributionSupportTest, GetAttributionSupportHeader) {
     mojom::AttributionSupport attribution_support;
     const char* expected;
   } kTestCases[] = {
-    {mojom::AttributionSupport::kWeb, "web"},
-#if BUILDFLAG(IS_ANDROID)
-    {mojom::AttributionSupport::kWebAndOs, "os, web"},
-    {mojom::AttributionSupport::kOs, "os"},
-    {mojom::AttributionSupport::kNone, ""},
-#endif
+      {mojom::AttributionSupport::kWeb, "web"},
+      {mojom::AttributionSupport::kWebAndOs, "os, web"},
+      {mojom::AttributionSupport::kOs, "os"},
+      {mojom::AttributionSupport::kNone, ""},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -37,12 +33,10 @@ TEST(AttributionSupportTest, HasAttributionOsSupport) {
     mojom::AttributionSupport attribution_support;
     bool expected;
   } kTestCases[] = {
-    {mojom::AttributionSupport::kWeb, false},
-#if BUILDFLAG(IS_ANDROID)
-    {mojom::AttributionSupport::kWebAndOs, true},
-    {mojom::AttributionSupport::kOs, true},
-    {mojom::AttributionSupport::kNone, false},
-#endif
+      {mojom::AttributionSupport::kWeb, false},
+      {mojom::AttributionSupport::kWebAndOs, true},
+      {mojom::AttributionSupport::kOs, true},
+      {mojom::AttributionSupport::kNone, false},
   };
 
   for (const auto& test_case : kTestCases) {
@@ -50,8 +44,6 @@ TEST(AttributionSupportTest, HasAttributionOsSupport) {
               test_case.expected);
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
 
 TEST(AttributionSupportTest, HasAttributionWebSupport) {
   const struct {
@@ -86,8 +78,6 @@ TEST(AttributionSupportTest, HasAttributionSupport) {
               test_case.expected);
   }
 }
-
-#endif
 
 }  // namespace
 }  // namespace network

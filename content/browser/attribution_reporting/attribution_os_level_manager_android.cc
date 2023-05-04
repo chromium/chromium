@@ -15,20 +15,16 @@
 #include "base/android/jni_array.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/os_registration.h"
 #include "content/public/android/content_jni_headers/AttributionOsLevelManager_jni.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -37,36 +33,7 @@ namespace content {
 
 namespace {
 
-using ScopedApiStateForTesting =
-    ::content::AttributionOsLevelManagerAndroid::ScopedApiStateForTesting;
-
-using ApiState = ::content::AttributionOsLevelManagerAndroid::ApiState;
-
-#if DCHECK_IS_ON()
-const base::SequenceChecker& GetSequenceChecker() {
-  static base::NoDestructor<base::SequenceChecker> checker;
-  return *checker;
-}
-#endif
-
-// This flag is per device and can only be changed by the OS. Currently we don't
-// observe setting changes on the device and the flag is only initialized once
-// on startup. The value may vary in tests.
-absl::optional<ApiState> g_state GUARDED_BY_CONTEXT(GetSequenceChecker());
-
-void SetApiState(absl::optional<ApiState> state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
-
-  ApiState previous = AttributionOsLevelManagerAndroid::GetApiState();
-
-  g_state = state;
-
-  if (previous == AttributionOsLevelManagerAndroid::GetApiState()) {
-    return;
-  }
-
-  AttributionManagerImpl::UpdateSupportForRenderProcessHosts();
-}
+using ApiState = ::content::AttributionOsLevelManager::ApiState;
 
 int GetDeletionMode(bool delete_rate_limit_data) {
   // See
@@ -116,32 +83,17 @@ ApiState ConvertToApiState(int value) {
 static void JNI_AttributionOsLevelManager_OnMeasurementStateReturned(
     JNIEnv* env,
     jint state) {
-  SetApiState(ConvertToApiState(state));
-
-  base::UmaHistogramEnumeration("Conversions.AttributionSupport",
-                                AttributionManagerImpl::GetSupport());
-}
-
-ScopedApiStateForTesting::ScopedApiStateForTesting(ApiState state)
-    : previous_(g_state) {
-  SetApiState(state);
-}
-
-ScopedApiStateForTesting::~ScopedApiStateForTesting() {
-  SetApiState(previous_);
-}
-
-// static
-ApiState AttributionOsLevelManagerAndroid::GetApiState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
-  return g_state.value_or(ApiState::kDisabled);
+  AttributionOsLevelManager::SetApiState(ConvertToApiState(state));
 }
 
 AttributionOsLevelManagerAndroid::AttributionOsLevelManagerAndroid() {
   jobj_ = Java_AttributionOsLevelManager_Constructor(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 
-  InitializeOsSupport();
+  if (AttributionOsLevelManager::ShouldInitializeApiState()) {
+    Java_AttributionOsLevelManager_getMeasurementApiStatus(
+        base::android::AttachCurrentThread(), jobj_);
+  }
 }
 
 AttributionOsLevelManagerAndroid::~AttributionOsLevelManagerAndroid() {
@@ -209,20 +161,6 @@ void AttributionOsLevelManagerAndroid::ClearData(
       base::android::ToJavaArrayOfStrings(
           env, std::vector<std::string>(domains.begin(), domains.end())),
       GetDeletionMode(delete_rate_limit_data), GetMatchBehavior(mode));
-}
-
-void AttributionOsLevelManagerAndroid::InitializeOsSupport() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(GetSequenceChecker());
-
-  if (g_state.has_value()) {
-    return;
-  }
-
-  // Only make the async call once.
-  g_state.emplace(ApiState::kDisabled);
-
-  Java_AttributionOsLevelManager_getMeasurementApiStatus(
-      base::android::AttachCurrentThread(), jobj_);
 }
 
 void AttributionOsLevelManagerAndroid::OnRegistrationCompleted(JNIEnv* env,

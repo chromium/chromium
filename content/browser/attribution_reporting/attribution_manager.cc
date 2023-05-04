@@ -5,7 +5,7 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 
 #include "base/check.h"
-#include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -31,7 +31,7 @@ AttributionManager* AttributionManager::FromBrowserContext(
 
 // static
 network::mojom::AttributionSupport AttributionManager::GetSupport() {
-  return AttributionManagerImpl::GetSupport();
+  return AttributionOsLevelManager::GetSupport();
 }
 
 }  // namespace content

@@ -19,14 +19,14 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_os_level_manager.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_observer.h"
+#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
@@ -46,6 +46,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
+#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
@@ -76,12 +77,6 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "content/browser/attribution_reporting/attribution_os_level_manager_android.h"
-#include "content/browser/attribution_reporting/test/mock_content_browser_client.h"
-#include "content/public/test/content_browser_test_content_browser_client.h"
-#endif
 
 namespace content {
 
@@ -992,7 +987,6 @@ IN_PROC_BROWSER_TEST_F(
   expected_report.WaitForReport();
 }
 
-#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
                        NavigationNoneSupported_EligibleHeaderNotSet) {
   MockAttributionReportingContentBrowserClientBase<
@@ -1027,7 +1021,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsBrowserTest,
   EXPECT_FALSE(base::Contains(register_response->http_request()->headers,
                               "Attribution-Reporting-Support"));
 }
-#endif
 
 class AttributionsPrerenderBrowserTest : public AttributionsBrowserTest {
  public:
@@ -1247,7 +1240,6 @@ IN_PROC_BROWSER_TEST_F(AttributionsCrossAppWebEnabledBrowserTest,
             "web");
 }
 
-#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     AttributionsCrossAppWebEnabledBrowserTest,
     AttributionEligibleNavigationOsLevelEnabled_SetsSupportHeader) {
@@ -1259,9 +1251,8 @@ IN_PROC_BROWSER_TEST_F(
           https_server(), "/register_source_redirect2");
   ASSERT_TRUE(https_server()->Start());
 
-  AttributionOsLevelManagerAndroid::ScopedApiStateForTesting
-      scoped_api_state_setting(
-          AttributionOsLevelManagerAndroid::ApiState::kEnabled);
+  AttributionOsLevelManager::ScopedApiStateForTesting scoped_api_state_setting(
+      AttributionOsLevelManager::ApiState::kEnabled);
 
   GURL impression_url = https_server()->GetURL(
       "a.test", "/attribution_reporting/page_with_impression_creator.html");
@@ -1298,7 +1289,6 @@ IN_PROC_BROWSER_TEST_F(
                 "Attribution-Reporting-Support"),
             "os, web");
 }
-#endif  // BUILDFLAG(IS_ANDROID)
 
 class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
  public:

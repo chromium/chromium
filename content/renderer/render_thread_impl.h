@@ -450,10 +450,8 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
   void SetIsCrossOriginIsolated(bool value) override;
   void SetIsIsolatedContext(bool value) override;
-#if BUILDFLAG(IS_ANDROID)
   void SetAttributionReportingSupport(
       network::mojom::AttributionSupport) override;
-#endif
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
