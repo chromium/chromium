@@ -796,7 +796,6 @@ export class Video extends ModeBase {
   private async captureTimeLapse(param: h264.EncoderParameters):
       Promise<TimeLapseSaver> {
     const encoderConfig = getVideoEncoderConfig(param, this.captureResolution);
-    const video = this.video.video;
 
     // Creates a saver given the initial speed.
     const saver = await TimeLapseSaver.create(
@@ -819,40 +818,38 @@ export class Video extends ModeBase {
       }
       saver.setErrorCallback(onError);
 
-      // TODO(b/236800499): Investigate whether we should use async, or use
-      // reader.read().then() instead.
       async function updateFrame(): Promise<void> {
         if (!state.get(state.State.RECORDING)) {
           resolve(writtenFrameCount);
           return;
         }
         if (state.get(state.State.RECORDING_PAUSED)) {
-          video.requestVideoFrameCallback(updateFrame);
+          state.addOneTimeObserver(state.State.RECORDING_PAUSED, updateFrame);
           return;
         }
-        if (frameCount % saver.speed === 0) {
-          let frame: VideoFrame|null = null;
-          try {
-            const {done, value} = await reader.read();
-            if (done) {
-              resolve(writtenFrameCount);
-              return;
-            }
-            frame = value;
+        let frame: VideoFrame|null = null;
+        try {
+          const {done, value} = await reader.read();
+          if (done) {
+            resolve(writtenFrameCount);
+            return;
+          }
+          frame = value;
+          if (frameCount % saver.speed === 0) {
             saver.write(frame, frameCount);
             writtenFrameCount++;
-          } catch (e) {
-            onError(e);
-          } finally {
-            if (frame !== null) {
-              frame.close();
-            }
+          }
+        } catch (e) {
+          onError(e);
+        } finally {
+          if (frame !== null) {
+            frame.close();
           }
         }
         frameCount++;
-        video.requestVideoFrameCallback(updateFrame);
+        updateFrame();
       }
-      video.requestVideoFrameCallback(updateFrame);
+      updateFrame();
     });
 
     if (frames === 0) {
