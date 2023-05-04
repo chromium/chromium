@@ -1664,30 +1664,6 @@ TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(server_metadata.use_date, server_profile.use_date());
 }
 
-// Tests that the profile is only deletable if it is not verified.
-TEST(AutofillProfileTest, IsDeletable) {
-  // Set up an arbitrary time, as setup the current time to just above the
-  // threshold later than that time.
-  const base::Time kArbitraryTime = base::Time::FromDoubleT(25000000000);
-  TestAutofillClock test_clock;
-  test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::Days(1));
-
-  // Created a profile that has not been used since over the deletion threshold.
-  AutofillProfile profile = test::GetFullProfile();
-  profile.set_use_date(kArbitraryTime);
-
-  // Make sure it's deletable.
-  EXPECT_TRUE(profile.IsDeletable());
-
-  // Set the profile as being verified.
-  profile.set_origin("Not empty");
-  ASSERT_TRUE(profile.IsVerified());
-
-  // Make sure it's not deletable.
-  EXPECT_FALSE(profile.IsDeletable());
-}
-
 // Tests that the |HasStructuredData| returns whether the profile has structured
 // data or not.
 TEST(AutofillProfileTest, HasStructuredData) {

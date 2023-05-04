@@ -77,9 +77,6 @@ class AutofillProfile : public AutofillDataModel {
   AutofillMetadata GetMetadata() const override;
   double GetRankingScore(base::Time current_time) const override;
   bool SetMetadata(const AutofillMetadata& metadata) override;
-  // Returns whether the profile is deletable: if it is not verified and has not
-  // been used for longer than |kDisusedAddressDeletionTimeDelta|.
-  bool IsDeletable() const override;
 
   // FormGroup:
   void GetMatchingTypes(const std::u16string& text,

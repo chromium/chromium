@@ -319,10 +319,6 @@ bool AutofillProfile::SetMetadata(const AutofillMetadata& metadata) {
   return true;
 }
 
-bool AutofillProfile::IsDeletable() const {
-  return AutofillDataModel::IsDeletable() && !IsVerified();
-}
-
 void AutofillProfile::GetMatchingTypes(
     const std::u16string& text,
     const std::string& app_locale,

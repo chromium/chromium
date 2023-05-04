@@ -239,13 +239,9 @@ void PersonalDataManagerCleaner::DedupeProfiles(
   AutofillMetrics::LogNumberOfProfilesConsideredForDedupe(
       existing_profiles->size());
 
-  // Sort the profiles by ranking score with all the verified profiles at the
-  // end. That way the most relevant profiles will get merged into the less
-  // relevant profiles, which keeps the syntax of the most relevant profiles
-  // data. Verified profiles are put at the end because they do not merge into
-  // other profiles, so the loop can be stopped when we reach those. However
-  // they need to be in the vector because an unverified profile trying to merge
-  // into a similar verified profile will be discarded.
+  // Sort the profiles by ranking score. That way the most relevant profiles
+  // will get merged into the less relevant profiles, which keeps the syntax of
+  // the most relevant profiles data.
   // Since profiles earlier in the list are merged into profiles later in the
   // list, `kLocalOrSyncable` profiles are placed before `kAccount` profiles.
   // This is because local profiles can be merged into account profiles, but not
@@ -260,13 +256,10 @@ void PersonalDataManagerCleaner::DedupeProfiles(
         }
         return a->HasGreaterRankingThan(b.get(), comparison_time);
       });
-  auto first_verified_profile = base::ranges::stable_partition(
-      *existing_profiles, [](const std::unique_ptr<AutofillProfile>& profile) {
-        return !profile->IsVerified();
-      });
 
   AutofillProfileComparator comparator(personal_data_manager_->app_locale());
-  for (auto i = existing_profiles->begin(); i != first_verified_profile; i++) {
+  for (auto i = existing_profiles->begin(); i != existing_profiles->end();
+       i++) {
     AutofillProfile* profile_to_merge = i->get();
 
     // If the profile was set to be deleted, skip it. This can happen because
@@ -326,13 +319,10 @@ void PersonalDataManagerCleaner::DedupeProfiles(
         // Now try to merge the new resulting profile with the rest of the
         // existing profiles.
         profile_to_merge = &existing_profile;
-        // Verified profiles do not get merged. Save some time by not
-        // trying. Note that the `existing_profile` (now `profile_to_merge`)
-        // might be verified.
-        // Similarly, account profiles cannot be merged into other profiles,
-        // since that would delete them.
-        if (profile_to_merge->IsVerified() ||
-            profile_to_merge->source() == AutofillProfile::Source::kAccount) {
+        // Account profiles cannot be merged into other profiles, since that
+        // would delete them. Note that the `existing_profile` (now
+        // `profile_to_merge`) might be verified.
+        if (profile_to_merge->source() == AutofillProfile::Source::kAccount) {
           break;
         }
       }
