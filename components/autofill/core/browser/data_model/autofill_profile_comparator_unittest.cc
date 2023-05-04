@@ -1434,59 +1434,6 @@ TEST_F(AutofillProfileComparatorTest, IsMergeCandidate) {
                                            unmergeable_profile, "en_US"));
 }
 
-// Test the correct determination of a merge candidate.
-TEST_F(AutofillProfileComparatorTest, GetMergeCandidate) {
-  AutofillProfile existing_profile;
-  autofill::test::SetProfileInfo(
-      &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
-      "company", "line1", "line2", "city", "state", "zip", "US", "phone");
-
-  // A profile should never be a merge candidate to itself because all values
-  // are the same.
-  EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-                existing_profile, {&existing_profile}, "en_US"),
-            absl::nullopt);
-
-  // Create a new profile that is not mergeable because it has a completely
-  // different name.
-  AutofillProfile new_profile = existing_profile;
-  new_profile.SetRawInfo(NAME_FULL, u"JustAnotherName");
-  EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-                new_profile, {&existing_profile}, "en_US"),
-            absl::nullopt);
-
-  // Use a city name that is a superset of the existing city name. It should be
-  // mergeable and the profile should be updated to the new value.
-  new_profile = existing_profile;
-  new_profile.SetRawInfoWithVerificationStatus(
-      ADDRESS_HOME_CITY, u"the City", autofill::VerificationStatus::kObserved);
-  absl::optional<AutofillProfile> optional_merge_candidate =
-      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-          new_profile, {&existing_profile}, "en_US");
-  ASSERT_TRUE(optional_merge_candidate.has_value());
-  EXPECT_EQ(optional_merge_candidate.value(), existing_profile);
-
-  // Now create a second existing profile that is the same as the first one, but
-  // was used more often. By this, this profile should become the merge
-  // candidate.
-  AutofillProfile second_existing_profile = existing_profile;
-  second_existing_profile.set_use_count(second_existing_profile.use_count() +
-                                        10);
-  optional_merge_candidate =
-      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-          new_profile, {&existing_profile, &second_existing_profile}, "en_US");
-  ASSERT_TRUE(optional_merge_candidate.has_value());
-  EXPECT_EQ(optional_merge_candidate.value(), second_existing_profile);
-
-  // Make sure the result is independent of the initial ordering of the
-  // profiles.
-  optional_merge_candidate =
-      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
-          new_profile, {&second_existing_profile, &existing_profile}, "en_US");
-  ASSERT_TRUE(optional_merge_candidate.has_value());
-  EXPECT_EQ(optional_merge_candidate.value(), second_existing_profile);
-}
-
 // Tests that the profiles are merged when they have common states.
 TEST_F(AutofillProfileComparatorTest, MergeProfilesBasedOnState) {
   base::test::ScopedFeatureList feature;

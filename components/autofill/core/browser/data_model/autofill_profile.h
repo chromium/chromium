@@ -165,12 +165,6 @@ class AutofillProfile : public AutofillDataModel {
   bool MergeDataFrom(const AutofillProfile& profile,
                      const std::string& app_locale);
 
-  // Merges structured data from |this| profile and the given |profile| into
-  // |this| profile. Expected to be called if |this| profile is already
-  // verified. Returns true if the profile was modified.
-  bool MergeStructuredDataFrom(const AutofillProfile& profile,
-                               const std::string& app_locale);
-
   // Saves info from |profile| into |this|, provided |this| and |profile| do not
   // have any direct conflicts (i.e. data is present but different). Will not
   // make changes if |this| is verified and |profile| is not. Returns true if

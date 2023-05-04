@@ -600,52 +600,6 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   }
 }
 
-bool AutofillProfile::MergeStructuredDataFrom(const AutofillProfile& profile,
-                                              const std::string& app_locale) {
-  // Should only be called if the profile is already verified.
-  DCHECK(IsVerified());
-
-  AutofillProfileComparator comparator(app_locale);
-
-  DVLOG(1) << "Merging profile structure information :\nSource = " << profile
-           << "\nDest = " << *this;
-
-  bool merged = false;
-
-  // It is already verified upstream that the profiles and therefore also the
-  // names and addresses are mergeable.
-  // However, the structure should only be merged if the full names or addresses
-  // are token equivalent.
-  if (AreStringTokenEquivalent(GetRawInfo(NAME_FULL),
-                               profile.GetRawInfo(NAME_FULL))) {
-    NameInfo name;
-    if (!comparator.MergeNames(profile, *this, name)) {
-      NOTREACHED();
-      return false;
-    }
-    if (name_ != name) {
-      name_ = name;
-      merged = true;
-    }
-  }
-
-  if (AreStringTokenEquivalent(
-          GetRawInfo(ADDRESS_HOME_STREET_ADDRESS),
-          profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))) {
-    Address address;
-    if (!comparator.MergeAddresses(profile, *this, address)) {
-      NOTREACHED();
-      return false;
-    }
-    if (address_ != address) {
-      address_ = address;
-      merged = true;
-    }
-  }
-
-  return merged;
-}
-
 bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
                                     const std::string& app_locale) {
   AutofillProfileComparator comparator(app_locale);
@@ -742,22 +696,7 @@ bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
   // already deemed to be mergeable.
   DCHECK(comparator.AreMergeable(*this, profile));
 
-  // We don't replace verified profile data with unverified profile data. But,
-  // we can merge two unverified profiles or merge verified profile data into an
-  // unverified profile.
-  if (!IsVerified() || profile.IsVerified()) {
-    if (MergeDataFrom(profile, app_locale)) {
-      AutofillMetrics::LogProfileActionOnFormSubmitted(
-          AutofillMetrics::EXISTING_PROFILE_UPDATED);
-    } else {
-      AutofillMetrics::LogProfileActionOnFormSubmitted(
-          AutofillMetrics::EXISTING_PROFILE_USED);
-    }
-    return true;
-  }
-  // If the profile is verified, only the structured name information should be
-  // merged.
-  if (MergeStructuredDataFrom(profile, app_locale)) {
+  if (MergeDataFrom(profile, app_locale)) {
     AutofillMetrics::LogProfileActionOnFormSubmitted(
         AutofillMetrics::EXISTING_PROFILE_UPDATED);
   } else {

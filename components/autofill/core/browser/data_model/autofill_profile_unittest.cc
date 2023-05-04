@@ -1377,49 +1377,6 @@ TEST(AutofillProfileTest, FullAddress) {
   EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
 }
 
-TEST(AutofillProfileTest, SaveAdditionalInfo_Verified_MergeStructure) {
-  AutofillProfile a;
-  a.SetRawInfoWithVerificationStatus(NAME_FULL, u"Marion Mitchell Morrison",
-                                     VerificationStatus::kUserVerified);
-  a.FinalizeAfterImport();
-  ASSERT_FALSE(a.IsVerified());
-  a.set_origin(autofill::kSettingsOrigin);
-  ASSERT_TRUE(a.IsVerified());
-
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FIRST), VerificationStatus::kParsed);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_MIDDLE), VerificationStatus::kParsed);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_LAST), VerificationStatus::kParsed);
-  EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Marion");
-  EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Mitchell");
-  EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
-
-  AutofillProfile b;
-  b.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Mitchell",
-                                     VerificationStatus::kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Marion",
-                                     VerificationStatus::kObserved);
-  b.SetRawInfoWithVerificationStatus(NAME_LAST, u"Morrison",
-                                     VerificationStatus::kObserved);
-  b.FinalizeAfterImport();
-  ASSERT_FALSE(b.IsVerified());
-
-  a.SaveAdditionalInfo(b, "en-US");
-
-  // After merging, the full name is presvered, but the substructure changed.
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FULL),
-            VerificationStatus::kUserVerified);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_FIRST), VerificationStatus::kObserved);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_MIDDLE),
-            VerificationStatus::kObserved);
-  EXPECT_EQ(a.GetVerificationStatus(NAME_LAST), VerificationStatus::kObserved);
-  EXPECT_EQ(a.GetRawInfo(NAME_FULL), u"Marion Mitchell Morrison");
-  EXPECT_EQ(a.GetRawInfo(NAME_FIRST), u"Mitchell");
-  EXPECT_EQ(a.GetRawInfo(NAME_MIDDLE), u"Marion");
-  EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
-}
-
 TEST(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
   AutofillProfile a;
 
