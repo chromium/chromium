@@ -667,7 +667,6 @@ component("views") {
       "//components/remote_cocoa/browser",
       "//ui/accelerated_widget_mac",
       "//ui/events:dom_keycode_converter",
-      "//ui/gl",
     ]
     frameworks = [
       "AppKit.framework",

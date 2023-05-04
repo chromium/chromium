@@ -57,6 +57,7 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
     : delegate_(delegate),
       use_remote_layer_api_(ui::RemoteLayerAPISupported()),
       scale_factor_(1),
+      vsync_callback_(delegate->GetGpuVSyncCallback()),
       weak_ptr_factory_(this) {
   static bool av_disabled_at_command_line =
       !base::FeatureList::IsEnabled(kAVFoundationOverlays);
@@ -86,11 +87,6 @@ ImageTransportSurfaceOverlayMacEGL::ImageTransportSurfaceOverlayMacEGL(
     }] retain]);
 #endif
     [ca_context_ setLayer:ca_layer_tree_coordinator_->GetCALayerForDisplay()];
-  }
-
-  if (features::UseGpuVsync()) {
-    gpu_vsync_mac_ =
-        std::make_unique<GpuVSyncMac>(delegate->GetGpuVSyncCallback());
   }
 }
 
@@ -263,24 +259,19 @@ void ImageTransportSurfaceOverlayMacEGL::SetCALayerErrorCode(
   ca_layer_error_code_ = ca_layer_error_code;
 }
 
+void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
+}
+
 bool ImageTransportSurfaceOverlayMacEGL::SupportsGpuVSync() const {
   return features::UseGpuVsync();
 }
 
-void ImageTransportSurfaceOverlayMacEGL::SetVSyncDisplayID(int64_t display_id) {
-  if (!features::UseGpuVsync()) {
-    return;
-  }
-
-  gpu_vsync_mac_->SetVSyncDisplayID(display_id);
-}
-
 void ImageTransportSurfaceOverlayMacEGL::SetGpuVSyncEnabled(bool enabled) {
-  if (!features::UseGpuVsync()) {
+  if (gpu_vsync_enabled_ == enabled) {
     return;
   }
 
-  gpu_vsync_mac_->SetGpuVSyncEnabled(enabled);
+  gpu_vsync_enabled_ = enabled;
 }
 
 }  // namespace gpu

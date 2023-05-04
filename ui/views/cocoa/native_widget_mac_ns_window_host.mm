@@ -1176,13 +1176,11 @@ void NativeWidgetMacNSWindowHost::OnWindowDisplayChanged(
       // created, so this should not be a fatal error.
       LOG(ERROR) << "Failed to create display link.";
     }
-  }
 
-  if (compositor_ && display_link_ &&
-      last_compositor_display_id_ != display_.id()) {
-    RequestVSyncParametersUpdate();
-    compositor_->compositor()->SetVSyncDisplayID(display_.id());
-    last_compositor_display_id_ = display_.id();
+    if (compositor_) {
+      RequestVSyncParametersUpdate();
+      compositor_->compositor()->SetVSyncDisplayID(display_.id());
+    }
   }
 }
 
