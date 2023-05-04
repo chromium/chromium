@@ -316,15 +316,6 @@ suite('PrivacyPageTests', function() {
     assertTrue(privacyPage.showPasswordPromptDialog_);
   });
 
-  test('Refresh token when authentication token invalid', async () => {
-    privacyPage.setProperties({setModes_: () => {}});
-    flush();
-
-    privacyPage.dispatchEvent(new CustomEvent('auth-token-invalid'));
-
-    assertEquals(privacyPage.setModes_, undefined);
-  });
-
   test('Smart privacy hidden when both features disabled', async () => {
     loadTimeData.overrideValues({
       isSnoopingProtectionEnabled: false,

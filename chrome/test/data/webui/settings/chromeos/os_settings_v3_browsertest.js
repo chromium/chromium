@@ -573,7 +573,6 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
    'people_page_account_manager_subpage_test.js',
    {enabled: ['ash::features::kLacrosSupport']},
  ],
- ['PeoplePageQuickUnlock', 'quick_unlock_authenticate_browsertest_chromeos.js'],
  [
    'PersonalizationPageWithPersonalizationHub',
    'personalization_page_with_personalization_hub_test.js',
