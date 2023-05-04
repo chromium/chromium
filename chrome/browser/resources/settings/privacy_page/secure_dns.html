@@ -1,9 +1,16 @@
-    <style include="settings-shared md-select">
+    <style include="cr-shared-style md-select">
       #automaticRadioButton {
         align-items: flex-start;
+        min-height: var(--cr-section-min-height);
         padding: 6px 0;
         --cr-radio-button-disc-margin-block-start: calc(
             (1.54em /* line-height */ - var(--cr-radio-button-size)) / 2);
+      }
+
+      #secureDnsRadioGroup {
+        display: block;
+        padding-inline-end: var(--cr-section-padding);
+        padding-inline-start: var(--cr-section-indent-padding);
       }
 
       #secureResolverSelectRadioButton {
@@ -15,6 +22,8 @@
 
       #secureRadioButtonItem {
         align-items: baseline;
+        display: flex;
+        min-height: var(--cr-section-min-height);
       }
 
       #secureRadioButtonItemInner {
@@ -39,21 +48,21 @@
         sub-label="[[secureDnsDescription_]]"
         on-change="onToggleChanged_">
     </settings-toggle-button>
-    <cr-radio-group id="secureDnsRadioGroup" class="list-frame"
+    <cr-radio-group id="secureDnsRadioGroup"
         selected="{{secureDnsRadio_}}"
         on-selected-changed="onRadioSelectionChanged_"
         hidden="[[!showRadioGroup_]]">
-      <cr-radio-button id="automaticRadioButton" class="list-item"
+      <cr-radio-button id="automaticRadioButton"
           name="[[secureDnsModeEnum_.AUTOMATIC]]"
           label="$i18n{secureDnsAutomaticModeDescription}">
-        <div class="secondary">
+        <div class="cr-secondary-text">
           $i18n{secureDnsAutomaticModeDescriptionSecondary}
         </div>
       </cr-radio-button>
-      <cr-radio-button id="secureResolverSelectRadioButton" class="list-item"
+      <cr-radio-button id="secureResolverSelectRadioButton"
           name="[[secureDnsModeEnum_.SECURE]]"
           aria-label="$i18n{secureDnsSecureModeA11yLabel}">
-        <div id="secureRadioButtonItem" class="list-item">
+        <div id="secureRadioButtonItem">
           $i18n{secureDnsSecureDropdownModeDescription}
           <div id="secureRadioButtonItemInner">
             <select id="secureResolverSelect" class="md-select"
@@ -64,7 +73,7 @@
                 <option value="[[item.value]]">[[item.name]]</option>
               </template>
             </select>
-            <div id="privacyPolicy" class="secondary"
+            <div id="privacyPolicy" class="cr-secondary-text"
                 inner-h-t-m-l="[[privacyPolicyString_]]"></div>
             <secure-dns-input id="secureDnsInput"
                 value="[[secureDnsInputValue_]]"

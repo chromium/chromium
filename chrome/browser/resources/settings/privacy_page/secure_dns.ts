@@ -16,10 +16,11 @@
 
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '/shared/settings/controls/settings_toggle_button.js';
-import '../settings_shared.css.js';
 import '../strings.m.js';
 import './secure_dns_input.js';
 
