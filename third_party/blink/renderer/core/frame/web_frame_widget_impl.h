@@ -940,6 +940,9 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void NotifyZoomLevelChanged(LocalFrame* root);
 
+  // Satisfy the render blocking condition for cross-document view transitions.
+  void NotifyViewTransitionRenderingHasBegun();
+
   // A copy of the web drop data object we received from the browser.
   Member<DataObject> current_drag_data_;
 

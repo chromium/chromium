@@ -1421,8 +1421,13 @@ void WebFrameWidgetImpl::WillBeginMainFrame() {
     animation_frame_timing_monitor_->WillBeginMainFrame();
   }
 
-  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled())
+  NotifyViewTransitionRenderingHasBegun();
+}
+
+void WebFrameWidgetImpl::NotifyViewTransitionRenderingHasBegun() {
+  if (!RuntimeEnabledFeatures::ViewTransitionOnNavigationEnabled()) {
     return;
+  }
 
   ForEachLocalFrameControlledByWidget(
       local_root_->GetFrame(), [](WebLocalFrameImpl* local_frame) {
@@ -4512,6 +4517,8 @@ WebFrameWidgetImpl::GetFrameWidgetTestHelperForTesting() {
 }
 
 void WebFrameWidgetImpl::PrepareForFinalLifecyclUpdateForTesting() {
+  NotifyViewTransitionRenderingHasBegun();
+
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(), [](WebLocalFrameImpl* local_frame) {
         LocalFrame* core_frame = local_frame->GetFrame();
