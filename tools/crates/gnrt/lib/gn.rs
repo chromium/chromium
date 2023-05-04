@@ -48,7 +48,7 @@ pub struct RuleCommon {
     pub public_visibility: bool,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct RuleConcrete {
     pub crate_name: Option<String>,
     pub epoch: Option<Epoch>,
@@ -71,10 +71,11 @@ pub struct RuleConcrete {
     pub features: Vec<String>,
     pub build_root: Option<String>,
     pub build_script_outputs: Vec<String>,
+    pub rustc_metadata: Option<String>,
     pub rustflags: Vec<String>,
     pub rustenv: Vec<String>,
     pub output_dir: Option<String>,
-    pub gn_variables_lib: String,
+    pub gn_variables_lib: Option<String>,
 }
 
 /// Describes a single GN build rule for a crate configuration. Each field
@@ -208,12 +209,12 @@ pub fn build_rule_from_std_dep(
         .map(|dep| RuleDep { cond: Condition::Always, rule: dep })
         .collect();
 
+    let rustc_metadata = config_field!(rustc_metadata).next().cloned();
+
     let remove_library_configs: Vec<String> =
         config_field!(remove_library_configs).cloned().collect();
 
     let mut rule = RuleConcrete {
-        crate_name: None,
-        epoch: None,
         crate_type: "rlib".to_string(),
         crate_root: format!("//{crate_root_from_src}"),
         no_std: true,
@@ -227,19 +228,14 @@ pub fn build_rule_from_std_dep(
         add_executable_configs: Vec::new(),
         remove_executable_configs: Vec::new(),
         deps: extra_deps,
-        dev_deps: vec![],
-        build_deps: vec![],
-        aliased_deps: vec![],
-        features: vec![],
-        build_root: None,
-        build_script_outputs: vec![],
+        rustc_metadata,
         rustflags,
         rustenv,
         output_dir: crate_config
             .output_dir
             .clone()
             .or_else(|| extra_config.all_config.output_dir.clone()),
-        gn_variables_lib: String::new(),
+        ..Default::default()
     };
 
     apply_default_configs(&mut rule);
@@ -321,31 +317,14 @@ fn make_build_file_for_chromium_dep(
     // Template for all the rules in a build file. Several fields are
     // the same for all a package's rules.
     let mut rule_template = RuleConcrete {
-        crate_name: None,
-        epoch: None,
-        crate_type: String::new(),
-        crate_root: String::new(),
-        no_std: false,
         edition: package_metadata.edition.0.clone(),
         cargo_pkg_version: package_metadata.version.to_string(),
         cargo_pkg_authors: cargo_pkg_authors,
         cargo_pkg_name: package_metadata.name.clone(),
         cargo_pkg_description,
-        add_library_configs: Vec::new(),
-        remove_library_configs: Vec::new(),
-        add_executable_configs: Vec::new(),
-        remove_executable_configs: Vec::new(),
-        deps: Vec::new(),
-        dev_deps: Vec::new(),
-        build_deps: Vec::new(),
-        aliased_deps: Vec::new(),
-        features: Vec::new(),
         build_root: dep.build_script.as_ref().map(|p| to_gn_path(p.as_path())),
         build_script_outputs: build_script_outputs.get(&crate_id).cloned().unwrap_or_default(),
-        rustflags: vec![],
-        rustenv: vec![],
-        output_dir: None,
-        gn_variables_lib: String::new(),
+        ..Default::default()
     };
 
     apply_default_configs(&mut rule_template);
@@ -456,8 +435,7 @@ fn make_build_file_for_chromium_dep(
             lib_details.crate_type = lib_target.lib_type.to_string();
             lib_details.crate_root = to_gn_path(lib_target.root.as_path());
             lib_details.features = per_kind_info.features.clone();
-            lib_details.gn_variables_lib =
-                gn_variables_libs.get(&crate_id).cloned().unwrap_or_default();
+            lib_details.gn_variables_lib = gn_variables_libs.get(&crate_id).cloned();
 
             let testonly = dep_kind == deps::DependencyKind::Development;
             let visibility =
@@ -641,6 +619,10 @@ fn write_concrete<W: Write>(
         }
     }
 
+    if let Some(meta) = &details.rustc_metadata {
+        writeln!(writer, "rustc_metadata = \"{meta}\"")?;
+    }
+
     if !details.rustenv.is_empty() {
         write!(writer, "rustenv = ")?;
         write_list(&mut writer, &details.rustenv)?;
@@ -655,8 +637,8 @@ fn write_concrete<W: Write>(
         writeln!(writer, "output_dir = \"{output_dir}\"")?;
     }
 
-    if !details.gn_variables_lib.is_empty() {
-        writeln!(writer, "{}", details.gn_variables_lib)?;
+    if let Some(raw_gn) = &details.gn_variables_lib {
+        writeln!(writer, "{}", raw_gn)?;
     }
 
     writeln!(writer, "}}")

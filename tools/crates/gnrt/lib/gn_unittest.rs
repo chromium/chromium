@@ -10,7 +10,7 @@ use std::borrow::Borrow;
 
 use gnrt_lib::crates::Epoch;
 
-#[gtest(GnTest, FormatBuildFile)]
+#[gtest(GnTest, FormatBuildFileWithAllFields)]
 fn test() {
     // A simple lib rule.
     let build_file = BuildFile {
@@ -52,6 +52,7 @@ fn test() {
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
+                    rustc_metadata: Some("foometadata".to_string()),
                     rustflags: vec![
                         "--cfg=foo".to_string(),
                         "--cfg=feature=\"std\"".to_string(),
@@ -59,7 +60,7 @@ fn test() {
                     ],
                     rustenv: vec!["BAR_ENV=123".to_string()],
                     output_dir: Some("some/out/dir".to_string()),
-                    gn_variables_lib: "variables = []".to_string(),
+                    gn_variables_lib: Some("variables = []".to_string()),
                 },
             },
         )],
@@ -112,6 +113,7 @@ build_sources = [ "crate/build.rs" ]
 build_script_outputs = [
 "binding.rs",
 ]
+rustc_metadata = "foometadata"
 rustenv = [
 "BAR_ENV=123",
 ]
@@ -138,28 +140,10 @@ variables = []
                         epoch: Some(Epoch::Major(1)),
                         crate_type: "rlib".to_string(),
                         crate_root: "crate/src/lib.rs".to_string(),
-                        no_std: false,
                         edition: "2021".to_string(),
                         cargo_pkg_version: "1.2.3".to_string(),
-                        cargo_pkg_authors: None,
                         cargo_pkg_name: "foo".to_string(),
-                        cargo_pkg_description: None,
-                        add_library_configs: Vec::new(),
-                        remove_library_configs: Vec::new(),
-                        add_executable_configs: Vec::new(),
-                        remove_executable_configs: Vec::new(),
-                        deps: vec![],
-                        // dev_deps should *not* show up in the output currently.
-                        dev_deps: vec![],
-                        build_deps: vec![],
-                        aliased_deps: vec![],
-                        features: vec![],
-                        build_root: None,
-                        build_script_outputs: vec![],
-                        rustflags: vec![],
-                        rustenv: vec![],
-                        output_dir: None,
-                        gn_variables_lib: String::new(),
+                        ..Default::default()
                     },
                 },
             ),
@@ -215,16 +199,9 @@ testonly = true
                     epoch: Some(Epoch::Major(1)),
                     crate_type: "rlib".to_string(),
                     crate_root: "crate/src/lib.rs".to_string(),
-                    no_std: false,
                     edition: "2021".to_string(),
                     cargo_pkg_version: "1.2.3".to_string(),
-                    cargo_pkg_authors: None,
                     cargo_pkg_name: "foo".to_string(),
-                    cargo_pkg_description: None,
-                    add_library_configs: Vec::new(),
-                    remove_library_configs: Vec::new(),
-                    add_executable_configs: Vec::new(),
-                    remove_executable_configs: Vec::new(),
                     deps: vec![
                         RuleDep::construct_for_testing(
                             Condition::Always,
@@ -259,10 +236,7 @@ testonly = true
                     features: vec!["std".to_string()],
                     build_root: Some("crate/build.rs".to_string()),
                     build_script_outputs: vec!["binding.rs".to_string()],
-                    rustflags: vec![],
-                    rustenv: vec![],
-                    output_dir: None,
-                    gn_variables_lib: String::new(),
+                    ..Default::default()
                 },
             },
         )],
@@ -338,6 +312,13 @@ fn expect_eq_diff<T: Borrow<str>, U: Borrow<str>>(actual: T, expected: U) {
     use std::io::Write;
     use std::process::*;
 
+    // For prettier output, allow setting an env var to colorize output. Don't
+    // do this by default since it might not work on all terminals.
+    let color_arg = format!(
+        "--color={option}",
+        option = std::env::var("DIFF_COLOR").map(|s| s).unwrap_or("never".to_string()),
+    );
+
     // Closure to invoke diff on the inputs. This is wrapped in a closure so
     // that we can fail softly if `diff` could not be run.
     let inner = || {
@@ -348,7 +329,7 @@ fn expect_eq_diff<T: Borrow<str>, U: Borrow<str>>(actual: T, expected: U) {
         write!(BufWriter::new(&expected_file), "{expected}")?;
 
         let mut diff = Command::new("diff")
-            .args(["-U", "3", "--color=auto", &expected_file_path, "-"])
+            .args(["-U", "3", &color_arg, &expected_file_path, "-"])
             .stdin(Stdio::piped())
             .spawn()?;
 

@@ -5,6 +5,17 @@
 # Provides per-crate and overall configuration options to gnrt.
 
 [all]
+# std crates should have metadata applied to them. This would avoid any symbol
+# conflicts between std dependencies and third_party/rust crates.
+#
+# However, we can't apply it yet. GN can't automatically clean old artifacts,
+# nor can we delete and rebuild the sysroot on every build.
+#
+# TODO(crbug.com/1245714): set up GN rules to rebuilt the sysroot only when
+# needed. Then set this metadata.
+#
+# rustc_metadata = "libstd"
+
 # force-unstable-if-unmarked prevents normal crates from inadvertently using
 # symbols from std-internal dependencies in the sysroot. This is normally passed
 # during an x.py build, but we have to do it manually.
