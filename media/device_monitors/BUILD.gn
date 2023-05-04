@@ -34,6 +34,7 @@ source_set("device_monitors") {
       "device_monitor_mac.h",
       "device_monitor_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [ "Foundation.framework" ]
   }
 
