@@ -17,7 +17,6 @@
 #include "base/json/json_writer.h"
 #include "base/linux_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/process_iterator.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -55,21 +54,6 @@ namespace {
 
 constexpr char kLastTracingModelName[] = "last_tracing_model.json";
 
-enum class Action {
-  kShown = 0,
-  kBuildSucceeded = 1,
-  kBuildFailed = 2,
-  kInitialLoadSucceeded = 3,
-  kInitialLoadFailed = 4,
-  kLoadSucceeded = 5,
-  kLoadFailed = 6,
-  kMaxValue = kLoadFailed,
-};
-
-void UpdateStatistics(Action action) {
-  UMA_HISTOGRAM_ENUMERATION("Arc.Tracing.Tool", action);
-}
-
 // Maximum interval to display in full mode.
 constexpr base::TimeDelta kMaxIntervalToDisplayInFullMode = base::Seconds(5.0);
 
@@ -91,11 +75,9 @@ std::pair<base::Value, std::string> MaybeLoadLastGraphicsModel(
 
   arc::ArcTracingGraphicsModel graphics_model;
   if (!graphics_model.LoadFromValue(model->GetDict())) {
-    UpdateStatistics(Action::kInitialLoadFailed);
     return std::make_pair(base::Value(), "Failed to load last tracing model");
   }
 
-  UpdateStatistics(Action::kInitialLoadSucceeded);
   return std::make_pair(std::move(*model), "Loaded last tracing model");
 }
 
@@ -202,7 +184,6 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
       (time_max - base::TimeTicks()).InMicroseconds());
 
   if (!common_model.Build(data)) {
-    UpdateStatistics(Action::kBuildFailed);
     return std::make_pair(base::Value(), "Failed to process tracing data");
   }
 
@@ -213,7 +194,6 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
   if (mode != ArcGraphicsTracingMode::kFull)
     graphics_model.set_skip_structure_validation();
   if (!graphics_model.Build(common_model)) {
-    UpdateStatistics(Action::kBuildFailed);
     return std::make_pair(base::Value(), "Failed to build tracing model");
   }
 
@@ -233,7 +213,6 @@ std::pair<base::Value, std::string> BuildGraphicsModel(
     LOG(ERROR) << "Failed serialize model to " << model_path.value() << ".";
   }
 
-  UpdateStatistics(Action::kBuildSucceeded);
   return std::make_pair(base::Value(std::move(model)),
                         "Tracing model is ready");
 }
@@ -245,12 +224,10 @@ std::pair<base::Value, std::string> LoadGraphicsModel(
   if (mode != ArcGraphicsTracingMode::kFull)
     graphics_model.set_skip_structure_validation();
   if (!graphics_model.LoadFromJson(json_text)) {
-    UpdateStatistics(Action::kLoadFailed);
     return std::make_pair(base::Value(), "Failed to load tracing model");
   }
 
   base::Value::Dict model = graphics_model.Serialize();
-  UpdateStatistics(Action::kLoadSucceeded);
   return std::make_pair(base::Value(std::move(model)),
                         "Tracing model is loaded");
 }
@@ -333,8 +310,6 @@ ArcGraphicsTracingHandler::ArcGraphicsTracingHandler(
                       current_active, nullptr);
   }
   wm_helper_->AddActivationObserver(this);
-
-  UpdateStatistics(Action::kShown);
 }
 
 ArcGraphicsTracingHandler::~ArcGraphicsTracingHandler() {

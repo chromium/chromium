@@ -4883,17 +4883,6 @@ Unknown properties are collapsed to zero. -->
   <int value="8" label="Privacy policy button clicked"/>
 </enum>
 
-<enum name="ArcTracingToolAction">
-  <summary>Defines Arc Tracing tool actions</summary>
-  <int value="0" label="UI Shown"/>
-  <int value="1" label="Model built"/>
-  <int value="2" label="Model failed to build"/>
-  <int value="3" label="Model reloaded on initialization"/>
-  <int value="4" label="Model failed to reload on initialization"/>
-  <int value="5" label="Model loaded"/>
-  <int value="6" label="Model failed to load"/>
-</enum>
-
 <enum name="ArcUserInteraction">
   <summary>Defines Arc User Interactions</summary>
   <int value="0" label="Action not user initiated"/>

@@ -2302,12 +2302,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.Tracing.Tool" enum="ArcTracingToolAction"
-    expires_after="M82">
-  <owner>khmel@google.com</owner>
-  <summary>Action of ARC++ Graphics Tracing tool.</summary>
-</histogram>
-
 <histogram name="Arc.UiAvailable.AlreadyProvisioned.TimeDelta{ArcUserTypes}"
     units="ms" expires_after="2023-09-01">
   <owner>khmel@google.com</owner>
