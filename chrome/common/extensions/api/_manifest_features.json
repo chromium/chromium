@@ -214,7 +214,7 @@
     "extension_types": "all"
   },
   "side_panel": {
-    "channel": "canary",
+    "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
