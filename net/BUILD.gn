@@ -1267,6 +1267,7 @@ component("net") {
       "proxy_resolution/proxy_resolver_mac.cc",
       "proxy_resolution/proxy_resolver_mac.h",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -1603,6 +1604,7 @@ component("net") {
     } else if (is_ios) {
       # Use ICU alternative on iOS.
       sources += [ "base/net_string_util_icu_alternatives_ios.mm" ]
+      configs += [ "//build/config/compiler:enable_arc" ]
     } else {
       assert(false,
              "ICU alternative is not implemented for platform: " + target_os)
@@ -3008,6 +3010,7 @@ test("net_unittests") {
 
   if (is_apple) {
     sources += [ "base/mac/url_conversions_unittest.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_mac) {
