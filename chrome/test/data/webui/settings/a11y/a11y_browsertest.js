@@ -11,6 +11,7 @@ GEN('#include "build/branding_buildflags.h"');
 GEN('#include "build/build_config.h"');
 GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "components/password_manager/core/common/password_manager_features.h"');
 
 // TODO(crbug.com/1002627): This block prevents generation of a
 // link-in-text-block browser-test. This can be removed once the bug is
@@ -39,6 +40,8 @@ const violationFilterExcludeCustomInputAndTabindex =
 [['About', 'about_a11y_test.js', {options: axeOptionsExcludeLinkInTextBlock}],
  ['Accessibility', 'accessibility_a11y_test.js'],
  ['Basic', 'basic_a11y_test.js'],
+ // TODO(crbug.com/1420597): remove this test after Password Manager redesign is
+ // launched.
  ['Passwords', 'passwords_a11y_test.js'],
 ].forEach(test => defineTest(...test));
 
@@ -59,6 +62,13 @@ function defineTest(testName, module, config) {
     get browsePreload() {
       return `chrome://settings/test_loader.html?module=settings/a11y/${
           module}`;
+    }
+
+    /** @override */
+    get featureList() {
+      return {
+        disabled: ['password_manager::features::kPasswordManagerRedesign']
+      };
     }
   };
 

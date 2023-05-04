@@ -34,8 +34,9 @@ PasswordsPrivateDelegateProxy::PasswordsPrivateDelegateProxy(
 PasswordsPrivateDelegateProxy::PasswordsPrivateDelegateProxy(
     BrowserContext* browser_context,
     scoped_refptr<PasswordsPrivateDelegate> delegate)
-    : browser_context_(browser_context),
-      scoped_instance_(std::move(delegate)) {}
+    : browser_context_(browser_context), scoped_instance_(std::move(delegate)) {
+  weak_instance_ = scoped_instance_->AsWeakPtr();
+}
 PasswordsPrivateDelegateProxy::~PasswordsPrivateDelegateProxy() = default;
 
 void PasswordsPrivateDelegateProxy::Shutdown() {
