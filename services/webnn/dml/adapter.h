@@ -11,6 +11,7 @@
 #include <wrl.h>
 
 #include "base/memory/ref_counted.h"
+#include "services/webnn/dml/command_queue.h"
 
 namespace webnn::dml {
 
@@ -29,20 +30,20 @@ class Adapter final : public base::RefCounted<Adapter> {
 
   IDMLDevice* dml_device() const { return dml_device_.Get(); }
 
-  ID3D12CommandQueue* command_queue() const { return command_queue_.Get(); }
+  CommandQueue* command_queue() const { return command_queue_.get(); }
 
  private:
   friend class base::RefCounted<Adapter>;
-  explicit Adapter(ComPtr<IDXGIAdapter> dxgi_adapter,
-                   ComPtr<ID3D12Device> d3d12_device,
-                   ComPtr<IDMLDevice> dml_device,
-                   ComPtr<ID3D12CommandQueue> command_queue);
+  Adapter(ComPtr<IDXGIAdapter> dxgi_adapter,
+          ComPtr<ID3D12Device> d3d12_device,
+          ComPtr<IDMLDevice> dml_device,
+          std::unique_ptr<CommandQueue> command_queue);
   ~Adapter();
 
   ComPtr<IDXGIAdapter> dxgi_adapter_;
   ComPtr<ID3D12Device> d3d12_device_;
   ComPtr<IDMLDevice> dml_device_;
-  ComPtr<ID3D12CommandQueue> command_queue_;
+  std::unique_ptr<CommandQueue> command_queue_;
 };
 
 }  // namespace webnn::dml

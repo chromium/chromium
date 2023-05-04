@@ -39,15 +39,10 @@ scoped_refptr<Adapter> Adapter::Create(ComPtr<IDXGIAdapter> dxgi_adapter) {
   };
 
   // Create command queue.
-  ComPtr<ID3D12CommandQueue> command_queue;
-  D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
-  command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-  command_queue_desc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-  hr = d3d12_device->CreateCommandQueue(&command_queue_desc,
-                                        IID_PPV_ARGS(&command_queue));
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "Failed to create command queue : "
-                << logging::SystemErrorCodeToString(hr);
+  std::unique_ptr<CommandQueue> command_queue =
+      CommandQueue::Create(d3d12_device.Get());
+  if (!command_queue) {
+    DLOG(ERROR) << "Failed to create command queue.";
     return nullptr;
   }
 
@@ -59,7 +54,7 @@ scoped_refptr<Adapter> Adapter::Create(ComPtr<IDXGIAdapter> dxgi_adapter) {
 Adapter::Adapter(ComPtr<IDXGIAdapter> dxgi_adapter,
                  ComPtr<ID3D12Device> d3d12_device,
                  ComPtr<IDMLDevice> dml_device,
-                 ComPtr<ID3D12CommandQueue> command_queue)
+                 std::unique_ptr<CommandQueue> command_queue)
     : dxgi_adapter_(std::move(dxgi_adapter)),
       d3d12_device_(std::move(d3d12_device)),
       dml_device_(std::move(dml_device)),

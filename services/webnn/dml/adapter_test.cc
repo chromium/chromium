@@ -2,40 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include <d3d11.h>
 #include <wrl.h>
 #include <memory>
 
-#include "base/command_line.h"
 #include "services/webnn/dml/adapter.h"
+#include "services/webnn/dml/test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_angle_util_win.h"
-#include "ui/gl/init/gl_factory.h"
 
 namespace webnn::dml {
 
-using Microsoft::WRL::ComPtr;
-
-class WebNNAdapterTest : public testing::Test {
- public:
-  void SetUp() override {
-    display_ = gl::init::InitializeGLNoExtensionsOneOff(
-        /*init_bindings=*/true,
-        /*gpu_preference=*/gl::GpuPreference::kDefault);
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kUseGpuInTests)) {
-      GTEST_SKIP() << "Skipping all tests for this fixture if GPU hardware "
-                      "hasn't been used in tests.";
-    }
-  }
-
-  void TearDown() override {
-    gl::init::ShutdownGL(display_, /*due_to_fallback=*/false);
-  }
-
- protected:
-  raw_ptr<gl::GLDisplay> display_ = nullptr;
-};
+class WebNNAdapterTest : public TestBase {};
 
 TEST_F(WebNNAdapterTest, GetDXGIAdapterFromAngle) {
   ComPtr<ID3D11Device> d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
