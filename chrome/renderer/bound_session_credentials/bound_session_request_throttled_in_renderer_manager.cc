@@ -21,7 +21,7 @@ BoundSessionRequestThrottledInRendererManager::Create(
         pending_remote) {
   CHECK(pending_remote.is_valid());
   scoped_refptr<BoundSessionRequestThrottledInRendererManager> helper =
-      new BoundSessionRequestThrottledInRendererManager();
+      base::WrapRefCounted(new BoundSessionRequestThrottledInRendererManager());
   content::ChildThread::Get()->GetIOTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&BoundSessionRequestThrottledInRendererManager::Initialize,
