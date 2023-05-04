@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/bookmarks/bookmark_ios_unit_test_support.h"
@@ -77,7 +78,9 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
             GetApplicationContext()->GetSystemIdentityManager());
     FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
     system_identity_manager->AddIdentity(fake_identity);
-    authentication_service_->SignIn(fake_identity);
+    authentication_service_->SignIn(
+        fake_identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
     authentication_service_->GrantSyncConsent(fake_identity);
   }
 
