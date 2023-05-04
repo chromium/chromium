@@ -121,6 +121,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                                   SetWallpaperCallback callback) = 0;
 
+  // Used to select, load, and show the OOBE wallpaper
+  virtual void ShowOobeWallpaper() = 0;
+
   // Sets the Google Photos photo with id |params.id| as the active wallpaper.
   virtual void SetGooglePhotosWallpaper(
       const GooglePhotosWallpaperParams& params,

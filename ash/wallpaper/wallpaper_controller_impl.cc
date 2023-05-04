@@ -115,6 +115,9 @@ constexpr base::TimeDelta kWallpaperLoadAnimationDuration =
 // The color of the wallpaper if no other wallpaper images are available.
 constexpr SkColor kDefaultWallpaperColor = SK_ColorGRAY;
 
+// The color of the Oobe wallpaper if no other wallpaper images are available.
+constexpr SkColor kOobeWallpaperColor = SK_ColorWHITE;
+
 // The paths of wallpaper directories.
 base::FilePath& GlobalUserDataDir() {
   static base::NoDestructor<base::FilePath> dir_user_data;
@@ -688,15 +691,18 @@ void WallpaperControllerImpl::UpdateWallpaperBlurForLockState(bool blur) {
   }
 
   bool changed = is_wallpaper_blurred_for_lock_state_ != blur;
+  float blur_sigma =
+      blur ? wallpaper_constants::kLockLoginBlur : wallpaper_constants::kClear;
+  if (IsOobeWallpaper()) {
+    blur_sigma = wallpaper_constants::kOobeBlur;
+  }
   // is_wallpaper_blurrred_for_lock_state_ may already be updated in
   // InstallDesktopController. Always try to update, then invoke observer
   // if something changed.
   for (auto* root_window_controller : Shell::GetAllRootWindowControllers()) {
     changed |=
         root_window_controller->wallpaper_widget_controller()->SetWallpaperBlur(
-            blur ? wallpaper_constants::kLockLoginBlur
-                 : wallpaper_constants::kClear,
-            kLockAnimationBlurAnimationDuration);
+            blur_sigma, kLockAnimationBlurAnimationDuration);
   }
 
   is_wallpaper_blurred_for_lock_state_ = blur;
@@ -727,7 +733,6 @@ void WallpaperControllerImpl::RestoreWallpaperBlurForLockState(float blur) {
 
 bool WallpaperControllerImpl::ShouldApplyShield() const {
   bool needs_shield = false;
-
   if (Shell::Get()->overview_controller()->InOverviewSession()) {
     needs_shield = !chromeos::features::IsJellyrollEnabled();
   } else if (Shell::Get()->session_controller()->IsUserSessionBlocked()) {
@@ -1312,6 +1317,12 @@ void WallpaperControllerImpl::ShowUserWallpaper(
   }
 
   if (info.type == WallpaperType::kDefault) {
+    session_manager::SessionState session_state =
+        Shell::Get()->session_controller()->GetSessionState();
+    if (session_state == session_manager::SessionState::OOBE) {
+      ShowOobeWallpaper();
+      return;
+    }
     wallpaper_cache_map_.erase(account_id);
     SetDefaultWallpaperImpl(user_type, /*show_wallpaper=*/true,
                             base::DoNothing());
@@ -1363,6 +1374,13 @@ void WallpaperControllerImpl::ShowSigninWallpaper() {
   current_user_ = EmptyAccountId();
   if (ShouldSetDevicePolicyWallpaper()) {
     SetDevicePolicyWallpaper();
+    return;
+  }
+
+  session_manager::SessionState session_state =
+      Shell::Get()->session_controller()->GetSessionState();
+  if (session_state == session_manager::SessionState::OOBE) {
+    ShowOobeWallpaper();
     return;
   }
 
@@ -1651,6 +1669,11 @@ void WallpaperControllerImpl::OnSessionStateChanged(
   if (IsDevicePolicyWallpaper() && !ShouldSetDevicePolicyWallpaper())
     ReloadWallpaper(/*clear_cache=*/false);
 
+  // Replace the oobe wallpaper with a user wallpaper if necessary.
+  if (IsOobeWallpaper()) {
+    ReloadWallpaper(/*clear_cache=*/false);
+  }
+
   CalculateWallpaperColors();
 
   is_session_active_ = state == session_manager::SessionState::ACTIVE;
@@ -1703,6 +1726,7 @@ void WallpaperControllerImpl::OnCheckpointChanged(
     case WallpaperType::kOneShot:
     case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
+    case WallpaperType::kOobe:
     case WallpaperType::kCount:
       return;
   }
@@ -1834,9 +1858,13 @@ void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
     const int container_id = GetWallpaperContainerId();
     wallpaper_widget_controller->Reparent(container_id);
 
-    blur = is_wallpaper_blurred_for_lock_state
-               ? wallpaper_constants::kLockLoginBlur
-               : wallpaper_constants::kClear;
+    if (IsOobeWallpaper()) {
+      blur = wallpaper_constants::kOobeBlur;
+    } else {
+      blur = is_wallpaper_blurred_for_lock_state
+                 ? wallpaper_constants::kLockLoginBlur
+                 : wallpaper_constants::kClear;
+    }
   }
 
   wallpaper_widget_controller->wallpaper_view()->ClearCachedImage();
@@ -2097,6 +2125,50 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
 
   wallpaper_cache_map_[params.account_id] =
       CustomWallpaperElement(base::FilePath(), image);
+}
+
+void WallpaperControllerImpl::ShowOobeWallpaper() {
+  if (ash::features::IsOobeSimonEnabled()) {
+    const base::FilePath simon_file_path = base::FilePath(FILE_PATH_LITERAL(
+        "/usr/share/chromeos-assets/simon/simon_wallpaper.jpg"));
+    if (!cached_oobe_wallpaper_.image.isNull() &&
+        cached_oobe_wallpaper_.file_path == simon_file_path) {
+      OnOobeWallpaperDecoded(simon_file_path, cached_oobe_wallpaper_.image);
+    } else {
+      ReadAndDecodeWallpaper(
+          base::BindOnce(&WallpaperControllerImpl::OnOobeWallpaperDecoded,
+                         weak_factory_.GetWeakPtr(), simon_file_path),
+          simon_file_path);
+    }
+  } else {
+    ShowOneShotWallpaper(CreateSolidColorWallpaper(kOobeWallpaperColor));
+  }
+}
+
+void WallpaperControllerImpl::OnOobeWallpaperDecoded(
+    const base::FilePath& path,
+    const gfx::ImageSkia& image) {
+  if (image.isNull()) {
+    LOG(ERROR) << "Failed to decode OOBE wallpaper.";
+    cached_oobe_wallpaper_.image =
+        CreateSolidColorWallpaper(kOobeWallpaperColor);
+    cached_oobe_wallpaper_.file_path.clear();
+
+    ShowOneShotWallpaper(cached_oobe_wallpaper_.image);
+  } else {
+    cached_oobe_wallpaper_.image = image;
+    cached_oobe_wallpaper_.file_path = path;
+
+    WallpaperInfo info = {path.value(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+                          WallpaperType::kOobe, base::Time::Now()};
+    ShowWallpaperImage(image, info,
+                       /*preview_mode=*/false, /*is_override=*/false);
+  }
+}
+
+bool WallpaperControllerImpl::IsOobeWallpaper() const {
+  return current_wallpaper_ &&
+         current_wallpaper_->wallpaper_info().type == WallpaperType::kOobe;
 }
 
 void WallpaperControllerImpl::OnGooglePhotosPhotoFetched(
@@ -2764,6 +2836,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
     case WallpaperType::kThirdParty:
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
+    case WallpaperType::kOobe:
     case WallpaperType::kCount:
       DCHECK(false) << "Synced in an unsyncable wallpaper type";
       break;
@@ -3045,6 +3118,7 @@ void WallpaperControllerImpl::OnUpdateWallpaperTimerExpired() {
     case WallpaperType::kThirdParty:
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
+    case WallpaperType::kOobe:
     case WallpaperType::kCount:
       LOG(ERROR) << "Timer to update wallpaper expired, but the current "
                  << "wallpaper type doesn't support/require updating.";

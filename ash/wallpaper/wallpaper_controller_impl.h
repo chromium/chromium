@@ -254,6 +254,8 @@ class ASH_EXPORT WallpaperControllerImpl
                                  const gfx::ImageSkia& image) override;
   void SetOnlineWallpaper(const OnlineWallpaperParams& params,
                           SetWallpaperCallback callback) override;
+  void ShowOobeWallpaper() override;
+  bool IsOobeWallpaper() const;
   void SetGooglePhotosWallpaper(const GooglePhotosWallpaperParams& params,
                                 SetWallpaperCallback callback) override;
   void SetGooglePhotosDailyRefreshAlbumId(const AccountId& account_id,
@@ -489,6 +491,11 @@ class ASH_EXPORT WallpaperControllerImpl
                                 bool save_file,
                                 SetWallpaperCallback callback,
                                 const gfx::ImageSkia& image);
+
+  // Used as the callback as soon as the OOBE wallpaper is loaded and decoded
+  // from file system.
+  void OnOobeWallpaperDecoded(const base::FilePath& path,
+                              const gfx::ImageSkia& image);
 
   // Used as the callback of fetching the data for a Google Photos photo from
   // the unique id.
@@ -823,6 +830,9 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Cached default wallpaper.
   CachedDefaultWallpaper cached_default_wallpaper_;
+
+  // Cached OOBE wallpaper.
+  CachedDefaultWallpaper cached_oobe_wallpaper_;
 
   // The paths of the customized default wallpapers, if they exist.
   base::FilePath customized_default_small_path_;

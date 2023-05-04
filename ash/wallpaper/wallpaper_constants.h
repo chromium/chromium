@@ -17,6 +17,8 @@ constexpr float kClear = 0.f;
 constexpr float kOverviewBlur = ColorProvider::kBackgroundBlurSigma;
 // Blur sigma in lock/login screen.
 constexpr float kLockLoginBlur = 30.0f;
+// Blur sigma used in oobe.
+constexpr float kOobeBlur = ColorProvider::kBackgroundBlurSigma;
 
 // The ID of the time of day wallpaper collection served by backdrop server.
 constexpr char kTimeOfDayWallpaperCollectionId[] =

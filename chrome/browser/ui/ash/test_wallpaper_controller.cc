@@ -107,6 +107,10 @@ void TestWallpaperController::SetOnlineWallpaper(
   std::move(callback).Run(/*success=*/true);
 }
 
+void TestWallpaperController::ShowOobeWallpaper() {
+  ++set_oobe_wallpaper_count_;
+}
+
 void TestWallpaperController::SetGooglePhotosWallpaper(
     const ash::GooglePhotosWallpaperParams& params,
     SetWallpaperCallback callback) {

@@ -439,6 +439,7 @@ void PersonalizationAppWallpaperProviderImpl::OnWallpaperResized() {
     case ash::WallpaperType::kDefault:
     case ash::WallpaperType::kDevice:
     case ash::WallpaperType::kOneShot:
+    case ash::WallpaperType::kOobe:
     case ash::WallpaperType::kPolicy:
     case ash::WallpaperType::kThirdParty:
       NotifyWallpaperChanged(

@@ -28,6 +28,7 @@ bool WallpaperBlurManager::IsBlurAllowedForLockState(
     case WallpaperType::kThirdParty:
     case WallpaperType::kDailyGooglePhotos:
     case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kOobe:
     // May receive kCount if wallpaper not loaded yet.
     case WallpaperType::kCount:
       return true;

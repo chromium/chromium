@@ -245,14 +245,10 @@ void WallpaperControllerClientImpl::SetInitialWallpaper() {
     return;
   }
 
-  // Show a white wallpaper during OOBE.
+  // Show a wallpaper during OOBE.
   if (SessionManager::Get()->session_state() ==
       session_manager::SessionState::OOBE) {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(1, 1);
-    bitmap.eraseColor(SK_ColorWHITE);
-    wallpaper_controller_->ShowOneShotWallpaper(
-        gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+    wallpaper_controller_->ShowOobeWallpaper();
     return;
   }
 

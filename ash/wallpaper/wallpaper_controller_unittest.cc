@@ -3355,6 +3355,54 @@ TEST_F(WallpaperControllerTest, ShowOneShotWallpaper) {
   EXPECT_EQ(WallpaperType::kCustomized, controller_->GetWallpaperType());
 }
 
+TEST_F(WallpaperControllerTest, ShowOobeWallpaper) {
+  SetBypassDecode();
+
+  controller_->ShowDefaultWallpaperForTesting();
+  RunAllTasksUntilIdle();
+
+  // Verify the OOBE wallpaper is shown during OOBE.
+  SetSessionState(SessionState::OOBE);
+  controller_->ReloadWallpaperForTesting(/*clear_cache=*/false);
+  RunAllTasksUntilIdle();
+  if (ash::features::IsOobeSimonEnabled()) {
+    EXPECT_TRUE(controller_->IsOobeWallpaper());
+  } else {
+    EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
+    EXPECT_EQ(GetWallpaperColor(), SK_ColorWHITE);
+  }
+
+  SetSessionState(SessionState::OOBE);
+  controller_->ShowSigninWallpaper();
+  RunAllTasksUntilIdle();
+  if (ash::features::IsOobeSimonEnabled()) {
+    EXPECT_TRUE(controller_->IsOobeWallpaper());
+  } else {
+    EXPECT_EQ(WallpaperType::kOneShot, controller_->GetWallpaperType());
+    EXPECT_EQ(GetWallpaperColor(), SK_ColorWHITE);
+  }
+
+  // Verify the OOBE wallpaper is replaced when session state is no
+  // longer OOBE.
+  SetSessionState(SessionState::LOGGED_IN_NOT_ACTIVE);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  // Verify the OOBE wallpaper never shows up again when session
+  // state changes.
+  SetSessionState(SessionState::ACTIVE);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  SetSessionState(SessionState::LOCKED);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+
+  SetSessionState(SessionState::LOGIN_SECONDARY);
+  RunAllTasksUntilIdle();
+  EXPECT_FALSE(controller_->IsOobeWallpaper());
+}
+
 TEST_F(WallpaperControllerTest, OnFirstWallpaperShown) {
   TestWallpaperControllerObserver observer(controller_);
   EXPECT_EQ(0, GetWallpaperCount());

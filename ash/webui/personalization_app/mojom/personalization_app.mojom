@@ -48,6 +48,7 @@ enum WallpaperType {
                            // album id.
   kOnceGooglePhotos = 11,  // WallpaperInfo.location contains the Google Photos
                            // photo id.
+  kOobe = 12,  // Wallpaper shown during OOBE if not overridden.
 };
 
 // The image type specific to online wallpapers. This should be kept in sync

@@ -83,6 +83,7 @@ bool WallpaperInfo::MatchesSelection(const WallpaperInfo& other) const {
     case WallpaperType::kThirdParty:
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
+    case WallpaperType::kOobe:
     case WallpaperType::kCount:
       return type == other.type && layout == other.layout &&
              location == other.location;
@@ -105,6 +106,7 @@ bool WallpaperInfo::MatchesAsset(const WallpaperInfo& other) const {
     case WallpaperType::kThirdParty:
     case WallpaperType::kDevice:
     case WallpaperType::kOneShot:
+    case WallpaperType::kOobe:
     case WallpaperType::kCount:
       return true;
   }
