@@ -325,7 +325,6 @@ ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
 
 // Produces an inspector issue and sends it to the client with
 // |ReportBrowserInitiatedIssue|.
-// This only support TrustedWebActivityIssue for now.
 void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info);

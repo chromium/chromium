@@ -18,7 +18,6 @@ enum InspectorIssueCode {
   kBlockedByResponseIssue,
   kContentSecurityPolicyIssue,
   kSharedArrayBufferIssue,
-  kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
   kFederatedAuthRequestIssue,
@@ -159,21 +158,6 @@ struct SharedArrayBufferIssueDetails {
   SharedArrayBufferIssueType type;
 };
 
-enum TwaQualityEnforcementViolationType {
-  kHttpError,
-  kUnavailableOffline,
-  kDigitalAssetLinks,
-};
-
-struct TrustedWebActivityIssueDetails {
-  url.mojom.Url url;
-  TwaQualityEnforcementViolationType violation_type;
-  // 0 is not a valid code and is used to indicate absence.
-  int32 http_error_code = 0;
-  string? package_name;
-  string? signature;
-};
-
 struct LowTextContrastIssue {
   int32 violating_node_id;
   string violating_node_selector;
@@ -269,7 +253,6 @@ struct InspectorIssueDetails {
   BlockedByResponseIssueDetails? blocked_by_response_issue_details;
   ContentSecurityPolicyIssueDetails? csp_issue_details;
   SharedArrayBufferIssueDetails? sab_issue_details;
-  TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
   FederatedAuthRequestIssueDetails? federated_auth_request_details;

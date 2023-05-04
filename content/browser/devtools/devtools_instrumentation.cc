@@ -133,48 +133,6 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
   return issue;
 }
 
-std::unique_ptr<protocol::Audits::InspectorIssue> BuildTWAQualityIssue(
-    const blink::mojom::TrustedWebActivityIssueDetailsPtr& issue_details) {
-  protocol::String type_string;
-  switch (issue_details->violation_type) {
-    case blink::mojom::TwaQualityEnforcementViolationType::kHttpError:
-      type_string =
-          protocol::Audits::TwaQualityEnforcementViolationTypeEnum::KHttpError;
-      break;
-    case blink::mojom::TwaQualityEnforcementViolationType::kUnavailableOffline:
-      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
-          KUnavailableOffline;
-      break;
-    case blink::mojom::TwaQualityEnforcementViolationType::kDigitalAssetLinks:
-      type_string = protocol::Audits::TwaQualityEnforcementViolationTypeEnum::
-          KDigitalAssetLinks;
-      break;
-  }
-
-  auto twa_details = protocol::Audits::TrustedWebActivityIssueDetails::Create()
-                         .SetUrl(issue_details->url.spec())
-                         .SetViolationType(type_string)
-                         .Build();
-  if (issue_details->http_error_code)
-    twa_details->SetHttpStatusCode(issue_details->http_error_code);
-  if (issue_details->package_name)
-    twa_details->SetPackageName(*issue_details->package_name);
-  if (issue_details->signature)
-    twa_details->SetSignature(*issue_details->signature);
-
-  auto protocol_issue_details =
-      protocol::Audits::InspectorIssueDetails::Create()
-          .SetTwaQualityEnforcementDetails(std::move(twa_details))
-          .Build();
-  auto issue =
-      protocol::Audits::InspectorIssue::Create()
-          .SetCode(
-              protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue)
-          .SetDetails(std::move(protocol_issue_details))
-          .Build();
-  return issue;
-}
-
 std::string FederatedAuthRequestResultToProtocol(
     blink::mojom::FederatedAuthRequestResult result) {
   using blink::mojom::FederatedAuthRequestResult;
@@ -1531,10 +1489,7 @@ void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info) {
   std::unique_ptr<protocol::Audits::InspectorIssue> issue;
-  if (info->code ==
-      blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue) {
-    issue = BuildTWAQualityIssue(info->details->twa_issue_details);
-  } else if (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
+  if (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
     issue = BuildHeavyAdIssue(info->details->heavy_ad_issue_details);
   } else if (info->code ==
              blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
