@@ -4781,8 +4781,6 @@ crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface
 # Sheriff 2021-03-08
 crbug.com/1092462 [ Linux ] http/tests/media/media-source/mediasource-duration.html [ Failure Pass ]
 
-crbug.com/1185051 fast/canvas/OffscreenCanvas-Bitmaprenderer-toBlob-worker.html [ Failure Pass ]
-
 # Expect failure for unimplemented canvas color object input
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.html [ Failure ]
 crbug.com/1187575 external/wpt/html/canvas/element/fill-and-stroke-styles/2d.fillStyle.colorObject.transparency.html [ Failure ]

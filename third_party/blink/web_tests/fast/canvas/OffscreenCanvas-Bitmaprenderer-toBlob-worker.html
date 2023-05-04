@@ -30,7 +30,7 @@
   htmlCanvasCtx.fillStyle = "green";
   htmlCanvasCtx.fillRect(15, 30, 45, 30);
 
-  // Fill canvasToBlobWorker and canvasTrasnferControlWorker
+  // Fill canvasToBlobWorker and canvasTransferControlWorker
   var blob = new Blob([document.getElementById("worker").textContent]);
   var worker = new Worker(URL.createObjectURL(blob));
 
@@ -38,11 +38,11 @@
 
   worker.addEventListener('message', ev => {
     pngImageWorker.src = URL.createObjectURL(ev.data);
-    if (window.testRunner) {
-      requestAnimationFrame(() => {
+    pngImageWorker.onload = () => {
+      if (window.testRunner) {
         testRunner.notifyDone();
-      });
-    }
+      }
+    };
   });
 
   createImageBitmap(htmlCanvas).then(function(bmap){
