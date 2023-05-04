@@ -66571,9 +66571,12 @@ from previous Chrome versions.
 
 <enum name="LoginSuccessReason">
   <int value="0" label="OFFLINE_AND_ONLINE">
-    Login success offline and online
+    Login success offline and online (e.g. reauth)
   </int>
   <int value="1" label="OFFLINE_ONLY">Login success offline only</int>
+  <int value="2" label="ONLINE_ONLY">
+    Login success online only (e.g. new/ephemeral user)
+  </int>
 </enum>
 
 <enum name="LoginUserType">

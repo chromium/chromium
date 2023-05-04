@@ -64,7 +64,14 @@ void LoginPerformer::OnAuthSuccess(const UserContext& user_context) {
   const bool is_ephemeral =
       user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
           user_context.GetAccountId());
-  auth_events_recorder_->OnLoginSuccess(OFFLINE_AND_ONLINE,
+  SuccessReason reason = SuccessReason::OFFLINE_AND_ONLINE;
+  if (!is_known_user || is_ephemeral) {
+    reason = SuccessReason::ONLINE_ONLY;
+  } else if (is_login_offline) {
+    reason = SuccessReason::OFFLINE_ONLY;
+  }
+
+  auth_events_recorder_->OnLoginSuccess(reason,
                                         /*is_new_user=*/!is_known_user,
                                         is_login_offline, is_ephemeral);
   VLOG(1) << "LoginSuccess hash: " << user_context.GetUserIDHash();

@@ -98,6 +98,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) AuthFailure {
 enum SuccessReason {
   OFFLINE_AND_ONLINE = 0,
   OFFLINE_ONLY = 1,
+  ONLINE_ONLY = 2,
   NUM_SUCCESS_REASONS,  // This has to be the last item.
 };
 
