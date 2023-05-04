@@ -566,6 +566,12 @@ void ReturnToAppPanel::ChildPreferredSizeChanged(View* child) {
 }
 
 void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
+  // Every exit path of this function needs to call `PreferredSizeChanged()`
+  // because these views are added asynchronously in LaCrOS, after the bubble
+  // widget has allocated size for the bubble. See b/273814401.
+  base::ScopedClosureRunner preferred_size_changed_runner(base::BindOnce(
+      &ReturnToAppPanel::PreferredSizeChanged, base::Unretained(this)));
+
   if (apps.size() < 1) {
     SetVisible(false);
     return;
@@ -580,7 +586,6 @@ void ReturnToAppPanel::AddButtonsToPanel(MediaApps apps) {
         GetMediaAppDisplayText(app), app->app_type);
     app_button->expand_indicator()->SetVisible(false);
     container_view_->AddChildView(std::move(app_button));
-
     return;
   }
 

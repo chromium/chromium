@@ -30,14 +30,14 @@ BubbleView::BubbleView(const InitParams& init_params,
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+}
 
+void BubbleView::AddedToWidget() {
   // `ReturnToAppPanel` resides in the top-level layout and isn't part of the
   // scrollable area (that can't be added until the `BubbleView` officially has
   // a parent widget).
   AddChildView(std::make_unique<ReturnToAppPanel>());
-}
 
-void BubbleView::AddedToWidget() {
   // Create the `views::ScrollView` to house the effects sections. This has to
   // be done here because `BubbleDialogDelegate::GetBubbleBounds` requires a
   // parent widget, which isn't officially assigned until after the call to
