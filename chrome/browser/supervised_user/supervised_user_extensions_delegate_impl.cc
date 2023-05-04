@@ -111,7 +111,8 @@ void SupervisedUserExtensionsDelegateImpl::RequestToEnableExtensionOrShowError(
     auto icon_callback = base::BindOnce(
         &SupervisedUserExtensionsDelegateImpl::OnExtensionDataLoaded,
         base::Unretained(this), std::cref(extension), browser_context,
-        web_contents);
+        web_contents ? absl::make_optional(web_contents->GetWeakPtr())
+                     : absl::nullopt);
     icon_loader_ = std::make_unique<ExtensionIconLoader>();
     icon_loader_->Load(extension, browser_context, std::move(icon_callback));
     return;
@@ -171,9 +172,24 @@ void SupervisedUserExtensionsDelegateImpl::
 void SupervisedUserExtensionsDelegateImpl::OnExtensionDataLoaded(
     const extensions::Extension& extension,
     content::BrowserContext* context,
-    content::WebContents* contents,
+    absl::optional<base::WeakPtr<content::WebContents>> contents,
     const gfx::ImageSkia& icon) {
-  ShowParentPermissionDialogForExtension(extension, context, contents, icon);
+  // Treat the request as canceled if web contents that the request originated
+  // in was destroyed (the web contents was originally passed, but weak ptr is
+  // not valid anymore).
+  content::WebContents* web_contents = nullptr;
+  if (contents) {
+    base::WeakPtr<content::WebContents> contents_weak_ptr = contents.value();
+    if (!contents_weak_ptr) {
+      std::move(done_callback_)
+          .Run(extensions::SupervisedUserExtensionsDelegate::
+                   ExtensionApprovalResult::kCanceled);
+      return;
+    }
+    web_contents = contents_weak_ptr.get();
+  }
+  ShowParentPermissionDialogForExtension(extension, context, web_contents,
+                                         icon);
 }
 
 }  // namespace extensions

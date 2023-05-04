@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -60,6 +62,7 @@ class SupervisedUserExtensionsDelegateImpl
       content::BrowserContext* context,
       content::WebContents* contents,
       const gfx::ImageSkia& icon);
+
   // Shows a dialog indicating that |extension| has been blocked and call
   // |done_callback| when it completes. Depending on the blocked_action type,
   // the UI of the dialog may differ.
@@ -68,12 +71,18 @@ class SupervisedUserExtensionsDelegateImpl
       content::WebContents* contents,
       ExtensionInstalledBlockedByParentDialogAction blocked_action);
 
-  void OnExtensionDataLoaded(const extensions::Extension& extension,
-                             content::BrowserContext* context,
-                             content::WebContents* contents,
-                             const gfx::ImageSkia& icon);
+  // This method is called after all async data are fetched.
+  // Since `WebContents` that initiated the request could be destroyed during
+  // the async fetch the method cancels the request if `contents` was specified,
+  // but is not valid anymore. `contents` is an optional argument because the
+  // request can be made from an entry point not associate with `WebContents`.
+  void OnExtensionDataLoaded(
+      const extensions::Extension& extension,
+      content::BrowserContext* context,
+      absl::optional<base::WeakPtr<content::WebContents>> contents,
+      const gfx::ImageSkia& icon);
 
-  // The dialog pointer is only destroyed when a new dialog is created or the
+  // The V1 dialog pointer is only destroyed when a new dialog is created or the
   // SupervisedUserExtensionsDelegate is destroyed. Therefore there can only be
   // one dialog opened at a time and the last dialog object can have a pretty
   // long lifetime.
