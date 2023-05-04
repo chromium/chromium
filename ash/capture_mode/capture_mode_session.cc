@@ -1075,19 +1075,12 @@ void CaptureModeSession::OnKeyEvent(ui::KeyEvent* event) {
     }
 
     case ui::VKEY_UP:
-    case ui::VKEY_DOWN: {
-      event->StopPropagation();
-      event->SetHandled();
-      UpdateRegionVertically(/*up=*/key_code == ui::VKEY_UP, event->flags());
-      return;
-    }
-
+    case ui::VKEY_DOWN:
     case ui::VKEY_LEFT:
     case ui::VKEY_RIGHT: {
       event->StopPropagation();
       event->SetHandled();
-      UpdateRegionHorizontally(/*left=*/key_code == ui::VKEY_LEFT,
-                               event->flags());
+      UpdateRegionForArrowKeys(key_code, event->flags());
       return;
     }
 
@@ -2671,82 +2664,80 @@ void CaptureModeSession::SelectDefaultRegion() {
                       /*by_user=*/true);
 }
 
-void CaptureModeSession::UpdateRegionHorizontally(bool left, int event_flags) {
+void CaptureModeSession::UpdateRegionForArrowKeys(ui::KeyboardCode key_code,
+                                                  int event_flags) {
   const FineTunePosition focused_fine_tune_position =
       focus_cycler_->GetFocusedFineTunePosition();
-  if (focused_fine_tune_position == FineTunePosition::kNone ||
-      focused_fine_tune_position == FineTunePosition::kTopCenter ||
-      focused_fine_tune_position == FineTunePosition::kBottomCenter) {
+  if (focused_fine_tune_position == FineTunePosition::kNone) {
     return;
   }
 
+  switch (key_code) {
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+      if (focused_fine_tune_position == FineTunePosition::kTopCenter ||
+          focused_fine_tune_position == FineTunePosition::kBottomCenter) {
+        return;
+      }
+      break;
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+      if (focused_fine_tune_position == FineTunePosition::kLeftCenter ||
+          focused_fine_tune_position == FineTunePosition::kRightCenter) {
+        return;
+      }
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
+  const bool horizontal =
+      key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT;
   const int change = GetArrowKeyPressChange(event_flags);
   gfx::Rect new_capture_region = controller_->user_capture_region();
 
   if (focused_fine_tune_position == FineTunePosition::kCenter) {
-    new_capture_region.Offset(left ? -change : change, 0);
+    // Shift the whole capture region if we are focused on it.
+    if (horizontal) {
+      new_capture_region.Offset(key_code == ui::VKEY_LEFT ? -change : change,
+                                0);
+    } else {
+      new_capture_region.Offset(0, key_code == ui::VKEY_UP ? -change : change);
+    }
     new_capture_region.AdjustToFit(current_root_->bounds());
   } else {
     const gfx::Point location =
         capture_mode_util::GetLocationForFineTunePosition(
             new_capture_region, focused_fine_tune_position);
-    // If an affordance circle on the left side of the capture region is
-    // focused, left presses will enlarge the existing region and right presses
-    // will shrink the existing region. If it is on the right side, right
-    // presses will enlarge and left presses will shrink.
-    const bool affordance_on_left = location.x() == new_capture_region.x();
-    const bool shrink = affordance_on_left ^ left;
 
-    if (shrink && new_capture_region.width() < change)
-      return;
+    // If an affordance circle on the left/top side of the capture region is
+    // focused, left/up presses will enlarge the existing region and right/down
+    // presses will shrink the existing region. If it is on the right/bottom
+    // side, right/down presses will enlarge and left/up presses will shrink.
+    // Does nothing if shrinking will cause the new capture region to become
+    // empty.
+    gfx::Insets insets;
+    if (horizontal) {
+      const bool affordance_on_left = location.x() == new_capture_region.x();
+      const bool shrink = affordance_on_left ^ (key_code == ui::VKEY_LEFT);
+      if (shrink && new_capture_region.width() < change) {
+        return;
+      }
+      const int inset = shrink ? change : -change;
+      insets = gfx::Insets::TLBR(0, affordance_on_left ? inset : 0, 0,
+                                 affordance_on_left ? 0 : inset);
+    } else {
+      const bool affordance_on_top = location.y() == new_capture_region.y();
+      const bool shrink = affordance_on_top ^ (key_code == ui::VKEY_UP);
+      if (shrink && new_capture_region.height() < change) {
+        return;
+      }
+      const int inset = shrink ? change : -change;
+      insets = gfx::Insets::TLBR(affordance_on_top ? inset : 0, 0,
+                                 affordance_on_top ? 0 : inset, 0);
+    }
 
-    const int inset = shrink ? change : -change;
-    auto insets = gfx::Insets::TLBR(0, affordance_on_left ? inset : 0, 0,
-                                    affordance_on_left ? 0 : inset);
     new_capture_region.Inset(insets);
-    ClipRectToFit(&new_capture_region, current_root_->bounds());
-  }
-
-  UpdateCaptureRegion(new_capture_region, /*is_resizing=*/false,
-                      /*by_user=*/true);
-}
-
-void CaptureModeSession::UpdateRegionVertically(bool up, int event_flags) {
-  const FineTunePosition focused_fine_tune_position =
-      focus_cycler_->GetFocusedFineTunePosition();
-  if (focused_fine_tune_position == FineTunePosition::kNone ||
-      focused_fine_tune_position == FineTunePosition::kLeftCenter ||
-      focused_fine_tune_position == FineTunePosition::kRightCenter) {
-    return;
-  }
-
-  const int change = GetArrowKeyPressChange(event_flags);
-  gfx::Rect new_capture_region = controller_->user_capture_region();
-
-  // TODO(sammiequon): The below is similar to UpdateRegionHorizontally() except
-  // we are acting on the y-axis. Investigate if we can remove the duplication.
-  if (focused_fine_tune_position == FineTunePosition::kCenter) {
-    new_capture_region.Offset(0, up ? -change : change);
-    new_capture_region.AdjustToFit(current_root_->bounds());
-  } else {
-    const gfx::Point location =
-        capture_mode_util::GetLocationForFineTunePosition(
-            new_capture_region, focused_fine_tune_position);
-    // If an affordance circle on the top side of the capture region is
-    // focused, up presses will enlarge the existing region and down presses
-    // will shrink the existing region. If it is on the bottom side, down
-    // presses will enlarge and up presses will shrink.
-    const bool affordance_on_top = location.y() == new_capture_region.y();
-    const bool shrink = affordance_on_top ^ up;
-
-    if (shrink && new_capture_region.height() < change)
-      return;
-
-    const int inset = shrink ? change : -change;
-    auto insets = gfx::Insets::TLBR(affordance_on_top ? inset : 0, 0,
-                                    affordance_on_top ? 0 : inset, 0);
-    new_capture_region.Inset(insets);
-
     ClipRectToFit(&new_capture_region, current_root_->bounds());
   }
 
