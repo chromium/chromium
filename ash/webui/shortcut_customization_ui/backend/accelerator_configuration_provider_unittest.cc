@@ -21,6 +21,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom-forward.h"
@@ -613,12 +614,24 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   fake_keyboard.sys_path = base::FilePath("path1");
   fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, kKbdTopRowLayout2Tag);
 
+  // Disable TopRowKeysAreFKeys.
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kSendFunctionKeys, false);
+    EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+  } else {
+    auto settings = Shell::Get()
+                        ->input_device_settings_controller()
+                        ->GetKeyboardSettings(fake_keyboard.id)
+                        ->Clone();
+    settings->top_row_are_fkeys = false;
+    Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+        fake_keyboard.id, std::move(settings));
+  }
+
   FakeAcceleratorsUpdatedMojoObserver mojo_observer;
   SetUpObserver(&mojo_observer);
   EXPECT_EQ(0, mojo_observer.num_times_notified());
-
-  // Top row keys are not function keys by default.
-  EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
 
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
@@ -645,18 +658,28 @@ TEST_F(AcceleratorConfigurationProviderTest, TopRowKeyAcceleratorRemapped) {
   Shell::Get()->ash_accelerator_configuration()->Initialize(test_data);
   base::RunLoop().RunUntilIdle();
 
-  // Notified once after instantiating the accelerators.
+  // Notified after instantiating the accelerators.
   EXPECT_EQ(1, mojo_observer.num_times_notified());
   // Verify observer received the correct accelerators.
   ExpectMojomAcceleratorsEqual(mojom::AcceleratorSource::kAsh, test_data,
                                mojo_observer.config());
 
   // Enable TopRowKeysAreFKeys.
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      prefs::kSendFunctionKeys, true);
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+        prefs::kSendFunctionKeys, true);
+    EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+  } else {
+    auto settings = Shell::Get()
+                        ->input_device_settings_controller()
+                        ->GetKeyboardSettings(fake_keyboard.id)
+                        ->Clone();
+    settings->top_row_are_fkeys = true;
+    Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+        fake_keyboard.id, std::move(settings));
+  }
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
   EXPECT_EQ(2, mojo_observer.num_times_notified());
 
   // Initialize the same test_data again, but with

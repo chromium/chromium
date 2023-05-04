@@ -290,9 +290,6 @@ namespace shortcut_ui {
 AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
     : ash_accelerator_configuration_(
           Shell::Get()->ash_accelerator_configuration()) {
-  // Observe connected keyboard events.
-  ui::DeviceDataManager::GetInstance()->AddObserver(this);
-
   // Observe keyboard input method changes.
   input_method::InputMethodManager::Get()->AddObserver(this);
 
@@ -300,7 +297,13 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider()
   Shell::Get()->keyboard_capability()->AddObserver(this);
 
   if (features::IsInputDeviceSettingsSplitEnabled()) {
+    // `InputDeviceSettingsController` provides updates whenever a device is
+    // connected/disconnected or if its settings changed. In any of these cases,
+    // accelerators must be updated.
     Shell::Get()->input_device_settings_controller()->AddObserver(this);
+  } else {
+    // Observe connected keyboard events.
+    ui::DeviceDataManager::GetInstance()->AddObserver(this);
   }
 
   ash_accelerator_configuration_->AddAcceleratorsUpdatedCallback(
@@ -408,12 +411,12 @@ void AcceleratorConfigurationProvider::OnTopRowKeysAreFKeysChanged() {
 
 void AcceleratorConfigurationProvider::OnKeyboardConnected(
     const mojom::Keyboard& keyboard) {
-  NotifyAcceleratorsUpdated();
+  UpdateKeyboards();
 }
 
 void AcceleratorConfigurationProvider::OnKeyboardDisconnected(
     const mojom::Keyboard& keyboard) {
-  NotifyAcceleratorsUpdated();
+  UpdateKeyboards();
 }
 
 void AcceleratorConfigurationProvider::OnKeyboardSettingsUpdated(
