@@ -50,6 +50,13 @@ base::FilePath GetDocumentsProviderMountPath(
     const std::string& authority,
     const std::string& root_document_id);
 
+// Returns the "escaped_authority/escaped_root_document_id" suffix of the
+// "/foo/bar/baz/escaped_authority/escaped_root_document_id" that is returned
+// by GetDocumentsProviderMountPath.
+base::FilePath GetDocumentsProviderMountPathSuffix(
+    const std::string& authority,
+    const std::string& root_document_id);
+
 // Parses an absolute file |path| from the ARC documents provider file system.
 // Appropriate unescaping is done to extract |authority| and |root_document_id|
 // from |path|.

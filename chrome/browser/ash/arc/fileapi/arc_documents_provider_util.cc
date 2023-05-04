@@ -144,7 +144,13 @@ base::FilePath GetDocumentsProviderMountPath(
     const std::string& authority,
     const std::string& root_document_id) {
   return base::FilePath(kDocumentsProviderMountPointPath)
-      .Append(EscapePathComponent(authority))
+      .Append(GetDocumentsProviderMountPathSuffix(authority, root_document_id));
+}
+
+base::FilePath GetDocumentsProviderMountPathSuffix(
+    const std::string& authority,
+    const std::string& root_document_id) {
+  return base::FilePath(EscapePathComponent(authority))
       .Append(EscapePathComponent(root_document_id));
 }
 
