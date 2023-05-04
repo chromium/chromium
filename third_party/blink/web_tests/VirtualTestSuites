@@ -366,7 +366,8 @@
   {
     "prefix": "compute-pressure",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/compute-pressure"],
+    "bases": ["external/wpt/compute-pressure",
+              "wpt_internal/compute-pressure"],
     "exclusive_tests": "ALL",
     "args": ["--enable-features=ComputePressure"],
     "expires": "Jul 1, 2023"

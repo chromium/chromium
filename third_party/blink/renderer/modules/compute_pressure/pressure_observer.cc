@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer.h"
 
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -66,6 +67,12 @@ Vector<V8PressureSource> PressureObserver::supportedSources() {
 ScriptPromise PressureObserver::observe(ScriptState* script_state,
                                         V8PressureSource source,
                                         ExceptionState& exception_state) {
+  if (!base::FeatureList::IsEnabled(blink::features::kComputePressure)) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
+                                      "Compute Pressure API is not available.");
+    return ScriptPromise();
+  }
+
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
