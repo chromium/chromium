@@ -20,19 +20,6 @@ enum SimpleEnum { SIMPLE_ENUM };
 enum EnumWithExplicitType : uint64_t { ENUM_WITH_EXPLICIT_TYPE };
 enum class ScopedEnum { SCOPED_ENUM };
 struct SimpleStruct {};
-struct StructWithToString {
-  std::string ToString() const { return ""; }
-};
-
-// .ToString() support on structs.
-static_assert(!internal::SupportsToString<SimpleStruct>::value,
-              "simple struct value doesn't support .ToString()");
-static_assert(!internal::SupportsToString<const SimpleStruct&>::value,
-              "simple struct const ref doesn't support .ToString()");
-static_assert(internal::SupportsToString<StructWithToString>::value,
-              "struct with .ToString() should be printable by value");
-static_assert(internal::SupportsToString<const StructWithToString&>::value,
-              "struct with .ToString() should be printable by const ref");
 
 // is_scoped_enum
 TEST(TemplateUtil, IsScopedEnum) {

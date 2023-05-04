@@ -13,6 +13,22 @@
 namespace base {
 namespace {
 
+class NotStringifiable {};
+class HasToString {
+ public:
+  std::string ToString() const { return "yay!"; }
+};
+
+// .ToString() support on structs.
+static_assert(!internal::SupportsToString<NotStringifiable>::value,
+              "value without ToString() shouldn't be marked SupportsToString");
+static_assert(!internal::SupportsToString<const NotStringifiable&>::value,
+              "const& without ToString() shouldn't be marked SupportsToString");
+static_assert(internal::SupportsToString<HasToString>::value,
+              "value with ToString() should be marked SupportsToString");
+static_assert(internal::SupportsToString<const HasToString&>::value,
+              "const& with ToString() should be marked SupportsToString");
+
 TEST(ToStringTest, Streamable) {
   // Types with built-in <<.
   EXPECT_EQ(ToString("foo"), "foo");
@@ -37,11 +53,6 @@ TEST(ToStringTest, UserDefinedStreamable) {
                      StreamableTestEnum::kLocation),
             "hello world");
 }
-
-class HasToString {
- public:
-  std::string ToString() const { return "yay!"; }
-};
 
 TEST(ToStringTest, UserDefinedToString) {
   // Type with user-defined ToString().
@@ -82,8 +93,6 @@ TEST(ToStringTest, FunctionPointer) {
   // Functions should be treated like function pointers.
   EXPECT_EQ(ToString(Func), ToString(&Func));
 }
-
-class NotStringifiable {};
 
 class OverloadsAddressOp {
  public:

@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include "base/template_util.h"
 #include "base/types/supports_ostream_operator.h"
@@ -17,6 +18,12 @@
 namespace base {
 
 namespace internal {
+
+template <typename T, typename = void>
+struct SupportsToString : std::false_type {};
+template <typename T>
+struct SupportsToString<T, decltype(void(std::declval<T>().ToString()))>
+    : std::true_type {};
 
 // I/O manipulators are function pointers, but should be sent directly to the
 // `ostream` instead of being cast to `const void*` like other function
