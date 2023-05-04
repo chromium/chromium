@@ -18,8 +18,10 @@
 
 namespace viz {
 
-SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
-                                               ResourceFormat format) {
+SkColorType ToClosestSkColorType(bool gpu_compositing,
+                                 SharedImageFormat format) {
+  CHECK(format.is_single_plane());
+
   if (!gpu_compositing) {
     // TODO(crbug.com/986405): Remove this assumption and have clients tag
     // resources with the correct format.
@@ -29,7 +31,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
     return kN32_SkColorType;
   }
 
-  switch (format) {
+  switch (format.resource_format()) {
     case RGBA_4444:
       return kARGB_4444_SkColorType;
     case RGBA_8888:
@@ -85,8 +87,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
     case RGBA_F16:
       return kRGBA_F16_SkColorType;
   }
-  NOTREACHED();
-  return kN32_SkColorType;
+  NOTREACHED_NORETURN();
 }
 
 ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
@@ -129,8 +130,7 @@ ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
     default:
       break;
   }
-  NOTREACHED();
-  return RGBA_8888;
+  NOTREACHED_NORETURN();
 }
 
 int BitsPerPixel(ResourceFormat format) {
@@ -166,42 +166,7 @@ int BitsPerPixel(ResourceFormat format) {
     case ETC1:
       return 4;
   }
-  NOTREACHED();
-  return 0;
-}
-
-int AlphaBits(ResourceFormat format) {
-  switch (format) {
-    case RGBA_F16:
-      return 16;
-    case BGRA_8888:
-    case RGBA_8888:
-    case YUVA_420_TRIPLANAR:
-    case ALPHA_8:
-      return 8;
-    case RGBA_4444:
-      return 4;
-    case RGBA_1010102:
-    case BGRA_1010102:
-      return 2;
-    case RGBX_8888:
-    case BGRX_8888:
-    case P010:
-    case RG16_EXT:
-    case RGB_565:
-    case LUMINANCE_F16:
-    case R16_EXT:
-    case BGR_565:
-    case RG_88:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case LUMINANCE_8:
-    case RED_8:
-    case ETC1:
-      return 0;
-  }
-  NOTREACHED();
-  return 0;
+  NOTREACHED_NORETURN();
 }
 
 unsigned int GLDataType(ResourceFormat format) {
@@ -290,42 +255,38 @@ unsigned int GLInternalFormat(ResourceFormat format) {
 
 bool HasEquivalentBufferFormat(SharedImageFormat format) {
   if (format.is_single_plane()) {
-    return HasEquivalentBufferFormat(format.resource_format());
+    switch (format.resource_format()) {
+      case BGRA_8888:
+      case RED_8:
+      case R16_EXT:
+      case RG16_EXT:
+      case RGBA_4444:
+      case RGBA_8888:
+      case RGBA_F16:
+      case BGR_565:
+      case RG_88:
+      case RGBX_8888:
+      case BGRX_8888:
+      case RGBA_1010102:
+      case BGRA_1010102:
+      case YVU_420:
+      case YUV_420_BIPLANAR:
+      case YUVA_420_TRIPLANAR:
+      case P010:
+        return true;
+      case ETC1:
+      case ALPHA_8:
+      case LUMINANCE_8:
+      case RGB_565:
+      case LUMINANCE_F16:
+        return false;
+    }
   }
 
   return format == MultiPlaneFormat::kYV12 ||
          format == MultiPlaneFormat::kNV12 ||
          format == MultiPlaneFormat::kNV12A ||
          format == MultiPlaneFormat::kP010;
-}
-
-bool HasEquivalentBufferFormat(ResourceFormat format) {
-  switch (format) {
-    case BGRA_8888:
-    case RED_8:
-    case R16_EXT:
-    case RG16_EXT:
-    case RGBA_4444:
-    case RGBA_8888:
-    case RGBA_F16:
-    case BGR_565:
-    case RG_88:
-    case RGBX_8888:
-    case BGRX_8888:
-    case RGBA_1010102:
-    case BGRA_1010102:
-    case YVU_420:
-    case YUV_420_BIPLANAR:
-    case YUVA_420_TRIPLANAR:
-    case P010:
-      return true;
-    case ETC1:
-    case ALPHA_8:
-    case LUMINANCE_8:
-    case RGB_565:
-    case LUMINANCE_F16:
-      return false;
-  }
 }
 
 gfx::BufferFormat BufferFormat(ResourceFormat format) {
@@ -374,10 +335,6 @@ gfx::BufferFormat BufferFormat(ResourceFormat format) {
       break;
   }
   return gfx::BufferFormat::RGBA_8888;
-}
-
-bool IsResourceFormatCompressed(ResourceFormat format) {
-  return format == ETC1;
 }
 
 unsigned int TextureStorageFormat(ResourceFormat format,
@@ -483,8 +440,7 @@ bool IsGpuMemoryBufferFormatSupported(ResourceFormat format) {
     case P010:
       return false;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 bool IsBitmapFormatSupported(ResourceFormat format) {
@@ -514,8 +470,7 @@ bool IsBitmapFormatSupported(ResourceFormat format) {
     case P010:
       return false;
   }
-  NOTREACHED();
-  return false;
+  NOTREACHED_NORETURN();
 }
 
 SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
@@ -555,6 +510,7 @@ SharedImageFormat GetSharedImageFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return LegacyMultiPlaneFormat::kP010;
   }
+  NOTREACHED_NORETURN();
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -624,7 +580,7 @@ VkFormat ToVkFormat(ResourceFormat format) {
 SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  SharedImageFormat format,
                                  int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
+  CHECK(format.IsValidPlaneIndex(plane_index));
   if (!gpu_compositing) {
     // TODO(crbug.com/986405): Remove this assumption and have clients tag
     // resources with the correct format.
@@ -634,8 +590,7 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kN32_SkColorType;
   }
   if (format.is_single_plane()) {
-    return ResourceFormatToClosestSkColorType(gpu_compositing,
-                                              format.resource_format());
+    return ToClosestSkColorType(gpu_compositing, format);
   }
 
   auto plane_config = format.plane_config();
@@ -671,13 +626,6 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
                                  : kR16G16_float_SkColorType;
     }
   }
-}
-
-SkColorType ToClosestSkColorType(bool gpu_compositing,
-                                 SharedImageFormat format) {
-  CHECK(format.is_single_plane());
-  return ResourceFormatToClosestSkColorType(gpu_compositing,
-                                            format.resource_format());
 }
 
 }  // namespace viz
