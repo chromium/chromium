@@ -370,10 +370,12 @@ TEST_F(EGLImageBackingFactoryThreadSafeTest, Dawn_SkiaGL) {
                                        });
   ASSERT_NE(adapter_it, adapters.end());
 
-  dawn::native::DawnDeviceDescriptor device_descriptor;
   // We need to request internal usage to be able to do operations with
   // internal methods that would need specific usages.
-  device_descriptor.requiredFeatures.push_back("dawn-internal-usages");
+  wgpu::FeatureName dawn_internal_usage = wgpu::FeatureName::DawnInternalUsages;
+  wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeaturesCount = 1;
+  device_descriptor.requiredFeatures = &dawn_internal_usage;
 
   wgpu::Device device =
       wgpu::Device::Acquire(adapter_it->CreateDevice(&device_descriptor));
