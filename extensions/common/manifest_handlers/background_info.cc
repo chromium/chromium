@@ -391,7 +391,8 @@ bool BackgroundManifestHandler::Validate(
 
   if (BackgroundInfo::IsServiceWorkerBased(extension)) {
     DCHECK(extension->is_extension() ||
-           extension->is_chromeos_system_extension());
+           extension->is_chromeos_system_extension() ||
+           extension->is_login_screen_extension());
     const std::string& background_service_worker_script =
         BackgroundInfo::GetBackgroundServiceWorkerScript(extension);
     if (!base::PathExists(
