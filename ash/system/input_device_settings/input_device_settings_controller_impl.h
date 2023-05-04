@@ -77,7 +77,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
 
   void OnKeyboardListUpdated(std::vector<ui::KeyboardDevice> keyboards_to_add,
                              std::vector<DeviceId> keyboard_ids_to_remove);
-  void OnTouchpadListUpdated(std::vector<ui::InputDevice> touchpads_to_add,
+  void OnTouchpadListUpdated(std::vector<ui::TouchpadDevice> touchpads_to_add,
                              std::vector<DeviceId> touchpad_ids_to_remove);
   void OnMouseListUpdated(std::vector<ui::InputDevice> mice_to_add,
                           std::vector<DeviceId> mouse_ids_to_remove);
@@ -154,7 +154,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // depend on these objects.
   std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
       keyboard_notifier_;
-  std::unique_ptr<InputDeviceNotifier<mojom::TouchpadPtr, ui::InputDevice>>
+  std::unique_ptr<InputDeviceNotifier<mojom::TouchpadPtr, ui::TouchpadDevice>>
       touchpad_notifier_;
   std::unique_ptr<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>
       mouse_notifier_;

@@ -26,6 +26,8 @@ component("devices") {
     "stylus_state.h",
     "touch_device_transform.cc",
     "touch_device_transform.h",
+    "touchpad_device.cc",
+    "touchpad_device.h",
     "touchscreen_device.cc",
     "touchscreen_device.h",
   ]

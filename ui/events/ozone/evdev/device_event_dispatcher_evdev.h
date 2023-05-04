@@ -23,6 +23,7 @@
 namespace ui {
 
 struct KeyboardDevice;
+struct TouchpadDevice;
 enum class StylusState;
 
 struct COMPONENT_EXPORT(EVDEV) KeyEventParams {
@@ -207,7 +208,7 @@ class COMPONENT_EXPORT(EVDEV) DeviceEventDispatcherEvdev {
   virtual void DispatchPointingStickDevicesUpdated(
       const std::vector<InputDevice>& devices) = 0;
   virtual void DispatchTouchpadDevicesUpdated(
-      const std::vector<InputDevice>& devices,
+      const std::vector<TouchpadDevice>& devices,
       bool has_haptic_touchpad) = 0;
   virtual void DispatchDeviceListsComplete() = 0;
   virtual void DispatchStylusStateChanged(StylusState stylus_state) = 0;

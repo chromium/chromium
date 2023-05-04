@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -124,8 +125,9 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
                                    bool has_mouse) override {}
   void DispatchPointingStickDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
-                                      bool has_haptic_touchpad) override {}
+  void DispatchTouchpadDevicesUpdated(
+      const std::vector<TouchpadDevice>& devices,
+      bool has_haptic_touchpad) override {}
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
   void DispatchDeviceListsComplete() override {}

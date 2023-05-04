@@ -48,6 +48,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_rewriter.h"
@@ -4462,7 +4463,7 @@ TEST_F(EventRewriterAshTest, TopRowKeysAreFunctionKeys) {
 void EventRewriterTest::DontRewriteIfNotRewritten(int right_click_flags) {
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
-  std::vector<ui::InputDevice> touchpad_devices(2);
+  std::vector<ui::TouchpadDevice> touchpad_devices(2);
   constexpr int kTouchpadId1 = 10;
   constexpr int kTouchpadId2 = 11;
   touchpad_devices[0].id = kTouchpadId1;
@@ -4647,7 +4648,7 @@ TEST_F(EventRewriterTest, DeprecatedAltClickGeneratesNotification) {
   scoped_feature_list_.InitAndEnableFeature(::features::kDeprecateAltClick);
   ui::DeviceDataManager* device_data_manager =
       ui::DeviceDataManager::GetInstance();
-  std::vector<ui::InputDevice> touchpad_devices(1);
+  std::vector<ui::TouchpadDevice> touchpad_devices(1);
   constexpr int kTouchpadId1 = 10;
   touchpad_devices[0].id = kTouchpadId1;
   static_cast<ui::DeviceHotplugEventObserver*>(device_data_manager)

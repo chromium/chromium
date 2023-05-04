@@ -160,12 +160,14 @@ bool ShouldObserveSequence(ui::LayerAnimationSequence* sequence) {
 
 // Check if there is any external and internal pointing device in
 // |input_devices|.
+template <typename PointingDeviceType>
 void CheckHasPointingDevices(
-    const std::vector<ui::InputDevice>& input_devices,
+    const std::vector<PointingDeviceType>& input_devices,
     BluetoothDevicesObserver* bluetooth_device_observer,
     bool* out_has_external_pointing_device,
     bool* out_has_internal_pointing_device) {
-  for (const ui::InputDevice& input_device : input_devices) {
+  static_assert(std::is_base_of<ui::InputDevice, PointingDeviceType>::value);
+  for (const PointingDeviceType& input_device : input_devices) {
     if (input_device.type == ui::INPUT_DEVICE_INTERNAL) {
       *out_has_internal_pointing_device = true;
     } else if (input_device.type == ui::INPUT_DEVICE_USB ||

@@ -7,6 +7,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 
 namespace ui {
@@ -80,7 +81,7 @@ void DeviceDataManagerTestApi::SetTouchscreenDevices(
 }
 
 void DeviceDataManagerTestApi::SetTouchpadDevices(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<TouchpadDevice>& devices) {
   DeviceDataManager::instance_->OnTouchpadDevicesUpdated(devices);
 }
 

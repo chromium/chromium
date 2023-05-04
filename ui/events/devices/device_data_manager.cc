@@ -155,7 +155,8 @@ const std::vector<InputDevice>& DeviceDataManager::GetPointingStickDevices()
   return pointing_stick_devices_;
 }
 
-const std::vector<InputDevice>& DeviceDataManager::GetTouchpadDevices() const {
+const std::vector<TouchpadDevice>& DeviceDataManager::GetTouchpadDevices()
+    const {
   return touchpad_devices_;
 }
 
@@ -220,7 +221,7 @@ void DeviceDataManager::OnPointingStickDevicesUpdated(
 }
 
 void DeviceDataManager::OnTouchpadDevicesUpdated(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<TouchpadDevice>& devices) {
   if (base::ranges::equal(devices, touchpad_devices_, InputDeviceEquals)) {
     return;
   }

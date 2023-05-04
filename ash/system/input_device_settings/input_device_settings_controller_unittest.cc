@@ -38,6 +38,7 @@
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
@@ -72,14 +73,14 @@ const ui::KeyboardDevice kSampleKeyboardUsb2(20,
                                              0x1111,
                                              0x3333,
                                              0);
-const ui::InputDevice kSampleTouchpadInternal(1,
-                                              ui::INPUT_DEVICE_INTERNAL,
-                                              "kSampleTouchpadInternal",
-                                              "",
-                                              base::FilePath(),
-                                              0x1111,
-                                              0x4444,
-                                              0);
+const ui::TouchpadDevice kSampleTouchpadInternal(1,
+                                                 ui::INPUT_DEVICE_INTERNAL,
+                                                 "kSampleTouchpadInternal",
+                                                 "",
+                                                 base::FilePath(),
+                                                 0x1111,
+                                                 0x4444,
+                                                 0);
 const ui::InputDevice kSamplePointingStickInternal(
     2,
     ui::INPUT_DEVICE_INTERNAL,

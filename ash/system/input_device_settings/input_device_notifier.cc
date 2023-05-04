@@ -15,6 +15,7 @@
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
@@ -163,9 +164,9 @@ InputDeviceNotifier<mojom::KeyboardPtr,
 }
 
 template <>
-std::vector<ui::InputDevice>
+std::vector<ui::TouchpadDevice>
 InputDeviceNotifier<mojom::TouchpadPtr,
-                    ui::InputDevice>::GetUpdatedDeviceList() {
+                    ui::TouchpadDevice>::GetUpdatedDeviceList() {
   return ui::DeviceDataManager::GetInstance()->GetTouchpadDevices();
 }
 
@@ -193,7 +194,7 @@ InputDeviceNotifier<mojom::PointingStickPtr,
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
-    InputDeviceNotifier<mojom::TouchpadPtr, ui::InputDevice>;
+    InputDeviceNotifier<mojom::TouchpadPtr, ui::TouchpadDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)
     InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>;
 template class EXPORT_TEMPLATE_DECLARE(ASH_EXPORT)

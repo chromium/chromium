@@ -205,7 +205,7 @@ void InputDeviceSettingsControllerImpl::Init() {
                       &InputDeviceSettingsControllerImpl::OnMouseListUpdated,
                       base::Unretained(this)));
   touchpad_notifier_ = std::make_unique<
-      InputDeviceNotifier<mojom::TouchpadPtr, ui::InputDevice>>(
+      InputDeviceNotifier<mojom::TouchpadPtr, ui::TouchpadDevice>>(
       &touchpads_,
       base::BindRepeating(
           &InputDeviceSettingsControllerImpl::OnTouchpadListUpdated,
@@ -852,7 +852,7 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
-    std::vector<ui::InputDevice> touchpads_to_add,
+    std::vector<ui::TouchpadDevice> touchpads_to_add,
     std::vector<DeviceId> touchpad_ids_to_remove) {
   for (const auto& touchpad : touchpads_to_add) {
     auto mojom_touchpad = BuildMojomTouchpad(touchpad);

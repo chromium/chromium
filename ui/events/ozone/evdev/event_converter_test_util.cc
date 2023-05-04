@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
@@ -86,8 +87,9 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
       const std::vector<InputDevice>& devices) override {
     event_factory_evdev_->DispatchPointingStickDevicesUpdated(devices);
   }
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
-                                      bool has_haptic_touchpad) override {
+  void DispatchTouchpadDevicesUpdated(
+      const std::vector<TouchpadDevice>& devices,
+      bool has_haptic_touchpad) override {
     event_factory_evdev_->DispatchTouchpadDevicesUpdated(devices,
                                                          has_haptic_touchpad);
   }

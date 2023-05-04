@@ -22,6 +22,7 @@
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/stylus_state.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_evdev_impl.h"
@@ -627,13 +628,14 @@ void InputDeviceFactoryEvdev::NotifyPointingStickDevicesUpdated() {
 }
 
 void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
-  std::vector<InputDevice> touchpads;
+  std::vector<TouchpadDevice> touchpads;
   bool has_haptic_touchpad = false;
   for (const auto& it : converters_) {
     if (it.second->HasTouchpad()) {
       if (it.second->HasHapticTouchpad())
         has_haptic_touchpad = true;
-      touchpads.push_back(it.second->input_device());
+      touchpads.emplace_back(it.second->input_device(),
+                             it.second->HasHapticTouchpad());
     }
   }
 

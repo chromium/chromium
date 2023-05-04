@@ -31,6 +31,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 #include "ui/events/event_switches.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_evdev.h"
@@ -270,8 +271,9 @@ class MockDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
                                    bool has_mouse) override {}
   void DispatchPointingStickDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
-                                      bool has_haptic_touchpad) override {}
+  void DispatchTouchpadDevicesUpdated(
+      const std::vector<TouchpadDevice>& devices,
+      bool has_haptic_touchpad) override {}
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices) override {}
   void DispatchDeviceListsComplete() override {}
