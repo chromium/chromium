@@ -228,7 +228,6 @@ class InputDeviceSettingsControllerTest : public NoSessionAshTestBase {
         GetSessionControllerClient();
     session_controller->Reset();
 
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     auto user_1_prefs = std::make_unique<TestingPrefServiceSimple>();
     RegisterUserProfilePrefs(user_1_prefs->registry(), /*for_test=*/true);
     auto user_2_prefs = std::make_unique<TestingPrefServiceSimple>();

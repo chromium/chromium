@@ -6,7 +6,9 @@
 
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "device/udev_linux/fake_udev_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -83,7 +85,29 @@ class FakeDeviceManager {
 
 }  // namespace
 
-using AcceleratorAliasConverterTest = AshTestBase;
+class AcceleratorAliasConverterTest : public AshTestBase {
+ public:
+  void SetTopRowAsFKeysForKeyboard(const ui::InputDevice& keyboard,
+                                   bool enabled) {
+    if (!features::IsInputDeviceSettingsSplitEnabled()) {
+      // Top row keys not fKeys prevents remapping.
+      Shell::Get()
+          ->keyboard_capability()
+          ->SetTopRowKeysAsFKeysEnabledForTesting(enabled);
+      EXPECT_EQ(enabled,
+                Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+      return;
+    }
+
+    auto settings = Shell::Get()
+                        ->input_device_settings_controller()
+                        ->GetKeyboardSettings(keyboard.id)
+                        ->Clone();
+    settings->top_row_are_fkeys = enabled;
+    Shell::Get()->input_device_settings_controller()->SetKeyboardSettings(
+        keyboard.id, std::move(settings));
+  }
+};
 
 TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
   std::unique_ptr<FakeDeviceManager> fake_keyboard_manager_ =
@@ -96,10 +120,7 @@ TEST_F(AcceleratorAliasConverterTest, CheckTopRowAliasNoAlias) {
 
   AcceleratorAliasConverter accelerator_alias_converter_;
 
-  // Top row keys not fKeys prevents remapping.
-  Shell::Get()->keyboard_capability()->SetTopRowKeysAsFKeysEnabledForTesting(
-      false);
-  EXPECT_FALSE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
+  SetTopRowAsFKeysForKeyboard(fake_keyboard, /*enabled=*/false);
   const ui::Accelerator accelerator{ui::VKEY_ZOOM, ui::EF_ALT_DOWN};
   std::vector<ui::Accelerator> accelerator_aliases =
       accelerator_alias_converter_.CreateAcceleratorAlias(accelerator);
@@ -274,11 +295,9 @@ TEST_F(AcceleratorAliasConverterTest, CheckCapsLockAlias) {
 class TopRowAliasTest : public AcceleratorAliasConverterTest,
                         public testing::WithParamInterface<
                             TopRowAcceleratorAliasConverterTestData> {
+ public:
   void SetUp() override {
     AcceleratorAliasConverterTest::SetUp();
-    // Enable top row keys as fKeys.
-    Shell::Get()->keyboard_capability()->SetTopRowKeysAsFKeysEnabledForTesting(
-        true);
     TopRowAcceleratorAliasConverterTestData test_data = GetParam();
     keyboard_connection_type_ = test_data.keyboard_connection_type_;
     keyboard_layout_types_ = test_data.keyboard_layout_types_;
@@ -488,6 +507,7 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
         /*name=*/layout);
     fake_keyboard.sys_path = base::FilePath("path" + layout);
     fake_keyboard_manager_->AddFakeKeyboard(fake_keyboard, layout);
+    SetTopRowAsFKeysForKeyboard(fake_keyboard, /*enabled=*/true);
     i++;
   }
 
@@ -498,7 +518,6 @@ TEST_P(TopRowAliasTest, CheckTopRowAlias) {
   base::ranges::sort(accelerator_alias);
   base::ranges::sort(expected_accelerators_);
 
-  ASSERT_TRUE(Shell::Get()->keyboard_capability()->TopRowKeysAreFKeys());
   ASSERT_EQ(expected_accelerators_.size(), accelerator_alias.size());
   for (size_t i = 0; i < expected_accelerators_.size(); i++) {
     EXPECT_EQ(expected_accelerators_[i], accelerator_alias[i]);

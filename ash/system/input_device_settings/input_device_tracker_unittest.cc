@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_tracker.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -11,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 
@@ -39,6 +41,7 @@ class InputDeviceTrackerTest
 
   // testing::Test:
   void SetUp() override {
+    feature_list_.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
     AshTestBase::SetUp();
     std::tie(category_, pref_path_) = GetParam();
     tracker_ = std::make_unique<InputDeviceTracker>();
@@ -94,6 +97,7 @@ class InputDeviceTrackerTest
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<InputDeviceTracker> tracker_;
   raw_ptr<PrefService, DanglingUntriaged | ExperimentalAsh> pref_service_;
 

@@ -75,6 +75,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/soda/constants.h"
+#include "components/user_manager/known_user.h"
 
 namespace ash {
 
@@ -169,14 +170,16 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   LoginExpandedPublicAccountView::RegisterLocalStatePrefs(registry);
   LockStateController::RegisterPrefs(registry);
   quick_pair::Mediator::RegisterLocalStatePrefs(registry);
-  if (ash::features::IsQsRevampEnabled())
+  if (ash::features::IsQsRevampEnabled()) {
     QuickSettingsFooter::RegisterLocalStatePrefs(registry);
-  else
+  } else {
     TopShortcutsView::RegisterLocalStatePrefs(registry);
+  }
   KeyboardBacklightColorController::RegisterPrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);
+    user_manager::KnownUser::RegisterPrefs(registry);
   }
 }
 

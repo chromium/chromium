@@ -100,7 +100,6 @@ class KeyboardPrefHandlerTest : public AshTestBase {
   }
 
   void InitializePrefService() {
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
 
     pref_service_->registry()->RegisterDictionaryPref(

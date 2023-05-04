@@ -34,7 +34,6 @@ namespace {
 class LoginScreenControllerTest : public AshTestBase {
  public:
   LoginScreenControllerTest() {
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 
@@ -45,7 +44,6 @@ class LoginScreenControllerTest : public AshTestBase {
 class LoginScreenControllerNoSessionTest : public NoSessionAshTestBase {
  public:
   LoginScreenControllerNoSessionTest() {
-    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 

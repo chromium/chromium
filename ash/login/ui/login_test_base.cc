@@ -24,7 +24,6 @@ namespace ash {
 
 LoginTestBase::LoginTestBase()
     : NoSessionAshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  user_manager::KnownUser::RegisterPrefs(local_state()->registry());
   auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(
       AuthEventsRecorder::AuthenticationSurface::kLogin);
