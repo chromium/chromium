@@ -72,6 +72,8 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
                                   uint32_t api_version,
                                   const gfx::ExtensionSet& enabled_extensions);
 
+  void ResetForTesting();
+
   // This is used to allow thread safe access to a given vulkan queue when
   // multiple gpu threads are accessing it. Note that this map will be only
   // accessed by multiple gpu threads concurrently to read the data, so it

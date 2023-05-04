@@ -1169,4 +1169,179 @@ bool VulkanFunctionPointers::BindDeviceFunctionPointers(
   return true;
 }
 
+void VulkanFunctionPointers::ResetForTesting() {
+  base::AutoLock lock(write_lock_);
+
+  per_queue_lock_map.clear();
+  loader_library_ = nullptr;
+  vkGetInstanceProcAddr = nullptr;
+
+  vkEnumerateInstanceVersion = nullptr;
+  vkCreateInstance = nullptr;
+  vkEnumerateInstanceExtensionProperties = nullptr;
+  vkEnumerateInstanceLayerProperties = nullptr;
+
+  vkCreateDevice = nullptr;
+  vkDestroyInstance = nullptr;
+  vkEnumerateDeviceExtensionProperties = nullptr;
+  vkEnumerateDeviceLayerProperties = nullptr;
+  vkEnumeratePhysicalDevices = nullptr;
+  vkGetDeviceProcAddr = nullptr;
+  vkGetPhysicalDeviceFeatures2 = nullptr;
+  vkGetPhysicalDeviceFormatProperties = nullptr;
+  vkGetPhysicalDeviceFormatProperties2 = nullptr;
+  vkGetPhysicalDeviceImageFormatProperties2 = nullptr;
+  vkGetPhysicalDeviceMemoryProperties = nullptr;
+  vkGetPhysicalDeviceMemoryProperties2 = nullptr;
+  vkGetPhysicalDeviceProperties = nullptr;
+  vkGetPhysicalDeviceProperties2 = nullptr;
+  vkGetPhysicalDeviceQueueFamilyProperties = nullptr;
+
+#if DCHECK_IS_ON()
+  vkCreateDebugReportCallbackEXT = nullptr;
+  vkDestroyDebugReportCallbackEXT = nullptr;
+#endif  // DCHECK_IS_ON()
+
+  vkDestroySurfaceKHR = nullptr;
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR = nullptr;
+  vkGetPhysicalDeviceSurfaceFormatsKHR = nullptr;
+  vkGetPhysicalDeviceSurfaceSupportKHR = nullptr;
+
+  vkCreateHeadlessSurfaceEXT = nullptr;
+
+#if defined(USE_VULKAN_XCB)
+  vkCreateXcbSurfaceKHR = nullptr;
+  vkGetPhysicalDeviceXcbPresentationSupportKHR = nullptr;
+#endif  // defined(USE_VULKAN_XCB)
+
+#if BUILDFLAG(IS_WIN)
+  vkCreateWin32SurfaceKHR = nullptr;
+  vkGetPhysicalDeviceWin32PresentationSupportKHR = nullptr;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_ANDROID)
+  vkCreateAndroidSurfaceKHR = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  vkCreateImagePipeSurfaceFUCHSIA = nullptr;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+  vkAllocateCommandBuffers = nullptr;
+  vkAllocateDescriptorSets = nullptr;
+  vkAllocateMemory = nullptr;
+  vkBeginCommandBuffer = nullptr;
+  vkBindBufferMemory = nullptr;
+  vkBindBufferMemory2 = nullptr;
+  vkBindImageMemory = nullptr;
+  vkBindImageMemory2 = nullptr;
+  vkCmdBeginRenderPass = nullptr;
+  vkCmdCopyBuffer = nullptr;
+  vkCmdCopyBufferToImage = nullptr;
+  vkCmdCopyImageToBuffer = nullptr;
+  vkCmdEndRenderPass = nullptr;
+  vkCmdExecuteCommands = nullptr;
+  vkCmdNextSubpass = nullptr;
+  vkCmdPipelineBarrier = nullptr;
+  vkCreateBuffer = nullptr;
+  vkCreateCommandPool = nullptr;
+  vkCreateDescriptorPool = nullptr;
+  vkCreateDescriptorSetLayout = nullptr;
+  vkCreateFence = nullptr;
+  vkCreateFramebuffer = nullptr;
+  vkCreateGraphicsPipelines = nullptr;
+  vkCreateImage = nullptr;
+  vkCreateImageView = nullptr;
+  vkCreateRenderPass = nullptr;
+  vkCreateSampler = nullptr;
+  vkCreateSemaphore = nullptr;
+  vkCreateShaderModule = nullptr;
+  vkDestroyBuffer = nullptr;
+  vkDestroyCommandPool = nullptr;
+  vkDestroyDescriptorPool = nullptr;
+  vkDestroyDescriptorSetLayout = nullptr;
+  vkDestroyDevice = nullptr;
+  vkDestroyFence = nullptr;
+  vkDestroyFramebuffer = nullptr;
+  vkDestroyImage = nullptr;
+  vkDestroyImageView = nullptr;
+  vkDestroyRenderPass = nullptr;
+  vkDestroySampler = nullptr;
+  vkDestroySemaphore = nullptr;
+  vkDestroyShaderModule = nullptr;
+  vkDeviceWaitIdle = nullptr;
+  vkFlushMappedMemoryRanges = nullptr;
+  vkEndCommandBuffer = nullptr;
+  vkFreeCommandBuffers = nullptr;
+  vkFreeDescriptorSets = nullptr;
+  vkFreeMemory = nullptr;
+  vkInvalidateMappedMemoryRanges = nullptr;
+  vkGetBufferMemoryRequirements = nullptr;
+  vkGetBufferMemoryRequirements2 = nullptr;
+  vkGetDeviceQueue = nullptr;
+  vkGetDeviceQueue2 = nullptr;
+  vkGetFenceStatus = nullptr;
+  vkGetImageMemoryRequirements = nullptr;
+  vkGetImageMemoryRequirements2 = nullptr;
+  vkGetImageSubresourceLayout = nullptr;
+  vkMapMemory = nullptr;
+  vkQueueSubmit = nullptr;
+  vkQueueWaitIdle = nullptr;
+  vkResetCommandBuffer = nullptr;
+  vkResetFences = nullptr;
+  vkUnmapMemory = nullptr;
+  vkUpdateDescriptorSets = nullptr;
+  vkWaitForFences = nullptr;
+
+#if BUILDFLAG(IS_ANDROID)
+  vkGetAndroidHardwareBufferPropertiesANDROID = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_POSIX)
+  vkGetSemaphoreFdKHR = nullptr;
+  vkImportSemaphoreFdKHR = nullptr;
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_WIN)
+  vkGetSemaphoreWin32HandleKHR = nullptr;
+  vkImportSemaphoreWin32HandleKHR = nullptr;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_POSIX)
+  vkGetMemoryFdKHR = nullptr;
+  vkGetMemoryFdPropertiesKHR = nullptr;
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_WIN)
+  vkGetMemoryWin32HandleKHR = nullptr;
+  vkGetMemoryWin32HandlePropertiesKHR = nullptr;
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  vkImportSemaphoreZirconHandleFUCHSIA = nullptr;
+  vkGetSemaphoreZirconHandleFUCHSIA = nullptr;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  vkGetMemoryZirconHandleFUCHSIA = nullptr;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_FUCHSIA)
+  vkCreateBufferCollectionFUCHSIA = nullptr;
+  vkSetBufferCollectionImageConstraintsFUCHSIA = nullptr;
+  vkGetBufferCollectionPropertiesFUCHSIA = nullptr;
+  vkDestroyBufferCollectionFUCHSIA = nullptr;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+  vkAcquireNextImageKHR = nullptr;
+  vkCreateSwapchainKHR = nullptr;
+  vkDestroySwapchainKHR = nullptr;
+  vkGetSwapchainImagesKHR = nullptr;
+  vkQueuePresentKHR = nullptr;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  vkGetImageDrmFormatModifierPropertiesEXT = nullptr;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+}
+
 }  // namespace gpu

@@ -452,6 +452,10 @@ test("gl_tests") {
     }
   }
 
+  if (is_linux) {
+    sources += [ "command_buffer/service/shared_image/angle_vulkan_image_backing_factory_unittest.cc" ]
+  }
+
   if (use_dawn) {
     deps += [
       "//third_party/dawn/src/dawn:cpp",
