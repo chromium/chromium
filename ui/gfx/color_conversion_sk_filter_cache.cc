@@ -26,10 +26,12 @@ namespace {
 // Allocate an SkSurface to be used to create the tonemapped result.
 static sk_sp<SkSurface> MakeSurfaceForResult(SkImageInfo image_info,
                                              GrDirectContext* context) {
-  sk_sp<SkSurface> surface;
+  // TODO(ccameron) this code is only used in OOP-R, which implies a GPU
+  // backend, so perhaps this code should be moved to cc/
+#if defined(SK_GANESH)
   if (context) {
     // TODO(https://crbug.com/1286088): Consider adding mipmap support here.
-    surface =
+    sk_sp<SkSurface> surface =
         SkSurface::MakeRenderTarget(context, skgpu::Budgeted::kNo, image_info,
                                     /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
                                     /*surfaceProps=*/nullptr,
@@ -37,20 +39,20 @@ static sk_sp<SkSurface> MakeSurfaceForResult(SkImageInfo image_info,
     // It is not guaranteed that kRGBA_F16_SkColorType is renderable. If we fail
     // to create an SkSurface with that color type, fall back to
     // kN32_SkColorType.
-    if (!surface) {
-      DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
-      image_info = image_info.makeColorType(kN32_SkColorType);
-      surface = SkSurface::MakeRenderTarget(
-          context, skgpu::Budgeted::kNo, image_info,
-          /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
-          /*surfaceProps=*/nullptr,
-          /*shouldCreateWithMips=*/false);
+    if (surface) {
+      return surface;
     }
-  } else {
-    surface = SkSurface::MakeRaster(image_info, image_info.minRowBytes(),
-                                    /*surfaceProps=*/nullptr);
+    DLOG(ERROR) << "Falling back to tone mapped 8-bit surface.";
+    image_info = image_info.makeColorType(kN32_SkColorType);
+    return SkSurface::MakeRenderTarget(
+        context, skgpu::Budgeted::kNo, image_info,
+        /*sampleCount=*/0, kTopLeft_GrSurfaceOrigin,
+        /*surfaceProps=*/nullptr,
+        /*shouldCreateWithMips=*/false);
   }
-  return surface;
+#endif
+  return SkSurface::MakeRaster(image_info, image_info.minRowBytes(),
+                               /*surfaceProps=*/nullptr);
 }
 
 }  // namespace
