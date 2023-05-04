@@ -61,6 +61,8 @@ class METRICS_EXPORT SourceIdObj {
     // manifest. A new source of this type and associated events are expected to
     // be recorded within the same report interval; it will not be kept in
     // memory between different reports.
+    // TODO(crbug.com/1441376): Deprecate and migrate usages to AppKm so UKM can
+    // reuse code and enforce the same checks.
     DESKTOP_WEB_APP_ID = 6,
     // Source ID for web workers, namely SharedWorkers and ServiceWorkers. Web
     // workers may inherit a source ID from the spawner context (in the case of

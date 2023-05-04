@@ -46,6 +46,10 @@ int BucketedDailySeconds(base::TimeDelta delta) {
   return std::max(1, result);
 }
 
+// Checks whether the user enabled syncing apps, which is required to record
+// app-keyed metrics.
+// TODO(crbug.com/1441376): Deprecated. Switch to AppKm so UKM code can enforce
+// these checks.
 bool ShouldRecordAppKeyedMetrics(syncer::SyncService* sync_service) {
   switch (
       syncer::GetUploadToGoogleState(sync_service, syncer::ModelType::APPS)) {
@@ -61,8 +65,8 @@ bool ShouldRecordAppKeyedMetrics(syncer::SyncService* sync_service) {
 
 }  // namespace
 
-// This class exists just to be friended by |UkmRecorder| to control the
-// emission of Web app UKMs in UkmRecorder.
+// This class exists just to use a `PassKey` so `UkmRecorder` can control the
+// emission of Web app UKMs.
 class DesktopWebAppUkmRecorder {
  public:
   static void Emit(const DailyInteraction& record) {
