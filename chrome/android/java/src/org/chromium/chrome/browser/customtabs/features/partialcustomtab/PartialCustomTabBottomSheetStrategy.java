@@ -501,7 +501,7 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
             }
         }
 
-        int sideOffset = shouldDrawDividerLine()
+        int sideOffset = shouldDrawDividerLine() || isFullscreen()
                 ? 0
                 : mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_shadow_offset);
         int sideMargin = isMaxWidthLandscapeBottomSheet ? sideOffset : 0;
