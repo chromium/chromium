@@ -721,6 +721,36 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     return;
   }
 
+  const bool row_notice_acknowledged =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged);
+  const bool eaa_notice_acknowledged =
+      pref_service_->GetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged);
+  // Restricted Notice
+  // Note that ordering is important: one of consent or notice will always be
+  // required when the restricted prompt is shown, and both return
+  // unconditionally.
+  if (privacy_sandbox_settings_->IsSubjectToM1NoticeRestricted()) {
+    const bool restricted_notice_acknowledged = pref_service_->GetBoolean(
+        prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged);
+
+    // Acknowledgement of any of the prompt types implies acknowledgement of the
+    // restricted notice as well.
+    if (row_notice_acknowledged || eaa_notice_acknowledged) {
+      base::UmaHistogramEnumeration(
+          privacy_sandbox_prompt_startup_histogram,
+          PromptStartupState::
+              kRestrictedNoticeNotShownDueToFullNoticeAcknowledged);
+
+      return;
+    }
+    base::UmaHistogramEnumeration(
+        privacy_sandbox_prompt_startup_histogram,
+        restricted_notice_acknowledged
+            ? PromptStartupState::kRestrictedNoticeFlowCompleted
+            : PromptStartupState::kRestrictedNoticePromptWaiting);
+    return;
+  }
+
   // EEA
   if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
     // Consent decision not made
@@ -735,9 +765,7 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
     // Consent decision made at this point.
 
     // Notice Acknowledged
-    const bool notice_acknowledged = pref_service_->GetBoolean(
-        prefs::kPrivacySandboxM1EEANoticeAcknowledged);
-    if (notice_acknowledged) {
+    if (eaa_notice_acknowledged) {
       base::UmaHistogramEnumeration(
           privacy_sandbox_prompt_startup_histogram,
           topics_enabled
@@ -753,9 +781,6 @@ void PrivacySandboxService::RecordPrivacySandbox4StartupMetrics() {
 
   // ROW
   if (privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get()) {
-    const bool row_notice_acknowledged = pref_service_->GetBoolean(
-        prefs::kPrivacySandboxM1RowNoticeAcknowledged);
-
     base::UmaHistogramEnumeration(
         privacy_sandbox_prompt_startup_histogram,
         row_notice_acknowledged ? PromptStartupState::kROWNoticeFlowCompleted
