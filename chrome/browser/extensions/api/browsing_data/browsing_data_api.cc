@@ -316,18 +316,16 @@ ExtensionFunction::ResponseAction BrowsingDataRemoverFunction::Run() {
     } else {
       return RespondNow(std::move(result.error()));
     }
-    mode_ = content::BrowsingDataFilterBuilder::Mode::kDelete;
-  } else {
-    if (exclude_origins) {
-      OriginParsingResult result = ParseOrigins(*exclude_origins);
-      if (result.has_value()) {
-        origins_ = std::move(*result);
-      } else {
-        return RespondNow(std::move(result.error()));
-      }
+  } else if (exclude_origins) {
+    OriginParsingResult result = ParseOrigins(*exclude_origins);
+    if (result.has_value()) {
+      origins_ = std::move(*result);
+    } else {
+      return RespondNow(std::move(result.error()));
     }
-    mode_ = content::BrowsingDataFilterBuilder::Mode::kPreserve;
   }
+  mode_ = origins ? content::BrowsingDataFilterBuilder::Mode::kDelete
+                  : content::BrowsingDataFilterBuilder::Mode::kPreserve;
 
   // Check if a filter is set but non-filterable types are selected.
   if ((!origins_.empty() && (removal_mask_ & ~kFilterableDataTypes) != 0)) {

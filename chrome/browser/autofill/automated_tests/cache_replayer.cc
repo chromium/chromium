@@ -210,11 +210,10 @@ ErrorOr<std::string> PeelAutofillPageResourceQueryRequestWrapper(
 // Gets Query request proto content from HTTP POST body.
 ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromPOSTQuery(
     const network::ResourceRequest& resource_request) {
-  ErrorOr<std::string> query = PeelAutofillPageResourceQueryRequestWrapper(
-      GetStringFromDataElements(resource_request.request_body->elements()));
-  if (!query.has_value())
-    return base::unexpected(query.error());
-  return ParseProtoContents<AutofillPageQueryRequest>(query.value());
+  return PeelAutofillPageResourceQueryRequestWrapper(
+             GetStringFromDataElements(
+                 resource_request.request_body->elements()))
+      .and_then(ParseProtoContents<AutofillPageQueryRequest>);
 }
 
 bool IsSingleFormRequest(const AutofillPageQueryRequest& query) {
@@ -257,12 +256,8 @@ ErrorOr<AutofillPageQueryRequest> GetAutofillQueryFromRequestNode(
         "Unable to retrieve serialized request from WPR request_node");
   }
   std::string http_text = SplitHTTP(decoded_request_text).second;
-  ErrorOr<std::string> query =
-      PeelAutofillPageResourceQueryRequestWrapper(http_text);
-  if (!query.has_value()) {
-    return base::unexpected(query.error());
-  }
-  return ParseProtoContents<AutofillPageQueryRequest>(query.value());
+  return PeelAutofillPageResourceQueryRequestWrapper(http_text).and_then(
+      ParseProtoContents<AutofillPageQueryRequest>);
 }
 
 // Gets AutofillQueryResponseContents from WPR recorded HTTP response body.

@@ -141,21 +141,24 @@ void SignedWebBundleReader::OnIntegrityBlockParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(state_, State::kInitializing);
 
-  if (error) {
-    FulfillWithError(std::move(read_error_callback), std::move(error));
-    return;
-  }
-
-  auto integrity_block = web_package::SignedWebBundleIntegrityBlock::Create(
-      std::move(raw_integrity_block));
+  auto integrity_block = [&]()
+      -> base::expected<web_package::SignedWebBundleIntegrityBlock,
+                        web_package::mojom::BundleIntegrityBlockParseErrorPtr> {
+    if (error) {
+      return base::unexpected(std::move(error));
+    }
+    return web_package::SignedWebBundleIntegrityBlock::Create(
+               std::move(raw_integrity_block))
+        .transform_error([&](std::string error) {
+          return web_package::mojom::BundleIntegrityBlockParseError::New(
+              web_package::mojom::BundleParseErrorType::kFormatError,
+              "Error while parsing the Signed Web Bundle's integrity block: " +
+                  std::move(error));
+        });
+  }();
   if (!integrity_block.has_value()) {
-    FulfillWithError(
-        std::move(read_error_callback),
-        web_package::mojom::BundleIntegrityBlockParseError::New(
-            web_package::mojom::BundleParseErrorType::kFormatError,
-            "Error while parsing the Signed Web Bundle's integrity "
-            "block: " +
-                integrity_block.error()));
+    FulfillWithError(std::move(read_error_callback),
+                     std::move(integrity_block.error()));
     return;
   }
 

@@ -144,7 +144,7 @@ void ConstructResultFromValue(
     run_callback_with_error(std::move(value_or_error.error()));
     return;
   }
-  const base::Value& root_node = *value_or_error;
+  const base::Value root_node = std::move(*value_or_error);
 
   // From this point on, we hope that everything is valid (e.g., that we don't
   // get non-dictionary values or unexpected top-level types. But, if we did,

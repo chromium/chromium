@@ -246,10 +246,10 @@ HRESULT IsCOMCallerAllowed() {
     return S_OK;
   }
 
-  HResultOr<bool> result = IsCOMCallerAdmin();
+  const HResultOr<bool> result = IsCOMCallerAdmin();
   if (!result.has_value()) {
     HRESULT hr = result.error();
-    LOG(ERROR) << __func__ << ": IsCOMCallerAdmin failed: " << std::hex << hr;
+    LOG(ERROR) << "IsCOMCallerAdmin failed: " << std::hex << hr;
     return hr;
   }
 

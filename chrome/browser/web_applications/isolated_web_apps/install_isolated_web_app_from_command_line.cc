@@ -262,11 +262,8 @@ void IsolatedWebAppCommandLineInstallManager::OnGetIsolatedWebAppUrlInfo(
 void IsolatedWebAppCommandLineInstallManager::OnInstallIsolatedWebApp(
     base::expected<InstallIsolatedWebAppCommandSuccess,
                    InstallIsolatedWebAppCommandError> result) {
-  if (!result.has_value()) {
-    ReportInstallationResult(base::unexpected(result.error().message));
-  } else {
-    ReportInstallationResult(result.value());
-  }
+  ReportInstallationResult(
+      result.transform_error([](auto error) { return error.message; }));
 }
 
 void IsolatedWebAppCommandLineInstallManager::ReportInstallationResult(
