@@ -73,6 +73,10 @@ struct BLINK_COMMON_EXPORT
     return r.snapshot_root_size_at_capture;
   }
 
+  static float device_pixel_ratio(const blink::ViewTransitionState& r) {
+    return r.device_pixel_ratio;
+  }
+
   static bool Read(blink::mojom::ViewTransitionStateDataView r,
                    blink::ViewTransitionState* out);
 };

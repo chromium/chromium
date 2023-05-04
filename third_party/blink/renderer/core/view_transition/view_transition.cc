@@ -920,6 +920,11 @@ const ClipPaintPropertyNode* ViewTransition::GetCaptureClip(
 }
 
 void ViewTransition::RunViewTransitionStepsOutsideMainFrame() {
+  // TODO(crbug.com/1441748): This should be a DCHECK.
+  if (state_ == State::kWaitForRenderBlock) {
+    return;
+  }
+
   DCHECK(document_->Lifecycle().GetState() >=
          DocumentLifecycle::kPrePaintClean);
   DCHECK(!in_main_lifecycle_update_);
@@ -931,6 +936,11 @@ void ViewTransition::RunViewTransitionStepsOutsideMainFrame() {
 }
 
 void ViewTransition::RunViewTransitionStepsDuringMainFrame() {
+  // TODO(crbug.com/1441748): This should be a DCHECK.
+  if (state_ == State::kWaitForRenderBlock) {
+    return;
+  }
+
   DCHECK_GE(document_->Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
   DCHECK(!in_main_lifecycle_update_);

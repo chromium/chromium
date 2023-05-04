@@ -336,6 +336,7 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
     Document& document,
     ViewTransitionState transition_state)
     : document_(document), state_(State::kCaptured), deserialized_(true) {
+  device_pixel_ratio_ = transition_state.device_pixel_ratio;
   captured_name_count_ = static_cast<int>(transition_state.elements.size());
   snapshot_root_size_at_capture_ =
       transition_state.snapshot_root_size_at_capture;
@@ -1006,6 +1007,8 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
                                  ->StyleRef()
                                  .EffectiveZoom();
   if (device_pixel_ratio_ != device_pixel_ratio) {
+    // TODO(vmpstr): Changes to device pixel ratio are hard to deal with because
+    // of the cached content. We should just skip the transition here.
     device_pixel_ratio_ = device_pixel_ratio;
     needs_style_invalidation = true;
   }
@@ -1463,6 +1466,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
 
   ViewTransitionState transition_state;
 
+  transition_state.device_pixel_ratio = device_pixel_ratio_;
   DCHECK(snapshot_root_size_at_capture_);
   transition_state.snapshot_root_size_at_capture =
       *snapshot_root_size_at_capture_;
@@ -1488,7 +1492,9 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     element.snapshot_id = element_data->old_snapshot_id;
     element.paint_order = element_data->element_index;
     element.is_root = false;
+
     // TODO(khushalsagar): Also writing mode.
+    // TODO(vmpstr): Also captured_rect_in_layout_space.
 
     DCHECK_GT(element.paint_order, 0);
   }
