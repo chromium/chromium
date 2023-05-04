@@ -184,6 +184,7 @@ public class PushMessagingTest implements PushMessagingServiceObserver.Listener 
     @Test
     @MediumTest
     @Feature({"Browser", "PushMessaging"})
+    @DisabledTest(message = "Disabled for flakiness, see https://crbug.com/1442707")
     public void testPushPermissionGranted() throws TimeoutException {
         // Notifications permission should initially be prompt.
         Assert.assertEquals("\"default\"", runScriptBlocking("Notification.permission"));
