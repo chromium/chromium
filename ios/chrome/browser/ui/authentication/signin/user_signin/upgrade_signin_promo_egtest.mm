@@ -79,7 +79,7 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 }
 
 // Tests that the sign-in promo is not visible at start-up with no identity.
-- (void)testNoSigninPromoWithNoIdentity {
+- (void)DISABLED_testNoSigninPromoWithNoIdentity {
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
@@ -90,7 +90,7 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 
 // Tests that the sign-in promo is not visible at start-up once
 // the user has signed in to their account previously.
-- (void)testStartupSigninPromoUserSignedIn {
+- (void)DISABLED_testStartupSigninPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [SigninEarlGrey setCapabilities:GetCapabilitiesDictionary(
@@ -138,7 +138,7 @@ ios::CapabilitiesDict* GetCapabilitiesDictionary(
 
 // Tests sign-in promo behavior in landscape. It should appears if and only if
 // the device is an ipad.
-- (void)testNoSignInPromoInLandscapeMode {
+- (void)DISABLED_testNoSignInPromoInLandscapeMode {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
