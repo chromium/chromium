@@ -64,7 +64,6 @@ in_app_images = [
   "settings_help.svg",
   "settings_resolution.svg",
   "settings_timer_duration.svg",
-  "spinner.svg",
 ]
 
 icon_images = [
