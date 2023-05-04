@@ -118,12 +118,13 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   //                will be translated to other languages.
   private defaultFontName_: string = 'sans-serif';
   private validFontNames_: Array<{name: string, css: string}> = [
-    {name: 'Standard font', css: 'Standard font'},
+    {name: 'Poppins', css: 'Poppins'},
     {name: 'Sans-serif', css: 'sans-serif'},
     {name: 'Serif', css: 'serif'},
-    {name: 'Arial', css: 'Arial'},
-    {name: 'Comic Sans MS', css: '"Comic Sans MS"'},
-    {name: 'Times New Roman', css: '"Times New Roman"'},
+    {name: 'Comic Neue', css: '"Comic Neue"'},
+    {name: 'Lexend Deca', css: '"Lexend Deca"'},
+    {name: 'EB Garamond', css: '"EB Garamond"'},
+    {name: 'STIX Two Text', css: '"STIX Two Text"'},
   ];
 
   // Maps a DOM node to the AXNodeID that was used to create it. DOM nodes and

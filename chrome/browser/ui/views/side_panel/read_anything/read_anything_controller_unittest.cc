@@ -78,12 +78,14 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
     controller_->OnLetterSpacingChanged(index);
   }
 
-  void MockModelInit(std::string font_name,
+  void MockModelInit(std::string language,
+                     std::string font_name,
                      double font_scale,
                      read_anything::mojom::Colors colors,
                      read_anything::mojom::LineSpacing line_spacing,
                      read_anything::mojom::LetterSpacing letter_spacing) {
-    model_->Init(font_name, font_scale, colors, line_spacing, letter_spacing);
+    model_->Init(language, font_name, font_scale, colors, line_spacing,
+                 letter_spacing);
   }
 
   std::string GetPrefFontName() {
@@ -120,8 +122,15 @@ class ReadAnythingControllerTest : public TestWithBrowserView {
 };
 
 TEST_F(ReadAnythingControllerTest, ValidIndexUpdatesFontNamePref) {
-  std::string expected_font_name = "Arial";
+  std::string expected_font_name = "Comic Neue";
 
+  // Initialize model with English so all fonts are available choices.
+  std::string font_name;
+  std::string language = "en";
+  MockModelInit(language, font_name, 4.5,
+                read_anything::mojom::Colors::kDefaultValue,
+                read_anything::mojom::LineSpacing::kDefaultValue,
+                read_anything::mojom::LetterSpacing::kDefaultValue);
   MockOnFontChoiceChanged(3);
 
   EXPECT_EQ(expected_font_name, GetPrefFontName());
@@ -147,7 +156,9 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMax) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 4.5, read_anything::mojom::Colors::kDefaultValue,
+  std::string language = "en";
+  MockModelInit(language, font_name, 4.5,
+                read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
 
@@ -160,7 +171,9 @@ TEST_F(ReadAnythingControllerTest, OnFontSizeChangedHonorsMin) {
   EXPECT_NEAR(GetPrefFontScale(), 1.0, 0.01);
 
   std::string font_name;
-  MockModelInit(font_name, 0.5, read_anything::mojom::Colors::kDefaultValue,
+  std::string language = "en";
+  MockModelInit(language, font_name, 0.5,
+                read_anything::mojom::Colors::kDefaultValue,
                 read_anything::mojom::LineSpacing::kDefaultValue,
                 read_anything::mojom::LetterSpacing::kDefaultValue);
 

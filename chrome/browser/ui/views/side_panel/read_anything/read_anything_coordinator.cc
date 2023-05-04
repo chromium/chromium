@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
@@ -21,6 +22,9 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/language/core/browser/language_model.h"
+#include "components/language/core/browser/language_model_manager.h"
+#include "components/language/core/common/locale_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/combobox_model.h"
 
@@ -38,6 +42,13 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
   Browser* browser = &GetBrowser();
   if (!browser->profile() || !browser->profile()->GetPrefs())
     return;
+
+  // Get user's default language to check for compatible fonts.
+  language::LanguageModel* language_model =
+      LanguageModelManagerFactory::GetForBrowserContext(browser->profile())
+          ->GetPrimaryModel();
+  std::string prefs_lang = language_model->GetLanguages().front().lang_code;
+  prefs_lang = language::ExtractBaseLanguage(prefs_lang);
 
   std::string prefs_font_name;
   prefs_font_name = browser->profile()->GetPrefs()->GetString(
@@ -63,7 +74,8 @@ void ReadAnythingCoordinator::InitModelWithUserPrefs() {
           prefs::kAccessibilityReadAnythingLetterSpacing));
 
   model_->Init(
-      /* font name = */ prefs_font_name,
+      /* lang code = */ prefs_lang,
+      /* font = */ prefs_font_name,
       /* font scale = */ prefs_font_scale,
       /* colors = */ prefs_colors,
       /* line spacing = */ prefs_line_spacing,

@@ -38,6 +38,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   std::string GetFontNameAt(size_t index);
   bool IsValidFontName(const std::string& font_name);
   bool IsValidFontIndex(size_t index);
+  void SetDefaultLanguage(const std::string& lang);
   size_t GetFontNameIndex(std::string font_name);
   void SetSelectedIndex(size_t index);
   std::vector<std::string> GetLabelFontNameAt(size_t index) override;
@@ -269,7 +270,8 @@ class ReadAnythingModel {
   ReadAnythingModel& operator=(const ReadAnythingModel&) = delete;
   ~ReadAnythingModel();
 
-  void Init(const std::string& font_name,
+  void Init(const std::string& lang_code,
+            const std::string& font_name,
             double font_scale,
             read_anything::mojom::Colors colors,
             read_anything::mojom::LineSpacing line_spacing,

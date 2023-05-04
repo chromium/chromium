@@ -72,10 +72,12 @@ ReadAnythingUI::ReadAnythingUI(content::WebUI* web_ui)
       "script-src 'self' chrome-untrusted://resources;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'self' chrome-untrusted://resources 'unsafe-inline';");
+      "style-src 'self' chrome-untrusted://resources "
+      "https://fonts.googleapis.com 'unsafe-inline';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FontSrc,
-      "font-src 'self' chrome-untrusted://resources;");
+      "font-src 'self' chrome-untrusted://resources "
+      "https://fonts.gstatic.com;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
       "img-src 'self' chrome-untrusted://resources;");

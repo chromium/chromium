@@ -6,10 +6,10 @@
 
 namespace string_constants {
 
-// The default Read Anything font that will be used before a selection is made.
-// This will also be used as a backup font if another Read Anything font is
-// unavailable by the system.
-const char kReadAnythingDefaultFontName[] = "Sans-serif";
+// Used as an initial value in the model. This is not shown to the user.
+// The font option shown to the user before a selection occurs is either from
+// their saved preference or from the default selected_index_ in the font model.
+const char kReadAnythingDefaultFontName[] = "Poppins";
 
 const char kLetterSpacingHistogramName[] =
     "Accessibility.ReadAnything.LetterSpacing";
