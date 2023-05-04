@@ -17,7 +17,8 @@ class UnifiedSystemTrayController;
 
 // Controller of locale feature pod button. The button appears in demo mode and
 // allows setting the language for demo mode content. To work on demo mode, see
-// instructions at go/demo-mode-g3-cookbook.
+// instructions at go/demo-mode-g3-cookbook. To force the feature tile to show
+// in the emulator pass --qs-show-locale-tile.
 class ASH_EXPORT LocaleFeaturePodController : public FeaturePodControllerBase {
  public:
   explicit LocaleFeaturePodController(

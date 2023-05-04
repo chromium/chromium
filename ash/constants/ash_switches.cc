@@ -856,6 +856,10 @@ const char kQsAddFakeBluetoothDevices[] = "qs-add-fake-bluetooth-devices";
 // Adds fake Cast devices to the quick settings menu for UI testing.
 const char kQsAddFakeCastDevices[] = "qs-add-fake-cast-devices";
 
+// Forces the quick settings "locale" FeatureTile to show. Normally it only
+// shows in demo mode, which does not work in the emulator.
+const char kQsShowLocaleTile[] = "qs-show-locale-tile";
+
 // The name of the per-model directory which contains per-region
 // subdirectories with regulatory label files for this model.
 // The per-model directories (if there are any) are located under
