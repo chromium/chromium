@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/bookmarks/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
@@ -147,7 +148,10 @@
       isIncognito ? ToolbarStyle::kIncognito : ToolbarStyle::kNormal;
 
   ToolbarButtonActionsHandler* actionHandler =
-      [[ToolbarButtonActionsHandler alloc] init];
+      [[ToolbarButtonActionsHandler alloc]
+          initWithEngagementTracker:feature_engagement::TrackerFactory::
+                                        GetForBrowserState(
+                                            self.browser->GetBrowserState())];
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
 

@@ -25,6 +25,7 @@ source_set("buttons") {
     "resources:tab_toolbar_button_color_highlighted",
     "resources:tab_toolbar_button_color_highlighted_incognito",
     "//base",
+    "//components/feature_engagement/public",
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",

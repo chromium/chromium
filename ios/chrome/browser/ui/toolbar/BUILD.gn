@@ -36,6 +36,7 @@ source_set("toolbar") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/bookmarks",
+    "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/ntp",
     "//ios/chrome/browser/ntp:util",
