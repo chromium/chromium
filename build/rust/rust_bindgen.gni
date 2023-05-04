@@ -177,7 +177,7 @@ template("rust_bindgen") {
       ]
     }
 
-    if (!is_cfi) {
+    if (is_cfi) {
       # LLVM searches for a default CFI ignorelist at (exactly)
       # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
       # Even if we provide a custom -fsanitize-ignorelist, the absence
