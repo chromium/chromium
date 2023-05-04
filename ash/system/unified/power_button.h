@@ -36,6 +36,9 @@ class ASH_EXPORT PowerButton : public views::View {
   // If the context mune is currently open.
   bool IsMenuShowing();
 
+  // Getter of the `MenuItemView` for testing.
+  views::MenuItemView* GetMenuViewForTesting();
+
   views::View* button_content_for_testing() { return button_content_; }
 
  private:
@@ -60,9 +63,6 @@ class ASH_EXPORT PowerButton : public views::View {
   // Shows the context menu by `MenuController`. This method passed in to the
   // `Button` view as the `OnPressedCallback`.
   void OnButtonActivated(const ui::Event& event);
-
-  // Getter of the `MenuItemView` for testing.
-  views::MenuItemView* GetMenuViewForTesting();
 
   // Owned by views hierarchy.
   raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;

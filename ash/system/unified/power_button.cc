@@ -409,6 +409,10 @@ bool PowerButton::IsMenuShowing() {
   return menu_runner && menu_runner->IsRunning();
 }
 
+views::MenuItemView* PowerButton::GetMenuViewForTesting() {
+  return context_menu_->root_menu_item_view_;
+}
+
 void PowerButton::OnThemeChanged() {
   views::View::OnThemeChanged();
 
@@ -461,10 +465,6 @@ void PowerButton::OnButtonActivated(const ui::Event& event) {
       /*source=*/this, GetBoundsInScreen().CenterPoint(), type);
 
   UpdateView();
-}
-
-views::MenuItemView* PowerButton::GetMenuViewForTesting() {
-  return context_menu_->root_menu_item_view_;
 }
 
 }  // namespace ash
