@@ -270,7 +270,7 @@ def CargoVendor(cargo_bin):
         else:
             sys.exit(1)
 
-        # From https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L986-L995:
+        # From https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L1003-L1013:
         # The additional `--sync` Cargo.toml files are not part of the top level
         # workspace.
         vendor_cmd = [
@@ -278,6 +278,8 @@ def CargoVendor(cargo_bin):
             'vendor',
             '--locked',
             '--versioned-dirs',
+            '--sync',
+            'src/tools/cargo/Cargo.toml',
             '--sync',
             'src/tools/rust-analyzer/Cargo.toml',
             '--sync',
