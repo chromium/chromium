@@ -8,21 +8,22 @@
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
-(function() {
-chrome.readAnything.onConnected = function() {};
+(() => {
+  chrome.readAnything.onConnected = () => {};
 
-const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
-const container = readAnythingApp.getElementById('container');
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
+  const container = readAnythingApp.getElementById('container');
 
-chrome.readAnything.setThemeForTesting(
-    'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1, 0);
-const expected = 'rgb(253, 226, 147)';  // #FDE293
-const actual = getComputedStyle(container).backgroundColor;
-const isEqual = actual === expected;
-if (!isEqual) {
-  console.error(
-      'Expected: ' + JSON.stringify(expected) + ', ' +
-      'Actual: ' + JSON.stringify(actual));
-}
-return isEqual;
+  chrome.readAnything.setThemeForTesting(
+      'f', 1, 0, /* SkColorSetRGB(0xFD, 0xE2, 0x93) = */ 4294828691, 1, 0);
+  const expected = 'rgb(253, 226, 147)';  // #FDE293
+  const actual = getComputedStyle(container).backgroundColor;
+  const isEqual = actual === expected;
+  if (!isEqual) {
+    console.error(
+        'Expected: ' + JSON.stringify(expected) + ', ' +
+        'Actual: ' + JSON.stringify(actual));
+  }
+  return isEqual;
 })();

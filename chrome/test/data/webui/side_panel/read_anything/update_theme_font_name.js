@@ -8,45 +8,46 @@
 // Do not call the real `onConnected()`. As defined in
 // ReadAnythingAppController, onConnected creates mojo pipes to connect to the
 // rest of the Read Anything feature, which we are not testing here.
-(function() {
-chrome.readAnything.onConnected = function() {};
+(() => {
+  chrome.readAnything.onConnected = () => {};
 
-const readAnythingApp = document.querySelector('read-anything-app').shadowRoot;
-const container = readAnythingApp.getElementById('container');
-let result = true;
+  const readAnythingApp =
+      document.querySelector('read-anything-app').shadowRoot;
+  const container = readAnythingApp.getElementById('container');
+  let result = true;
 
-function assertEquals(actual, expected) {
-  const isEqual = actual === expected;
-  if (!isEqual) {
-    console.error(
-        'Expected: ' + JSON.stringify(expected) + ', ' +
-        'Actual: ' + JSON.stringify(actual));
-  }
-  result = result && isEqual;
-  return isEqual;
-}
+  const assertEquals = (actual, expected) => {
+    const isEqual = actual === expected;
+    if (!isEqual) {
+      console.error(
+          'Expected: ' + JSON.stringify(expected) + ', ' +
+          'Actual: ' + JSON.stringify(actual));
+    }
+    result = result && isEqual;
+    return isEqual;
+  };
 
-function assertFontName(expected) {
-  assertEquals(expected, getComputedStyle(container).fontFamily);
-}
+  const assertFontName = (expected) => {
+    assertEquals(expected, getComputedStyle(container).fontFamily);
+  };
 
-chrome.readAnything.setThemeForTesting('Standard font', 18.0, 0, 0, 1, 0);
-assertFontName('"Standard font"');
+  chrome.readAnything.setThemeForTesting('Standard font', 18.0, 0, 0, 1, 0);
+  assertFontName('"Standard font"');
 
-chrome.readAnything.setThemeForTesting('Sans-serif', 18.0, 0, 0, 1, 0);
-assertFontName('sans-serif');
+  chrome.readAnything.setThemeForTesting('Sans-serif', 18.0, 0, 0, 1, 0);
+  assertFontName('sans-serif');
 
-chrome.readAnything.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
-assertFontName('serif');
+  chrome.readAnything.setThemeForTesting('Serif', 18.0, 0, 0, 1, 0);
+  assertFontName('serif');
 
-chrome.readAnything.setThemeForTesting('Arial', 18.0, 0, 0, 1, 0);
-assertFontName('Arial');
+  chrome.readAnything.setThemeForTesting('Arial', 18.0, 0, 0, 1, 0);
+  assertFontName('Arial');
 
-chrome.readAnything.setThemeForTesting('Comic Sans MS', 18.0, 0, 0, 1, 0);
-assertFontName('"Comic Sans MS"');
+  chrome.readAnything.setThemeForTesting('Comic Sans MS', 18.0, 0, 0, 1, 0);
+  assertFontName('"Comic Sans MS"');
 
-chrome.readAnything.setThemeForTesting('Times New Roman', 18.0, 0, 0, 1, 0);
-assertFontName('"Times New Roman"');
+  chrome.readAnything.setThemeForTesting('Times New Roman', 18.0, 0, 0, 1, 0);
+  assertFontName('"Times New Roman"');
 
-return result;
+  return result;
 })();
