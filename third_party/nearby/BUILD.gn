@@ -651,6 +651,7 @@ source_set("platform_base_connection_info") {
   ]
   public_deps = [
     ":platform_base",
+    ":platform_base_logging",
     "//third_party/abseil-cpp:absl",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -792,6 +793,8 @@ source_set("presence") {
     "src/presence/presence_service.h",
   ]
   public_deps = [
+    ":connections_metadata_proto",
+    ":platform_public_types",
     ":presence_internal",
     ":presence_types",
     "//third_party/abseil-cpp:absl",
@@ -870,6 +873,7 @@ source_set("presence_internal") {
   ]
   public_deps = [
     ":connections_enums_proto",
+    ":connections_local_credential_proto",
     ":connections_metadata_proto",
     ":platform_base",
     ":platform_base_uuid",
