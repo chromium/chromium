@@ -116,6 +116,14 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
     bookmarks::BookmarkModel* profile_model,
     bookmarks::BookmarkModel* account_model);
 
+// Checks if `account_model` is available and returns true if all the available
+// bookmark models are loaded. Note that `profile_model` is always available.
+// `profile_model` must not be `nullptr`. `account_model` may be `nullptr` if
+// it is not available. Otherwise it must not be `nullptr`.
+bool AreAllAvailableBookmarkModelsLoaded(
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model);
+
 // Whether the Cloud Slash icon should be displayed for the profile model.
 // For nodes in account model, the icon should never been shown.
 bool ShouldDisplayCloudSlashIconForProfileModel(

@@ -121,17 +121,16 @@ bool IsABookmarkNodeSectionForIdentifier(
   if ((self = [super init])) {
     DCHECK(browser);
     CHECK(displayedNode);
+    CHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+        profileBookmarkModel, accountBookmarkModel));
+
+    _browser = browser->AsWeakPtr();
     _profileBookmarkModel = profileBookmarkModel->AsWeakPtr();
     if (base::FeatureList::IsEnabled(
             bookmarks::kEnableBookmarksAccountStorage)) {
-      CHECK(accountBookmarkModel);
-      CHECK(accountBookmarkModel->loaded());
       _accountBookmarkModel = accountBookmarkModel->AsWeakPtr();
-    } else {
-      CHECK(!accountBookmarkModel);
     }
     _displayedNode = displayedNode;
-    _browser = browser->AsWeakPtr();
     _baseViewController = baseViewController;
   }
   return self;
@@ -196,12 +195,6 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Computes the bookmarks table view based on the currently displayed node.
 - (void)computeBookmarkTableViewData {
   [self resetSections];
-
-  // Regenerate the list of all bookmarks.
-  if (!_profileBookmarkModel->loaded() || !self.displayedNode) {
-    [self updateTableViewBackground];
-    return;
-  }
 
   if (self.consumer.isDisplayingBookmarkRoot) {
     [self generateTableViewDataForRootNode];
@@ -461,13 +454,13 @@ bool IsABookmarkNodeSectionForIdentifier(
       _accountBookmarkModel.get());
 }
 
-#pragma mark - BookmarkModelBridgeObserver Callbacks
+#pragma mark - BookmarkModelBridgeObserver
 
 // BookmarkModelBridgeObserver Callbacks
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
-  [self.consumer refreshContents];
+  NOTREACHED();
 }
 
 // The node has changed, but not its children.

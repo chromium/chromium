@@ -88,6 +88,7 @@ class BookmarkModel;
 
 // Designated initializer.
 // `baseViewController` view controller used to present sign-in UI.
+// `profileBookmarkModel` must not be `nullptr`. It should also be loaded.
 // TODO(crbug.com/1402758): `browser` and `baseViewController` need to be
 // removed from `BookmarksHomeMediator`. A mediator should not be aware of
 // those classes.

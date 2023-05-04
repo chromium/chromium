@@ -180,6 +180,18 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
                                                        : profile_model;
 }
 
+bool AreAllAvailableBookmarkModelsLoaded(
+    bookmarks::BookmarkModel* profile_model,
+    bookmarks::BookmarkModel* account_model) {
+  DCHECK(profile_model);
+  if (!base::FeatureList::IsEnabled(
+          bookmarks::kEnableBookmarksAccountStorage)) {
+    return profile_model->loaded();
+  }
+  DCHECK(account_model);
+  return profile_model->loaded() && account_model->loaded();
+}
+
 bool ShouldDisplayCloudSlashIconForProfileModel(
     SyncSetupService* sync_setup_service) {
   if (!base::FeatureList::IsEnabled(

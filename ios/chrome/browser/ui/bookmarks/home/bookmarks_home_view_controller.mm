@@ -297,12 +297,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 - (NSArray<BookmarksHomeViewController*>*)cachedViewControllerStack {
   // This method is only designed to be called for the view controller
   // associated with the root node.
-  DCHECK(_profileBookmarkModel->loaded());
-  if (base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage)) {
-    CHECK(_accountBookmarkModel->loaded());
-  } else {
-    CHECK(!_accountBookmarkModel.get());
-  }
+  CHECK(bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+      _profileBookmarkModel.get(), _accountBookmarkModel.get()));
   DCHECK([self isDisplayingBookmarkRoot]);
 
   NSMutableArray<BookmarksHomeViewController*>* stack = [NSMutableArray array];
@@ -1136,6 +1132,10 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 #pragma mark - BookmarkModelBridgeObserver
 
 - (void)bookmarkModelLoaded:(bookmarks::BookmarkModel*)model {
+  if (!bookmark_utils_ios::AreAllAvailableBookmarkModelsLoaded(
+          _profileBookmarkModel.get(), _accountBookmarkModel.get())) {
+    return;
+  }
   DCHECK(!self.displayedFolderNode);
   self.displayedFolderNode = _profileBookmarkModel->root_node();
 
