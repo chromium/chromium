@@ -101,6 +101,10 @@ void ResetInputs(UiControlsState* state) {
                                    touch_id, 0, 0);
     }
   }
+
+  // TODO(crbug.com/1431512): Fix this issue and the code below should not be
+  // necessary.
+  ui_controls::SendMouseMove(0, 0);
 }
 
 void ui_controls_send_key_events(struct wl_client* client,
