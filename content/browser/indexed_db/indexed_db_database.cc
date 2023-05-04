@@ -228,7 +228,7 @@ void IndexedDBDatabase::RequireBlockingTransactionClientsToBeActive(
       connection->DisallowInactiveClient(
           storage::mojom::DisallowInactiveClientReason::
               kTransactionIsBlockingOthers,
-          base::NullCallback());
+          base::DoNothing());
     }
   }
 }

@@ -756,7 +756,7 @@ void DatabaseImpl::DidBecomeInactive() {
         connection_->DisallowInactiveClient(
             storage::mojom::DisallowInactiveClientReason::
                 kTransactionIsAcquiringLocks,
-            base::NullCallback());
+            base::DoNothing());
         return;
       }
       case IndexedDBTransaction::State::STARTED: {
@@ -768,7 +768,7 @@ void DatabaseImpl::DidBecomeInactive() {
           connection_->DisallowInactiveClient(
               storage::mojom::DisallowInactiveClientReason::
                   kTransactionIsBlockingOthers,
-              base::NullCallback());
+              base::DoNothing());
           return;
         }
         break;
