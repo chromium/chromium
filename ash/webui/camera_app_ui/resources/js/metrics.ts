@@ -25,9 +25,12 @@ import {getGAHelper} from './untrusted_scripts.js';
 import {WaitableEvent} from './waitable_event.js';
 
 /**
- * The tracker ID of the GA metrics.
+ * The tracker ID of the GA metrics and the measurement ID of GA4 events. Make
+ * sure to replace both of them when debugging (see
+ * go/cros-camera:dd:cca-ga-migration).
  */
 const GA_ID = 'UA-134822711-1';
+const GA4_ID = 'G-TRQS261G6E';
 
 let baseDimen: Map<number, number|string>|null = null;
 
@@ -70,8 +73,34 @@ async function sendEvent(
   const canSendMetrics =
       await ChromeHelper.getInstance().isMetricsAndCrashReportingEnabled();
   if (canSendMetrics) {
-    (await getGAHelper()).sendGAEvent(event);
+    const gaHelper = await getGAHelper();
+    const ga4CustomDimensions =
+        toGA4Dimensions(new Map([...baseDimen, ...(dimen ?? [])]));
+    await Promise.all([
+      gaHelper.sendGAEvent(event),
+      gaHelper.sendGA4Event(event, ga4CustomDimensions),
+    ]);
   }
+}
+
+/**
+ * Convert GA custom dimensions to GA4 custom dimensions. Dimension numbers are
+ * mapped to lowercase enum key names; the values are cast to strings (undefined
+ * values are dropped).
+ *
+ * @param dimensions GA custom dimensions map.
+ * @return A string key-value pairs.
+ */
+function toGA4Dimensions(dimensions: Map<number, unknown>) {
+  const ga4Dimensions: Record<string, string> = {};
+  for (const [enumKey, value] of dimensions) {
+    if (value === undefined) {
+      continue;
+    }
+    const key = MetricDimension[enumKey].toLowerCase();
+    ga4Dimensions[key] = String(value);
+  }
+  return ga4Dimensions;
 }
 
 /**
@@ -168,7 +197,10 @@ export async function initMetrics(): Promise<void> {
   }
 
   await (await getGAHelper())
-      .initGA(GA_ID, clientId, Comlink.proxy(setClientId));
+      .initGA(
+          {gaId: GA_ID, ga4Id: GA4_ID, clientId},
+          Comlink.proxy(setClientId),
+      );
   ready.signal();
 }
 
