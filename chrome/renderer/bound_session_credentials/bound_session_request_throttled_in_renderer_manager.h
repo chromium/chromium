@@ -52,7 +52,8 @@ class BoundSessionRequestThrottledInRendererManager
   // - The remote connection is closed (on profile shutdown).
   // This class expects `callback` to be bound to the sequence on which it
   // should run.
-  void OnRequestBlockedOnCookie(
+  // Marked virtual for testing.
+  virtual void OnRequestBlockedOnCookie(
       BoundSessionRequestThrottledListener::
           ResumeOrCancelThrottledRequestCallback callback);
 
@@ -65,9 +66,10 @@ class BoundSessionRequestThrottledInRendererManager
   friend class base::RefCountedThreadSafe<
       BoundSessionRequestThrottledInRendererManager>;
   friend class BoundSessionRequestThrottledInRendererManagerTest;
+  friend class MockBoundSessionRequestThrottledInRendererManager;
 
   BoundSessionRequestThrottledInRendererManager();
-  ~BoundSessionRequestThrottledInRendererManager();
+  virtual ~BoundSessionRequestThrottledInRendererManager();
 
   void CallRemoteOnRequestBlockedOnCookie();
 
