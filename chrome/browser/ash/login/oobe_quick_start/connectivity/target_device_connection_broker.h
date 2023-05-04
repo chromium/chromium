@@ -11,12 +11,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash::quick_start {
 
 struct FidoAssertionInfo;
-struct WifiCredentials;
 
 // TargetDeviceConnectionBroker is the entrypoint for consuming the Quick Start
 // connectivity component. Calling code is expected to get an instance of this
@@ -49,7 +49,7 @@ class TargetDeviceConnectionBroker {
   class AuthenticatedConnection {
    public:
     using RequestWifiCredentialsCallback =
-        base::OnceCallback<void(absl::optional<WifiCredentials>)>;
+        base::OnceCallback<void(absl::optional<mojom::WifiCredentialsPtr>)>;
     // The ack_successful bool indicates whether the ack was successfully
     // received by the source device. If true, then the target device will
     // prepare to resume the Quick Start connection after it updates.

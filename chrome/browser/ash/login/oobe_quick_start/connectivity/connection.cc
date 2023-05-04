@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/ash/login/oobe_quick_start/logging/logging.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
@@ -172,12 +171,7 @@ void Connection::ParseWifiCredentialsResponse(
     return;
   }
 
-  WifiCredentials credentials;
-  credentials.ssid = response->get_credentials()->ssid;
-  credentials.password = response->get_credentials()->password;
-  credentials.is_hidden = response->get_credentials()->is_hidden;
-  credentials.security_type = response->get_credentials()->security_type;
-  std::move(callback).Run(std::move(credentials));
+  std::move(callback).Run(response->get_credentials()->Clone());
 }
 
 void Connection::OnNotifySourceOfUpdateResponse(

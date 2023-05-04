@@ -17,13 +17,13 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/random_session_id.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
-#include "chrome/browser/ash/login/oobe_quick_start/connectivity/wifi_credentials.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connection.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connection.h"
 #include "chromeos/ash/components/quick_start/fake_quick_start_decoder.h"
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/cbor/reader.h"
@@ -158,7 +158,7 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
           mojom::WifiCredentials::New("ssid", mojom::WifiSecurityType::kPSK,
                                       true, "password")));
 
-  base::test::TestFuture<absl::optional<WifiCredentials>> future;
+  base::test::TestFuture<absl::optional<mojom::WifiCredentialsPtr>> future;
 
   authenticated_connection_->RequestWifiCredentials(session_id,
                                                     future.GetCallback());
@@ -201,13 +201,13 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
             shared_secret_base64);
 
-  const absl::optional<WifiCredentials>& credentials = future.Get();
+  const absl::optional<mojom::WifiCredentialsPtr>& credentials = future.Get();
   EXPECT_TRUE(credentials.has_value());
-  EXPECT_EQ(credentials->ssid, "ssid");
-  EXPECT_EQ(credentials->password, "password");
-  EXPECT_EQ(credentials->security_type,
+  EXPECT_EQ(credentials.value()->ssid, "ssid");
+  EXPECT_EQ(credentials.value()->password, "password");
+  EXPECT_EQ(credentials.value()->security_type,
             ash::quick_start::mojom::WifiSecurityType::kPSK);
-  EXPECT_TRUE(credentials->is_hidden);
+  EXPECT_TRUE(credentials.value()->is_hidden);
 }
 
 TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
@@ -218,14 +218,13 @@ TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
       mojom::GetWifiCredentialsResponse::NewFailureReason(
           mojom::GetWifiCredentialsFailureReason::kMissingWifiHiddenStatus));
 
-  base::test::TestFuture<absl::optional<WifiCredentials>> future;
+  base::test::TestFuture<absl::optional<mojom::WifiCredentialsPtr>> future;
 
   authenticated_connection_->RequestWifiCredentials(session_id,
                                                     future.GetCallback());
 
   fake_nearby_connection_->AppendReadableData({0x00, 0x01, 0x02});
 
-  absl::optional<WifiCredentials> credentials = future.Get();
   EXPECT_FALSE(future.Get().has_value());
 }
 
