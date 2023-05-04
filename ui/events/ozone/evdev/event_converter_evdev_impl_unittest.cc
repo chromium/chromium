@@ -834,7 +834,8 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
 
   SetTestNowSeconds(1510019415);
   ClearDispatchedEvents();
-  GetInputController()->SetPrimaryButtonRight(absl::nullopt, false);
+  GetInputController()->SetPrimaryButtonRight(device()->input_device().id,
+                                              false);
   dev->ProcessEvents(mock_kernel_queue, std::size(mock_kernel_queue));
   EXPECT_EQ(4u, size());
 
@@ -874,7 +875,8 @@ TEST_F(EventConverterEvdevImplTest, ShouldSwapMouseButtonsFromUserPreference) {
   SetTestNowSeconds(1510019417);
 
   ClearDispatchedEvents();
-  GetInputController()->SetPrimaryButtonRight(absl::nullopt, true);
+  GetInputController()->SetPrimaryButtonRight(device()->input_device().id,
+                                              true);
   dev->ProcessEvents(mock_kernel_queue2, std::size(mock_kernel_queue2));
   EXPECT_EQ(4u, size());
 
