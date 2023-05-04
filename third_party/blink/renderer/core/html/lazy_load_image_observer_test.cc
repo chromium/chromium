@@ -987,6 +987,36 @@ TEST_F(LazyLoadImagesTest, NonLazyIgnoredForLazyLoadImagesMetrics) {
       "Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold2.4G", 0);
 }
 
+// Allow lazy loading of file:/// urls.
+TEST_F(LazyLoadImagesTest, LazyLoadFileUrls) {
+  SimRequest main_resource("file:///test.html", "text/html");
+  SimSubresourceRequest image_resource("file:///image.png", "image/png");
+
+  LoadURL("file:///test.html");
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <div style='height: %dpx;'></div>
+        <img id='lazy' src='file:///image.png' loading='lazy'/>
+      )HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* lazy = To<HTMLImageElement>(GetDocument().getElementById("lazy"));
+  EXPECT_FALSE(lazy->CachedImage()->IsLoading());
+
+  // Scroll down such that the image is visible.
+  GetDocument().View()->LayoutViewport()->SetScrollOffset(
+      ScrollOffset(0, kViewportHeight + kLoadingDistanceThreshold),
+      mojom::blink::ScrollType::kProgrammatic);
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(lazy->CachedImage()->IsLoading());
+}
+
 class DelayOutOfViewportLazyImagesTest : public SimTest {
  public:
   static constexpr int kViewportWidth = 800;

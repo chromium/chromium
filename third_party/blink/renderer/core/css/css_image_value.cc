@@ -109,12 +109,9 @@ FetchParameters CSSImageValue::PrepareFetch(
                                        cross_origin);
   }
 
-  bool is_lazily_loaded =
-      image_request_behavior ==
+  if (image_request_behavior ==
           FetchParameters::ImageRequestBehavior::kDeferImageLoad &&
-      // Only http/https images are eligible to be lazily loaded.
-      params.Url().ProtocolIsInHTTPFamily();
-  if (is_lazily_loaded) {
+      !params.Url().ProtocolIsData()) {
     params.SetLazyImageDeferred();
   }
 
