@@ -71,7 +71,7 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "chromeos-amd64-generic-rel-compilator",
     branch_selector = branches.selector.CROS_LTS_BRANCHES,
-    cores = 8,
+    cores = "8|16",
     main_list_view = "try",
 )
 
