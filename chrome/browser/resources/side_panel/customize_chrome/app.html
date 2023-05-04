@@ -1,14 +1,4 @@
 <style include="sp-shared-style">
-  :host {
-    --horizontal-rule-color: var(--google-grey-300);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host {
-      --horizontal-rule-color: var(--google-grey-700);
-    }
-  }
-
   :host-context([chrome-refresh-2023]):host {
     display: block;
     padding: var(--sp-body-padding) 0;
@@ -18,15 +8,21 @@
     margin: 8px 16px;
   }
 
-  .horizontal-rule {
-    background-color: var(--horizontal-rule-color);
+  .card-separator {
+    background-color: var(--google-grey-300);
     border: none;
     height: 2px;
     margin: 0;
     width: 100%;
   }
 
-  :host-context([chrome-refresh-2023]) .horizontal-rule {
+  @media (prefers-color-scheme: dark) {
+    .card-separator {
+      background-color: var(--google-grey-700);
+    }
+  }
+
+  :host-context([chrome-refresh-2023]) .card-separator {
     background: transparent;
     height: 8px;
   }
@@ -55,7 +51,7 @@
         id="appearanceElement">
       </customize-chrome-appearance>
     </div>
-    <hr class="horizontal-rule">
+    <hr class="card-separator">
     <div id="shortcuts" class="section sp-card">
       <sp-heading hide-back-button>
         <h2 slot="heading">$i18n{shortcutsHeader}</h2>
@@ -63,7 +59,7 @@
       <customize-chrome-shortcuts></customize-chrome-shortcuts>
     </div>
     <template is="dom-if" if="[[modulesEnabled_]]">
-      <hr class="horizontal-rule">
+      <hr class="card-separator">
       <div id="modules" class="section sp-card">
         <sp-heading hide-back-button>
           <h2 slot="heading">$i18n{cardsHeader}</h2>

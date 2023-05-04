@@ -87,3 +87,20 @@
   --cr-input-background-color:
       var(--color-side-panel-textfield-background-hover);
 }
+
+.sp-hr {
+  background: var(--google-grey-300);
+  border: none;
+  height: 1px;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sp-hr {
+    background: var(--google-grey-700);
+  }
+}
+
+:host-context([chrome-refresh-2023]) .sp-hr {
+  background: var(--color-side-panel-divider);
+}

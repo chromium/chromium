@@ -1,4 +1,4 @@
-<style>
+<style include="sp-shared-style">
   #showToggleContainer {
     align-items: center;
     display: flex;
@@ -43,11 +43,7 @@
   }
 
   hr {
-    background-color: var(--horizontal-rule-color);
-    border: none;
-    height: 1px;
     margin-bottom: 16px;
-    width: 100%;
   }
 
   cr-toggle {
@@ -66,7 +62,7 @@
 </div>
 <div id="cards">
   <iron-collapse opened="[[show_]]" no-animation="[[!initialized_]]">
-    <hr>
+    <hr class="sp-hr">
     <template is="dom-repeat" items="[[modules_]]">
       <div class="card">
         <div class="card-name">[[item.name]]</div>
