@@ -105,16 +105,15 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
         100 * (buckets.size() - contributions.size()) / buckets.size());
   }
 
-  const int kExclusiveMaxHistogramValue = 101;
+  static_assert(
+      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger == 20,
+      "Bump the version for histogram "
+      "Conversions.AggregatableReport.NumContributionsPerReport2");
 
-  static_assert(attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger <
-                    kExclusiveMaxHistogramValue,
-                "Bump the version for histogram "
-                "Conversions.AggregatableReport.NumContributionsPerReport");
-
-  base::UmaHistogramCounts100(
-      "Conversions.AggregatableReport.NumContributionsPerReport",
-      contributions.size());
+  base::UmaHistogramExactLinear(
+      "Conversions.AggregatableReport.NumContributionsPerReport2",
+      contributions.size(),
+      attribution_reporting::kMaxAggregationKeysPerSourceOrTrigger + 1);
 
   return contributions;
 }

@@ -100,7 +100,7 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.NumContributionsPerReport", 2, 1);
+      "Conversions.AggregatableReport.NumContributionsPerReport2", 2, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest,
@@ -124,7 +124,7 @@ TEST(AggregatableAttributionUtilsTest,
   histograms.ExpectUniqueSample(
       "Conversions.AggregatableReport.DroppedKeysPercentage", 100, 1);
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.NumContributionsPerReport", 0, 1);
+      "Conversions.AggregatableReport.NumContributionsPerReport2", 0, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest, RoundsSourceRegistrationTime) {
