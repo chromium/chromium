@@ -160,40 +160,8 @@ static const char kTestShippingFormString[] = R"(
 // <select>.
 std::string GenerateTestShippingFormWithSelectMenu() {
   std::string out = kTestShippingFormString;
-
-  // Remove everything inside <select></select> tags including the tags.
-  std::string kSelectOpenTag("<select");
-  std::string kSelectCloseTag("</select>");
-  size_t open_tag_index = out.find(kSelectOpenTag);
-  while (open_tag_index != std::string::npos) {
-    size_t end_tag_index = out.find(kSelectCloseTag, open_tag_index);
-    if (end_tag_index == std::string::npos) {
-      return "";
-    }
-    out = out.substr(0u, open_tag_index) +
-          out.substr(end_tag_index + kSelectCloseTag.length());
-    open_tag_index = out.find(kSelectOpenTag, open_tag_index);
-  }
-
-  std::string kFormCloseTag("</form>");
-  size_t form_end_tag_index = out.find(kFormCloseTag);
-
-  // TODO(crbug.com/1422650): Remove "autocomplete" attributes once they are no
-  // longer necessary.
-  std::string form_suffix = R"(
-   <selectmenu id="state" autocomplete="address-level1">
-     <option value="" selected="yes">--</option>
-     <option value="CA">California</option>
-     <option value="TX">Texas</option>
-   </selectmenu><br>
-   <selectmenu id="country" autocomplete="country">
-     <option value="" selected="yes">--</option>
-     <option value="CA">Canada</option>
-     <option value="US">United States</option>
-   </selectmenu><br>
-  )";
-
-  return out.insert(form_end_tag_index, form_suffix);
+  RE2::GlobalReplace(&out, "<(/?)select", "<\\1selectmenu");
+  return out;
 }
 
 // Searches all frames of the primary page in |web_contents| and returns one
@@ -1417,8 +1385,6 @@ class AutofillInteractiveDisableAutofillSelectMenuTest
 // feature is disabled.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveDisableAutofillSelectMenuTest,
                        DisableSelectMenuAutofilling) {
-  // TODO(crbug.com/1422650): Remove "autocomplete" attribute once it is no
-  // longer necessary.
   const char kFormWithSelectMenuString[] = R"(
     <!-- Disable extra network request for /favicon.ico -->
     <link rel="icon" href="data:,">
