@@ -84,7 +84,7 @@ bool IsDeprecateAltClickEnabled() {
 
 BASE_FEATURE(kShortcutCustomizationApp,
              "ShortcutCustomizationApp",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsShortcutCustomizationAppEnabled() {
   return base::FeatureList::IsEnabled(kShortcutCustomizationApp);

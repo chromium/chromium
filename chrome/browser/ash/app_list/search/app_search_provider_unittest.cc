@@ -12,12 +12,14 @@
 #include <utility>
 
 #include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -94,10 +96,18 @@ void UpdateIconKey(apps::AppServiceProxy& proxy, const std::string& app_id) {
 class AppSearchProviderTest : public AppSearchProviderTestBase {
  public:
   AppSearchProviderTest()
-      : AppSearchProviderTestBase(/*zero_state_provider=*/false) {}
+      : AppSearchProviderTestBase(/*zero_state_provider=*/false) {
+    // TODO(jimmyxgong): Remove tests related to the old keyboard shortcut app
+    // after it has been deprecated.
+    feature_list_.InitAndDisableFeature(
+        {ash::features::kOnlyShowNewShortcutsApp});
+  }
   AppSearchProviderTest(const AppSearchProviderTest&) = delete;
   AppSearchProviderTest& operator=(const AppSearchProviderTest&) = delete;
   ~AppSearchProviderTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AppSearchProviderTest, Basic) {

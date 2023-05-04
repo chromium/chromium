@@ -172,6 +172,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     extension_misc::kTextEditorAppId,
     web_app::kPrintManagementAppId,
     web_app::kScanningAppId,
+    web_app::kShortcutCustomizationAppId,
     guest_os::kTerminalSystemAppId,
 
     web_app::kYoutubeTVAppId,
