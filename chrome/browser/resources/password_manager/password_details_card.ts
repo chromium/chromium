@@ -124,7 +124,7 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
   }
 
   private onCopyUsernameClick_() {
-    navigator.clipboard.writeText(this.password.username);
+    navigator.clipboard.writeText(this.password.username).catch(() => {});
     this.showToast_(this.i18n('usernameCopiedToClipboard'));
     this.extendAuthValidity_();
     PasswordManagerImpl.getInstance().recordPasswordViewInteraction(
