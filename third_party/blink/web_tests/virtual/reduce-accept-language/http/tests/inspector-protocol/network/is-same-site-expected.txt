@@ -9,7 +9,7 @@ requests[
             sec-ch-ua-mobile : ?0
             sec-ch-ua-platform : "Unknown"
         }
-        initialPriority : Low
+        initialPriority : Medium
         isSameSite : true
         method : GET
         mixedContentType : none
@@ -25,7 +25,7 @@ requests[
             sec-ch-ua-mobile : ?0
             sec-ch-ua-platform : "Unknown"
         }
-        initialPriority : Low
+        initialPriority : Medium
         isSameSite : true
         method : GET
         mixedContentType : none
@@ -74,7 +74,7 @@ requests[
             sec-ch-ua-mobile : ?0
             sec-ch-ua-platform : "Unknown"
         }
-        initialPriority : Low
+        initialPriority : Medium
         isSameSite : true
         method : GET
         mixedContentType : none
@@ -90,7 +90,7 @@ requests[
             sec-ch-ua-mobile : ?0
             sec-ch-ua-platform : "Unknown"
         }
-        initialPriority : Low
+        initialPriority : Medium
         isSameSite : false
         method : GET
         mixedContentType : none
@@ -103,7 +103,7 @@ requests[
             Referer : http://127.0.0.1:8000/
             User-Agent : <string>
         }
-        initialPriority : Low
+        initialPriority : Medium
         isSameSite : false
         method : GET
         mixedContentType : none
@@ -116,7 +116,7 @@ requests[
             Referer : http://devtools.oopif.test:8000/inspector-protocol/network/resources/same-site-iframe.html
             User-Agent : <string>
         }
-        initialPriority : Low
+        initialPriority : Medium
         isSameSite : false
         method : GET
         mixedContentType : none

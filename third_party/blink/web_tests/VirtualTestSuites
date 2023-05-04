@@ -1950,7 +1950,7 @@
       "http/tests/inspector-protocol/network/is-same-site.js",
       "http/tests/priority-hints/image-initial-load.html"
     ],
-    "args": ["--enable-features=BoostImagePriority"]
+    "args": ["--disable-features=BoostImagePriority"]
   },
   {
     "prefix": "html-pattern-regexp-unicodesets",
