@@ -125,7 +125,7 @@ absl::optional<syncer::ModelError> ReadingListSyncBridge::MergeFullSyncData(
         model_->GetEntryByURL(entry->URL());
 
     if (!existing_entry) {
-      model_->SyncAddEntry(std::move(entry));
+      model_->AddEntry(std::move(entry), reading_list::ADDED_VIA_SYNC);
     } else {
       ReadingListEntry* merged_entry = model_->SyncMergeEntry(std::move(entry));
 
@@ -207,7 +207,7 @@ ReadingListSyncBridge::ApplyIncrementalSyncChanges(
           model_->GetEntryByURL(entry->URL());
 
       if (!existing_entry) {
-        model_->SyncAddEntry(std::move(entry));
+        model_->AddEntry(std::move(entry), reading_list::ADDED_VIA_SYNC);
       } else {
         // Merge the local data and the sync data and store the result.
         model_->SyncMergeEntry(std::move(entry));

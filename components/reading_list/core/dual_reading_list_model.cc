@@ -229,6 +229,21 @@ bool DualReadingListModel::NeedsExplicitUploadToSyncServer(
              switches::kReadingListEnableSyncTransportModeUponSignIn);
 }
 
+void DualReadingListModel::MarkAllForUploadToSyncServerIfNeeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::AutoReset<bool> auto_reset_suppress_observer_notifications(
+      &suppress_observer_notifications_, true);
+
+  for (const GURL& url : local_or_syncable_model_->GetKeys()) {
+    if (NeedsExplicitUploadToSyncServer(url)) {
+      scoped_refptr<ReadingListEntry> entry = GetEntryByURL(url)->Clone();
+      local_or_syncable_model_->RemoveEntryByURL(url);
+      account_model_->AddEntry(entry, reading_list::ADDED_VIA_CURRENT_APP);
+    }
+  }
+}
+
 const ReadingListEntry& DualReadingListModel::AddOrReplaceEntry(
     const GURL& url,
     const std::string& title,
@@ -591,7 +606,9 @@ void DualReadingListModel::ReadingListDidMoveEntry(
 void DualReadingListModel::ReadingListWillAddEntry(
     const ReadingListModel* model,
     const ReadingListEntry& entry) {
-  DCHECK(!suppress_observer_notifications_);
+  if (suppress_observer_notifications_) {
+    return;
+  }
 
   if (local_or_syncable_model_->GetEntryByURL(entry.URL())) {
     // The presence of the entry in `local_or_syncable_model_` indicates that
@@ -612,7 +629,9 @@ void DualReadingListModel::ReadingListDidAddEntry(
     const ReadingListModel* model,
     const GURL& url,
     reading_list::EntrySource source) {
-  DCHECK(!suppress_observer_notifications_);
+  if (suppress_observer_notifications_) {
+    return;
+  }
 
   UpdateEntryStateCountersOnEntryInsertion(*GetEntryByURL(url));
 

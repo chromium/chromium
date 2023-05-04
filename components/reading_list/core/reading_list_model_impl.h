@@ -63,6 +63,7 @@ class ReadingListModelImpl : public ReadingListModel {
   bool IsUrlSupported(const GURL& url) override;
   CoreAccountId GetAccountWhereEntryIsSavedTo(const GURL& url) override;
   bool NeedsExplicitUploadToSyncServer(const GURL& url) const override;
+  void MarkAllForUploadToSyncServerIfNeeded() override;
   const ReadingListEntry& AddOrReplaceEntry(
       const GURL& url,
       const std::string& title,
@@ -86,8 +87,12 @@ class ReadingListModelImpl : public ReadingListModel {
   void AddObserver(ReadingListModelObserver* observer) override;
   void RemoveObserver(ReadingListModelObserver* observer) override;
 
+  // Add |entry| to the model, which must not exist before, and notify the sync
+  // bridge if |source| is not ADDED_VIA_SYNC.
+  void AddEntry(scoped_refptr<ReadingListEntry> entry,
+                reading_list::EntrySource source);
+
   // API specifically for changes received via sync.
-  void SyncAddEntry(scoped_refptr<ReadingListEntry> entry);
   ReadingListEntry* SyncMergeEntry(scoped_refptr<ReadingListEntry> entry);
   void SyncRemoveEntry(const GURL& url);
   void SyncDeleteAllEntriesAndSyncMetadata();
@@ -156,11 +161,6 @@ class ReadingListModelImpl : public ReadingListModel {
   ReadingListModelStorage* StorageLayer();
 
   void MarkEntrySeenImpl(ReadingListEntry* entry);
-
-  // Add |entry| to the model, which must not exist before, and notify the sync
-  // bridge if |source| is not ADDED_VIA_SYNC.
-  void AddEntryImpl(scoped_refptr<ReadingListEntry> entry,
-                    reading_list::EntrySource source);
 
   // Remove entry |url| and propagate to the sync bridge if |from_sync| is
   // false.

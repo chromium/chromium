@@ -104,6 +104,11 @@ class ReadingListModel : public KeyedService {
   // upload to sync servers.
   virtual bool NeedsExplicitUploadToSyncServer(const GURL& url) const = 0;
 
+  // Uploads all entries (if any) that required explicit upload to sync servers.
+  // The upload itself may take long to complete (depending on network
+  // connectivity any many other factors).
+  virtual void MarkAllForUploadToSyncServerIfNeeded() = 0;
+
   // Adds |url| at the top of the unread entries, and removes entries with the
   // same |url| from everywhere else if they exist. The entry title will be a
   // trimmed copy of |title|. |time_to_read_minutes| is the estimated time to
