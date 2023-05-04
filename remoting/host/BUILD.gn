@@ -590,6 +590,7 @@ static_library("common") {
       "disconnect_window_linux.cc",
       "pairing_registry_delegate_linux.cc",
       "pairing_registry_delegate_linux.h",
+      "usage_stats_consent_linux.cc",
       "xsession_chooser_linux.cc",
     ]
     if (remoting_use_x11) {
@@ -601,7 +602,7 @@ static_library("common") {
       ]
     }
 
-    # webRTC only enables portal support if PipeWire support is enabled
+    # WebRTC only enables portal support if PipeWire support is enabled
     if (rtc_use_pipewire) {
       configs += [ "//third_party/webrtc/modules/portal:gio" ]
     }
