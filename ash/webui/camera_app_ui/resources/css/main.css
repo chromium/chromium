@@ -41,6 +41,14 @@
 
   /* From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap. */
   --border-radius-rounded-with-short-side: 9999999px;
+
+  /* These are calculated and overridden at runtime in views/camera/layout.ts */
+  --preview-content-height: 0;
+  --preview-content-left: 0;
+  --preview-content-top: 0;
+  --preview-content-width: 0;
+  --preview-viewport-height: 0;
+  --preview-viewport-width: 0;
 }
 
 html {
@@ -818,18 +826,18 @@ html[dir=rtl] body.view-expert-settings .right-stripe {
 }
 
 #preview-viewport {
-  height: 0; /* Calculate at runtime. */
+  height: var(--preview-viewport-height);
   overflow: hidden;
   position: relative;
-  width: 0; /* Calculate at runtime. */
+  width: var(--preview-viewport-width);
 }
 
 .preview-content {
-  height: 0; /* Calculate at runtime. */
-  left: 0; /* Calculate at runtime. */
+  height: var(--preview-content-height);
+  left: var(--preview-content-left);
   position: relative;
-  top: 0; /* Calculate at runtime. */
-  width: 0; /* Calculate at runtime. */
+  top: var(--preview-content-top);
+  width: var(--preview-content-width);
 }
 
 body.streaming .preview-content {
