@@ -306,8 +306,8 @@ Style notes:
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_IME_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for IME settings accessed through the IME feature pod.">
         Input Methods Settings
       </message>
-      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_LOCALE_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for locale settings accessed through the locale feature pod.">
-        Locale Settings
+      <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_LOCALE_SETTINGS_ACCESSIBLE_DESCRIPTION" desc="The accessible description for locale settings accessed through the quick settings locale feature pod in demo mode.">
+        Language Settings
       </message>
       <message name="IDS_ASH_QUICK_SETTINGS_BUBBLE_MEDIA_CONTROLS_ACCESSIBLE_DESCRIPTION" is_accessibility_with_no_ui="true" desc="The accessible description for media controls pod in quick settings.">
         Media controls, now playing <ph name="MEDIA_TITLE">$1<ex>(Song name)</ex></ph>
