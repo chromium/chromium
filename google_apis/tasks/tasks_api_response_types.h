@@ -102,7 +102,7 @@ class Task {
   const std::string& title() const { return title_; }
   Status status() const { return status_; }
   const std::string& parent_id() const { return parent_id_; }
-  absl::optional<base::Time> due() { return due_; }
+  const absl::optional<base::Time>& due() const { return due_; }
 
  private:
   // Task identifier.

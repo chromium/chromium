@@ -81,7 +81,8 @@ constexpr char kDefaultTasksResponseContent[] = R"(
         {
           "id": "asd",
           "title": "Parent task, level 1",
-          "status": "needsAction"
+          "status": "needsAction",
+          "due": "2023-04-19T00:00:00.000Z"
         },
         {
           "id": "qwe",
@@ -290,18 +291,22 @@ TEST_F(GlanceablesTasksClientImplTest, GetTasks) {
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
   EXPECT_EQ(root_tasks->GetItemAt(0)->title, "Parent task, level 1");
   EXPECT_EQ(root_tasks->GetItemAt(0)->completed, false);
+  EXPECT_EQ(FormatTimeAsString(root_tasks->GetItemAt(0)->due.value()),
+            "2023-04-19T00:00:00.000Z");
 
   const auto& subtasks_level_2 = root_tasks->GetItemAt(0)->subtasks;
   EXPECT_EQ(subtasks_level_2.size(), 1u);
   EXPECT_EQ(subtasks_level_2.at(0)->id, "qwe");
   EXPECT_EQ(subtasks_level_2.at(0)->title, "Child task, level 2");
   EXPECT_EQ(subtasks_level_2.at(0)->completed, false);
+  EXPECT_FALSE(subtasks_level_2.at(0)->due);
 
   const auto& subtasks_level_3 = subtasks_level_2.at(0)->subtasks;
   EXPECT_EQ(subtasks_level_3.size(), 1u);
   EXPECT_EQ(subtasks_level_3.at(0)->id, "zxc");
   EXPECT_EQ(subtasks_level_3.at(0)->title, "Child task, level 3");
   EXPECT_EQ(subtasks_level_3.at(0)->completed, true);
+  EXPECT_FALSE(subtasks_level_3.at(0)->due);
 }
 
 TEST_F(GlanceablesTasksClientImplTest, GetTasksOnSubsequentCalls) {

@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -45,6 +46,7 @@ struct ASH_EXPORT GlanceablesTask {
   GlanceablesTask(const std::string& id,
                   const std::string& title,
                   bool completed,
+                  const absl::optional<base::Time>& due,
                   std::vector<std::unique_ptr<GlanceablesTask>> subtasks);
   GlanceablesTask(const GlanceablesTask&) = delete;
   GlanceablesTask& operator=(const GlanceablesTask&) = delete;
@@ -59,6 +61,9 @@ struct ASH_EXPORT GlanceablesTask {
   // Indicates whether the task is completed (has "status" field equals to
   // "completed" on the API side).
   const bool completed;
+
+  // Optional due date of the task.
+  const absl::optional<base::Time> due;
 
   // Subtasks of the task (pre-grouped tasks that have "parent" field equals to
   // `id` on the API side).

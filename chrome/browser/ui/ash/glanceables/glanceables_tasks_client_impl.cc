@@ -85,7 +85,7 @@ std::unique_ptr<GlanceablesTask> ConvertIndividualTask(
   return std::make_unique<GlanceablesTask>(
       raw_task->id(), raw_task->title(),
       /*completed=*/raw_task->status() == Task::Status::kCompleted,
-      std::move(converted_subtasks));
+      raw_task->due(), std::move(converted_subtasks));
 }
 
 // Entry point to convert `raw_tasks` received from Google Tasks API to

@@ -23,10 +23,12 @@ GlanceablesTask::GlanceablesTask(
     const std::string& id,
     const std::string& title,
     bool completed,
+    const absl::optional<base::Time>& due,
     std::vector<std::unique_ptr<GlanceablesTask>> subtasks)
     : id(id),
       title(title),
       completed(completed),
+      due(due),
       subtasks(std::move(subtasks)) {}
 
 GlanceablesTask::~GlanceablesTask() = default;
