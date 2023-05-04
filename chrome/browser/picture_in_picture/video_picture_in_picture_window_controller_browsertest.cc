@@ -1537,8 +1537,16 @@ class PictureInPictureWindowControllerPrerenderBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+// TODO(crbug.com/1432427): Reenable once Linux MSAN failure is fixed.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_EnterPipThenNavigateAwayCloseWindow \
+  DISABLED_EnterPipThenNavigateAwayCloseWindow
+#else
+#define MAYBE_EnterPipThenNavigateAwayCloseWindow \
+  EnterPipThenNavigateAwayCloseWindow
+#endif
 IN_PROC_BROWSER_TEST_F(PictureInPictureWindowControllerPrerenderBrowserTest,
-                       EnterPipThenNavigateAwayCloseWindow) {
+                       MAYBE_EnterPipThenNavigateAwayCloseWindow) {
   GURL test_page_url = embedded_test_server()->GetURL(
       "example.com", "/media/picture-in-picture/window-size.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
