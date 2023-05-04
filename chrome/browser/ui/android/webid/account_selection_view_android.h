@@ -33,7 +33,8 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
       IdentityRegistryCallback identity_registry_callback) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
-  void CloseIdpSigninModalDialog() override;
+  void ShowModalDialog(const GURL& url) override;
+  void CloseModalDialog() override;
 
   void OnAccountSelected(
       JNIEnv* env,

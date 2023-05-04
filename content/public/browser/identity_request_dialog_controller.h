@@ -144,13 +144,13 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // Show dialog notifying user that IdP sign-in failed.
   virtual void ShowIdpSigninFailureDialog(base::OnceClosure dismiss_callback);
 
-  // Show a pop-up window that the IdP controls.
-  virtual void ShowPopUpWindow(const GURL& url,
+  // Show a modal dialog that loads content from the IdP.
+  virtual void ShowModalDialog(const GURL& url,
                                TokenCallback on_resolve,
                                DismissCallback dismiss_callback);
 
-  // Closes the IDP sign-in modal dialog.
-  virtual void CloseIdpSigninModalDialog();
+  // Closes the modal dialog.
+  virtual void CloseModalDialog();
 
  protected:
   bool is_interception_enabled_{false};

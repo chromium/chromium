@@ -600,7 +600,7 @@ void AccountSelectionBubbleView::ShowFailureDialog(
       gfx::Insets::VH(kTopBottomPadding, kLeftRightPadding)));
   identity_registry_callback_ = std::move(identity_registry_callback);
   auto button = std::make_unique<ContinueButton>(
-      base::BindRepeating(&Observer::ShowIdpSigninModalDialog,
+      base::BindRepeating(&Observer::ShowModalDialog,
                           base::Unretained(observer_),
                           idp_metadata.idp_signin_url),
       l10n_util::GetStringUTF16(IDS_IDP_SIGNIN_STATUS_FAILURE_DIALOG_CONTINUE),

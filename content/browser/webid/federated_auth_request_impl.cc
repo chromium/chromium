@@ -1553,7 +1553,7 @@ void FederatedAuthRequestImpl::OnContinueOnResponseReceived(
   }
 
   // TODO(crbug.com/1429083): record the appropriate metrics.
-  request_dialog_controller_->ShowPopUpWindow(
+  request_dialog_controller_->ShowModalDialog(
       std::move(continue_on),
       base::BindOnce(&FederatedAuthRequestImpl::CompleteTokenRequest,
                      weak_ptr_factory_.GetWeakPtr(), std::move(idp),
@@ -1948,7 +1948,7 @@ void FederatedAuthRequestImpl::SetDialogControllerForTests(
 }
 
 void FederatedAuthRequestImpl::NotifyClose() {
-  request_dialog_controller_->CloseIdpSigninModalDialog();
+  request_dialog_controller_->CloseModalDialog();
 }
 
 void FederatedAuthRequestImpl::OnRejectRequest() {

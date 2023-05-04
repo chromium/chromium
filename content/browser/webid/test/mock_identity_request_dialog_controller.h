@@ -41,7 +41,7 @@ class MockIdentityRequestDialogController
                     const content::IdentityProviderMetadata&,
                     DismissCallback,
                     IdentityRegistryCallback));
-  MOCK_METHOD3(ShowPopUpWindow,
+  MOCK_METHOD3(ShowModalDialog,
                void(const GURL&, TokenCallback, DismissCallback));
 };
 

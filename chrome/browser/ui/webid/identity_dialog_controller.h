@@ -62,14 +62,18 @@ class IdentityDialogController
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;
 
+  // Show a modal dialog that loads content from the IdP in a WebView.
+  void ShowModalDialog(const GURL& url,
+                       TokenCallback on_resolve,
+                       DismissCallback dismiss_callback) override;
+  void CloseModalDialog() override;
+
   // AccountSelectionView::Delegate:
   void OnAccountSelected(const GURL& idp_config_url,
                          const Account& account) override;
   void OnDismiss(DismissReason dismiss_reason) override;
   gfx::NativeView GetNativeView() override;
   content::WebContents* GetWebContents() override;
-
-  void CloseIdpSigninModalDialog() override;
 
  private:
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};

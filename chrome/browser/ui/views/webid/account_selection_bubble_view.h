@@ -64,11 +64,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
     // Called when the user clicks "close" button.
     virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
 
-    // Called when the user clicks "sign in to IDP" button on failure dialog.
-    virtual void ShowIdpSigninModalDialog(const GURL& url) = 0;
+    // Called to load a modal webview.
+    virtual void ShowModalDialog(const GURL& url) = 0;
 
     // Called when IdentityProvider.close() is called from the renderer.
-    virtual void CloseIdpSigninModalDialog() = 0;
+    virtual void CloseModalDialog() = 0;
   };
 
   METADATA_HEADER(AccountSelectionBubbleView);
@@ -164,11 +164,11 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   // Removes all children except for `header_view_`.
   void RemoveNonHeaderChildViews();
 
-  // Opens a modal dialog view that renders the given `url`.
-  void ShowIdpSigninModalDialog(const GURL& url);
+  // Opens a modal dialog webview that renders the given `url`.
+  void ShowModalDialog(const GURL& url);
 
-  // Closes the IDP sign-in modal dialog, if it is shown.
-  void CloseIdpSigninModalDialog();
+  // Closes the modal webview dialog, if it is shown.
+  void CloseModalDialog();
 
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;

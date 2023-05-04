@@ -34,7 +34,7 @@ class CONTENT_EXPORT FakeIdentityRequestDialogController
 
   std::string GetTitle() const override;
 
-  void ShowPopUpWindow(const GURL& url,
+  void ShowModalDialog(const GURL& url,
                        TokenCallback on_resolve,
                        DismissCallback dismiss_callback) override;
 

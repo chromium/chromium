@@ -96,7 +96,7 @@ void IdentityRequestDialogController::ShowIdpSigninFailureDialog(
   }
 }
 
-void IdentityRequestDialogController::ShowPopUpWindow(
+void IdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
     TokenCallback on_resolve,
     DismissCallback dismiss_callback) {
@@ -105,6 +105,6 @@ void IdentityRequestDialogController::ShowPopUpWindow(
   }
 }
 
-void IdentityRequestDialogController::CloseIdpSigninModalDialog() {}
+void IdentityRequestDialogController::CloseModalDialog() {}
 
 }  // namespace content

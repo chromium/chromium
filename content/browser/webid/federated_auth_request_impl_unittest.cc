@@ -3947,7 +3947,7 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
 
   // When the pop-up window is opened, resolve it immediately by
   // producing an access token.
-  EXPECT_CALL(*weak_dialog_controller, ShowPopUpWindow(_, _, _))
+  EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _, _))
       .WillOnce(::testing::WithArg<1>(
           [&](IdentityRequestDialogController::TokenCallback on_resolve) {
             std::move(on_resolve).Run("an-access-token");

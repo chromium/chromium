@@ -81,7 +81,8 @@ class AccountSelectionView {
   virtual std::string GetTitle() const = 0;
   virtual absl::optional<std::string> GetSubtitle() const = 0;
 
-  virtual void CloseIdpSigninModalDialog() = 0;
+  virtual void ShowModalDialog(const GURL& url) = 0;
+  virtual void CloseModalDialog() = 0;
 
  protected:
   raw_ptr<Delegate> delegate_ = nullptr;

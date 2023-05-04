@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -353,7 +354,7 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
       views::Widget::ClosedReason::kCloseButtonClicked);
 }
 
-void FedCmAccountSelectionView::ShowIdpSigninModalDialog(const GURL& url) {
+void FedCmAccountSelectionView::ShowModalDialog(const GURL& url) {
   idp_signin_modal_dialog_ = FedCmModalDialogView::ShowFedCmModalDialog(
       delegate_->GetWebContents(), url);
   if (GetBubbleView()->HasIdentityRegistryCallback()) {
@@ -362,7 +363,7 @@ void FedCmAccountSelectionView::ShowIdpSigninModalDialog(const GURL& url) {
   }
 }
 
-void FedCmAccountSelectionView::CloseIdpSigninModalDialog() {
+void FedCmAccountSelectionView::CloseModalDialog() {
   if (idp_signin_modal_dialog_) {
     idp_signin_modal_dialog_->CloseFedCmModalDialog();
     idp_signin_modal_dialog_ = nullptr;

@@ -204,7 +204,11 @@ absl::optional<std::string> AccountSelectionViewAndroid::GetSubtitle() const {
   return ConvertJavaStringToUTF8(subtitle);
 }
 
-void AccountSelectionViewAndroid::CloseIdpSigninModalDialog() {
+void AccountSelectionViewAndroid::ShowModalDialog(const GURL& url) {
+  // TODO(crbug.com/1429083): Support the AuthZ modal dialog on Android.
+}
+
+void AccountSelectionViewAndroid::CloseModalDialog() {
   // TODO(crbug.com/1430830): Support IDP sign-in modal dialog on Android.
 }
 

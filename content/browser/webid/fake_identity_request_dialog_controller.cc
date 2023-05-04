@@ -63,7 +63,7 @@ std::string FakeIdentityRequestDialogController::GetTitle() const {
   return title_;
 }
 
-void FakeIdentityRequestDialogController::ShowPopUpWindow(
+void FakeIdentityRequestDialogController::ShowModalDialog(
     const GURL& url,
     TokenCallback on_resolve,
     DismissCallback dismiss_callback) {

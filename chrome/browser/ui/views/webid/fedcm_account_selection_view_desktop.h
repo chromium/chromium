@@ -127,8 +127,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                      const ui::Event& event) override;
   void OnBackButtonClicked() override;
   void OnCloseButtonClicked(const ui::Event& event) override;
-  void ShowIdpSigninModalDialog(const GURL& url) override;
-  void CloseIdpSigninModalDialog() override;
+  void ShowModalDialog(const GURL& url) override;
+  void CloseModalDialog() override;
 
   void ShowVerifyingSheet(const Account& account,
                           const IdentityProviderDisplayData& idp_display_data);

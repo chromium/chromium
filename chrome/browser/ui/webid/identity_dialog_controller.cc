@@ -102,6 +102,13 @@ content::WebContents* IdentityDialogController::GetWebContents() {
   return rp_web_contents_;
 }
 
-void IdentityDialogController::CloseIdpSigninModalDialog() {
-  account_view_->CloseIdpSigninModalDialog();
+void IdentityDialogController::ShowModalDialog(
+    const GURL& url,
+    TokenCallback on_resolve,
+    DismissCallback dismiss_callback) {
+  account_view_->ShowModalDialog(url);
+}
+
+void IdentityDialogController::CloseModalDialog() {
+  account_view_->CloseModalDialog();
 }
