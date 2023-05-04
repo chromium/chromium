@@ -1622,4 +1622,32 @@ TEST_F(AccessCodeCastSinkServiceTest, RestartExpirationTimerDoesntResetTimer) {
             base::Seconds(500));
 }
 
+TEST_F(AccessCodeCastSinkServiceTest, AddRouteCallsHandleMediaRoute) {
+  // Test that adding a route will properly call HandleMediaRouteAdded and
+  // metrics.
+  SetDeviceDurationPrefForTest(base::Seconds(10));
+
+  // Initialize histogram tester so we can ensure metrics are collected.
+  base::HistogramTester histogram_tester;
+
+  MediaSinkInternal access_code_sink = CreateCastSink(1);
+  access_code_sink.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+  mock_cast_media_sink_service_impl()->AddSinkForTest(access_code_sink);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  MediaRoute media_route_cast = CreateRouteForTesting(access_code_sink.id());
+  std::vector<MediaRoute> route_list = {media_route_cast};
+
+  // Simulate that this cast sink has an open route.
+  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
+      route_list);
+  FastForwardUiAndIoTasks();
+
+  // The cast sink was added by an access code so the histogram should be
+  // recorded.
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.DeviceDurationOnRoute", 10, 1);
+}
+
 }  // namespace media_router

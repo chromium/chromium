@@ -122,6 +122,9 @@ class AccessCodeCastSinkService : public KeyedService,
                              RecordRouteDuration);
     FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                              RecordRouteDurationNonAccessCodeDevice);
+    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                             AddRouteCallsHandleMediaRoute);
+
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
@@ -210,6 +213,8 @@ class AccessCodeCastSinkService : public KeyedService,
                            RecordRouteDurationNonAccessCodeDevice);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            RestartExpirationTimerDoesntResetTimer);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           AddRouteCallsHandleMediaRoute);
 
   // Use |AccessCodeCastSinkServiceFactory::GetForProfile(..)| to get
   // an instance of this service.

@@ -176,7 +176,7 @@ void AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::OnRoutesUpdated(
   std::vector<MediaRoute::Id> added_routes;
   std::set_difference(new_routes.begin(), new_routes.end(),
                       previous_routes_.begin(), previous_routes_.end(),
-                      std::inserter(added_routes, removed_routes.end()));
+                      std::inserter(added_routes, added_routes.end()));
 
   previous_routes_ = new_routes;
 
