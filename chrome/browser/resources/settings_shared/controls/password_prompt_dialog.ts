@@ -13,9 +13,9 @@
  * Example:
  *
  * <settings-password-prompt-dialog
- *   id="passwordPrompt"
- *   password-prompt-text="{{passwordPromptText}}"
- *   auth-token="{{authToken}}">
+ *     id="passwordPrompt"
+ *     password-prompt-text="{{passwordPromptText}}"
+ *     auth-token="{{authToken}}">
  * </settings-password-prompt-dialog>
  */
 
@@ -156,9 +156,9 @@ class SettingsPasswordPromptDialogElement extends PolymerElement {
     this.passwordInvalid_ = false;
   }
 
-  private isConfirmEnabled_() {
+  private isConfirmEnabled_(): boolean {
     return !this.waitingForPasswordCheck_ && !this.passwordInvalid_ &&
-        this.inputValue_;
+        !!this.inputValue_;
   }
 }
 

@@ -20,7 +20,7 @@ import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classe
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 // <if expr="is_chromeos">
-import '../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 // </if>
 import '/shared/settings/controls/settings_toggle_button.js';
 import '../settings_shared.css.js';

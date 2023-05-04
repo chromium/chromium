@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 // <if expr="is_chromeos">
-import '../controls/password_prompt_dialog.js';
+import '/shared/settings/controls/password_prompt_dialog.js';
 // </if>
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';

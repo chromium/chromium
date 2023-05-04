@@ -254,9 +254,6 @@ build_webui("build") {
   if (is_win || is_mac) {
     web_component_files += [ "autofill_page/passkeys_subpage.ts" ]
   }
-  if (is_chromeos) {
-    web_component_files += [ "controls/password_prompt_dialog.ts" ]
-  }
   if (is_chrome_branded) {
     web_component_files += [ "get_most_chrome_page/get_most_chrome_page.ts" ]
   }
@@ -382,9 +379,7 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/passwords_private.d.ts",
     "//tools/typescript/definitions/pending.d.ts",
-    "//tools/typescript/definitions/runtime.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
   ]
   if (is_chromeos) {
     ts_definitions +=

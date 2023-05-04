@@ -20,6 +20,10 @@ build_webui("build") {
     "controls/settings_toggle_button.ts",
   ]
 
+  if (is_chromeos) {
+    web_component_files += [ "controls/password_prompt_dialog.ts" ]
+  }
+
   non_web_component_files = [
     "extension_control_browser_proxy.ts",
     "lifetime_browser_proxy.ts",
@@ -40,6 +44,13 @@ build_webui("build") {
     "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/settings_private.d.ts",
   ]
+  if (is_chromeos) {
+    ts_definitions += [
+      "//tools/typescript/definitions/tabs.d.ts",
+      "//tools/typescript/definitions/runtime.d.ts",
+      "//tools/typescript/definitions/quick_unlock_private.d.ts",
+    ]
+  }
   ts_deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/settings_prefs:build_ts",
