@@ -94,11 +94,15 @@ constexpr NSInteger kSigninTimeoutDurationSeconds = 10;
 }
 
 - (void)dealloc {
-  DCHECK(!self.accountManagerService);
-  DCHECK(!self.authenticationService);
-  DCHECK(!self.identityManager);
-  DCHECK(!self.userPrefService);
-  DCHECK(!_identityManagerObserverBridge.get());
+  DCHECK(!self.accountManagerService && !self.authenticationService &&
+         !self.identityManager && !self.userPrefService &&
+         !_identityManagerObserverBridge.get())
+      << "self.accountManagerService: " << self.accountManagerService
+      << ", self.authenticationService: " << self.authenticationService
+      << ", self.identityManager: " << self.identityManager
+      << ", self.userPrefService: " << self.userPrefService
+      << ", _identityManagerObserverBridge: "
+      << _identityManagerObserverBridge.get();
 }
 
 - (void)disconnectWithResult:(SigninCoordinatorResult)signinResult {
