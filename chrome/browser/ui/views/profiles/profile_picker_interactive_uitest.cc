@@ -17,14 +17,18 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -57,7 +61,7 @@ class WidgetBoundsChangeWaiter : public views::WidgetObserver {
 }  // namespace
 
 class ProfilePickerInteractiveUiTest
-    : public InProcessBrowserTest,
+    : public InteractiveBrowserTest,
       public WithProfilePickerInteractiveUiTestHelpers {
  public:
   ProfilePickerInteractiveUiTest() = default;
@@ -124,31 +128,53 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest, FullscreenWithKeyboard) {
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// Checks that the signin web view is able to process keyboard events.
-// TODO(https://crbug.com/1227800): Flaky on linux and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_CloseDiceSigninWithKeyboard DISABLED_CloseDiceSigninWithKeyboard
-#else
-#define MAYBE_CloseDiceSigninWithKeyboard CloseDiceSigninWithKeyboard
-#endif
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
-                       MAYBE_CloseDiceSigninWithKeyboard) {
-  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuAddNewProfile,
-                     GURL("chrome://profile-picker/new-profile"));
+                       CloseDiceSigninWithKeyboard) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPickerWebContentsId);
 
-  // Simulate a click on the signin button.
-  base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
-  EXPECT_CALL(switch_finished_callback, Run(true));
-  ProfilePicker::SwitchToDiceSignIn(SK_ColorRED,
-                                    switch_finished_callback.Get());
+  const DeepQuery kSignInButton = {"profile-picker-app", "profile-type-choice",
+                                   "#signInButton"};
+  const ui::Accelerator kCloseWindowAccelerator
+#if BUILDFLAG(IS_MAC)
+      {ui::VKEY_W, ui::EF_COMMAND_DOWN};
+#else
+      {ui::VKEY_W, ui::EF_CONTROL_DOWN};
+#endif
 
-  // Switch to the signin webview.
-  WaitForLoadStop(signin::GetChromeSyncURLForDice({.for_promo_flow = true}));
+  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+      ProfilePicker::EntryPoint::kProfileMenuAddNewProfile));
+  WaitForPickerWidgetCreated();
+  view()->SetProperty(views::kElementIdentifierKey, kProfilePickerViewId);
 
-  // Close the picker with the keyboard.
-  EXPECT_TRUE(ProfilePicker::IsOpen());
-  SendCloseWindowKeyboardCommand();
-  WaitForPickerClosed();
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      // Wait for the profile picker to show the profile type choice screen.
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kPickerWebContentsId, web_view()),
+      WaitForWebContentsReady(kPickerWebContentsId,
+                              GURL("chrome://profile-picker/new-profile")),
+
+      // Click "sign in".
+      // Note: the button should be disabled after this, but there is no good
+      // way to verify it in this sequence. It is verified by unit tests in
+      // chrome/test/data/webui/signin/profile_picker_app_test.ts
+      EnsurePresent(kPickerWebContentsId, kSignInButton),
+      MoveMouseTo(kPickerWebContentsId, kSignInButton), ClickMouse(),
+
+      // Wait for switch to the Gaia sign-in page to complete.
+      // Note: kPickerWebContentsId now points to the new profile's WebContents.
+      WaitForWebContentsNavigation(kPickerWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()),
+
+      // Send "Close window" keyboard shortcut and wait for view to close.
+      SendAccelerator(kProfilePickerViewId, kCloseWindowAccelerator),
+      WaitForHide(kProfilePickerViewId, /*transition_only_on_event=*/true),
+
+      // Note: The widget/view is destroyed asynchronously, we need to flush the
+      // message loops to be able to reliably check the global state.
+      FlushEvents(), CheckResult(&ProfilePicker::IsOpen, testing::IsFalse()));
 }
 
 // Checks that both the signin web view and the main picker view are able to
