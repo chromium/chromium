@@ -104,11 +104,6 @@ template("rust_target") {
     _visibility = invoker.visibility
   }
 
-  _use_local_std = use_local_std_by_default
-  if (defined(invoker.use_local_std)) {
-    _use_local_std = invoker.use_local_std
-  }
-
   _rustflags = []
   if (defined(invoker.rustflags)) {
     _rustflags += invoker.rustflags
@@ -132,6 +127,10 @@ template("rust_target") {
     if (defined(invoker.proc_macro_configs)) {
       _configs += invoker.proc_macro_configs
       _test_configs += [ "//build/rust:proc_macro_extern" ]
+    }
+  } else if (invoker.target_type == "rust_proc_macro") {
+    if (defined(invoker.shared_library_configs)) {
+      _configs += invoker.shared_library_configs
     }
   } else {
     if (defined(invoker.library_configs)) {
@@ -223,7 +222,6 @@ template("rust_target") {
                  "_rustflags",
                  "_support_use_from_cpp",
                  "_testonly",
-                 "_use_local_std",
                  "_visibility",
                ])
   } else {
@@ -262,23 +260,11 @@ template("rust_target") {
         # target that depends on a rust target directly may need access to Cxx
         # as well, which means it must appear in public_deps.
         public_deps += [ "//build/rust:cxx_cppdeps" ]
-
-        # cxx_cppdeps pulls in the default libstd, so make sure the default was
-        # not overridden.
-        assert(
-            _use_local_std == use_local_std_by_default,
-            "Rust targets with cxx bindings cannot override the default libstd")
       } else if (!defined(invoker.no_std) || !invoker.no_std) {
         # If C++ depends on and links in the library, we need to make sure C++
         # links in the Rust stdlib. This is orthogonal to if the library exports
         # bindings for C++ to use.
-        if (_use_local_std) {
-          deps = [ "//build/rust/std:link_local_std" ]
-        } else {
-          assert(prebuilt_libstd_supported,
-                 "Prebuilt Rust stdlib is not available for this target")
-          deps = [ "//build/rust/std:link_prebuilt_std" ]
-        }
+        deps = [ "//build/rust/std:stdlib_for_clang" ]
       }
     }
 
@@ -298,13 +284,7 @@ template("rust_target") {
     }
 
     if (!defined(invoker.no_std) || !invoker.no_std) {
-      if (_use_local_std) {
-        _rust_deps += [ "//build/rust/std:local_std_for_rustc" ]
-      } else {
-        _rust_deps += [ "//build/rust/std:prebuilt_std_for_rustc" ]
-      }
-    } else {
-      not_needed([ "_use_local_std" ])
+      _rust_deps += [ "//build/rust/std:stdlib_for_rustc" ]
     }
 
     # You must go through the groups above to get to these targets.
@@ -449,5 +429,6 @@ template("rust_target") {
 set_defaults("rust_target") {
   executable_configs = default_executable_configs
   library_configs = default_compiler_configs
+  shared_library_configs = default_shared_library_configs
   proc_macro_configs = default_rust_proc_macro_configs
 }

@@ -266,13 +266,12 @@ template("cargo_crate") {
           ":${_build_script_name}($host_toolchain_no_sanitizers)"
       deps = [ build_script_target ]
 
-      # The build script output is always in the name-specific output dir. It
-      # may be built with a different toolchain when cross-compiling (the host
-      # toolchain) so we must find the path relative to that.
-      _build_script_target_out_dir =
-          get_label_info(build_script_target, "target_out_dir")
-      _build_script_exe =
-          "$_build_script_target_out_dir/$_orig_target_name/$_build_script_name"
+      # The build script may be built with a different toolchain when
+      # cross-compiling (the host toolchain) so we must find the path relative
+      # to that.
+      _build_script_root_out_dir =
+          get_label_info(build_script_target, "root_out_dir")
+      _build_script_exe = "$_build_script_root_out_dir/$_build_script_name"
       if (is_win) {
         _build_script_exe = "${_build_script_exe}.exe"
       }
@@ -328,11 +327,14 @@ template("cargo_crate") {
           deps = invoker.build_deps
         }
 
-        # An rlib's build script may be built differently for tests and for
-        # production, so they must be in a name specific to the GN target. The
-        # ${_build_script_name}_output target looks for the exe in this
-        # location.
-        output_dir = "$target_out_dir/$_orig_target_name"
+        # The ${_build_script_name}_output target looks for the exe in this
+        # location. Due to how the Windows component build works, this has to
+        # be $root_out_dir for all EXEs. In component build, C++ links to the
+        # CRT as a DLL, and if Rust does not match, we can't link mixed target
+        # Rust EXE/DLLs, as the headers in C++ said something different than
+        # what Rust links. Since the CRT DLL is placed in the $root_out_dir,
+        # an EXE can find it if it's also placed in that dir.
+        output_dir = root_out_dir
         rustenv = _rustenv
         forward_variables_from(invoker,
                                [

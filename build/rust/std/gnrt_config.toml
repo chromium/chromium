@@ -51,6 +51,11 @@ cfg = ['libc_priv_mod_use', 'libc_union', 'libc_const_size_of', 'libc_align',
 'libc_non_exhaustive', 'libc_long_array', 'libc_ptr_addr_of',
 'libc_underscore_const_names', 'libc_const_extern_fn'
 ]
+# The libc crate tries to link in the Windows CRT, but we specify the CRT
+# library ourselves in //build/config/win:dynamic_crt and
+# //build/config/win:static_crt because Rustc does not allow us to specify
+# using the debug CRT: https://github.com/rust-lang/rust/issues/39016
+rustflags = ['-Zlink-directives=false']
 
 # This target is #[no_core] when included by std, which is incompatible with
 # profiling.

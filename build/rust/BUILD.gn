@@ -37,19 +37,7 @@ if (toolchain_has_rust) {
     # Depending on the C++ bindings side of cxx then requires also depending
     # on the Rust bindings, since one calls the other. And the Rust bindings
     # require the Rust standard library.
-    # Normally the Rust stdlib is brought in as a dependency by depending
-    # on any first-party Rust target. But in this case, it's conceivable
-    # that pure-C++ targets will not depend on any 1p Rust code so we'll add
-    # the Rust stdlib explicitly.
     deps = [ ":cxx_rustdeps" ]
-
-    if (use_local_std_by_default) {
-      deps += [ "//build/rust/std:link_local_std" ]
-    } else {
-      assert(prebuilt_libstd_supported,
-             "Prebuilt Rust stdlib is not available for this target")
-      deps += [ "//build/rust/std:link_prebuilt_std" ]
-    }
   }
 
   # The required dependencies for cxx-generated bindings, that must be included

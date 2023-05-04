@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,11 @@
 
 #include "build/rust/tests/test_rust_static_library/src/lib.rs.h"
 
-TEST(RustTest, CppCallingIntoRust_BasicFFI) {
+TEST(RustStaticTest, CppCallingIntoRust_BasicFFI) {
   EXPECT_EQ(7, add_two_ints_via_rust(3, 4));
 }
 
-TEST(RustTest, RustComponentUsesPartitionAlloc) {
+TEST(RustStaticTest, RustComponentUsesPartitionAlloc) {
   // Verify that PartitionAlloc is consistently used in C++ and Rust.
   auto cpp_allocated_int = std::make_unique<int>();
   SomeStruct* rust_allocated_ptr = allocate_via_rust().into_raw();

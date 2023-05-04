@@ -362,6 +362,7 @@ cargo_crate("libc") {
     "--cfg=libc_ptr_addr_of",
     "--cfg=libc_underscore_const_names",
     "--cfg=libc_const_extern_fn",
+    "-Zlink-directives=false",
     "-Zforce-unstable-if-unmarked",
   ]
   output_dir =
