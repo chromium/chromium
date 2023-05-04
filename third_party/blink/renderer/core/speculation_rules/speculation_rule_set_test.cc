@@ -372,6 +372,8 @@ TEST_F(SpeculationRuleSetTest, IgnoresUnknownOrDifferentlyTypedTopLevelKeys) {
 }
 
 TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint_{
+      true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
 
@@ -436,7 +438,7 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
       R"nvs({
         "source": "list",
         "urls": ["no-source.html"],
-        "no_vary_search_expected": "params=(\"a\")"
+        "no_vary_search_expected": "params=(a)"
       }]})nvs",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
