@@ -1117,6 +1117,8 @@ void MainThreadSchedulerImpl::SetHaveSeenABlockingGestureForTesting(
 void MainThreadSchedulerImpl::PerformMicrotaskCheckpoint() {
   // This will fallback to execute the microtask checkpoint for the
   // default EventLoop for the isolate.
+  recordreplay::Assert(
+      "[RUN-1593-1876] MainThreadSchedulerImpl::PerformMicrotaskCheckpoint %d", !!isolate());
   if (isolate())
     EventLoop::PerformIsolateGlobalMicrotasksCheckpoint(isolate());
   // Perform a microtask checkpoint for each AgentSchedulingGroup. This
