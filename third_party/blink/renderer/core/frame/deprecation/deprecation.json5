@@ -3,7 +3,7 @@
   // The code for triggering DevTools Deprecation Issues is generated from here.
   //
   parameters: {
-    // The name of each deprecation is cannot contain any characters illegal in
+    // The name of each deprecation cannot contain any characters illegal in
     // a c++ enum.
     // name: {
     //   valid_type: "str",
