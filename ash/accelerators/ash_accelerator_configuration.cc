@@ -339,7 +339,13 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreDefault(
     }
   }
 
-  // TODO(jimmyxgong): Update prefs when available.
+  // Update the pref overrides.
+  std::string id = base::NumberToString(action_id);
+  const auto* found_override = accelerator_overrides_.Find(id);
+  if (found_override) {
+    accelerator_overrides_.Remove(id);
+  }
+
   UpdateAndNotifyAccelerators();
 
   VLOG(1) << "ResetAction called for ActionID: " << action_id
@@ -354,12 +360,14 @@ AcceleratorConfigResult AshAcceleratorConfiguration::RestoreAllDefaults() {
   deprecated_accelerators_to_id_.Clear();
   actions_with_deprecations_.clear();
 
-  // TODO(jimmyxgong): Reset the prefs here too.
   id_to_accelerators_ = default_id_to_accelerators_cache_;
   accelerator_to_id_ = default_accelerators_to_id_cache_;
 
   deprecated_accelerators_to_id_ = default_deprecated_accelerators_to_id_cache_;
   actions_with_deprecations_ = default_actions_with_deprecations_cache_;
+
+  // Clear the prefs to be back to default.
+  accelerator_overrides_.clear();
 
   UpdateAndNotifyAccelerators();
 

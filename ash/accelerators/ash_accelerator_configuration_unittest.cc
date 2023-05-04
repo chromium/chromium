@@ -1316,4 +1316,152 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorPref) {
   ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 }
 
+TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetAllPref) {
+  SimulateNewUserFirstLogin(kFakeUserEmail);
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+
+  config_->Initialize(test_data);
+
+  // Expect that there are no entries stored in the override pref.
+  const base::Value::Dict& pref_overrides = GetOverridePref();
+  EXPECT_TRUE(pref_overrides.empty());
+
+  AcceleratorConfigResult result = config_->RemoveAccelerator(
+      SWITCH_TO_LAST_USED_IME,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN));
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  const base::Value::Dict& updated_overrides = GetOverridePref();
+  // There should now be an entry in the pref overrides.
+  EXPECT_EQ(1u, updated_overrides.size());
+  // Expect the pref to have one entry that has the key of
+  // `SWITCH_TO_LAST_USED_IME`.
+  const base::Value::List* accelerator_overrides =
+      updated_overrides.FindList(base::NumberToString(SWITCH_TO_LAST_USED_IME));
+  EXPECT_EQ(1u, accelerator_overrides->size());
+  // Removing one accelerator in `SWITCH_TO_LAST_USED_IME` will result in
+  // one entry with the `kRemove` tag.
+  AcceleratorModificationData override_data =
+      ValueToAcceleratorModificationData(
+          accelerator_overrides->front().GetDict());
+  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_SPACE,
+                       ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
+                      override_data.accelerator);
+  EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
+
+  // Now re-login to the original profile.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& original_pref_overrides = GetOverridePref();
+  EXPECT_FALSE(original_pref_overrides.empty());
+
+  // Verify pref overrides were applied correctly.
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+
+  // Now reset all to default.
+  result = config_->RestoreAllDefaults();
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  // Relogin, expect shortcuts to be back to default.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& reset_pref_overrides = GetOverridePref();
+  EXPECT_TRUE(reset_pref_overrides.empty());
+  // `test_data` is the default state of accelerators.
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+}
+
+TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorThenResetPref) {
+  SimulateNewUserFirstLogin(kFakeUserEmail);
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+
+  config_->Initialize(test_data);
+
+  // Expect that there are no entries stored in the override pref.
+  const base::Value::Dict& pref_overrides = GetOverridePref();
+  EXPECT_TRUE(pref_overrides.empty());
+
+  AcceleratorConfigResult result = config_->RemoveAccelerator(
+      SWITCH_TO_LAST_USED_IME,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN));
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  const base::Value::Dict& updated_overrides = GetOverridePref();
+  // There should now be an entry in the pref overrides.
+  EXPECT_EQ(1u, updated_overrides.size());
+  // Expect the pref to have one entry that has the key of
+  // `SWITCH_TO_LAST_USED_IME`.
+  const base::Value::List* accelerator_overrides =
+      updated_overrides.FindList(base::NumberToString(SWITCH_TO_LAST_USED_IME));
+  // Removing one accelerator in `SWITCH_TO_LAST_USED_IME` will result in
+  // one entry with the `kRemove` tag.
+  EXPECT_EQ(1u, accelerator_overrides->size());
+  AcceleratorModificationData override_data =
+      ValueToAcceleratorModificationData(
+          accelerator_overrides->front().GetDict());
+  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_SPACE,
+                       ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
+                      override_data.accelerator);
+  EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
+
+  // Now re-login to the original profile.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& original_pref_overrides = GetOverridePref();
+  EXPECT_FALSE(original_pref_overrides.empty());
+
+  // Verify pref overrides were applied correctly.
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
+
+  // Now reset the action to default.
+  result = config_->RestoreDefault(SWITCH_TO_LAST_USED_IME);
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  // Relogin, expect shortcuts to be back to default.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& reset_pref_overrides = GetOverridePref();
+  EXPECT_TRUE(reset_pref_overrides.empty());
+  // `test_data` is the default state of accelerators.
+  ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+}
+
 }  // namespace ash
