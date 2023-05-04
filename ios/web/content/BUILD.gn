@@ -31,6 +31,7 @@ source_set("content") {
   deps = [
     "//base",
     "//build:blink_buildflags",
+    "//components/js_injection/browser",
     "//content/public/browser",
     "//ios/web/common:user_agent",
     "//ios/web/find_in_page:find_in_page",

@@ -4,6 +4,8 @@
 
 #import "ios/web/content/init/ios_content_renderer_client.h"
 
+#import "components/js_injection/renderer/js_communication.h"
+
 namespace web {
 
 IOSContentRendererClient::IOSContentRendererClient() = default;
@@ -12,6 +14,13 @@ IOSContentRendererClient::~IOSContentRendererClient() = default;
 void IOSContentRendererClient::RenderThreadStarted() {
   // TODO(crbug.com/1423527): Create and register a v8::Extension for receiving
   // messages from JavaScript.
+}
+
+void IOSContentRendererClient::RenderFrameCreated(
+    content::RenderFrame* render_frame) {
+  // As a RenderFrameObserver, JSCommunication handles destroying
+  // itself when its RenderFrame is destroyed.
+  new js_injection::JsCommunication(render_frame);
 }
 
 void IOSContentRendererClient::RunScriptsAtDocumentStart(

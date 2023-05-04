@@ -24,6 +24,7 @@ source_set("init") {
     "//build:blink_buildflags",
     "//components/embedder_support:browser_util",
     "//components/embedder_support/origin_trials:origin_trials",
+    "//components/js_injection/renderer",
     "//components/version_info",
     "//content/public/app",
     "//content/public/browser",

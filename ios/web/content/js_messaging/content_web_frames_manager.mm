@@ -7,6 +7,7 @@
 #import <set>
 
 #import "base/ios/device_util.h"
+#import "components/js_injection/browser/js_communication_host.h"
 #import "content/public/browser/page.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/js_messaging/content_web_frame.h"
@@ -21,7 +22,10 @@ namespace web {
 ContentWebFramesManager::ContentWebFramesManager(
     ContentWebState* content_web_state)
     : content::WebContentsObserver(content_web_state->GetWebContents()),
-      content_web_state_(content_web_state) {}
+      content_web_state_(content_web_state),
+      js_communication_host_(
+          std::make_unique<js_injection::JsCommunicationHost>(
+              content_web_state->GetWebContents())) {}
 
 ContentWebFramesManager::~ContentWebFramesManager() = default;
 

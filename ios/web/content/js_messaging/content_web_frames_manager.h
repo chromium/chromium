@@ -16,6 +16,10 @@
 #error File can only be included when USE_BLINK is true
 #endif
 
+namespace js_injection {
+class JsCommunicationHost;
+}
+
 namespace web {
 
 class ContentWebState;
@@ -57,6 +61,9 @@ class ContentWebFramesManager : public WebFramesManager,
 
   // The ContentWebState that owns this object.
   raw_ptr<ContentWebState> content_web_state_;
+
+  // Used for receiving messages from JavaScript.
+  std::unique_ptr<js_injection::JsCommunicationHost> js_communication_host_;
 };
 
 }  // namespace web

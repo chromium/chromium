@@ -23,6 +23,7 @@ class IOSContentRendererClient : public content::ContentRendererClient {
 
   // content::ContentRendererClient implementation:
   void RenderThreadStarted() override;
+  void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
 };
