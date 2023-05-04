@@ -32,7 +32,7 @@ GenerateKeyTask::GenerateKeyTask(
           base::BindOnce(
               &crypto::UnexportableKeyProvider::GenerateSigningKeySlowly,
               std::move(key_provider),
-              std::vector<const crypto::SignatureVerifier::SignatureAlgorithm>(
+              std::vector<crypto::SignatureVerifier::SignatureAlgorithm>(
                   acceptable_algorithms.begin(),
                   acceptable_algorithms.end())),
           std::move(callback)) {}
