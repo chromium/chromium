@@ -46,6 +46,7 @@ source_set("privacy_sandbox") {
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
+    "//components/privacy_sandbox/privacy_sandbox_attestations",
     "//components/strings:components_strings_grit",
     "//content/public/browser",
     "//net:net",

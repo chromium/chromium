@@ -83,7 +83,8 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     : delegate_(std::move(delegate)),
       host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
-      pref_service_(pref_service) {
+      pref_service_(pref_service),
+      attestations_({}) {
   DCHECK(pref_service_);
   DCHECK(host_content_settings_map_);
   DCHECK(cookie_settings_);
@@ -170,6 +171,15 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowed() const {
 bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
     const url::Origin& top_frame_origin,
     const GURL& url) const {
+  // Check for attestation on the calling context's site.
+  if (!attestations_.IsSiteAttested(
+          net::SchemefulSite(url),
+          PrivacySandboxAttestationsGatedAPI::kTopics)) {
+    base::UmaHistogramEnumeration("PrivacySandbox.IsTopicsAllowedForContext",
+                                  Status::kAttestationFailed);
+    return false;
+  }
+
   // M1 specific
   if (base::FeatureList::IsEnabled(privacy_sandbox::kPrivacySandboxSettings4)) {
     Status status = GetM1TopicAllowedStatus();
@@ -583,6 +593,11 @@ void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
 void PrivacySandboxSettingsImpl::SetDelegateForTesting(
     std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
+}
+
+void PrivacySandboxSettingsImpl::SetPrivacySandboxAttestationsMapForTesting(
+    const PrivacySandboxAttestationsMap& attestations_map) {
+  attestations_ = PrivacySandboxAttestations(attestations_map);
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(

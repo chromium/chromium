@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -199,6 +200,8 @@ class PrivacySandboxSettingsTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList disabled_topics_feature_list_;
+
+  using Status = PrivacySandboxSettingsImpl::Status;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
@@ -1125,8 +1128,6 @@ class PrivacySandboxSettingsM1Test : public PrivacySandboxSettingsTest {
   }
 
  protected:
-  using Status = PrivacySandboxSettingsImpl::Status;
-
   void RunTestCase(const TestState& test_state,
                    const TestInput& test_input,
                    const TestOutput& test_output) {
@@ -1682,6 +1683,62 @@ TEST_F(PrivacySandboxSettingsM1Test, TopicsConsentStatus) {
                kIsTopicsAllowedForContextMetric,
            },
            static_cast<int>(Status::kApisDisabled)}});
+}
+
+class PrivacySandboxAttestationsTest : public PrivacySandboxSettingsTest {
+  void InitializeFeaturesBeforeStart() override {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kEnforcePrivacySandboxAttestations);
+  }
+};
+
+// TODO(crbug.com/1442226): Transition to the new declarative test format.
+TEST_F(PrivacySandboxAttestationsTest, IsTopicsAllowedForContextAttestation) {
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/true,
+      /*block_third_party_cookies=*/false,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_ALLOW,
+      /*user_cookie_exceptions=*/{},
+      /*managed_cookie_setting=*/privacy_sandbox_test_util::kNoSetting,
+      /*managed_cookie_exceptions=*/{});
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  base::HistogramTester histogram_tester;
+
+  GURL top_level_url("https://top-level-origin.com");
+  GURL caller_url("https://embedded.com");
+
+  // With an empty attestation map, Topics is not allowed.
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
+      url::Origin::Create(top_level_url), caller_url));
+
+  // With the top-level site in the attestation map, Topics is still not
+  // allowed; it's gated on the caller's site.
+  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(
+      {{net::SchemefulSite(top_level_url),
+        {PrivacySandboxAttestationsGatedAPI::kTopics}}});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
+      url::Origin::Create(top_level_url), caller_url));
+
+  // With the caller's site in the attestation map, but no attestation for
+  // Topics, Topics is not allowed.
+  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(
+      {{net::SchemefulSite(caller_url), {}}});
+  EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
+      url::Origin::Create(top_level_url), caller_url));
+
+  // With the caller's site in the attestation map and attestation for Topics,
+  // Topics is allowed.
+  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(
+      {{net::SchemefulSite(caller_url),
+        {PrivacySandboxAttestationsGatedAPI::kTopics}}});
+  EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
+      url::Origin::Create(top_level_url), caller_url));
+
+  // Check that the histogram recorded 3 failures of 4 attempts above.
+  histogram_tester.ExpectUniqueSample(
+      "PrivacySandbox.IsTopicsAllowedForContext", Status::kAttestationFailed,
+      3);
 }
 
 }  // namespace privacy_sandbox

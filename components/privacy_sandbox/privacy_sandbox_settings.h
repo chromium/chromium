@@ -7,6 +7,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 
 class GURL;
 
@@ -211,6 +212,10 @@ class PrivacySandboxSettings : public KeyedService {
 
   // Overrides the internal delegate for test purposes.
   virtual void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) = 0;
+
+  // Overrides the privacy sandbox attestations map for testing.
+  virtual void SetPrivacySandboxAttestationsMapForTesting(
+      const PrivacySandboxAttestationsMap& attestations_map) = 0;
 };
 
 }  // namespace privacy_sandbox

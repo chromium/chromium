@@ -84,6 +84,10 @@ class MockPrivacySandboxSettings
               SetDelegateForTesting,
               (std::unique_ptr<Delegate>),
               (override));
+  MOCK_METHOD(void,
+              SetPrivacySandboxAttestationsMapForTesting,
+              (const privacy_sandbox::PrivacySandboxAttestationsMap&),
+              (override));
 };
 
 }  // namespace privacy_sandbox_test_util
