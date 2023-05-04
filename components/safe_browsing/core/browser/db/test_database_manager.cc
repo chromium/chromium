@@ -96,12 +96,6 @@ bool TestSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
   return true;
 }
 
-bool TestSafeBrowsingDatabaseManager::MatchMalwareIP(
-    const std::string& ip_address) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
 safe_browsing::ThreatSource TestSafeBrowsingDatabaseManager::GetThreatSource()
     const {
   NOTIMPLEMENTED();

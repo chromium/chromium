@@ -84,7 +84,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
       const std::string& metric_variation) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool MatchDownloadAllowlistUrl(const GURL& url) override;
-  bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
 
@@ -300,12 +299,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   void ScheduleFullHashCheck(std::unique_ptr<PendingCheck> check);
 
   // Checks |stores_to_check| in database synchronously for hash prefixes
-  // matching |hash|. Returns true if there's a match; false otherwise. This is
-  // used for lists that have full hash information in the database.
-  bool HandleHashSynchronously(const FullHashStr& hash,
-                               const StoresToCheck& stores_to_check);
-
-  // Checks |stores_to_check| in database synchronously for hash prefixes
   // matching the full hashes for |url|. See |HandleHashSynchronously| for
   // details.
   bool HandleUrlSynchronously(const GURL& url,
@@ -388,6 +381,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // Stops tracking all checks awaiting a full hash response from the
   // SafeBrowsing service. Returns the swapped copy of the checks.
   PendingChecks CopyAndRemoveAllPendingChecks();
+
+  // Delete any *.store files from disk that are no longer used.
+  void DeleteUnusedStoreFiles();
 
   // Stores full hashes of URLs that have been artificially marked as unsafe.
   StoreAndHashPrefixes artificially_marked_store_and_hash_prefixes_;

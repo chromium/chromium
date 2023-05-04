@@ -140,10 +140,6 @@ ListIdentifier GetChromeUrlClientIncidentId() {
   return ListIdentifier(CHROME_PLATFORM, URL, CLIENT_INCIDENT);
 }
 
-ListIdentifier GetIpMalwareId() {
-  return ListIdentifier(GetCurrentPlatformType(), IP_RANGE, MALWARE_THREAT);
-}
-
 ListIdentifier GetUrlBillingId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, BILLING);
 }
@@ -616,39 +612,6 @@ void V4ProtocolManagerUtil::SetClientInfoFromConfig(
   DCHECK(client_info);
   client_info->set_client_id(config.client_name);
   client_info->set_client_version(config.version);
-}
-
-// static
-bool V4ProtocolManagerUtil::GetIPV6AddressFromString(
-    const std::string& ip_address,
-    net::IPAddress* address) {
-  DCHECK(address);
-  if (!address->AssignFromIPLiteral(ip_address))
-    return false;
-  if (address->IsIPv4())
-    *address = net::ConvertIPv4ToIPv4MappedIPv6(*address);
-  return address->IsIPv6();
-}
-
-// static
-bool V4ProtocolManagerUtil::IPAddressToEncodedIPV6Hash(
-    const std::string& ip_address,
-    FullHashStr* hashed_encoded_ip) {
-  net::IPAddress address;
-  if (!GetIPV6AddressFromString(ip_address, &address)) {
-    return false;
-  }
-  std::string packed_ip = net::IPAddressToPackedString(address);
-  if (packed_ip.empty()) {
-    return false;
-  }
-
-  const std::string hash = base::SHA1HashString(packed_ip);
-  DCHECK_EQ(20u, hash.size());
-  hashed_encoded_ip->resize(hash.size() + 1);
-  hashed_encoded_ip->replace(0, hash.size(), hash);
-  (*hashed_encoded_ip)[hash.size()] = static_cast<unsigned char>(128);
-  return true;
 }
 
 // static

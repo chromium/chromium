@@ -491,6 +491,7 @@ class V4LocalDatabaseManagerTest : public PlatformTest {
     // Wait for tasks on the task runner so we're sure that the
     // V4LocalDatabaseManager has read the data from disk.
     task_runner_->RunPendingTasks();
+    task_environment_.RunUntilIdle();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -1113,29 +1114,6 @@ TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistUrl) {
       v4_local_database_manager_));
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestMatchMalwareIP) {
-  SetupFakeManager();
-
-  // >>> hashlib.sha1(socket.inet_pton(socket.AF_INET6,
-  // '::ffff:192.168.1.2')).digest() + chr(128)
-  // '\xb3\xe0z\xafAv#h\x9a\xcf<\xf3ee\x94\xda\xf6y\xb1\xad\x80'
-  StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(
-      GetIpMalwareId(), FullHashStr("\xB3\xE0z\xAF"
-                                    "Av#h\x9A\xCF<\xF3"
-                                    "ee\x94\xDA\xF6y\xB1\xAD\x80"));
-  ReplaceV4Database(store_and_hash_prefixes);
-
-  EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP(""));
-  // Not blocklisted.
-  EXPECT_FALSE(v4_local_database_manager_->MatchMalwareIP("192.168.1.1"));
-  // Blocklisted.
-  EXPECT_TRUE(v4_local_database_manager_->MatchMalwareIP("192.168.1.2"));
-
-  EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
-      v4_local_database_manager_));
-}
-
 // This verifies the fix for race in http://crbug.com/660293
 TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithSameClientAndCancel) {
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
@@ -1553,8 +1531,7 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
       GetUrlSocEngId(), GetUrlMalwareId(), GetUrlBillingId(),
       GetUrlCsdAllowlistId(), GetUrlHighConfidenceAllowlistId()};
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::vector<ListIdentifier> expected_lists{GetIpMalwareId(),
-                                             GetUrlSocEngId(),
+  std::vector<ListIdentifier> expected_lists{GetUrlSocEngId(),
                                              GetUrlMalwareId(),
                                              GetUrlUwsId(),
                                              GetUrlMalBinId(),
@@ -1568,9 +1545,8 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
                                              GetUrlHighConfidenceAllowlistId()};
 #else
   std::vector<ListIdentifier> expected_lists{
-      GetIpMalwareId(), GetUrlSocEngId(), GetUrlMalwareId(),
-      GetUrlUwsId(),    GetUrlMalBinId(), GetChromeExtMalwareId(),
-      GetUrlBillingId()};
+      GetUrlSocEngId(), GetUrlMalwareId(),       GetUrlUwsId(),
+      GetUrlMalBinId(), GetChromeExtMalwareId(), GetUrlBillingId()};
 #endif
 
   std::vector<ListIdentifier> synced_lists;
@@ -1580,6 +1556,68 @@ TEST_F(V4LocalDatabaseManagerTest, SyncedLists) {
     }
   }
   EXPECT_EQ(expected_lists, synced_lists);
+}
+
+TEST_F(V4LocalDatabaseManagerTest, DeleteUnusedStoreFileDoesNotExist) {
+  auto store_file_path = base_dir_.GetPath().AppendASCII("IpMalware.store");
+  ASSERT_FALSE(base::PathExists(store_file_path));
+
+  // Reset the database manager so that DeleteUnusedStoreFiles is called.
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
+  ASSERT_FALSE(base::PathExists(store_file_path));
+}
+
+TEST_F(V4LocalDatabaseManagerTest, DeleteUnusedStoreFileSuccess) {
+  auto store_file_path = base_dir_.GetPath().AppendASCII("IpMalware.store");
+  ASSERT_FALSE(base::PathExists(store_file_path));
+
+  // Now write an empty file.
+  base::WriteFile(store_file_path, "", 0);
+  ASSERT_TRUE(base::PathExists(store_file_path));
+
+  // Reset the database manager so that DeleteUnusedStoreFiles is called.
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
+  ASSERT_FALSE(base::PathExists(store_file_path));
+}
+
+TEST_F(V4LocalDatabaseManagerTest, DeleteUnusedStoreFileRandomFileNotDeleted) {
+  auto random_store_file_path = base_dir_.GetPath().AppendASCII("random.store");
+  ASSERT_FALSE(base::PathExists(random_store_file_path));
+
+  // Now write an empty file.
+  base::WriteFile(random_store_file_path, "", 0);
+  ASSERT_TRUE(base::PathExists(random_store_file_path));
+
+  // Reset the database manager so that DeleteUnusedStoreFiles is called.
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
+  ASSERT_TRUE(base::PathExists(random_store_file_path));
+
+  // Cleanup
+  base::DeleteFile(random_store_file_path);
+}
+
+TEST_F(V4LocalDatabaseManagerTest, DeleteAssociatedFile) {
+  auto store_file_path = base_dir_.GetPath().AppendASCII("IpMalware.store");
+  ASSERT_FALSE(base::PathExists(store_file_path));
+
+  // Now write an empty file.
+  base::WriteFile(store_file_path, "", 0);
+  ASSERT_TRUE(base::PathExists(store_file_path));
+
+  // Now write a helper file.
+  auto helper_file_path =
+      base_dir_.GetPath().AppendASCII("IpMalware.store.4_timestamp");
+  base::WriteFile(helper_file_path, "", 0);
+  ASSERT_TRUE(base::PathExists(helper_file_path));
+
+  // Reset the database manager so that DeleteUnusedStoreFiles is called.
+  ResetLocalDatabaseManager();
+  WaitForTasksOnTaskRunner();
+  EXPECT_FALSE(base::PathExists(store_file_path));
+  EXPECT_FALSE(base::PathExists(helper_file_path));
 }
 
 }  // namespace safe_browsing
