@@ -80,6 +80,10 @@ class FakeSymbolizer:
     method_name = '{}::Func_{:X}'.format(namespace, address)
     return [(method_name, '{}.cc:1:1'.format(namespace))]
 
+  @staticmethod
+  def IsValidTarget(path):
+    # pylint: disable=unused-argument
+    return True
 
 class StackDecodeTest(unittest.TestCase):
   def setUp(self):
