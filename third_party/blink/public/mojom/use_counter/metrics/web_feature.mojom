@@ -2257,7 +2257,6 @@ enum WebFeature {
   kLazyLoadFrameLoadingAttributeLazy = 2933,
   kLazyLoadImageLoadingAttributeEager = 2934,
   kLazyLoadImageLoadingAttributeLazy = 2935,
-  kLazyLoadImageMissingDimensionsForLazy = 2936,
   kPeriodicBackgroundSyncGetTags = 2937,
   kPeriodicBackgroundSyncUnregister = 2938,
   kCreateObjectURLMediaSourceFromWorker = 2939,

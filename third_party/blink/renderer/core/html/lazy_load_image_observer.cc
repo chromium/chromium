@@ -19,12 +19,10 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
 namespace blink {
@@ -153,19 +151,12 @@ LazyLoadImageObserver::LazyLoadImageObserver(const Document& root_document) {
       root_document.LoadEventFinished();
 }
 
-void LazyLoadImageObserver::StartMonitoringNearViewport(
-    Document* root_document,
-    Element* element,
-    DeferralMessage deferral_message) {
+void LazyLoadImageObserver::StartMonitoringNearViewport(Document* root_document,
+                                                        Element* element) {
   if (!lazy_load_intersection_observer_) {
     CreateLazyLoadIntersectionObserver(root_document);
   }
   lazy_load_intersection_observer_->observe(element);
-
-  if (deferral_message == DeferralMessage::kMissingDimensionForLazy) {
-    UseCounter::Count(root_document,
-                      WebFeature::kLazyLoadImageMissingDimensionsForLazy);
-  }
 }
 
 void LazyLoadImageObserver::StopMonitoring(Element* element) {

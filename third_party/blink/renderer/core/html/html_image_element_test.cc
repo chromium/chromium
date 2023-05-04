@@ -7,9 +7,6 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/css/css_property_value_set.h"
-#include "third_party/blink/renderer/core/css/parser/css_parser.h"
-#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -76,65 +73,6 @@ TEST_F(HTMLImageElementTest, sourceSize) {
   EXPECT_EQ(kViewportWidth, image->SourceSize(*image));
   image->setAttribute(html_names::kSizesAttr, "50vw");
   EXPECT_EQ(250, image->SourceSize(*image));
-}
-
-TEST_F(HTMLImageElementTest, attributeLazyLoadDimensionType) {
-  struct TestCase {
-    const char* attribute_value;
-    HTMLImageElement::LazyLoadDimensionType expected_dimension_type;
-  };
-  const TestCase test_cases[] = {
-      {"", HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"invalid", HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"10px", HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall},
-      {"10", HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall},
-      {"100px", HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall},
-      {"100", HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall},
-  };
-  for (const auto& test : test_cases) {
-    EXPECT_EQ(test.expected_dimension_type,
-              HTMLImageElement::GetAttributeLazyLoadDimensionType(
-                  test.attribute_value));
-  }
-}
-
-TEST_F(HTMLImageElementTest, inlineStyleLazyLoadDimensionType) {
-  struct TestCase {
-    const char* inline_style;
-    HTMLImageElement::LazyLoadDimensionType expected_dimension_type;
-  };
-  const TestCase test_cases[] = {
-      {"", HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"invalid", HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"height: 1px", HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"width: 1px", HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"height: 1; width: 1",
-       HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"height: 50%; width: 50%",
-       HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"height: 1px; width: 1px",
-       HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall},
-      {"height: 10px; width: 10px",
-       HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall},
-      {"height: 100px; width: 10px",
-       HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall},
-      {"height: 10px; width: 100px",
-       HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall},
-      {"height: 100px; width: 100px",
-       HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall},
-      {"height: 100; width: 100",
-       HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-      {"height: 100%; width: 100%",
-       HTMLImageElement::LazyLoadDimensionType::kNotAbsolute},
-  };
-  for (const auto& test : test_cases) {
-    const ImmutableCSSPropertyValueSet* property_set =
-        CSSParser::ParseInlineStyleDeclaration(
-            test.inline_style, kHTMLStandardMode,
-            SecureContextMode::kInsecureContext);
-    EXPECT_EQ(test.expected_dimension_type,
-              HTMLImageElement::GetInlineStyleDimensionsType(property_set));
-  }
 }
 
 TEST_F(HTMLImageElementTest, ImageAdRectangleUpdate) {

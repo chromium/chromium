@@ -31,25 +31,6 @@ namespace {
                               base::saturated_cast<int>((bytes) / 1024), 1, \
                               64 * 1024, 50)
 
-// Returns true if absolute dimension is specified in the width and height
-// attributes or in the inline style.
-bool IsDimensionAbsoluteLarge(const HTMLImageElement& html_image) {
-  if (HTMLImageElement::GetAttributeLazyLoadDimensionType(
-          html_image.FastGetAttribute(html_names::kWidthAttr)) ==
-          HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall ||
-      HTMLImageElement::GetAttributeLazyLoadDimensionType(
-          html_image.FastGetAttribute(html_names::kHeightAttr)) ==
-          HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall) {
-    return true;
-  }
-  if (HTMLImageElement::GetInlineStyleDimensionsType(
-          html_image.InlineStyle()) ==
-      HTMLImageElement::LazyLoadDimensionType::kAbsoluteNotSmall) {
-    return true;
-  }
-  return false;
-}
-
 Document* GetRootDocumentOrNull(Element* element) {
   if (LocalFrame* frame = element->GetDocument().GetFrame())
     return frame->LocalFrameRoot().GetDocument();
@@ -69,24 +50,10 @@ void StartMonitoringVisibility(HTMLImageElement* html_image) {
 
 // static
 void LazyImageHelper::StartMonitoring(blink::Element* element) {
-  Document* document = GetRootDocumentOrNull(element);
-  if (!document)
-    return;
-
-  using DeferralMessage = LazyLoadImageObserver::DeferralMessage;
-  auto deferral_message = DeferralMessage::kNone;
-  if (auto* html_image = DynamicTo<HTMLImageElement>(element)) {
-    LoadingAttributeValue effective_loading_attr = GetLoadingAttributeValue(
-        html_image->FastGetAttribute(html_names::kLoadingAttr));
-    DCHECK_NE(effective_loading_attr, LoadingAttributeValue::kEager);
-    if (effective_loading_attr != LoadingAttributeValue::kAuto &&
-        !IsDimensionAbsoluteLarge(*html_image)) {
-      DCHECK_EQ(effective_loading_attr, LoadingAttributeValue::kLazy);
-      deferral_message = DeferralMessage::kMissingDimensionForLazy;
-    }
+  if (Document* document = GetRootDocumentOrNull(element)) {
+    document->EnsureLazyLoadImageObserver().StartMonitoringNearViewport(
+        document, element);
   }
-  document->EnsureLazyLoadImageObserver().StartMonitoringNearViewport(
-      document, element, deferral_message);
 }
 
 void LazyImageHelper::StopMonitoring(Element* element) {
@@ -135,25 +102,6 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
 
   if (frame.Owner() && !frame.Owner()->ShouldLazyLoadChildren())
     return LazyImageHelper::Eligibility::kDisabled;
-
-  // Avoid automatically lazyloading if width and height attributes are small.
-  // This heuristic helps avoid double fetching tracking pixels.
-  if (HTMLImageElement::GetAttributeLazyLoadDimensionType(
-          html_image->FastGetAttribute(html_names::kWidthAttr)) ==
-          HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall &&
-      HTMLImageElement::GetAttributeLazyLoadDimensionType(
-          html_image->FastGetAttribute(html_names::kHeightAttr)) ==
-          HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall) {
-    return LazyImageHelper::Eligibility::kDisabled;
-  }
-  // Avoid automatically lazyloading if width or height is specified in inline
-  // style and is small enough. This heuristic helps avoid double fetching
-  // tracking pixels.
-  if (HTMLImageElement::GetInlineStyleDimensionsType(
-          html_image->InlineStyle()) ==
-      HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall) {
-    return LazyImageHelper::Eligibility::kDisabled;
-  }
 
   return LazyImageHelper::Eligibility::kDisabled;
 }

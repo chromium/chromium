@@ -78,70 +78,11 @@ class LazyLoadImagesSimTest : public SimTest {
     }
     EXPECT_TRUE(is_background_image_found);
     EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeEager));
-  }
-
-  void VerifyImageElementWithDimensionDeferred(const char* img_attribute) {
-    SimRequest image_resource("https://example.com/img.png", "image/png");
-    LoadMainResource(String::Format(R"HTML(
-      <body onload='console.log("main body onload");'>
-        <div style='height:10000px;'></div>
-        <img src="img.png" loading="lazy" %s
-              onload= 'console.log("deferred_image onload");'>
-      </body>)HTML",
-                                    img_attribute));
-
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
-
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-
-    // Scroll down until the image element is visible.
-    GetDocument().View()->LayoutViewport()->SetScrollOffset(
-        ScrollOffset(0, 10000), mojom::blink::ScrollType::kProgrammatic);
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
-    image_resource.Complete(ReadTestImage());
-    test::RunPendingTasks();
-    EXPECT_TRUE(ConsoleMessages().Contains("deferred_image onload"));
-
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_TRUE(GetDocument().IsUseCounted(
         WebFeature::kLazyLoadImageLoadingAttributeLazy));
     EXPECT_FALSE(GetDocument().IsUseCounted(
         WebFeature::kLazyLoadImageLoadingAttributeEager));
   }
 };
-
-TEST_F(LazyLoadImagesSimTest, LargeImageHeight100Width100) {
-  VerifyImageElementWithDimensionDeferred("height='100px' width='100px'");
-}
-
-TEST_F(LazyLoadImagesSimTest, LargeImageHeight1Width100) {
-  VerifyImageElementWithDimensionDeferred("height='1px' width='100px'");
-}
-
-TEST_F(LazyLoadImagesSimTest, LargeImageHeight100Width1) {
-  VerifyImageElementWithDimensionDeferred("height='100px' width='1px'");
-}
-
-TEST_F(LazyLoadImagesSimTest, LargeImageStyleHeight100Width100) {
-  VerifyImageElementWithDimensionDeferred(
-      "style='height: 100px; width: 100px;'");
-}
-
-TEST_F(LazyLoadImagesSimTest, LargeImageStyleHeight100Width1) {
-  VerifyImageElementWithDimensionDeferred("style='height: 100px; width: 1px;'");
-}
-
-TEST_F(LazyLoadImagesSimTest, LargeImageStyleHeight1Width100) {
-  VerifyImageElementWithDimensionDeferred("style='height: 1px; width: 100px;'");
-}
 
 TEST_F(LazyLoadImagesSimTest, ImgSrcset) {
   WebView().Resize(gfx::Size(100, 1));
@@ -527,35 +468,6 @@ class LazyLoadImagesTest : public SimTest {
     EXPECT_FALSE(ConsoleMessages().Contains("image onload"));
   }
 
-  void TestLoadImageExpectingLazyLoadWithoutPlaceholder(
-      const char* image_attributes) {
-    SimSubresourceRequest full_resource("https://example.com/image.png",
-                                        "image/png");
-
-    LoadMainResourceWithImageFarFromViewport(image_attributes);
-
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-    EXPECT_FALSE(ConsoleMessages().Contains("image onload"));
-
-    // Scrolling down should trigger the fetch of the image.
-    GetDocument().View()->LayoutViewport()->SetScrollOffset(
-        ScrollOffset(0, kLoadingDistanceThreshold + kViewportHeight),
-        mojom::blink::ScrollType::kProgrammatic);
-    Compositor().BeginFrame();
-    test::RunPendingTasks();
-    full_resource.Complete(ReadTestImage());
-    test::RunPendingTasks();
-
-    EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
-    EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-    EXPECT_TRUE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeLazy));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageLoadingAttributeEager));
-  }
-
   void TestLoadImageExpectingFullImageLoad(const char* image_attributes) {
     SimSubresourceRequest full_resource("https://example.com/image.png",
                                         "image/png");
@@ -572,8 +484,6 @@ class LazyLoadImagesTest : public SimTest {
 
     EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
     EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
-    EXPECT_FALSE(GetDocument().IsUseCounted(
-        WebFeature::kLazyLoadImageMissingDimensionsForLazy));
     EXPECT_FALSE(GetDocument().IsUseCounted(
         WebFeature::kLazyLoadImageLoadingAttributeLazy));
     EXPECT_FALSE(GetDocument().IsUseCounted(
@@ -636,8 +546,6 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromLazyToEager) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
   EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-  EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeEager));
@@ -654,8 +562,6 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromAutoToEager) {
 
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageMissingDimensionsForLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
@@ -674,54 +580,9 @@ TEST_F(LazyLoadImagesTest, AttributeChangedFromUnsetToEager) {
   EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
   EXPECT_TRUE(ConsoleMessages().Contains("image onload"));
   EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageMissingDimensionsForLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeLazy));
   EXPECT_FALSE(GetDocument().IsUseCounted(
       WebFeature::kLazyLoadImageLoadingAttributeEager));
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageWithLazyAttr) {
-  TestLoadImageExpectingLazyLoad("loading='lazy' width='1px' height='1px'");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeEager));
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageViaStyleWithLazyAttr) {
-  TestLoadImageExpectingLazyLoad(
-      "loading='lazy' style='width:1px;height:1px;'");
-  EXPECT_TRUE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeLazy));
-  EXPECT_FALSE(GetDocument().IsUseCounted(
-      WebFeature::kLazyLoadImageLoadingAttributeEager));
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageWidth1Height1) {
-  TestLoadImageExpectingFullImageLoad("width='1px' height='1px'");
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageWidth10Height10) {
-  TestLoadImageExpectingFullImageLoad("width='10px' height='10px'");
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageWidth1Height11) {
-  TestLoadImageExpectingLazyLoadWithoutPlaceholder(
-      "width='1px' height='11px' loading='lazy'");
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageViaStyleWidth1Height1) {
-  TestLoadImageExpectingFullImageLoad("style='width:1px;height:1px;'");
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageViaStyleWidth10Height10) {
-  TestLoadImageExpectingFullImageLoad("style='width:10px;height:10px;'");
-}
-
-TEST_F(LazyLoadImagesTest, TinyImageViaStyleWidth11Height1) {
-  TestLoadImageExpectingLazyLoadWithoutPlaceholder(
-      "style='width:11px;height:1px;'  loading='lazy'");
 }
 
 TEST_F(LazyLoadImagesTest, JavascriptCreatedImageFarFromViewport) {

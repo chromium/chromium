@@ -99,7 +99,7 @@ struct IntegrityTestCase {
 
 struct LazyLoadImageTestCase {
   const char* input_html;
-  bool lazy_load_image_enabled;
+  bool should_preload;
 };
 
 struct AttributionSrcTestCase {
@@ -242,11 +242,11 @@ class HTMLMockHTMLResourcePreloader : public ResourcePreloader {
     }
   }
 
-  void LazyLoadImageEnabledVerification(bool expected_enabled) {
-    if (expected_enabled) {
-      EXPECT_FALSE(preload_request_) << preload_request_->ResourceURL();
+  void LazyLoadImagePreloadVerification(bool expected) {
+    if (expected) {
+      EXPECT_TRUE(preload_request_.get());
     } else {
-      ASSERT_TRUE(preload_request_.get());
+      EXPECT_FALSE(preload_request_) << preload_request_->ResourceURL();
     }
   }
 
@@ -433,8 +433,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
     scanner_->AppendToEnd(String(test_case.input_html));
     std::unique_ptr<PendingPreloadData> preload_data = scanner_->Scan(base_url);
     preloader.TakePreloadData(std::move(preload_data));
-    preloader.LazyLoadImageEnabledVerification(
-        test_case.lazy_load_image_enabled);
+    preloader.LazyLoadImagePreloadVerification(test_case.should_preload);
   }
 
   void Test(AttributionSrcTestCase test_case) {
@@ -1396,155 +1395,15 @@ TEST_F(HTMLPreloadScannerTest, MetaCsp_NoPreloadsAfter) {
     Test(test_case);
 }
 
-// TODO(crbug.com/1441062): These lazy load images tests date back to when we
-// had a feature for automatically applying lazy loading to images, but that
-// has been removed. These tests should be cleaned up to just test the basic
-// auto/eager/lazy behavior.
-TEST_F(HTMLPreloadScannerTest, LazyLoadImage_SmallImages) {
+TEST_F(HTMLPreloadScannerTest, LazyLoadImage) {
   RunSetUp(kViewportEnabled);
   LazyLoadImageTestCase test_cases[] = {
-      {"<img src='foo.jpg' loading='lazy'>", true},
-      {"<img src='foo.jpg' height='1px' width='1px' loading='lazy'>", true},
-      {"<img src='foo.jpg' style='height: 1px; width: 1px' loading='lazy'>",
-       true},
-      {"<img src='foo.jpg' height='10px' width='10px' loading='lazy'>", true},
-      {"<img src='foo.jpg' style='height: 10px; width: 10px' loading='lazy'>",
-       true},
-      {"<img src='foo.jpg' height='1px' loading='lazy'>", true},
-      {"<img src='foo.jpg' style='height: 1px;' loading='lazy'>", true},
-      {"<img src='foo.jpg' width='1px' loading='lazy'>", true},
-      {"<img src='foo.jpg' style='width: 1px;' loading='lazy'>", true},
-  };
-
-  for (const auto& test_case : test_cases)
-    Test(test_case);
-}
-
-TEST_F(HTMLPreloadScannerTest,
-       LazyLoadImage_FeatureAutomaticEnabledWithAttribute) {
-  RunSetUp(kViewportEnabled);
-  LazyLoadImageTestCase test_cases[] = {
-      {"<img src='foo.jpg' loading='auto'>", false},
-      {"<img src='foo.jpg' loading='lazy'>", true},
-      {"<img src='foo.jpg' loading='eager'>", false},
-      // loading=lazy should override other conditions.
-      {"<img src='foo.jpg' style='height: 1px;' loading='lazy'>", true},
-      {"<img src='foo.jpg' style='height: 1px; width: 1px' loading='lazy'>",
-       true},
+      {"<img src='foo.jpg' loading='auto'>", true},
+      {"<img src='foo.jpg' loading='lazy'>", false},
+      {"<img src='foo.jpg' loading='eager'>", true},
   };
   for (const auto& test_case : test_cases)
     Test(test_case);
-}
-
-TEST_F(HTMLPreloadScannerTest,
-       LazyLoadImage_FeatureExplicitEnabledWithAttribute) {
-  RunSetUp(kViewportEnabled);
-  LazyLoadImageTestCase test_cases[] = {
-      {"<img src='foo.jpg' loading='auto'>", false},
-      {"<img src='foo.jpg' loading='lazy'>", true},
-      {"<img src='foo.jpg' loading='eager'>", false},
-  };
-  for (const auto& test_case : test_cases)
-    Test(test_case);
-}
-
-TEST_F(HTMLPreloadScannerTest,
-       LazyLoadImage_FeatureAutomaticPreloadForLargeImages) {
-  // Large images should not be preloaded, when loading is auto or lazy.
-  RunSetUp(kViewportEnabled);
-  PreloadScannerTestCase test_cases[] = {
-      {"http://example.test",
-       "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-  };
-  for (const auto& test_case : test_cases)
-    Test(test_case);
-
-  // When loading is eager, lazyload is disabled and preload happens.
-  LazyLoadImageTestCase test_cases_that_preload[] = {
-      {"<img src='foo.jpg' height='20px' width='20px' loading='eager'>", false},
-      {"<img src='foo.jpg' style='height: 20px; width: 20px' loading='eager'>",
-       false},
-  };
-  for (const auto& test_case : test_cases_that_preload)
-    Test(test_case);
-}
-
-TEST_F(HTMLPreloadScannerTest,
-       LazyLoadImage_FeatureExplicitPreloadForLargeImages) {
-  // Large images should not be preloaded, when loading is lazy.
-  RunSetUp(kViewportEnabled);
-  PreloadScannerTestCase test_cases[] = {
-      {"http://example.test",
-       "<img src='foo.jpg' height='20px' width='20px' loading='lazy'>", nullptr,
-       "http://example.test/", ResourceType::kImage, 0},
-      {"http://example.test",
-       "<img src='foo.jpg' style='height: 20px; width: 20px' loading='lazy'>",
-       nullptr, "http://example.test/", ResourceType::kImage, 0},
-  };
-  for (const auto& test_case : test_cases)
-    Test(test_case);
-
-  // When loading is eager or auto, lazyload is disabled and preload happens.
-  LazyLoadImageTestCase test_cases_that_preload[] = {
-      {"<img src='foo.jpg' height='20px' width='20px' loading='eager'>", false},
-      {"<img src='foo.jpg' style='height: 20px; width: 20px' loading='eager'>",
-       false},
-      {"<img src='foo.jpg' height='20px' width='20px' loading='auto'>", false},
-      {"<img src='foo.jpg' style='height: 20px; width: 20px' loading='auto'>",
-       false},
-  };
-  for (const auto& test_case : test_cases_that_preload)
-    Test(test_case);
-}
-
-// TODO(domfarolino): Before merging, can we just delete this test, since we no
-// longer have metadata fetching?
-TEST_F(HTMLPreloadScannerTest, LazyLoadImage_DisableMetadataFetch) {
-  struct TestCase {
-    const char* loading_attr_value;
-    bool expected_is_preload;
-  };
-  const TestCase test_cases[] = {
-      // The lazyload eligible cases should not trigger a preload.
-      {"lazy", false},
-
-      // Lazyload ineligible case.
-      {"auto", true},
-
-      // Full image should be fetched when loading='eager' irrespective of
-      // automatic lazyload feature state.
-      {"eager", true},
-  };
-  for (const auto& test_case : test_cases) {
-    RunSetUp(kViewportEnabled);
-    const std::string img_html = base::StringPrintf(
-        "<img src='foo.jpg' loading='%s'>", test_case.loading_attr_value);
-    if (test_case.expected_is_preload) {
-      LazyLoadImageTestCase test_preload = {img_html.c_str(), false};
-      Test(test_preload);
-    } else {
-      PreloadScannerTestCase test_no_preload = {
-          "http://example.test",  img_html.c_str(),     nullptr,
-          "http://example.test/", ResourceType::kImage, 0};
-      Test(test_no_preload);
-    }
-  }
 }
 
 // https://crbug.com/1087854

@@ -66,19 +66,6 @@ class CORE_EXPORT HTMLImageElement final
                                                   unsigned width,
                                                   unsigned height);
 
-  // Returns dimension type of the attribute value or inline dimensions usable
-  // for LazyLoad, whether the dimension is absolute or not and if the absolute
-  // value is small enough to be skipped for lazyloading.
-  enum class LazyLoadDimensionType {
-    kNotAbsolute,
-    kAbsoluteNotSmall,
-    kAbsoluteSmall,
-  };
-  static LazyLoadDimensionType GetAttributeLazyLoadDimensionType(
-      const String& attribute_value);
-  static LazyLoadDimensionType GetInlineStyleDimensionsType(
-      const CSSPropertyValueSet* property_set);
-
   HTMLImageElement(Document&, const CreateElementFlags);
   explicit HTMLImageElement(Document&, bool created_by_parser = false);
   ~HTMLImageElement() override;

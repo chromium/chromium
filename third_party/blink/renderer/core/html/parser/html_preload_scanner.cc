@@ -422,23 +422,11 @@ class TokenPreloadScanner::StartTagScanner {
           dimension.IsAbsolute()) {
         resource_width_ = dimension.Value();
       }
-      if (width_attr_dimension_type_ ==
-          HTMLImageElement::LazyLoadDimensionType::kNotAbsolute) {
-        width_attr_dimension_type_ =
-            HTMLImageElement::GetAttributeLazyLoadDimensionType(
-                attribute_value);
-      }
     } else if (Match(attribute_name, html_names::kHeightAttr)) {
       HTMLDimension dimension;
       if (ParseDimensionValue(attribute_value, dimension) &&
           dimension.IsAbsolute()) {
         resource_height_ = dimension.Value();
-      }
-      if (height_attr_dimension_type_ ==
-          HTMLImageElement::LazyLoadDimensionType::kNotAbsolute) {
-        height_attr_dimension_type_ =
-            HTMLImageElement::GetAttributeLazyLoadDimensionType(
-                attribute_value);
       }
     } else if (loading_attr_value_ == LoadingAttributeValue::kAuto &&
                Match(attribute_name, html_names::kLoadingAttr)) {
@@ -782,10 +770,6 @@ class TokenPreloadScanner::StartTagScanner {
   IntegrityMetadataSet integrity_metadata_;
   SubresourceIntegrity::IntegrityFeatures integrity_features_;
   LoadingAttributeValue loading_attr_value_ = LoadingAttributeValue::kAuto;
-  HTMLImageElement::LazyLoadDimensionType width_attr_dimension_type_ =
-      HTMLImageElement::LazyLoadDimensionType::kNotAbsolute;
-  HTMLImageElement::LazyLoadDimensionType height_attr_dimension_type_ =
-      HTMLImageElement::LazyLoadDimensionType::kNotAbsolute;
   TokenPreloadScanner::ScannerType scanner_type_;
   // For explanation, see TokenPreloadScanner's declaration.
   bool priority_hints_origin_trial_enabled_;
