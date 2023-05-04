@@ -317,9 +317,65 @@ testPausedStateAddsTypeAttributeAndSyncingRemovesAttribute(done: () => void) {
       container!.updates, 2,
       'Bulk pin state stage should increment updates to 2');
   assertEquals(panel!.getAttribute('type'), 'offline');
+  assertFalse(panel!.hasAttribute('items'));
+  assertFalse(panel!.hasAttribute('percentage'));
+
+  // Switching back into `SYNCING` with new pinned bytes removes the type
+  // attribute and updates the attributes.
+  store.dispatch(updateBulkPinProgress({...bulkPinning, pinnedBytes: 300}));
+  assertEquals(
+      container!.updates, 3,
+      'Bulk pin state stage should increment updates to 3');
+  assertFalse(panel!.hasAttribute('type'));
+  assertEquals(panel!.getAttribute('items'), '10');
+  assertEquals(panel!.getAttribute('percentage'), '30');
+
+  done();
+}
+
+/**
+ * Tests that updating the syncing stage to not enough space adds the type
+ * attribute and goes back to syncing (i.e. user has started it again) removes
+ * the type attribute.
+ */
+export async function
+testNotEnoughSpaceStateAddsTypeAttributeAndSyncingRemovesAttribute(
+    done: () => void) {
+  // Initialize the store with bulk pinning enabled.
+  const store = getStore();
+  store.init({...getEmptyState(), preferences: PREFERENCES});
+
+  // Setup a syncing state that should be 10% done with 10 items.
+  const bulkPinning: BulkPinProgress = {
+    stage: BulkPinStage.SYNCING,
+    freeSpaceBytes: 0,
+    requiredSpaceBytes: 0,
+    bytesToPin: 1000,
+    pinnedBytes: 100,
+    filesToPin: 10,
+  };
+
+  // Dispatch an update to the store and ensure the panel does get attributes.
+  store.dispatch(updateBulkPinProgress(bulkPinning));
+  assertEquals(
+      container!.updates, 1,
+      'Bulk pin state change should increment updates to 1');
   assertEquals(panel!.getAttribute('items'), '10');
   assertEquals(panel!.getAttribute('percentage'), '10');
 
+  // Entering into a not enough space state ensures the type is updated and the
+  // items and percentage attributes are removed.
+  store.dispatch(updateBulkPinProgress({
+    ...bulkPinning,
+    pinnedBytes: 200,
+    stage: BulkPinStage.NOT_ENOUGH_SPACE,
+  }));
+  assertEquals(
+      container!.updates, 2,
+      'Bulk pin state stage should increment updates to 2');
+  assertEquals(panel!.getAttribute('type'), 'not-enough-space');
+  assertFalse(panel!.hasAttribute('items'));
+  assertFalse(panel!.hasAttribute('percentage'));
 
   // Switching back into `SYNCING` with new pinned bytes removes the type
   // attribute and updates the attributes.

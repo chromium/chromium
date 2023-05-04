@@ -6,7 +6,7 @@ import {assertEquals, assertNotEquals} from 'chrome://webui-test/chromeos/chai_a
 
 import {waitUntil} from '../common/js/test_error_reporting.js';
 
-import {XfCloudPanel} from './xf_cloud_panel.js';
+import {CloudPanelType, XfCloudPanel} from './xf_cloud_panel.js';
 
 /**
  * Creates new <xf-cloud-panel> for each test.
@@ -220,7 +220,6 @@ export async function testWhenOfflineTypeAttributeInUseOtherStatesHidden(
   done();
 }
 
-
 /**
  * Tests that when the not-enough-space type attribute is supplied, the other
  * states should all be hidden.
@@ -270,6 +269,31 @@ export async function testWhenNotEnoughSpaceTypeAttributeInUseOtherStatesHidden(
   await waitForStyles(progressFinishedElement, 'display', 'none');
   await waitForStyles(progressOfflineElement, 'display', 'none');
   await waitForStyles(progressNotEnoughSpaceElement, 'display', 'flex');
+
+  done();
+}
+
+/**
+ * Tests that only accepted cloud panel types are valid values for the `type`
+ * attribute.
+ */
+export async function testOnlyAcceptedTypesUpdateTypeProperty(
+    done: () => void) {
+  const element = getCloudPanelElement();
+
+  // The `type` attribute should initially be undefined.
+  assertEquals(element.type, undefined);
+
+  // Setting it to a valid value should update the underlying type.
+  element.setAttribute('type', 'not-enough-space');
+  await waitForAttributeValue(element, 'type', CloudPanelType.NOT_ENOUGH_SPACE);
+
+  // Setting it to some random value will update the HTML elements type
+  // attribute but the actual elements `type` property will get set to null as
+  // it is not an acceptable value.
+  element.setAttribute('type', 'non-existant-type');
+  await waitForAttributeValue(element, 'type', 'non-existant-type');
+  assertEquals(element.type, null);
 
   done();
 }

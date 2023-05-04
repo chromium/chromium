@@ -11,7 +11,7 @@
 import {util} from '../common/js/util.js';
 import {State} from '../externs/ts/state.js';
 import {getStore, Store} from '../state/store.js';
-import {CloudPanelSettingsClickEvent, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
+import {CloudPanelSettingsClickEvent, CloudPanelType, XfCloudPanel} from '../widgets/xf_cloud_panel.js';
 
 export type BulkPinProgress = chrome.fileManagerPrivate.BulkPinProgress;
 export const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
@@ -100,8 +100,14 @@ export class CloudPanelContainer {
     // offline. This could be from either the network not being connected or
     // cellular being disabled for syncing.
     if (bulkPinProgress.stage === BulkPinStage.PAUSED) {
-      this.panel_.setAttribute('type', 'offline');
-      this.increaseUpdates_();
+      this.updatePanelType_(CloudPanelType.OFFLINE);
+      return;
+    }
+
+    // Not enough space indicates the available local storage is insufficient to
+    // store all the files required by the users My drive.
+    if (bulkPinProgress.stage === BulkPinStage.NOT_ENOUGH_SPACE) {
+      this.updatePanelType_(CloudPanelType.NOT_ENOUGH_SPACE);
       return;
     }
     this.panel_.removeAttribute('type');
@@ -119,6 +125,17 @@ export class CloudPanelContainer {
         (bulkPinProgress.pinnedBytes / bulkPinProgress.bytesToPin * 100)
             .toFixed(0);
     this.panel_.setAttribute('percentage', String(percentage));
+    this.increaseUpdates_();
+  }
+
+  /**
+   * Updates the underlying panel to the `type` and removes the in progress
+   * attributes.
+   */
+  private updatePanelType_(type: CloudPanelType) {
+    this.panel_.setAttribute('type', type);
+    this.panel_.removeAttribute('items');
+    this.panel_.removeAttribute('percentage');
     this.increaseUpdates_();
   }
 

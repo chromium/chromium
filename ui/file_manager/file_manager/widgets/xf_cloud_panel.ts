@@ -16,6 +16,15 @@ import {css, customElement, html, property, query, XfBase} from './xf_base.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 
 /**
+ * These type indicate static states that the cloud panel can enter. If one of
+ * these is supplied, `items` and `percentage` is ignored.
+ */
+export enum CloudPanelType {
+  OFFLINE = 'offline',
+  NOT_ENOUGH_SPACE = 'not-enough-space',
+}
+
+/**
  * The `<xf-cloud-panel>` represents the current state that the Drive bulk
  * pinning process is currently in. When files are being pinned and downloaded,
  * the `items` and `progress` attributes are used to signify that the panel is
@@ -56,6 +65,26 @@ export class XfCloudPanel extends XfBase {
     },
   })
   percentage?: number;
+
+  /**
+   * Attempts to map the supplied `type` attribute to an available value.
+   */
+  @property({
+    type: CloudPanelType,
+    reflect: true,
+    converter: {
+      fromAttribute:
+          (value: string) => {
+            if (value in CloudPanelType) {
+              return value as CloudPanelType;
+            }
+            console.warn(`Failed to convert ${value} to CloudPanelType`);
+            return null;
+          },
+      toAttribute: (key: keyof CloudPanelType) => key,
+    },
+  })
+  type?: CloudPanelType;
 
   /**
    * The cloud panel uses the `CrActionMenu` to provide the dialog behaviour and
