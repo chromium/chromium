@@ -22497,6 +22497,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileWebInspectorSettingsBack">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    Reported when user goes back from Web Inspector Settings UI to root Settings
+    screen. iOS only.
+  </description>
+</action>
+
+<action name="MobileWebInspectorSettingsClose">
+  <owner>ajuma@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    Reported when Web Inspector Settings UI was dismissed. iOS only.
+  </description>
+</action>
+
 <action name="MobileWebsiteSettingsOpenedFromMenu">
   <owner>tedchoc@chromium.org</owner>
   <description>Page Info opened via the menu.</description>

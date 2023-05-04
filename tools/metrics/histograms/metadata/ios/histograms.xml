@@ -2549,6 +2549,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WebInspector.Enabled" enum="BooleanEnabled"
+    expires_after="2024-05-01">
+  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records whether Web Inspector support has been enabled by the user. Logged
+    on iOS 16.4+ only, each time that a WKWebView has been created.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WhatsNew.TableViewDidScroll" enum="Boolean"
     expires_after="2023-09-24">
   <owner>cheickcisse@google.com</owner>

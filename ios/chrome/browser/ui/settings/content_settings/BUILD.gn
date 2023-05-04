@@ -13,6 +13,10 @@ source_set("content_settings") {
     "default_page_mode_coordinator.mm",
     "default_page_mode_mediator.h",
     "default_page_mode_mediator.mm",
+    "web_inspector_state_coordinator.h",
+    "web_inspector_state_coordinator.mm",
+    "web_inspector_state_mediator.h",
+    "web_inspector_state_mediator.mm",
   ]
   deps = [
     ":content_settings_ui",
@@ -54,6 +58,10 @@ source_set("content_settings_ui") {
     "default_page_mode_table_view_controller.h",
     "default_page_mode_table_view_controller.mm",
     "default_page_mode_table_view_controller_delegate.h",
+    "web_inspector_state_consumer.h",
+    "web_inspector_state_table_view_controller.h",
+    "web_inspector_state_table_view_controller.mm",
+    "web_inspector_state_table_view_controller_delegate.h",
   ]
   deps = [
     "//base",
@@ -73,6 +81,8 @@ source_set("unit_tests") {
     "content_settings_table_view_controller_unittest.mm",
     "default_page_mode_mediator_unittest.mm",
     "default_page_mode_table_view_controller_unittest.mm",
+    "web_inspector_state_mediator_unittest.mm",
+    "web_inspector_state_table_view_controller_unittest.mm",
   ]
   deps = [
     ":content_settings",
@@ -81,12 +91,15 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
+    "//components/prefs:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_settings",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/ui/table_view:test_support",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/web/common:features",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

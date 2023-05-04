@@ -3123,6 +3123,18 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_DEFAULT_PAGE_MODE_TIP_VOICE_OVER" desc="The text of the tip explaining to the user how to change the mode (desktop/mobile) in which the websites will be requested. [Read by Text-to-Speech]">
         You can change the default site view to desktop in Settings then Content Settings
       </message>
+      <message name="IDS_IOS_WEB_INSPECTOR_LABEL" desc="The label of the cell used to display whether Web Inspector support is enabled">
+        Web Inspector
+      </message>
+      <message name="IDS_IOS_WEB_INSPECTOR_TITLE" desc="The title of the screen in which the user can enable Web Inspector support, to allow debugging web pages">
+        Web Inspector
+      </message>
+      <message name="IDS_IOS_WEB_INSPECTOR_SUBTITLE_IPAD" desc="The subtitle explaining how to use Web Inspector">
+        To use the Web Inspector, connect to Safari on your computer using a cable and access your iPad from the Develop menu. You can enable the develop menu in the Advanced section of Safari settings on your computer.
+      </message>
+      <message name="IDS_IOS_WEB_INSPECTOR_SUBTITLE_IPHONE" desc="The subtitle explaining how to use Web Inspector">
+        To use the Web Inspector, connect to Safari on your computer using a cable and access your iPhone from the Develop menu. You can enable the develop menu in the Advanced section of Safari settings on your computer.
+      </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_CUSTOM_SECTION_HEADER" desc="The header for custom search engines section in Search Engine selection setting [iOS only]">
         Recently Visited
       </message>
