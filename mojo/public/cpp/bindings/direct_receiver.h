@@ -15,6 +15,10 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
+namespace blink {
+class WidgetInputHandlerImpl;
+}
+
 namespace mojo {
 
 namespace internal {
@@ -64,6 +68,7 @@ class DirectReceiverKey {
   // Update this list and get a mojo/OWNERS approval in order to gain access to
   // DirectReceiver construction.
   friend class mojo::test::direct_receiver_unittest::ServiceImpl;
+  friend class blink::WidgetInputHandlerImpl;
 };
 
 // DirectReceiver is a wrapper around the standard Receiver<T> type that always

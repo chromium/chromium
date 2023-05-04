@@ -1108,6 +1108,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGainmapHdrImages);
 // If enabled, image loading tasks on visible pages have high priority.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kMainThreadHighPriorityImageLoading);
 
+// Enables input IPC to directly target the renderer's compositor thread without
+// hopping through the IO thread first.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputIpcDirect);
+
 }  // namespace features
 }  // namespace blink
 

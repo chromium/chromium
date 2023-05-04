@@ -7315,6 +7315,23 @@
             ]
         }
     ],
+    "InputIpcDirect": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "InputIpcDirect"
+                    ]
+                }
+            ]
+        }
+    ],
     "InstallAmbientBadgeEngagement": [
         {
             "platforms": [

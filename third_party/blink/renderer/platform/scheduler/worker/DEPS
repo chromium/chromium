@@ -3,6 +3,7 @@ specific_include_rules = {
     "+base/task/sequence_manager/task_queue_impl.h",
   ],
   "non_main_thread_impl.h": [
+    "+base/message_loop/message_pump_type.h",
     "+base/threading/simple_thread.h",
     "+third_party/blink/renderer/platform/heap/gc_task_runner.h",
   ],
