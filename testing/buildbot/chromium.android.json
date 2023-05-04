@@ -7461,6 +7461,7 @@
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
@@ -33536,6 +33537,7 @@
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb"
         ],
+        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
