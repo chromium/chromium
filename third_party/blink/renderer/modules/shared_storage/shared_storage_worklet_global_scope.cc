@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_run_function_for_shared_storage_run_operation.h"
@@ -49,24 +50,24 @@ namespace blink {
 
 namespace {
 
-ScriptValue Deserialize(ScriptState* script_state,
-                        const Vector<uint8_t>& serialized_data) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Context> context = script_state->GetContext();
+constexpr char kCannotDeserializeDataErrorMessage[] =
+    "Cannot deserialize data.";
 
-  v8::Local<v8::Object> v8_data;
-  if (serialized_data.empty()) {
-    v8_data = v8::Object::New(isolate);
-  } else {
-    v8::ValueDeserializer deserializer(isolate, serialized_data.data(),
-                                       serialized_data.size());
-
-    v8::Local<v8::Value> value =
-        deserializer.ReadValue(context).ToLocalChecked();
-    v8_data = value->ToObject(context).ToLocalChecked();
+absl::optional<ScriptValue> Deserialize(
+    v8::Isolate* isolate,
+    ExecutionContext* execution_context,
+    const BlinkCloneableMessage& serialized_data) {
+  if (!serialized_data.message->CanDeserializeIn(execution_context)) {
+    return absl::nullopt;
   }
 
-  return ScriptValue(isolate, v8_data);
+  Member<UnpackedSerializedScriptValue> unpacked =
+      SerializedScriptValue::Unpack(serialized_data.message);
+  if (!unpacked) {
+    return absl::nullopt;
+  }
+
+  return ScriptValue(isolate, unpacked->Deserialize(isolate));
 }
 
 // We try to use .stack property so that the error message contains a stack
@@ -381,7 +382,7 @@ void SharedStorageWorkletGlobalScope::AddModule(
 void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
     const String& name,
     const Vector<KURL>& urls,
-    const Vector<uint8_t>& serialized_data,
+    BlinkCloneableMessage serialized_data,
     mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
         private_aggregation_host,
     RunURLSelectionOperationCallback callback) {
@@ -418,10 +419,17 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
   base::ranges::transform(urls, std::back_inserter(urls_param),
                           [](const KURL& url) { return url.GetString(); });
 
-  ScriptValue data_param = Deserialize(script_state, serialized_data);
+  absl::optional<ScriptValue> data_param =
+      Deserialize(isolate, /*execution_context=*/this, serialized_data);
+  if (!data_param) {
+    std::move(combined_operation_completion_cb)
+        .Run(/*success=*/false, kCannotDeserializeDataErrorMessage,
+             /*index=*/0);
+    return;
+  }
 
   v8::Maybe<ScriptPromise> result = registered_run_function->Invoke(
-      instance.Get(isolate), urls_param, data_param);
+      instance.Get(isolate), urls_param, *data_param);
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Value> exception = try_catch.Exception();
@@ -455,7 +463,7 @@ void SharedStorageWorkletGlobalScope::RunURLSelectionOperation(
 
 void SharedStorageWorkletGlobalScope::RunOperation(
     const String& name,
-    const Vector<uint8_t>& serialized_data,
+    BlinkCloneableMessage serialized_data,
     mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
         private_aggregation_host,
     RunOperationCallback callback) {
@@ -488,10 +496,16 @@ void SharedStorageWorkletGlobalScope::RunOperation(
   V8RunFunctionForSharedStorageRunOperation* registered_run_function =
       operation_definition->GetRunFunctionForSharedStorageRunOperation();
 
-  ScriptValue data_param = Deserialize(script_state, serialized_data);
+  absl::optional<ScriptValue> data_param =
+      Deserialize(isolate, /*execution_context=*/this, serialized_data);
+  if (!data_param) {
+    std::move(combined_operation_completion_cb)
+        .Run(/*success=*/false, kCannotDeserializeDataErrorMessage);
+    return;
+  }
 
   v8::Maybe<ScriptPromise> result =
-      registered_run_function->Invoke(instance.Get(isolate), data_param);
+      registered_run_function->Invoke(instance.Get(isolate), *data_param);
 
   if (try_catch.HasCaught()) {
     v8::Local<v8::Value> exception = try_catch.Exception();

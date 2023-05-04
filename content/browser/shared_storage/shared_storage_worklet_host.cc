@@ -203,7 +203,7 @@ void SharedStorageWorkletHost::AddModuleOnWorklet(
 
 void SharedStorageWorkletHost::RunOperationOnWorklet(
     const std::string& name,
-    const std::vector<uint8_t>& serialized_data,
+    blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     const absl::optional<std::string>& context_id) {
   // This function is invoked from `document_service_`. Thus both `page_` and
@@ -226,7 +226,8 @@ void SharedStorageWorkletHost::RunOperationOnWorklet(
   }
 
   GetAndConnectToSharedStorageWorkletService()->RunOperation(
-      name, serialized_data, MaybeBindPrivateAggregationHost(context_id),
+      name, std::move(serialized_data),
+      MaybeBindPrivateAggregationHost(context_id),
       base::BindOnce(&SharedStorageWorkletHost::OnRunOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
@@ -235,7 +236,7 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
     const std::string& name,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
-    const std::vector<uint8_t>& serialized_data,
+    blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     const absl::optional<std::string>& context_id,
     blink::mojom::SharedStorageDocumentService::
@@ -294,7 +295,8 @@ void SharedStorageWorkletHost::RunURLSelectionOperationOnWorklet(
   shared_storage_worklet_host_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
-      name, urls, serialized_data, MaybeBindPrivateAggregationHost(context_id),
+      name, urls, std::move(serialized_data),
+      MaybeBindPrivateAggregationHost(context_id),
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,

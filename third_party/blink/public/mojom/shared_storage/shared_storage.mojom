@@ -6,6 +6,7 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
+import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "url/mojom/url.mojom";
 
 // The input argument of the shared storage key. The data will be checked at
@@ -47,19 +48,20 @@ interface SharedStorageDocumentService {
           string error_message);
 
   // Handle sharedStorage.runOperation(): run the operation previously
-  // registered by register() with matching `name`. `serialized_data` is the
-  // serialization result of JavaScript value
-  // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
-  // There's no need to sanitize `serialized_data` at the browser process as the
-  // data will be only consumed in an environment (i.e. the worklet) in control
-  // by the same origin. `keep_alive_after_operation` indicates whether or not
-  // the worklet should be kept alive after this operation finishes. The only
-  // errors reported are if the API is disabled or if the worklet has expired
-  // because the context previously initiated either a `run()` or `selectURL()`
-  // call without including the option `keepAlive: true`; other errors are
-  // suppressed and reported as success. `context_id` is an optional string that
-  // is passed to Private Aggregation (if enabled).
-  RunOperationOnWorklet(string name, array<uint8> serialized_data,
+  // registered by register() with matching `name`. `serialized_data.message` is
+  // the serialization result of JavaScript value
+  // SharedStorageRunOperationMethodOptions.data using
+  // SerializedScriptValue::Serialize(). There's no need to sanitize
+  // `serialized_data` at the browser process as the data will be only consumed
+  // in an environment (i.e. the worklet) in control by the same origin.
+  // `keep_alive_after_operation` indicates whether or not the worklet should be
+  // kept alive after this operation finishes. The only errors reported are if
+  // the API is disabled or if the worklet has expired because the context
+  // previously initiated either a `run()` or `selectURL()` call without
+  // including the option `keepAlive: true`; other errors are suppressed and
+  // reported as success. `context_id` is an optional string that is passed to
+  // Private Aggregation (if enabled).
+  RunOperationOnWorklet(string name, CloneableMessage serialized_data,
                         bool keep_alive_after_operation, string? context_id)
       => (bool success,
           string error_message);
@@ -69,18 +71,18 @@ interface SharedStorageDocumentService {
   // be checked at the renderer and enforced at the browser: the length of the
   // `urls` array is below the configured limit number
   // `kSharedStorageURLSelectionOperationInputURLSizeLimit`.
-  // `serialized_data` is the serialization result of JavaScript value
-  // SharedStorageRunOperationMethodOptions.data using v8::ValueSerializer.
-  // There's no need to sanitize `serialized_data` at the browser process as the
-  // data will be only consumed in an environment (i.e. the worklet) in control
-  // by the same origin. `keep_alive_after_operation` indicates whether or not
-  // the worklet should be kept alive after this operation finishes.
-  // `context_id` is an optional string that is passed to Private Aggregation
-  // (if enabled).
+  // `serialized_data.message` is the serialization result of JavaScript value
+  // SharedStorageRunOperationMethodOptions.data using
+  // SerializedScriptValue::Serialize(). There's no need to sanitize
+  // `serialized_data` at the browser process as the data will be only consumed
+  // in an environment (i.e. the worklet) in control by the same origin.
+  // `keep_alive_after_operation` indicates whether or not the worklet should be
+  // kept alive after this operation finishes. `context_id` is an optional
+  // string that is passed to Private Aggregation (if enabled).
   RunURLSelectionOperationOnWorklet(string name,
                                     array<SharedStorageUrlWithMetadata>
                                       urls_with_metadata,
-                                    array<uint8> serialized_data,
+                                    CloneableMessage serialized_data,
                                     bool keep_alive_after_operation,
                                     string? context_id)
     => (bool success, string error_message, FencedFrameConfig? config);

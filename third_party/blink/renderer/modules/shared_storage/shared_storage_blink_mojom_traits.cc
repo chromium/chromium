@@ -1,8 +1,8 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/mojo/shared_storage_mojom_traits.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h"
 
 namespace mojo {
 
@@ -12,7 +12,7 @@ bool StructTraits<blink::mojom::SharedStorageKeyArgumentDataView, WTF::String>::
          WTF::String* out_key) {
   // There is no need to convert `SharedStorageKeyArgument` back to
   // `WTF::String`. If we do need to implement deserialization later, we need to
-  // validate that its size.
+  // validate its length.
   NOTREACHED();
   return false;
 }
@@ -24,7 +24,7 @@ bool StructTraits<
                        WTF::String* out_value) {
   // There is no need to convert `SharedStorageValueArgument` back to
   // `WTF::String`. If we do need to implement deserialization later, we need to
-  // validate that its size.
+  // validate its length.
   NOTREACHED();
   return false;
 }

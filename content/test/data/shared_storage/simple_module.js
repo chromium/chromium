@@ -7,7 +7,19 @@ console.log('Start executing simple_module.js')
 class TestOperation {
   async run(data) {
     console.log('Start executing \'test-operation\'');
-    console.log(JSON.stringify(data, Object.keys(data).sort()));
+    if (data === undefined || data === null) {
+      console.log(data);
+    } else if (data.constructor.name === 'CryptoKey') {
+      console.log(
+        "CryptoKey,",
+        "algorithm:",
+        JSON.stringify(data.algorithm, Object.keys(data.algorithm).sort()),
+        "usages:",
+        JSON.stringify(data.usages, Object.keys(data.usages).sort()),
+        "extractable:", data.extractable);
+    } else {
+      console.log(JSON.stringify(data, Object.keys(data).sort()));
+    }
     console.log('Finish executing \'test-operation\'');
   }
 }

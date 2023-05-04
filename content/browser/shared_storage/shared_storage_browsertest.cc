@@ -1382,7 +1382,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "a.test", "/shared_storage/simple_module.js"))}});
@@ -1461,7 +1461,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1536,7 +1536,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
@@ -1590,7 +1590,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, RunOperation_Success) {
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -1663,7 +1663,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   ExpectAccessObserved(
       {{AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "a.test", "/shared_storage/simple_module.js"))}});
@@ -1685,13 +1685,9 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
           'test-operation', {data: {'customKey': testFunction}});
     )");
 
-  EXPECT_EQ(
-      std::string("a JavaScript error: \""
-                  "Error: function testFunction() {} could not be cloned.\n"
-                  "    at __const_std::string&_script__:4:21):\n"
-                  "              sharedStorage.run(\n"
-                  "                            ^^^^^\n"),
-      result.error);
+  EXPECT_THAT(
+      result.error,
+      testing::HasSubstr("function testFunction() {} could not be cloned"));
 
   histogram_tester_.ExpectTotalCount(kTimingRunExecutedInWorkletHistogram, 0);
 
@@ -1700,6 +1696,143 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
       {{AccessType::kDocumentAddModule, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForAddModule(https_server()->GetURL(
             "a.test", "/shared_storage/simple_module.js"))}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       RunOperation_VerifyUndefinedData) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("Start executing simple_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("Finish executing simple_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.run('test-operation', /*options=*/{});
+    )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("Start executing 'test-operation'",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ("undefined",
+            base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("Finish executing 'test-operation'",
+            base::UTF16ToUTF8(console_observer.messages()[4].message));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       RunOperation_Failure_BlobDataTypeNotSupportedInWorklet) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("Start executing simple_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("Finish executing simple_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      const blob = new Blob(["abc"], {type: 'text/plain'});
+      sharedStorage.run('test-operation', /*options=*/{data: blob});
+    )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(3u, console_observer.messages().size());
+  EXPECT_EQ("Cannot deserialize data.",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
+                       RunOperation_VerifyCryptoKeyData) {
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      sharedStorage.worklet.addModule('shared_storage/simple_module.js');
+    )"));
+
+  EXPECT_EQ(1u, test_worklet_host_manager().GetAttachedWorkletHostsCount());
+  EXPECT_EQ(0u, test_worklet_host_manager().GetKeepAliveWorkletHostsCount());
+
+  EXPECT_EQ(2u, console_observer.messages().size());
+  EXPECT_EQ("Start executing simple_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[0].message));
+  EXPECT_EQ("Finish executing simple_module.js",
+            base::UTF16ToUTF8(console_observer.messages()[1].message));
+
+  // There is 1 more "worklet operation": `run()`.
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->SetExpectedWorkletResponsesCount(1);
+
+  EXPECT_TRUE(ExecJs(shell(), R"(
+      const myPromise = new Promise((resolve, reject) => {
+        crypto.subtle.generateKey(
+          {
+            name: "AES-GCM",
+            length: 256,
+          },
+          true,
+          ["encrypt", "decrypt"]
+        ).then((key) => {
+          sharedStorage.run('test-operation', /*options=*/{data: key})
+                       .then(() => { resolve(); });
+        });
+      });
+    )"));
+
+  test_worklet_host_manager()
+      .GetAttachedWorkletHost()
+      ->WaitForWorkletResponses();
+
+  EXPECT_EQ(5u, console_observer.messages().size());
+  EXPECT_EQ("Start executing 'test-operation'",
+            base::UTF16ToUTF8(console_observer.messages()[2].message));
+  EXPECT_EQ(
+      "CryptoKey, algorithm: {\"length\":256,\"name\":\"AES-GCM\"} usages: "
+      "[\"encrypt\",\"decrypt\"] extractable: true",
+      base::UTF16ToUTF8(console_observer.messages()[3].message));
+  EXPECT_EQ("Finish executing 'test-operation'",
+            base::UTF16ToUTF8(console_observer.messages()[4].message));
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -1762,7 +1895,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/erroneous_function_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1847,10 +1980,10 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1923,7 +2056,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1995,7 +2128,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WorkletDestroyed) {
@@ -2308,7 +2441,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeepAlive_SubframeWorklet) {
@@ -2531,7 +2664,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -2638,7 +2771,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -2750,7 +2883,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "b.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("b.test",
                                          "/fenced_frames/title0.html"),
@@ -2898,14 +3031,14 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3025,7 +3158,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3126,7 +3259,7 @@ IN_PROC_BROWSER_TEST_P(
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3218,7 +3351,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3332,10 +3465,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3426,7 +3559,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3540,14 +3673,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
                   {}}}))},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())}});
+                                               blink::CloneableMessage())}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
@@ -3652,7 +3785,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3760,7 +3893,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3856,7 +3989,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
             "a.test", "/shared_storage/simple_module.js"))},
        {AccessType::kDocumentSelectURL, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSelectURL(
-            "test-url-selection-operation", std::vector<uint8_t>(),
+            "test-url-selection-operation", blink::CloneableMessage(),
             std::vector<SharedStorageUrlSpecWithMetadata>(
                 {{https_server()->GetURL("a.test",
                                          "/fenced_frames/title0.html"),
@@ -3928,7 +4061,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInDocument) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletGet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForGetOrDelete("key0")},
        {AccessType::kWorkletGet, MainFrameId(), origin_str,
@@ -3981,7 +4114,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInDocument) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()},
        {AccessType::kWorkletGet, MainFrameId(), origin_str,
@@ -4021,7 +4154,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInDocument) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()}});
 }
@@ -4073,7 +4206,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, SetAppendOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletSet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessType::kWorkletSet, MainFrameId(), origin_str,
@@ -4131,7 +4264,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletSet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSet("key0", std::string(1024, 'a'),
                                                false)},
@@ -4183,7 +4316,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, DeleteOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletSet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
@@ -4231,7 +4364,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, ClearOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletSet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForSet("key0", "value0", false)},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
@@ -4326,14 +4459,14 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, GetOperationInWorklet) {
         SharedStorageEventParams::CreateForAddModule(script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("get-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()},
        {AccessType::kWorkletGet, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForGetOrDelete("key0")},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("get-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()},
        {AccessType::kWorkletGet, MainFrameId(), origin_str,
@@ -4374,7 +4507,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletLength, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()}});
 }
@@ -4414,7 +4547,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin2_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletLength, MainFrameId(), origin2_str,
         SharedStorageEventParams::CreateDefault()}});
 }
@@ -4468,7 +4601,7 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, KeysAndEntriesOperation) {
         SharedStorageEventParams::CreateForAddModule(out_script_url)},
        {AccessType::kDocumentRun, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateForRun("test-operation",
-                                               std::vector<uint8_t>())},
+                                               blink::CloneableMessage())},
        {AccessType::kWorkletKeys, MainFrameId(), origin_str,
         SharedStorageEventParams::CreateDefault()},
        {AccessType::kWorkletEntries, MainFrameId(), origin_str,
@@ -4526,10 +4659,10 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,
   expected_accesses.emplace_back(
       AccessType::kDocumentAddModule, MainFrameId(), origin_str,
       SharedStorageEventParams::CreateForAddModule(out_script_url));
-  expected_accesses.emplace_back(AccessType::kDocumentRun, MainFrameId(),
-                                 origin_str,
-                                 SharedStorageEventParams::CreateForRun(
-                                     "test-operation", std::vector<uint8_t>()));
+  expected_accesses.emplace_back(
+      AccessType::kDocumentRun, MainFrameId(), origin_str,
+      SharedStorageEventParams::CreateForRun("test-operation",
+                                             blink::CloneableMessage()));
   expected_accesses.emplace_back(AccessType::kWorkletKeys, MainFrameId(),
                                  origin_str,
                                  SharedStorageEventParams::CreateDefault());

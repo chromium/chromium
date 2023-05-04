@@ -146,7 +146,7 @@ void SharedStorageDocumentServiceImpl::AddModuleOnWorklet(
 
 void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
     const std::string& name,
-    const std::vector<uint8_t>& serialized_data,
+    blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     const absl::optional<std::string>& context_id,
     RunOperationOnWorkletCallback callback) {
@@ -178,7 +178,7 @@ void SharedStorageDocumentServiceImpl::RunOperationOnWorklet(
       SharedStorageEventParams::CreateForRun(name, serialized_data));
 
   GetSharedStorageWorkletHost()->RunOperationOnWorklet(
-      name, serialized_data, keep_alive_after_operation, context_id);
+      name, std::move(serialized_data), keep_alive_after_operation, context_id);
   std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 }
 
@@ -186,7 +186,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
     const std::string& name,
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
-    const std::vector<uint8_t>& serialized_data,
+    blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     const absl::optional<std::string>& context_id,
     RunURLSelectionOperationOnWorkletCallback callback) {
@@ -294,7 +294,7 @@ void SharedStorageDocumentServiceImpl::RunURLSelectionOperationOnWorklet(
                                                    std::move(converted_urls)));
 
   GetSharedStorageWorkletHost()->RunURLSelectionOperationOnWorklet(
-      name, std::move(urls_with_metadata), serialized_data,
+      name, std::move(urls_with_metadata), std::move(serialized_data),
       keep_alive_after_operation, context_id, std::move(callback));
 }
 

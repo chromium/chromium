@@ -9,6 +9,7 @@
 
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/messaging/cloneable_message.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -38,10 +39,10 @@ class CONTENT_EXPORT SharedStorageEventParams {
 
   static SharedStorageEventParams CreateForRun(
       const std::string& operation_name,
-      const std::vector<uint8_t>& serialized_data);
+      const blink::CloneableMessage& serialized_data);
   static SharedStorageEventParams CreateForSelectURL(
       const std::string& operation_name,
-      const std::vector<uint8_t>& serialized_data,
+      const blink::CloneableMessage& serialized_data,
       std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata);
   static SharedStorageEventParams CreateForSet(const std::string& key,
                                                const std::string& value,

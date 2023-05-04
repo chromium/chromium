@@ -1265,8 +1265,6 @@ component("platform") {
     "mojo/kurl_mojom_traits.h",
     "mojo/mojo_binding_context.h",
     "mojo/security_origin_mojom_traits.h",
-    "mojo/shared_storage_mojom_traits.cc",
-    "mojo/shared_storage_mojom_traits.h",
     "mojo/string16_mojom_traits.cc",
     "mojo/string16_mojom_traits.h",
     "p2p/empty_network_manager.cc",

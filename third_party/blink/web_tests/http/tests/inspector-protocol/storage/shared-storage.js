@@ -32,6 +32,11 @@
   async function getPromiseForEventCount(numEvents) {
     totalEventsSoFar += numEvents;
     return dp.Storage.onceSharedStorageAccessed(messageObject => {
+      // Skip testing the content of `serializedData`, as it can contain
+      // non-printable characters.
+      if (messageObject.params.params.serializedData !== undefined) {
+        messageObject.params.params.serializedData = '';
+      }
       events.push(messageObject.params);
       return (events.length === totalEventsSoFar);
     });

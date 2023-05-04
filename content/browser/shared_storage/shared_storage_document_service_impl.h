@@ -61,7 +61,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
   void AddModuleOnWorklet(const GURL& script_source_url,
                           AddModuleOnWorkletCallback callback) override;
   void RunOperationOnWorklet(const std::string& name,
-                             const std::vector<uint8_t>& serialized_data,
+                             blink::CloneableMessage serialized_data,
                              bool keep_alive_after_operation,
                              const absl::optional<std::string>& context_id,
                              RunOperationOnWorkletCallback callback) override;
@@ -69,7 +69,7 @@ class CONTENT_EXPORT SharedStorageDocumentServiceImpl final
       const std::string& name,
       std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
           urls_with_metadata,
-      const std::vector<uint8_t>& serialized_data,
+      blink::CloneableMessage serialized_data,
       bool keep_alive_after_operation,
       const absl::optional<std::string>& context_id,
       RunURLSelectionOperationOnWorkletCallback callback) override;

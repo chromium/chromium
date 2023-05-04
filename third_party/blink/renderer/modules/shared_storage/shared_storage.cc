@@ -56,44 +56,27 @@ enum class GlobalScope {
   kSharedStorageWorklet,
 };
 
-// Use the native v8::ValueSerializer here as opposed to using
-// blink::V8ScriptValueSerializer. It's capable of serializing objects of
-// primitive types. It's TBD whether we want to support any other non-primitive
-// types supported by blink::V8ScriptValueSerializer.
-bool Serialize(ScriptState* script_state,
-               const SharedStorageRunOperationMethodOptions* options,
-               ExceptionState& exception_state,
-               Vector<uint8_t>& output) {
-  DCHECK(output.empty());
-
-  if (!options->hasData())
-    return true;
-
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::ValueSerializer serializer(isolate);
-
-  v8::TryCatch try_catch(isolate);
-
-  bool wrote_value;
-  if (!serializer
-           .WriteValue(script_state->GetContext(), options->data().V8Value())
-           .To(&wrote_value)) {
-    DCHECK(try_catch.HasCaught());
-    exception_state.RethrowV8Exception(try_catch.Exception());
-    return false;
+absl::optional<BlinkCloneableMessage> Serialize(
+    const SharedStorageRunOperationMethodOptions* options,
+    const ExecutionContext& execution_context,
+    ExceptionState& exception_state) {
+  scoped_refptr<SerializedScriptValue> serialized_value =
+      options->hasData()
+          ? SerializedScriptValue::Serialize(
+                options->data().GetIsolate(), options->data().V8Value(),
+                SerializedScriptValue::SerializeOptions(), exception_state)
+          : SerializedScriptValue::UndefinedValue();
+  if (exception_state.HadException()) {
+    return absl::nullopt;
   }
 
-  DCHECK(wrote_value);
+  BlinkCloneableMessage output;
+  output.message = std::move(serialized_value);
+  output.sender_agent_cluster_id = execution_context.GetAgentClusterID();
+  output.sender_origin = execution_context.GetSecurityOrigin()->IsolatedCopy();
+  // TODO(yaoxia): do we need to set `output.sender_stack_trace_id`?
 
-  std::pair<uint8_t*, size_t> buffer = serializer.Release();
-
-  output.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(buffer.second));
-  output.Append(buffer.first, static_cast<wtf_size_t>(buffer.second));
-  DCHECK_EQ(output.size(), buffer.second);
-
-  free(buffer.first);
-
-  return true;
+  return output;
 }
 
 void LogTimingHistogramForVoidOperation(
@@ -786,8 +769,9 @@ ScriptPromise SharedStorage::selectURL(
     index++;
   }
 
-  Vector<uint8_t> serialized_data;
-  if (!Serialize(script_state, options, exception_state, serialized_data)) {
+  absl::optional<BlinkCloneableMessage> serialized_data =
+      Serialize(options, *execution_context, exception_state);
+  if (!serialized_data) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
@@ -812,7 +796,7 @@ ScriptPromise SharedStorage::selectURL(
 
   GetSharedStorageDocumentService(execution_context)
       ->RunURLSelectionOperationOnWorklet(
-          name, std::move(converted_urls), std::move(serialized_data),
+          name, std::move(converted_urls), std::move(*serialized_data),
           keep_alive, std::move(context_id),
           WTF::BindOnce(
               [](ScriptPromiseResolver* resolver, SharedStorage* shared_storage,
@@ -874,8 +858,9 @@ ScriptPromise SharedStorage::run(
     return ScriptPromise();
   }
 
-  Vector<uint8_t> serialized_data;
-  if (!Serialize(script_state, options, exception_state, serialized_data)) {
+  absl::optional<BlinkCloneableMessage> serialized_data =
+      Serialize(options, *execution_context, exception_state);
+  if (!serialized_data) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return ScriptPromise();
   }
@@ -900,7 +885,7 @@ ScriptPromise SharedStorage::run(
 
   GetSharedStorageDocumentService(execution_context)
       ->RunOperationOnWorklet(
-          name, std::move(serialized_data), keep_alive, std::move(context_id),
+          name, std::move(*serialized_data), keep_alive, std::move(context_id),
           WTF::BindOnce(&OnVoidOperationFinished, WrapPersistent(resolver),
                         WrapPersistent(this),
                         blink::SharedStorageVoidOperation::kRun,

@@ -69,21 +69,23 @@ SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForRun(
     const std::string& operation_name,
-    const std::vector<uint8_t>& serialized_data) {
+    const blink::CloneableMessage& serialized_data) {
   return SharedStorageEventParams(
       absl::nullopt, operation_name,
-      std::string(serialized_data.begin(), serialized_data.end()),
+      std::string(serialized_data.owned_encoded_message.begin(),
+                  serialized_data.owned_encoded_message.end()),
       absl::nullopt, absl::nullopt, absl::nullopt, absl::nullopt);
 }
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForSelectURL(
     const std::string& operation_name,
-    const std::vector<uint8_t>& serialized_data,
+    const blink::CloneableMessage& serialized_data,
     std::vector<SharedStorageUrlSpecWithMetadata> urls_with_metadata) {
   return SharedStorageEventParams(
       absl::nullopt, operation_name,
-      std::string(serialized_data.begin(), serialized_data.end()),
+      std::string(serialized_data.owned_encoded_message.begin(),
+                  serialized_data.owned_encoded_message.end()),
       std::move(urls_with_metadata), absl::nullopt, absl::nullopt,
       absl::nullopt);
 }

@@ -110,12 +110,12 @@ class MODULES_EXPORT SharedStorageWorkletGlobalScope final
   void RunURLSelectionOperation(
       const String& name,
       const Vector<KURL>& urls,
-      const Vector<uint8_t>& serialized_data,
+      BlinkCloneableMessage serialized_data,
       mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
           private_aggregation_host,
       RunURLSelectionOperationCallback callback) override;
   void RunOperation(const String& name,
-                    const Vector<uint8_t>& serialized_data,
+                    BlinkCloneableMessage serialized_data,
                     mojo::PendingRemote<mojom::blink::PrivateAggregationHost>
                         private_aggregation_host,
                     RunOperationCallback callback) override;
