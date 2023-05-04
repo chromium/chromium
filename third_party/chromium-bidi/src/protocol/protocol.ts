@@ -687,7 +687,7 @@ export namespace Script {
     | CommonDataTypes.RemoteReference
     | CommonDataTypes.SharedReference
     | CommonDataTypes.LocalValue
-    | Script.Channel;
+    | Script.ChannelValue;
 
   export type CallFunctionParameters = {
     functionDeclaration: string;
@@ -728,6 +728,7 @@ export namespace Script {
 
   export type AddPreloadScriptParameters = {
     functionDeclaration: string;
+    arguments?: ChannelValue[];
     sandbox?: string;
     context?: CommonDataTypes.BrowsingContext | null;
   };
@@ -747,15 +748,15 @@ export namespace Script {
     script: PreloadScript;
   };
 
-  export type ChannelId = string;
+  export type Channel = string;
 
   export type ChannelProperties = {
-    channel: ChannelId;
+    channel: Channel;
     maxDepth?: number;
     ownership?: ResultOwnership;
   };
 
-  export type Channel = {
+  export type ChannelValue = {
     type: 'channel';
     value: ChannelProperties;
   };
@@ -766,7 +767,7 @@ export namespace Script {
   };
 
   export type MessageParameters = {
-    channel: ChannelId;
+    channel: Channel;
     data: CommonDataTypes.RemoteValue;
     source: Source;
   };

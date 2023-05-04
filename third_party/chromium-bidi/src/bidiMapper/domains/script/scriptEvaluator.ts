@@ -509,7 +509,7 @@ export class ScriptEvaluator {
   }
 
   async #initChannelListener(
-    channel: Script.Channel,
+    channel: Script.ChannelValue,
     channelHandle: string | undefined,
     realm: Realm
   ) {

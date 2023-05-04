@@ -299,10 +299,26 @@ export namespace Script {
     return parseObject(params, DisownParametersSchema);
   }
 
+  const ChannelSchema = zod.string();
+
+  const ChannelPropertiesSchema = zod.object({
+    channel: ChannelSchema,
+    // TODO(#294): maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
+    // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
+    maxDepth: zod.number().int().min(1).max(1).optional(),
+    ownership: ResultOwnershipSchema.optional(),
+  });
+
+  export const ChannelValueSchema = zod.object({
+    type: zod.literal('channel'),
+    value: ChannelPropertiesSchema,
+  });
+
   export const PreloadScriptSchema = zod.string();
 
   export const AddPreloadScriptParametersSchema = zod.object({
     functionDeclaration: zod.string(),
+    arguments: zod.array(ChannelValueSchema).optional(),
     sandbox: zod.string().optional(),
     context: CommonDataTypes.BrowsingContextSchema.optional(),
   });
@@ -323,21 +339,6 @@ export namespace Script {
     return parseObject(params, RemovePreloadScriptParametersSchema);
   }
 
-  const ChannelIdSchema = zod.string();
-
-  const ChannelPropertiesSchema = zod.object({
-    channel: ChannelIdSchema,
-    // TODO(#294): maxDepth: CommonDataTypes.MaxDepthSchema.optional(),
-    // See: https://github.com/w3c/webdriver-bidi/pull/361/files#r1141961142
-    maxDepth: zod.number().int().min(1).max(1).optional(),
-    ownership: ResultOwnershipSchema.optional(),
-  });
-
-  export const ChannelSchema = zod.object({
-    type: zod.literal('channel'),
-    value: ChannelPropertiesSchema,
-  });
-
   // ArgumentValue = (
   //   RemoteReference //
   //   LocalValue //
@@ -347,7 +348,7 @@ export namespace Script {
     CommonDataTypes.RemoteReferenceSchema,
     CommonDataTypes.SharedReferenceSchema,
     CommonDataTypes.LocalValueSchema,
-    Script.ChannelSchema,
+    Script.ChannelValueSchema,
   ]);
 
   // CallFunctionParameters = {

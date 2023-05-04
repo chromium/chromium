@@ -294,6 +294,12 @@ export class BrowsingContextProcessor {
   async process_script_addPreloadScript(
     params: Script.AddPreloadScriptParameters
   ): Promise<Script.AddPreloadScriptResult> {
+    if (params.arguments !== undefined && params.arguments.length > 0) {
+      throw new Message.UnsupportedOperationException(
+        'add preload script arguments are not supported'
+      );
+    }
+
     const cdpTargets = new Set<CdpTarget>(
       // TODO: flatten children and deduplicate.
       params.context === undefined || params.context === null
