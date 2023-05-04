@@ -2018,6 +2018,8 @@ void SplitViewController::OnOverviewModeEnding(
     if (window != GetDefaultSnappedWindow()) {
       absl::optional<float> snap_ratio = ComputeSnapRatio(window);
       if (snap_ratio) {
+        const bool was_active =
+            overview_session->IsWindowActiveWindowBeforeOverview(window);
         // Remove the overview item before snapping because the overview session
         // is unavailable to retrieve outside this function after
         // OnOverviewEnding is notified.
@@ -2030,6 +2032,10 @@ void SplitViewController::OnOverviewModeEnding(
                        : SnapPosition::kPrimary,
                    WindowSnapActionSource::kAutoSnapInSplitView,
                    /*activate_window=*/false, *snap_ratio);
+        if (was_active) {
+          wm::ActivateWindow(window);
+        }
+
         // If ending overview causes a window to snap, also do not do exiting
         // overview animation.
         overview_session->SetWindowListNotAnimatedWhenExiting(root_window_);

@@ -3825,28 +3825,27 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
 }
 
 // Tests the windows are stacked correctly when entering or exiting splitview
-// while the new overivew layout is enabled.
-// TODO(b/278952025): Fix this test to match the common user CUJs.
+// while in tablet mode.
 TEST_F(TabletModeOverviewSessionTest, StackingOrderSplitViewWindow) {
   std::unique_ptr<aura::Window> window1 = CreateTestWindow();
   std::unique_ptr<aura::Window> window2 = CreateUnsnappableWindow();
   std::unique_ptr<aura::Window> window3 = CreateTestWindow();
 
-  ToggleOverview();
-  ASSERT_TRUE(InOverviewSession());
-
-  // Snap `window1` to the left and exit overview, `window3` will be snapped.
-  // `window3` will be stacked on top.
+  // Snap `window1` to the left and `window3` to the right. Activate `window3`
+  // so that it is stacked above `window1`.
   split_view_controller()->SnapWindow(
       window1.get(), SplitViewController::SnapPosition::kPrimary);
-  ToggleOverview();
-  ASSERT_EQ(SplitViewController::State::kBothSnapped,
-            split_view_controller()->state());
+  split_view_controller()->SnapWindow(
+      window3.get(), SplitViewController::SnapPosition::kSecondary);
+  wm::ActivateWindow(window3.get());
   ASSERT_TRUE(window_util::IsStackedBelow(window1.get(), window3.get()));
 
-  // Test that on entering overview, `window3` is also of a lower z-order, so
+  // Test that on entering overview, `window3` is stacked below `window1`, so
   // that when we scroll the grid, it will be seen under `window1`.
   ToggleOverview();
+  ASSERT_FALSE(GetOverviewItemForWindow(window1.get()));
+  ASSERT_TRUE(GetOverviewItemForWindow(window2.get()));
+  ASSERT_TRUE(GetOverviewItemForWindow(window3.get()));
   EXPECT_TRUE(window_util::IsStackedBelow(window3.get(), window1.get()));
 
   // Test that `window2` has a cannot snap widget indicating that it cannot be
@@ -3863,7 +3862,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderSplitViewWindow) {
   // Test that on exiting overview, the relative stacking order between
   // `window3` and `window1` remains unchanged.
   ToggleOverview();
-  EXPECT_TRUE(window_util::IsStackedBelow(window3.get(), window1.get()));
+  EXPECT_TRUE(window_util::IsStackedBelow(window1.get(), window3.get()));
 }
 
 // Tests the windows are remain stacked underneath the split view window after
