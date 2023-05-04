@@ -207,7 +207,7 @@ void BucketManagerHost::DidGetBucket(
         case storage::QuotaError::kUnknownError:
           return blink::mojom::BucketError::kUnknown;
       }
-    }(result.error().quota_error);
+    }(result.error());
     std::move(callback).Run(mojo::NullRemote(), error);
     return;
   }
