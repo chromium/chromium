@@ -51,7 +51,7 @@
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
-    "jobs": 225,
+    "jobs": 300,
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {

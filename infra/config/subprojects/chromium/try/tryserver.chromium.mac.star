@@ -16,7 +16,7 @@ try_.defaults.set(
     builderless = True,
     os = os.MAC_ANY,
     ssd = True,
-    compilator_reclient_jobs = reclient.jobs.MID_JOBS_FOR_CQ,
+    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,

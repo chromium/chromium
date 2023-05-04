@@ -17,7 +17,7 @@ try_.defaults.set(
     cores = 8,
     os = os.LINUX_DEFAULT,
     compilator_cores = 16,
-    compilator_reclient_jobs = reclient.jobs.MID_JOBS_FOR_CQ,
+    compilator_reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
     orchestrator_cores = 2,
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
