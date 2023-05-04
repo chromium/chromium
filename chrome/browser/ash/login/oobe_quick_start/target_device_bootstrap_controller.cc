@@ -8,6 +8,8 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
@@ -104,15 +106,10 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
     return;
   }
 
-  // Arbitrary session ID.
-  int32_t session_id = 1;
-
-  // TODO(b/280308026): Currently using an arbitrary session ID. Update this by
-  // generating a session ID to use as a param of NotifySourceOfUpdate().
   // TODO(b/280308026): Implement NotifySourceOfUpdateCallback and pass as
   // argument here. This callback persists the connection info to local disk if
   // the success param it receives is 'true' and then drops the connection.
-  authenticated_connection_->NotifySourceOfUpdate(session_id,
+  authenticated_connection_->NotifySourceOfUpdate(session_id_,
                                                   base::DoNothing());
 
   // TODO(b/234655072): Implement timeout for connection to close.
@@ -156,6 +153,12 @@ void TargetDeviceBootstrapController::OnConnectionAuthenticated(
   CHECK(base::Contains(kPossibleSteps, status_.step));
 
   authenticated_connection_ = authenticated_connection;
+
+  // Create session ID by generating UUID and then hashing.
+  const base::Uuid random_uuid = base::Uuid::GenerateRandomV4();
+  session_id_ = static_cast<int32_t>(
+      base::PersistentHash(random_uuid.AsLowercaseString()));
+
   status_.step = Step::CONNECTED;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();

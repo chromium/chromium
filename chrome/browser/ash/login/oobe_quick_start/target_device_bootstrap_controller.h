@@ -112,6 +112,8 @@ class TargetDeviceBootstrapController
   base::WeakPtr<TargetDeviceConnectionBroker::AuthenticatedConnection>
       authenticated_connection_;
 
+  int32_t session_id_;
+
   base::WeakPtrFactory<TargetDeviceBootstrapController>
       weak_ptr_factory_for_clients_{this};
 
