@@ -205,8 +205,7 @@ UIColor* DimColorIncognito() {
                                    color:suggestionTextColor
                                 dimColor:dimColor];
 
-    if (self.isTailSuggestion &&
-        base::FeatureList::IsEnabled(kOmniboxTailSuggest)) {
+    if (self.isTailSuggestion) {
       NSMutableAttributedString* mutableString =
           [[NSMutableAttributedString alloc] init];
       NSAttributedString* tailSuggestPrefix =
