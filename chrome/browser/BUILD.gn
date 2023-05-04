@@ -3021,7 +3021,6 @@ static_library("browser") {
       "installable/installed_webapp_geolocation_context.h",
       "installable/installed_webapp_provider.cc",
       "installable/installed_webapp_provider.h",
-      "installable/quality_enforcer.cc",
       "language/android/language_bridge.cc",
       "language/android/language_bridge.h",
       "lens/android/lens_policy_utils.cc",

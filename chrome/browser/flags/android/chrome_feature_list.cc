@@ -320,9 +320,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kToolbarMicIphAndroid,
     &kToolbarScrollAblationAndroid,
     &kTrustedWebActivityPostMessage,
-    &kTrustedWebActivityQualityEnforcement,
-    &kTrustedWebActivityQualityEnforcementForced,
-    &kTrustedWebActivityQualityEnforcementWarning,
     &kResizeOnlyActiveTab,
     &kSpareTab,
     &kStartSurfaceAndroid,
@@ -1066,18 +1063,6 @@ BASE_FEATURE(kToolbarScrollAblationAndroid,
 BASE_FEATURE(kTrustedWebActivityPostMessage,
              "TrustedWebActivityPostMessage",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrustedWebActivityQualityEnforcement,
-             "TrustedWebActivityQualityEnforcement",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrustedWebActivityQualityEnforcementForced,
-             "TrustedWebActivityQualityEnforcementForced",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTrustedWebActivityQualityEnforcementWarning,
-             "TrustedWebActivityQualityEnforcementWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kResizeOnlyActiveTab,
              "ResizeOnlyActiveTab",

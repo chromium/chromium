@@ -15,7 +15,6 @@ android_library("java") {
     "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
-    "//chrome/browser/android/browserservices/constants:java",
     "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/ukm/android:java",
