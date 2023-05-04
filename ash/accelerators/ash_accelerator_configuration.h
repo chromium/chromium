@@ -157,7 +157,8 @@ class ASH_EXPORT AshAcceleratorConfiguration : public AcceleratorConfiguration,
   // Adds the accelerator, does not notify observers.
   mojom::AcceleratorConfigResult DoAddAccelerator(
       AcceleratorActionId action_id,
-      const ui::Accelerator& accelerator);
+      const ui::Accelerator& accelerator,
+      bool save_override);
 
   // Replace the accelerator, does not notify observers.
   mojom::AcceleratorConfigResult DoReplaceAccelerator(
