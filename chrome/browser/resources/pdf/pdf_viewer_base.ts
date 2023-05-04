@@ -438,34 +438,21 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
     if (params.position) {
       this.viewport_.goToPageAndXy(
           params.page || 0, params.position.x, params.position.y);
-    } else if (params.page) {
-      this.viewport_.goToPage(params.page);
     }
 
     if (params.view) {
       this.isUserInitiatedEvent = false;
-      let fittingTypeParams;
-      if (params.view === FittingType.FIT_TO_BOUNDING_BOX) {
-        assert(params.boundingBox);
-        fittingTypeParams = {
-          page: params.page || 0,
-          boundingBox: params.boundingBox,
-        };
-      }
+      const fittingTypeParams = {
+        boundingBox: params.boundingBox,
+        page: params.page || 0,
+        viewPosition: params.viewPosition,
+      };
       this.viewport_.setFittingType(params.view, fittingTypeParams);
       this.forceFit(params.view);
-      if (params.viewPosition) {
-        const zoomedPositionShift =
-            params.viewPosition * this.viewport_.getZoom();
-        const currentViewportPosition = this.viewport_.position;
-        if (params.view === FittingType.FIT_TO_WIDTH) {
-          currentViewportPosition.y += zoomedPositionShift;
-        } else if (params.view === FittingType.FIT_TO_HEIGHT) {
-          currentViewportPosition.x += zoomedPositionShift;
-        }
-        this.viewport_.setPosition(currentViewportPosition);
-      }
       this.isUserInitiatedEvent = true;
+    } else if (!params.position && params.page) {
+      // No fitting type provided, so just go to page.
+      this.viewport_.goToPage(params.page);
     }
   }
 
