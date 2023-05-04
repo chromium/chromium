@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ne">
+<translation id="100506692671054486">यसअघि कुनै पनि कमान्ड दिइएको छैन</translation>
 <translation id="1009046985747440431">नेभिगेसन गर्न माथि फर्केको वा तल फर्केको तीर कुञ्जी थिच्नुहोस्; सक्रिय गर्न Enter कुञ्जी थिच्नुहोस्</translation>
 <translation id="1011903154582639569">कुनै कुञ्जी फेला पारी टाइप गर्न औँला उठाउनुहोस्</translation>
 <translation id="1012173283529841972">सूची वस्तु</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">लाभेन्डर ब्लस</translation>
 <translation id="3943857333388298514">टाँस्नुहोस्</translation>
 <translation id="3962990492275676168">हालको स्थानबाट पढ्न सुरु गर्नुहोस्</translation>
+<translation id="397094149579293440">टेक्स्ट चयन गरिएको छैन</translation>
 <translation id="3970951409746498040">बालुवा जस्तो खैरो</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">मोकासिन</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">अघिल्लो कुनै पनि लेभल १ शीर्षक छैन</translation>
 <translation id="4787577491510559358">वस्तुको हालको ढाँचा कस्तो छ भनेर सुनाउनुहोस्</translation>
 <translation id="479989351350248267">खोज्नुहोस्</translation>
+<translation id="4802034228771424756">टेक्स्ट फिल्ड फोकस गरिएको छैन</translation>
 <translation id="4804818685124855865">जडान विच्छेद</translation>
 <translation id="481165870889056555">हालको पृष्ठको शीर्षक घोषणा गर्नुहोस्</translation>
 <translation id="4815668758102003883">फिक्का टर्कोइस</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">आन्तरिक लिङ्क</translation>
 <translation id="4909019435900810068">एक शब्द पछाडि सार्नुहोस्</translation>
 <translation id="4911349081560453449">अघिल्लो कुनै पनि जाँच बाकस छैन</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> भन्ने कमान्ड कार्यान्वयन गर्न सकिएन, फेरि प्रयास गर्नुहोस्</translation>
 <translation id="492295894462528572">प्राक्कथन</translation>
 <translation id="495046168593986294">माथि स्क्रोल गर्नुहोस्</translation>
 <translation id="495170559598752135">कार्यहरू</translation>
 <translation id="4953585991029886728">पाठ सम्पादन गर्नुहोस्</translation>
+<translation id="4964701498510730546">टेक्स्ट फिल्ड खाली छ</translation>
 <translation id="4973717656530883744">न्यूनतम <ph name="X" /></translation>
 <translation id="4974612477719259470">अघिल्लो कुनै पनि बटन छैन</translation>
 <translation id="4979404613699303341">अघिल्लो बटन</translation>
+<translation id="4981239367072766915">इनपुट पत्ता लगाउन सकिएन</translation>
 <translation id="4982917827052020884">तपाईंले नियमित रूपमा प्रयोग गर्ने केही कीहरूका बारेमा जानौँ। Control की हाल अन रहेको कुनै वाक् सुविधा बन्द गर्नका लागि प्रयोग गर्न सकिन्छ। Control की किबोर्डको पुछारको बायाँ कुनामा हुन्छ। जारी राख्न Control की थिच्नुहोस्।</translation>
 <translation id="4983588134362688868">पृष्ठको शीर्षमा जम्प गर्नुहोस्</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, सन्झ्याल</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">ब्याट्रीको हालको स्थिति सुनाउनुहोस्</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, रेडियो बटन चयन गरिएको</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, मेनु आइटम रेडियो बटन चयन गरिएको छ</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> भन्ने कमान्ड कार्यान्वयन गर्न सकिएन, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">बोली प्रयोग गरी लगइन गर्ने सुविधा सक्षम पार्नुहोस्</translation>
 <translation id="5041394372352067729">ब्रेल प्रदर्शनलाई पृष्ठको शिर्षमा सार्नुहो</translation>
 <translation id="5042770794184672516">बोली मात्रा वृद्ध</translation>

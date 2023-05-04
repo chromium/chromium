@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">මිල හඹා යෑම නතර විය</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> ලෙස කරගෙන යන්න</translation>
 <translation id="4652817563047461855">ඔබේ මුරපද සුරක්ෂිත බවට වග බලා ගන්න, ඒවා අවදානමට ලක් වී තිබේ දැයි සොයා බලන්න, සහ සබැඳිව ඔබව ආරක්ෂා කර ගැනීමට උපදෙස් ලබා ගන්න. <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">ඔබ ඔබේ Google ගිණුමට පුරන විට, මෙම විශේෂාංගය සක්‍රීය කෙරේ.</translation>
 <translation id="4659667755519643272">පටිති මාරුකරවනය වෙත ඇතුළත් වන්න</translation>
 <translation id="46614316059270592">මුරපදය සුරකින්න</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> ලෙස පුරන්න වී ඇත.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">ඔබගේ සියලුම උපාංග මත පිටුසන්, මුරපද, ඉතිහාසය හා අනෙකුත් සැකසීම් ලබා ගැනීමට ඔබගේ Google ගිණුම සමඟ පුරනය වන්න</translation>
 <translation id="4986678885919050584">මෙම උපාංගයෙන් ඉවත් කරන්න</translation>
 <translation id="498985224078955265">මෙම පටිත්ත වෙනත් උපාංගයකට යැවීමට, උපාංග දෙකම මත Chrome වෙත පුරන්න.</translation>
+<translation id="4996567535980789550">ඔබ දකින අන්තර්ගතය කළමනාකරණය කිරීමට සමමුහුර්ත කිරීම ක්‍රියාත්මක කරන්න</translation>
 <translation id="5005498671520578047">මුරපදය පිටපත් කරන්න</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> වෙත යවන්න</translation>
 <translation id="5017828934289857214">මට පසුව සිහිකැඳවන්න</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">මුරපදය සංස්කරණ කරන්න</translation>
 <translation id="5433691172869980887">පරිශීලක නම පිටපත් කරන ලදී</translation>
 <translation id="5439599923922718668">නිතර පිවිසි</translation>
+<translation id="5439618055789623719"><ph name="USER_EMAIL" /> ලෙස පුරන ලදි</translation>
 <translation id="54401264925851789">පිටු ආරක්ෂිත තතු</translation>
 <translation id="5443952882982198570">ණය කාඩ්පත්</translation>
 <translation id="5444892875087332195">පිටුසන්</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">ඔබව ඔබේ Google ගිණුමෙන් නොවරනු ඇත. ඔබගේ Google ගිණුමට <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> දී බ්‍රවුස් කිරීමේ ඉතිහාසයේ වෙනත් ආකාර තිබිය හැකිය.</translation>
 <translation id="9037965129289936994">මුල් පිටපත පෙන්වන්න</translation>
 <translation id="9039373489628511875">කලාප පළල</translation>
+<translation id="9043368763795653245">ඔබේ සොයා ගැනීමේ සංග්‍රහය සහ Chrome පෞද්ගලීකරණය කිරීම සඳහා, සමමුහුර්තකරණය ක්‍රියාත්මක කරන්න.</translation>
 <translation id="9055772144595778347">පුරනය වීමට නොහැක</translation>
 <translation id="9055960261314198756">වැඩිදියුණු කළ ආරක්ෂාව ක්‍රියාවිරහිතයි</translation>
 <translation id="9057972802061533987">අනුගමනය කළ නොහැකිය. යම් දෙයක් වැරදිණි.</translation>

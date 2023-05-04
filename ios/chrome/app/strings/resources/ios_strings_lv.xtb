@@ -547,7 +547,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4642472735733036929">Cenu izsekošana ir apturēta.</translation>
 <translation id="4650125387981512669">Turpināt kā: <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Aizsargājiet savas paroles, uzziniet, vai tās nav uzlauztas, un saņemiet padomus par drošību tiešsaistē. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
-<translation id="4659126640776004816">Kad pierakstāties savā Google kontā, šī funkcija ir ieslēgta.</translation>
 <translation id="4659667755519643272">Atvērt ciļņu pārslēdzēju</translation>
 <translation id="46614316059270592">Saglabāt paroli</translation>
 <translation id="4666531726415300315">Pierakstījies kā <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="4979397965658815378">Pierakstieties Google kontā, lai izmantotu savas grāmatzīmes, paroles, vēsturi un citus Chrome datus visās jūsu ierīcēs.</translation>
 <translation id="4986678885919050584">Noņemt no šīs ierīces</translation>
 <translation id="498985224078955265">Lai nosūtītu šo cilni uz citu ierīci, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
+<translation id="4996567535980789550">Sinhronizācijas ieslēgšana, lai pārvaldītu jums redzamo saturu</translation>
 <translation id="5005498671520578047">Paroles kopēšana</translation>
 <translation id="5016420433031926653">Nosūtīt uz e-pasta adresi <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Atgādināt vēlāk</translation>
@@ -666,6 +666,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="543338862236136125">Rediģēt paroli</translation>
 <translation id="5433691172869980887">Lietotājvārds ir nokopēts.</translation>
 <translation id="5439599923922718668">Bieži apmeklētas</translation>
+<translation id="5439618055789623719">Pierakstījies kā <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Lapas drošības informācija</translation>
 <translation id="5443952882982198570">Kredītkartes</translation>
 <translation id="5444892875087332195">Grāmatzīmes</translation>
@@ -1236,6 +1237,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9034759925968272072">Jūs netiksiet izrakstīts no sava Google konta. Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> var būt citu veidu pārlūkošanas vēstures dati.</translation>
 <translation id="9037965129289936994">Rādīt sākotnējo tekstu</translation>
 <translation id="9039373489628511875">Joslas platums</translation>
+<translation id="9043368763795653245">Lai personalizētu savu Discover plūsmu un pārlūku Chrome, ieslēdziet sinhronizāciju.</translation>
 <translation id="9055772144595778347">Nevar pierakstīties</translation>
 <translation id="9055960261314198756">Uzlabota aizsardzība ir izslēgta</translation>
 <translation id="9057972802061533987">Nevar sekot. Radās kļūda.</translation>

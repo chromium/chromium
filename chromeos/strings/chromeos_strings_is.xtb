@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Fleiri stillingar</translation>
 <translation id="2085089206770112532">Draga úr birtustigi skjás</translation>
-<translation id="209751264101900360">Frá dögun til rökkurs - flæði skýja</translation>
 <translation id="2102231663024125441">Breytingar á texta</translation>
 <translation id="2105810540595158374">Tækið er leikjafjarstýring.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Ekki taka þetta ytra tæki úr sambandi eða slökkva á tölvunni þinni á meðan fastbúnaðurinn uppfærist. Þú getur minnkað þennan glugga. Uppfærslan gæti tekið nokkrar mínútur og óvíst er að ytra tækið virki á meðan.</translation>
 <translation id="3486220673238053218">skilgreining</translation>
 <translation id="3488065109653206955">Virkjað að hluta</translation>
+<translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Niðurhali lokið</translation>
 <translation id="3969602104473960991">Aðgangsorð ChromeOS var uppfært</translation>
 <translation id="397105322502079400">Reiknar...</translation>
-<translation id="3974175076798940554">Nú eru sérvaldar Chromebook Plus-eignir í boði</translation>
 <translation id="39823212440917567">Prentverk sem eru eldri en <ph name="NUMBER_OF_DAYS" /> verða fjarlægð</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> er nú uppfært</translation>
 <translation id="4003384961948020559">Mistókst – úttakið er fullt</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Margmiðlun</translation>
 <translation id="4289540628985791613">Yfirlit</translation>
 <translation id="4289849978083912975">Skyggnusýning</translation>
-<translation id="4293621540182258188">Frá dögun til rökkurs - flæði jarðar</translation>
 <translation id="4297501883039923494">Stöðvað – óþekkt villa</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> myndir</translation>
 <translation id="4311195029067684288">Allur</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Auka birtustig skjás</translation>
 <translation id="57838592816432529">Þagga</translation>
 <translation id="5784136236926853061">Langur HTTP-biðtími</translation>
-<translation id="5809090008577139505">Norðurljós</translation>
 <translation id="5826644637650799838">Um listaverkið</translation>
 <translation id="5832805196449965646">Bæta notanda við</translation>
 <translation id="583281660410589416">Óþekkt</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">litur lykils</translation>
 <translation id="5916084858004523819">Bannað</translation>
 <translation id="5916664084637901428">Kveikt</translation>
-<translation id="5918201491776799918">Veldu sérstök Chromebook Plus-listaverk</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
 <translation id="5939518447894949180">Endurstilla</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Þema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Kveikja á dökku þema</translation>
+<translation id="6285899124799306373">opna ræsiforrit</translation>
 <translation id="6302401976930124515">Hætt var við prófunina: <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">Skoða forrit</translation>
 <translation id="6319207335391420837">Uppfæra fastbúnað í <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Forskoðun skjávara</translation>
 <translation id="6388847657025262518">Skjalamatarinn á skannanum er fastur. Athugaðu skjalamatarann og reyndu aftur.</translation>
 <translation id="6394634179843537518">Bæta við skrá</translation>
+<translation id="6401427872449207797">vafraleit</translation>
 <translation id="6410257289063177456">Myndaskrár</translation>
 <translation id="641081527798843608">Samsvörun viðfangs</translation>
 <translation id="6412715219990689313">Innbyggt lyklaborð</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Tækið er mús.</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7665800271478495366">Breyta notandamynd</translation>
-<translation id="7675241868020048622">Aurora (aðeins í „Plus“)</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
 <translation id="7701040980221191251">Ekkert</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Velja <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Forritunartól</translation>
-<translation id="8153923300383192510">Aðeins í Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Hengja við</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">spila efni</translation>
 <translation id="8318753676953949627">Engar myndir</translation>
 <translation id="8329018942023753850">reiknivélarforrit</translation>
+<translation id="8335869473001018124">opna leit</translation>
 <translation id="8336739000755212683">Breyta reikningsmynd í tækinu</translation>
 <translation id="8347227221149377169">Prentverk</translation>
 <translation id="8351855506390808906">Snertipunktur lyklaskipanar</translation>

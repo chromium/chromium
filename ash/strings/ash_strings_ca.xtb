@@ -476,7 +476,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3255483164551725916">Què pots fer?</translation>
 <translation id="3256109297135787951">Deixa de destacar un element del prestatge</translation>
 <translation id="3260969790895726815">La parla es processa localment i el dictat funciona sense connexió, però algunes ordres de veu no funcionaran.</translation>
-<translation id="3265032511221679826">Vols activar l'accés a la ubicació exacta?</translation>
+<translation id="3265032511221679826">Vols activar l'accés a la ubicació precisa?</translation>
 <translation id="3269597722229482060">Clic amb el botó dret</translation>
 <translation id="3289364673986435196">Menú d'engegada</translation>
 <translation id="3289544412142055976">Actualment, les aplicacions de Linux no s'admeten</translation>
@@ -999,7 +999,6 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Prem Ctrl+Alt+Z per desactivar els avisos de veu.</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601571553788043181">Obre el fitxer al navegador Chrome</translation>
 <translation id="5618148318840095371">T'hem canviat a una xarxa millor</translation>
 <translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -1414,7 +1413,6 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7569509451529460200">S'ha activat el braille i ChromeVox</translation>
 <translation id="7573585051776738856">Finestra activa acoblada a la dreta.</translation>
 <translation id="7579778809502851308">Captura de pantalla</translation>
-<translation id="7590883480672980941">Configuració de l'entrada</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
 <translation id="7600875258240007829">Mostra totes les notificacions</translation>
 <translation id="7607002721634913082">En pausa</translation>

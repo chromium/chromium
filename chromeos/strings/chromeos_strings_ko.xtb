@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">설정 더보기</translation>
 <translation id="2085089206770112532">디스플레이 밝기 낮추기</translation>
-<translation id="209751264101900360">동이 틀 무렵부터 어두워지는 하늘 - 구름 흐름</translation>
 <translation id="2102231663024125441">텍스트 수정</translation>
 <translation id="2105810540595158374">게임 컨트롤러 기기입니다.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, 버전 <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="3486220673238053218">정의</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
+<translation id="3502426834823382181">모든 앱 보기</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />성능 추적 데이터<ph name="END_LINK1" /> 전송</translation>
 <translation id="3517001332549868749">Chrome OS 업데이트</translation>
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3969602104473960991">ChromeOS 비밀번호 업데이트됨</translation>
 <translation id="397105322502079400">계산 중...</translation>
-<translation id="3974175076798940554">독점 Chromebook Plus 애셋 사용 가능</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" />일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> 버전이 최신임</translation>
 <translation id="4003384961948020559">실패 - 출력 가득 참</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">미디어</translation>
 <translation id="4289540628985791613">개요</translation>
 <translation id="4289849978083912975">슬라이드쇼</translation>
-<translation id="4293621540182258188">동이 틀 무렵부터 어두워지는 하늘 - 지구 흐름</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
 <translation id="4300073214558989">이미지 <ph name="IMAGE_COUNT" />개</translation>
 <translation id="4311195029067684288">전체화면</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">디스플레이 밝기 높이기</translation>
 <translation id="57838592816432529">음소거</translation>
 <translation id="5784136236926853061">HTTP 지연 시간 높음</translation>
-<translation id="5809090008577139505">오로라</translation>
 <translation id="5826644637650799838">작품 정보</translation>
 <translation id="5832805196449965646">사용자 추가</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">키 색상</translation>
 <translation id="5916084858004523819">금지됨</translation>
 <translation id="5916664084637901428">사용</translation>
-<translation id="5918201491776799918">Chromebook Plus 전용 예술작품을 선택합니다.</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}other{파일 스캔이 완료되어 <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />에 저장되었습니다.}}</translation>
 <translation id="5931523347251946569">파일을 찾을 수 없음</translation>
 <translation id="5939518447894949180">초기화</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">테마</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">어두운 테마 사용 설정</translation>
+<translation id="6285899124799306373">런처 열기</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> 테스트가 취소됨</translation>
 <translation id="631063167932043783">탐색 앱</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> 펌웨어 업데이트</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">화면 보호기 미리보기</translation>
 <translation id="6388847657025262518">스캐너의 급지대에 용지가 걸렸습니다. 급지대를 확인한 후 다시 시도해 보세요.</translation>
 <translation id="6394634179843537518">파일 추가</translation>
+<translation id="6401427872449207797">브라우저 검색</translation>
 <translation id="6410257289063177456">이미지 파일</translation>
 <translation id="641081527798843608">주제 일치</translation>
 <translation id="6412715219990689313">내장 키보드</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">마우스 기기입니다.</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7665800271478495366">아바타 변경</translation>
-<translation id="7675241868020048622">오로라(플러스 전용)</translation>
 <translation id="7690294790491645610">새 비밀번호 확인</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> 선택</translation>
 <translation id="8151185429379586178">개발자 도구</translation>
-<translation id="8153923300383192510">Chromebook Plus 전용입니다.</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">접속</translation>
 <translation id="8206859287963243715">휴대전화</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">미디어를 재생합니다</translation>
 <translation id="8318753676953949627">이미지 없음</translation>
 <translation id="8329018942023753850">계산기 앱입니다</translation>
+<translation id="8335869473001018124">검색 열기</translation>
 <translation id="8336739000755212683">기기 계정 이미지 변경</translation>
 <translation id="8347227221149377169">인쇄 작업</translation>
 <translation id="8351855506390808906">키매핑 터치 포인트</translation>

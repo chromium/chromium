@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Rohkem seadeid</translation>
 <translation id="2085089206770112532">Ekraanikuva ereduse vähendamine</translation>
-<translation id="209751264101900360">Päikesetõusust päikeseloojanguni – pilvevoog</translation>
 <translation id="2102231663024125441">Teksti muutmine</translation>
 <translation id="2105810540595158374">Seade on mängupult.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Püsivara värskendamise ajal ärge seda välist seadet eemaldage ega arvutit välja lülitage. Võite selle akna minimeerida. Selle värskenduse lõpuleviimiseks võib kuluda mõni minut ja teie väline seade ei pruugi sel ajal töötada.</translation>
 <translation id="3486220673238053218">definitsioon</translation>
 <translation id="3488065109653206955">Osaliselt aktiveeritud</translation>
+<translation id="3502426834823382181">kõikide rakenduste kuvamine</translation>
 <translation id="3510890413042482857">Saada <ph name="BEGIN_LINK1" />toimivuse jälgimiseandmeid<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-i värsken.</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
 <translation id="3969602104473960991">Chrome OS-i parooli värskendati</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
-<translation id="3974175076798940554">Eksklusiivsed Chromebook Plusi varad on nüüd saadaval</translation>
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="3993704782688964914">Teie <ph name="DEVICE_NAME" /> on nüüd ajakohane</translation>
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Meedia</translation>
 <translation id="4289540628985791613">Ülevaade</translation>
 <translation id="4289849978083912975">Slaidiseanss</translation>
-<translation id="4293621540182258188">Päikesetõusust päikeseloojanguni – Maa pöörlemine</translation>
 <translation id="4297501883039923494">Peatatud – tundmatu viga</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> pilti</translation>
 <translation id="4311195029067684288">Täielik</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Ekraanikuva ereduse suurendamine</translation>
 <translation id="57838592816432529">Vaigista</translation>
 <translation id="5784136236926853061">Pikk HTTP latentsusaeg</translation>
-<translation id="5809090008577139505">Virmalised</translation>
 <translation id="5826644637650799838">Kunsti teave</translation>
 <translation id="5832805196449965646">Lisa inimene</translation>
 <translation id="583281660410589416">Tundmatu</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">klahvistiku värv</translation>
 <translation id="5916084858004523819">Keelatud</translation>
 <translation id="5916664084637901428">Sees</translation>
-<translation id="5918201491776799918">Valige Chromebook Plusi eksklusiivne kujundus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Teie faili skannimine õnnestus ja see salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Teie failide skannimine õnnestus ja need salvestati kausta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Faili ei leitud</translation>
 <translation id="5939518447894949180">Lähtesta</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Tumeda teema sisselülitamine</translation>
+<translation id="6285899124799306373">käivitaja avamine</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> tühistati</translation>
 <translation id="631063167932043783">Rakendus Avastamine</translation>
 <translation id="6319207335391420837">Seadme <ph name="DEVICE_NAME" /> püsivara värskendamine</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Ekraanisäästja eelvaade</translation>
 <translation id="6388847657025262518">Skanneri dokumendisöötur on ummistunud. Kontrollige sööturit ja proovige uuesti.</translation>
 <translation id="6394634179843537518">Lisa fail</translation>
+<translation id="6401427872449207797">brauseri otsing</translation>
 <translation id="6410257289063177456">Pildifailid</translation>
 <translation id="641081527798843608">Teema vaste</translation>
 <translation id="6412715219990689313">Sisseehitatud klaviatuur</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Seade on hiir.</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7665800271478495366">Muuda avatari</translation>
-<translation id="7675241868020048622">Aurora (ainult keskklassi Chromebookis)</translation>
 <translation id="7690294790491645610">Kinnitage uus parool</translation>
 <translation id="7701040980221191251">Pole</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Vali „<ph name="TOPIC_SOURCE" /> – <ph name="TOPIC_SOURCE_DESC" />”</translation>
 <translation id="8151185429379586178">Arendaja tööriistad</translation>
-<translation id="8153923300383192510">Chromebook Plusi eksklusiivne kujundus</translation>
 <translation id="8179976553408161302">Sisestusklahv</translation>
 <translation id="8183974620058026102">Manusta</translation>
 <translation id="8206859287963243715">Mobiil</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">esitab meediat</translation>
 <translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8329018942023753850">rakendus Kalkulaator</translation>
+<translation id="8335869473001018124">otsingu avamine</translation>
 <translation id="8336739000755212683">Seadme kontopildi muutmine</translation>
 <translation id="8347227221149377169">Prinditööd</translation>
 <translation id="8351855506390808906">Klahvide vastendamine, puutepunkt</translation>

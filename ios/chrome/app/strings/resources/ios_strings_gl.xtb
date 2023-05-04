@@ -400,7 +400,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3588820906588687999">Abrir imaxe nunha pestana nova</translation>
 <translation id="3595252146048399851">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3603009562372709545">Copiar URL da ligazón</translation>
-<translation id="3607167657931203000">Autocompletar datos</translation>
+<translation id="3607167657931203000">Datos de Autocompletar</translation>
 <translation id="3608008480985212611">Iniciar sesión para xestionar as túas preferencias.</translation>
 <translation id="3609785682760573515">Sincronizando...</translation>
 <translation id="3631443864840848029">Asegúrate de gardar o teu contrasinal actual deste sitio.</translation>
@@ -547,7 +547,6 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Confirma se os teus contrasinais son seguros, descubre se foron vulnerados e recibe consellos para protexerte en liña. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Cando inicies sesión na túa Conta de Google, activarase esta función.</translation>
 <translation id="4659667755519643272">Entrar no selector de pestanas</translation>
 <translation id="46614316059270592">Gardar contrasinal</translation>
 <translation id="4666531726415300315">Iniciaches sesión como <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4979397965658815378">Inicia sesión na túa conta de Google para ter os marcadores, os contrasinais, o historial e o resto das opcións de configuración en todos os teus dispositivos.</translation>
 <translation id="4986678885919050584">Quitar deste dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestana a outro dispositivo, inicia sesión en Chrome nos dous dispositivos.</translation>
+<translation id="4996567535980789550">Activa a sincronización para xestionar o contido que ves</translation>
 <translation id="5005498671520578047">Copiar contrasinal</translation>
 <translation id="5016420433031926653">Enviaranse a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrarmo máis tarde</translation>
@@ -666,6 +666,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="543338862236136125">Editar contrasinal</translation>
 <translation id="5433691172869980887">Copiouse o nome de usuario</translation>
 <translation id="5439599923922718668">Visitas frecuentes</translation>
+<translation id="5439618055789623719">Tes a sesión iniciada como <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Información de seguranza da páxina</translation>
 <translation id="5443952882982198570">Tarxetas de crédito</translation>
 <translation id="5444892875087332195">Marcadores</translation>
@@ -1236,6 +1237,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9034759925968272072">Non se pechará sesión na túa conta de Google. É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar orixinal</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
+<translation id="9043368763795653245">Activa a sincronización para personalizar Chrome e o teu feed de Discover.</translation>
 <translation id="9055772144595778347">Imposible in. sesión</translation>
 <translation id="9055960261314198756">A protección mellorada está desactivada</translation>
 <translation id="9057972802061533987">Non se puido seguir o contido. Produciuse un erro.</translation>

@@ -547,7 +547,6 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="4642472735733036929">Kainų stebėjimas sustabdytas</translation>
 <translation id="4650125387981512669">Tęsti kaip <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Įsitikinkite, kad slaptažodžiai saugūs, sužinokite, ar jie nebuvo pažeisti, ir gaukite patarimų, kaip apsisaugoti internete. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Prisijungus prie „Google“ paskyros, ši funkcija yra įjungta.</translation>
 <translation id="4659667755519643272">Įjungti skirtukų perjungiklį</translation>
 <translation id="46614316059270592">Išsaugoti slaptažodį</translation>
 <translation id="4666531726415300315">Esate prisijungę kaip <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4979397965658815378">Prisijunkite naudodami „Google“ paskyrą, kad gautumėte žymes, slaptažodžius, istoriją ir kitus nustatymus visuose įrenginiuose</translation>
 <translation id="4986678885919050584">Pašalinti iš šio įrenginio</translation>
 <translation id="498985224078955265">Jei norite siųsti šį skirtuką į kitą įrenginį, prisijunkite prie „Chrome“ abiejuose įrenginiuose</translation>
+<translation id="4996567535980789550">Įjunkite sinchronizavimą, kad galėtumėte tvarkyti matomą turinį</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5016420433031926653">Siųsti: <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Priminti vėliau</translation>
@@ -666,6 +666,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="543338862236136125">Redaguoti slaptažodį</translation>
 <translation id="5433691172869980887">Naudotojo vardas nukopijuotas</translation>
 <translation id="5439599923922718668">Dažnai lankytasi</translation>
+<translation id="5439618055789623719">Prisijungta kaip <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Puslapio saugos informacija</translation>
 <translation id="5443952882982198570">Kredito kortelės</translation>
 <translation id="5444892875087332195">Žymės</translation>
@@ -1236,6 +1237,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="9034759925968272072">Nebūsite atjungti nuo „Google“ paskyros. Adresu <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> gali būti pateikta kitų formų jūsų „Google“ paskyros istorija.</translation>
 <translation id="9037965129289936994">Rodyti originalą</translation>
 <translation id="9039373489628511875">Pralaidumas</translation>
+<translation id="9043368763795653245">Jei norite suasmeninti „Discover“ sklaidos kanalą ir „Chrome“, įjunkite sinchronizavimą.</translation>
 <translation id="9055772144595778347">Neįmanoma prisij.</translation>
 <translation id="9055960261314198756">Sustiprinta apsauga išjungta</translation>
 <translation id="9057972802061533987">Negalima stebėti. Kažkas nepavyko.</translation>

@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2085089206770112532">Уменьшение яркости дисплея</translation>
-<translation id="209751264101900360">От рассвета до заката: облака</translation>
 <translation id="2102231663024125441">Редактирование текста</translation>
 <translation id="2105810540595158374">Это игровой контроллер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Пока выполняется обновление встроенного ПО, не отключайте внешнее устройство и не выключайте компьютер. Это окно можно свернуть. Обновление займет несколько минут, в течение которых внешнее устройство может не работать.</translation>
 <translation id="3486220673238053218">узнать определение</translation>
 <translation id="3488065109653206955">Частично активировано</translation>
+<translation id="3502426834823382181">посмотреть все приложения</translation>
 <translation id="3510890413042482857">Отправлять <ph name="BEGIN_LINK1" />данные отслеживания производительности<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3969602104473960991">Пароль Chrome OS изменен</translation>
 <translation id="397105322502079400">Вычисление…</translation>
-<translation id="3974175076798940554">Эксклюзивный контент для Chromebook Plus</translation>
 <translation id="39823212440917567">Задания печати, хранящиеся дольше <ph name="NUMBER_OF_DAYS" /> дн., будут удалены</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" />: установлено актуальное ПО</translation>
 <translation id="4003384961948020559">Сбой: выходной лоток заполнен</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Камера и микрофон </translation>
 <translation id="4289540628985791613">Обзор</translation>
 <translation id="4289849978083912975">Слайд-шоу</translation>
-<translation id="4293621540182258188">От рассвета до заката: Земля</translation>
 <translation id="4297501883039923494">Печать прервана: неизвестная ошибка</translation>
 <translation id="4300073214558989">Изображений: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4311195029067684288">Максимальное увеличение</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Увеличение яркости экрана</translation>
 <translation id="57838592816432529">Отключить звук</translation>
 <translation id="5784136236926853061">большое время ожидания HTTP</translation>
-<translation id="5809090008577139505">Полярное сияние</translation>
 <translation id="5826644637650799838">Подробнее</translation>
 <translation id="5832805196449965646">Добавить пользователя</translation>
 <translation id="583281660410589416">Неизвестно</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">цвет клавиш</translation>
 <translation id="5916084858004523819">Запрещено</translation>
 <translation id="5916664084637901428">ВКЛ</translation>
-<translation id="5918201491776799918">Выбрать эксклюзивные анимации для Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл отсканирован и сохранен в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не найден.</translation>
 <translation id="5939518447894949180">Сбросить</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Включить тёмную тему</translation>
+<translation id="6285899124799306373">открыть панель запуска</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тестирование отменено.</translation>
 <translation id="631063167932043783">Приложение "Возможности"</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />: обновление встроенного ПО</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Предварительный просмотр заставки</translation>
 <translation id="6388847657025262518">Автоподатчик документов заклинило. Устраните проблему и повторите попытку.</translation>
 <translation id="6394634179843537518">Добавить файл</translation>
+<translation id="6401427872449207797">поиск в браузере</translation>
 <translation id="6410257289063177456">Файлы изображений</translation>
 <translation id="641081527798843608">Совпадение тем</translation>
 <translation id="6412715219990689313">Встроенная клавиатура</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Это мышь.</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7665800271478495366">Изменить аватар</translation>
-<translation id="7675241868020048622">Аврора (Plus exclusive)</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
 <translation id="7701040980221191251">Нет</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбрать вариант "<ph name="TOPIC_SOURCE" />" (<ph name="TOPIC_SOURCE_DESC" />)</translation>
 <translation id="8151185429379586178">Инструменты разработчика</translation>
-<translation id="8153923300383192510">Эксклюзивно для Chromebook Plus</translation>
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Сотовый</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">воспроизвести медиаконтент</translation>
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
+<translation id="8335869473001018124">открыть поиск</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
 <translation id="8347227221149377169">Задания печати</translation>
 <translation id="8351855506390808906">Точка касания для привязки клавиш</translation>

@@ -547,7 +547,6 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
 <translation id="4650125387981512669">Jätkake kasutajana <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Saate veenduda, et teie paroolid oleksid kaitstud, kontrollida, kas need pole ohustatud, ja saada nõu, kuidas end veebis kaitsta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Kui logite oma Google'i kontole sisse, lülitatakse see funktsioon sisse.</translation>
 <translation id="4659667755519643272">Ava vahelehtede vaheti</translation>
 <translation id="46614316059270592">Salvesta parool</translation>
 <translation id="4666531726415300315">Sisse logitud kasutajana <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="4979397965658815378">Logige sisse oma Google'i kontoga, et näha oma järjehoidjaid, paroole, ajalugu ja muid seadeid kõigis oma seadmetes</translation>
 <translation id="4986678885919050584">Eemalda sellest seadmest</translation>
 <translation id="498985224078955265">Selle vahelehe saatmiseks teise seadmesse logige mõlemas seadmes Chrome'i sisse.</translation>
+<translation id="4996567535980789550">Kuvatud sisu haldamiseks lülitage sisse sünkroonimine</translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5016420433031926653">Saatmine aadressile <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Tuleta hiljem meelde</translation>
@@ -666,6 +666,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="543338862236136125">Muuda parooli</translation>
 <translation id="5433691172869980887">Kasutajanimi on kopeeritud</translation>
 <translation id="5439599923922718668">Sageli külastatud</translation>
+<translation id="5439618055789623719">Sisse logitud kasutajana <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Lehe turvateave</translation>
 <translation id="5443952882982198570">Krediitkaardid</translation>
 <translation id="5444892875087332195">Järjehoidjad</translation>
@@ -1236,6 +1237,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="9034759925968272072">Teid ei logita Google'i kontolt välja. Aadressil <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu.</translation>
 <translation id="9037965129289936994">Kuva originaal</translation>
 <translation id="9039373489628511875">Ribalaius</translation>
+<translation id="9043368763795653245">Oma Discoveri voo ja Chrome'i isikupärastamiseks lülitage sisse sünkroonimine.</translation>
 <translation id="9055772144595778347">Ei saa sisse logida</translation>
 <translation id="9055960261314198756">Täiustatud kaitse on välja lülitatud</translation>
 <translation id="9057972802061533987">Ei saa jälgida. Midagi läks valesti.</translation>

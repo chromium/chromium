@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Más opciones de configuración</translation>
 <translation id="2085089206770112532">Disminuir el brillo de la pantalla</translation>
-<translation id="209751264101900360">Del amanecer a la noche: Flujo de nubes</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
 <translation id="2105810540595158374">El dispositivo es un control de juegos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">No desconectes este dispositivo externo ni apagues la computadora mientras se actualiza el firmware. Puedes minimizar esta ventana. Es posible que esta actualización demore unos minutos y que el dispositivo externo no funcione hasta que termine.</translation>
 <translation id="3486220673238053218">definición</translation>
 <translation id="3488065109653206955">Parcialmente activado</translation>
+<translation id="3502426834823382181">ver todas las apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de registro del rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualización del SO</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3969602104473960991">Se actualizó la contraseña de Chrome OS</translation>
 <translation id="397105322502079400">Calculando...</translation>
-<translation id="3974175076798940554">Ya están disponibles los recursos exclusivos para Chromebook Plus</translation>
 <translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="3993704782688964914">Tu <ph name="DEVICE_NAME" /> está actualizado</translation>
 <translation id="4003384961948020559">Error: La bandeja de salida está llena</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Multimedia</translation>
 <translation id="4289540628985791613">Descripción general</translation>
 <translation id="4289849978083912975">Presentación de diapositivas</translation>
-<translation id="4293621540182258188">Del amanecer a la noche: Flujo de la Tierra</translation>
 <translation id="4297501883039923494">Se detuvo: error desconocido</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> Imágenes</translation>
 <translation id="4311195029067684288">Total</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Aumentar el brillo de la pantalla</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Acerca del arte</translation>
 <translation id="5832805196449965646">Agregar a una persona</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">color de la tecla</translation>
 <translation id="5916084858004523819">Prohibido</translation>
 <translation id="5916664084637901428">Activado</translation>
-<translation id="5918201491776799918">Selecciona obras de arte exclusivas de Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se escaneó correctamente y se guardó en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se escanearon correctamente y se guardaron en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No se encontró el archivo</translation>
 <translation id="5939518447894949180">Restablecer</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activar el tema oscuro</translation>
+<translation id="6285899124799306373">abrir el selector</translation>
 <translation id="6302401976930124515">Se canceló la prueba de <ph name="TEST_NAME" /></translation>
 <translation id="631063167932043783">App Explorar</translation>
 <translation id="6319207335391420837">Actualizar el firmware en <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Vista previa del protector de pantalla</translation>
 <translation id="6388847657025262518">Se atascó el alimentador de documentos del escáner. Revisa el alimentador y vuelve a intentarlo.</translation>
 <translation id="6394634179843537518">Agregar archivo</translation>
+<translation id="6401427872449207797">realizar búsquedas en el navegador</translation>
 <translation id="6410257289063177456">Archivos de imagen</translation>
 <translation id="641081527798843608">Coincidencia de asunto</translation>
 <translation id="6412715219990689313">Teclado integrado</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">El dispositivo es un mouse.</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7665800271478495366">Cambiar avatar</translation>
-<translation id="7675241868020048622">Aurora (exclusivo para Plus)</translation>
 <translation id="7690294790491645610">Confirmar contraseña nueva</translation>
 <translation id="7701040980221191251">Ninguna</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Seleccionar <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Herramientas del programador</translation>
-<translation id="8153923300383192510">Exclusivos para Chromebook Plus</translation>
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183974620058026102">Adjuntar</translation>
 <translation id="8206859287963243715">Celular</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">reproducir contenido multimedia</translation>
 <translation id="8318753676953949627">No hay imágenes</translation>
 <translation id="8329018942023753850">app de Calculadora</translation>
+<translation id="8335869473001018124">abrir la búsqueda</translation>
 <translation id="8336739000755212683">Cambiar la imagen de cuenta del dispositivo</translation>
 <translation id="8347227221149377169">Trabajos de impresión</translation>
 <translation id="8351855506390808906">Punto táctil de la asignación de teclas</translation>

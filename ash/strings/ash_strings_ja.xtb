@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">カメラ プレビューが非表示になっています</translation>
 <translation id="1961832440516943645"><ph name="DATE" />、<ph name="TIME" /></translation>
 <translation id="1962969542251276847">画面をロック</translation>
+<translation id="1962972976741217487">1 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="1967970931040389207">アクセス ポイントをオンにする</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />（USB）</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" /> さん、こんにちは</translation>
@@ -931,6 +932,7 @@
 <translation id="5297704307811127955">オフ</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5302048478445481009">言語</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> 台のデバイスが <ph name="DEVICE_NAME" /> のアクセス ポイントに接続されています</translation>
 <translation id="5308380583665731573">接続</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
@@ -999,7 +1001,6 @@
 <translation id="5597451508971090205"><ph name="DATE" /> (<ph name="SHORT_WEEKDAY" />)</translation>
 <translation id="5600837773213129531">音声フィードバックを無効にするには Ctrl+Alt+Z を押してください。</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601571553788043181">Chrome ブラウザでファイルを開く</translation>
 <translation id="5618148318840095371">より安全なネットワークに切り替えました</translation>
 <translation id="5619862035903135339">管理者が設定したポリシーにより、スクリーン キャプチャは無効になっています</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -1338,6 +1339,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> 秒後に元の解像度に戻ります</translation>
 <translation id="7180611975245234373">更新</translation>
+<translation id="7187711731540696127"><ph name="DEVICE_NAME" /> のアクセス ポイントはオンです。デバイスが接続されていません</translation>
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7189412385142492784">金星までの距離は</translation>
 <translation id="7198435252016571249">カメラは右下にスナップされています。システムのサーフェスと競合しています。</translation>
@@ -1418,7 +1420,6 @@
 <translation id="7569509451529460200">Braille と ChromeVox が有効になっています</translation>
 <translation id="7573585051776738856">アクティブなウィンドウを右側に固定しました。</translation>
 <translation id="7579778809502851308">スクリーン キャプチャ</translation>
-<translation id="7590883480672980941">入力設定</translation>
 <translation id="7593891976182323525">検索/Shift</translation>
 <translation id="7600875258240007829">通知をすべて表示</translation>
 <translation id="7607002721634913082">一時停止中</translation>

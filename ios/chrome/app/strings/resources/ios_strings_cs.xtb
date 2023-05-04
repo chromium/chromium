@@ -377,7 +377,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3469166899695866866">Zastavit stahování?</translation>
 <translation id="3470502288861289375">Kopírování...</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{pro {COUNT} web nebo aplikaci}few{pro {COUNT} weby nebo aplikace}many{pro {COUNT} webu nebo aplikací}other{pro {COUNT} webů nebo aplikací}}</translation>
-<translation id="3474624961160222204">Pokrač. jako <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3478058380795961209">Měsíc vypršení platnosti</translation>
 <translation id="3482959374254649722">Probíhá synchronizace karet…</translation>
 <translation id="3484946776651937681">Otevřít ve složce Stažené soubory</translation>
@@ -547,7 +547,6 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="4642472735733036929">Sledování ceny bylo ukončeno</translation>
 <translation id="4650125387981512669">Pokračovat jako <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Ujistěte se, že jsou vaše hesla v bezpečí, ověřte si, zda nebyla prolomena, a nechte si poradit, jak se na internetu chránit. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Když se přihlásíte k účtu Google, tato funkce se zapne.</translation>
 <translation id="4659667755519643272">Přejít do přepínače karet</translation>
 <translation id="46614316059270592">Uložit heslo</translation>
 <translation id="4666531726415300315">Jste přihlášeni jako <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4979397965658815378">Přihlaste se pomocí účtu Google a získejte záložky, hesla, historii a další nastavení do všech svých zařízení.</translation>
 <translation id="4986678885919050584">Odstranit z tohoto zařízení</translation>
 <translation id="498985224078955265">Pokud tuto kartu chcete odeslat do jiného zařízení, na obou zařízeních se přihlaste do Chromu.</translation>
+<translation id="4996567535980789550">Pokud chcete spravovat zobrazovaný obsah, zapněte synchronizaci</translation>
 <translation id="5005498671520578047">Kopírování hesla</translation>
 <translation id="5016420433031926653">Odeslat na adresu <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Připomenout později</translation>
@@ -666,6 +666,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="543338862236136125">Upravit heslo</translation>
 <translation id="5433691172869980887">Uživatelské jméno bylo zkopírováno</translation>
 <translation id="5439599923922718668">Často navštěvované</translation>
+<translation id="5439618055789623719">Jste přihlášeni jako <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informace o zabezpečení stránky</translation>
 <translation id="5443952882982198570">Platební karty</translation>
 <translation id="5444892875087332195">Záložky</translation>
@@ -1236,6 +1237,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9034759925968272072">Nebudete odhlášeni ze svého účtu Google. Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> mohou být k dispozici další formy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="9037965129289936994">Zobrazit originál</translation>
 <translation id="9039373489628511875">Šířka pásma</translation>
+<translation id="9043368763795653245">Pokud chcete personalizovat feed Objevit a Chrome, zapněte synchronizaci.</translation>
 <translation id="9055772144595778347">Přihlášení se nezdařilo</translation>
 <translation id="9055960261314198756">Vylepšená ochrana je vypnutá</translation>
 <translation id="9057972802061533987">Sledování nelze zapnout. Něco se pokazilo.</translation>

@@ -243,7 +243,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2386938421315164605">Skrýt a znovu zobrazit témata</translation>
 <translation id="2390510615457643724">Opravdu soubor <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) chcete stáhnout znovu?</translation>
 <translation id="2394602618534698961">Zde se zobrazují stažené soubory</translation>
-<translation id="2407481962792080328">Když se přihlásíte k účtu Google, je tato funkce zapnutá</translation>
 <translation id="2410754283952462441">Vyberte účet</translation>
 <translation id="2414886740292270097">Tmavé</translation>
 <translation id="2426805022920575512">Vybrat jiný účet</translation>
@@ -300,6 +299,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="265156376773362237">Standardní předběžné načítání</translation>
 <translation id="2656405586795711023">Webové aplikace</translation>
 <translation id="2669454659051515572">Stažené soubory může vidět kdokoli, kdo používá tohle zařízení</translation>
+<translation id="2688382350024736268">Chrome nyní mezi weby a aplikacemi sdílí jen velmi omezené informace – například kdy se vám zobrazila reklama, aby weby mohly měřit výkon reklam.</translation>
 <translation id="2702516483241149200">Nové: Sdílení odkazu, který obsah posune na tento text</translation>
 <translation id="2707726405694321444">Obnovit stránku</translation>
 <translation id="271033894570825754">Nové</translation>
@@ -450,7 +450,7 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3443221991560634068">Znovu načíst aktuální stránku</translation>
 <translation id="3444179773590444986">Poskytnout zpětnou vazbu k tmavému motivu pro weby?</translation>
 <translation id="3452832259067974318">Aby Chrome chránil vaše soukromí, nebude do tohoto pole automaticky vyplňovat heslo.</translation>
-<translation id="3474624961160222204">Pokrač. jako <ph name="NAME" /></translation>
+<translation id="3474624961160222204">Pokračovat jako <ph name="NAME" /></translation>
 <translation id="3478363558367712427">Můžete si vybrat vyhledávač</translation>
 <translation id="3479552764303398839">Teď ne</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /> o navrhovaném obsahu</translation>
@@ -848,6 +848,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="562289928968387744">Spravovat reakce</translation>
 <translation id="5626134646977739690">Jméno:</translation>
 <translation id="5628604359369369630">Nepřečteno – k dispozici offline</translation>
+<translation id="5635091213277904818">Weby, které jsou starší než 30 dní, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam můžete webu také zablokovat.</translation>
 <translation id="5639724618331995626">Povolit všechny weby</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historie vyhledávání<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />další typy aktivity<ph name="END_LINK2" /> se mohou ukládat do vašeho účtu Google</translation>
 <translation id="564667659802381754">Průvodce ochranou soukromí <ph name="BEGIN_NEW" />Nové<ph name="END_NEW" /></translation>
@@ -1173,6 +1174,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7291910923717764901">Byly přidány popisy obrázků pro tuto stránku</translation>
 <translation id="7293429513719260019">Zvolte jazyk</translation>
 <translation id="729975465115245577">V zařízení není žádná aplikace, pomocí které by soubor s hesly bylo možné uložit.</translation>
+<translation id="7304072650267745798">Zařízení Android může obsahovat podobné nastavení. Pokud je toto nastavení zapnuto v Chromu a na vašem zařízení Android, společnosti mohou měřit efektivitu reklamy na webech, které navštěvujete, a v aplikacích, které používáte.</translation>
 <translation id="7304873321153398381">Offline. Chrome nemůže zkontrolovat vaše hesla.</translation>
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7332075081379534664">Přihlášení proběhlo úspěšně</translation>
@@ -1255,6 +1257,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7682724950699840886">Vyzkoušejte tyto tipy: Zajistěte, aby v zařízení byl dostatek místa a zkuste export zopakovat.</translation>
 <translation id="7686086654630106285">Další informace o reklamách navrhovaných weby</translation>
 <translation id="768618399695552958">Některé stránky, které navštěvujete, se načítají předběžně. Pokud na stránky odkazuje web Google, mohou se předběžně načíst prostřednictvím serverů Google.</translation>
+<translation id="7690596512217303514">Vaše zařízení nemohlo Chrome otevřít. Tento problém vyřešíte stažením nejnovější aktualizace Chromu z obchodu s aplikacemi.</translation>
 <translation id="7691043218961417207">Objevte obsah ke sledování</translation>
 <translation id="7697383401610880082">Úchyt pro přetažení</translation>
 <translation id="7698359219371678927">Vytvořit e-mail v aplikaci <ph name="APP_NAME" /></translation>
@@ -1366,6 +1369,7 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8209050860603202033">Otevřít obrázek</translation>
 <translation id="8216351761227087153">Sledovat</translation>
 <translation id="8218622182176210845">Správa účtu</translation>
+<translation id="8221401890884589479">Nežádoucí weby můžete zablokovat. Chrome z tohoto seznamu také automaticky odstraňuje weby, které jsou starší než 30 dní. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Nabídka karty informačního kanálu</translation>
 <translation id="8236097722223016103">Přidat do záložek</translation>
 <translation id="8250920743982581267">Dokumenty</translation>

@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Нэмэлт тохиргоо</translation>
 <translation id="2085089206770112532">Дэлгэцийн гэрэлтүүлгийг багасгах</translation>
-<translation id="209751264101900360">Үүр цайхаас шөнө хүртэл - Cloud Flow</translation>
 <translation id="2102231663024125441">Текст засах</translation>
 <translation id="2105810540595158374">Төхөөрөмж нь тоглоомын гар байна.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Жижиг программыг шинэчилж байх үед энэ гадны төхөөрөмжийг бүү салгаарай. Мөн компьютероо бүү унтраагаарай. Та энэ цонхыг багасгах боломжтой. Энэ шинэчлэлтэд хэдэн минут зарцуулж магадгүй бөгөөд энэ хугацаанд таны гадны төхөөрөмж ажиллахгүй байж магадгүй.</translation>
 <translation id="3486220673238053218">тодорхойлолт</translation>
 <translation id="3488065109653206955">Хагас идэвхжсэн</translation>
+<translation id="3502426834823382181">бүх аппыг харах</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Гүйцэтгэлийн ул мөрийн өгөгдлийг<ph name="END_LINK1" /> илгээх</translation>
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3969602104473960991">ChromeOS-н нууц үгийг шинэчилсэн</translation>
 <translation id="397105322502079400">Тооцоолж байна ...</translation>
-<translation id="3974175076798940554">Chromebook Plus-н тусгай өмчүүд одоо боломжтой</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3993704782688964914">Таны <ph name="DEVICE_NAME" /> одоо шинэчлэгдсэн</translation>
 <translation id="4003384961948020559">Амжилтгүй болсон - Гаралт дүүрсэн</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Медиа</translation>
 <translation id="4289540628985791613">Тойм</translation>
 <translation id="4289849978083912975">Слайд харуулалт</translation>
-<translation id="4293621540182258188">Үүр цайхаас шөнө хүртэл - Earth Flow</translation>
 <translation id="4297501883039923494">Зогссон - Тодорхойгүй алдаа</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> зураг</translation>
 <translation id="4311195029067684288">Бүтэн</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Дэлгэцийн гэрэлтүүлгийг нэмэгдүүлэх</translation>
 <translation id="57838592816432529">Дууг хаах</translation>
 <translation id="5784136236926853061">HTTP-н өндөр хоцролт</translation>
-<translation id="5809090008577139505">Аврора</translation>
 <translation id="5826644637650799838">Урлагийн тухай</translation>
 <translation id="5832805196449965646">Хүн нэм</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">товчны өнгө</translation>
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5916664084637901428">Асаах</translation>
-<translation id="5918201491776799918">Chromebook Plus-н онцгой постерыг сонгох</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
 <translation id="5939518447894949180">Дахин сэргээх</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Загвар</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Бараан загварыг асаах</translation>
+<translation id="6285899124799306373">эхлүүлэгчийг нээх</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> тестийг цуцалсан байна</translation>
 <translation id="631063167932043783">Аппыг судлах</translation>
 <translation id="6319207335391420837">Жижиг программыг <ph name="DEVICE_NAME" /> дээр шинэчлэх</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Дэлгэц амраагчийг урьдчилан үзэх</translation>
 <translation id="6388847657025262518">Сканнерын документ дамжуулах тавиур гацсан байна. Дамжуулах тавиурыг шалгаад, дахин оролдоно уу.</translation>
 <translation id="6394634179843537518">Файл нэмэх</translation>
+<translation id="6401427872449207797">хөтчийн хайлт</translation>
 <translation id="6410257289063177456">Зургийн файлууд</translation>
 <translation id="641081527798843608">Субъект тохируулах</translation>
 <translation id="6412715219990689313">Суурилуулсан гар</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Төхөөрөмж нь хулгана байна.</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7665800271478495366">Аватар өөрчлөх</translation>
-<translation id="7675241868020048622">Aurora (Plus-д тусгайлсан)</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
 <translation id="7701040980221191251">Тодорхойгүй</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />-г сонгох</translation>
 <translation id="8151185429379586178">Хөгжүүлэгчийн багажнууд</translation>
-<translation id="8153923300383192510">Chromebook Plus-н онцгой</translation>
 <translation id="8179976553408161302">Нэвтрэх</translation>
 <translation id="8183974620058026102">Хавсаргах</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">медиаг тоглуулах</translation>
 <translation id="8318753676953949627">Зураг байхгүй</translation>
 <translation id="8329018942023753850">тооны машин апп</translation>
+<translation id="8335869473001018124">хайлтыг нээх</translation>
 <translation id="8336739000755212683">Төхөөрөмжийн бүртгэлийн зургийг өөрчлөх</translation>
 <translation id="8347227221149377169">Хэвлэх ажлууд</translation>
 <translation id="8351855506390808906">Товч харгалзуулалтын хүрэх цэг</translation>

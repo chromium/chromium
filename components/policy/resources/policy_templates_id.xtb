@@ -319,7 +319,6 @@ Jika kebijakan ini tidak disetel, kebijakan<ph name="ASK_WINDOW_MANAGEMENT_POLIC
 
 Tindakan ini akan menggantikan kebijakan <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> yang sudah tidak digunakan lagi.</translation>
 <translation id="129206366270737897">Menonaktifkan semua metode <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> asinkron.</translation>
-<translation id="129392056654547767">Image firmware UEFI yang digunakan oleh VM. Hal ini merupakan tindakan sementara selagi kami mengemasnya sebagai DLC ChromeOS.</translation>
 <translation id="1294263471858445589">Mengaktifkan autentikasi pasif di sesi samaran dan reguler.</translation>
 <translation id="1295737447968372331">Mengaktifkan dikte di layar login</translation>
 <translation id="1297182715641689552">Gunakan skrip proxy .pac</translation>
@@ -602,7 +601,6 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Di <ph name="MS_WIN_NAME" />, fungsi ini hanya tersedia di instance yang dihubungkan ke domain <ph name="MS_AD_NAME" />, dijalankan di Windows 10 Pro, atau didaftarkan di Pengelolaan Cloud Browser Chrome. Di <ph name="MAC_OS_NAME" />, fungsi ini hanya tersedia di instance yang dikelola melalui MDM, atau dihubungkan ke domain melalui MCX.</translation>
 <translation id="1530812829012954197">Selalu urai pola URL berikut di browser host</translation>
 <translation id="1542491165152947087">Izinkan pengguna mengaktifkan atau menonaktifkan setelan Topik iklan <ph name="PRIVACY_SANDBOX_NAME" /> di perangkat mereka.</translation>
-<translation id="1547424904796464052">Hash SHA-256 dengan enkode heksadesimal pada image firmware.</translation>
 <translation id="1550295162561011575">Menyetel kebijakan ini memungkinkan administrator mengonfigurasi otomatisasi untuk meluncurkan aplikasi di perangkat <ph name="PRODUCT_NAME" />. Aplikasi ini dapat diluncurkan saat login pengguna, atau pengguna dapat meluncurkannya bersama dari peluncur.</translation>
 <translation id="1552418937045050762">Jika setelan ini diaktifkan, pengguna akan diizinkan memilih untuk menggunakan Berbagi Langsung yang memungkinkan mereka mengirim dan menerima file dari pengguna terdekat.
 
@@ -3371,13 +3369,6 @@ Kebijakan ini adalah solusi sementara dan akan dihapus dalam beberapa milestone 
 <translation id="4025500273782820766">Izinkan pengguna memilih "Selalu izinkan" untuk melewati perintah konfirmasi di waktu mendatang, jika dialog protokol eksternal muncul</translation>
 <translation id="402759845255257575">Jangan izinkan situs apa pun menjalankan JavaScript</translation>
 <translation id="4027608872760987929">Aktifkan penyedia penelusuran default</translation>
-<translation id="4027904270588278067">Menyetel kebijakan akan menyiapkan direktori yang digunakan Chrome untuk mendownload file. Kebijakan akan menggunakan direktori yang disediakan, terlepas apakah pengguna menentukan direktori atau mengaktifkan tanda untuk dimintai lokasi download setiap waktu.
-
-      Kebijakan ini menggantikan kebijakan <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-
-      Jika kebijakan tidak disetel, Chrome akan menggunakan direktori download default, dan pengguna dapat mengubahnya.
-
-      Catatan: Lihat daftar variabel yang dapat Anda gunakan ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables ).</translation>
 <translation id="4030152268425532846">Nonaktifkan pembatalan login otomatis</translation>
 <translation id="4043796890723386527">Cegah pengguna membuat dan menggunakan profil sekunder serta menggunakan mode tamu di browser <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Mengaktifkan Penghalangan Jendela</translation>
@@ -4539,19 +4530,6 @@ Jika kebijakan ini disetel ke benar (true) atau tidak disetel, pelaporan data di
 <translation id="519247340330463721">Mengonfigurasi kebijakan terkait Safe Browsing.</translation>
 <translation id="5194683382395300627">Mengizinkan penggunaan <ph name="ASSISTANT_PRODUCT_NAME" /> di web, misalnya untuk mengaktifkan perubahan sandi secara otomatis</translation>
 <translation id="5196630732055960309">Mengizinkan File Handling API di aplikasi web ini</translation>
-<translation id="5198660575318473544">Mengontrol apakah ekstensi Manifes v2 dapat digunakan di layar login <ph name="PRODUCT_OS_NAME" />.
-
-Dukungan ekstensi Manifes v2 tidak akan digunakan lagi dan semua ekstensi harus
-dimigrasikan ke v3 pada masa mendatang. Informasi selengkapnya dan linimasa migrasi
-dapat ditemukan di https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Jika kebijakan disetel ke <ph name="DEFAULT" /> (0) atau tidak disetel, pemuatan ekstensi v2 akan ditentukan oleh perangkat, mengikuti linimasa di atas.
-Jika kebijakan disetel ke <ph name="DISABLE" /> (1), penginstalan ekstensi v2 akan diblokir dan ekstensi yang ada akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel setelah dukungan v2 dinonaktifkan secara default.
-Jika kebijakan disetel ke <ph name="ENABLE" /> (2), ekstensi v2 akan diizinkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
-Jika kebijakan disetel ke <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), ekstensi v2 yang diinstal otomatis akan diizinkan. Ini termasuk ekstensi yang dicantumkan oleh <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> atau <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> dengan <ph name="INSTALLATION_MODE" /> "force_installed" atau "normal_installed". Semua ekstensi v2 lainnya akan dinonaktifkan. Opsi ini akan diperlakukan sama seperti jika kebijakan tidak disetel sebelum dukungan v2 dinonaktifkan secara default.
-
-
-Ketersediaan ekstensi masih dikontrol oleh kebijakan lainnya.</translation>
 <translation id="5206454085187851382">Jika <ph name="PRINTERS_ALLOWLIST" /> dipilih untuk <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> akan menentukan printer yang dapat digunakan oleh pengguna. Hanya printer dengan ID yang cocok dengan nilai dalam kebijakan ini yang akan tersedia bagi pengguna. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Mengonfigurasi apakah <ph name="PRODUCT_NAME" /> di Linux akan menggunakan notifikasi sistem.
 
@@ -7773,7 +7751,6 @@ juga aman.</translation>
 <translation id="802776363472387903">Hash SHA-256 gambar <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Aktifkan penyedia penelusuran default dan izinkan pengguna mengubah daftar penyedia penelusuran</translation>
 <translation id="8029201909194194377">Durasi sesi maksimum yang diizinkan untuk koneksi akses jarak jauh</translation>
-<translation id="8033908599068513676">URL image firmware untuk didownload.</translation>
 <translation id="8035570672225663428">Aktifkan model pengisian daya adaptif untuk menunda proses pengisian daya guna memperpanjang masa pakai baterai</translation>
 <translation id="8044493735196713914">Laporkan mode boot perangkat</translation>
 <translation id="8044720778481009876">Tujuan <ph name="CLOUD_PRINT_NAME" /> dan 'Simpan ke Google Drive' (Tidak digunakan lagi)</translation>
@@ -8765,6 +8742,11 @@ Jika kebijakan ini dinonaktifkan, perilaku lama akan digunakan.
 Jika kebijakan ini tidak disetel, perilaku baru akan digunakan seperti pengguna Chromium lainnya.</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
+<translation id="8961117818679701775">Kebijakan ini memungkinkan admin menentukan setelan untuk aplikasi web terinstal. Kebijakan ini memetakan ID Aplikasi Web ke setelan tertentu. Konfigurasi default dapat disetel menggunakan ID khusus <ph name="DEFAULT_SCOPE" />, yang berlaku untuk semua aplikasi web tanpa konfigurasi khusus dalam kebijakan ini.
+
+Kolom <ph name="MANIFEST_ID_FIELD" /> adalah ID Manifes untuk Aplikasi Web. Lihat <ph name="WEB_APP_ID_REFERENCE_URL" /> guna mendapatkan petunjuk cara menentukan ID Manifes untuk aplikasi web terinstal.
+Kolom <ph name="RUN_ON_OS_LOGIN_FIELD" /> menentukan apakah aplikasi web dapat dijalankan selama login OS. Jika kolom ini disetel ke <ph name="BLOCKED" />, aplikasi web tidak akan dijalankan selama login OS dan pengguna tidak akan dapat mengaktifkannya nanti. Jika kolom ini disetel ke <ph name="RUN_WINDOWED" />, aplikasi web akan dijalankan selama login OS dan pengguna tidak akan dapat menonaktifkannya nanti. Jika kolom ini disetel ke <ph name="ALLOWED" />, pengguna akan dapat mengonfigurasi aplikasi web untuk dijalankan saat login OS. Konfigurasi default hanya mengizinkan nilai <ph name="ALLOWED" /> dan <ph name="BLOCKED" />.
+(Sejak versi 115) Kolom <ph name="PREVENT_CLOSE_FIELD" /> menentukan apakah aplikasi web harus dicegah agar tidak ditutup dengan cara apa pun (mis. oleh pengguna, pengelola tugas, API web). Perilaku ini hanya dapat diaktifkan jika <ph name="RUN_ON_OS_LOGIN_FIELD" /> disetel ke <ph name="RUN_WINDOWED" />. Jika aplikasi sudah berjalan, properti ini hanya akan berlaku setelah aplikasi dimulai ulang. Jika kolom ini tidak ditentukan, aplikasi akan dapat ditutup oleh pengguna.</translation>
 <translation id="8970205333161758602">Tindas permintaan penghentian <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Memilih apakah perintah <ph name="PRIVACY_SANDBOX_NAME" /> dapat ditampilkan kepada pengguna Anda</translation>
 <translation id="8974588819713914715">Kebijakan ini tidak digunakan lagi dan tidak didukung. Sebagai gantinya, gunakan kebijakan '<ph name="URL_ALLOWLIST_POLICY_NAME" />'.</translation>

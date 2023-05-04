@@ -1057,6 +1057,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3587738293690942763">Střední</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně jeden den.}=1{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně jeden den.}few{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně {NUM_DAYS} dny.}many{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně {NUM_DAYS} dne.}other{Skupinu můžete kdykoli resetovat. Zařazení do nové skupiny trvá přibližně {NUM_DAYS} dní.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Témata a weby navrhující reklamy, které jsou starší než 30 dní, Chrome automaticky maže. Případně můžete zablokovat konkrétní témata a weby, které se vám nelíbí.</translation>
 <translation id="3603507503523709">Aplikace je blokována administrátorem</translation>
 <translation id="3605899229568538311">5 × 5″</translation>
 <translation id="3608932978122581043">Orientace podávání</translation>
@@ -1185,6 +1186,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">V nastavení Chromu můžete předvolby kdykoli upravit</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Jak můžete svá data spravovat:<ph name="END_BOLD" /> Weby, které jsou starší než 30 dní, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam pro vás můžete webu také kdykoliv zablokovat a reklamy navrhované weby můžete v nastavení Chromu kdykoliv vypnout.</translation>
 <translation id="3921869355029467742">Zadat bezpečnostní kód</translation>
 <translation id="3927932062596804919">Odmítnout</translation>
 <translation id="393316646445601645">Internet a telekomunikace</translation>
@@ -1351,6 +1353,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4287495839370498922">Vylepšená ochrana soukromí v reklamách v Chromu</translation>
 <translation id="4287885627794386150">Vhodné k testování technologie, ale neaktivní</translation>
 <translation id="4290920330097335010">Nikdy nepovolovat</translation>
+<translation id="4296207570293932800">Je k dispozici nová funkce ochrany soukromí v reklamách</translation>
 <translation id="4297502707443874121">Miniatura stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investice</translation>
 <translation id="42981349822642051">Rozbalit</translation>
@@ -1622,6 +1625,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="495170559598752135">Akce</translation>
 <translation id="4953689047182316270">Reagovat na události přístupnosti</translation>
 <translation id="4958444002117714549">Rozbalit seznam</translation>
+<translation id="4960068118612257147">Změny můžete provést v nastavení ochrany soukromí v reklamách v Chromu</translation>
 <translation id="4964505745997821360">Zdravotní pojištění</translation>
 <translation id="4968522289500246572">Tato aplikace je určena pro mobily a změna velikosti nemusí fungovat správně. V aplikaci může docházet k problémům nebo se může restartovat.</translation>
 <translation id="4968665849807487749">Může požádat o správu oken na všech obrazovkách</translation>

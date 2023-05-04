@@ -547,7 +547,6 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4642472735733036929">Verðvöktun hætt</translation>
 <translation id="4650125387981512669">Halda áfram sem <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Vertu viss um að aðgangsorðin þín séu örugg, fáðu tilkynningar ef þau eru í hættu og ráðleggingar um hvernig þú getur varið þig á netinu. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Kveikt er á þessum eiginleika þegar þú skráir þig inn á Google reikninginn þinn.</translation>
 <translation id="4659667755519643272">Fara í flipaval</translation>
 <translation id="46614316059270592">Vista aðgangsorð</translation>
 <translation id="4666531726415300315">Innskráð(ur) sem <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4979397965658815378">Skráðu þig inn með Google reikningnum þínum til að fá bókamerkin þín, ferilinn, aðgangsorð og aðrar stillingar í öll tækin þín</translation>
 <translation id="4986678885919050584">Fjarlægja úr þessu tæki</translation>
 <translation id="498985224078955265">Til að senda þennan flipa í annað tæki þarftu að skrá þig inn í Chrome í báðum tækjum.</translation>
+<translation id="4996567535980789550">Kveiktu á samstillingu til að stjórna efninu sem þú sérð</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5016420433031926653">Senda til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Minna mig á seinna</translation>
@@ -666,6 +666,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="543338862236136125">Breyta aðgangsorði</translation>
 <translation id="5433691172869980887">Notandanafn afritað</translation>
 <translation id="5439599923922718668">Oft skoðað</translation>
+<translation id="5439618055789623719">Skráð(ur) inn sem <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Öryggisupplýsingar síðu</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
 <translation id="5444892875087332195">Bókamerki</translation>
@@ -1236,6 +1237,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9034759925968272072">Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil á <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Sýna frumtexta</translation>
 <translation id="9039373489628511875">Bandvídd</translation>
+<translation id="9043368763795653245">Til að sérsníða Chrome og strauminn „Tillögur“ skaltu kveikja á samstillingu.</translation>
 <translation id="9055772144595778347">Innskráning tókst ekki</translation>
 <translation id="9055960261314198756">Slökkt er á aukinni vörn</translation>
 <translation id="9057972802061533987">Ekki er hægt að fylgja. Eitthvað fór úrskeiðis.</translation>

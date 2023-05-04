@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Ezarpen gehiago</translation>
 <translation id="2085089206770112532">Pantailaren distira jaisteko tekla</translation>
-<translation id="209751264101900360">Egunsentitik ilunabarrera: hodeien fluxua</translation>
 <translation id="2102231663024125441">Testuak editatzea</translation>
 <translation id="2105810540595158374">Gailua bideo-jokoen kontrolagailu bat da.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> bertsioa</translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Firmwarea eguneratu bitartean, ez deskonektatu kanpoko gailua edo ez itzali ordenagailua. Leihoa minimiza dezakezu. Agian minutu batzuk beharko dira eguneratzea instalatzeko, eta baliteke kanpoko gailuak denbora tarte horretan ez funtzionatzea.</translation>
 <translation id="3486220673238053218">definizioa</translation>
 <translation id="3488065109653206955">Partzialki aktibatuta</translation>
+<translation id="3502426834823382181">ikusi aplikazio guztiak</translation>
 <translation id="3510890413042482857">Bidali <ph name="BEGIN_LINK1" />errendimenduaren jarraipena egiteko datuak<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-ren eguneratzea</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Deskargatzen amaitu da</translation>
 <translation id="3969602104473960991">Eguneratu da Chrome OS-ko pasahitza</translation>
 <translation id="397105322502079400">Kalkulatzen…</translation>
-<translation id="3974175076798940554">Chromebook Plus-en baliabide esklusiboak eskuragai</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> egun baino gehiagoko inprimatze-lanak kendu egingo dira</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eguneratuta dago</translation>
 <translation id="4003384961948020559">Hutsegitea - Irteera-erretilua beteta dago</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Multimedia-edukia</translation>
 <translation id="4289540628985791613">Ikuspegi orokorra</translation>
 <translation id="4289849978083912975">Diapositiba-aurkezpena</translation>
-<translation id="4293621540182258188">Egunsentitik ilunabarrera: lurraren fluxua</translation>
 <translation id="4297501883039923494">Geldituta: errore ezezaguna</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> irudi</translation>
 <translation id="4311195029067684288">Osoa</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Pantailaren distira igotzeko tekla</translation>
 <translation id="57838592816432529">Desaktibatu audioa</translation>
 <translation id="5784136236926853061">HTTP eskaeren latentzia luzea da</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Artelanari buruz</translation>
 <translation id="5832805196449965646">Gehitu pertsona bat</translation>
 <translation id="583281660410589416">Ezezaguna</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">teklen kolorea</translation>
 <translation id="5916084858004523819">Debekatuta</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
-<translation id="5918201491776799918">Hautatu Chromebook Plus-eko artelan esklusiboak</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fitxategia eskaneatu da, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}other{Fitxategiak eskaneatu dira, eta <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> karpetan gorde.}}</translation>
 <translation id="5931523347251946569">Ez da aurkitu fitxategia</translation>
 <translation id="5939518447894949180">Berrezarri</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Gaia</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktibatu gai iluna</translation>
+<translation id="6285899124799306373">ireki Exekutatzeko tresna</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> neurtzeko proba bertan behera utzi da</translation>
 <translation id="631063167932043783">"Arakatu" aplikazioa</translation>
 <translation id="6319207335391420837">Eguneratu firmwarea <ph name="DEVICE_NAME" /> gailuan</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Pantaila-babeslearen aurrebista</translation>
 <translation id="6388847657025262518">Eskanerraren dokumentu-elikatzailea trabatuta dago. Egiazta ezazu eta saiatu berriro.</translation>
 <translation id="6394634179843537518">Gehitu fitxategi bat</translation>
+<translation id="6401427872449207797">bilatu arakatzailearekin</translation>
 <translation id="6410257289063177456">Irudi-fitxategiak</translation>
 <translation id="641081527798843608">Gaiaren bat-etortzea</translation>
 <translation id="6412715219990689313">Teklatu integratua</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Gailua sagu bat da.</translation>
 <translation id="7658239707568436148">Utzi</translation>
 <translation id="7665800271478495366">Aldatu abatarra</translation>
-<translation id="7675241868020048622">Aurora (plus esklusiboa)</translation>
 <translation id="7690294790491645610">Berretsi pasahitz berria</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7705524343798198388">VPNa</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Hautatu <ph name="TOPIC_SOURCE" /> zerbitzuko <ph name="TOPIC_SOURCE_DESC" /> aukera</translation>
 <translation id="8151185429379586178">Garatzaileen tresnak</translation>
-<translation id="8153923300383192510">Chromebook Plus-eko esklusiboak</translation>
 <translation id="8179976553408161302">Sartu</translation>
 <translation id="8183974620058026102">Erantsi</translation>
 <translation id="8206859287963243715">Konexio mugikorra</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">erreproduzitu multimedia-edukia</translation>
 <translation id="8318753676953949627">Ez dago irudirik</translation>
 <translation id="8329018942023753850">kalkulagailua aplikazioa</translation>
+<translation id="8335869473001018124">ireki bilaketa-eremua</translation>
 <translation id="8336739000755212683">Aldatu gailuko kontuaren irudia</translation>
 <translation id="8347227221149377169">Inprimatze-lanak</translation>
 <translation id="8351855506390808906">Teklak esleitzeko ukipen-puntua</translation>

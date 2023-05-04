@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="100506692671054486">前のコマンドがありません</translation>
 <translation id="1009046985747440431">上または下矢印キーで移動し、Enter キーで有効にします</translation>
 <translation id="1011903154582639569">キーを探し、見つかったら指を離して入力します</translation>
 <translation id="1012173283529841972">リスト項目</translation>

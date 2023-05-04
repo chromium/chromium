@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Іншыя налады</translation>
 <translation id="2085089206770112532">Паменшыць яркасць дысплэя</translation>
-<translation id="209751264101900360">Ад зары да цемры. Цячэнне аблокаў</translation>
 <translation id="2102231663024125441">Рэдагаванне тэксту</translation>
 <translation id="2105810540595158374">Гэта гульнявы кантролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Падчас абнаўлення ўбудаванага ПЗ не адключайце знешнюю прыладу і не выключайце камп'ютар. Гэта акно можна згарнуць. Абнаўленне зойме некалькі хвілін, і падчас яго знешняя прылада можа не працаваць.</translation>
 <translation id="3486220673238053218">азначэнне</translation>
 <translation id="3488065109653206955">Часткова актывавана</translation>
+<translation id="3502426834823382181">паглядзець усе праграмы</translation>
 <translation id="3510890413042482857">Адпраўляць <ph name="BEGIN_LINK1" />даныя адсочвання прадукцыйнасці<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="3969602104473960991">Пароль Chrome OS зменены</translation>
 <translation id="397105322502079400">Ідзе разлік...</translation>
-<translation id="3974175076798940554">Даступныя эксклюзіўныя функцыі Chromebook плюс</translation>
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
 <translation id="3993704782688964914">Прылада "<ph name="DEVICE_NAME" />" абноўлена</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Мультымедыя</translation>
 <translation id="4289540628985791613">Агляд</translation>
 <translation id="4289849978083912975">Слайд-шоу</translation>
-<translation id="4293621540182258188">Ад зары да цемры. Цячэнне Зямлі</translation>
 <translation id="4297501883039923494">Спынена: невядомая памылка</translation>
 <translation id="4300073214558989">Відарысаў: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4311195029067684288">Поўнасцю</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Павялічыць яркасць дысплэя</translation>
 <translation id="57838592816432529">Выключыць</translation>
 <translation id="5784136236926853061">Вялікая затрымка HTTP-запытаў</translation>
-<translation id="5809090008577139505">Палярнае ззянне</translation>
 <translation id="5826644637650799838">Інфармацыя аб ілюстрацыі</translation>
 <translation id="5832805196449965646">Дадаць карыстальніка</translation>
 <translation id="583281660410589416">Невядома</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">колер клавіш</translation>
 <translation id="5916084858004523819">Забароненая</translation>
 <translation id="5916664084637901428">Уключана</translation>
-<translation id="5918201491776799918">Выбраныя эксклюзіўныя творы Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Сканіраванне завершана. Файл захаваны ў папку <ph name="LINK_BEGIN" />"<ph name="FOLDER_NAME" />"<ph name="LINK_END" />.}one{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Сканіраванне завершана. Файлы захаваны ў папку <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не знойдзены</translation>
 <translation id="5939518447894949180">Скінуць</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Тэма</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Уключыць цёмную тэму</translation>
+<translation id="6285899124799306373">адкрыць панэль запуску</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />: тэст скасаваны</translation>
 <translation id="631063167932043783">Праграма "Агляд"</translation>
 <translation id="6319207335391420837">Абнаўленне ўбудаванага ПЗ прылады "<ph name="DEVICE_NAME" />"</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Перадпрагляд застаўкі</translation>
 <translation id="6388847657025262518">Заела прыстасаванне сканера для падачы дакументаў. Праверце прыстасаванне і паўтарыце спробу.</translation>
 <translation id="6394634179843537518">Дадайце файл</translation>
+<translation id="6401427872449207797">пошук у браўзеры</translation>
 <translation id="6410257289063177456">Файлы відарысаў</translation>
 <translation id="641081527798843608">Супадзенне суб'екта</translation>
 <translation id="6412715219990689313">Убудаваная клавіятура</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Гэта мыш.</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
 <translation id="7665800271478495366">Змяніць аватар</translation>
-<translation id="7675241868020048622">Aurora (толькі на прыладах Plus)</translation>
 <translation id="7690294790491645610">Пацвердзіце новы пароль</translation>
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Выбраць <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Інструменты распрацоўшчыкаў</translation>
-<translation id="8153923300383192510">Эксклюзіўна для Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Далучыць</translation>
 <translation id="8206859287963243715">Мабільная сетка</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">прайграць медыязмесціва</translation>
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8329018942023753850">праграма "Калькулятар"</translation>
+<translation id="8335869473001018124">адкрыць пошук</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
 <translation id="8347227221149377169">Заданні друку</translation>
 <translation id="8351855506390808906">Кропка дотыку для вызначэння клавіш</translation>

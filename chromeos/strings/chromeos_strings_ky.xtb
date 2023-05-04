@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Дагы параметрлер</translation>
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
-<translation id="209751264101900360">Таңдан баштап караңгыга чейин - Булут</translation>
 <translation id="2102231663024125441">Текстти оңдоо</translation>
 <translation id="2105810540595158374">Түзмөк — оюнду көзөмөлдөгүч.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Орнотулган программа жаңыртылып жатканда, тышкы түзмөктү ажыратпаңыз же компьютерди өчүрбөңүз. Бул терезени кичирейтип койсоңуз болот. Жаңыртуу бир нече мүнөткө созулуп, ал эми тышкы түзмөгүңүз бул убакытта иштебеши мүмкүн.</translation>
 <translation id="3486220673238053218">аныктама</translation>
 <translation id="3488065109653206955">Жарым-жартылай жандырылган</translation>
+<translation id="3502426834823382181">бардык колдонмолорду көрүү</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Жаздырылган майнаптуулук маалыматын<ph name="END_LINK1" /> жөнөтүү</translation>
 <translation id="3517001332549868749">ChromeOS жаңыртуусу</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3969602104473960991">ChromeOS сырсөзү өзгөрдү</translation>
 <translation id="397105322502079400">Эсептелүүдө…</translation>
-<translation id="3974175076798940554">Эми эксклюзивдүү Chromebook Plus объекттери жеткиликтүү</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күндөн мурунку басып чыгаруу тапшырмалары өчүрүлөт</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> түзмөгүңүз жаңыртылды</translation>
 <translation id="4003384961948020559">Басылып чыгарылган жок - Барактар тактасы толук</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Медиа</translation>
 <translation id="4289540628985791613">Сереп салуу</translation>
 <translation id="4289849978083912975">Слайдшоу</translation>
-<translation id="4293621540182258188">Таңдан баштап караңгыга чейин - Жер</translation>
 <translation id="4297501883039923494">Токтоду – Белгисиз ката</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> сүрөт</translation>
 <translation id="4311195029067684288">Толук</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Дисплейдин жарыктыгын көбөйтүү</translation>
 <translation id="57838592816432529">Үнсүз</translation>
 <translation id="5784136236926853061">HTTP күтүү убакыты жогору</translation>
-<translation id="5809090008577139505">Уюл шооласы</translation>
 <translation id="5826644637650799838">Көркөм өнөр жөнүндө</translation>
 <translation id="5832805196449965646">Адам кошуу</translation>
 <translation id="583281660410589416">Белгисиз</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">баскычтын түсү</translation>
 <translation id="5916084858004523819">Тыюу салынат</translation>
 <translation id="5916664084637901428">Күйүк</translation>
-<translation id="5918201491776799918">Chromebook Plus үчүн эксклюзивдүү сүрөттү тандоо</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}other{Файлдар ийгиликтүү скандалып, <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> папкасына сакталды.}}</translation>
 <translation id="5931523347251946569">Файл табылган жок</translation>
 <translation id="5939518447894949180">Кайра коюу</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Караңгы теманы күйгүзүү</translation>
+<translation id="6285899124799306373">жүргүзгүчтү ачуу</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> сыноосу жокко чыгарылды</translation>
 <translation id="631063167932043783">Мүмкүнчүлүктөр колдонмосу</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> түзмөгүндө орнотулган программаны жаңыртуу</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Көшөгөнү алдын ала көрүү</translation>
 <translation id="6388847657025262518">Сканердин документ түрмөгү такалып калды. Түрмөктү текшерип, кайра аракет кылыңыз.</translation>
 <translation id="6394634179843537518">Файл кошуу</translation>
+<translation id="6401427872449207797">серепчиден издөө</translation>
 <translation id="6410257289063177456">Сүрөт файлдары</translation>
 <translation id="641081527798843608">Темасы дал келди</translation>
 <translation id="6412715219990689313">Кыстарылган баскычтоп</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Түзмөк — чычкан.</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7665800271478495366">Аватарды өзгөртүү</translation>
-<translation id="7675241868020048622">Aurora (Plus үчүн)</translation>
 <translation id="7690294790491645610">Жаңы сырсөздү ырастаңыз</translation>
 <translation id="7701040980221191251">Эч бир</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> тандоо</translation>
 <translation id="8151185429379586178">Иштеп чыгуучунун куралдары</translation>
-<translation id="8153923300383192510">Chromebook Plus үчүн эксклюзивдүү</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Тиркөө</translation>
 <translation id="8206859287963243715">Уюктук</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">медианы ойнотуу</translation>
 <translation id="8318753676953949627">Сүрөттөр жок</translation>
 <translation id="8329018942023753850">эсептегич колдонмосу</translation>
+<translation id="8335869473001018124">издөөнү ачуу</translation>
 <translation id="8336739000755212683">Түзмөктөгү аккаунттун сүрөтүн өзгөртүү</translation>
 <translation id="8347227221149377169">Басып чыгаруу тапшырмалары</translation>
 <translation id="8351855506390808906">Баскычтарды дайындоо үчүн тийүү чекити</translation>

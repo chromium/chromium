@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Cilësime të tjera</translation>
 <translation id="2085089206770112532">Ulja e ndriçimit të ekranit</translation>
-<translation id="209751264101900360">Nga agimi në muzg - lëvizja e reve</translation>
 <translation id="2102231663024125441">Redaktimi i tekstit</translation>
 <translation id="2105810540595158374">Pajisja është një kontrollues loje.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioni <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Mos e shkëput këtë pajisje të jashtme dhe mos e fik kompjuterin gjatë përditësimit të firmuerit. Mund ta minimizosh këtë dritare. Ky përditësim mund të zgjasë disa minuta dhe pajisja jote e jashtme mund të mos funksionojë gjatë kësaj kohe.</translation>
 <translation id="3486220673238053218">përkufizimi</translation>
 <translation id="3488065109653206955">I aktivizuar pjesërisht</translation>
+<translation id="3502426834823382181">shiko të gjitha aplikacionet</translation>
 <translation id="3510890413042482857">Dërgo <ph name="BEGIN_LINK1" />të dhënat e gjurmimit të performancës<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Përditësim: ChromeOS</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Shkarkimi përfundoi</translation>
 <translation id="3969602104473960991">Fjalëkalimi i ChromeOS u përditësua</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
-<translation id="3974175076798940554">Tani ofrohen elemente ekskluzive të Chromebook Plus</translation>
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> tani është përditësuar</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Përmbledhje</translation>
 <translation id="4289849978083912975">Shfaqje me rrëshqitje</translation>
-<translation id="4293621540182258188">Nga agimi në muzg - lëvizja e Tokës</translation>
 <translation id="4297501883039923494">Ndaloi - Gabim i panjohur</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imazhe</translation>
 <translation id="4311195029067684288">I plotë</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Ngritja e ndriçimit të ekranit</translation>
 <translation id="57838592816432529">Hiqi zërin</translation>
 <translation id="5784136236926853061">Vonesë shumë e lartë e HTTP-së</translation>
-<translation id="5809090008577139505">Agimi polar</translation>
 <translation id="5826644637650799838">Rreth artit</translation>
 <translation id="5832805196449965646">Shto person</translation>
 <translation id="583281660410589416">E panjohur</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">ngjyra e tastit</translation>
 <translation id="5916084858004523819">E ndaluar</translation>
 <translation id="5916664084637901428">Aktiv</translation>
-<translation id="5918201491776799918">Zgjidh ilustrimin ekskluziv të Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skedari yt është skanuar dhe është ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skedarët e tu janë skanuar dhe janë ruajtur me sukses në <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skedari nuk u gjet</translation>
 <translation id="5939518447894949180">Rivendos</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Aktivizo temën e errët</translation>
+<translation id="6285899124799306373">hap nisësin</translation>
 <translation id="6302401976930124515">Testi "<ph name="TEST_NAME" />" është anuluar</translation>
 <translation id="631063167932043783">Aplikacioni "Eksploro"</translation>
 <translation id="6319207335391420837">Përditëso firmuerin në <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Pamja paraprake e mbrojtësit të ekranit</translation>
 <translation id="6388847657025262518">Furnizuesi i dokumenteve i skanerit është bllokuar. Kontrollo furnizuesin dhe provo përsëri.</translation>
 <translation id="6394634179843537518">Shto një skedar</translation>
+<translation id="6401427872449207797">kërkimi në shfletues</translation>
 <translation id="6410257289063177456">Skedarët e imazheve</translation>
 <translation id="641081527798843608">Përputhja e subjektit</translation>
 <translation id="6412715219990689313">Tastiera e integruar</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Pajisja është një maus.</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665800271478495366">Ndrysho simbolin</translation>
-<translation id="7675241868020048622">Aurora (ekskluzivisht për Plus)</translation>
 <translation id="7690294790491645610">Konfirmo fjalëkalimin e ri</translation>
 <translation id="7701040980221191251">Asnjë</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Zgjidh "<ph name="TOPIC_SOURCE_DESC" />" nga "<ph name="TOPIC_SOURCE" />"</translation>
 <translation id="8151185429379586178">Mjetet e zhvilluesit</translation>
-<translation id="8153923300383192510">Ekskluzive për Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Bashkëngjit</translation>
 <translation id="8206859287963243715">Rrjeti celular</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">luaj median</translation>
 <translation id="8318753676953949627">Nuk ka imazhe</translation>
 <translation id="8329018942023753850">aplikacioni i makinës llogaritëse</translation>
+<translation id="8335869473001018124">hap kërkimin</translation>
 <translation id="8336739000755212683">Ndrysho imazhin e llogarisë së pajisjes</translation>
 <translation id="8347227221149377169">Printimet</translation>
 <translation id="8351855506390808906">Pika e prekjes për organizimin e tasteve</translation>

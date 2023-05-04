@@ -1060,6 +1060,7 @@
 <translation id="3587738293690942763">보통</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}=1{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 하루 정도가 소요됩니다.}other{언제든지 그룹을 재설정할 수 있습니다. 새 그룹에 참여하는 데 {NUM_DAYS}일이 소요됩니다.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome에서는 30일이 지난 광고를 추천하는 주제 및 사이트를 자동 삭제합니다. 원하지 않는 특정 주제 및 사이트를 차단할 수도 있습니다.</translation>
 <translation id="3603507503523709">관리자가 차단한 애플리케이션</translation>
 <translation id="3605899229568538311">5x5인치</translation>
 <translation id="3608932978122581043">종이 공급 방향</translation>
@@ -1189,6 +1190,7 @@
 <translation id="3906954721959377182">태블릿</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다.</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> Chrome에서는 30일이 지난 사이트를 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 또한 Chrome 설정에서 광고를 추천하지 못하도록 언제든지 특정 사이트를 차단하고 사이트 추천 광고 설정을 사용 중지할 수 있습니다.</translation>
 <translation id="3921869355029467742">보안 코드 입력하기</translation>
 <translation id="3927932062596804919">거부</translation>
 <translation id="393316646445601645">인터넷 및 전기 통신</translation>
@@ -1355,6 +1357,7 @@
 <translation id="4287495839370498922">Chrome의 개선된 광고 개인 정보 보호</translation>
 <translation id="4287885627794386150">무료 체험을 이용할 수 있으나 활성화되어 있지 않음</translation>
 <translation id="4290920330097335010">허용 안함</translation>
+<translation id="4296207570293932800">새로운 광고 개인 정보 보호 기능 사용 가능</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> 페이지 미리보기 이미지</translation>
 <translation id="4298000214066716287">투자</translation>
 <translation id="42981349822642051">펼치기</translation>
@@ -1626,6 +1629,7 @@
 <translation id="495170559598752135">작업</translation>
 <translation id="4953689047182316270">접근성 이벤트에 응답</translation>
 <translation id="4958444002117714549">펼치기 목록</translation>
+<translation id="4960068118612257147">Chrome 광고 개인 정보 보호 설정에서 변경할 수 있습니다.</translation>
 <translation id="4964505745997821360">건강보험</translation>
 <translation id="4968522289500246572">모바일용 앱이므로 크기가 제대로 조절되지 않을 수도 있습니다. 문제가 발생하거나 앱이 다시 시작될 수 있습니다.</translation>
 <translation id="4968665849807487749">모든 디스플레이의 창 관리를 허용할지 확인할 수 있음</translation>

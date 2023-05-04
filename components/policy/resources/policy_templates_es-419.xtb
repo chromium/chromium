@@ -319,7 +319,6 @@ Si no la estableces, se aplicará la política <ph name="ASK_WINDOW_MANAGEMENT_P
 
 Esto reemplaza la política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />, que dejó de estar disponible.</translation>
 <translation id="129206366270737897">Inhabilitar cualquier método asíncrono de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /></translation>
-<translation id="129392056654547767">La imagen de firmware UEFI que usa la VM. Esto existe como una medida temporal mientras se empaqueta como un DLC de ChromeOS.</translation>
 <translation id="1294263471858445589">Permite la autenticación ambiental en sesiones comunes y de incógnito.</translation>
 <translation id="1295737447968372331">Habilita la función de dictado en la pantalla de acceso</translation>
 <translation id="1297182715641689552">Usar un script para proxy .pac</translation>
@@ -603,7 +602,6 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       En <ph name="MS_WIN_NAME" />, esta funcionalidad solo está disponible en instancias vinculadas a un dominio de <ph name="MS_AD_NAME" />, que se ejecuten en Windows 10 Pro o inscritas en la Administración en la nube para el navegador Chrome. En <ph name="MAC_OS_NAME" />, esta funcionalidad solo está disponible en instancias administradas mediante MDM o vinculadas a un dominio a través de MCX.</translation>
 <translation id="1530812829012954197">Siempre procesar los siguientes patrones de direcciones URL en el navegador del host</translation>
 <translation id="1542491165152947087">Permitir que los usuarios activen o desactiven la configuración de <ph name="PRIVACY_SANDBOX_NAME" /> de temas de anuncios en sus dispositivos</translation>
-<translation id="1547424904796464052">Hash SHA-256 con codificación hexadecimal de la imagen de firmware.</translation>
 <translation id="1550295162561011575">Si estableces esta política, los administradores podrán configurar la automatización de la ejecución de apps en dispositivos <ph name="PRODUCT_NAME" />. Estas apps se pueden ejecutar con el acceso del usuario, o los usuarios pueden ejecutarlas juntas desde el selector.</translation>
 <translation id="1552418937045050762">Si habilitas esta configuración, los usuarios podrán activar la función Compartir con Nearby, lo que les permitirá enviar archivos a personas cercanas y recibirlos.
 
@@ -3364,13 +3362,6 @@ Esta política es una solución temporal y se quitará en algunos momentos impor
 <translation id="4025500273782820766">Permitir que los usuarios seleccionen "Permitir siempre" cuando se muestra un diálogo de protocolo externo para omitir futuros mensajes de confirmación</translation>
 <translation id="402759845255257575">No permitir que los sitios ejecuten JavaScript.</translation>
 <translation id="4027608872760987929">Habilitar el proveedor de búsqueda predeterminado</translation>
-<translation id="4027904270588278067">Si estableces la política, se configurará el directorio que usa Chrome para descargar archivos. Utilizará el directorio proporcionado ya sea que los usuarios hayan especificado uno o no, o activado la marca para que siempre se les pregunte dónde quieren realizar las descargas.
-
-      Esta política anula la política <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-
-      Si no estableces la política, Chrome utilizará el directorio de descarga predeterminado y los usuarios podrán cambiarlo.
-
-      Nota: Consulta la lista de las variables que puedes utilizar (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4030152268425532846">Inhabilitar el rescate de acceso automático</translation>
 <translation id="4043796890723386527">Impedir que los usuarios creen o utilicen perfiles secundarios o usen el modo de invitado en el navegador <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Habilita la oclusión de ventanas</translation>
@@ -4531,19 +4522,6 @@ Si no se establece esta política o se establece como verdadera, los informes so
 <translation id="519247340330463721">Configura las políticas relacionadas con la Navegación segura.</translation>
 <translation id="5194683382395300627">Permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web, p. ej., para habilitar el cambio automático de contraseñas</translation>
 <translation id="5196630732055960309">Permitir la API de File Handling en esas aplicaciones web</translation>
-<translation id="5198660575318473544">Controla si se pueden usar extensiones de Manifest V2 en la pantalla de acceso de <ph name="PRODUCT_OS_NAME" />.
-
-La compatibilidad con extensiones de Manifest V2 dejará de estar disponible y todas las extensiones deberán
-migrar a V3 en el futuro. Para obtener más información y el cronograma de
-migración, consulta https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Si estableces la política como <ph name="DEFAULT" /> (0) o no la estableces, el dispositivo determinará las cargas de las extensiones de V2, de acuerdo con el cronograma que se indica más arriba.
-Si estableces la política como <ph name="DISABLE" /> (1), se bloqueará la instalación de extensiones de V2 y se inhabilitarán las extensiones existentes. La opción se tratará de la misma manera que si no estableces la política después de que la compatibilidad con V2 se desactive de forma predeterminada.
-Si estableces la política como <ph name="ENABLE" /> (2), se permitirán las extensiones de V2. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con V2 se desactive de forma predeterminada.
-Si estableces la política como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), se permitirán las extensiones de V2 instaladas de manera automática. Esto incluye las extensiones que aparecen en la lista de <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o de <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Todas las demás extensiones de V2 están inhabilitadas. La opción se tratará de la misma manera que si no estableces la política antes de que la compatibilidad con V2 se desactive de forma predeterminada.
-
-
-La disponibilidad de las extensiones aún se controla mediante otras políticas.</translation>
 <translation id="5206454085187851382">Si eliges <ph name="PRINTERS_ALLOWLIST" /> para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> especificará las impresoras que podrán utilizar los usuarios. El usuario solo podrá acceder a las impresoras cuyos ID coincidan con los valores en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Configura si <ph name="PRODUCT_NAME" /> en Linux usará notificaciones del sistema.
 
@@ -7770,7 +7748,6 @@ también es seguro.</translation>
 <translation id="802776363472387903">El hash SHA-256 de la imagen del <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Habilitar el proveedor de búsqueda predeterminado y permitir que los usuarios modifiquen la lista de proveedores de búsqueda</translation>
 <translation id="8029201909194194377">Duración máxima de la sesión que se permite para las conexiones de acceso remoto</translation>
-<translation id="8033908599068513676">URL de la imagen de firmware que se descargará.</translation>
 <translation id="8035570672225663428">Habilitar el modelo de carga adaptable para detener el proceso de carga y así extender la duración de la batería</translation>
 <translation id="8044493735196713914">Modo de notificación de inicio de dispositivo</translation>
 <translation id="8044720778481009876">Destinos: <ph name="CLOUD_PRINT_NAME" /> y "Guardar en Google Drive" (obsoleta)</translation>
@@ -8784,6 +8761,11 @@ Si se inhabilita, se utilizará el comportamiento anterior.
 Si no se establece, se usará el comportamiento nuevo al igual que en el resto de los usuarios de Chromium.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
+<translation id="8961117818679701775">Esta política permite que un administrador especifique la configuración para las apps web instaladas. Esta política asigna una ID de app web a su parámetro de configuración específico. Es posible establecer una configuración predeterminada usando la ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las apps web que no tengan una configuración personalizada en esta política.
+
+El campo <ph name="MANIFEST_ID_FIELD" /> es la ID del manifiesto para la app web. Consulta <ph name="WEB_APP_ID_REFERENCE_URL" /> a fin de obtener instrucciones para determinar la ID del manifiesto correspondiente a una app web instalada.
+El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una app web puede ejecutarse durante el acceso al SO. Si estableces este campo como <ph name="BLOCKED" />, no se ejecutará la app web durante el acceso al SO, y el usuario no podrá habilitar esta acción más tarde. Si estableces este campo como <ph name="RUN_WINDOWED" />, se ejecutará la app web durante el acceso al SO, y el usuario no podrá inhabilitar esta acción más tarde. Si estableces este campo como <ph name="ALLOWED" />, el usuario podrá configurar la app web para que se ejecute durante el acceso al SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
+(A partir de la versión 115) El campo <ph name="PREVENT_CLOSE_FIELD" /> especifica si se debe impedir que una app web se cierre de alguna forma (p. ej., por el usuario, el administrador de tareas o las APIs web). Este comportamiento solo se puede habilitar si estableces <ph name="RUN_ON_OS_LOGIN_FIELD" /> como <ph name="RUN_WINDOWED" />. Si la app ya se estaba ejecutando, esta propiedad solo se aplicará cuando se reinicie la app. Si no se define este campo, los usuarios podrán cerrar las apps.</translation>
 <translation id="8970205333161758602">Elimina el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8973579598359969188">Elegir si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
 <translation id="8974588819713914715">Esta política dejó de estar disponible y ya no se admite. En su lugar, usa la política "<ph name="URL_ALLOWLIST_POLICY_NAME" />".</translation>

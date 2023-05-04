@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="100506692671054486">이전 명령어 없음</translation>
 <translation id="1009046985747440431">이동하려면 위쪽 또는 아래쪽 화살표를 누르고, 활성화하려면 Enter를 누르세요.</translation>
 <translation id="1011903154582639569">키를 찾은 다음 손가락을 떼서 입력하세요.</translation>
 <translation id="1012173283529841972">목록 항목</translation>
@@ -460,6 +461,7 @@
 <translation id="3936394396199829062">라벤더 블러시</translation>
 <translation id="3943857333388298514">붙여넣기</translation>
 <translation id="3962990492275676168">현재 위치부터 읽기 시작</translation>
+<translation id="397094149579293440">선택된 텍스트가 없습니다.</translation>
 <translation id="3970951409746498040">샌디 브라운</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">모카신</translation>
@@ -566,6 +568,7 @@
 <translation id="4786285211967466855">이전 수준 1 제목이 없습니다</translation>
 <translation id="4787577491510559358">현재 항목의 서식을 음성으로 안내합니다.</translation>
 <translation id="479989351350248267">검색</translation>
+<translation id="4802034228771424756">포커스가 지정된 텍스트 필드가 없습니다.</translation>
 <translation id="4804818685124855865">연결 해제</translation>
 <translation id="481165870889056555">현재 페이지의 제목 알림</translation>
 <translation id="4815668758102003883">페일 터코이즈</translation>
@@ -588,13 +591,16 @@
 <translation id="489907760999452556">내부 링크</translation>
 <translation id="4909019435900810068">한 단어 뒤로 이동</translation>
 <translation id="4911349081560453449">이전 체크박스가 없습니다</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" />할 수 없습니다. 다시 시도해 주세요.</translation>
 <translation id="492295894462528572">서문</translation>
 <translation id="495046168593986294">위로 스크롤</translation>
 <translation id="495170559598752135">작업</translation>
 <translation id="4953585991029886728">텍스트 수정</translation>
+<translation id="4964701498510730546">텍스트 필드가 비어 있습니다.</translation>
 <translation id="4973717656530883744">최소 <ph name="X" /></translation>
 <translation id="4974612477719259470">이전 버튼이 없습니다</translation>
 <translation id="4979404613699303341">이전 버튼</translation>
+<translation id="4981239367072766915">입력을 인식할 수 없습니다.</translation>
 <translation id="4982917827052020884">평소 사용하는 몇 가지 키부터 시작해 보겠습니다. Ctrl 키는 현재 음성을 중지하는 데 사용할 수 있습니다. 키보드 왼쪽 하단에서 Ctrl 키를 찾아보세요. 계속하려면 Ctrl 키를 누르세요.</translation>
 <translation id="4983588134362688868">페이지 처음으로 이동</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, 창</translation>
@@ -602,6 +608,7 @@
 <translation id="4994420463726586413">현재 배터리 상태를 음성으로 안내합니다.</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, 라디오 버튼이 선택됨</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, 메뉴 항목 라디오 버튼 선택됨</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" />할 수 없습니다. <ph name="REASON" /></translation>
 <translation id="5020651427400641814">음성 로깅 사용</translation>
 <translation id="5041394372352067729">점자 디스플레이를 페이지 상단으로 이동합니다.</translation>
 <translation id="5042770794184672516">음성 볼륨 높이기</translation>

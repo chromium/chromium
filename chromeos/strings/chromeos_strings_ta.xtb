@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">மேலும் அமைப்புகள்</translation>
 <translation id="2085089206770112532">காட்சி ஒளிர்வைக் குறைக்கும்</translation>
-<translation id="209751264101900360">விடியல் முதல் இரவு வரை - கிளவுடு ஃப்ளோ</translation>
 <translation id="2102231663024125441">வார்த்தைகளைத் திருத்துதல்</translation>
 <translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">நிலைபொருளைப் புதுப்பிக்கும்போது இந்த வெளிப்புறச் சாதனத்தின் இணைப்பைத் துண்டிக்கவோ உங்கள் கம்ப்யூட்டரை ஷட் டவுன் செய்யவோ கூடாது. இந்தச் சாளரத்தைச் சிறிதாக்கிக்கொள்ளலாம். இந்தப் புதுப்பிப்பு நிறைவடைய சில நிமிடங்கள் ஆகலாம். அதுவரை உங்கள் வெளிப்புறச் சாதனத்தில் வேறு எதுவும் செய்ய முடியாமல் போகலாம்.</translation>
 <translation id="3486220673238053218">விளக்கம்</translation>
 <translation id="3488065109653206955">பகுதியளவு செயலாக்கப்பட்டது</translation>
+<translation id="3502426834823382181">அனைத்து ஆப்ஸையும் காட்டும்</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />செயல்திறன் டிரேஸ் தரவை <ph name="END_LINK1" /> அனுப்பு</translation>
 <translation id="3517001332549868749">ChromeOS அப்டேட்</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3969602104473960991">ChromeOS கடவுச்சொல் மாற்றப்பட்டது</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
-<translation id="3974175076798940554">பிரத்தியேகமான Chromebook Plus அசெட்டுகள் இப்போது கிடைக்கின்றன</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="3993704782688964914">உங்கள் <ph name="DEVICE_NAME" /> இப்போது புதுப்பிக்கப்பட்டது</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">ஊடகம்</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4289849978083912975">ஸ்லைடு ஷோ</translation>
-<translation id="4293621540182258188">விடியல் முதல் இரவு வரை - எர்த் ஃப்ளோ</translation>
 <translation id="4297501883039923494">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> படங்கள்</translation>
 <translation id="4311195029067684288">முழு</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">காட்சி ஒளிர்வை அதிகரிக்கும்</translation>
 <translation id="57838592816432529">ஒலியடக்கு</translation>
 <translation id="5784136236926853061">HTTP கோரிக்கைகள் அதிக நேரம் எடுத்துக்கொள்கின்றன</translation>
-<translation id="5809090008577139505">விண்ணொளி</translation>
 <translation id="5826644637650799838">கலை குறித்த விவரம்</translation>
 <translation id="5832805196449965646">நபரைச் சேர்</translation>
 <translation id="583281660410589416">தெரியாதது</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">கீபோர்டு வண்ணம்</translation>
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5916664084637901428">இயக்கு</translation>
-<translation id="5918201491776799918">Chromebook Plus பிரத்தியேக ஆர்ட்வொர்க்கைத் தேர்ந்தெடுக்கும்</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் ஃபைல் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டது.}other{உங்கள் ஃபைல்கள்  ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ஃபைல்றையில் சேமிக்கப்பட்டன.}}</translation>
 <translation id="5931523347251946569">ஃபைல் இல்லை</translation>
 <translation id="5939518447894949180">மீட்டமை</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">தீம்</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">டார்க் தீமினை இயக்குதல்</translation>
+<translation id="6285899124799306373">தொடக்கியைத் திறக்கும்</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> சோதனை ரத்துசெய்யப்பட்டது</translation>
 <translation id="631063167932043783">Explore ஆப்ஸ்</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> இல் நிலைபொருளைப் புதுப்பியுங்கள்</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">ஸ்கிரீன் சேவர் மாதிரிக்காட்சி</translation>
 <translation id="6388847657025262518">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடரில் தாள் சிக்கிக் கொண்டது. ஃபீடரைச் சரிசெய்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6394634179843537518">ஃபைலைச் சேர்</translation>
+<translation id="6401427872449207797">உலாவித் தேடல்</translation>
 <translation id="6410257289063177456">பட ஃபைல்கள்</translation>
 <translation id="641081527798843608">சப்ஜெக்ட் மேட்ச்</translation>
 <translation id="6412715219990689313">உள்ளமைந்த கீபோர்டு</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">சாதனம் ஒரு மவுஸ்.</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7665800271478495366">தோற்றப் படத்தை மாற்றும்</translation>
-<translation id="7675241868020048622">விண்ணொளி (பிரத்தியேகமானது)</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
 <translation id="7701040980221191251">எதுவுமில்லை</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> ஐத் தேர்ந்தெடுங்கள்</translation>
 <translation id="8151185429379586178">டெவெலப்பர் கருவிகள்</translation>
-<translation id="8153923300383192510">Chromebook Plus பிரத்தியேக வீடியோக்கள்</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">இணை</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">மீடியாவைப் பிளே செய்வதற்கான ஐகான்</translation>
 <translation id="8318753676953949627">படங்கள் இல்லை</translation>
 <translation id="8329018942023753850">கால்குலேட்டர் ஆப்ஸ் ஐகான்</translation>
+<translation id="8335869473001018124">தேடலைத் திறக்கும்</translation>
 <translation id="8336739000755212683">சாதனக் கணக்கின் படத்தை மாற்றவும்</translation>
 <translation id="8347227221149377169">அச்சுப் பணிகள்</translation>
 <translation id="8351855506390808906">டச் பாயிண்ட் பட்டன் ஒதுக்கீடு</translation>

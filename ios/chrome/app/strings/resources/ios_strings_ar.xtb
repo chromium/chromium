@@ -188,6 +188,7 @@
 <translation id="2242467532204595597">‏يمكنك فتح Chrome عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى.</translation>
 <translation id="22508856139286506">التحذيرات التي تم إغلاقها (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">القائمة ← السجلّ</translation>
+<translation id="2252674110805316998">بحث الويب</translation>
 <translation id="2256933947031277845">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط.</translation>
 <translation id="225943865679747347">رمز الخطأ: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">إضافة حساب</translation>
@@ -490,6 +491,7 @@
 <translation id="4272631900155121838">لمسح رمز الاستجابة السريعة ضوئيًا، يمكنك تفعيل الكاميرا من الإعدادات</translation>
 <translation id="4277990410970811858">التصفُّح الآمن</translation>
 <translation id="4281844954008187215">بنود الخدمة</translation>
+<translation id="4293080268407233932">بحث</translation>
 <translation id="4304713468139749426">مدير كلمات المرور</translation>
 <translation id="430793432425771671">مزامنة جميع البيانات</translation>
 <translation id="4309403553630140242">يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
@@ -547,7 +549,6 @@
 <translation id="4642472735733036929">توقّفت عملية تتبُّع السعر.</translation>
 <translation id="4650125387981512669">المتابعة باسم <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">يُرجى التأكّد من أنّ كلمات المرور الخاصة بك آمنة، وتحديد ما إذا تم اختراقها، والحصول على نصائح للمساعدة في حماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">‏عند تسجيل الدخول إلى حسابك على Google، يتم تفعيل هذه الميزة.</translation>
 <translation id="4659667755519643272">دخول أداة تغيير علامات التبويب</translation>
 <translation id="46614316059270592">حفظ كلمة المرور</translation>
 <translation id="4666531726415300315">تم تسجيل الدخول كحساب <ph name="EMAIL" />
@@ -610,6 +611,7 @@
 <translation id="4979397965658815378">‏سجّل الدخول إلى حسابك على Google للحصول على الإشارات المرجعية وكلمات المرور والسجلّ والإعدادات الأخرى واستخدامها على جميع أجهزتك.</translation>
 <translation id="4986678885919050584">‏إزالة حساب Google من هذا الجهاز</translation>
 <translation id="498985224078955265">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
+<translation id="4996567535980789550">تفعيل المزامنة لإدارة المحتوى الذي تراه</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5016420433031926653">سيتم الإرسال إلى <ph name="USER_EMAIL" />.</translation>
 <translation id="5017828934289857214">تذكيري لاحقًا</translation>
@@ -666,6 +668,7 @@
 <translation id="543338862236136125">تعديل كلمة المرور</translation>
 <translation id="5433691172869980887">تم نسخ اسم المستخدم</translation>
 <translation id="5439599923922718668">المواقع الإلكترونية التي تزورها بشكلٍ متكرر</translation>
+<translation id="5439618055789623719">تم تسجيل الدخول بحساب <ph name="USER_EMAIL" />.</translation>
 <translation id="54401264925851789">معلومات أمان الصفحة</translation>
 <translation id="5443952882982198570">بطاقات الائتمان</translation>
 <translation id="5444892875087332195">الإشارات المرجعية</translation>
@@ -746,6 +749,7 @@
 <translation id="5951816930277761335">شارِك الرابط.</translation>
 <translation id="5955891643922670672">عرض النسخة بلا إنترنت</translation>
 <translation id="5957613098218939406">خيارات إضافية</translation>
+<translation id="595769230373966252">البحث باستخدام "<ph name="SEARCH_PROVIDER" />"</translation>
 <translation id="5963939892571022323">يتعذَّر إنشاء رابط يؤدي إلى النصوص التي تم تمييزها.</translation>
 <translation id="5965679971710331625">تم تسجيل الدخول</translation>
 <translation id="5979837087407522202">بحث عن كلمات المرور</translation>
@@ -1235,6 +1239,7 @@
 <translation id="9034759925968272072">‏لن يتم تسجيل خروجك من حسابك في Google. قد يتضمن حسابك في Google نماذج أخرى من سجل التصفح في <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">عرض الصفحة الأصلية</translation>
 <translation id="9039373489628511875">النطاق الترددي</translation>
+<translation id="9043368763795653245">‏لتخصيص متصفِّح Chrome وخلاصة "اقتراحات"، يُرجى تفعيل المزامنة.</translation>
 <translation id="9055772144595778347">تعذر تسجيل الدخول</translation>
 <translation id="9055960261314198756">"الحماية المحسَّنة" غير مفعَّلة</translation>
 <translation id="9057972802061533987">تتعذّر المتابعة. حدث خطأ.</translation>

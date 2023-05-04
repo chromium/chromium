@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
+<translation id="100506692671054486">ما مِن طلب سابق.</translation>
 <translation id="1009046985747440431">‏اضغط على السهم المتجه للأعلى أو للأسفل للتنقل، واضغط على Enter للتفعيل.</translation>
 <translation id="1011903154582639569">اعثر على لوحة المفاتيح المراد استخدامها، ثم انقر عليها للكتابة.</translation>
 <translation id="1012173283529841972">عنصر قائمة</translation>
@@ -460,6 +461,7 @@
 <translation id="3936394396199829062">أرجواني فاتح</translation>
 <translation id="3943857333388298514">لصق</translation>
 <translation id="3962990492275676168">بدء القراءة من الموقع الحالي</translation>
+<translation id="397094149579293440">لم يتم اختيار نص.</translation>
 <translation id="3970951409746498040">بني رملي</translation>
 <translation id="3989324057180830702">زر التبديل</translation>
 <translation id="3991317907213946254">أصفر باهت</translation>
@@ -566,6 +568,7 @@
 <translation id="4786285211967466855">ليس هناك عنوان سابق من المستوى الأول.</translation>
 <translation id="4787577491510559358">الإعلان عن تنسيق عنصر حالي</translation>
 <translation id="479989351350248267">بحث</translation>
+<translation id="4802034228771424756">لم يتم وضع التركيز على حقل نصي.</translation>
 <translation id="4804818685124855865">إلغاء الربط</translation>
 <translation id="481165870889056555">الإعلان عن عنوان الصفحة الحالية</translation>
 <translation id="4815668758102003883">فيروزي باهت</translation>
@@ -588,13 +591,16 @@
 <translation id="489907760999452556">رابط داخلي</translation>
 <translation id="4909019435900810068">نقل للخلف بمقدار كلمة واحدة</translation>
 <translation id="4911349081560453449">ليس هناك مربع اختيار سابق.</translation>
+<translation id="4919186071145887492">يتعذّر تنفيذ <ph name="COMMAND" />، يُرجى إعادة المحاولة.</translation>
 <translation id="492295894462528572">مقدمة</translation>
 <translation id="495046168593986294">التمرير لأعلى</translation>
 <translation id="495170559598752135">إجراءات</translation>
 <translation id="4953585991029886728">تعديل النص</translation>
+<translation id="4964701498510730546">الحقل النصي فارغ.</translation>
 <translation id="4973717656530883744">الحد الأدنى <ph name="X" /></translation>
 <translation id="4974612477719259470">ليس هناك زر سابق.</translation>
 <translation id="4979404613699303341">الزر السابق</translation>
+<translation id="4981239367072766915">البيانات المُدخَلة غير معروفة.</translation>
 <translation id="4982917827052020884">‏لنبدأ ببعض المفاتيح التي ستستخدمها بانتظام. يمكن استخدام مفتاح Control لإيقاف الكلام. ابحث عن مفتاح Control في أسفل يسار لوحة المفاتيح. للمواصلة، اضغط على مفتاح Control.</translation>
 <translation id="4983588134362688868">انتقال إلى أعلى الصفحة</translation>
 <translation id="4986606102545753256">النافذة <ph name="NAME" /></translation>
@@ -602,6 +608,7 @@
 <translation id="4994420463726586413">الإعلان عن حالة البطارية الحالية</translation>
 <translation id="4997282455736854877">تم اختيار زر الاختيار <ph name="NAME" /></translation>
 <translation id="5012724933919010465">تم اختيار الزر الخاص باختيار عنصر القائمة <ph name="NAME" />.</translation>
+<translation id="5014131807708055994">يتعذّر تنفيذ <ph name="COMMAND" />. السبب: <ph name="REASON" />.</translation>
 <translation id="5020651427400641814">تفعيل تسجيل الكلام</translation>
 <translation id="5041394372352067729">نقل عرض برايل إلى أعلى الصفحة</translation>
 <translation id="5042770794184672516">زيادة مستوى صوت النطق</translation>

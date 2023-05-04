@@ -317,7 +317,6 @@ Si cette règle n'est pas définie, la règle <ph name="ASK_WINDOW_MANAGEMENT_PO
 
 Cette règle remplace la règle <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />, obsolète.</translation>
 <translation id="129206366270737897">Désactive les méthodes asynchrones de <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
-<translation id="129392056654547767">Image du micrologiciel UEFI utilisé par la VM. Cette mesure est temporaire, le temps d'empaqueter le micrologiciel en tant que contenu téléchargeable ChromeOS.</translation>
 <translation id="1294263471858445589">Activer l'authentification ambiante pour les sessions standards et de navigation privée.</translation>
 <translation id="1295737447968372331">Activer la dictée sur l'écran de connexion</translation>
 <translation id="1297182715641689552">Utiliser un script de proxy .pac</translation>
@@ -601,7 +600,6 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Sous <ph name="MS_WIN_NAME" />, cette règle n'est disponible que pour les instances associées à un domaine <ph name="MS_AD_NAME" />, exécutées sur Windows 10 Pro ou qui bénéficient de la gestion cloud du navigateur Chrome. Sous <ph name="MAC_OS_NAME" />, elle n'est disponible que sur les instances gérées via MDM ou associées à un domaine via MCX.</translation>
 <translation id="1530812829012954197">Toujours rendre les formats d'URL suivants dans le navigateur hôte</translation>
 <translation id="1542491165152947087">Autorisez les utilisateurs à activer ou désactiver le paramètre des thèmes publicitaires de <ph name="PRIVACY_SANDBOX_NAME" /> sur leur appareil.</translation>
-<translation id="1547424904796464052">Hachage SHA-256 de l'image du micrologiciel, encodé en hexadécimal.</translation>
 <translation id="1550295162561011575">Cette règle permet aux administrateurs de configurer l'automatisation pour le lancement des applis sur les appareils <ph name="PRODUCT_NAME" />. Ces applis peuvent être lancées dès que l'utilisateur se connecte. L'utilisateur peut aussi les lancer depuis le lanceur d'applis.</translation>
 <translation id="1552418937045050762">Si ce paramètre est activé, les utilisateurs sont autorisés à activer le Partage à proximité, qui leur permet d'envoyer des fichiers aux personnes à proximité et inversement, de recevoir des fichiers de ces personnes.
 
@@ -3330,13 +3328,6 @@ Cette règle est une mesure temporaire et sera supprimée dans une future versio
 <translation id="4025500273782820766">Autoriser les utilisateurs à sélectionner "Toujours autoriser" quand une boîte de dialogue de protocole externe s'affiche pour permettre à l'utilisateur d'ignorer les futures invites de confirmation</translation>
 <translation id="402759845255257575">Interdire à tous les sites d'exécuter JavaScript</translation>
 <translation id="4027608872760987929">Activer le moteur de recherche par défaut</translation>
-<translation id="4027904270588278067">Cette règle définit le répertoire utilisé par Chrome pour le téléchargement de fichiers. Ce répertoire sera utilisé même si l'utilisateur en indique un autre ou s'il a activé le flag permettant de choisir un emplacement cible à chaque téléchargement.
-
-      Cette règle remplace la règle <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-
-      Si cette règle n'est pas configurée, Chrome utilise le répertoire de téléchargement par défaut, que les utilisateurs peuvent modifier.
-
-      Remarque : Pour savoir quelles variables vous pouvez utiliser, consultez la page https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4030152268425532846">Désactiver l'annulation de la connexion automatique</translation>
 <translation id="4043796890723386527">Empêcher les utilisateurs de créer et d'utiliser des profils secondaires, et d'utiliser le mode Invité dans le navigateur <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Détecter les fenêtres recouvertes</translation>
@@ -4452,17 +4443,6 @@ Si vous activez ce paramètre, <ph name="PRODUCT_NAME" /> ignore toutes les opti
 <translation id="519247340330463721">Configurez les règles associées à la navigation sécurisée.</translation>
 <translation id="5194683382395300627">Autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web (par ex. : pour activer la modification automatique des mots de passe)</translation>
 <translation id="5196630732055960309">Autoriser l'API File Handling pour ces applis Web</translation>
-<translation id="5198660575318473544">Contrôler si les extensions Manifest V2 peuvent être utilisées sur l'écran de connexion <ph name="PRODUCT_OS_NAME" />.
-
-Les extensions Manifest V2 seront obsolètes et toutes les extensions devront être migrées vers V3 à l'avenir. Vous trouverez plus d'informations et le calendrier de la migration sur https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Si la règle est définie sur <ph name="DEFAULT" /> (0) ou n'est pas configurée, le chargement des extensions V2 est déterminé par l'appareil, selon le calendrier ci-dessus.
-Si la règle est définie sur <ph name="DISABLE" /> (1), l'installation des extensions V2 est bloquée et les extensions existantes sont désactivées. L'option sera traitée de la même manière que si la règle n'était pas définie après la désactivation par défaut de V2.
-Si la règle est définie sur <ph name="ENABLE" /> (2), les extensions V2 sont autorisées. L'option sera traitée de la même manière que si la règle n'était pas définie avant la désactivation par défaut de V2.
-Si cette règle est définie sur <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), les extensions V2 installées d'office sont autorisées. Cela inclut les extensions listées par <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> avec <ph name="INSTALLATION_MODE" /> "force_installed" ou "normal_installed". Toutes les autres extensions V2 sont désactivées. L'option sera traitée de la même manière que si la règle n'était pas définie avant la désactivation par défaut de V2.
-
-
-La disponibilité des extensions est toujours contrôlée par d'autres règles.</translation>
 <translation id="5206454085187851382">Si <ph name="PRINTERS_ALLOWLIST" /> est sélectionné pour la règle <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, la définition de <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> indique les imprimantes accessibles aux utilisateurs. Seules les imprimantes dont les ID correspondent aux valeurs définies dans cette règle sont proposées aux utilisateurs. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Cette règle détermine si <ph name="PRODUCT_NAME" /> utilise les notifications système sur Linux.
 
@@ -7590,7 +7570,6 @@ Nous vous recommandons d'utiliser "<ph name="LACROS_SELECTION_USER_CHOICE_VALUE"
 <translation id="802776363472387903">Hachage SHA-256 de l'image <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Activer le moteur de recherche par défaut et autoriser les utilisateurs à modifier la liste des moteurs de recherche</translation>
 <translation id="8029201909194194377">Durée maximale des sessions autorisée pour les connexions d'accès à distance</translation>
-<translation id="8033908599068513676">URL de l'image du micrologiciel à télécharger.</translation>
 <translation id="8035570672225663428">Activez le modèle de recharge adaptative pour suspendre le processus de charge et allonger la durée de vie de la batterie.</translation>
 <translation id="8044493735196713914">Indiquer le mode de démarrage de l'appareil</translation>
 <translation id="8044720778481009876">Destinations <ph name="CLOUD_PRINT_NAME" /> et "Enregistrer dans Google Drive" (obsolète)</translation>
@@ -8567,6 +8546,11 @@ Si elle est désactivée, l'ancien comportement sera utilisé.
 Si cette règle n'est pas configurée, le nouveau comportement sera utilisé tout comme le reste des utilisateurs de Chromium.</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
+<translation id="8961117818679701775">Cette règle permet à un administrateur de définir des paramètres pour les applications Web installées. Elle fait correspondre un ID d'application Web à son paramètre spécifique. Une configuration par défaut peut être définie avec l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les applications Web pour lesquelles aucune configuration personnalisée n'est définie dans cette règle.
+
+Le champ <ph name="MANIFEST_ID_FIELD" /> contient l'ID du fichier manifeste pour l'application Web. Pour savoir comment déterminer l'ID du fichier manifeste d'une application Web qui a été installée, consultez <ph name="WEB_APP_ID_REFERENCE_URL" />.
+Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut être exécutée pendant la connexion au système d'exploitation. Si ce champ est défini sur <ph name="BLOCKED" />, l'application Web ne s'exécutera pas pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas activer ce champ plus tard. Si ce champ est défini sur <ph name="RUN_WINDOWED" />, l'application Web s'exécutera pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas désactiver ce champ plus tard. Si ce champ est défini sur <ph name="ALLOWED" />, l'utilisateur pourra configurer l'application Web pour qu'elle s'exécute pendant la connexion au système d'exploitation. La configuration par défaut n'autorise que les valeurs <ph name="ALLOWED" /> et <ph name="BLOCKED" />.
+(Depuis la version 115) Le champ <ph name="PREVENT_CLOSE_FIELD" /> indique si la fermeture de l'application Web doit être empêchée de quelque manière que ce soit (par exemple, par l'utilisateur, le gestionnaire de tâches ou les API Web). Ce comportement ne peut être activé que si <ph name="RUN_ON_OS_LOGIN_FIELD" /> est défini sur <ph name="RUN_WINDOWED" />. Si l'appli était déjà en cours d'exécution, cette propriété ne sera prise en compte qu'après avoir redémarré l'appli. Si ce champ n'est pas défini, les utilisateurs pourront fermer les applis.</translation>
 <translation id="8970205333161758602">Supprimer l'invite de fermeture de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Choisissez si l'invite <ph name="PRIVACY_SANDBOX_NAME" /> peut être présentée à vos utilisateurs</translation>
 <translation id="8974588819713914715">Cette règle est obsolète et non compatible (veuillez utiliser la règle <ph name="URL_ALLOWLIST_POLICY_NAME" /> à la place).</translation>

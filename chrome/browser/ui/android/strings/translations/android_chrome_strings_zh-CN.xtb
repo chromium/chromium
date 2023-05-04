@@ -243,7 +243,6 @@
 <translation id="2386938421315164605">隐藏和取消隐藏主题</translation>
 <translation id="2390510615457643724">您想再次下载 <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="2394602618534698961">您下载的文件会显示在此处</translation>
-<translation id="2407481962792080328">当您登录自己的 Google 帐号后，系统即会启用此功能</translation>
 <translation id="2410754283952462441">选择帐号</translation>
 <translation id="2414886740292270097">深色调</translation>
 <translation id="2426805022920575512">选择其他帐号</translation>
@@ -300,6 +299,7 @@
 <translation id="265156376773362237">标准预加载</translation>
 <translation id="2656405586795711023">Web 应用</translation>
 <translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
+<translation id="2688382350024736268">Chrome 现在只会与网站和应用分享非常有限的信息（例如向您展示广告的时段），以帮助网站衡量广告效果。</translation>
 <translation id="2702516483241149200">新功能：可分享能够定位到此文本的链接</translation>
 <translation id="2707726405694321444">刷新网页</translation>
 <translation id="271033894570825754">新建</translation>
@@ -848,6 +848,7 @@
 <translation id="562289928968387744">管理回应</translation>
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
+<translation id="5635091213277904818">Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会再次出现在列表中。您也可禁止某个网站向您展示建议的广告。</translation>
 <translation id="5639724618331995626">允许访问所有网站</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />可能会保存在您的 Google 帐号中</translation>
 <translation id="564667659802381754">隐私保护指南<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
@@ -1173,6 +1174,7 @@
 <translation id="7291910923717764901">已为此网页添加图片说明</translation>
 <translation id="7293429513719260019">选择语言</translation>
 <translation id="729975465115245577">您的设备上没有可以存储密码文件的应用。</translation>
+<translation id="7304072650267745798">您的 Android 设备可能包含类似的设置。如果您在 Chrome 中和 Android 设备上开启了这项设置，相关公司或许就能对在您访问的网站和使用的应用中投放的广告进行效果衡量。</translation>
 <translation id="7304873321153398381">设备已离线。Chrome 无法检查您的密码。</translation>
 <translation id="7313188324932846546">点按即可设置同步</translation>
 <translation id="7332075081379534664">登录成功</translation>
@@ -1255,6 +1257,7 @@
 <translation id="7682724950699840886">请尝试按以下提示操作：确保您的设备上有足够的空间，然后重新尝试导出。</translation>
 <translation id="7686086654630106285">详细了解网站建议的广告</translation>
 <translation id="768618399695552958">在您访问的网页中，有一些是预加载的网页。从 Google 网站链接到的网页可能会通过 Google 服务器预加载。</translation>
+<translation id="7690596512217303514">您的设备无法打开 Chrome。若要解决此问题，请从应用商店下载最新的 Chrome 更新。</translation>
 <translation id="7691043218961417207">探索值得关注的内容</translation>
 <translation id="7697383401610880082">拖动手柄</translation>
 <translation id="7698359219371678927">在 <ph name="APP_NAME" /> 中创建电子邮件</translation>
@@ -1366,6 +1369,7 @@
 <translation id="8209050860603202033">打开图片</translation>
 <translation id="8216351761227087153">观看</translation>
 <translation id="8218622182176210845">管理您的帐号</translation>
+<translation id="8221401890884589479">您可根据自己的需要屏蔽一些网站。Chrome 还会从列表中自动删除保留时长超过 30 天的网站。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">动态卡片上的菜单</translation>
 <translation id="8236097722223016103">添加到书签</translation>
 <translation id="8250920743982581267">文档</translation>

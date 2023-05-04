@@ -318,7 +318,6 @@ Se il criterio non viene configurato, si applica il criterio <ph name="ASK_WINDO
 
 Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> obsoleto.</translation>
 <translation id="129206366270737897">Consente di disattivare tutti i metodi asincroni di <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" />.</translation>
-<translation id="129392056654547767">L'immagine del firmware UEFI utilizzata dalla VM. Questa è una misura temporanea adottata durante la pacchettizzazione come DLC di ChromeOS.</translation>
 <translation id="1294263471858445589">Attiva l'autenticazione ambientale nelle sessioni standard e in modalità in incognito.</translation>
 <translation id="1295737447968372331">Attiva la dettatura sulla schermata di accesso</translation>
 <translation id="1297182715641689552">Utilizza uno script proxy .pac</translation>
@@ -601,7 +600,6 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Su <ph name="MS_WIN_NAME" />, questa funzionalità è disponibile soltanto sulle istanze che fanno parte di un dominio <ph name="MS_AD_NAME" />, sono in esecuzione su Windows 10 Pro o sono registrate in Chrome Browser Cloud Management. Su <ph name="MAC_OS_NAME" />, questa funzionalità è disponibile soltanto nelle istanze gestite tramite MDM o aggiunte a un dominio tramite MCX.</translation>
 <translation id="1530812829012954197">Visualizza sempre i seguenti schemi URL nel browser host</translation>
 <translation id="1542491165152947087">Consenti agli utenti di attivare o disattivare sul loro dispositivo l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa agli argomenti degli annunci.</translation>
-<translation id="1547424904796464052">Hash SHA-256 esadecimale codificato dell'immagine del firmware.</translation>
 <translation id="1550295162561011575">L'impostazione di questo criterio consente agli amministratori di configurare l'automazione per il lancio di app sui dispositivi <ph name="PRODUCT_NAME" />. Queste app possono essere lanciate al momento dell'accesso dell'utente oppure insieme da Avvio app.</translation>
 <translation id="1552418937045050762">Se questa impostazione viene attivata, gli utenti possono scegliere di utilizzare la funzionalità Condivisione nelle vicinanze, che consente di inviare e ricevere file dalle persone nelle vicinanze.
 
@@ -3341,13 +3339,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="4025500273782820766">Consenti agli utenti di selezionare "Consenti sempre" quando viene mostrata una finestra di dialogo relativa a un protocollo esterno per non ricevere più messaggi di conferma in futuro</translation>
 <translation id="402759845255257575">Non consentire ad alcun sito di eseguire JavaScript</translation>
 <translation id="4027608872760987929">Attiva il provider di ricerca predefinito</translation>
-<translation id="4027904270588278067">Se il criterio viene configurato, viene impostata anche la directory utilizzata da Chrome per il download dei file. Viene utilizzata la directory fornita, indipendentemente dal fatto che gli utenti ne abbiano specificata una o abbiano attivato il flag richiesto ogni volta per il percorso di download.
-
-      Questo criterio esegue l'override del criterio <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-
-      Se il criterio non viene configurato, Chrome utilizza la directory predefinita per il download, che gli utenti possono modificare.
-
-      Nota. Vedi l'elenco di variabili che puoi utilizzare: https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables.</translation>
 <translation id="4030152268425532846">Disattiva l'esclusione dell'accesso automatico</translation>
 <translation id="4043796890723386527">Impedisci agli utenti di creare e usare profili secondari e di utilizzare la modalità ospite nel browser <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Attiva Copertura finestra</translation>
@@ -4469,17 +4460,6 @@ Se questa norma non viene impostata viene utilizzata la riga di comando predefin
 <translation id="519247340330463721">Configura le norme relative alla Navigazione sicura.</translation>
 <translation id="5194683382395300627">Consenti l'utilizzo di <ph name="ASSISTANT_PRODUCT_NAME" /> sul Web, ad esempio per attivare la modifica automatica delle password</translation>
 <translation id="5196630732055960309">Consenti l'API File Handling su queste app web</translation>
-<translation id="5198660575318473544">Controlla se le estensioni Manifest v2 possono essere utilizzate nella schermata di accesso di <ph name="PRODUCT_OS_NAME" />.
-
-Il supporto delle estensioni Manifest v2 verrà ritirato e in futuro sarà necessario eseguire la migrazione di tutte le estensioni alla versione 3. Ulteriori informazioni e tempistiche della migrazione sono disponibili all'indirizzo https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Se il criterio viene impostato su <ph name="DEFAULT" /> (0) o se non viene configurato, il caricamento delle estensioni v2 viene determinato dal dispositivo, in base alle tempistiche indicate nella pagina precedente.
-Se il criterio viene impostato su <ph name="DISABLE" /> (1), l'installazione delle estensioni v2 viene bloccata, mentre le estensioni esistenti vengono disattivate. L'opzione verrà trattata come se il criterio non fosse impostato dopo la disattivazione del supporto della versione 2 per impostazione predefinita.
-Se il criterio viene impostato su <ph name="ENABLE" /> (2), le estensioni v2 sono consentite. L'opzione verrà trattata come se il criterio non fosse impostato prima della disattivazione del supporto della versione 2 per impostazione predefinita.
-Se il criterio viene impostato su <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), le estensioni v2 con installazione forzata sono consentite. Sono incluse le estensioni elencate da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> con <ph name="INSTALLATION_MODE" /> "force_installed" o "normal_installed". Tutte le altre estensioni v2 vengono disattivate. L'opzione verrà trattata come se il criterio non fosse impostato prima della disattivazione del supporto della versione 2 per impostazione predefinita.
-
-
-La disponibilità delle estensioni è comunque controllata da altri criteri.</translation>
 <translation id="5206454085187851382">Se per il criterio <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_ALLOWLIST" />, la configurazione del criterio <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questo criterio saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Consente di configurare se <ph name="PRODUCT_NAME" /> utilizzerà notifiche di sistema su Linux.
 
@@ -7601,7 +7581,6 @@ In questo tipo di scenari non è garantita la corretta migrazione dei dati.
 <translation id="802776363472387903">L'hash SHA-256 dell'immagine <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Attiva il provider di ricerca predefinito e consenti agli utenti di modificare l'elenco dei provider di ricerca</translation>
 <translation id="8029201909194194377">Durata massima della sessione consentita per le connessioni di accesso remoto</translation>
-<translation id="8033908599068513676">URL dell'immagine del firmware da scaricare.</translation>
 <translation id="8035570672225663428">Consenti al modello di ricarica adattiva di sospendere la procedura di ricarica per prolungare la durata della batteria</translation>
 <translation id="8044493735196713914">Indicazione modalità di avvio dispositivo</translation>
 <translation id="8044720778481009876">Destinazioni <ph name="CLOUD_PRINT_NAME" /> e "Salva su Google Drive" (deprecate)</translation>
@@ -8578,6 +8557,11 @@ Se viene disattivato, verrà utilizzato il comportamento precedente.
 Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente come avviene per gli altri utenti di Chromium.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
+<translation id="8961117818679701775">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate. Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
+
+Il campo <ph name="MANIFEST_ID_FIELD" /> è l'ID manifest dell'app web. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID manifest di un'app web installata.
+Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app web può essere eseguita durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
+(Dalla versione 115) Il campo <ph name="PREVENT_CLOSE_FIELD" /> consente di specificare se impedire o meno la chiusura di un'app web in qualsiasi modo (ad esempio da parte dell'utente, da Task Manager, da API web). Questo comportamento può essere attivato solo se il criterio <ph name="RUN_ON_OS_LOGIN_FIELD" /> è impostato su <ph name="RUN_WINDOWED" />. Se l'app era già in esecuzione, questa proprietà diventa effettiva solo dopo il suo riavvio. Se questo campo non viene definito, gli utenti potranno chiudere le app.</translation>
 <translation id="8970205333161758602">Eliminazione del messaggio di richiesta di turndown di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Scegli se è possibile o meno mostrare la richiesta di <ph name="PRIVACY_SANDBOX_NAME" /> ai tuoi utenti</translation>
 <translation id="8974588819713914715">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>

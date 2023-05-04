@@ -299,7 +299,7 @@
 <translation id="2902684821701498619">वाचन सूची वर जोडा</translation>
 <translation id="291754862089661335">QR कोड किंवा बारकोडची या फ्रेममध्‍ये स्थिती निर्धारित करा</translation>
 <translation id="2920866371965792875">या साइटवरील अपडेट मिळवण्यासाठी, येथे फॉलो करा.</translation>
-<translation id="2921219216347069551">पृष्ठ शेअर करू शकत नाही</translation>
+<translation id="2921219216347069551">पेज शेअर करू शकत नाही</translation>
 <translation id="2923448633003185837">पेस्ट करा आणि जा</translation>
 <translation id="292639812446257861">न वाचलेले चिन्हांकित करा</translation>
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">किमतीचा माग ठेवणे थांबले आहे</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> म्हणून पुढे सुरू ठेवा</translation>
 <translation id="4652817563047461855">तुमचे पासवर्ड सुरक्षित असल्याची खात्री करा, ते धोक्यात असल्यास शोधा आणि ऑनलाइन असताना स्वतःचे संरक्षण करण्यात मदत करण्यासाठी सल्ला मिळवा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">तुम्ही तुमच्या Google खात्यामध्ये साइन इन केल्यावर, हे वैशिष्ट्य सुरू केले जाते.</translation>
 <translation id="4659667755519643272">टॅब स्विचर प्रविष्‍ट करा</translation>
 <translation id="46614316059270592">पासवर्ड सेव्ह करा</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> म्हणून साइन इन केले.
@@ -1043,7 +1042,7 @@
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
 <translation id="777572173400717978">{count,plural, =1{बुकमार्क केलेली}other{बुकमार्क केलेल्या}}</translation>
 <translation id="7781011649027948662">पेजचे भाषांतर करायचे?</translation>
-<translation id="7781069478569868053">नवीन टॅब पृष्‍ठ</translation>
+<translation id="7781069478569868053">नवीन टॅब पेज</translation>
 <translation id="7781829728241885113">काल</translation>
 <translation id="7786246662347093005">{COUNT,plural, =1{एका दिवसानंतर}other{{COUNT} दिवसांनंतर}}</translation>
 <translation id="778855399387580014">एका नवीन Chrome टॅबमध्ये शोध सुरू करा.</translation>
@@ -1175,7 +1174,7 @@
 <translation id="8638151046944329622">{COUNT,plural, =0{No compromised passwords}=1{{COUNT} धोक्यात असलेला पासवर्ड}other{{COUNT} धोक्यात असलेले पासवर्ड}}</translation>
 <translation id="8654802032646794042">रद्द करा</translation>
 <translation id="8663764600409216912">तुम्ही असे पासवर्ड वापरत आहात ज्यांचा अंदाज लावणे कठीण आहे</translation>
-<translation id="8668210798914567634">हे पृष्‍ठ आपल्या वाचन सूचीमध्ये सेव्ह केले गेले आहे.</translation>
+<translation id="8668210798914567634">हे पेज तुमच्या वाचन सूचीमध्ये सेव्ह केले गेले आहे.</translation>
 <translation id="8680787084697685621">खाते साइन-इन तपशील कालबाह्य झाला.</translation>
 <translation id="868773710103052534">तुम्ही पूर्णपणे तयार आहात</translation>
 <translation id="8693663554456874301">{count,plural, =1{टॅब बंद करा}other{टॅब बंद करा}}</translation>

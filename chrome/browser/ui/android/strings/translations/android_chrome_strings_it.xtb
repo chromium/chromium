@@ -243,7 +243,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2386938421315164605">Nascondi e mostra argomenti</translation>
 <translation id="2390510615457643724">Vuoi scaricare di nuovo <ph name="FILE_NAME" /> <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">I file scaricati vengono visualizzati qui</translation>
-<translation id="2407481962792080328">Questa funzionalità viene attivata quando accedi al tuo Account Google</translation>
 <translation id="2410754283952462441">Scegli un account</translation>
 <translation id="2414886740292270097">Scuro</translation>
 <translation id="2426805022920575512">Scegli un altro account</translation>
@@ -300,6 +299,7 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="265156376773362237">Precaricamento standard</translation>
 <translation id="2656405586795711023">App web</translation>
 <translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
+<translation id="2688382350024736268">Ora Chrome condivide soltanto informazioni molto limitate tra siti e app, ad esempio quando ti è stato mostrato un annuncio, per aiutare i siti a misurare il rendimento degli annunci.</translation>
 <translation id="2702516483241149200">Novità: condividi un link che scorre direttamente a questo testo</translation>
 <translation id="2707726405694321444">Aggiorna la pagina</translation>
 <translation id="271033894570825754">Nuovo</translation>
@@ -848,6 +848,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="562289928968387744">Gestisci reazioni</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Da leggere - Disponibili offline</translation>
+<translation id="5635091213277904818">Chrome elimina automaticamente i siti risalenti a più di 30 giorni prima della data corrente. Se visiti di nuovo un sito, questo potrebbe essere visualizzato di nuovo nell'elenco. In alternativa, puoi impedire a un sito di suggerire annunci per te.</translation>
 <translation id="5639724618331995626">Consenti tutti i siti</translation>
 <translation id="5641456720590409793">La <ph name="BEGIN_LINK1" />cronologia delle ricerche<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />altri tipi di attività<ph name="END_LINK2" /> potrebbero essere salvati nel tuo Account Google</translation>
 <translation id="564667659802381754">Guida alla privacy <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
@@ -1173,6 +1174,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7291910923717764901">Descrizioni delle immagini aggiunte per questa pagina</translation>
 <translation id="7293429513719260019">Seleziona lingua</translation>
 <translation id="729975465115245577">Il tuo dispositivo non ha un'app per archiviare il file di password.</translation>
+<translation id="7304072650267745798">Il tuo dispositivo Android potrebbe includere un'impostazione simile. Se questa impostazione è attiva in Chrome e sul tuo dispositivo Android, un'azienda potrebbe essere in grado di misurare l'efficacia di un annuncio sui siti web che visiti e nelle app che utilizzi.</translation>
 <translation id="7304873321153398381">Offline. Chrome non può controllare le tue password.</translation>
 <translation id="7313188324932846546">Tocca per configurare la sincronizzazione</translation>
 <translation id="7332075081379534664">Accesso eseguito</translation>
@@ -1255,6 +1257,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7682724950699840886">Prova i seguenti suggerimenti: assicurati di avere spazio sufficiente sul dispositivo e prova a esportare di nuovo.</translation>
 <translation id="7686086654630106285">Scopri di più sugli annunci suggeriti dai siti</translation>
 <translation id="768618399695552958">Alcune delle pagine che visiti sono precaricate. Le pagine potrebbero essere precaricate tramite i server di Google quando il sito che vi rimanda è un sito Google.</translation>
+<translation id="7690596512217303514">Impossibile aprire Chrome sul dispositivo. Per risolvere il problema, scarica l'ultimo aggiornamento di Chrome dallo store.</translation>
 <translation id="7691043218961417207">Esplora i contenuti da seguire</translation>
 <translation id="7697383401610880082">Punto di trascinamento</translation>
 <translation id="7698359219371678927">Crea email in <ph name="APP_NAME" /></translation>
@@ -1366,6 +1369,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8209050860603202033">Apri immagine</translation>
 <translation id="8216351761227087153">Guarda</translation>
 <translation id="8218622182176210845">Gestisci il tuo account</translation>
+<translation id="8221401890884589479">Puoi bloccare i siti indesiderati. Inoltre, Chrome elimina automaticamente dall'elenco i siti risalenti a più di 30 giorni prima della data corrente. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Menu scheda feed</translation>
 <translation id="8236097722223016103">Aggiungi ai preferiti</translation>
 <translation id="8250920743982581267">Documenti</translation>

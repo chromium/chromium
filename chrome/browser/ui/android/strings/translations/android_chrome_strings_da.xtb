@@ -151,6 +151,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="1810845389119482123">Indledende konfiguration af synkronisering er ikke afsluttet</translation>
 <translation id="1829244130665387512">Find på siden</translation>
 <translation id="1832459821645506983">Ja tak</translation>
+<translation id="185383612275551373">Synkroniser for at få det mest relevante indhold fra Google</translation>
 <translation id="1854311313115643875">Når prøver er aktiveret, giver Ad measurement de websites, du besøger, mulighed for at anmode om oplysninger fra Chrome, som hjælper websitet med at måle, hvor godt dets annoncer klarer sig. Ad measurement begrænser sporing på tværs af websites ved at overføre så få oplysninger som muligt mellem websites.
 
 Når du sletter din browserhistorik – det hele eller for et specifikt website – sletter du også de tilhørende målingsoplysninger. Se <ph name="BEGIN_LINK" />din browserhistorik<ph name="END_LINK" />.</translation>
@@ -242,7 +243,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2386938421315164605">Skjul og vis emner</translation>
 <translation id="2390510615457643724">Vil du downloade <ph name="FILE_NAME" /><ph name="FILE_SIZE" /> igen?</translation>
 <translation id="2394602618534698961">Her vises de filer, du downloader</translation>
-<translation id="2407481962792080328">Når du logger ind på din Google-konto, er denne funktion aktiveret</translation>
 <translation id="2410754283952462441">Vælg en konto</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2426805022920575512">Vælg en anden konto</translation>
@@ -299,6 +299,7 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="265156376773362237">Standardforudindlæsning</translation>
 <translation id="2656405586795711023">Webapps</translation>
 <translation id="2669454659051515572">Alle, der bruger denne enhed, kan se downloadede filer</translation>
+<translation id="2688382350024736268">Chrome deler nu kun meget begrænsede oplysninger mellem websites og apps, f.eks. hvornår du fik vist en annonce, for at hjælpe websites med at måle annonceeffektiviteten.</translation>
 <translation id="2702516483241149200">Nyhed: Del et link, der ruller til denne tekst</translation>
 <translation id="2707726405694321444">Opdater siden</translation>
 <translation id="271033894570825754">Nyt</translation>
@@ -847,6 +848,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="562289928968387744">Administrer reaktioner</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulæst – Tilgængelig offline</translation>
+<translation id="5635091213277904818">Chrome sletter automatisk websites, der er mere end 30 dage gamle. Et website, du besøger igen, kan dukke op på listen igen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig.</translation>
 <translation id="5639724618331995626">Tillad alle websites</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søgehistorikken<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> gemmes muligvis på din Google-konto</translation>
 <translation id="564667659802381754">Privatlivsguide <ph name="BEGIN_NEW" />Nyhed<ph name="END_NEW" /></translation>
@@ -1172,6 +1174,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7291910923717764901">Der blev tilføjet billedbeskrivelser for denne side</translation>
 <translation id="7293429513719260019">Vælg sprog</translation>
 <translation id="729975465115245577">Der er ikke nogen app på din enhed, hvor filen med adgangskoder kan gemmes.</translation>
+<translation id="7304072650267745798">Din Android-enhed har muligvis en lignende indstilling. Hvis denne indstilling er aktiveret i Chrome og på din Android-enhed, kan en virksomhed måle effektiviteten af en annonce på de websites, du besøger, og i de apps, du bruger.</translation>
 <translation id="7304873321153398381">Offline. Chrome kan ikke tjekke dine adgangskoder.</translation>
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
 <translation id="7332075081379534664">Login blev fuldført</translation>
@@ -1254,6 +1257,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7682724950699840886">Prøv følgende tips: Sørg for, at der er nok ledig plads på din enhed, og prøv at eksportere igen.</translation>
 <translation id="7686086654630106285">Mere om foreslåede annoncer fra websites</translation>
 <translation id="768618399695552958">Nogle af de sider, du besøger, forudindlæses. Nogle sider forudindlæses muligvis via Google-servere, når de er linket fra et Google-website.</translation>
+<translation id="7690596512217303514">Din enhed kunne ikke åbne Chrome. Du kan løse problemet ved at downloade den nyeste Chrome-opdatering fra din appbutik.</translation>
 <translation id="7691043218961417207">Gennemse indhold, du vil følge</translation>
 <translation id="7697383401610880082">Håndtag</translation>
 <translation id="7698359219371678927">Opret mail i <ph name="APP_NAME" /></translation>
@@ -1365,6 +1369,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8209050860603202033">Åbn billede</translation>
 <translation id="8216351761227087153">Se</translation>
 <translation id="8218622182176210845">Administrer din konto</translation>
+<translation id="8221401890884589479">Du kan blokere websites, du ikke er interesseret i. Chrome sletter også automatisk websites fra listen, som er mere end 30 dage gamle. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Feedkortmenu</translation>
 <translation id="8236097722223016103">Føj til bogmærker</translation>
 <translation id="8250920743982581267">Dokumenter</translation>

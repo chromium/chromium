@@ -1059,6 +1059,7 @@
 <translation id="3587738293690942763">መሃል</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል አንድ ቀን ያህል ጊዜ ይወስዳል።}=1{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል አንድ ቀን ያህል ጊዜ ይወስዳል።}one{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል {NUM_DAYS} ቀኖች ያህል ጊዜ ይወስዳል።}other{ቡድንዎን በማንኛውም ጊዜ ዳግም ማስጀመር ይችላሉ። አዲስ ቡድን ለመቀላቀል {NUM_DAYS} ቀኖች ያህል ጊዜ ይወስዳል።}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />፣ <ph name="DOMAIN" />፣ <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome ከ30 ቀናት በላይ የሆናቸው ማስታወቂያዎችን የሚጠቁሙ ርዕሶች እና ጣቢያዎችን በራስ-ሰር ይሰርዛል። ወይም እርስዎ የማይወዷቸውን የተወሰኑ ርዕሶች እና ጣቢያዎችን ማገድ ይችላሉ።</translation>
 <translation id="3603507503523709">መተግበሪያ በእርስዎ አስተዳዳሪ ታግዷል</translation>
 <translation id="3605899229568538311">5 x 5 ኢንች</translation>
 <translation id="3608932978122581043">የምገባ አቀማመጥ</translation>
@@ -1188,6 +1189,7 @@
 <translation id="3906954721959377182">ጡባዊ</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">በChrome ቅንብሮች ውስጥ በማንኛውም ጊዜ ሐሳብዎን መቀየር ይችላሉ</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />እንዴት ውሂብዎን ማስተዳደር እንደሚችሉ፦<ph name="END_BOLD" /> Chrome ከ30 ቀናት በላይ የሆናቸው ጣቢያዎችን በራስ-ሰር ይሰርዛል። እንደገና የሚጎበኙት ጣቢያ በዝርዝሩ ላይ እንደገና ሊታይ ይችላል። እንዲሁም አንድ ጣቢያ ለእርስዎ ማስታወቂያዎችን እንዳይጠቁም ማገድ እና በማንኛውም ጊዜ በChrome ቅንብሮች ውስጥ በጣቢያ የተጠቆሙ ማስታወቂያዎችን ማጥፋት ይችላሉ።</translation>
 <translation id="3921869355029467742">የደህንነት ኮድዎን ያስገቡ</translation>
 <translation id="3927932062596804919">ከልክል</translation>
 <translation id="393316646445601645">በይነመረብ እና ቴሌኮም</translation>
@@ -1354,6 +1356,7 @@
 <translation id="4287495839370498922">በChrome ውስጥ የተሻሻለ የማስታወቂያ ግላዊነት</translation>
 <translation id="4287885627794386150">ለሙከራ ብቁ ነው፣ ነገር ግን ንቁ አይደለም</translation>
 <translation id="4290920330097335010">መቼም አትፍቀድ</translation>
+<translation id="4296207570293932800">አዲስ የማስታወቂያ የግላዊነት ባህሪ አሁን ይገኛል</translation>
 <translation id="4297502707443874121">የገጽ <ph name="THUMBNAIL_PAGE" /> ድንክዬ</translation>
 <translation id="4298000214066716287">ኢንቨስት ማድረግ</translation>
 <translation id="42981349822642051">ዘርጋ</translation>
@@ -1625,6 +1628,7 @@
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4953689047182316270">ለተደራሽነት ክስተቶች ምላሽ መስጠት</translation>
 <translation id="4958444002117714549">ዝርዝሩን ዘርጋ</translation>
+<translation id="4960068118612257147">በChrome ማስታወቂያ ግላዊነት ቅንብሮች ላይ ለውጦችን ማድረግ ይችላሉ</translation>
 <translation id="4964505745997821360">የጤና መድህን</translation>
 <translation id="4968522289500246572">ይህ መተግበሪያ ለሞባይል የተነደፈ ነው፣ እና በጥሩ ሁኔታ መጠን ላይቀይር ይችላል። መተግበሪያው ችግሮች ሊያጋጥሙት ወይም ዳግም ሊነሳ ይችላል።</translation>
 <translation id="4968665849807487749">በሁሉም የእርስዎ ማሳያዎች ላይ መስኮቶችን ለማስተዳደር መጠየቅ ይችላል</translation>

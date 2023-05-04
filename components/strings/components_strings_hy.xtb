@@ -191,6 +191,7 @@
 <translation id="1396259464226642517">Այս արդյունքն անսպասելի՞ էր։ <ph name="BEGIN_LINK" />Կարծիք հայտնել<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Բաց կանաչ</translation>
 <translation id="1406500794671479665">Հաստատում…</translation>
+<translation id="1406812885827747674">Թույլատրել այս անգամ</translation>
 <translation id="1407135791313364759">Բացել բոլորը</translation>
 <translation id="1408787208417187241">Երեք ամրակ վերևում</translation>
 <translation id="1410941016594047814">Envelope Invite</translation>
@@ -470,6 +471,7 @@
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="20817612488360358">Համակարգի պրոքսի-սերվերի կարգավորումները կայված են, բայց նաև նշված է նրա ուղղակի կազմաձևում:</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
+<translation id="2083256696566019397">Թույլատրել ամեն այցի ժամանակ</translation>
 <translation id="2085876078937250610">Պահել…</translation>
 <translation id="2088086323192747268">«Կառավարել համաժամացումը» կոճակ։ Համաժամացվող տեղեկությունները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Enter։</translation>
 <translation id="2091887806945687916">Ձայն</translation>
@@ -1354,6 +1356,7 @@
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Քարտը պահվեց ձեր Google հաշվում}one{Քարտը պահվեց ձեր Google հաշվում}other{Քարտերը պահվեցին ձեր Google հաշվում}}</translation>
 <translation id="4287495839370498922">Գովազդի ուժեղացված գաղտնիություն Chrome-ում</translation>
 <translation id="4287885627794386150">Փորձնական գործառույթը հասանելի է, սակայն ակտիվացված չէ</translation>
+<translation id="4290920330097335010">Երբեք չթույլատրել</translation>
 <translation id="4296207570293932800">Գովազդի գաղտնիության գործառույթների նոր տարբերակը հասանելի է</translation>
 <translation id="4297502707443874121">Էջ <ph name="THUMBNAIL_PAGE" />-ի մանրապատկեր</translation>
 <translation id="4298000214066716287">Ներդ­րումներ</translation>

@@ -191,6 +191,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1396259464226642517">¿No esperabas este resultado? <ph name="BEGIN_LINK" />Enviar comentarios<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Verde claro</translation>
 <translation id="1406500794671479665">Verificando...</translation>
+<translation id="1406812885827747674">Permitir esta vez</translation>
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1408787208417187241">Grapado triple en la parte superior</translation>
 <translation id="1410941016594047814">Sobre Invite</translation>
@@ -470,6 +471,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="20817612488360358">Se ha establecido la configuración del proxy del sistema, pero también se han especificado ajustes de proxy explícitos.</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083256696566019397">Permitir en todas las visitas</translation>
 <translation id="2085876078937250610">Guardar…</translation>
 <translation id="2088086323192747268">Botón Gestionar sincronización, pulsa Intro para gestionar la información que sincronizas en la configuración de Chrome</translation>
 <translation id="2091887806945687916">Sonido</translation>
@@ -1058,6 +1060,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3587738293690942763">Medio</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Puedes restablecer tu grupo en cualquier momento. Se tarda alrededor de un día en unirse a un nuevo grupo.}=1{Puedes restablecer tu grupo en cualquier momento. Se tarda alrededor de un día en unirse a un nuevo grupo.}other{Puedes restablecer tu grupo en cualquier momento. Se tardan {NUM_DAYS} días en unirse a un nuevo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome elimina automáticamente temas y sitios que sugieren anuncios si tienen una antigüedad superior a 30 días. También puedes bloquear temas y sitios concretos que no te gusten.</translation>
 <translation id="3603507503523709">Tu administrador ha bloqueado esta aplicación</translation>
 <translation id="3605899229568538311">5x5 pulgadas</translation>
 <translation id="3608932978122581043">Orientación de entrada</translation>
@@ -1187,6 +1190,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Puedes cambiar de opinión en cualquier momento modificando la configuración de Chrome</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Cómo puedes gestionar tus datos:<ph name="END_BOLD" /> Chrome elimina automáticamente los sitios que tienen una antigüedad superior a 30 días. Si visitas un sitio de nuevo, es posible que vuelva a aparecer en la lista. También puedes bloquear las sugerencias de anuncios de un sitio y desactivar los anuncios sugeridos por sitios en cualquier momento desde la configuración de Chrome.</translation>
 <translation id="3921869355029467742">Introducir el código de seguridad</translation>
 <translation id="3927932062596804919">Denegar</translation>
 <translation id="393316646445601645">Internet y telecomunicaciones</translation>
@@ -1352,6 +1356,8 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Se ha guardado esta tarjeta en tu cuenta de Google}other{Se han guardado estas tarjetas en tu cuenta de Google}}</translation>
 <translation id="4287495839370498922">Privacidad mejorada en la publicidad con Chrome</translation>
 <translation id="4287885627794386150">Disponible para pruebas, pero no está activo</translation>
+<translation id="4290920330097335010">No permitir nunca</translation>
+<translation id="4296207570293932800">Nueva función de privacidad en la publicidad ya disponible</translation>
 <translation id="4297502707443874121">Miniatura de la página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Inversiones</translation>
 <translation id="42981349822642051">Mostrar</translation>
@@ -1623,6 +1629,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="495170559598752135">Acciones</translation>
 <translation id="4953689047182316270">Responder a eventos de accesibilidad</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
+<translation id="4960068118612257147">Puedes hacer cambios en la configuración de privacidad en la publicidad de Chrome</translation>
 <translation id="4964505745997821360">Seguro médico</translation>
 <translation id="4968522289500246572">Esta aplicación se ha diseñado para móviles y es posible que su tamaño no se cambie correctamente. Puede que la aplicación dé problemas o se reinicie.</translation>
 <translation id="4968665849807487749">Puede solicitar permiso para gestionar las ventanas en todas tus pantallas</translation>

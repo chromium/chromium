@@ -1056,6 +1056,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3587738293690942763">Oʻrtacha</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish bir kun vaqt oladi.}=1{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish bir kun vaqt oladi.}other{Guruh sozlamalarini istalgan vaqtda tiklash mumkin. Yangi guruhga qoʻshilish {NUM_DAYS} kun vaqt oladi.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome 30 kundan eskirgan mavzular va reklama taklif qiladigan saytlarni avtomatik oʻchiradi. Yoki istalgan mavzu va saytni mustaqil bloklash mumkin.</translation>
 <translation id="3603507503523709">Ilova administrator tomonidan bloklangan</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Holatini belgilash</translation>
@@ -1184,6 +1185,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3906954721959377182">Planshet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Fikringiz oʻzgarsa, buni istalgan vaqt Chrome sozlamalari orqali oʻzgartirish mumkin</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Maʼlumotlar qanday boshqariladi:<ph name="END_BOLD" /> Chrome 30 kundan eskirgan saytlarni avtomatik oʻchiradi. Takroriy ochilgan saytlar roʻyxatda qayta chiqishi mumkin. Chrome sozlamalari orqali istalgan vaqt reklama taklif qilgan saytni bloklash va saytlarning reklama taklif qilishini taqiqlash mumkin.</translation>
 <translation id="3921869355029467742">Himoya kodini kiriting</translation>
 <translation id="3927932062596804919">Taqiqlash</translation>
 <translation id="393316646445601645">Internet va telekom</translation>
@@ -1350,6 +1352,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4287495839370498922">Chrome brauzerida reklamalardagi kuchaytirilgan maxfiylik</translation>
 <translation id="4287885627794386150">Sinov funksiyasi bor, lekin faol emas</translation>
 <translation id="4290920330097335010">Ruxsat berilmasin</translation>
+<translation id="4296207570293932800">Reklamada maxfiylik yangi funksiyalari chiqdi</translation>
 <translation id="4297502707443874121">Sahifa eskizi: <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investitsiya</translation>
 <translation id="42981349822642051">Kengaytirish</translation>
@@ -1621,6 +1624,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="495170559598752135">Harakatlar</translation>
 <translation id="4953689047182316270">Qulayliklar ishlatilishi</translation>
 <translation id="4958444002117714549">Ro‘yxatni yoyish</translation>
+<translation id="4960068118612257147">Chrome reklamada maxfiylik sozlamalari orqali oʻzgartirish mumkin.</translation>
 <translation id="4964505745997821360">Sogʻliq sugʻurtasi</translation>
 <translation id="4968522289500246572">Bu ilova mobil qurilmalar uchun ishlab chiqilgan va oʻlchami bexato oʻzgarmasligi mumkin. Ishlashida xato chiqishi yoki qaytadan ishga tushishi mumkin.</translation>
 <translation id="4968665849807487749">Barcha displeylaringizda oynalarni boshqarishni soʻrashingiz mumkin</translation>

@@ -151,6 +151,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="1810845389119482123">Synkronoinnin alkumääritys ei valmis</translation>
 <translation id="1829244130665387512">Haku sivulta</translation>
 <translation id="1832459821645506983">Kyllä</translation>
+<translation id="185383612275551373">Synkronoi saadaksesi osuvinta sisältöä Googlelta</translation>
 <translation id="1854311313115643875">Kokeilujen aikana käyttämäsi sivustot voivat pyytää Chromelta mainosten mittaamisen avulla tietoja, jotka auttavat mittaamaan sivustoilla näkyvien mainosten suoriutumista. Mainosten mittaaminen rajoittaa sivustojen välistä seurantaa siirtämällä mahdollisimman vähän tietoja sivustojen välillä.
 
 Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat myös siihen liittyvät mittaustiedot. Tarkista <ph name="BEGIN_LINK" />selaushistoriasi<ph name="END_LINK" />.</translation>
@@ -242,7 +243,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2386938421315164605">Piilota ja näytä aiheita</translation>
 <translation id="2390510615457643724">Haluatko, että <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ladataan uudelleen?</translation>
 <translation id="2394602618534698961">Lataamasi tiedostot näkyvät tässä</translation>
-<translation id="2407481962792080328">Tämä ominaisuus otetaan käyttöön, kun kirjaudut Google-tilillesi</translation>
 <translation id="2410754283952462441">Valitse tili</translation>
 <translation id="2414886740292270097">Tumma</translation>
 <translation id="2426805022920575512">Valitse toinen tili</translation>
@@ -299,6 +299,7 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="265156376773362237">Vakioesilataus</translation>
 <translation id="2656405586795711023">Verkkosovellukset</translation>
 <translation id="2669454659051515572">Kaikki tämän laitteen käyttäjät voivat nähdä ladatut tiedostot</translation>
+<translation id="2688382350024736268">Chrome jakaa nyt vain hyvin rajallisia tietoja sivustojen ja sovellusten välillä (esim. kun mainos on näytetty sinulle), jotta sivustot voivat mitata mainosten tuloksia.</translation>
 <translation id="2702516483241149200">Uutta: jaa linkki, joka vie tähän tekstiin</translation>
 <translation id="2707726405694321444">Päivitä sivu</translation>
 <translation id="271033894570825754">Uusi</translation>
@@ -847,6 +848,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="562289928968387744">Ylläpidä reaktioita</translation>
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lukematon – luettavissa ilman verkkoyhteyttä</translation>
+<translation id="5635091213277904818">Chrome poistaa automaattisesti yli 30 päivää vanhat sivustot. Jos käyt taas sivustolla, se voi näkyä listalla uudelleen. Voit myös estää sivustoa ehdottamasta mainoksia sinulle.</translation>
 <translation id="5639724618331995626">Salli kaikki sivustot</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Hakuhistoriaa<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muita toimintoja<ph name="END_LINK2" /> voidaan tallentaa Google-tilillesi.</translation>
 <translation id="564667659802381754">Yksityisyysopas <ph name="BEGIN_NEW" />uusi<ph name="END_NEW" /></translation>
@@ -1172,6 +1174,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7291910923717764901">Kuvaselitykset lisätty tälle sivulle</translation>
 <translation id="7293429513719260019">Valitse kieli</translation>
 <translation id="729975465115245577">Laitteella ei ole sovellusta, johon salasanatiedoston voisi tallentaa.</translation>
+<translation id="7304072650267745798">Android-laitteellasi voi olla vastaava asetus. Jos asetus on päällä Chromessa ja Android-laitteella, yritys voi pystyä mittaamaan mainoksen tehokkuutta kaikilla verkkosivustoilla ja käyttämissäsi sovelluksissa.</translation>
 <translation id="7304873321153398381">Offline-tilassa. Chrome ei voi tarkistaa salasanojasi.</translation>
 <translation id="7313188324932846546">Ota synkronointi käyttöön napauttamalla</translation>
 <translation id="7332075081379534664">Sisäänkirjautuminen onnistui</translation>
@@ -1254,6 +1257,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7682724950699840886">Kokeile seuraavia keinoja: varmista, että laitteellasi on tarpeeksi tilaa, yritä viedä uudelleen.</translation>
 <translation id="7686086654630106285">Lisätietoja sivuston ehdottamista mainoksista</translation>
 <translation id="768618399695552958">Jotkin avaamistasi sivuista ovat esiladattuja. Sivut on mahdollisesti esiladattu Googlen palvelimien kautta, kun niihin on linkitetty Googlen sivustolta.</translation>
+<translation id="7690596512217303514">Laite ei voinut avata Chromea. Voit korjata ongelman lataamalla uusimman Chrome-päivityksen sovelluskaupasta.</translation>
 <translation id="7691043218961417207">Tutustu seurattavaan sisältöön</translation>
 <translation id="7697383401610880082">Vetokahva</translation>
 <translation id="7698359219371678927">Luo sähköposti sovelluksessa <ph name="APP_NAME" /></translation>
@@ -1365,6 +1369,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8209050860603202033">Avaa kuva</translation>
 <translation id="8216351761227087153">Katso</translation>
 <translation id="8218622182176210845">Ylläpidä tiliäsi</translation>
+<translation id="8221401890884589479">Voit estää sivustot, joita et halua. Chrome myös poistaa listalta automaattisesti yli 30 päivää vanhat sivustot. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Fiidikottien valikko</translation>
 <translation id="8236097722223016103">Lisää kirjanmerkkeihin</translation>
 <translation id="8250920743982581267">Dokumentit</translation>

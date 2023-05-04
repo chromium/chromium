@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="kk">
+<translation id="100506692671054486">алдыңғы пәрмен жоқ</translation>
 <translation id="1009046985747440431">Жылжу үшін жоғары не төмен көрсеткі пернесін, ал іске қосу үшін Enter пернесін басыңыз.</translation>
 <translation id="1011903154582639569">Пернені тауып, қажетті таңбаны енгізу үшін саусағыңызды көтеріңіз</translation>
 <translation id="1012173283529841972">Тізім элементі</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Ақшыл күлгін</translation>
 <translation id="3943857333388298514">Қою</translation>
 <translation id="3962990492275676168">Ағымдағы орыннан оқуды бастау</translation>
+<translation id="397094149579293440">таңдалған мәтін жоқ</translation>
 <translation id="3970951409746498040">Сарғыш қоңыр</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">Күңгірт сары</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Алдыңғы 1-деңгей тақырыбы жоқ.</translation>
 <translation id="4787577491510559358">Ағымдағы элементті форматтауды жариялау</translation>
 <translation id="479989351350248267">іздеу</translation>
+<translation id="4802034228771424756">фокусталған мәтін өрісі жоқ</translation>
 <translation id="4804818685124855865">Ажырату</translation>
 <translation id="481165870889056555">Ағымдағы беттің тақырыбын жариялау</translation>
 <translation id="4815668758102003883">Бозғылт көк</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Ішкі сілтеме</translation>
 <translation id="4909019435900810068">Бір сөз артқа жылжыту</translation>
 <translation id="4911349081560453449">Алдыңғы құсбелгі ұяшығы жоқ.</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> мүмкін емес, қайталап көріңіз.</translation>
 <translation id="492295894462528572">Сөз басы</translation>
 <translation id="495046168593986294">Жоғарыға айналдыру</translation>
 <translation id="495170559598752135">Әрекеттер</translation>
 <translation id="4953585991029886728">Мәтінді өзгерту</translation>
+<translation id="4964701498510730546">мәтін өрісі бос</translation>
 <translation id="4973717656530883744">Ең азы <ph name="X" /></translation>
 <translation id="4974612477719259470">Алдыңғы түйме жоқ.</translation>
 <translation id="4979404613699303341">Алдыңғы түйме</translation>
+<translation id="4981239367072766915">енгізілген дерек танылмады</translation>
 <translation id="4982917827052020884">Үнемі пайдаланатын пернелерден бастайық. Қазір оқылып жатқан кез келген сөзді Ctrl пернесімен тоқтатуға болады. Ctrl пернесі пернетақтаның төменгі сол жақ бұрышында орналасқан. Жалғастыру үшін Ctrl пернесін басыңыз.</translation>
 <translation id="4983588134362688868">Беттің басына өту</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, терезе</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Ағымдағы батарея күйін жариялау</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, радио түйме таңдалды</translation>
 <translation id="5012724933919010465"><ph name="NAME" /> мәзір элементінің ауыстырып қосқышы таңдалған</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> мүмкін емес, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Дауыспен енгізу арқылы кіру функциясын қосу</translation>
 <translation id="5041394372352067729">Брайль дисплейін беттің жоғарғы жағына жылжыту</translation>
 <translation id="5042770794184672516">Дауыс деңгейін арттыру</translation>

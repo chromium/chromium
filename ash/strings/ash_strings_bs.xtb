@@ -221,6 +221,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1961239773406905488">Pregled kamere je skriven</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zaključavanje ekrana</translation>
+<translation id="1962972976741217487">Jedan uređaj povezan je s vašom <ph name="DEVICE_NAME" /> žarišnom točkom</translation>
 <translation id="1967970931040389207">Uključi pristupnu tačku</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Zdravo, <ph name="USERNAME" /></translation>
@@ -931,6 +932,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5297704307811127955">Isključeno</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5302048478445481009">Jezik</translation>
+<translation id="5303783651764314393">Ovoliko uređaja povezano je s vašom <ph name="DEVICE_NAME" /> žarišnom točkom: <ph name="DEVICECOUNT" /></translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5313326810920013265">Bluetooth postavke</translation>
 <translation id="5314219114274263156">Snimak ekrana je napravljen</translation>
@@ -999,7 +1001,6 @@ Povežite uređaj na napajanje.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Pritisnite Ctrl + Alt + Z da onemogućite izgovaranje povratnih informacija.</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601571553788043181">Otvaranje fajla u pregledniku Chrome</translation>
 <translation id="5618148318840095371">Prebacili smo vas na bolju mrežu</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućavaju snimanje ekrana</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -1338,6 +1339,7 @@ Nova instalacija</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Vraćanje na staru rezoluciju za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
+<translation id="7187711731540696127">Vaša je <ph name="DEVICE_NAME" /> žarišna točka uključena, nije povezan nijedan uređaj</translation>
 <translation id="7188494361780961876">Meni je pomjeren u gornji lijevi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko je udaljena Venera</translation>
 <translation id="7198435252016571249">Kamera se uklopila u donji desni ugao. Došlo je do konflikta s površinom sistema.</translation>
@@ -1417,7 +1419,6 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="7569509451529460200">Braillevo pismo i ChromeVox su omogućeni</translation>
 <translation id="7573585051776738856">Aktivni prozor je priključen na desnoj strani.</translation>
 <translation id="7579778809502851308">Snimanje ekrana</translation>
-<translation id="7590883480672980941">Postavke unosa</translation>
 <translation id="7593891976182323525">Tipka za pretraživanje ili Shift</translation>
 <translation id="7600875258240007829">Prikaži sva obavještenja</translation>
 <translation id="7607002721634913082">Pauzirano</translation>

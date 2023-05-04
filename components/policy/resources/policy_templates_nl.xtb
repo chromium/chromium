@@ -317,7 +317,6 @@ Als je het beleid niet instelt, is het beleid <ph name="ASK_WINDOW_MANAGEMENT_PO
 
 Dit vervangt het beëindigde beleid <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" />.</translation>
 <translation id="129206366270737897">Zet alle asynchrone methoden van <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> uit.</translation>
-<translation id="129392056654547767">De UEFI-firmware-image die door de VM wordt gebruikt. Dit bestaat als tijdelijke maatregel terwijl we het pakket verpakken als ChromeOS DLC.</translation>
 <translation id="1294263471858445589">Ambient-verificatie in normale en incognitosessies aanzetten.</translation>
 <translation id="1295737447968372331">Dicteren op het inlogscherm aanzetten</translation>
 <translation id="1297182715641689552">Een PAC-script voor de proxy gebruiken</translation>
@@ -601,7 +600,6 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor Cloudbeheer voor de Chrome-browser. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="1530812829012954197">De volgende URL-patronen altijd verwerken in de hostbrowser</translation>
 <translation id="1542491165152947087">Sta gebruikers toe de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentieonderwerpen op hun apparaat aan of uit te zetten.</translation>
-<translation id="1547424904796464052">Hexadecimale gecodeerde SHA-256-hash van de firmware-image.</translation>
 <translation id="1550295162561011575">Als je dit beleid instelt, kunnen beheerders automatisering instellen om apps te starten op <ph name="PRODUCT_NAME" />-apparaten. Deze apps kunnen worden gestart nadat de gebruiker is ingelogd of kunnen gelijktijdig door de gebruiker worden gestart vanuit de launcher.</translation>
 <translation id="1552418937045050762">Als deze instelling aanstaat, kunnen gebruikers zich aanmelden voor Dichtbij delen. Daarmee kunnen ze bestanden sturen naar en ontvangen van mensen in de buurt.
 
@@ -3323,13 +3321,6 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4025500273782820766">Sta toe dat gebruikers 'Altijd toestaan' selecteren als een dialoogvenster voor externe protocollen wordt getoond om toekomstige bevestigingsprompts over te slaan</translation>
 <translation id="402759845255257575">Niet toestaan dat sites JavaScript uitvoeren</translation>
 <translation id="4027608872760987929">Standaard zoekprovider gebruiken</translation>
-<translation id="4027904270588278067">Als je het beleid instelt, wordt de map ingesteld die Chrome gebruikt voor het downloaden van bestanden. Chrome gebruikt de opgegeven map, ongeacht of de gebruiker een map heeft gespecificeerd of heeft aangegeven dat er elke keer om een downloadlocatie moet worden gevraagd.
-
-      Dit beleid overschrijft het beleid <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-
-      Als je het beleid niet instelt, gebruikt Chrome de standaard downloadmap en kunnen gebruikers deze wijzigen.
-
-      Opmerking: Bekijk een lijst met variabelen die je kunt gebruiken (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4030152268425532846">Automatisch inloggen voortijdig afbreken niet toestaan</translation>
 <translation id="4043796890723386527">Voorkomen dat gebruikers secundaire profielen maken en gebruiken of dat ze de gastmodus gebruiken in de <ph name="LACROS_NAME" />-browser</translation>
 <translation id="4051723201852944592">Occlusie van vensters aanzetten</translation>
@@ -4436,17 +4427,6 @@ Als je dit beleid instelt op True of niet instelt, volgt de rapportage van diagn
 <translation id="519247340330463721">Beleid met betrekking tot Safe Browsing configureren.</translation>
 <translation id="5194683382395300627">Toestaan dat <ph name="ASSISTANT_PRODUCT_NAME" /> wordt gebruikt op internet, bijvoorbeeld om wachtwoorden automatisch te wijzigen</translation>
 <translation id="5196630732055960309">De File Handling API toestaan voor deze web-apps</translation>
-<translation id="5198660575318473544">Bepaal of Manifest v2-extensies kunnen worden gebruikt op het <ph name="PRODUCT_OS_NAME" />-inlogscherm.
-
-Ondersteuning voor Manifest v2-extensies wordt beëindigd en alle extensies moeten in de toekomst worden overgezet naar v3. Je kunt meer informatie en een tijdlijn van de migratie vinden op https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Als je het beleid instelt op <ph name="DEFAULT" /> (0) of niet instelt, wordt het laden van v2-extensies bepaald door het apparaat op basis van de bovenstaande tijdlijn.
-Als je het beleid instelt op <ph name="DISABLE" /> (1), wordt de installatie van v2-extensies geblokkeerd. Bestaande extensies worden uitgezet. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld nadat de v2-ondersteuning standaard is uitgezet.
-Als je het beleid instelt op <ph name="ENABLE" /> (2), zijn v2-extensies toegestaan. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
-Als je het beleid instelt op <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), zijn afgedwongen geïnstalleerde v2-extensies toegestaan. Dit omvat extensies die worden vermeld in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> met <ph name="INSTALLATION_MODE" /> force_installed of normal_installed. Alle andere v2-extensies staan uit. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
-
-
-De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsregels.</translation>
 <translation id="5206454085187851382">Als <ph name="PRINTERS_ALLOWLIST" /> wordt gekozen voor <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, kun je door <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> in te stellen aangeven welke printers gebruikers kunnen gebruiken. Alleen printers waarvan de ID's overeenkomen met de waarden in dit beleid, zijn beschikbaar voor de gebruiker. De ID's moeten overeenkomen met het veld <ph name="ID_FIELD" /> of <ph name="GUID_FIELD" /> in het bestand dat is opgegeven in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Bepaalt of <ph name="PRODUCT_NAME" /> in Linux systeemmeldingen gebruikt.
 
@@ -7555,7 +7535,6 @@ Het gebruik van <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> of <ph name="LA
 <translation id="802776363472387903">De SHA-256-hash van de <ph name="PLUGIN_VM_NAME" />-afbeelding.</translation>
 <translation id="8028814157747157754">De standaard zoekprovider aanzetten en toestaan dat gebruikers de lijst met zoekproviders wijzigen</translation>
 <translation id="8029201909194194377">Maximale toegestane sessieduur voor verbindingen voor externe toegang</translation>
-<translation id="8033908599068513676">URL van de firmware-image die moet worden gedownload.</translation>
 <translation id="8035570672225663428">Het model voor aangepast opladen aanzetten om het oplaadproces te onderbreken om de batterijduur te verlengen</translation>
 <translation id="8044493735196713914">Opstartmodus van apparaat melden</translation>
 <translation id="8044720778481009876">De bestemmingen <ph name="CLOUD_PRINT_NAME" /> en Opslaan in Google Drive (beëindigd)</translation>
@@ -8531,6 +8510,11 @@ Als je dit beleid niet toepast, wordt het oude gedrag gebruikt.
 Als je dit beleid niet instelt, wordt het nieuwe gedrag gebruikt, net als bij de rest van de Chromium-gebruikers.</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
+<translation id="8961117818679701775">Met dit beleid kan een beheerder instellingen voor geïnstalleerde web-apps opgeven. Dit beleid wijst een web-app-ID toe aan de specifieke instelling. Met de speciale ID <ph name="DEFAULT_SCOPE" /> kan een standaardconfiguratie worden ingesteld die van toepassing is op alle web-apps waarvoor geen aangepaste configuratie is ingesteld in dit beleid.
+
+Het veld <ph name="MANIFEST_ID_FIELD" /> is de manifest-ID voor de web-app. Zie <ph name="WEB_APP_ID_REFERENCE_URL" /> voor instructies om de manifest-ID voor een geïnstalleerde web-app te bepalen.
+Het veld <ph name="RUN_ON_OS_LOGIN_FIELD" /> geeft aan of een web-app kan worden uitgevoerd tijdens de OS-login. Als dit veld is ingesteld op <ph name="BLOCKED" />, wordt de web-app niet uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet aanzetten. Als dit veld is ingesteld op <ph name="RUN_WINDOWED" />, wordt de web-app uitgevoerd tijdens de OS-login en kan de gebruiker dit later niet uitzetten. Als dit veld is ingesteld op <ph name="ALLOWED" />, kan de gebruiker instellen dat de web-app wordt uitgevoerd tijdens de OS-login. De standaardconfiguratie staat alleen de waarden <ph name="ALLOWED" /> en <ph name="BLOCKED" /> toe
+(Sinds versie 115) Het veld <ph name="PREVENT_CLOSE_FIELD" /> geeft aan of het sluiten van een web-app op een bepaalde manier wordt voorkomen (bijvoorbeeld door de gebruiker, taakbeheer, web-API's). Dit gedrag kan alleen worden aangezet als <ph name="RUN_ON_OS_LOGIN_FIELD" /> is ingesteld op <ph name="RUN_WINDOWED" />. Als de app al actief was, wordt deze property pas van kracht nadat de app opnieuw is opgestart. Als dit veld niet is gedefinieerd, kunnen gebruikers apps sluiten.</translation>
 <translation id="8970205333161758602">De prompt <ph name="PRODUCT_FRAME_NAME" /> negeren</translation>
 <translation id="8973579598359969188">Kiezen of je gebruikers de <ph name="PRIVACY_SANDBOX_NAME" />-prompt te zien kunnen krijgen</translation>
 <translation id="8974588819713914715">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan het beleid <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>

@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
-<translation id="209751264101900360">מעלות השחר עד לרדת החושך – תנועת העננים</translation>
 <translation id="2102231663024125441">עריכת טקסט</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">במהלך עדכון הקושחה אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. העדכון הזה עשוי לקחת כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל במהלכו.</translation>
 <translation id="3486220673238053218">הגדרה</translation>
 <translation id="3488065109653206955">מופעל חלקית</translation>
+<translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3969602104473960991">‏הסיסמה של ChromeOS עודכנה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
-<translation id="3974175076798940554">‏עכשיו אפשר לגשת לנכסים בלעדיים של Chromebook Plus</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="3993704782688964914">עכשיו המכשיר <ph name="DEVICE_NAME" /> מעודכן</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">מדיה</translation>
 <translation id="4289540628985791613">סקירה כללית</translation>
 <translation id="4289849978083912975">מצגת</translation>
-<translation id="4293621540182258188">מעלות השחר עד לרדת החושך – תנועת כדור הארץ</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4311195029067684288">מלא</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">הגברה של בהירות התצוגה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
-<translation id="5809090008577139505">הזוהר הצפוני</translation>
 <translation id="5826644637650799838">מידע על יצירת האומנות</translation>
 <translation id="5832805196449965646">הוספת משתמש</translation>
 <translation id="583281660410589416">לא ידוע</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">הצבע העיקרי</translation>
 <translation id="5916084858004523819">אסור</translation>
 <translation id="5916664084637901428">פועל</translation>
-<translation id="5918201491776799918">‏בחירת יצירות אומנות בלעדיות ב-Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{הקובץ נסרק בהצלחה ונשמר בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{הקבצים נסרקו בהצלחה ונשמרו בתיקייה <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5939518447894949180">איפוס</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">עיצוב</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">הפעלת העיצוב הכהה</translation>
+<translation id="6285899124799306373">פתיחה של מרכז האפליקציות</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="631063167932043783">‏האפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="6319207335391420837">יש לעדכן את הקושחה של <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">תצוגה מקדימה של שומר המסך</translation>
 <translation id="6388847657025262518">מזין המסמכים של הסורק תקוע. יש לבדוק אותו ולנסות שוב.</translation>
 <translation id="6394634179843537518">הוספה של קובץ</translation>
+<translation id="6401427872449207797">חיפוש בדפדפן</translation>
 <translation id="6410257289063177456">קובצי תמונה</translation>
 <translation id="641081527798843608">התאמת נושא</translation>
 <translation id="6412715219990689313">מקלדת מובנית</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
 <translation id="7658239707568436148">ביטול</translation>
 <translation id="7665800271478495366">החלפת הדמות</translation>
-<translation id="7675241868020048622">הזוהר הצפוני (עם אפשרויות בלעדיות)</translation>
 <translation id="7690294790491645610">אישור הסיסמה החדשה</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
-<translation id="8153923300383192510">‏בלעדי ב-Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">צירוף</translation>
 <translation id="8206859287963243715">סלולארי</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">הפעלת המדיה</translation>
 <translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8329018942023753850">אפליקציית המחשבון</translation>
+<translation id="8335869473001018124">פתיחת החיפוש</translation>
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8347227221149377169">משימות הדפסה</translation>
 <translation id="8351855506390808906">נקודת מגע למיפוי מקשים</translation>

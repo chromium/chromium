@@ -547,7 +547,6 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4642472735733036929">Prezioaren jarraipena egiteari utzi zaio</translation>
 <translation id="4650125387981512669">Egin aurrera <ph name="FIRST_RUN_ACCOUNT_NAME" /> gisa</translation>
 <translation id="4652817563047461855">Ziurtatu zure pasahitzak babestuta daudela, jakin arriskuan jarri diren eta jaso zeure burua sarean babesteko aholkuak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Google-ko kontuan saioa hastean, aktibatu egiten da eginbide hau.</translation>
 <translation id="4659667755519643272">Sartu fitxa-aldatzailean</translation>
 <translation id="46614316059270592">Gorde pasahitza</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> gisa hasi duzu saioa.
@@ -610,6 +609,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4979397965658815378">Hasi saioa Google-ko kontuarekin laster-markak, historia, pasahitzak eta bestelako ezarpenak gailu guztietan eskura izateko</translation>
 <translation id="4986678885919050584">Ken ezazu gailu honetatik</translation>
 <translation id="498985224078955265">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bi gailuetan.</translation>
+<translation id="4996567535980789550">Ikusten duzun edukia kudeatzeko, aktibatu sinkronizazioa</translation>
 <translation id="5005498671520578047">Kopiatu pasahitza</translation>
 <translation id="5016420433031926653">Bidali <ph name="USER_EMAIL" /> helbidera</translation>
 <translation id="5017828934289857214">Gogorarazi geroago</translation>
@@ -666,6 +666,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="543338862236136125">Editatu pasahitza</translation>
 <translation id="5433691172869980887">Kopiatu da erabiltzaile-izena</translation>
 <translation id="5439599923922718668">Gehien bisitatutakoak</translation>
+<translation id="5439618055789623719"><ph name="USER_EMAIL" /> gisa hasi duzu saioa</translation>
 <translation id="54401264925851789">Orriaren segurtasunaren informazioa</translation>
 <translation id="5443952882982198570">Kreditu-txartelak</translation>
 <translation id="5444892875087332195">Laster-markak</translation>
@@ -1236,6 +1237,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9034759925968272072">Ez da amaituko Google-ko kontuko saioa. Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk edukitzea <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> webgunean.</translation>
 <translation id="9037965129289936994">Ikusi jatorrizkoa</translation>
 <translation id="9039373489628511875">Banda-zabalera</translation>
+<translation id="9043368763795653245">Discover jarioa eta Chrome pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="9055772144595778347">Ezin da hasi saioa</translation>
 <translation id="9055960261314198756">Babes hobetua desaktibatuta dago</translation>
 <translation id="9057972802061533987">Ezin zaio jarraitu. Arazoren bat izan da.</translation>

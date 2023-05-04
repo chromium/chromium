@@ -316,7 +316,6 @@
 
 此政策取代了已弃用的 <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> 政策。</translation>
 <translation id="129206366270737897">停用 <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> 的所有异步方法。</translation>
-<translation id="129392056654547767">虚拟机使用的 UEFI 固件映像。在我们将其作为 ChromeOS DLC 打包时，这是一项临时措施。</translation>
 <translation id="1294263471858445589">为无痕会话和常规会话启用静默身份验证。</translation>
 <translation id="1295737447968372331">在登录屏幕上启用“语音输入”</translation>
 <translation id="1297182715641689552">使用 .pac 代理脚本</translation>
@@ -598,7 +597,6 @@
       在 <ph name="MS_WIN_NAME" /> 上，此功能仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、在 Windows 10 专业版上运行的实例，或已注册 Chrome 浏览器云管理的实例。在 <ph name="MAC_OS_NAME" /> 上，此功能仅适用于通过 MDM 进行管理或通过 MCX 加入网域的实例。</translation>
 <translation id="1530812829012954197">总是通过托管浏览器呈现以下网址格式</translation>
 <translation id="1542491165152947087">允许用户在其设备上开启或关闭 <ph name="PRIVACY_SANDBOX_NAME" /> 广告主题设置。</translation>
-<translation id="1547424904796464052">固件映像的十六进制编码 SHA-256 哈希。</translation>
 <translation id="1550295162561011575">设置此政策后，管理员就可以配置在 <ph name="PRODUCT_NAME" /> 设备上启动应用的自动化设置。这些应用可在用户登录时启动，也可由用户从启动器中一并启动。</translation>
 <translation id="1552418937045050762">如果您启用了此设置，用户将能够选择启用“附近分享”功能，以便和附近的人互相发送文件。
 
@@ -3310,13 +3308,6 @@
 <translation id="4025500273782820766">允许用户在系统显示外部协议对话框时选择“始终允许”，以跳过后续的确认提示</translation>
 <translation id="402759845255257575">不允许任何网站运行 JavaScript</translation>
 <translation id="4027608872760987929">启用默认搜索服务提供商</translation>
-<translation id="4027904270588278067">通过设置此政策，您可以配置供 Chrome 用于下载文件的目录。无论用户是指定了一个目录，还是开启了 flag，要求系统在每次下载前都向用户询问文件保存位置，Chrome 都会使用此政策中提供的目录。
-
-      此政策会覆盖 <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" /> 政策。
-
-      如果您未设置此政策，Chrome 会使用默认下载目录，而且用户可以更改此目录。
-
-      注意：查看您可以使用哪些变量 ( https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables )。</translation>
 <translation id="4030152268425532846">禁止取消自动登录</translation>
 <translation id="4043796890723386527">禁止用户在 <ph name="LACROS_NAME" /> 浏览器中创建和使用次级个人资料以及使用访客模式</translation>
 <translation id="4051723201852944592">启用窗口遮挡</translation>
@@ -4424,17 +4415,6 @@
 <translation id="519247340330463721">配置与安全浏览功能相关的政策。</translation>
 <translation id="5194683382395300627">允许在网页上使用 <ph name="ASSISTANT_PRODUCT_NAME" />来实现诸多目的（例如启用自动更改密码的功能）</translation>
 <translation id="5196630732055960309">允许在这些 Web 应用上使用 File Handling API</translation>
-<translation id="5198660575318473544">控制可否在 <ph name="PRODUCT_OS_NAME" /> 登录页面上使用 Manifest V2 扩展程序。
-
-对 Manifest V2 扩展程序的支持将被弃用，日后所有扩展程序都需要迁移到 V3。如需了解详情和迁移时间轴，请访问 https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/。
-
-如果此政策设为 <ph name="DEFAULT" /> (0) 或未设置，设备会根据上述时间轴决定是否加载 V2 扩展程序。
-如果此政策设为 <ph name="DISABLE" /> (1)，系统会禁止安装 V2 扩展程序，并停用已安装的这类扩展程序。在 V2 支持被默认关闭之后，系统对该选项的处理方式将与未设置此政策时的情形相同。
-如果此政策设为 <ph name="ENABLE" /> (2)，系统将允许安装 V2 扩展程序。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
-如果此政策设为 <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3)，系统将允许使用强制安装的 V2 扩展程序。这包括由 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 列出且 <ph name="INSTALLATION_MODE" /> 为“force_installed”或“normal_installed”的扩展程序。所有其他 V2 扩展程序均会被停用。在 V2 支持被默认关闭之前，系统对该选项的处理方式将与未设置此政策时的情形相同。
-
-
-扩展程序的可用性仍由其他政策控制。</translation>
 <translation id="5206454085187851382">如果为 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_ALLOWLIST" />，您便可通过设置 <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> 来指定用户可以使用哪些打印机。用户将只能使用那些符合条件（ID 与此政策中所列的值匹配）的打印机。ID 必须与 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="5207543664699568887">配置 Linux 上的 <ph name="PRODUCT_NAME" /> 是否会使用系统通知。
 
@@ -7538,7 +7518,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="802776363472387903"><ph name="PLUGIN_VM_NAME" /> 图片的 SHA-256 哈希值。</translation>
 <translation id="8028814157747157754">启用默认搜索服务提供商并允许用户修改搜索服务提供商列表</translation>
 <translation id="8029201909194194377">远程访问连接可达到的会话时长上限</translation>
-<translation id="8033908599068513676">要下载的固件映像的网址。</translation>
 <translation id="8035570672225663428">启用“自适应充电”模式以暂缓充电进程，进而延长电池寿命</translation>
 <translation id="8044493735196713914">报告设备引导模式</translation>
 <translation id="8044720778481009876"><ph name="CLOUD_PRINT_NAME" />和“保存到 Google 云端硬盘”目的地（已弃用）</translation>

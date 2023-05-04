@@ -547,7 +547,6 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="4642472735733036929">Monitorimi i çmimeve ndaloi</translation>
 <translation id="4650125387981512669">Vazhdo si <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Sigurohu që fjalëkalimet e tua të jetë të sigurta, zbulo nëse janë komprometuar dhe merr këshilla për të të ndihmuar për mbrojtjen tënde në linjë. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar.</translation>
 <translation id="4659667755519643272">Futu te "Ndërruesi i skedave"</translation>
 <translation id="46614316059270592">Ruaj fjalëkalimin</translation>
 <translation id="4666531726415300315">Je identifikuar si <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4979397965658815378">Identifikohu me llogarinë e Google për të marrë faqeshënuesit, fjalëkalimet, historikun dhe cilësime të tjera në të gjitha pajisjet e tua.</translation>
 <translation id="4986678885919050584">Hiq nga kjo pajisje</translation>
 <translation id="498985224078955265">Për ta dërguar këtë skedë te një pajisje tjetër, identifikohu në Chrome në të dyja pajisjet.</translation>
+<translation id="4996567535980789550">Aktivizo sinkronizimin për të menaxhuar përmbajtjet që shikon</translation>
 <translation id="5005498671520578047">Kopjo fjalëkalimin</translation>
 <translation id="5016420433031926653">Dërgo te <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Më kujto më vonë</translation>
@@ -666,6 +666,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="543338862236136125">Redakto fjalëkalimin</translation>
 <translation id="5433691172869980887">Emri i përdoruesit u kopjua</translation>
 <translation id="5439599923922718668">Të vizituara shpesh</translation>
+<translation id="5439618055789623719">Identifikuar si <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informacioni i sigurisë së faqes</translation>
 <translation id="5443952882982198570">Kartat e kreditit</translation>
 <translation id="5444892875087332195">Faqeshënuesit</translation>
@@ -1236,6 +1237,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9034759925968272072">Nuk do të dalësh nga llogaria e Google. Llogaria jote e Google mund të ketë forma të tjera të historikut të shfletimit në <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Shfaq origjinalin</translation>
 <translation id="9039373489628511875">Gjerësia e bandës</translation>
+<translation id="9043368763795653245">Për të personalizuar furnizimin tënd të "Zbulo" dhe Chrome, aktivizo sinkronizimin.</translation>
 <translation id="9055772144595778347">Nuk mund të identifikohet</translation>
 <translation id="9055960261314198756">Mbrojtja e përmirësuar është joaktive</translation>
 <translation id="9057972802061533987">Nuk mund të ndiqet. Ndodhi një gabim.</translation>

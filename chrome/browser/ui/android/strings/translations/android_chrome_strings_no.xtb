@@ -243,7 +243,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2386938421315164605">Skjul emner og gjør dem synlige</translation>
 <translation id="2390510615457643724">Vil du laste ned <ph name="FILE_NAME" /> <ph name="FILE_SIZE" /> på nytt?</translation>
 <translation id="2394602618534698961">Filer du laster ned, vises her</translation>
-<translation id="2407481962792080328">Når du logger på Google-kontoen din, blir denne funksjonen slått på</translation>
 <translation id="2410754283952462441">Velg en konto</translation>
 <translation id="2414886740292270097">Mørk</translation>
 <translation id="2426805022920575512">Velg en annen konto</translation>
@@ -300,6 +299,7 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="265156376773362237">Standard forhåndslasting</translation>
 <translation id="2656405586795711023">Nettprogrammer</translation>
 <translation id="2669454659051515572">Alle som bruker denne enheten, kan se nedlastede filer</translation>
+<translation id="2688382350024736268">Chrome deler nå bare svært begrenset informasjon mellom nettsteder og apper, for eksempel når det vises annonser, for å hjelpe nettsteder med å måle annonseresultatene.</translation>
 <translation id="2702516483241149200">Ny: del en link som ruller til denne teksten</translation>
 <translation id="2707726405694321444">Last inn siden på nytt</translation>
 <translation id="271033894570825754">Ny</translation>
@@ -848,6 +848,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="562289928968387744">Administrer reaksjoner</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulest – tilgjengelig uten nett</translation>
+<translation id="5635091213277904818">Chrome sletter automatisk nettsteder som er eldre enn 30 dager. Nettsteder du besøker på nytt, kan havne på listen igjen. Du kan også blokkere nettsteder fra å foreslå annonser for deg.</translation>
 <translation id="5639724618331995626">Tillat alle nettsteder</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søkeloggen<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />annen typer aktivitet<ph name="END_LINK2" /> kan lagres i Google-kontoen din.</translation>
 <translation id="564667659802381754">Personvernveiledning <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
@@ -1173,6 +1174,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7291910923717764901">Bildebeskrivelser er lagt til for denne siden</translation>
 <translation id="7293429513719260019">Velg språk</translation>
 <translation id="729975465115245577">Enheten din har ingen app som kan lagre passordfilen.</translation>
+<translation id="7304072650267745798">Android-enheten din har muligens en lignende innstilling. Hvis denne innstillingen er slått på i Chrome og på Android-enheten din, kan selskaper måle effektiviteten til annonser på alle nettsteder du besøker, og i alle apper du bruker.</translation>
 <translation id="7304873321153398381">Uten nett. Chrome kan ikke sjekke passordene dine.</translation>
 <translation id="7313188324932846546">Trykk for å konfigurere synkronisering</translation>
 <translation id="7332075081379534664">Påloggingen var vellykket</translation>
@@ -1255,6 +1257,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7682724950699840886">Prøv dette: Sørg for at det er nok plass på enheten, og prøv å eksportere på nytt.</translation>
 <translation id="7686086654630106285">Mer om annonser som foreslås på nettstedet</translation>
 <translation id="768618399695552958">Noen av sidene du besøker, er forhåndslastede. Sider kan bli forhåndslastet via Googles tjenere når de er linket på Google-nettsteder.</translation>
+<translation id="7690596512217303514">Kunne ikke åpne Chrome på enheten. For å løse problemet, last ned den nyeste Chrome-oppdateringen fra appbutikken.</translation>
 <translation id="7691043218961417207">Utforsk innhold du kan følge</translation>
 <translation id="7697383401610880082">Håndtak</translation>
 <translation id="7698359219371678927">Opprett en e-post i <ph name="APP_NAME" /></translation>
@@ -1366,6 +1369,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8209050860603202033">Åpne bildet</translation>
 <translation id="8216351761227087153">Se</translation>
 <translation id="8218622182176210845">Administrer kontoen din</translation>
+<translation id="8221401890884589479">Du kan blokkere nettsteder du ikke vil ha. Dessuten sletter Chrome automatisk nettsteder som er eldre enn 30 dager, fra listen. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Feedkortmeny</translation>
 <translation id="8236097722223016103">Legg til i bokmerker</translation>
 <translation id="8250920743982581267">Dokumenter</translation>

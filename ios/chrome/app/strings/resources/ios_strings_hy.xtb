@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">Գների հետագծումը կանգնեցված է</translation>
 <translation id="4650125387981512669">Շարունակել որպես <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Համոզվեք, որ ձեր գաղտնաբառերը վտանգված չեն, պարզեք՝ արդյոք դրանք չեն կոտրվել, և ստացեք խորհուրդներ, որոնք կօգնեն ձեզ պաշտպանվել համացանցում։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Այս գործառույթը միանում է, երբ դուք մտնում եք Google հաշիվ:</translation>
 <translation id="4659667755519643272">Բացել ներդիրների փոխանջատիչը</translation>
 <translation id="46614316059270592">Պահել գաղտնաբառը</translation>
 <translation id="4666531726415300315">Մուտք եք գործել <ph name="EMAIL" /> հաշիվ:
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">Մուտք գործեք ձեր Google հաշվով՝ ձեր էջանիշները, գաղտնաբառերը, պատմությունը և այլ կարգավորումները ձեր բոլոր սարքերում օգտագործելու համար:</translation>
 <translation id="4986678885919050584">Հեռացնել սարքից</translation>
 <translation id="498985224078955265">Այս ներդիրը մեկ այլ սարք ուղարկելու համար երկու սարքերում մուտք գործեք Chrome։</translation>
+<translation id="4996567535980789550">Միացրեք համաժամացումը, որպեսզի կառավարեք բովանդակությունը, որը տեսնում եք</translation>
 <translation id="5005498671520578047">Պատճենել գաղտնաբառը</translation>
 <translation id="5016420433031926653">Ուղարկվում են <ph name="USER_EMAIL" /> հասցեին</translation>
 <translation id="5017828934289857214">Հիշեցնել ինձ ավելի ուշ</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">Փոխել գաղտնաբառը</translation>
 <translation id="5433691172869980887">Օգտանունը պատճենվեց</translation>
 <translation id="5439599923922718668">Հաճախ այցելած</translation>
+<translation id="5439618055789623719">Մուտք եք գործել որպես <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Տեղեկություններ էջի հուսալիության մասին</translation>
 <translation id="5443952882982198570">Վարկային քարտեր</translation>
 <translation id="5444892875087332195">Էջանիշեր</translation>
@@ -1236,6 +1237,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9034759925968272072">Դուք դուրս չեք գա ձեր Google հաշվից: Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս: Դրանք կարող եք գտնել <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> էջում:</translation>
 <translation id="9037965129289936994">Ցույց տալ բնօրինակը</translation>
 <translation id="9039373489628511875">Թողունակություն</translation>
+<translation id="9043368763795653245">Ձեր Discover-ի ֆիդը և Chrome-ն անհատականացնելու համար միացրեք համաժամացումը։</translation>
 <translation id="9055772144595778347">Հնարավոր չէ մուտք գործել</translation>
 <translation id="9055960261314198756">Բարելավված պաշտպանությունն անջատված է</translation>
 <translation id="9057972802061533987">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>

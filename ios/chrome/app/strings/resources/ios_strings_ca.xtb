@@ -547,7 +547,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4642472735733036929">S'ha aturat el seguiment dels preus</translation>
 <translation id="4650125387981512669">Continua com a <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Assegura't que les teves contrasenyes siguin segures, esbrina si estan en perill i obtén consells per protegir-te en línia. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada.</translation>
 <translation id="4659667755519643272">Entra al selector de pestanyes</translation>
 <translation id="46614316059270592">Desa la contrasenya</translation>
 <translation id="4666531726415300315">Has iniciat la sessió com a <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4979397965658815378">Inicia la sessió amb el compte de Google per tenir les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració en tots els dispositius.</translation>
 <translation id="4986678885919050584">Suprimeix d'aquest dispositiu</translation>
 <translation id="498985224078955265">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome en els dos dispositius.</translation>
+<translation id="4996567535980789550">Activa la sincronització per gestionar el contingut que veus</translation>
 <translation id="5005498671520578047">Copia la contrasenya</translation>
 <translation id="5016420433031926653">Envia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Recorda-m'ho més tard</translation>
@@ -666,6 +666,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="543338862236136125">Edita la contrasenya</translation>
 <translation id="5433691172869980887">S'ha copiat el nom d'usuari</translation>
 <translation id="5439599923922718668">Visitats amb freqüència</translation>
+<translation id="5439618055789623719">Has iniciat la sessió com a <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informació de seguretat de la pàgina</translation>
 <translation id="5443952882982198570">Targetes de crèdit</translation>
 <translation id="5444892875087332195">Adreces d'interès</translation>
@@ -1236,6 +1237,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="9034759925968272072">No se us tancarà la sessió del compte de Google, el qual és possible que tingui altres formes de l'historial de navegació a <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra l'original</translation>
 <translation id="9039373489628511875">Amplada de banda</translation>
+<translation id="9043368763795653245">Per personalitzar Chrome i el tauler de Discover, activa la sincronització.</translation>
 <translation id="9055772144595778347">No es pot iniciar la sessió</translation>
 <translation id="9055960261314198756">La protecció millorada està desactivada</translation>
 <translation id="9057972802061533987">No es pot seguir. S'ha produït un error.</translation>

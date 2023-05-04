@@ -547,7 +547,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4642472735733036929">Prisovervågning er stoppet</translation>
 <translation id="4650125387981512669">Fortsæt som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Sørg for, at dine adgangskoder er beskyttet, find ud af, om de er blevet kompromitteret, og få gode råd til, hvordan du beskytter dig selv online. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Når du logger ind på din Google-konto, er denne funktion aktiveret.</translation>
 <translation id="4659667755519643272">Åbn Faneskift</translation>
 <translation id="46614316059270592">Gem adgangskode</translation>
 <translation id="4666531726415300315">Logget ind som <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4979397965658815378">Log ind med din Google-konto for at få adgang til dine bogmærker, dine adgangskoder, din historik og andre indstillinger på alle dine enheder.</translation>
 <translation id="4986678885919050584">Fjern fra denne enhed</translation>
 <translation id="498985224078955265">Hvis du vil sende denne fane til en anden enhed, skal du logge ind på Chrome på begge enheder.</translation>
+<translation id="4996567535980789550">Aktivér synkronisering for at administrere det indhold, du ser</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påmind mig senere</translation>
@@ -666,6 +666,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="543338862236136125">Rediger adgangskode</translation>
 <translation id="5433691172869980887">Brugernavnet er kopieret</translation>
 <translation id="5439599923922718668">Ofte besøgt</translation>
+<translation id="5439618055789623719">Logget ind som <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Oplysninger om sidesikkerhed</translation>
 <translation id="5443952882982198570">Kreditkort</translation>
 <translation id="5444892875087332195">Bogmærker</translation>
@@ -1236,6 +1237,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9034759925968272072">Du logges ikke ud af din Google-konto. Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis oprindelig</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
+<translation id="9043368763795653245">Aktivér synkronisering for at tilpasse dit Discover-feed og Chrome.</translation>
 <translation id="9055772144595778347">Kan ikke logge ind</translation>
 <translation id="9055960261314198756">Forbedret beskyttelse er deaktiveret</translation>
 <translation id="9057972802061533987">Indholdet kan ikke følges. Der gik noget galt.</translation>

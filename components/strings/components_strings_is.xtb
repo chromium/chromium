@@ -1060,6 +1060,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3587738293690942763">Miðja</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur um einn dag að ganga í nýjan hóp.}=1{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur um einn dag að ganga í nýjan hóp.}one{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur {NUM_DAYS} dag að ganga í nýjan hóp.}other{Þú getur endurstillt hópinn þinn hvenær sem er. Það tekur {NUM_DAYS} daga að ganga í nýjan hóp.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome eyðir sjálfkrafa umfjöllunarefnum og vefsvæðum sem senda auglýsingatillögur sem eru eldri en 30 daga. Þú getur einnig sett tiltekin umfjöllunarefni og vefsvæði sem höfða ekki til þín á bannlista.</translation>
 <translation id="3603507503523709">Kerfisstjóri hefur lokað á þetta forrit</translation>
 <translation id="3605899229568538311">5 x 5 to.</translation>
 <translation id="3608932978122581043">Inntaksstefna</translation>
@@ -1189,6 +1190,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3906954721959377182">Spjaldtölva</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Þú getur skipt um skoðun hvenær sem er í stillingum Chrome</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Hvernig þú getur stjórnað gögnunum þínum:<ph name="END_BOLD" /> Chrome eyðir vefsvæðum sem eru eldri en 30 daga sjálfkrafa. Vefsvæði sem þú heimsækir aftur gæti birst aftur á listanum. Þú getur einnig lokað á að vefsvæði stingi upp á auglýsingum fyrir þig og slökkt á auglýsingatillögum vefsvæða hvenær sem er í stillingum Chrome.</translation>
 <translation id="3921869355029467742">Sláðu inn öryggiskóðann</translation>
 <translation id="3927932062596804919">Hafna</translation>
 <translation id="393316646445601645">Internet og símaþjónusta</translation>
@@ -1355,6 +1357,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4287495839370498922">Bætt persónuvernd auglýsinga í Chrome</translation>
 <translation id="4287885627794386150">Getur fengið prufuútgáfu en hún er ekki virk</translation>
 <translation id="4290920330097335010">Aldrei leyfa</translation>
+<translation id="4296207570293932800">Nýr persónuverndareiginleiki auglýsinga er nú í boði</translation>
 <translation id="4297502707443874121">Smámynd síðu <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Fjárfestingar</translation>
 <translation id="42981349822642051">Stækka</translation>
@@ -1626,6 +1629,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="495170559598752135">Aðgerðir</translation>
 <translation id="4953689047182316270">Svara aðgengisatburði</translation>
 <translation id="4958444002117714549">Stækka lista</translation>
+<translation id="4960068118612257147">Þú getur gert breytingar í persónuverndarstillingum auglýsinga í Chrome</translation>
 <translation id="4964505745997821360">Sjúkratryggingar</translation>
 <translation id="4968522289500246572">Þetta forrit er hannað fyrir snjalltæki og óvíst er að breytingar á stærð komi vel út. Vandamál gætu komið upp í forritinu eða endurræsing þess gæti átt sér stað.</translation>
 <translation id="4968665849807487749">Getur beðið um að stjórna gluggum á öllum skjáum</translation>

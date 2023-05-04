@@ -191,6 +191,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1396259464226642517">Vai šis rezultāts bija negaidīts? <ph name="BEGIN_LINK" />Sūtiet atsauksmi<ph name="END_LINK" />.</translation>
 <translation id="1405567553485452995">Gaiši zaļa</translation>
 <translation id="1406500794671479665">Notiek verificēšana...</translation>
+<translation id="1406812885827747674">Atļaut šajā reizē</translation>
 <translation id="1407135791313364759">Atvērt visas</translation>
 <translation id="1408787208417187241">Trīskāršs skavojums augšdaļā</translation>
 <translation id="1410941016594047814">Aploksne Invite</translation>
@@ -470,6 +471,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2079545284768500474">Atsaukt</translation>
 <translation id="20817612488360358">Ir iestatīta datora starpniekserveru iestatījumu lietošana, bet ir norādīta arī atklāta starpniekservera konfigurācija.</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />. rezultāts no <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083256696566019397">Atļaut katrā apmeklējuma reizē</translation>
 <translation id="2085876078937250610">Saglabāt…</translation>
 <translation id="2088086323192747268">Poga “Pārvaldīt sinhronizāciju”: nospiediet ievadīšanas taustiņu, lai Chrome iestatījumos pārvaldītu, kāda informācija tiek sinhronizēta.</translation>
 <translation id="2091887806945687916">Signāls</translation>
@@ -1058,6 +1060,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3587738293690942763">vidējais</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt aptuveni dienu.}=1{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt aptuveni dienu.}zero{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienas.}one{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienu.}other{Jebkurā laikā varat atiestatīt grupu. Pievienošanās jaunai grupai var ilgt {NUM_DAYS} dienas.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Pārlūkā Chrome tiek automātiski dzēstas tēmas un vietnes, kas tiek izmantotas reklāmu ieteikšanai un ir vecākas nekā 30 dienas. Varat arī bloķēt konkrētas tēmas un vietnes, kas jums nepatīk.</translation>
 <translation id="3603507503523709">Lietojumprogrammu bloķēja jūsu administrators</translation>
 <translation id="3605899229568538311">5 x 5 collas</translation>
 <translation id="3608932978122581043">Padeves virziens</translation>
@@ -1186,6 +1189,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3906954721959377182">Planšetdators</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Ja pārdomāsiet, jebkurā brīdī varēsiet atbilstoši mainīt Chrome iestatījumus</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Kā pārvaldīt savus datus:<ph name="END_BOLD" /> pārlūkā Chrome tiek automātiski dzēstas vietnes, kas ir glabātas ilgāk nekā 30 dienas. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Jebkurā brīdī Chrome iestatījumos varat bloķēt vietni, lai tā vairs neieteiktu reklāmas, un izslēgt vietņu ieteiktās reklāmas.</translation>
 <translation id="3921869355029467742">Ievadīt drošības kodu</translation>
 <translation id="3927932062596804919">Neatļaut</translation>
 <translation id="393316646445601645">Internets un telekomunikācijas</translation>
@@ -1351,6 +1355,8 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Šī karte tika saglabāta jūsu Google kontā}zero{Šīs kartes tika saglabātas jūsu Google kontā}one{Šīs kartes tika saglabātas jūsu Google kontā}other{Šīs kartes tika saglabātas jūsu Google kontā}}</translation>
 <translation id="4287495839370498922">Uzlabota reklāmu konfidencialitāte pārlūkā Chrome</translation>
 <translation id="4287885627794386150">Varat piedalīties izmēģinājumā, taču tas nav aktīvs</translation>
+<translation id="4290920330097335010">Nekad neatļaut</translation>
+<translation id="4296207570293932800">Tagad ir pieejama jauna reklāmu konfidencialitātes funkcija</translation>
 <translation id="4297502707443874121">Lappuses numur <ph name="THUMBNAIL_PAGE" /> sīktēls</translation>
 <translation id="4298000214066716287">Ieguldījumi</translation>
 <translation id="42981349822642051">Izvērst</translation>
@@ -1622,6 +1628,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="495170559598752135">Darbības</translation>
 <translation id="4953689047182316270">Atbildēt uz pieejamības notikumiem</translation>
 <translation id="4958444002117714549">Izvērst sarakstu</translation>
+<translation id="4960068118612257147">Varat veikt izmaiņas Chrome reklāmu konfidencialitātes iestatījumos.</translation>
 <translation id="4964505745997821360">Veselības apdrošināšana</translation>
 <translation id="4968522289500246572">Šī lietotne ir paredzēta mobilajām ierīcēm, un tās lielumu, iespējams, nevarēs atbilstoši mainīt. Lietotnē var rasties problēmas, vai tā var tikt restartēta.</translation>
 <translation id="4968665849807487749">Var pieprasīt atļauju pārvaldīt logus visos jūsu displejos</translation>

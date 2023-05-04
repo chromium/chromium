@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">Відстеження ціни зупинено</translation>
 <translation id="4650125387981512669">Продовжити як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Переконайтеся, що ваші паролі надійні й не були викрадені, а також отримайте пораду, як захистити себе в Інтернеті. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Ця функція вмикається, коли ви входите в обліковий запис Google.</translation>
 <translation id="4659667755519643272">Відкрити перемикач вкладок</translation>
 <translation id="46614316059270592">Зберегти пароль</translation>
 <translation id="4666531726415300315">Ви ввійшли як <ph name="EMAIL" />.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">Увійдіть в обліковий запис Google, щоб мати доступ до закладок, паролів, історії й інших налаштувань на всіх своїх пристроях</translation>
 <translation id="4986678885919050584">Видалити з цього пристрою</translation>
 <translation id="498985224078955265">Щоб надіслати цю вкладку на інший пристрій, увійдіть в обліковий запис Chrome на обох пристроях.</translation>
+<translation id="4996567535980789550">Увімкніть синхронізацію, щоб керувати контентом, який ви бачите</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5016420433031926653">Надсилати на адресу <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Нагадати пізніше</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">Змінити пароль</translation>
 <translation id="5433691172869980887">Ім’я користувача скопійовано</translation>
 <translation id="5439599923922718668">Часто відвідувані</translation>
+<translation id="5439618055789623719">Ви ввійшли в обліковий запис <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Відомості про безпеку сторінки</translation>
 <translation id="5443952882982198570">Кредитні картки</translation>
 <translation id="5444892875087332195">Закладки</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">Ви не вийдете з облікового запису Google. Історія веб-перегляду може також зберігатися у вашому обліковому записі Google на сторінці  <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показати оригінал</translation>
 <translation id="9039373489628511875">Трафік</translation>
+<translation id="9043368763795653245">Щоб персоналізувати стрічку рекомендацій і веб-переглядач Chrome, увімкніть синхронізацію.</translation>
 <translation id="9055772144595778347">Не вдається ввійти</translation>
 <translation id="9055960261314198756">Покращений захист вимкнено</translation>
 <translation id="9057972802061533987">Не вдалося підписатися.</translation>

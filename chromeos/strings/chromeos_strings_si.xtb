@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">තවත් සැකසුම්</translation>
 <translation id="2085089206770112532">සංදර්ශක දීප්තිය පහළට</translation>
-<translation id="209751264101900360">අලුයම සිට අඳුර දක්වා - වළාකුළු ප්‍රවාහය</translation>
 <translation id="2102231663024125441">පෙළ සංස්කරණය</translation>
 <translation id="2105810540595158374">උපාංගය ක්‍රීඩා පාලකයකි.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, අනුවාදය <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">නිත්‍ය මෘදුකාංග යාවත්කාලීන වන අතරතුර, මෙම බාහිර උපාංගය විසන්ධි කිරීම හෝ ඔබගේ පරිගණකය වැසීම නොකරන්න. ඔබට මෙම කවුළුව කුඩා කළ හැකිය. මෙම යාවත්කාලීන කිරීමට මිනිත්තු කිහිපයක් ගත විය හැකි අතර මෙම කාලය තුළ ඔබගේ බාහිර උපාංගය ක්‍රියා නොකළ හැකිය.</translation>
 <translation id="3486220673238053218">නිර්වචනය</translation>
 <translation id="3488065109653206955">අර්ධව සක්‍රිය කළ</translation>
+<translation id="3502426834823382181">සියලු යෙදුම් බලන්න</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ක්‍රියාකාරීත්ව අනුරේඛන දත්ත<ph name="END_LINK1" /> යවන්න</translation>
 <translation id="3517001332549868749">ChromeOS යාවත්කාලීනය</translation>
 <translation id="3527036260304016759">අසාර්ථක විය - නොදන්නා දෝෂයකි</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="3969602104473960991">ChromeOS මුරපදය යාවත්කාලීන කරන ලදි</translation>
 <translation id="397105322502079400">ගණනය කරමින්...</translation>
-<translation id="3974175076798940554">සුවිශේෂී Chromebook Plus වත්කම් දැන් තිබේ</translation>
 <translation id="39823212440917567">දින <ph name="NUMBER_OF_DAYS" />කට වඩා පැරණි මුද්‍රණ කාර්ය ඉවත් කරනු ඇත</translation>
 <translation id="3993704782688964914">ඔබගේ <ph name="DEVICE_NAME" /> දැන් යාවත්කාලීනයි</translation>
 <translation id="4003384961948020559">අසාර්ථක විය - ප්‍රතිදානය පිරී ඇත</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">මාධ්‍ය</translation>
 <translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
 <translation id="4289849978083912975">ස්ලයිඩ දැක්ම</translation>
-<translation id="4293621540182258188">අලුයම සිට අඳුර දක්වා - පෘථිවි ප්‍රවාහය</translation>
 <translation id="4297501883039923494">නැවතිණි - නොදන්නා දෝෂයකි</translation>
 <translation id="4300073214558989">රූප <ph name="IMAGE_COUNT" /></translation>
 <translation id="4311195029067684288">පූර්ණ</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">සංදර්ශක දීප්තිය ඉහළට</translation>
 <translation id="57838592816432529">නිහඬ කරන්න</translation>
 <translation id="5784136236926853061">ඉහළ HTTP පමාව</translation>
-<translation id="5809090008577139505">අරුණාලෝකය</translation>
 <translation id="5826644637650799838">කලාව පිළිබඳව</translation>
 <translation id="5832805196449965646">පුද්ගලයා එක් කරන්න</translation>
 <translation id="583281660410589416">නොදනී</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">ප්‍රධාන වර්ණය</translation>
 <translation id="5916084858004523819">තහනම්</translation>
 <translation id="5916664084637901428">ක්‍රියාත්මකයි</translation>
-<translation id="5918201491776799918">Chromebook Plus විශිෂ්ට කලා කටයුත්ත තෝරන්න</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ඔබගේ ගොනුව සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}one{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}other{ඔබගේ ගොනු සාර්ථකව ස්කෑන් කර <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> වෙත සුරැක ඇත.}}</translation>
 <translation id="5931523347251946569">ගොනුව හමු නොවිණි</translation>
 <translation id="5939518447894949180">නැවත සකසන්න</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">තේමාව</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">අඳුරු තේමාව ක්‍රියාත්මක කරන්න</translation>
+<translation id="6285899124799306373">දියත්කරණය විවෘත කරන්න</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="631063167932043783">යෙදුම ගවේෂණය කරන්න</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> හි නිත්‍ය මෘදුකාංග යාවත්කාලීන කරන්න</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">තිර සුරැකුම් පෙරදසුන</translation>
 <translation id="6388847657025262518">ස්කෑනරයේ ලේඛන සංග්‍රහය තදබදයට පත්ව ඇත. සංග්‍රහය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="6394634179843537518">ගොනුව එක් කරන්න</translation>
+<translation id="6401427872449207797">බ්‍රව්සර සෙවීම</translation>
 <translation id="6410257289063177456">පින්තූර ගොනු</translation>
 <translation id="641081527798843608">විෂය ගැළපුම</translation>
 <translation id="6412715219990689313">එක්ව තැනූ යතුරු පුවරුව</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">උපාංගය මූසිකයකි.</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7665800271478495366">නියුරුව වෙනස් කරන්න</translation>
-<translation id="7675241868020048622">අරුණෝදය (සහ සුවිශේෂී)</translation>
 <translation id="7690294790491645610">නව මුරපදය තහවුරු කරන්න</translation>
 <translation id="7701040980221191251">නොමැත</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> තෝරන්න</translation>
 <translation id="8151185429379586178">සංවර්ධක උපකරණ</translation>
-<translation id="8153923300383192510">Chromebook Plus විශිෂ්ට</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8183974620058026102">අමුණන්න</translation>
 <translation id="8206859287963243715">සෙලියුලර්</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">මාධ්‍ය වාදනය කරන්න</translation>
 <translation id="8318753676953949627">රූප නැත</translation>
 <translation id="8329018942023753850">ගණක යෙදුම</translation>
+<translation id="8335869473001018124">සෙවීම විවෘත කරන්න</translation>
 <translation id="8336739000755212683">උපාංග ගිණුම් රූපය මාරු කරන්න</translation>
 <translation id="8347227221149377169">මුද්‍රණ වැඩ</translation>
 <translation id="8351855506390808906">යතුරු අනුරූපණ ස්පර්ශ ලක්ෂ්‍යය</translation>

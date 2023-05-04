@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">ردیابی قیمت متوقف شد</translation>
 <translation id="4650125387981512669">ادامه دادن به‌عنوان <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">از ایمن بودن گذرواژه‌هایتان مطمئن شوید، ببینید گذرواژه‌هایتان لو رفته‌اند یا نه، و توصیه‌هایی برای کمک به محافظت از خودتان در فضای آنلاین دریافت کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">‏وقتی به «حساب Google» خود وارد می‌شوید، این ویژگی روشن می‌شود.</translation>
 <translation id="4659667755519643272">به تعویض‌کننده برگه وارد شود</translation>
 <translation id="46614316059270592">ذخیره گذرواژه</translation>
 <translation id="4666531726415300315">ورود به سیستم به‌عنوان <ph name="EMAIL" />.
@@ -1272,7 +1271,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="948048872540558976">ایجاد برگه جدید</translation>
 <translation id="952704832371081537">لغو</translation>
 <translation id="953008885340860025">‏Chrome از سیستم خارج شده است</translation>
-<translation id="959066944189734975"><ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
+<translation id="959066944189734975">‫<ph name="CHANNEL_NAME" /> را دنبال می‌کنید</translation>
 <translation id="973493300226275298">قیمت محصول موردنظرتان را در فروشگاه‌های آنلاین ردیابی کنید. وقتی قیمت کاهش پیدا کند، هشداری دریافت می‌کنید.</translation>
 <translation id="981498610235328462">سازمانتان فقط ورود به سیستم با حساب‌های خاصی را مجاز کرده است. حساب‌هایی که مجاز نیستند پنهان می‌شوند.</translation>
 <translation id="984509647832111802">همگام‌سازی کار نمی‌کند.</translation>

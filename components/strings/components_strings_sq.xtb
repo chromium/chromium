@@ -191,6 +191,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1396259464226642517">Ishte i papritur ky rezultat? <ph name="BEGIN_LINK" />Dërgo komente<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Jeshile e çelur</translation>
 <translation id="1406500794671479665">Po verifikon...</translation>
+<translation id="1406812885827747674">Lejo këtë herë</translation>
 <translation id="1407135791313364759">Hapi të gjitha</translation>
 <translation id="1408787208417187241">Tri kapje me tel lart</translation>
 <translation id="1410941016594047814">Zarf ftese</translation>
@@ -470,6 +471,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2079545284768500474">Zhbëj</translation>
 <translation id="20817612488360358">Cilësimet e përfaqësuesit të sistemit janë caktuar që të përdoren, por është specifikuar po ashtu një konfigurim i qartë i përfaqësuesit.</translation>
 <translation id="2082238445998314030">Rezultati <ph name="RESULT_NUMBER" /> nga <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083256696566019397">Lejo në çdo vizitë</translation>
 <translation id="2085876078937250610">Ruaj…</translation>
 <translation id="2088086323192747268">Butoni "Menaxho sinkronizimin". Shtyp "Enter" për të menaxhuar se çfarë informacionesh sinkronizon ti te cilësimet e Chrome</translation>
 <translation id="2091887806945687916">Tingulli</translation>
@@ -1058,6 +1060,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3587738293690942763">Mesatar</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Mund ta rivendosësh grupin tënd në çdo kohë. Duhet rreth një ditë për t'u bashkuar në një grup të ri.}=1{Mund ta rivendosësh grupin tënd në çdo kohë. Duhet rreth një ditë për t'u bashkuar në një grup të ri.}other{Mund ta rivendosësh grupin tënd në çdo kohë. Duhen {NUM_DAYS} ditë për t'u bashkuar në një grup të ri.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome i fshin automatikisht temat dhe sajtet që sugjerojnë reklama që janë më të vjetra se 30 ditë. Ose mund t'i bllokosh temat dhe sajtet specifike që nuk të pëlqejnë.</translation>
 <translation id="3603507503523709">Aplikacioni u bllokua nga administratori yt</translation>
 <translation id="3605899229568538311">5 x 5 inç</translation>
 <translation id="3608932978122581043">Orientimi i furnizimit</translation>
@@ -1187,6 +1190,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Mund të ndërrosh mendje në çdo kohë te cilësimet e Chrome</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Chrome i fshin automatikisht sajtet që janë më të vjetra se 30 ditë. Një sajt që e viziton përsëri mund të shfaqet përsëri në listë. Mund ta bllokosh një sajt që të mos sugjerojë reklama për ty dhe mund t'i çaktivizosh reklamat e sugjeruara nga sajtet në çdo kohë te cilësimet e Chrome.</translation>
 <translation id="3921869355029467742">Fut kodin e sigurisë</translation>
 <translation id="3927932062596804919">Refuzo</translation>
 <translation id="393316646445601645">Interneti dhe telekomunikacioni</translation>
@@ -1352,6 +1356,8 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kjo kartë është ruajtur në "Llogarinë tënde të Google"}other{Këto karta janë ruajtur në "Llogarinë tënde të Google"}}</translation>
 <translation id="4287495839370498922">Privatësia e përmirësuar e reklamave në Chrome</translation>
 <translation id="4287885627794386150">Ka të drejtë për provë, por nuk është aktiv</translation>
+<translation id="4290920330097335010">Mos lejo asnjëherë</translation>
+<translation id="4296207570293932800">Një veçori e re e privatësisë së reklamave ofrohet tani</translation>
 <translation id="4297502707443874121">Miniatura për faqen <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investimet</translation>
 <translation id="42981349822642051">Zgjero</translation>
@@ -1623,6 +1629,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4953689047182316270">Reago ndaj ngjarjeve të qasshmërisë</translation>
 <translation id="4958444002117714549">Zgjero listën</translation>
+<translation id="4960068118612257147">Mund të bësh ndryshime te cilësimet e privatësisë së reklamave të Chrome</translation>
 <translation id="4964505745997821360">Sigurimi shëndetësor</translation>
 <translation id="4968522289500246572">Ky aplikacion është projektuar për celular dhe përmasat mund të mos ndryshohen si duhet. Aplikacioni mund të ketë probleme ose të riniset.</translation>
 <translation id="4968665849807487749">Mund të kërkojë të menaxhojë dritaret në të gjitha ekranet e tua</translation>

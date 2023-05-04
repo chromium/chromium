@@ -191,6 +191,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1396259464226642517">Bol tento výsledok neočakávaný? <ph name="BEGIN_LINK" />Odoslať spätnú väzbu<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">Svetlozelená</translation>
 <translation id="1406500794671479665">Prebieha overovanie...</translation>
+<translation id="1406812885827747674">Povoliť teraz</translation>
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1408787208417187241">Tri spinky hore</translation>
 <translation id="1410941016594047814">Obálka Invite</translation>
@@ -470,6 +471,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2079545284768500474">Späť</translation>
 <translation id="20817612488360358">Používanie systémových nastavení servera proxy je nastavené, avšak je určená aj explicitná konfigurácia servera proxy.</translation>
 <translation id="2082238445998314030">Výsledok <ph name="RESULT_NUMBER" /> z <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2083256696566019397">Povoliť pri každej návšteve</translation>
 <translation id="2085876078937250610">Uložiť…</translation>
 <translation id="2088086323192747268">Tlačidlo Spravovať synchronizáciu. Stlačením klávesa Enter môžete v nastaveniach Chromu spravovať, aké údaje sa synchronizujú.</translation>
 <translation id="2091887806945687916">Zvuk</translation>
@@ -1055,6 +1057,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3587738293690942763">Stred</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}=1{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne deň.}few{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dni.}many{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dňa.}other{Skupinu môžete kedykoľvek resetovať. Pripojenie k novej skupine trvá približne {NUM_DAYS} dní.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome automaticky odstraňuje témy a weby navrhujúce reklamy, ktoré sú staršie ako 30 dní. Prípadne môžete zablokovať konkrétne témy a weby, ktoré sa vám nepáčia.</translation>
 <translation id="3603507503523709">Aplikácia bola zablokovaná vaším správcom</translation>
 <translation id="3605899229568538311">5 × 5 palca</translation>
 <translation id="3608932978122581043">Orientácia zásobníka</translation>
@@ -1183,6 +1186,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Svoje rozhodnutie môžete kedykoľvek zmeniť v nastaveniach Chromu</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Ako môžete spravovať svoje údaje:<ph name="END_BOLD" /> Chrome automaticky odstraňuje weby, ktoré sú staršie ako 30 dní. Web, ktorý znova navštívite, sa môže v zozname opäť zobraziť. V nastaveniach Chromu môžete navyše kedykoľvek zablokovať navrhovanie reklám určitým webom a vypnúť reklamy navrhované webmi.</translation>
 <translation id="3921869355029467742">Zadať bezpečnostný kód</translation>
 <translation id="3927932062596804919">Odmietnuť</translation>
 <translation id="393316646445601645">Internet a telekomunikácie</translation>
@@ -1348,6 +1352,8 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Táto karta sa uložila do vášho účtu Google}few{Tieto karty sa uložili do vášho účtu Google}many{Tieto karty sa uložili do vášho účtu Google}other{Tieto karty sa uložili do vášho účtu Google}}</translation>
 <translation id="4287495839370498922">Zlepšená ochrana súkromia pri reklamách v Chrome</translation>
 <translation id="4287885627794386150">Vhodné pre skúšobné obdobie, ale neaktívne</translation>
+<translation id="4290920330097335010">Nikdy nepovoliť</translation>
+<translation id="4296207570293932800">K dispozícii je nová funkcia ochrany súkromia pri reklamách</translation>
 <translation id="4297502707443874121">Miniatúra stránky <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investovanie</translation>
 <translation id="42981349822642051">Rozbaliť</translation>
@@ -1619,6 +1625,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="495170559598752135">Akcie</translation>
 <translation id="4953689047182316270">Reagovať na udalosti dostupnosti</translation>
 <translation id="4958444002117714549">Rozbaliť zoznam</translation>
+<translation id="4960068118612257147">Zmeny môžete vykonať v nastaveniach ochrany súkromia pri reklamách v Chrome</translation>
 <translation id="4964505745997821360">Zdravotné poistenie</translation>
 <translation id="4968522289500246572">Táto aplikácia je určená pre mobilné zariadenia a jej veľkosť sa nemusí náležite zmeniť. Môžu sa v nej vyskytnúť problémy alebo sa môže reštartovať.</translation>
 <translation id="4968665849807487749">Môže žiadať o povolenie spravovať okná na všetkých obrazovkách</translation>

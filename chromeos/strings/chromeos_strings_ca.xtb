@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2085089206770112532">Disminueix la brillantor de la pantalla</translation>
-<translation id="209751264101900360">De l'alba a la foscor: flux de núvols</translation>
 <translation id="2102231663024125441">Edició de text</translation>
 <translation id="2105810540595158374">El dispositiu és un comandament de joc.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Mentre el microprogramari s'actualitza, no desconnectis el dispositiu extern ni apaguis l'ordinador. Pots minimitzar aquesta finestra. Aquesta actualització pot tardar uns quants minuts i és possible que, durant aquest temps, el dispositiu extern no funcioni.</translation>
 <translation id="3486220673238053218">definició</translation>
 <translation id="3488065109653206955">Activat parcialment</translation>
+<translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">S'ha completat la baixada</translation>
 <translation id="3969602104473960991">S'ha actualitzat la contrasenya de Chrome OS</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
-<translation id="3974175076798940554">Els recursos exclusius per a Chromebook Plus ja estan disponibles</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="3993704782688964914">El dispositiu <ph name="DEVICE_NAME" /> s'acaba d'actualitzar</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Multimèdia</translation>
 <translation id="4289540628985791613">Visió general</translation>
 <translation id="4289849978083912975">Presentació de diapositives</translation>
-<translation id="4293621540182258188">De l'alba a la foscor: flux de la Terra</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imatges</translation>
 <translation id="4311195029067684288">Complet</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Augmenta la brillantor de la pantalla</translation>
 <translation id="57838592816432529">Silencia</translation>
 <translation id="5784136236926853061">La latència d'HTTP és alta</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">Sobre l'art</translation>
 <translation id="5832805196449965646">Afegeix una persona</translation>
 <translation id="583281660410589416">Desconegut</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">color de les tecles</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5916664084637901428">Activat</translation>
-<translation id="5918201491776799918">Selecciona obres d'art exclusives de Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
 <translation id="5939518447894949180">Restableix</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Activa el tema fosc</translation>
+<translation id="6285899124799306373">obre el menú d'aplicacions</translation>
 <translation id="6302401976930124515">La prova <ph name="TEST_NAME" /> s'ha cancel·lat</translation>
 <translation id="631063167932043783">Aplicació Explora</translation>
 <translation id="6319207335391420837">Actualitza el microprogramari que hi ha a <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Previsualització de l'estalvi de pantalla</translation>
 <translation id="6388847657025262518">L'alimentador de documents de l'escàner està encallat. Comprova l'alimentador i torna-ho a provar.</translation>
 <translation id="6394634179843537518">Afegeix un fitxer</translation>
+<translation id="6401427872449207797">cerca del navegador</translation>
 <translation id="6410257289063177456">Fitxers d'imatge </translation>
 <translation id="641081527798843608">Coincidència d'assumpte</translation>
 <translation id="6412715219990689313">Teclat integrat</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">El dispositiu és un ratolí.</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7665800271478495366">Canvia l'avatar</translation>
-<translation id="7675241868020048622">Aurora (exclusiu per a Plus)</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Selecciona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Eines per a desenvolupadors</translation>
-<translation id="8153923300383192510">Exclusiu per a Chromebook Plus</translation>
 <translation id="8179976553408161302">Retorn</translation>
 <translation id="8183974620058026102">Adjunta</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">reprodueix el contingut multimèdia</translation>
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8329018942023753850">aplicació Calculadora</translation>
+<translation id="8335869473001018124">obre la cerca</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
 <translation id="8347227221149377169">Tasques d'impressió</translation>
 <translation id="8351855506390808906">Punt tàctil del mapatge de teclat</translation>

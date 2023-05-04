@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">Следењето на цените е сопрено</translation>
 <translation id="4650125387981512669">Продолжете како <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Погрижете се лозинките да ви бидат безбедни, дознајте дали се компромитирани и добијте совет како да се заштитите себеси онлајн. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Функцијава е вклучена кога ќе се најавите на сметката на Google.</translation>
 <translation id="4659667755519643272">Влези во менувачот на картички</translation>
 <translation id="46614316059270592">Зачувај ја лозинката</translation>
 <translation id="4666531726415300315">Најавени сте како: <ph name="EMAIL" />.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">Најавете се со сметката на Google за да ги добиете обележувачите, лозинките, историјата и другите поставки на сите ваши уреди.</translation>
 <translation id="4986678885919050584">Отстранете ја од уредов</translation>
 <translation id="498985224078955265">За да ја испратите картичкава на друг уред, најавете се на Chrome на двата уреда.</translation>
+<translation id="4996567535980789550">Вклучување синхронизација за управување со содржините што ги гледате</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5016420433031926653">Испрати до <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Потсети ме подоцна</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">Измени ја лозинката</translation>
 <translation id="5433691172869980887">Корисничкото име е копирано</translation>
 <translation id="5439599923922718668">Често посетувани</translation>
+<translation id="5439618055789623719">Најавени сте како <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Безбедносни информации за страницата</translation>
 <translation id="5443952882982198570">Кредитни картички</translation>
 <translation id="5444892875087332195">Обележувачи</translation>
@@ -1236,6 +1237,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9034759925968272072">Нема да ве одјавиме од сметката на Google. Вашата сметка на Google можеби има други форми на историја на прелистување на <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Прикажи го оригиналот</translation>
 <translation id="9039373489628511875">Проток</translation>
+<translation id="9043368763795653245">За да ги персонализирате активноста на Discover и Chrome, вклучете синхронизација.</translation>
 <translation id="9055772144595778347">Не може да се најави</translation>
 <translation id="9055960261314198756">„Подобрената заштита“ е исклучена</translation>
 <translation id="9057972802061533987">Не може да се следи. Нешто тргна наопаку.</translation>

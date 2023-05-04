@@ -317,7 +317,6 @@ Khi bạn không đặt chính sách này, chính sách <ph name="ASK_WINDOW_MAN
 
 Chính sách này sẽ thay thế chính sách <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> đã ngừng hoạt động.</translation>
 <translation id="129206366270737897">Vô hiệu hoá mọi phương thức <ph name="FILE_SYSTEM_SYNC_ACCESS_HANDLE" /> không đồng bộ.</translation>
-<translation id="129392056654547767">Hình ảnh chương trình cơ sở UEFI mà máy ảo sử dụng. Đây chỉ là một biện pháp tạm thời trong khi chúng tôi đóng gói hình ảnh này dưới dạng nội dung tải xuống được (DLC) của ChromeOS.</translation>
 <translation id="1294263471858445589">Bật tùy chọn xác thực môi trường xung quanh cho các phiên thông thường và phiên ẩn danh.</translation>
 <translation id="1295737447968372331">Bật tính năng đọc chính tả trên màn hình đăng nhập</translation>
 <translation id="1297182715641689552">Sử dụng tập lệnh proxy .pac</translation>
@@ -601,7 +600,6 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Trên <ph name="MS_WIN_NAME" />, chức năng này chỉ có ở những phiên bản liên kết với một miền <ph name="MS_AD_NAME" />, chạy trên Windows 10 Pro, hoặc đã đăng ký tuỳ chọn Quản lý trình duyệt Chrome qua đám mây. Trên <ph name="MAC_OS_NAME" />, chức năng này chỉ có ở những phiên bản được quản lý qua MDM hoặc liên kết với một miền qua MCX.</translation>
 <translation id="1530812829012954197">Luôn hiển thị các mẫu URL sau đây trong trình duyệt chính</translation>
 <translation id="1542491165152947087">Cho phép người dùng bật hoặc tắt chế độ cài đặt Chủ đề quảng cáo của <ph name="PRIVACY_SANDBOX_NAME" /> trên thiết bị của họ.</translation>
-<translation id="1547424904796464052">Hàm băm SHA-256 được mã hoá thập lục phân của hình ảnh chương trình cơ sở.</translation>
 <translation id="1550295162561011575">Nếu bạn đặt chính sách này, quản trị viên có thể định cấu hình tự động khởi chạy ứng dụng trên các thiết bị <ph name="PRODUCT_NAME" />. Các ứng dụng này có thể khởi chạy khi người dùng đăng nhập hoặc người dùng có thể khởi chạy các ứng dụng cùng nhau từ trình chạy.</translation>
 <translation id="1552418937045050762">Nếu bạn bật tùy chọn cài đặt này, người dùng sẽ được phép chọn sử dụng tính năng Chia sẻ lân cận. Tính năng này cho phép họ gửi và nhận tệp từ những người ở gần.
 
@@ -3344,13 +3342,6 @@ Chính sách này là giải pháp tạm thời và sẽ bị xoá ở một và
 <translation id="4025500273782820766">Cho phép người dùng chọn "Luôn cho phép" khi hộp thoại giao thức bên ngoài hiển thị để bỏ qua những lời nhắc xác nhận trong tương lai</translation>
 <translation id="402759845255257575">Không cho phép bất kỳ trang web nào chạy JavaScript</translation>
 <translation id="4027608872760987929">Bật nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
-<translation id="4027904270588278067">Nếu bạn đặt chính sách này, thư mục mà Chrome dùng để lưu tệp tải xuống sẽ được thiết lập. Chrome sẽ sử dụng thư mục được cung cấp, bất kể người dùng có chỉ định một thư mục cụ thể hay không hoặc bật cờ luôn nhắc nhập vị trí mỗi lần tải xuống.
-
-      Chính sách này ghi đè chính sách <ph name="DEFAULT_DOWNLOAD_DIRECTORY_POLICY_NAME" />.
-
-      Nếu bạn không đặt chính sách này, Chrome sẽ sử dụng thư mục tải xuống mặc định và người dùng có thể thay đổi thư mục đó.
-
-      Lưu ý: Xem danh sách các biến mà bạn có thể sử dụng (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).</translation>
 <translation id="4030152268425532846">Tắt phím tắt bailout tự động đăng nhập</translation>
 <translation id="4043796890723386527">Ngăn người dùng tạo và sử dụng các hồ sơ phụ cũng như dùng chế độ khách trong trình duyệt <ph name="LACROS_NAME" /></translation>
 <translation id="4051723201852944592">Bật tính năng Che kín cửa sổ</translation>
@@ -4504,17 +4495,6 @@ Nếu bạn đặt chính sách này thành true hoặc không đặt, thì tín
 <translation id="519247340330463721">Định cấu hình các chính sách liên quan đến Duyệt web an toàn.</translation>
 <translation id="5194683382395300627">Cho phép dùng <ph name="ASSISTANT_PRODUCT_NAME" /> trên web, ví dụ: để bật chế độ tự động thay đổi mật khẩu</translation>
 <translation id="5196630732055960309">Cho phép API Xử lý tệp trên các ứng dụng web này</translation>
-<translation id="5198660575318473544">Kiểm soát xem có thể sử dụng tiện ích Manifest v2 trên màn hình đăng nhập của <ph name="PRODUCT_OS_NAME" /> được không.
-
-Chúng tôi sẽ ngừng hỗ trợ tiện ích Manifest v2 và yêu cầu di chuyển tất cả tiện ích sang v3 trong tương lai. Bạn có thể xem thêm thông tin và tiến trình di chuyển tại https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
-
-Nếu bạn đặt chính sách này thành <ph name="DEFAULT" /> (0) hoặc không đặt, thì quá trình tải các tiện ích v2 sẽ do thiết bị quyết định, theo tiến trình nêu trên.
-Nếu bạn đặt chính sách này thành <ph name="DISABLE" /> (1), thì việc cài đặt các tiện ích v2 sẽ bị chặn còn các tiện ích hiện có sẽ bị vô hiệu hoá. Tuỳ chọn này sẽ được xử lý giống như trường hợp bạn không đặt chính sách này sau khi tính năng hỗ trợ v2 bị tắt theo mặc định.
-Nếu bạn đặt chính sách này thành <ph name="ENABLE" /> (2), thì các tiện ích v2 sẽ được cho phép. Tuỳ chọn này sẽ được xử lý giống như trường hợp bạn không đặt chính sách này trước khi tính năng hỗ trợ v2 bị tắt theo mặc định.
-Nếu bạn đặt chính sách này thành <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), thì các tiện ích v2 bị buộc cài đặt sẽ được cho phép. Phạm vi bao gồm các tiện ích được <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> liệt kê với <ph name="INSTALLATION_MODE" /> là "force_install" hoặc "normal_install". Tất cả các tiện ích v2 khác đều bị vô hiệu hoá. Tuỳ chọn này sẽ được xử lý giống như trường hợp bạn không đặt chính sách này trước khi tính năng hỗ trợ v2 bị tắt theo mặc định.
-
-
-Khả năng sử dụng tiện ích vẫn chịu sự kiểm soát của các chính sách khác.</translation>
 <translation id="5206454085187851382">Nếu bạn chọn <ph name="PRINTERS_ALLOWLIST" /> cho <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, việc đặt <ph name="PRINTERS_BULK_ALLOWLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng có thể sử dụng. Người dùng chỉ có thể sử dụng những máy in có mã nhận dạng khớp với giá trị trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="5207543664699568887">Định cấu hình liệu <ph name="PRODUCT_NAME" /> trên Linux có sử dụng các thông báo hệ thống hay không.
 
@@ -7687,7 +7667,6 @@ Việc sử dụng <ph name="LACROS_SELECTION_USER_CHOICE_VALUE" /> hoặc <ph n
 <translation id="802776363472387903">Hàm băm SHA-256 của hình ảnh <ph name="PLUGIN_VM_NAME" />.</translation>
 <translation id="8028814157747157754">Bật nhà cung cấp dịch vụ tìm kiếm mặc định và cho phép người dùng sửa đổi danh sách nhà cung cấp dịch vụ tìm kiếm</translation>
 <translation id="8029201909194194377">Thời lượng phiên tối đa được phép cho các kết nối truy cập từ xa</translation>
-<translation id="8033908599068513676">URL của hình ảnh chương trình cơ sở sẽ tải xuống.</translation>
 <translation id="8035570672225663428">Bật mô hình sạc thích ứng để giữ quá trình sạc nhằm kéo dài thời lượng pin</translation>
 <translation id="8044493735196713914">Báo cáo chế độ khởi động thiết bị</translation>
 <translation id="8044720778481009876">Đích đến <ph name="CLOUD_PRINT_NAME" /> và "Lưu vào Google Drive" (Không dùng nữa)</translation>
@@ -8680,6 +8659,11 @@ Nếu chính sách này đang tắt thì thao tác cũ sẽ được sử dụng
 Nếu bạn không đặt chính sách này, thì thao tác mới sẽ được sử dụng giống như thao tác của những người dùng Chromium còn lại.</translation>
 <translation id="8955719471735800169">Quay lại đầu trang</translation>
 <translation id="8956312248048980644">Cho phép phân nhóm tác nhân theo khoá nguồn gốc theo mặc định.</translation>
+<translation id="8961117818679701775">Chính sách này cho phép quản trị viên chỉ định chế độ cài đặt cho các ứng dụng web đã cài đặt. Chính sách này liên kết một mã nhận dạng ứng dụng web với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt một cấu hình mặc định bằng mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả ứng dụng web chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
+
+Trường <ph name="MANIFEST_ID_FIELD" /> là mã nhận dạng tệp kê khai cho ứng dụng web. Hãy xem <ph name="WEB_APP_ID_REFERENCE_URL" /> để nắm được hướng dẫn về cách xác định mã nhận dạng tệp kê khai cho ứng dụng web đã được cài đặt.
+Trường <ph name="RUN_ON_OS_LOGIN_FIELD" /> cho biết ứng dụng web có thể hoạt động trong lúc đăng nhập vào hệ điều hành hay không. Nếu bạn đặt trường này thành <ph name="BLOCKED" />, ứng dụng web sẽ không chạy trong quá trình đăng nhập vào hệ điều hành và sau này, người dùng sẽ không thể bật ứng dụng này. Nếu bạn đặt trường này thành <ph name="RUN_WINDOWED" />, ứng dụng web sẽ chạy trong quá trình đăng nhập vào hệ điều hành và sau này, người dùng sẽ không thể tắt ứng dụng này. Nếu bạn đặt trường này thành <ph name="ALLOWED" />, người dùng sẽ có thể định cấu hình chạy ứng dụng web khi đăng nhập vào hệ điều hành. Cấu hình mặc định chỉ cho phép các giá trị <ph name="ALLOWED" /> và <ph name="BLOCKED" />.
+(Kể từ phiên bản 115) Trường <ph name="PREVENT_CLOSE_FIELD" /> chỉ định liệu ứng dụng web có bị cấm đóng theo bất kỳ cách nào hay không (ví dụ: do người dùng, trình quản lý tác vụ, API web). Bạn chỉ có thể bật hành vi này nếu đặt <ph name="RUN_ON_OS_LOGIN_FIELD" /> thành <ph name="RUN_WINDOWED" />. Nếu ứng dụng đang chạy, thuộc tính này sẽ chỉ có hiệu lực sau khi khởi động lại ứng dụng. Nếu bạn không xác định trường này, người dùng có thể đóng ứng dụng.</translation>
 <translation id="8970205333161758602">Loại bỏ lời nhắc từ chối <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Chọn có cho người dùng thấy lời nhắc của <ph name="PRIVACY_SANDBOX_NAME" /> hay không</translation>
 <translation id="8974588819713914715">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng chính sách "<ph name="URL_ALLOWLIST_POLICY_NAME" />".</translation>

@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">Проследяването на цената спря</translation>
 <translation id="4650125387981512669">Продължаване като <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Уверете се, че паролите ви са защитени, разберете дали са били компрометирани и получете съвет за това как да се предпазите онлайн. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Когато влезете в профила си в Google, тази функция се включва.</translation>
 <translation id="4659667755519643272">Влизане в превключвателя на раздели</translation>
 <translation id="46614316059270592">Запазване на паролата</translation>
 <translation id="4666531726415300315">Влезли сте като <ph name="EMAIL" />.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">Влезте с профила си в Google, за да получите своите отметки, пароли, история и други настройки на всичките си устройства</translation>
 <translation id="4986678885919050584">Премахване от това устройство</translation>
 <translation id="498985224078955265">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome и на двете устройства.</translation>
+<translation id="4996567535980789550">Включете синхронизирането, за да управлявате съдържанието, което виждате</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5016420433031926653">Изпращане до <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Напомняне по-късно</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">Редактиране на паролата</translation>
 <translation id="5433691172869980887">Потребителското име е копирано</translation>
 <translation id="5439599923922718668">Често посещавани</translation>
+<translation id="5439618055789623719">Влязохте като <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Информация за сигурността на страницата</translation>
 <translation id="5443952882982198570">Кредитни карти</translation>
 <translation id="5444892875087332195">Отметки</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">Няма да излезете от профила си в Google. Възможно е в него да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показване на оригинала</translation>
 <translation id="9039373489628511875">Капацитет</translation>
+<translation id="9043368763795653245">За да персонализирате емисията си в Discover и Chrome, включете синхронизирането.</translation>
 <translation id="9055772144595778347">Не може да се влезе</translation>
 <translation id="9055960261314198756">Режимът за подобрена защита е изключен</translation>
 <translation id="9057972802061533987">Следенето не е възможно. Нещо се обърка.</translation>

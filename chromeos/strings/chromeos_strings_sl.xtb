@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Več nastavitev</translation>
 <translation id="2085089206770112532">Zmanjšanje svetlosti zaslona</translation>
-<translation id="209751264101900360">Od zore do mraka – premik oblakov</translation>
 <translation id="2102231663024125441">Urejanje besedila</translation>
 <translation id="2105810540595158374">Naprava je krmilnik za igre.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, različica: <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Med posodabljanjem vdelane programske opreme ne odklopite zunanje naprave ali izklopite računalnika. To okno lahko pomanjšate. Ta posodobitev bo morda trajala nekaj minut in zunanja naprava v tem času morda ne bo delovala.</translation>
 <translation id="3486220673238053218">opredelitev</translation>
 <translation id="3488065109653206955">Delno aktivirano</translation>
+<translation id="3502426834823382181">prikaži vse aplikacije</translation>
 <translation id="3510890413042482857">Pošlji <ph name="BEGIN_LINK1" />podatke za sledenje učinkovitosti delovanja<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Posodobitev sistema Chrome OS</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Prenos končan</translation>
 <translation id="3969602104473960991">Geslo za Chrome OS je posodobljeno</translation>
 <translation id="397105322502079400">Izračunavanje …</translation>
-<translation id="3974175076798940554">Ekskluzivni elementi Chromebook Plus so zdaj na voljo</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="3993704782688964914">Naprava <ph name="DEVICE_NAME" /> je posodobljena.</translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Predstavnost</translation>
 <translation id="4289540628985791613">Pregled</translation>
 <translation id="4289849978083912975">Diaprojekcija</translation>
-<translation id="4293621540182258188">Od zore do mraka – premik Zemlje</translation>
 <translation id="4297501883039923494">Ustavljeno – neznana napaka</translation>
 <translation id="4300073214558989">Št. slik: <ph name="IMAGE_COUNT" /></translation>
 <translation id="4311195029067684288">V celoti</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Povečanje svetlosti zaslona</translation>
 <translation id="57838592816432529">Izklopi zvok</translation>
 <translation id="5784136236926853061">Velika zakasnitev HTTP</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">O likovnem izdelku</translation>
 <translation id="5832805196449965646">Dodaj osebo</translation>
 <translation id="583281660410589416">Neznano</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">barva tipk</translation>
 <translation id="5916084858004523819">Onemogočeno</translation>
 <translation id="5916664084637901428">Vklopljeno</translation>
-<translation id="5918201491776799918">Izberite ekskluzivna umetniška dela v Chromebooku Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Vaša datoteka je bila uspešno pregledana in je shranjena v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Vaše datoteke so bile uspešno pregledane in so shranjene v mapo <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Datoteke ni bilo mogoče najti</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Vklop temne teme</translation>
+<translation id="6285899124799306373">odpri zaganjalnik</translation>
 <translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
 <translation id="631063167932043783">Raziščite aplikacijo</translation>
 <translation id="6319207335391420837">Posodobitev vdelane programske opreme v napravi <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Predogled ohranjevalnika zaslona</translation>
 <translation id="6388847657025262518">V podajalniku papirja optičnega bralnika se je zagozdil papir. Preverite podajalnik in poskusite znova.</translation>
 <translation id="6394634179843537518">Dodaj datoteko</translation>
+<translation id="6401427872449207797">iskanje v brskalniku</translation>
 <translation id="6410257289063177456">Slikovne datoteke</translation>
 <translation id="641081527798843608">Ujemanje zadeve</translation>
 <translation id="6412715219990689313">Vgrajena tipkovnica</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Naprava je miška.</translation>
 <translation id="7658239707568436148">Prekliči</translation>
 <translation id="7665800271478495366">Spremeni avatar</translation>
-<translation id="7675241868020048622">Aurora (izključno pri Plus)</translation>
 <translation id="7690294790491645610">Potrdite novo geslo</translation>
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Izberite: <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Orodja za razvijalce</translation>
-<translation id="8153923300383192510">Samo za Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Vpetje</translation>
 <translation id="8206859287963243715">Prenosni</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">predvajanje predstavnosti</translation>
 <translation id="8318753676953949627">Ni slik</translation>
 <translation id="8329018942023753850">aplikacija računalo</translation>
+<translation id="8335869473001018124">odpri iskanje</translation>
 <translation id="8336739000755212683">Spremeni sliko računa v napravi</translation>
 <translation id="8347227221149377169">Tiskalna opravila</translation>
 <translation id="8351855506390808906">Točka dotika pri razporejanju tipk</translation>

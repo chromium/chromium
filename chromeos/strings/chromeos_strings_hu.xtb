@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">További beállítások</translation>
 <translation id="2085089206770112532">Kijelző fényerejének csökkentése</translation>
-<translation id="209751264101900360">Hajnaltól sötétig – szálló felhők</translation>
 <translation id="2102231663024125441">Szövegszerkesztés</translation>
 <translation id="2105810540595158374">Az eszköz egy kontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">A firmware frissítése közben ne húzza ki a külső eszközt, és ne kapcsolja ki számítógépét. Ezt az ablakot kis méretre állíthatja. A frissítés eltarthat néhány percig, és előfordulhat, hogy közben nem működik a külső eszköz.</translation>
 <translation id="3486220673238053218">definíció</translation>
 <translation id="3488065109653206955">Részben aktiválva</translation>
+<translation id="3502426834823382181">összes app megtekintése</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Teljesítménykövetési adatok<ph name="END_LINK1" /> elküldése</translation>
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
 <translation id="3527036260304016759">Sikertelen – Ismeretlen hiba</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">A letöltés sikeres</translation>
 <translation id="3969602104473960991">ChromeOS-jelszó módosítva</translation>
 <translation id="397105322502079400">Számítás…</translation>
-<translation id="3974175076798940554">Mostantól exkluzív Chromebook Plus-eszközök állnak rendelkezésre</translation>
 <translation id="39823212440917567">A(z) <ph name="NUMBER_OF_DAYS" /> napnál régebbi nyomtatási feladatokat eltávolítja a rendszer</translation>
 <translation id="3993704782688964914"><ph name="DEVICE_NAME" /> eszköze most már naprakész</translation>
 <translation id="4003384961948020559">Sikertelen – Megtelt a kimenet</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Média</translation>
 <translation id="4289540628985791613">Áttekintés</translation>
 <translation id="4289849978083912975">Diavetítés</translation>
-<translation id="4293621540182258188">Hajnaltól sötétig – a Föld mozgása</translation>
 <translation id="4297501883039923494">Leállt – Ismeretlen hiba</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> kép</translation>
 <translation id="4311195029067684288">Teljes</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Kijelző fényerejének növelése</translation>
 <translation id="57838592816432529">Némítás</translation>
 <translation id="5784136236926853061">Hosszú HTTP várakozási idő</translation>
-<translation id="5809090008577139505">Sarki fény</translation>
 <translation id="5826644637650799838">A műalkotásról</translation>
 <translation id="5832805196449965646">Személy hozzáadása</translation>
 <translation id="583281660410589416">Ismeretlen</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">billentyűk színe</translation>
 <translation id="5916084858004523819">Letiltva</translation>
 <translation id="5916664084637901428">Be</translation>
-<translation id="5918201491776799918">Exkluzív Chromebook Plus-műalkotások kiválasztása</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fájlját a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}other{Fájljait a rendszer sikeresen ellenőrizte, és a(z) <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> mappába mentette.}}</translation>
 <translation id="5931523347251946569">A fájl nem található</translation>
 <translation id="5939518447894949180">Visszaállítás</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Téma</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Sötét téma bekapcsolása</translation>
+<translation id="6285899124799306373">indító megnyitása</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="631063167932043783">Felfedezés alkalmazás</translation>
 <translation id="6319207335391420837">Firmware telepítése a következőre: <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Képernyővédő előnézete</translation>
 <translation id="6388847657025262518">A szkenner dokumentumadagolója beragadt. Ellenőrizze az adagolót, és próbálja újra.</translation>
 <translation id="6394634179843537518">Fájl hozzáadása</translation>
+<translation id="6401427872449207797">keresés böngészőben</translation>
 <translation id="6410257289063177456">Képfájlok</translation>
 <translation id="641081527798843608">Tárgyegyeztetés</translation>
 <translation id="6412715219990689313">Beépített billentyűzet</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Az eszköz egy egér.</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7665800271478495366">Avatar módosítása</translation>
-<translation id="7675241868020048622">Sarki fény (Plus exkluzív)</translation>
 <translation id="7690294790491645610">Új jelszó megerősítése</translation>
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> kiválasztása</translation>
 <translation id="8151185429379586178">Fejlesztői eszközök</translation>
-<translation id="8153923300383192510">Kizárólag Chromebook Pluson</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Csatolás</translation>
 <translation id="8206859287963243715">Mobil</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">médiafájl lejátszása</translation>
 <translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8329018942023753850">számológép alkalmazás</translation>
+<translation id="8335869473001018124">kereső megnyitása</translation>
 <translation id="8336739000755212683">Eszközfiókhoz tartozó kép módosítása</translation>
 <translation id="8347227221149377169">Nyomtatási feladatok</translation>
 <translation id="8351855506390808906">Billentyűzetkiosztás – érintési pont</translation>

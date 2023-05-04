@@ -396,7 +396,7 @@
 <translation id="1874224422119691492">पासवर्ड भरण्यासाठी तुम्ही स्क्रीन लॉक वापरायचे की नाही हे तुम्ही <ph name="SETTINGS" /> मध्ये बदलू शकता</translation>
 <translation id="1875025161375567525">फोटो ट्रे</translation>
 <translation id="1875512691959384712">Google Forms</translation>
-<translation id="187918866476621466">सुरू पृष्ठ उघडा</translation>
+<translation id="187918866476621466">स्टार्टअप पेज उघडा</translation>
 <translation id="1883255238294161206">सूची कोलॅप्स</translation>
 <translation id="1884843295353628214">जॅझ</translation>
 <translation id="1890171020361705182">Dino गेम. पिक्सलेट झालेला डायनासोर हा काट्यांपासून आणि टेरोडॅक्टिलपासून स्वतःचे रक्षण करत एका ओसाड जागेतून धावत आहे. तुम्ही ऑडिओ संकेत ऐकता तेव्हा, अडथळे आल्यावर उडी मारण्यासाठी टॅप करा.</translation>
@@ -1059,6 +1059,7 @@
 <translation id="3587738293690942763">मध्य</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{You can reset your group at any time. It takes about a day to join a new group.}=1{तुम्ही तुमचा गट कधीही रीसेट करू शकता. नवीन गटामध्ये सामील होण्यासाठी एक दिवस लागू शकतो.}other{तुम्ही तुमचा गट कधीही रीसेट करू शकता. नवीन गटामध्ये सामील होण्यासाठी {NUM_DAYS} दिवस लागू शकतात.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome हे ३० दिवसांपेक्षा जुन्या जाहिराती सुचवणारे विषय आणि साइट ऑटो-डिलीट करते किंवा तुम्हाला आवडत नसलेले विशिष्ट विषय आणि साइट तुम्ही ब्लॉक करू शकता.</translation>
 <translation id="3603507503523709">तुमच्या अ‍ॅडमिनिस्ट्रेटरने अ‍ॅप्लिकेशन ब्लॉक केले आहे</translation>
 <translation id="3605899229568538311">५ x ५ इं</translation>
 <translation id="3608932978122581043">ओरिएंटेशन फीड करा</translation>
@@ -1188,6 +1189,7 @@
 <translation id="3906954721959377182">टॅबलेट</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">तुम्ही Chrome सेटिंग्जमध्ये हे कधीही बदलू शकता</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />तुम्ही तुमचा डेटा कसा व्यवस्थापित करू शकता:<ph name="END_BOLD" /> Chrome हे ३० दिवसांपेक्षा जुन्या असलेल्या साइट ऑटो-डिलीट करते. तुम्ही पुन्हा भेट दिलेली साइट सूचीमध्ये परत दिसू शकते. तुम्ही साइटला तुम्हाला जाहिराती सुचवण्यापासूनदेखील ब्लॉक करू शकता आणि तुम्ही Chrome सेटिंग्जमध्ये साइटने सुचवलेल्या जाहिराती कधीही बंद करू शकता.</translation>
 <translation id="3921869355029467742">तुमचा सुरक्षा कोड एंटर करा</translation>
 <translation id="3927932062596804919">नकार द्या</translation>
 <translation id="393316646445601645">इंटरनेट आणि टेलिकॉम</translation>
@@ -1354,6 +1356,7 @@
 <translation id="4287495839370498922">Chrome मधील वर्धित जाहिरातींशी संबंधित गोपनीयता</translation>
 <translation id="4287885627794386150">चाचणीसाठी पात्र आहे पण ॲक्टिव्ह नाही</translation>
 <translation id="4290920330097335010">कधीही अनुमती देऊ नका</translation>
+<translation id="4296207570293932800">नवीन जाहिरातविषयक गोपनीयता वैशिष्‍ट्य आता उपलब्ध आहे</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> पेजची थंबनेल</translation>
 <translation id="4298000214066716287">गुंतवणूक करणे</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
@@ -1625,6 +1628,7 @@
 <translation id="495170559598752135">क्रिया</translation>
 <translation id="4953689047182316270">ॲक्सेसिबिलिटी कामक्रमांना प्रतिसाद द्या</translation>
 <translation id="4958444002117714549">सूची विस्तार करा</translation>
+<translation id="4960068118612257147">तुम्ही Chrome जाहिरातसंबंधी गोपनीयता सेटिंग्जमध्ये बदल करू शकता</translation>
 <translation id="4964505745997821360">आरोग्य विमा</translation>
 <translation id="4968522289500246572">हे ॲप मोबाइलसाठी डिझाइन केले असून योग्यप्रकारे आकार बदलू शकणार नाही. अ‍ॅपमध्ये समस्या येऊ शकतात किंवा ते रीस्टार्ट होऊ शकते.</translation>
 <translation id="4968665849807487749">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची विनंती करू शकते</translation>
@@ -1646,7 +1650,7 @@
 <translation id="5015510746216210676">मशीन नाव:</translation>
 <translation id="5017554619425969104">तुम्ही कॉपी केलेला मजकूर</translation>
 <translation id="5017828934289857214">मला नंतर आठवण करून द्या</translation>
-<translation id="5018422839182700155">हे पृष्‍ठ उघडू शकत नाही</translation>
+<translation id="5018422839182700155">हे पेज उघडू शकत नाही</translation>
 <translation id="5018802455907704660">१६ x २० इं</translation>
 <translation id="5019198164206649151">समर्थन संचयन खराब स्थितीत</translation>
 <translation id="5019293549442035120">तुम्ही संपूर्ण Google उत्पादनांवर सेव्ह केलेले पत्ते वापरू शकता. हा पत्ता तुमच्या Google खाते मध्ये सेव्ह केला जाईल, <ph name="USER_EMAIL" />.</translation>
@@ -2138,7 +2142,7 @@
 <translation id="6241121617266208201">सूचना लपवा</translation>
 <translation id="624499991300733384">प्रिंट कंपोझिटर सेवा</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
-<translation id="6254436959401408446">हे पृष्‍ठ उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
+<translation id="6254436959401408446">हे पेज उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
 <translation id="6259156558325130047">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>

@@ -1060,6 +1060,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3587738293690942763">Meio</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}=1{Você pode redefinir o grupo a qualquer momento. Leva cerca de um dia para fazer parte de um novo grupo.}one{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dia para fazer parte de um novo grupo.}other{Você pode redefinir o grupo a qualquer momento. Leva {NUM_DAYS} dias para fazer parte de um novo grupo.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Depois de 30 dias, o Chrome exclui automaticamente temas e sites que sugerem anúncios. Também é possível bloquear temas e sites específicos de que você não gosta.</translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
 <translation id="3605899229568538311">5 x 5 pol.</translation>
 <translation id="3608932978122581043">Fornecer orientação</translation>
@@ -1189,6 +1190,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">É possível mudar isso quando quiser nas configurações do Chrome</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Como gerenciar seus dados<ph name="END_BOLD" />: o Chrome exclui automaticamente sites acessados há mais de 30 dias. Um site que você visitar novamente poderá reaparecer. Você também pode bloquear um site para que ele não sugira anúncios e desativar as sugestões quando quiser nas configurações do Chrome.</translation>
 <translation id="3921869355029467742">Digitar o código de segurança</translation>
 <translation id="3927932062596804919">Negar</translation>
 <translation id="393316646445601645">Internet e telecomunicações</translation>
@@ -1355,6 +1357,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4287495839370498922">Mais privacidade de anúncios no Chrome</translation>
 <translation id="4287885627794386150">Qualificado para testes, mas inativo</translation>
 <translation id="4290920330097335010">Nunca permitir</translation>
+<translation id="4296207570293932800">Novo recurso de privacidade de anúncios já disponível</translation>
 <translation id="4297502707443874121">Miniatura da página <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investimentos</translation>
 <translation id="42981349822642051">Expandir</translation>
@@ -1626,6 +1629,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="495170559598752135">Ações</translation>
 <translation id="4953689047182316270">Responder a eventos de acessibilidade</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
+<translation id="4960068118612257147">Você pode fazer mudanças nas configurações de privacidade do Chrome</translation>
 <translation id="4964505745997821360">Plano de saúde</translation>
 <translation id="4968522289500246572">Este app foi criado para dispositivos móveis e pode não ser redimensionado corretamente. Pode haver erros ou talvez o app seja reiniciado.</translation>
 <translation id="4968665849807487749">Pode pedir para gerenciar janelas em todas as suas telas</translation>

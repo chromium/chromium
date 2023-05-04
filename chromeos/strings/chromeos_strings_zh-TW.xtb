@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2085089206770112532">顯示亮度調低</translation>
-<translation id="209751264101900360">黎明到黃昏 - 雲朵動態</translation>
 <translation id="2102231663024125441">文字編輯</translation>
 <translation id="2105810540595158374">裝置類型為遊戲控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -347,7 +346,6 @@
 <translation id="3967822245660637423">下載完成</translation>
 <translation id="3969602104473960991">已更新 Chrome OS 密碼</translation>
 <translation id="397105322502079400">計算中…</translation>
-<translation id="3974175076798940554">現已推出 Chromebook Plus 專屬素材資源</translation>
 <translation id="39823212440917567">系統會移除 <ph name="NUMBER_OF_DAYS" /> 天前的列印工作</translation>
 <translation id="3993704782688964914">你的「<ph name="DEVICE_NAME" />」目前是最新版本</translation>
 <translation id="4003384961948020559">失敗 - 輸出紙匣已滿</translation>
@@ -388,7 +386,6 @@
 <translation id="4275663329226226506">媒體</translation>
 <translation id="4289540628985791613">總覽</translation>
 <translation id="4289849978083912975">播放投影片</translation>
-<translation id="4293621540182258188">黎明到黃昏 - 地球動態</translation>
 <translation id="4297501883039923494">已停止 - 不明的錯誤</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> 張圖片</translation>
 <translation id="4311195029067684288">完整</translation>
@@ -572,7 +569,6 @@
 <translation id="576835345334454681">顯示亮度調高</translation>
 <translation id="57838592816432529">靜音</translation>
 <translation id="5784136236926853061">HTTP 延遲時間過長</translation>
-<translation id="5809090008577139505">極光</translation>
 <translation id="5826644637650799838">關於這張桌布</translation>
 <translation id="5832805196449965646">新增使用者</translation>
 <translation id="583281660410589416">未知</translation>
@@ -591,7 +587,6 @@
 <translation id="5907649332524363701">按鍵顏色</translation>
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5916664084637901428">開啟</translation>
-<translation id="5918201491776799918">選取 Chromebook Plus 獨家藝術圖片</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{檔案掃描完成，現已存放在「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
 <translation id="5939518447894949180">重設</translation>
@@ -802,7 +797,6 @@
 <translation id="7656388927906093505">裝置類型為滑鼠。</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7665800271478495366">變更顯示圖片</translation>
-<translation id="7675241868020048622">極光 (和獨家內容)</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -860,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">選取「<ph name="TOPIC_SOURCE" /><ph name="TOPIC_SOURCE_DESC" />」</translation>
 <translation id="8151185429379586178">開發人員工具</translation>
-<translation id="8153923300383192510">Chromebook Plus 獨家內容</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">連接</translation>
 <translation id="8206859287963243715">手機</translation>

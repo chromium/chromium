@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">የዋጋ ክትትል ቆሟል</translation>
 <translation id="4650125387981512669">እንደ <ph name="FIRST_RUN_ACCOUNT_NAME" /> ቀጥል</translation>
 <translation id="4652817563047461855">የእርስዎ ይለፍ ቃሎች ደህንነታቸው የተጠበቀ እንደሆኑ ያረጋግጡ፣ ተጠልፈው ከሆነ ይጣሩ እና መስመር ላይ ለእራስዎ ጥበቃ ለማድረግ የሚያግዙ ምክሮችን ያግኙ። <ph name="BEGIN_LINK" />የበለጠ ይወቁ<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">ወደ የእርስዎ የ Google መለያ ሲገቡ፣ ይህ ባህሪ ይበራል።</translation>
 <translation id="4659667755519643272">የትር መቀያየሪያን ያስገቡ</translation>
 <translation id="46614316059270592">የይለፍ ቃል አስቀምጥ</translation>
 <translation id="4666531726415300315">እንደ <ph name="EMAIL" /> ሆነው ገብተዋል።
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">የእርስዎን ዕልባቶች፣ የይለፍ ቃላት፣ ታሪክ እና ሌሎች ቅንብሮችን በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በGoogle መለያዎ ይግቡ</translation>
 <translation id="4986678885919050584">ከዚህ መሣሪያ አስወግድ</translation>
 <translation id="498985224078955265">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ በሁለቱም መሣሪያዎች ላይ ወደ Chrome ይግቡ።</translation>
+<translation id="4996567535980789550">የሚያዩትን ይዘት ለማስተዳደር አስምርን ያብሩ</translation>
 <translation id="5005498671520578047">የይለፍ ቃል ቅዳ</translation>
 <translation id="5016420433031926653">ወደ <ph name="USER_EMAIL" /> ላክ</translation>
 <translation id="5017828934289857214">በኋላ አስታውሰኝ</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">የይለፍ ቃል አርትዕ</translation>
 <translation id="5433691172869980887">የተጠቃሚ ስም ተቀድቷል</translation>
 <translation id="5439599923922718668">በተደጋጋሚነት የተጎበኙ</translation>
+<translation id="5439618055789623719">እንደ <ph name="USER_EMAIL" /> ሆነው በመለያ ገብተዋል</translation>
 <translation id="54401264925851789">የገጽ ደህንነት መረጃ</translation>
 <translation id="5443952882982198570">ክሬዲት ካርዶች</translation>
 <translation id="5444892875087332195">ዕልባቶች</translation>
@@ -1236,6 +1237,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9034759925968272072">ከእርስዎ የGoogle መለያ ዘግተው እንዲወጡ አይደረጉም። የእርስዎ Google መለያ በ<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> ውስጥ ሌሎች ዓይነቶች የአሰሳ ታሪኮች ሊኖሩት ይችላል።</translation>
 <translation id="9037965129289936994">የመጀመሪያውን አሳይ</translation>
 <translation id="9039373489628511875">መተላለፊያ ይዘት</translation>
+<translation id="9043368763795653245">የእርስዎን የምርምር ምግብ እና Chrome ግላዊነት ለማላበስ አስምርን ያብሩ።</translation>
 <translation id="9055772144595778347">መግባት አልተቻለም</translation>
 <translation id="9055960261314198756">የላቀ ጥበቃ ጠፍቷል</translation>
 <translation id="9057972802061533987">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>

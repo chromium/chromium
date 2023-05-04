@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
+<translation id="100506692671054486">geen vorige opdracht</translation>
 <translation id="1009046985747440431">Druk op de pijl-omhoog of -omlaag om te navigeren of druk op Enter om te activeren</translation>
 <translation id="1011903154582639569">Zoek een toets en til je vinger op om te typen</translation>
 <translation id="1012173283529841972">Lijstitem</translation>
@@ -459,6 +460,7 @@
 <translation id="3936394396199829062">Lavendelblos</translation>
 <translation id="3943857333388298514">Plak</translation>
 <translation id="3962990492275676168">Beginnen met lezen vanaf huidige locatie</translation>
+<translation id="397094149579293440">geen geselecteerde tekst</translation>
 <translation id="3970951409746498040">Zandbruin</translation>
 <translation id="3989324057180830702">Schakelknop</translation>
 <translation id="3991317907213946254">Moccasin</translation>
@@ -565,6 +567,7 @@
 <translation id="4786285211967466855">Geen vorige kop van niveau 1</translation>
 <translation id="4787577491510559358">Opmaak voor huidig item aankondigen</translation>
 <translation id="479989351350248267">zoeken</translation>
+<translation id="4802034228771424756">geen gefocust tekstveld</translation>
 <translation id="4804818685124855865">Verbinding verbreken</translation>
 <translation id="481165870889056555">De titel van de huidige pagina melden</translation>
 <translation id="4815668758102003883">Lichtturkoois</translation>
@@ -587,13 +590,16 @@
 <translation id="489907760999452556">Interne link</translation>
 <translation id="4909019435900810068">Eén woord teruggaan</translation>
 <translation id="4911349081560453449">Geen vorig selectievakje</translation>
+<translation id="4919186071145887492">Kan niet <ph name="COMMAND" />. Probeer het opnieuw.</translation>
 <translation id="492295894462528572">Voorwoord</translation>
 <translation id="495046168593986294">Omhoog scrollen</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4953585991029886728">Tekst bewerken</translation>
+<translation id="4964701498510730546">tekstveld is leeg</translation>
 <translation id="4973717656530883744">Min. <ph name="X" /></translation>
 <translation id="4974612477719259470">Geen vorige knop</translation>
 <translation id="4979404613699303341">Knop 'Vorige'</translation>
+<translation id="4981239367072766915">niet-herkende invoer</translation>
 <translation id="4982917827052020884">Laten we beginnen met enkele vaak gebruikte toetsen. Met de Ctrl-toets kun je de huidige spraak stoppen. De Ctrl-toets zit linksonder op je toetsenbord. Druk op de Ctrl-toets om door te gaan.</translation>
 <translation id="4983588134362688868">Naar de bovenkant van de pagina</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, venster</translation>
@@ -601,6 +607,7 @@
 <translation id="4994420463726586413">Huidige batterijstatus aankondigen</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, keuzerondje geselecteerd</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, keuzerondje voor menu-item geselecteerd</translation>
+<translation id="5014131807708055994">Kan niet <ph name="COMMAND" />, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">Spraakregistratie aanzetten</translation>
 <translation id="5041394372352067729">Brailleweergave naar bovenkant pagina verplaatsen</translation>
 <translation id="5042770794184672516">Spraakvolume verhogen</translation>

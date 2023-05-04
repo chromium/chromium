@@ -547,7 +547,6 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="4642472735733036929">Praćenje cijene zaustavljeno</translation>
 <translation id="4650125387981512669">Nastavi kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Provjerite jesu li vaše zaporke sigurne, saznajte jesu li ugrožene i primite savjete koji će vam pomoći da se zaštitite online. <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Kad se prijavite na Google račun, ova je značajka uključena.</translation>
 <translation id="4659667755519643272">Otvori prekidač za prebacivanje između kartica</translation>
 <translation id="46614316059270592">Spremi zaporku</translation>
 <translation id="4666531726415300315">Prijavljeni ste kao <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4979397965658815378">Prijavite se Google računom da biste imali pristup svojim oznakama, zaporkama, povijesti i ostalim postavkama na svim svojim uređajima</translation>
 <translation id="4986678885919050584">Ukloni s ovog uređaja</translation>
 <translation id="498985224078955265">Da biste poslali ovu karticu na drugi uređaj, prijavite se na Chrome na oba uređaja.</translation>
+<translation id="4996567535980789550">Uključite sinkronizaciju da biste upravljali sadržajem koji vam se prikazuje</translation>
 <translation id="5005498671520578047">Kopiranje zaporke</translation>
 <translation id="5016420433031926653">Šalju se na <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Podsjeti me kasnije</translation>
@@ -666,6 +666,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="543338862236136125">Uredite zaporku</translation>
 <translation id="5433691172869980887">Korisničko je ime kopirano</translation>
 <translation id="5439599923922718668">Često posjećeno</translation>
+<translation id="5439618055789623719">Prijavljeni ste kao <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informacije o sigurnosti stranice</translation>
 <translation id="5443952882982198570">Kreditne kartice</translation>
 <translation id="5444892875087332195">Oznake</translation>
@@ -1236,6 +1237,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="9034759925968272072">Nećete se odjaviti s Google računa. Na Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Prikaži izvornik</translation>
 <translation id="9039373489628511875">Propusnost</translation>
+<translation id="9043368763795653245">Da biste personalizirali svoj feed Discovera i Chrome, uključite sinkronizaciju.</translation>
 <translation id="9055772144595778347">Prijava nije moguća</translation>
 <translation id="9055960261314198756">Isključena je poboljšana zaštita</translation>
 <translation id="9057972802061533987">Praćenje nije uspjelo. Nešto nije u redu.</translation>

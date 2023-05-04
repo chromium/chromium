@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">‫IPv4/IPv6</translation>
 <translation id="2080070583977670716">مزيد من الإعدادات</translation>
 <translation id="2085089206770112532">تقليل سطوع الشاشة</translation>
-<translation id="209751264101900360">منظر السُحب من الفجر إلى الليل</translation>
 <translation id="2102231663024125441">تعديل النص</translation>
 <translation id="2105810540595158374">الجهاز هو ذراع تحكّم في الألعاب.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، الإصدار <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">لا تفصل هذا الجهاز الخارجي أو توقف تشغيل الكمبيوتر أثناء تحديث البرامج الثابتة. يمكنك تصغير هذه النافذة. قد يستغرق هذا التحديث بضع دقائق وقد يتوقف الجهاز الخارجي عن العمل أثناء التحديث.</translation>
 <translation id="3486220673238053218">تعريف</translation>
 <translation id="3488065109653206955">نشطة جزئيًا</translation>
+<translation id="3502426834823382181">عرض جميع التطبيقات</translation>
 <translation id="3510890413042482857">إرسال <ph name="BEGIN_LINK1" />بيانات تتبُّع مستوى الأداء<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏تحديث نظام التشغيل Chrome</translation>
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">اكتمل التنزيل</translation>
 <translation id="3969602104473960991">‏تم تعديل كلمة مرور نظام التشغيل Chrome</translation>
 <translation id="397105322502079400">جارٍ الحساب...</translation>
-<translation id="3974175076798940554">‏تتوفّر الآن مواد عرض حصرية لجهاز Chromebook Plus</translation>
 <translation id="39823212440917567">ستتم إزالة طلبات الطباعة التي مرَّ عليها أكثر من <ph name="NUMBER_OF_DAYS" /> يوم.</translation>
 <translation id="3993704782688964914">الجهاز <ph name="DEVICE_NAME" /> محدَّث الآن.</translation>
 <translation id="4003384961948020559">تعذّرت الطباعة - المخرجات ممتلئة</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">الوسائط</translation>
 <translation id="4289540628985791613">نظرة عامة</translation>
 <translation id="4289849978083912975">عرض الشرائح</translation>
-<translation id="4293621540182258188">منظر انسيابي للأرض من الفجر إلى الليل</translation>
 <translation id="4297501883039923494">توقّفت الطابعة - خطأ غير معروف</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> صورة</translation>
 <translation id="4311195029067684288">كامل</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">زيادة سطوع الشاشة</translation>
 <translation id="57838592816432529">كتم الصوت</translation>
 <translation id="5784136236926853061">‏وقت استجابة بروتوكول HTTP طويل.</translation>
-<translation id="5809090008577139505">الشفق</translation>
 <translation id="5826644637650799838">لمحة عن العمل الفني</translation>
 <translation id="5832805196449965646">إضافة شخص</translation>
 <translation id="583281660410589416">غير معروف</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">لون المفتاح</translation>
 <translation id="5916084858004523819">محظورة</translation>
 <translation id="5916664084637901428">مفعّل</translation>
-<translation id="5918201491776799918">‏يمكنك اختيار عمل فني حصري لعرضه على Chromebook Plus.</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{تم بنجاح مسح الملف ضوئيًا وحفظه في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}zero{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}two{تم بنجاح مسح الملفين ضوئيًا وحفظهما في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{تم بنجاح مسح الملفات ضوئيًا وحفظها في <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">لم يتم العثور على الملف.</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">تفعيل المظهر الداكن</translation>
+<translation id="6285899124799306373">فتح مشغّل التطبيقات</translation>
 <translation id="6302401976930124515">تم إلغاء اختبار <ph name="TEST_NAME" />.</translation>
 <translation id="631063167932043783">تطبيق "استكشاف"</translation>
 <translation id="6319207335391420837">تحديث البرامج الثابتة على <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">معاينة شاشة الاستراحة</translation>
 <translation id="6388847657025262518">وحدة تغذية المستندات في الماسح الضوئي مليئة بالأوراق. يُرجى إزالة بعض الأوراق وإعادة المحاولة.</translation>
 <translation id="6394634179843537518">إضافة ملف</translation>
+<translation id="6401427872449207797">البحث في المتصفِّح</translation>
 <translation id="6410257289063177456">ملفات الصور</translation>
 <translation id="641081527798843608">مطابقة الموضوع</translation>
 <translation id="6412715219990689313">لوحة مفاتيح مُدمَجة</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">الجهاز هو ماوس.</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7665800271478495366">تغيير الصورة الرمزية</translation>
-<translation id="7675241868020048622">‏‫Aurora (ميزة حصرية في Plus)</translation>
 <translation id="7690294790491645610">تأكيد كلمة المرور الجديدة</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">اختيار <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">أدوات مطوري البرامج</translation>
-<translation id="8153923300383192510">‏حصريًا على Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">إرفاق</translation>
 <translation id="8206859287963243715">خلوي</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">تشغيل الوسائط</translation>
 <translation id="8318753676953949627">ما مِن صور.</translation>
 <translation id="8329018942023753850">تطبيق "الآلة الحاسبة"</translation>
+<translation id="8335869473001018124">فتح البحث</translation>
 <translation id="8336739000755212683">تغيير صورة حساب الجهاز</translation>
 <translation id="8347227221149377169">مهام الطباعة</translation>
 <translation id="8351855506390808906">نقطة لمس تحديد المفاتيح</translation>

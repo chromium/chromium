@@ -1060,6 +1060,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3587738293690942763">Midtre</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Du kan tilbakestille gruppen din når som helst. Det tar omtrent én dag å bli med i en ny gruppe.}=1{Du kan tilbakestille gruppen din når som helst. Det tar omtrent én dag å bli med i en ny gruppe.}other{Du kan tilbakestille gruppen din når som helst. Det tar omtrent {NUM_DAYS} dager å bli med i en ny gruppe.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome sletter automatisk emner og nettsteder som foreslår annonser som er eldre enn 30 dager. Du kan også blokkere spesifikke emner og nettsteder du ikke liker.</translation>
 <translation id="3603507503523709">Programmet er blokkert av administratoren din</translation>
 <translation id="3605899229568538311">5 x 5 tommer</translation>
 <translation id="3608932978122581043">Feed-retning</translation>
@@ -1189,6 +1190,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3906954721959377182">Nettbrett</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Du kan når som helst ombestemme deg i Chrome-innstillingene.</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Slik kan du administrere dataene dine:<ph name="END_BOLD" /> Chrome sletter automatisk nettsteder som er eldre enn 30 dager. Nettsteder du besøker på nytt, kan havne på listen igjen. Du kan også når som helst slå av annonser som er foreslått av nettsteder, og blokkere nettsteder fra å foreslå annonser for deg, i Chrome-innstillingene.</translation>
 <translation id="3921869355029467742">Skriv inn sikkerhetskoden</translation>
 <translation id="3927932062596804919">Ikke tillat</translation>
 <translation id="393316646445601645">Internett og telekommunikasjon</translation>
@@ -1355,6 +1357,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4287495839370498922">Bedre annonsepersonvern i Chrome</translation>
 <translation id="4287885627794386150">Kvalifisert for utprøving, men ikke aktiv</translation>
 <translation id="4290920330097335010">Aldri tillat</translation>
+<translation id="4296207570293932800">En ny funksjon for annonsepersonvern er nå tilgjengelig</translation>
 <translation id="4297502707443874121">Miniatyrbilde for side <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investering</translation>
 <translation id="42981349822642051">Vis</translation>
@@ -1626,6 +1629,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="495170559598752135">Handlinger</translation>
 <translation id="4953689047182316270">Svar på tilgjengelighetshendelser</translation>
 <translation id="4958444002117714549">Utvid liste</translation>
+<translation id="4960068118612257147">Du kan gjøre endringer i innstillingene for annonsepersonvern i Chrome</translation>
 <translation id="4964505745997821360">Helseforsikring</translation>
 <translation id="4968522289500246572">Denne appen er designet for mobil, så det fungerer kanskje ikke så bra å endre størrelse på den. Det kan hende appen støter på problemer eller startes på nytt.</translation>
 <translation id="4968665849807487749">Kan be om å få administrere vinduer på alle skjermene dine</translation>

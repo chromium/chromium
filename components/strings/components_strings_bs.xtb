@@ -1060,6 +1060,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3587738293690942763">Srednje</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike jedan dan da se pridružite novoj grupi.}=1{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike jedan dan da se pridružite novoj grupi.}one{Možete vratiti grupu na zadano kad god želite. Potreban je otprilike {NUM_DAYS} dan da se pridružite novoj grupi.}few{Možete vratiti grupu na zadano kad god želite. Potrebna su otprilike {NUM_DAYS} dana da se pridružite novoj grupi.}other{Možete vratiti grupu na zadano kad god želite. Potrebno je otprilike {NUM_DAYS} dana da se pridružite novoj grupi.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome automatski briše teme i web lokacije koje predlažu oglase, a koje su starije od 30 dana. Ili možete blokirati određene teme i web lokacije koje vam se ne sviđaju.</translation>
 <translation id="3603507503523709">Aplikaciju je blokirao vaš administrator</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3608932978122581043">Orijentacija sažetka sadržaja</translation>
@@ -1189,6 +1190,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Uvijek se možete predomisliti i promijeniti postavke Chromea</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Chrome automatski briše web lokacije koje su starije od 30 dana. Web lokacija koju ponovo posjetite može se ponovo pojaviti na listi. Također možete blokirati da vam web lokacija predlaže oglase i isključiti oglase koje predlažu web lokacije u bilo kojem trenutku u postavkama Chromea.</translation>
 <translation id="3921869355029467742">Unesite sigurnosni kôd</translation>
 <translation id="3927932062596804919">Odbij</translation>
 <translation id="393316646445601645">Internet i telekom</translation>
@@ -1355,6 +1357,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4287495839370498922">Poboljšana privatnost pri izloženosti oglasima u Chromeu</translation>
 <translation id="4287885627794386150">Ispunjava uslove za probni period, ali nije aktivno</translation>
 <translation id="4290920330097335010">Nikada ne dozvoli</translation>
+<translation id="4296207570293932800">Sada je dostupna nova funkcija privatnosti pri izloženosti oglasima</translation>
 <translation id="4297502707443874121">Sličica za stranicu <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investicije</translation>
 <translation id="42981349822642051">Proširi</translation>
@@ -1626,6 +1629,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="495170559598752135">Radnje</translation>
 <translation id="4953689047182316270">Odgovori na događaje vezane za pristupačnost</translation>
 <translation id="4958444002117714549">Proširi listu</translation>
+<translation id="4960068118612257147">Možete unijeti promjene u postavkama privatnosti pri izloženosti oglasima u Chromeu</translation>
 <translation id="4964505745997821360">Zdravstveno osiguranje</translation>
 <translation id="4968522289500246572">Ova aplikacija je dizajnirana za mobilne uređaje i možda neće dobro promijeniti veličinu. Aplikacija može naići na probleme ili se ponovo pokrenuti.</translation>
 <translation id="4968665849807487749">Može tražiti upravljanje prozorima na svim vašim ekranima</translation>

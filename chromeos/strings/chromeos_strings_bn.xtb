@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">আরও সেটিংস</translation>
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
-<translation id="209751264101900360">সূর্যোদয় থেকে সূর্যাস্ত পর্যন্ত - মেঘ</translation>
 <translation id="2102231663024125441">টেক্সট এডিটিং</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">ফার্মওয়্যার আপডেট করার সময়, এই এক্সটার্নাল ডিভাইসটি আনপ্লাগ করবেন না বা আপনার কম্পিউটার বন্ধ করবেন না। আপনি এই উইন্ডোটি মিনিমাইজ করতে পারবেন। এই আপডেটে কয়েক মিনিট সময় লাগতে পারে এবং এই সময়ে আপনার এক্সটার্নাল ডিভাইস কাজ নাও করতে পারে।</translation>
 <translation id="3486220673238053218">সংজ্ঞা</translation>
 <translation id="3488065109653206955">আংশিকভাবে সক্রিয়</translation>
+<translation id="3502426834823382181">সব অ্যাপ দেখুন</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />পারফর্ম্যান্স ট্রেস ডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">ডাউনলোড সম্পূর্ণ</translation>
 <translation id="3969602104473960991">ChromeOS-এর পাসওয়ার্ড আপডেট করা হয়েছে</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
-<translation id="3974175076798940554">এক্সক্লুসিভ Chromebook Plus অ্যাসেট এখন উপলভ্য</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> দিনের বেশি পুরনো প্রিন্ট জব সরিয়ে দেওয়া হবে</translation>
 <translation id="3993704782688964914">আপনার <ph name="DEVICE_NAME" /> ডিভাইস এখন আপ-টু-ডেট আছে</translation>
 <translation id="4003384961948020559">প্রিন্ট করা যায়নি - আউটপুট বিন ভর্তি হয়ে গেছে</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">মাধ্যম</translation>
 <translation id="4289540628985791613">ওভারভিউ</translation>
 <translation id="4289849978083912975">স্লাইড শো</translation>
-<translation id="4293621540182258188">সূর্যোদয় থেকে সূর্যাস্ত পর্যন্ত - পৃথিবী</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" />টি ছবি</translation>
 <translation id="4311195029067684288">পূর্ণ</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">ডিসপ্লের উজ্জ্বলতা বাড়ানোর বোতাম</translation>
 <translation id="57838592816432529">মিউট করুন</translation>
 <translation id="5784136236926853061">HTTP লেটেন্সি বেশি</translation>
-<translation id="5809090008577139505">মেরুজ্যোতি</translation>
 <translation id="5826644637650799838">আর্ট সম্পর্কে</translation>
 <translation id="5832805196449965646">একজন ব্যক্তিকে যোগ করুন</translation>
 <translation id="583281660410589416">অজানা</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">কী কালার</translation>
 <translation id="5916084858004523819">নিষিদ্ধ</translation>
 <translation id="5916664084637901428">চালু</translation>
-<translation id="5918201491776799918">Chromebook Plus-এর জন্য এক্সক্লুসিভ আর্টওয়ার্ক বেছে নিন</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}one{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}other{আপনার ফাইল স্ক্যান করে <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-এ সেভ করা হয়েছে।}}</translation>
 <translation id="5931523347251946569">ফাইল পাওয়া যায়নি</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">থীম</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">ডার্ক থিম চালু করুন</translation>
+<translation id="6285899124799306373">লঞ্চার খুলুন</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" />-এ ফার্মওয়্যার আপডেট করুন</translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">স্ক্রিন সেভার প্রিভিউ</translation>
 <translation id="6388847657025262518">স্ক্যানারের ডকুমেন্ট ফিডার কাজ করছে না। ফিডার চেক করে আবার চেষ্টা করুন।</translation>
 <translation id="6394634179843537518">ফাইল যোগ করুন</translation>
+<translation id="6401427872449207797">ব্রাউজার সার্চ</translation>
 <translation id="6410257289063177456">ছবি ফাইল</translation>
 <translation id="641081527798843608">বিষয়ের মিল</translation>
 <translation id="6412715219990689313">বিল্ট-ইন কীবোর্ড</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">ডিভাইস একটি মাউজ।</translation>
 <translation id="7658239707568436148">বাতিল</translation>
 <translation id="7665800271478495366">অবতার পরিবর্তন করুন</translation>
-<translation id="7675241868020048622">মেরুজ্যোতি (এক্সক্লুসিভ সহ)</translation>
 <translation id="7690294790491645610">নতুন পাসওয়ার্ড নিশ্চিত করুন</translation>
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> বেছে নিন</translation>
 <translation id="8151185429379586178">ডেভেলপার টুল</translation>
-<translation id="8153923300383192510">Chromebook Plus এক্সক্লুসিভ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">অ্যাটাচ করুন</translation>
 <translation id="8206859287963243715">সেলুলার</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">মিডিয়া চালান</translation>
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
 <translation id="8329018942023753850">Calculator অ্যাপ</translation>
+<translation id="8335869473001018124">সার্চ খুলুন</translation>
 <translation id="8336739000755212683">ডিভাইস অ্যাকাউন্টের ছবিটি পরিবর্তন করুন</translation>
 <translation id="8347227221149377169">প্রিন্ট করার কাজগুলি</translation>
 <translation id="8351855506390808906">কীম্যাপ করার টাচ পয়েন্ট</translation>

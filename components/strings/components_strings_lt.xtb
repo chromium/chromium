@@ -1061,6 +1061,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3587738293690942763">Vidurys</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}=1{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks maždaug dieną.}one{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dieną.}few{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienas.}many{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienos.}other{Grupę bet kuriuo metu galite nustatyti iš naujo. Prisijungimas prie naujos grupės užtruks {NUM_DAYS} dienų.}}</translation>
 <translation id="3600246354004376029">„<ph name="TITLE" />“, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">„Chrome“ automatiškai ištrina temas ir svetaines, kuriose teikiami senesni nei trisdešimt dienų skelbimai. Taip pat galite užblokuoti konkrečias temas ir svetaines, kurios jums nepatinka.</translation>
 <translation id="3603507503523709">Programą užblokavo administratorius</translation>
 <translation id="3605899229568538311">5 x 5 col.</translation>
 <translation id="3608932978122581043">Pateikti orientaciją</translation>
@@ -1190,6 +1191,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3906954721959377182">Planšetinis kompiuteris</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Bet kada galite persigalvoti ir tai pakeisti „Chrome“ nustatymuose</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Kaip galite tvarkyti savo duomenis:<ph name="END_BOLD" /> „Chrome“ automatiškai ištrina senesnes nei trisdešimt dienų svetaines. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Taip pat galite bet kuriuo metu užblokuoti svetainę, kad ji negalėtų siūlyti skelbimų, ir išjungti svetainių siūlomus skelbimus „Chrome“ nustatymuose.</translation>
 <translation id="3921869355029467742">Įveskite saugos kodą</translation>
 <translation id="3927932062596804919">Uždrausti</translation>
 <translation id="393316646445601645">Internetas ir telekomunikacijos</translation>
@@ -1356,6 +1358,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="4287495839370498922">Patobulintas su skelbimais susijęs privatumas naršyklėje „Chrome“</translation>
 <translation id="4287885627794386150">Galima naudoti bandomąją versiją, bet ji nėra aktyvi</translation>
 <translation id="4290920330097335010">Niekada neleisti</translation>
+<translation id="4296207570293932800">Dabar pasiekiama nauja skelbimų privatumo funkcija</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> puslapio miniatiūra</translation>
 <translation id="4298000214066716287">Investavimas</translation>
 <translation id="42981349822642051">Išskleisti</translation>
@@ -1627,6 +1630,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="495170559598752135">Veiksmai</translation>
 <translation id="4953689047182316270">Reaguoti į pritaikymo neįgaliesiems įvykius</translation>
 <translation id="4958444002117714549">Išskleisti sąrašą</translation>
+<translation id="4960068118612257147">Galite atlikti „Chrome“ skelbimų privatumo nustatymų pakeitimus</translation>
 <translation id="4964505745997821360">Sveikatos draudimas</translation>
 <translation id="4968522289500246572">Ši programa sukurta mobiliesiems įrenginiams, todėl jos dydis gali būti pakeistas netinkamai. Programoje gali kilti problemų arba ji gali būti paleista iš naujo.</translation>
 <translation id="4968665849807487749">Gali būti prašoma tvarkyti langus visuose ekranuose</translation>

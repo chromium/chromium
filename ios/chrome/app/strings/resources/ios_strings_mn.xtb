@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">Үнэ хянахыг зогсоосон</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="4652817563047461855">Таны нууц үгнүүд аюулгүй эсэхийг шалгах, тэдгээр нь алдагдсан эсэхийг олж мэдэх болон өөрийгөө онлайн орчинд хамгаалахад туслах зөвлөгөөг аваарай. <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна.</translation>
 <translation id="4659667755519643272">Цонх хооронд шилжигчийг оруулна уу</translation>
 <translation id="46614316059270592">Нууц үг хадгалах</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" />-р нэвтэрсэн байна.
@@ -609,6 +608,7 @@
 <translation id="4979397965658815378">Хавчуурга, нууц үг, түүх болон бусад тохиргоог бүх төхөөрөмждөө авахын тулд Google Бүртгэлээрээ нэвтэрнэ үү</translation>
 <translation id="4986678885919050584">Энэ төхөөрөмжөөс хасах</translation>
 <translation id="498985224078955265">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд аль аль төхөөрөмж дээр Chrome-д нэвтэрнэ үү.</translation>
+<translation id="4996567535980789550">Хардаг контентоо удирдахын тулд синк хийхийг асаах</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" />-д илгээх</translation>
 <translation id="5017828934289857214">Надад дараа сануулна уу</translation>
@@ -665,6 +665,7 @@
 <translation id="543338862236136125">Нууц үг засах</translation>
 <translation id="5433691172869980887">Хэрэглэгчийн нэрийг хуулсан</translation>
 <translation id="5439599923922718668">Байнга зочилдог</translation>
+<translation id="5439618055789623719"><ph name="USER_EMAIL" />-р нэвтэрсэн</translation>
 <translation id="54401264925851789">Хуудасны аюулгүй байдалтай холбоотой мэдээлэл</translation>
 <translation id="5443952882982198570">Кредит картууд</translation>
 <translation id="5444892875087332195">Хавчуурга</translation>
@@ -1235,6 +1236,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="9034759925968272072">Таныг Google Бүртгэлээс гаргахгүй. Таны Google Бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />-д хайлтын түүхийн өөр хэлбэртэй байна.</translation>
 <translation id="9037965129289936994">Эх хувийг харуулах</translation>
 <translation id="9039373489628511875">Мессежийн өргөн</translation>
+<translation id="9043368763795653245">Discover-н хангамж болон Chrome-оо хувийн болгохын тулд синк хийхийг асаана уу.</translation>
 <translation id="9055772144595778347">Нэвтэрч чадахгүй байна</translation>
 <translation id="9055960261314198756">Сайжруулсан хамгаалалт унтраалттай байна</translation>
 <translation id="9057972802061533987">Дагах боломжгүй. Алдаа гарлаа.</translation>

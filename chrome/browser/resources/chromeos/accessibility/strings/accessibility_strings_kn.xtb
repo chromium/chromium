@@ -459,6 +459,7 @@
 <translation id="3936394396199829062">ನಸು ಕೆನ್ನೀಲಿ ಬಣ್ಣ</translation>
 <translation id="3943857333388298514">ಅಂಟಿಸು</translation>
 <translation id="3962990492275676168">ಪ್ರಸ್ತುತ ಸ್ಥಾನದಿಂದ ಓದುವಿಕೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
+<translation id="397094149579293440">ಯಾವುದೇ ಪಠ್ಯ ಆಯ್ಕೆಮಾಡಿಲ್ಲ</translation>
 <translation id="3970951409746498040">ಸ್ಯಾಂಡಿ ಬ್ರೌನ್</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">ಮೊಕಾಸಿನ್</translation>
@@ -565,6 +566,7 @@
 <translation id="4786285211967466855">ಯಾವುದೇ ಹಿಂದಿನ ಹಂತ 1 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
 <translation id="4787577491510559358">ಪ್ರಸ್ತುತ ಲೇಖನಕ್ಕಾಗಿ ಫಾರ್ಮ್ಯಾಟಿಂಗ್ ಅನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="479989351350248267">ಹುಡುಕಾಡಿ</translation>
+<translation id="4802034228771424756">ಯಾವುದೇ ಫೋಕಸ್ ಮಾಡದ ಪಠ್ಯ ಫೀಲ್ಡ್‌</translation>
 <translation id="4804818685124855865">ಡಿಸ್‌ಕನೆಕ್ಟ್</translation>
 <translation id="481165870889056555">ಪ್ರಸ್ತುತ ಪುಟದ ಶೀರ್ಷಿಕೆಯನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="4815668758102003883">ತಿಳಿ ವೈಢೂರ್ಯನೀಲಿ</translation>
@@ -587,13 +589,16 @@
 <translation id="489907760999452556">ಆಂತರಿಕ ಲಿಂಕ್</translation>
 <translation id="4909019435900810068">ಒಂದು ಪದ ಹಿಂದಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="4911349081560453449">ಯಾವುದೇ ಹಿಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್ ಇಲ್ಲ</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> ಸಾಧ್ಯವಿಲ್ಲ, ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="492295894462528572">ಮುನ್ನುಡಿ</translation>
 <translation id="495046168593986294">ಮೇಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಿ</translation>
 <translation id="495170559598752135">ಕ್ರಿಯೆಗಳು</translation>
 <translation id="4953585991029886728">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡಿ</translation>
+<translation id="4964701498510730546">ಪಠ್ಯ ಫೀಲ್ಡ್‌ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="4973717656530883744">ಗರಿಷ್ಟ <ph name="X" /></translation>
 <translation id="4974612477719259470">ಯಾವುದೇ ಹಿಂದಿನ ಬಟನ್ ಇಲ್ಲ</translation>
 <translation id="4979404613699303341">ಹಿಂದಿನ ಬಟನ್</translation>
+<translation id="4981239367072766915">ಗುರುತಿಸಲಾಗದ ಇನ್‌ಪುಟ್</translation>
 <translation id="4982917827052020884">ನೀವು ನಿಯಮಿತವಾಗಿ ಬಳಸುವ ಕೆಲವು ಕೀಗಳೊಂದಿಗೆ ಪ್ರಾರಂಭಿಸೋಣ. ಯಾವುದೇ ಪ್ರಸ್ತುತ ಧ್ವನಿಯನ್ನು ನಿಲ್ಲಿಸಲು Control ಕೀಯನ್ನು ಬಳಸಬಹುದು. ನಿಮ್ಮ ಕೀಬೋರ್ಡ್‌ನ ಕೆಳಗಿನ ಎಡ ಮೂಲೆಯಲ್ಲಿ Control ಕೀ ಅನ್ನು ಹುಡುಕಿ. ಮುಂದುವರಿಯಲು, Control ಕೀ ಒತ್ತಿರಿ.</translation>
 <translation id="4983588134362688868">ಪುಟದ ಮೇಲಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />, ವಿಂಡೊ</translation>
@@ -601,6 +606,7 @@
 <translation id="4994420463726586413">ಪ್ರಸ್ತುತ ಬ್ಯಾಟರಿ ಸ್ಥಿತಿಯನ್ನು ಪ್ರಕಟಿಸಿ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5012724933919010465"><ph name="NAME" />, ಮೆನು ಐಟಂ ರೇಡಿಯೋ ಬಟನ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> ಸಾಧ್ಯವಿಲ್ಲ, <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ಮಾತಿನ ಲಾಗಿಂಗ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="5041394372352067729">ಬ್ರೈಲ್‌ ಡಿಸ್‌ಪ್ಲೇಯನ್ನು ಪುಟದ ಮೇಲ್ಭಾಗಕ್ಕೆ ಸರಿಸು</translation>
 <translation id="5042770794184672516">ಧ್ವನಿಯ ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚಿಸಿ</translation>

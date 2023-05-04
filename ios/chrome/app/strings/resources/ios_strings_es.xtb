@@ -547,7 +547,6 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4642472735733036929">Seguimiento de precios detenido</translation>
 <translation id="4650125387981512669">Seguir como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Asegúrate de que tus contraseñas sean seguras, averigua si se han vulnerado y recibe consejos para protegerte en Internet. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Esta función se activará cuando inicies sesión en tu cuenta de Google.</translation>
 <translation id="4659667755519643272">Acceder a la función de cambio de pestaña</translation>
 <translation id="46614316059270592">Guardar contraseña</translation>
 <translation id="4666531726415300315">Has iniciado sesión como <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4979397965658815378">Inicia sesión con tu cuenta de Google para acceder a tus marcadores, contraseñas, historial y otros ajustes desde todos tus dispositivos</translation>
 <translation id="4986678885919050584">Quitar de este dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta pestaña a otro dispositivo, inicia sesión en Chrome en ambos dispositivos.</translation>
+<translation id="4996567535980789550">Activa la sincronización para gestionar el contenido que ves</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5016420433031926653">Enviar a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Recordar más tarde</translation>
@@ -666,6 +666,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="543338862236136125">Cambiar contraseña</translation>
 <translation id="5433691172869980887">Se ha copiado el nombre de usuario</translation>
 <translation id="5439599923922718668">Visitados con frecuencia</translation>
+<translation id="5439618055789623719">Has iniciado sesión como <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Información de seguridad de la página</translation>
 <translation id="5443952882982198570">Tarjetas de crédito</translation>
 <translation id="5444892875087332195">Marcadores</translation>
@@ -1236,6 +1237,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9034759925968272072">No se cerrará la sesión en tu cuenta de Google. Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Ancho de banda</translation>
+<translation id="9043368763795653245">Para personalizar tu feed de Discover y Chrome, activa la sincronización.</translation>
 <translation id="9055772144595778347">Error al iniciar sesión</translation>
 <translation id="9055960261314198756">La protección mejorada está desactivada</translation>
 <translation id="9057972802061533987">No se puede seguir. Algo ha fallado.</translation>

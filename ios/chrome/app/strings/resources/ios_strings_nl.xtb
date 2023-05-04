@@ -547,7 +547,6 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="4642472735733036929">Prijs volgen gestopt</translation>
 <translation id="4650125387981512669">Doorgaan als <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Zorg dat je wachtwoorden veilig zijn, ga na of ze zijn gehackt en krijg advies om je online te beschermen. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Als je inlogt op je Google-account, wordt deze functie aangezet.</translation>
 <translation id="4659667755519643272">Tabbladschakelaar openen</translation>
 <translation id="46614316059270592">Wachtwoord opslaan</translation>
 <translation id="4666531726415300315">Ingelogd als <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="4979397965658815378">Log in met je Google-account om je bookmarks, wachtwoorden, geschiedenis en andere instellingen op al je apparaten te gebruiken</translation>
 <translation id="4986678885919050584">Verwijderen van dit apparaat</translation>
 <translation id="498985224078955265">Als je dit tabblad naar een ander apparaat wilt sturen, log je op beide apparaten in bij Chrome.</translation>
+<translation id="4996567535980789550">Zet synchronisatie aan om de content te beheren die je te zien krijgt</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5016420433031926653">Sturen naar <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Later herinneren</translation>
@@ -666,6 +666,7 @@ Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze
 <translation id="543338862236136125">Wachtwoord bewerken</translation>
 <translation id="5433691172869980887">Gebruikersnaam gekopieerd</translation>
 <translation id="5439599923922718668">Vaak bezocht</translation>
+<translation id="5439618055789623719">Ingelogd als <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Paginabeveiligingsinfo</translation>
 <translation id="5443952882982198570">Creditcards</translation>
 <translation id="5444892875087332195">Bookmarks</translation>
@@ -1236,6 +1237,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="9034759925968272072">Je wordt niet uitgelogd van je Google-account. Voor je Google-account kunnen andere vormen van browsegeschiedenis beschikbaar zijn via <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Origineel bekijken</translation>
 <translation id="9039373489628511875">Bandbreedte</translation>
+<translation id="9043368763795653245">Zet synchronisatie aan om je Discover-feed en Chrome te personaliseren.</translation>
 <translation id="9055772144595778347">Kan niet inloggen</translation>
 <translation id="9055960261314198756">Geoptimaliseerde beveiliging staat uit</translation>
 <translation id="9057972802061533987">Volgen is mislukt. Er is iets misgegaan.</translation>

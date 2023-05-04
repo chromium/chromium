@@ -547,7 +547,6 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="4642472735733036929">Monitoramento de preço interrompido</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Verifique se suas senhas estão seguras, descubra se elas foram comprometidas e receba conselhos de proteção on-line. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Quando você faz login na sua Conta do Google, este recurso é ativado.</translation>
 <translation id="4659667755519643272">Entrar no seletor guias</translation>
 <translation id="46614316059270592">Salvar senha</translation>
 <translation id="4666531726415300315">Conectado como <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4979397965658815378">Faça login com sua Conta do Google para ter seus favoritos, senhas, histórico e outras configurações em todos os seus dispositivos</translation>
 <translation id="4986678885919050584">Remover deste dispositivo</translation>
 <translation id="498985224078955265">Para enviar esta guia a outro dispositivo, faça login no Chrome nos dois aparelhos.</translation>
+<translation id="4996567535980789550">Ative a sincronização para gerenciar o conteúdo que você recebe</translation>
 <translation id="5005498671520578047">Copiar senha</translation>
 <translation id="5016420433031926653">Enviar para <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Lembrar mais tarde</translation>
@@ -666,6 +666,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="543338862236136125">Editar senha</translation>
 <translation id="5433691172869980887">Nome de usuário copiado</translation>
 <translation id="5439599923922718668">Visitados com frequência</translation>
+<translation id="5439618055789623719">Conta conectada: <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informações de segurança</translation>
 <translation id="5443952882982198570">Cartões de crédito</translation>
 <translation id="5444892875087332195">Favoritos</translation>
@@ -1236,6 +1237,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9034759925968272072">Você não será desconectado da sua Conta do Google. É possível que sua Conta do Google tenha outras formas de histórico de navegação em <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostrar original</translation>
 <translation id="9039373489628511875">Largura de banda</translation>
+<translation id="9043368763795653245">Para personalizar o feed do Discover e o Chrome, ative a sincronização.</translation>
 <translation id="9055772144595778347">Não é possível fazer login</translation>
 <translation id="9055960261314198756">A proteção reforçada está desativada</translation>
 <translation id="9057972802061533987">Não foi possível seguir. Algo deu errado.</translation>

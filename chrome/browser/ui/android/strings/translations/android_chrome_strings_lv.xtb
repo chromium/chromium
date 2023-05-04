@@ -151,6 +151,7 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="1810845389119482123">Sākotnējā sinhronizācijas iestatīšana nav pabeigta</translation>
 <translation id="1829244130665387512">Atrast lapā</translation>
 <translation id="1832459821645506983">Jā, labi</translation>
+<translation id="185383612275551373">Aktivizējiet sinhronizāciju, lai saņemtu atbilstošāko saturu no Google.</translation>
 <translation id="1854311313115643875">Kad izmēģināšana ir ieslēgta, reklāmu izvērtēšana ļauj jūsu apmeklētajām vietnēm pieprasīt informāciju no Chrome, lai efektīvāk novērtētu vietnēs rādīto reklāmu veiktspēju. Reklāmu izvērtēšana ierobežo starpvietņu izsekošanu, pārsūtot starp vietnēm pēc iespējas mazāk informācijas.
 
 Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek dzēsta arī saistītā izvērtēšanas informācija. Skatiet <ph name="BEGIN_LINK" />savu pārlūkošanas vēsturi<ph name="END_LINK" />.</translation>
@@ -242,7 +243,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2386938421315164605">Tēmu slēpšana un rādīšana</translation>
 <translation id="2390510615457643724">Vai vēlaties vēlreiz lejupielādēt failu “<ph name="FILE_NAME" />” <ph name="FILE_SIZE" />?</translation>
 <translation id="2394602618534698961">Šeit tiek rādīti jūsu lejupielādētie faili</translation>
-<translation id="2407481962792080328">Kad pierakstāties savā Google kontā, šī funkcija ir ieslēgta.</translation>
 <translation id="2410754283952462441">Konta izvēle</translation>
 <translation id="2414886740292270097">Tumšs</translation>
 <translation id="2426805022920575512">Izvēlēties citu kontu</translation>
@@ -299,6 +299,7 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="265156376773362237">Standarta iepriekšēja ielāde</translation>
 <translation id="2656405586795711023">Tīmekļa lietotnes</translation>
 <translation id="2669454659051515572">Lejupielādētie faili ir redzami visiem šīs ierīces lietotājiem.</translation>
+<translation id="2688382350024736268">Lai palīdzētu vietnēm novērtēt reklāmu veiktspēju, Chrome tagad starp dažādām vietnēm un lietotnēm kopīgo tikai ļoti ierobežotu informāciju, piemēram, par laiku, kad noteikta reklāma tika jums parādīta.</translation>
 <translation id="2702516483241149200">Jaunums: varat kopīgot saiti uz šo tekstu</translation>
 <translation id="2707726405694321444">Atsvaidzināt lapu</translation>
 <translation id="271033894570825754">Jauns</translation>
@@ -847,6 +848,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="562289928968387744">Pārvaldīt reakcijas</translation>
 <translation id="5626134646977739690">Nosaukums:</translation>
 <translation id="5628604359369369630">Nelasītas — pieejamas bezsaistē</translation>
+<translation id="5635091213277904818">Pārlūkā Chrome tiek automātiski dzēstas vietnes, kas ir glabātas ilgāk nekā 30 dienas. Ja kādu vietni apmeklējat atkārtoti, tā var atkal tikt iekļauta sarakstā. Varat arī liegt vietnei ieteikt jums reklāmas.</translation>
 <translation id="5639724618331995626">Atļaut apmeklēt visas vietnes</translation>
 <translation id="5641456720590409793">Jūsu Google kontā var tikt saglabāta <ph name="BEGIN_LINK1" />meklēšanas vēsture<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />cita veida darbības<ph name="END_LINK2" /></translation>
 <translation id="564667659802381754">Konfidencialitātes ceļvedis <ph name="BEGIN_NEW" />Jaunums<ph name="END_NEW" /></translation>
@@ -1172,6 +1174,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7291910923717764901">Attēlu apraksti šajā lapā ir pievienoti</translation>
 <translation id="7293429513719260019">Atlasīt valodu</translation>
 <translation id="729975465115245577">Ierīcē nav lietotnes, kurā uzglabāt paroļu failu.</translation>
+<translation id="7304072650267745798">Android ierīcē var būt līdzīgs iestatījums. Ja pārlūkā Chrome un jūsu Android ierīcē šis iestatījums ir ieslēgts, iespējams, uzņēmumi var izvērtēt reklāmas efektivitāti jūsu apmeklētajās tīmekļa vietnēs un izmantotajās lietotnēs.</translation>
 <translation id="7304873321153398381">Bezsaistē. Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles.</translation>
 <translation id="7313188324932846546">Pieskarieties, lai iestatītu sinhronizāciju</translation>
 <translation id="7332075081379534664">Pierakstīšanās sekmīga</translation>
@@ -1254,6 +1257,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7682724950699840886">Ņemiet vērā šos ieteikumus: atbrīvojiet ierīcē vietu un mēģiniet eksportēt vēlreiz.</translation>
 <translation id="7686086654630106285">Vairāk par vietnēs ieteiktajām reklāmām</translation>
 <translation id="768618399695552958">Dažas no jūsu apmeklētajām lapām ir ielādētas iepriekš. Lapas var tikt ielādētas iepriekš, izmantojot Google serverus, ja novirzīšana tiek veikta no Google vietnes.</translation>
+<translation id="7690596512217303514">Jūsu ierīcē nevarēja atvērt pārlūku Chrome. Lai novērstu problēmu, no lietotņu veikala lejupielādējiet jaunāko Chrome atjauninājumu.</translation>
 <translation id="7691043218961417207">Izpētiet saturu, kam sekot</translation>
 <translation id="7697383401610880082">Vilkšanas turis</translation>
 <translation id="7698359219371678927">Izveidojiet e-pasta ziņojumu lietotnē <ph name="APP_NAME" />.</translation>
@@ -1365,6 +1369,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8209050860603202033">Atvērt attēlu</translation>
 <translation id="8216351761227087153">Skatīties</translation>
 <translation id="8218622182176210845">Konta pārvaldība</translation>
+<translation id="8221401890884589479">Varat bloķēt vietnes, ko nevēlaties saglabāt. Turklāt pārlūkā Chrome no saraksta tiek automātiski dzēstas vietnes, kas tajā ir glabātas ilgāk nekā 30 dienas. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8223642481677794647">Plūsmas kartītes izvēlne</translation>
 <translation id="8236097722223016103">Pievienot grāmatzīmēm</translation>
 <translation id="8250920743982581267">Dokumenti</translation>

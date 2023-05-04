@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">已停止追蹤價格</translation>
 <translation id="4650125387981512669">以「<ph name="FIRST_RUN_ACCOUNT_NAME" />」的身分繼續</translation>
 <translation id="4652817563047461855">確保密碼安全、檢查密碼是否被盜用，並提供可確保網上安全的建議。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">當您登入 Google 帳戶時，系統會啟用此功能</translation>
 <translation id="4659667755519643272">進入分頁切換工具</translation>
 <translation id="46614316059270592">儲存密碼</translation>
 <translation id="4666531726415300315">已使用 <ph name="EMAIL" /> 的身分登入。
@@ -667,7 +666,7 @@
 <translation id="543338862236136125">修改密碼</translation>
 <translation id="5433691172869980887">已複製使用者名稱</translation>
 <translation id="5439599923922718668">經常瀏覽</translation>
-<translation id="5439618055789623719">目前的登入身分是 <ph name="USER_EMAIL" /></translation>
+<translation id="5439618055789623719">已使用 <ph name="USER_EMAIL" /> 的身分登入</translation>
 <translation id="54401264925851789">網頁安全性資料</translation>
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">書籤</translation>

@@ -547,7 +547,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4642472735733036929">Prissporing er stoppet</translation>
 <translation id="4650125387981512669">Fortsett som <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Sørg for at passordene dine er trygge, finn ut om de har vært utsatt for sikkerhetsbrudd, og få råd om å beskytte deg på nettet. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Når du logger på Google-kontoen din, blir denne funksjonen slått på.</translation>
 <translation id="4659667755519643272">Åpne fanevelgeren</translation>
 <translation id="46614316059270592">Lagre passordet</translation>
 <translation id="4666531726415300315">Logget på som <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4979397965658815378">Logg på med Google-kontoen din for å få bokmerkene, passordene, loggoppføringene og de andre innstillingene dine på alle enhetene du bruker</translation>
 <translation id="4986678885919050584">Fjern fra denne enheten</translation>
 <translation id="498985224078955265">For å sende denne fanen til en annen enhet, logg på Chrome på begge enhetene.</translation>
+<translation id="4996567535980789550">Slå på synkronisering for å administrere innholdet du ser</translation>
 <translation id="5005498671520578047">Kopiér passordet</translation>
 <translation id="5016420433031926653">Send til <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Påminn meg senere</translation>
@@ -666,6 +666,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="543338862236136125">Endre passordet</translation>
 <translation id="5433691172869980887">Brukernavnet er kopiert</translation>
 <translation id="5439599923922718668">Ofte besøkte</translation>
+<translation id="5439618055789623719">Logget på som <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Sikkerhetsinformasjon for siden</translation>
 <translation id="5443952882982198570">Kredittkort</translation>
 <translation id="5444892875087332195">Bokmerker</translation>
@@ -1236,6 +1237,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9034759925968272072">Du blir ikke logget av Google-kontoen din, og det kan hende den har andre typer nettleserlogger på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Vis original</translation>
 <translation id="9039373489628511875">Båndbredde</translation>
+<translation id="9043368763795653245">For å gi Discover-feeden og Chrome et personlig preg, slå på synkronisering.</translation>
 <translation id="9055772144595778347">Kan ikke logge på</translation>
 <translation id="9055960261314198756">Økt beskyttelse er av</translation>
 <translation id="9057972802061533987">Kan ikke følge. Noe gikk galt.</translation>

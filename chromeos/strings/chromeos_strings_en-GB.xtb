@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">More settings</translation>
 <translation id="2085089206770112532">Display brightness down</translation>
-<translation id="209751264101900360">Dawn to dark - Cloud flow</translation>
 <translation id="2102231663024125441">Text editing</translation>
 <translation id="2105810540595158374">Device is a game controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -347,7 +346,6 @@
 <translation id="3967822245660637423">Download complete</translation>
 <translation id="3969602104473960991">Chrome OS password updated</translation>
 <translation id="397105322502079400">Calculating...</translation>
-<translation id="3974175076798940554">Exclusive Chromebook Plus assets now available</translation>
 <translation id="39823212440917567">Print jobs older than <ph name="NUMBER_OF_DAYS" /> days will be removed</translation>
 <translation id="3993704782688964914">Your <ph name="DEVICE_NAME" /> is now up to date</translation>
 <translation id="4003384961948020559">Failed – Output full</translation>
@@ -388,7 +386,6 @@
 <translation id="4275663329226226506">Media</translation>
 <translation id="4289540628985791613">Overview</translation>
 <translation id="4289849978083912975">Slideshow</translation>
-<translation id="4293621540182258188">Dawn to dark - Earth flow</translation>
 <translation id="4297501883039923494">Stopped – unknown error</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> images</translation>
 <translation id="4311195029067684288">Full</translation>
@@ -572,7 +569,6 @@
 <translation id="576835345334454681">Display brightness up</translation>
 <translation id="57838592816432529">Mute</translation>
 <translation id="5784136236926853061">High HTTP latency</translation>
-<translation id="5809090008577139505">Aurora</translation>
 <translation id="5826644637650799838">About the art</translation>
 <translation id="5832805196449965646">Add Person</translation>
 <translation id="583281660410589416">Unknown</translation>
@@ -591,7 +587,6 @@
 <translation id="5907649332524363701">key colour</translation>
 <translation id="5916084858004523819">Prohibited</translation>
 <translation id="5916664084637901428">On</translation>
-<translation id="5918201491776799918">Select Chromebook Plus exclusive artwork</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Your file has been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File not found</translation>
 <translation id="5939518447894949180">Reset</translation>
@@ -802,7 +797,6 @@
 <translation id="7656388927906093505">Device is a mouse.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7665800271478495366">Change avatar</translation>
-<translation id="7675241868020048622">Aurora (Plus exclusive)</translation>
 <translation id="7690294790491645610">Confirm new password</translation>
 <translation id="7701040980221191251">None</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -860,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Select <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Developer tools</translation>
-<translation id="8153923300383192510">Chromebook Plus exclusive</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Attach</translation>
 <translation id="8206859287963243715">Mobile</translation>

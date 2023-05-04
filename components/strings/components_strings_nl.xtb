@@ -1056,6 +1056,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3587738293690942763">Midden</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{Je kunt je groep op elk moment resetten. Het duurt ongeveer 1 dag om aan een nieuwe groep deel te nemen.}=1{Je kunt je groep op elk moment resetten. Het duurt ongeveer 1 dag om aan een nieuwe groep deel te nemen.}other{Je kunt je groep op elk moment resetten. Het duurt {NUM_DAYS} dagen om aan een nieuwe groep deel te nemen.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome verwijdert automatisch onderwerpen en sites die advertenties voorstellen als ze ouder zijn dan 30 dagen. Je kunt ook specifieke ongewenste onderwerpen en sites blokkeren.</translation>
 <translation id="3603507503523709">App geblokkeerd door je beheerder</translation>
 <translation id="3605899229568538311">5 x 5 inch</translation>
 <translation id="3608932978122581043">Invoerrichting</translation>
@@ -1184,6 +1185,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">Je kunt dit altijd wijzigen via de Chrome-instellingen</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Chrome verwijdert automatisch sites die ouder zijn dan 30 dagen. Een site die je opnieuw bezoekt, kan weer op de lijst komen te staan. Je kunt ook op elk gewenst moment via de Chrome-instellingen voorkomen dat een site advertenties voor je voorstelt of door sites voorgestelde advertenties uitzetten.</translation>
 <translation id="3921869355029467742">Geef je beveiligingscode op</translation>
 <translation id="3927932062596804919">Weigeren</translation>
 <translation id="393316646445601645">Internet en telecom</translation>
@@ -1350,6 +1352,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4287495839370498922">Verbeterde advertentieprivacy in Chrome</translation>
 <translation id="4287885627794386150">Komt in aanmerking voor proef maar is niet actief</translation>
 <translation id="4290920330097335010">Nooit toestaan</translation>
+<translation id="4296207570293932800">Nieuwe functie voor advertentieprivacy nu beschikbaar</translation>
 <translation id="4297502707443874121">Miniatuur voor pagina <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Beleggen</translation>
 <translation id="42981349822642051">Uitvouwen</translation>
@@ -1621,6 +1624,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4953689047182316270">Reageren op toegankelijkheidsgebeurtenissen</translation>
 <translation id="4958444002117714549">Lijst uitvouwen</translation>
+<translation id="4960068118612257147">Je kunt wijzigingen aanbrengen in de Chrome-instellingen voor advertentieprivacy</translation>
 <translation id="4964505745997821360">Zorgverzekeringen</translation>
 <translation id="4968522289500246572">Deze app is ontworpen voor mobiel en het formaat wordt misschien niet goed aangepast. De app kan problemen ondervinden of opnieuw opstarten.</translation>
 <translation id="4968665849807487749">Kan toestemming vragen om vensters te beheren op al je schermen</translation>

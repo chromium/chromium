@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
 <translation id="4650125387981512669">המשך בשם <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">חשוב לוודא שהסיסמאות מאובטחות, לבדוק אם הן נחשפו ולקבל עצות שיעזרו לך להגן על עצמך אונליין. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">‏התכונה הזו מופעלת בעת הכניסה לחשבון Google.</translation>
 <translation id="4659667755519643272">‏כניסה אל Tab Switcher</translation>
 <translation id="46614316059270592">שמירת הסיסמה</translation>
 <translation id="4666531726415300315">החשבון המחובר: <ph name="EMAIL" />.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">‏יש להיכנס באמצעות חשבון Google כדי לקבל גישה אל הסימניות, הסיסמאות, ההיסטוריה והגדרות נוספות בכל המכשירים שלך.</translation>
 <translation id="4986678885919050584">הסרה מהמכשיר הזה</translation>
 <translation id="498985224078955265">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chrome בשני המכשירים.</translation>
+<translation id="4996567535980789550">כדי לנהל את התוכן המוצג, צריך להפעיל את הסנכרון</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5016420433031926653">שליחה לכתובת <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">אני רוצה תזכורת מאוחר יותר</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">עריכת סיסמה</translation>
 <translation id="5433691172869980887">שם המשתמש הועתק</translation>
 <translation id="5439599923922718668">אתרים עם ביקורים תכופים</translation>
+<translation id="5439618055789623719">נכנסת בתור <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">פרטי אבטחת דף</translation>
 <translation id="5443952882982198570">כרטיסי אשראי</translation>
 <translation id="5444892875087332195">סימניות</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">‏לא תבוצע יציאה מחשבון Google שלך. ייתכן שיהיה באפשרותך לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">הצגת מקור</translation>
 <translation id="9039373489628511875">רוחב פס</translation>
+<translation id="9043368763795653245">‏כדי להתאים אישית את הפיד ב-Discover ואת Chrome, צריך להפעיל את הסנכרון.</translation>
 <translation id="9055772144595778347">לא ניתן להיכנס</translation>
 <translation id="9055960261314198756">ההגנה המשופרת מושבתת</translation>
 <translation id="9057972802061533987">לא ניתן לעקוב. משהו השתבש.</translation>

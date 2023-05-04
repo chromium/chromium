@@ -459,6 +459,7 @@
 <translation id="3936394396199829062">ሰማያዊ ወይን ጠጅ ፈካ ያለ</translation>
 <translation id="3943857333388298514">ለጥፍ</translation>
 <translation id="3962990492275676168">ከአሁኑ አካባቢ ሆነው ማንበብ ይጀምሩ</translation>
+<translation id="397094149579293440">ምንም የተመረጠ ጽሁፍ የለም</translation>
 <translation id="3970951409746498040">አሸዋማ ቡኒ</translation>
 <translation id="3989324057180830702">tgl btn</translation>
 <translation id="3991317907213946254">ሞካሲን</translation>
@@ -565,6 +566,7 @@
 <translation id="4786285211967466855">ምንም ቀዳሚ የደረጃ 1 ርዕስ የለም</translation>
 <translation id="4787577491510559358">ለአሁኑ ንጥል ቅርጸት ያስታውቁ</translation>
 <translation id="479989351350248267">ፈልግ</translation>
+<translation id="4802034228771424756">ምንም ትክረት የተሰጠው የጽሁፍ መስክ የለም</translation>
 <translation id="4804818685124855865">ግንኙነት አቋርጥ</translation>
 <translation id="481165870889056555">የአሁኑ ገፅ ርዕስ አስታውቅ</translation>
 <translation id="4815668758102003883">ግራጫ ወይራ ቅጠል</translation>
@@ -587,13 +589,16 @@
 <translation id="489907760999452556">ውስጣዊ አገናኝ</translation>
 <translation id="4909019435900810068">አንድ ቃል ወደኋላ ውሰድ</translation>
 <translation id="4911349081560453449">ምንም ቀዳሚ አመልካች ሳጥን የለም</translation>
+<translation id="4919186071145887492"><ph name="COMMAND" /> አልተቻለም፣ እንደገና ይሞክሩ</translation>
 <translation id="492295894462528572">መቅድም</translation>
 <translation id="495046168593986294">ወደ ላይ ይሸብልሉ</translation>
 <translation id="495170559598752135">እርምጃዎች</translation>
 <translation id="4953585991029886728">ጽሁፍ ያርትዑ</translation>
+<translation id="4964701498510730546">የጽሑፍ መስክ ባዶ ነው</translation>
 <translation id="4973717656530883744">ዝቅተኛ <ph name="X" /></translation>
 <translation id="4974612477719259470">ምንም ቀዳሚ አዝራር የለም</translation>
 <translation id="4979404613699303341">ቀዳሚ አዝራር</translation>
+<translation id="4981239367072766915">ያልታወቀ ግብዓት</translation>
 <translation id="4982917827052020884">በመደበኝነት በሚጠቀሙባቸው ጥቂት ቁልፎች እንጀምር። የControl ቁልፍ አሁን ያለ ማንኛውም ንግግርን ለማቆም ስራ ላይ ሊውል ይችላል። የControl ቁልፉን በቁልፍ ሰሌዳዎ ታች ግራ ጥግ ላይ ያግኙት። ለመቀጠል የControl ቁልፉን ይጫኑ።</translation>
 <translation id="4983588134362688868">ወደ የገጹ ላይኛው ክፍል ይዝለሉ</translation>
 <translation id="4986606102545753256"><ph name="NAME" />፣ መስኮት</translation>
@@ -601,6 +606,7 @@
 <translation id="4994420463726586413">የአሁኑ የባትሪ ሁኔታን አስታውቅ</translation>
 <translation id="4997282455736854877"><ph name="NAME" />፣ የሬዲዮ አዝራር ተመርጧል</translation>
 <translation id="5012724933919010465"><ph name="NAME" />፣ የምናሌ ንጥል ሬዲዮ አዝራር ተመርጧል</translation>
+<translation id="5014131807708055994"><ph name="COMMAND" /> አልተቻለም፣ <ph name="REASON" /></translation>
 <translation id="5020651427400641814">ንግግርን በምዝግብ ማስታወሻ መያዝን አንቃ</translation>
 <translation id="5041394372352067729">የብሬይል ማሳያውን ወደ ገጹ አናት ያንቀሳቅሱ</translation>
 <translation id="5042770794184672516">የንግግር ድምፅ መጠን ይጨምሩ</translation>

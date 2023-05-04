@@ -151,6 +151,7 @@
 <translation id="1810845389119482123">ההגדרה הראשונית של הסנכרון לא הושלמה</translation>
 <translation id="1829244130665387512">חיפוש בדף</translation>
 <translation id="1832459821645506983">כן, אני רוצה</translation>
+<translation id="185383612275551373">‏אפשר לבצע סנכרון כדי לקבל את התוכן הכי רלוונטי מ-Google</translation>
 <translation id="1854311313115643875">‏כשגרסאות הניסיון פעילות, מדידת המודעות מאפשרת לאתרים שבהם ביקרת לבקש מ-Chrome מידע שיעזור לבעלי האתרים למדוד את הביצועים של המודעות שלהם. מדידת המודעות מגבילה את המעקב באתרים שונים על ידי העברת כמות קטנה ככל האפשר של מידע בין אתרים.
 
 כשמוחקים את היסטוריית הגלישה, במלואה או של אתר מסוים, נמחקים גם הפרטים המשויכים אליה. כדאי לעיין ב<ph name="BEGIN_LINK" />היסטוריית הגלישה<ph name="END_LINK" />.</translation>
@@ -242,7 +243,6 @@
 <translation id="2386938421315164605">הסתרה וביטול הסתרה של נושאים</translation>
 <translation id="2390510615457643724">רוצה להוריד שוב את <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />)?</translation>
 <translation id="2394602618534698961">קבצים שהורדת מופיעים כאן</translation>
-<translation id="2407481962792080328">‏התכונה הזו מופעלת בעת הכניסה לחשבון Google</translation>
 <translation id="2410754283952462441">בחירת חשבון</translation>
 <translation id="2414886740292270097">כהה</translation>
 <translation id="2426805022920575512">בחירת חשבון אחר</translation>
@@ -299,6 +299,7 @@
 <translation id="265156376773362237">טעינה רגילה מראש</translation>
 <translation id="2656405586795711023">אפליקציות אינטרנט</translation>
 <translation id="2669454659051515572">כל מי שמשתמש במכשיר הזה יכול לראות את הקבצים שהורדו</translation>
+<translation id="2688382350024736268">‏Chrome משתף עכשיו מידע מוגבל מאוד בין אתרים ואפליקציות, למשל מתי הוצגה לך מודעה, כדי לעזור לבעלי אתרים למדוד את הביצועים של מודעות.</translation>
 <translation id="2702516483241149200">חדש: ניתן לשתף קישור שגולל לטקסט הזה</translation>
 <translation id="2707726405694321444">רענון הדף</translation>
 <translation id="271033894570825754">חדש</translation>
@@ -847,6 +848,7 @@
 <translation id="562289928968387744">ניהול התגובות</translation>
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
+<translation id="5635091213277904818">‏Chrome מוחק באופן אוטומטי אתרים שנוספו לפני יותר מ-30 יום. אתר שבחרת לבקר בו פעם נוספת עשוי להופיע שוב ברשימה. אפשר גם לחסום את האפשרות של אתרים להציע מודעות.</translation>
 <translation id="5639724618331995626">התרת גישה לכל האתרים</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google.</translation>
 <translation id="564667659802381754">מדריך בנושא פרטיות <ph name="BEGIN_NEW" />חדש<ph name="END_NEW" /></translation>
@@ -1172,6 +1174,7 @@
 <translation id="7291910923717764901">נוספו תיאורי תמונות בדף זה</translation>
 <translation id="7293429513719260019">בחירת שפה</translation>
 <translation id="729975465115245577">אין במכשיר אפליקציה לאחסון קובץ הסיסמאות.</translation>
+<translation id="7304072650267745798">‏במכשיר Android עשויה להופיע הגדרה דומה. אם ההגדרה הזו מופעלת ב-Chrome ובמכשיר Android, חברות עשויות לקבל הרשאות למדוד את רמת האפקטיביות של המודעות שלהן באתרים שבהם מבקרים ובאפליקציות שבהן משתמשים.</translation>
 <translation id="7304873321153398381">‏אין חיבור לאינטרנט. ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך.</translation>
 <translation id="7313188324932846546">יש להקיש כדי להגדיר סנכרון</translation>
 <translation id="7332075081379534664">הכניסה בוצעה בהצלחה</translation>
@@ -1254,6 +1257,7 @@
 <translation id="7682724950699840886">אפשר לנסות את הטיפים הבאים: צריך לוודא שיש מספיק מקום פנוי במכשיר ואז לנסות לייצא שוב.</translation>
 <translation id="7686086654630106285">מידע נוסף על הצעות למודעות באתרים</translation>
 <translation id="768618399695552958">‏חלק מהדפים שאליהם עוברים נטענים מראש. דפים יכולים להיטען מראש באמצעות שרתי Google כשיש אליהם קישורים מאתר שנוצר באמצעות Google Sites.</translation>
+<translation id="7690596512217303514">‏לא ניתן לפתוח את Chrome במכשיר. כדי לפתור את הבעיה, עליך להוריד את העדכון האחרון של Chrome מחנות האפליקציות.</translation>
 <translation id="7691043218961417207">אפשרויות לתוכן למעקב</translation>
 <translation id="7697383401610880082">נקודת אחיזה לגרירה</translation>
 <translation id="7698359219371678927">יצירת הודעת אימייל ב-<ph name="APP_NAME" /></translation>
@@ -1364,6 +1368,7 @@
 <translation id="8209050860603202033">פתיחת התמונה</translation>
 <translation id="8216351761227087153">צפייה</translation>
 <translation id="8218622182176210845">ניהול החשבון</translation>
+<translation id="8221401890884589479">‏אפשר לחסום אתרים שלא רוצים לתת להם הרשאה. בנוסף, Chrome מוחק מהרשימה באופן אוטומטי אתרים שנוספו לפני יותר מ-30 יום. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">תפריט כרטיס הפיד</translation>
 <translation id="8236097722223016103">הוספה לסימניות</translation>
 <translation id="8250920743982581267">מסמכים</translation>

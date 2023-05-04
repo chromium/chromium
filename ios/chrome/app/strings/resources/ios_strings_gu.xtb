@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">કિંમત ટ્રૅક કરવાનું બંધ કર્યું</translation>
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> તરીકે આગળ વધો</translation>
 <translation id="4652817563047461855">ખાતરી કરો કે તમારા પાસવર્ડ સલામત છે, જાણો કે તેની સાથે ચેડાં થયા છે કે નહીં અને તમારી જાતને ઑનલાઇન સુરક્ષિત રાખવામાં સહાય માટે સલાહ મેળવો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">જ્યારે તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન કરો છો, ત્યારે આ સુવિધા ચાલુ કરવામાં આવે છે.</translation>
 <translation id="4659667755519643272">ટેબ સ્વિચરમાં દાખલ થાઓ</translation>
 <translation id="46614316059270592">પાસવર્ડ સાચવો</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> તરીકે સાઇન ઇન થયાં.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">તમારા બુકમાર્ક, પાસવર્ડ, ઇતિહાસ અને બીજા સેટિંગને તમારા બધા ડિવાઇસ પર મેળવવા માટે તમારા Google એકાઉન્ટ સાથે સાઇન ઇન કરો.</translation>
 <translation id="4986678885919050584">આ ડિવાઇસમાંથી કાઢી નાખો</translation>
 <translation id="498985224078955265">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, બંને ડિવાઇસ પર Chromeમાં સાઇન ઇન કરો.</translation>
+<translation id="4996567535980789550">તમે જુઓ છો તે કન્ટેન્ટને મેનેજ કરવા માટે સિંકની સુવિધા ચાલુ કરો</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> પર મોકલો</translation>
 <translation id="5017828934289857214">મને પછીથી યાદ કરાવો</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">પાસવર્ડમાં ફેરફાર કરો</translation>
 <translation id="5433691172869980887">વપરાશકર્તાનામ કૉપિ કર્યું</translation>
 <translation id="5439599923922718668">વારંવાર મુલાકાત લેવાયેલી વેબસાઇટ</translation>
+<translation id="5439618055789623719"><ph name="USER_EMAIL" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="54401264925851789">પેજની સુરક્ષા માહિતી</translation>
 <translation id="5443952882982198570">ક્રેડિટ કાર્ડ</translation>
 <translation id="5444892875087332195">બુકમાર્ક</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થશો નહિ. તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે.</translation>
 <translation id="9037965129289936994">મૂળ બતાવો</translation>
 <translation id="9039373489628511875">બેન્ડવિડ્થ</translation>
+<translation id="9043368763795653245">તમારું Discover ફીડ અને Chromeને મનગમતું બનાવવા માટે, સિંકની સુવિધા ચાલુ કરો.</translation>
 <translation id="9055772144595778347">સાઇન ઇન કરી શકાતું નથી</translation>
 <translation id="9055960261314198756">વધારેલું સંરક્ષણ બંધ છે</translation>
 <translation id="9057972802061533987">ફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>

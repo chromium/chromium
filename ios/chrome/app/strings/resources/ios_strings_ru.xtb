@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">Отслеживание цен приостановлено.</translation>
 <translation id="4650125387981512669">Продолжить как <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Убедитесь, что пароли в безопасности и не были раскрыты, а также получите совет о защите в интернете. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Эта функция включается, когда вы входите в аккаунт Google.</translation>
 <translation id="4659667755519643272">Открыть переключатель вкладок</translation>
 <translation id="46614316059270592">Сохранить пароль</translation>
 <translation id="4666531726415300315">Вы вошли в аккаунт <ph name="EMAIL" />.
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">Войдите в аккаунт Google, чтобы пользоваться своими закладками, паролями, историей и другими настройками на любом устройстве</translation>
 <translation id="4986678885919050584">Удалить с устройства</translation>
 <translation id="498985224078955265">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chrome.</translation>
+<translation id="4996567535980789550">Чтобы указать, какой контент вы хотите видеть, включите синхронизацию</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5016420433031926653">Отправляются на адрес <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Напомнить позже</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">Изменить пароль</translation>
 <translation id="5433691172869980887">Имя пользователя скопировано</translation>
 <translation id="5439599923922718668">Часто посещаемые</translation>
+<translation id="5439618055789623719">Вы вошли в аккаунт <ph name="USER_EMAIL" />.</translation>
 <translation id="54401264925851789">Сведения о надежности страницы</translation>
 <translation id="5443952882982198570">Кредитные карты</translation>
 <translation id="5444892875087332195">Закладки</translation>
@@ -1236,6 +1237,7 @@
 <translation id="9034759925968272072">Вы не выйдете из аккаунта Google. Остальная история ваших действий в Интернете доступна на странице <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Показать оригинал</translation>
 <translation id="9039373489628511875">Контроль трафика</translation>
+<translation id="9043368763795653245">Чтобы персонализировать ленту рекомендаций и Chrome, включите синхронизацию.</translation>
 <translation id="9055772144595778347">Ошибка</translation>
 <translation id="9055960261314198756">Улучшенная защита отключена</translation>
 <translation id="9057972802061533987">Не удалось подписаться. Произошла ошибка.</translation>

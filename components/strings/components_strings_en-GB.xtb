@@ -1060,6 +1060,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3587738293690942763">Middle</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{You can reset your group at any time. It takes about a day to join a new group.}=1{You can reset your group at any time. It takes about a day to join a new group.}other{You can reset your group at any time. It takes {NUM_DAYS} days to join a new group.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome auto-deletes topics and sites that suggest ads that are older than 30 days. Or you can block specific topics and sites that you don't like.</translation>
 <translation id="3603507503523709">Application blocked by your administrator</translation>
 <translation id="3605899229568538311">5 in x 5 in</translation>
 <translation id="3608932978122581043">Feed orientation</translation>
@@ -1189,6 +1190,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3906954721959377182">Tablet</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">You can change your mind at any time in Chrome settings</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.</translation>
 <translation id="3921869355029467742">Enter your security code</translation>
 <translation id="3927932062596804919">Deny</translation>
 <translation id="393316646445601645">Internet and telecom</translation>
@@ -1355,6 +1357,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4287495839370498922">Enhanced ads privacy in Chrome</translation>
 <translation id="4287885627794386150">Eligible for trial but not active</translation>
 <translation id="4290920330097335010">Never allow</translation>
+<translation id="4296207570293932800">New ads privacy feature now available</translation>
 <translation id="4297502707443874121">Thumbnail for page <ph name="THUMBNAIL_PAGE" /></translation>
 <translation id="4298000214066716287">Investing</translation>
 <translation id="42981349822642051">Expand</translation>
@@ -1626,6 +1629,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="495170559598752135">Actions</translation>
 <translation id="4953689047182316270">Respond to Accessibility Events</translation>
 <translation id="4958444002117714549">Expand list</translation>
+<translation id="4960068118612257147">You can make changes in Chrome ads privacy settings</translation>
 <translation id="4964505745997821360">Health insurance</translation>
 <translation id="4968522289500246572">This app is designed for mobile and may not resize well. The app may experience issues or restart.</translation>
 <translation id="4968665849807487749">Can ask to manage windows on all your displays</translation>

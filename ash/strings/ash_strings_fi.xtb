@@ -221,6 +221,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1961239773406905488">Kameran esikatselu piilotettu</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Näytönlukitus</translation>
+<translation id="1962972976741217487">Yksi laite yhdistetty hotspotiin (<ph name="DEVICE_NAME" />)</translation>
 <translation id="1967970931040389207">Laita hotspot päälle</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hei <ph name="USERNAME" /></translation>
@@ -931,6 +932,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5297704307811127955">Poissa päältä</translation>
 <translation id="5300589172476337783">Näytä</translation>
 <translation id="5302048478445481009">Kieli</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> laitetta yhdistetty hotspotiin (<ph name="DEVICE_NAME" />)</translation>
 <translation id="5308380583665731573">Muodosta yhteys</translation>
 <translation id="5313326810920013265">Bluetooth-asetukset</translation>
 <translation id="5314219114274263156">Näytön tallennus valmis</translation>
@@ -999,7 +1001,6 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Poista äänipalaute käytöstä painamalla Ctrl+Alt+Z.</translation>
 <translation id="5601503069213153581">PIN-koodi</translation>
-<translation id="5601571553788043181">Avaa tiedosto Chrome-selaimessa</translation>
 <translation id="5618148318840095371">Olemme yhdistäneet laitteesi parempaan verkkoon</translation>
 <translation id="5619862035903135339">Järjestelmänvalvojakäytäntö poistaa kuvakaappauksen käytöstä</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -1338,6 +1339,7 @@ Uusi asennus</translation>
 <translation id="7165278925115064263">Alt+Vaihto+K</translation>
 <translation id="7168224885072002358">Palautetaan vanha tarkkuus, aikaa palautukseen <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Päivitä</translation>
+<translation id="7187711731540696127">Hotspot (<ph name="DEVICE_NAME" />) on päällä, ei yhdistettyjä laitteita</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>
 <translation id="7198435252016571249">Kamera kohdistettu oikeaan alakulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
@@ -1417,7 +1419,6 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7569509451529460200">Pistekirjoitus ja ChromeVox käytössä</translation>
 <translation id="7573585051776738856">Aktiivinen ikkuna kiinnitetty oikealle</translation>
 <translation id="7579778809502851308">Kuvakaappaus</translation>
-<translation id="7590883480672980941">Syöttöasetukset</translation>
 <translation id="7593891976182323525">Haku tai Shift</translation>
 <translation id="7600875258240007829">Näytä kaikki ilmoitukset</translation>
 <translation id="7607002721634913082">Keskeytetty</translation>

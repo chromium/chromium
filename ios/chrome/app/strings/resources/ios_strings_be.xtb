@@ -407,6 +407,7 @@
 <translation id="3638472932233958418">Перадзагрузка старонак</translation>
 <translation id="3661160521073045932">Даступны профіль канфігурацыі</translation>
 <translation id="3670030362669914947">Нумар</translation>
+<translation id="3700134753671613714">Каб закладкі былі даступнымі на ўсіх вашых прыладах, выканайце ўваход.</translation>
 <translation id="3709582977625132201">Пазначыць як непрачытанае</translation>
 <translation id="371230970611282515">Прадказвае небяспечныя падзеі і папярэджвае пра іх да таго, як яны здараюцца.</translation>
 <translation id="37207012422556617">Папулярныя пошукавыя запыты</translation>
@@ -546,7 +547,6 @@
 <translation id="4642472735733036929">Адсочванне цаны прыпынена</translation>
 <translation id="4650125387981512669">Працягнуць як <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Захоўвайце свае паролі ў бяспецы, будзьце ў курсе ў выпадку іх раскрыцця і атрымлівайце парады, якія дапамогуць вам абараніць сябе ў інтэрнэце. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google.</translation>
 <translation id="4659667755519643272">Перайсці да пераключальніка ўкладак</translation>
 <translation id="46614316059270592">Захаваць пароль</translation>
 <translation id="4666531726415300315">Вы ўвайшлі як <ph name="EMAIL" />.
@@ -609,6 +609,7 @@
 <translation id="4979397965658815378">Каб закладкі, паролі, гісторыя і іншыя налады былі даступнымі на ўсіх вашых прыладах, увайдзіце ва Уліковы запіс Google</translation>
 <translation id="4986678885919050584">Выдаліць з гэтай прылады</translation>
 <translation id="498985224078955265">Каб адправіць гэту ўкладку на іншую прыладу, увайдзіце ў Chrome з абедзвюх прылад.</translation>
+<translation id="4996567535980789550">Каб выбраць, якое змесціва павінна вам паказвацца, уключыце сінхранізацыю</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5016420433031926653">Адправіць на адрас <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Нагадаць пазней</translation>
@@ -665,6 +666,7 @@
 <translation id="543338862236136125">Змяніць пароль</translation>
 <translation id="5433691172869980887">Імя карыстальніка скапіравана</translation>
 <translation id="5439599923922718668">Часта наведваецца</translation>
+<translation id="5439618055789623719">Вы ўвайшлі як <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Інфармацыя пра бяспеку старонкі</translation>
 <translation id="5443952882982198570">Крэдытныя карты</translation>
 <translation id="5444892875087332195">Закладкі</translation>
@@ -1235,6 +1237,7 @@
 <translation id="9034759925968272072">З Уліковага запісу Google вы не выйдзеце. На сайце <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> размешчаны іншыя формы запісу гісторыі прагляду сайтаў для вашага Уліковага запісу Google.</translation>
 <translation id="9037965129289936994">Паказаць арыгінал</translation>
 <translation id="9039373489628511875">Паласа прапускання</translation>
+<translation id="9043368763795653245">Каб стужка "Рэкамендацыі" і Chrome персаналізаваліся, уключыце сінхранізацыю.</translation>
 <translation id="9055772144595778347">Не ўдалося ўвайсці</translation>
 <translation id="9055960261314198756">Палепшаная абарона выключана</translation>
 <translation id="9057972802061533987">Не ўдалося падпісацца. Нешта пайшло не так.</translation>

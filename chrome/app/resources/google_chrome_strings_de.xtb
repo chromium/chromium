@@ -114,6 +114,7 @@
 <translation id="2929907241665500097">Chrome konnte aufgrund eines Fehlers nicht aktualisiert werden. Wie du Updateprobleme und Fehler bei der Aktualisierung von Chrome behebst, <ph name="BEGIN_LINK" />erfährst du hier<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chrome</translation>
 <translation id="3019382870990049182">Neu starten, um &amp;Chrome OS Flex zu aktualisieren</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Google Chrome-Erweiterungen haben auf HID-Geräte zugegriffen}=1{Google Chrome-Erweiterungen greifen auf HID-Geräte zu}other{Google Chrome-Erweiterungen greifen auf # HID-Geräte zu}}</translation>
 <translation id="303514781271618814">Wir testen neue Funktionen für Chrome, mit denen Websites weniger Nutzerdaten verwenden, ohne dabei die Nutzererfahrung einzuschränken</translation>
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3038232873781883849">Warten auf Installation…</translation>
@@ -207,6 +208,7 @@
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Diese Datei ist eventuell schädlich und wurde von Chrome blockiert.</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
+<translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="4842397268809523050">Chrome OS Flex konnte deine Daten nicht synchronisieren, da die Synchronisierung für deine Domain nicht zur Verfügung steht.</translation>
 <translation id="4873783916118289636">Hiermit kannst du dir die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chrome ansehen</translation>
 <translation id="4891791193823137474">Google Chrome im Hintergrund ausführen</translation>
@@ -218,6 +220,7 @@
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4970947549776831107">Chrome hat diese Datei blockiert, weil der Dateityp gefährlich ist</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Eine Google Chrome-Erweiterung hat auf HID-Geräte zugegriffen}=1{Eine Google Chrome-Erweiterung greift auf 1 HID-Gerät zu}other{Eine Google Chrome-Erweiterung greift auf # HID-Geräte zu}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Dein Administrator hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="5098668839038261629">Wenn aktiviert, wirst du auch aus Chrome abgemeldet</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>

@@ -547,7 +547,6 @@ Angalia maagizo ya mtambo wako wa kutafuta, ikiwa yapo, kuhusu jinsi ya kufuta h
 <translation id="4642472735733036929">Imeacha kufuatilia bei</translation>
 <translation id="4650125387981512669">Endelea ukitumia <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Hakikisha manenosiri yako ni salama, fahamu ikiwa yameathiriwa na upate ushauri wa kukusaidia ujilinde ukiwa mtandaoni. <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Ukiingia katika Akaunti ya Google, kipengele hiki kitawashwa.</translation>
 <translation id="4659667755519643272">Weka Kibadilishaji cha Kichupo</translation>
 <translation id="46614316059270592">Hifadhi Nenosiri</translation>
 <translation id="4666531726415300315">Umeingia katika akaunti ukitumia <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4979397965658815378">Ingia katika akaunti kwa kutumia Akaunti yako ya Google ili upate alamisho, manenosiri, historia na mipangilio mingine kwenye vifaa vyako vyote.</translation>
 <translation id="4986678885919050584">Ondoa kwenye Kifaa hiki</translation>
 <translation id="498985224078955265">Ili utume kichupo hiki kwenye kifaa kingine, ingia katika akaunti kwenye Chrome katika vifaa vyote viwili.</translation>
+<translation id="4996567535980789550">Washa usawazishaji ili udhibiti maudhui unayoyaona</translation>
 <translation id="5005498671520578047">Nakili nenosiri</translation>
 <translation id="5016420433031926653">Tuma kwa <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Nikumbushe Baadaye</translation>
@@ -666,6 +666,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="543338862236136125">Badilisha nenosiri</translation>
 <translation id="5433691172869980887">Jina la mtumiaji limenakiliwa</translation>
 <translation id="5439599923922718668">Zinazotembelewa mara kwa mara</translation>
+<translation id="5439618055789623719">Umeingia katika akaunti ukitumia <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Maelezo ya Usalama wa Ukurasa</translation>
 <translation id="5443952882982198570">Kadi za Mikopo</translation>
 <translation id="5444892875087332195">Alamisho</translation>
@@ -1236,6 +1237,7 @@ Tovuti zinaweza kutumia vidakuzi kuona shughuli zako za kuvinjari kwenye tovuti 
 <translation id="9034759925968272072">Hutaondolewa katika Akaunti yako ya Google. Huenda Akaunti yako ya Google ina aina nyingine za historia ya kuvinjari katika <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Onyesha Asili</translation>
 <translation id="9039373489628511875">Kipimo data</translation>
+<translation id="9043368763795653245">Ili uweke mapendeleo kwenye mipasho yako ya Gundua na Chrome, washa mipangilio ya usawazishaji.</translation>
 <translation id="9055772144595778347">Siwezi Kuingia</translation>
 <translation id="9055960261314198756">Kipengele cha Ulinzi Ulioboreshwa kimezimwa</translation>
 <translation id="9057972802061533987">Imeshindwa kufuatilia. Hitilafu fulani imetokea.</translation>

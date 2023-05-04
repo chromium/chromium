@@ -243,7 +243,6 @@
 <translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2390510615457643724"><ph name="FILE_NAME" />(<ph name="FILE_SIZE" />) 파일을 다시 다운로드하시겠습니까?</translation>
 <translation id="2394602618534698961">다운로드한 파일이 여기 표시됩니다.</translation>
-<translation id="2407481962792080328">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
 <translation id="2410754283952462441">계정 선택</translation>
 <translation id="2414886740292270097">어둡게</translation>
 <translation id="2426805022920575512">다른 계정 선택</translation>
@@ -300,6 +299,7 @@
 <translation id="265156376773362237">표준 미리 로드</translation>
 <translation id="2656405586795711023">웹 앱</translation>
 <translation id="2669454659051515572">이 기기를 사용하는 누구나 다운로드된 파일을 볼 수 있습니다.</translation>
+<translation id="2688382350024736268">이제 Chrome에서 광고가 사용자에게 게시된 시기 등의 제한된 정보만 사이트 및 앱 간에 공유되어 사이트의 광고 실적을 측정하도록 돕습니다.</translation>
 <translation id="2702516483241149200">신규: 이 텍스트로 스크롤하는 링크 공유하기</translation>
 <translation id="2707726405694321444">페이지 새로고침</translation>
 <translation id="271033894570825754">New</translation>
@@ -848,6 +848,7 @@
 <translation id="562289928968387744">반응 관리</translation>
 <translation id="5626134646977739690">이름:</translation>
 <translation id="5628604359369369630">읽지 않음 - 오프라인에서 사용 가능</translation>
+<translation id="5635091213277904818">Chrome에서는 30일이 지난 사이트를 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 또는 사이트에서 광고를 추천하지 못하도록 차단할 수도 있습니다.</translation>
 <translation id="5639724618331995626">모든 사이트 허용</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />검색 기록<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />다른 활동 형식<ph name="END_LINK2" />이 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="564667659802381754">개인 정보 보호 가이드 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1173,6 +1174,7 @@
 <translation id="7291910923717764901">이 페이지에 추가된 이미지 설명</translation>
 <translation id="7293429513719260019">언어 선택</translation>
 <translation id="729975465115245577">기기에 비밀번호 파일을 저장할 수 있는 앱이 없습니다.</translation>
+<translation id="7304072650267745798">Android 기기에 비슷한 설정이 포함되어 있을 수 있습니다. Chrome과 Android 기기에서 이 설정을 사용 설정하면 사용자가 방문하는 웹사이트와 사용하는 앱에서 광고 효과를 측정할 수 있습니다.</translation>
 <translation id="7304873321153398381">오프라인 상태입니다. Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
 <translation id="7332075081379534664">로그인 성공</translation>
@@ -1255,6 +1257,7 @@
 <translation id="7682724950699840886">다음 방법을 시도해 보세요. 기기 저장용량이 충분한지 확인하고 다시 내보내 봅니다.</translation>
 <translation id="7686086654630106285">사이트 추천 광고에 관해 자세히 알아보기</translation>
 <translation id="768618399695552958">방문한 페이지 중 일부가 미리 로드되었습니다. Google 사이트에서 페이지에 연결하는 경우 Google 서버를 통해 페이지가 미리 로드될 수 있습니다.</translation>
+<translation id="7690596512217303514">기기에서 Chrome을 열 수 없습니다. 문제를 해결하려면 앱 스토어에서 최신 Chrome 업데이트를 다운로드하세요.</translation>
 <translation id="7691043218961417207">팔로우할 콘텐츠 살펴보기</translation>
 <translation id="7697383401610880082">드래그 핸들</translation>
 <translation id="7698359219371678927"><ph name="APP_NAME" />에서 이메일 만들기</translation>
@@ -1366,6 +1369,7 @@
 <translation id="8209050860603202033">이미지 열기</translation>
 <translation id="8216351761227087153">보기</translation>
 <translation id="8218622182176210845">계정 관리</translation>
+<translation id="8221401890884589479">원치 않는 사이트를 차단할 수 있습니다. 또한 Chrome에서는 30일이 지난 사이트도 목록에서 자동 삭제합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
 <translation id="8236097722223016103">북마크에 추가</translation>
 <translation id="8250920743982581267">문서</translation>

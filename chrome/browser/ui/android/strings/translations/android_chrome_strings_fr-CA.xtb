@@ -151,6 +151,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1810845389119482123">La configuration de la synchro. initiale n'est pas terminée</translation>
 <translation id="1829244130665387512">Rechercher sur la page</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
+<translation id="185383612275551373">Synchronisez vos données pour accéder à du contenu plus pertinent de Google</translation>
 <translation id="1854311313115643875">Pendant les essais, la mesure des annonces permet aux sites que vous visitez de demander des informations à Chrome afin de leur permettre de mesurer la performance de leurs annonces. La mesure des annonces limite les suivis intersites en transférant le moins d'informations possible entre les sites.
 
 Lorsque vous supprimez votre historique de navigation (pour un site en particulier ou pour tous les sites), vous supprimez également les informations de mesure associées. Consultez <ph name="BEGIN_LINK" />votre historique de navigation<ph name="END_LINK" />.</translation>
@@ -242,7 +243,6 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2390510615457643724">Voulez-vous télécharger <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) de nouveau?</translation>
 <translation id="2394602618534698961">Les fichiers que vous téléchargez s'affichent ici</translation>
-<translation id="2407481962792080328">Lorsque vous vous connecterez à votre compte Google, cette fonctionnalité sera activée</translation>
 <translation id="2410754283952462441">Choisir un compte</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2426805022920575512">Choisir un autre compte</translation>
@@ -299,6 +299,7 @@ Les jetons de confiance valides améliorent la confidentialité sur le Web et ne
 <translation id="265156376773362237">Préchargement standard</translation>
 <translation id="2656405586795711023">Applications Web</translation>
 <translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
+<translation id="2688382350024736268">Chrome ne partage désormais que des informations très limitées entre les sites et les applications, telles que lorsqu'une annonce vous a été présentée, pour aider les sites à mesurer les performances des annonces.</translation>
 <translation id="2702516483241149200">Nouveauté : communiquez un lien qui fait défiler l'écran jusqu'à ce texte</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
 <translation id="271033894570825754">Nouveau</translation>
@@ -847,6 +848,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="562289928968387744">Gérer les réactions</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
+<translation id="5635091213277904818">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d’empêcher un site de vous suggérer des annonces.</translation>
 <translation id="5639724618331995626">Autoriser tous les sites</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />L'historique de recherches<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />les autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrées dans votre compte Google</translation>
 <translation id="564667659802381754"><ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /> Guide sur la confidentialité</translation>
@@ -1172,6 +1174,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7291910923717764901">Les descriptions d'image ont été ajoutées pour cette page</translation>
 <translation id="7293429513719260019">Sélectionner la langue</translation>
 <translation id="729975465115245577">Votre appareil ne dispose pas d'une application pour stocker le fichier de mots de passe.</translation>
+<translation id="7304072650267745798">Il est possible que votre appareil Android ait un paramètre similaire. Si ce paramètre est activé dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l'efficacité d'une annonce sur les sites Web que vous visitez et les applications que vous utilisez.</translation>
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
 <translation id="7332075081379534664">Connexion réussie</translation>
@@ -1253,6 +1256,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7682724950699840886">Essayez de suivre les conseils suivants : assurez-vous qu'il y a suffisamment d'espace sur votre appareil et réessayez d'exporter les mots de passe.</translation>
 <translation id="7686086654630106285">En savoir plus sur les annonces suggérées par les sites</translation>
 <translation id="768618399695552958">Certaines des pages que vous visitez sont préchargées. Les pages peuvent être préchargées par les serveurs de Google lorsqu'elles sont associées à un site Google.</translation>
+<translation id="7690596512217303514">Votre appareil n'a pas pu ouvrir Chrome. Pour résoudre le problème, téléchargez la dernière mise à jour de Chrome depuis votre boutique d'applications.</translation>
 <translation id="7691043218961417207">Explorer le contenu à suivre</translation>
 <translation id="7697383401610880082">Poignée de déplacement</translation>
 <translation id="7698359219371678927">Créer un courriel dans <ph name="APP_NAME" /></translation>
@@ -1364,6 +1368,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8209050860603202033">Ouvrir l'image</translation>
 <translation id="8216351761227087153">Visionner</translation>
 <translation id="8218622182176210845">Gérer votre compte</translation>
+<translation id="8221401890884589479">Vous pouvez bloquer les annonces des sites de votre choix. En outre, Chrome supprime automatiquement les sites de la liste datant de plus de 30 jours. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8223642481677794647">Menu de la carte du flux</translation>
 <translation id="8236097722223016103">Ajouter aux favoris</translation>
 <translation id="8250920743982581267">Documents</translation>

@@ -147,7 +147,6 @@
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2080070583977670716">Повеќе поставки</translation>
 <translation id="2085089206770112532">Осветленоста на екранот се намали</translation>
-<translation id="209751264101900360">Од зора до мрак - движење на облаците</translation>
 <translation id="2102231663024125441">Изменување текст</translation>
 <translation id="2105810540595158374">Уредот е контролер на игра.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
@@ -293,6 +292,7 @@
 <translation id="3484914941826596830">Додека фирмверот се ажурира, не исклучувајте го надворешниов уред од струја или не исклучувајте го компјутерот. Може да го минимизирате прозорецов. Ажурирањево може да потрае неколку минути и надворешниот уред можеби нема да работи во ова време.</translation>
 <translation id="3486220673238053218">дефиниција</translation>
 <translation id="3488065109653206955">Делумно активиран</translation>
+<translation id="3502426834823382181">прикажи ги сите апликации</translation>
 <translation id="3510890413042482857">Испрати <ph name="BEGIN_LINK1" />податоци во траги за учинок<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање на Chrome OS</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
@@ -346,7 +346,6 @@
 <translation id="3967822245660637423">Преземањето е завршено</translation>
 <translation id="3969602104473960991">Лозинката за Chrome OS е ажурирана</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
-<translation id="3974175076798940554">Сега се достапни ексклузивни средства на Chromebook Plus</translation>
 <translation id="39823212440917567">Задачите за печатење постари од <ph name="NUMBER_OF_DAYS" /> дена ќе се отстранат</translation>
 <translation id="3993704782688964914">Уредот <ph name="DEVICE_NAME" /> сега е ажуриран</translation>
 <translation id="4003384961948020559">Неуспешно - излезната фиока е полна</translation>
@@ -387,7 +386,6 @@
 <translation id="4275663329226226506">Аудиовизуелни содржини</translation>
 <translation id="4289540628985791613">Преглед</translation>
 <translation id="4289849978083912975">Приказ на слајдови</translation>
-<translation id="4293621540182258188">Од зора до мрак - движење на Земјата</translation>
 <translation id="4297501883039923494">Запрено - непозната грешка</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> слики</translation>
 <translation id="4311195029067684288">Целосно</translation>
@@ -571,7 +569,6 @@
 <translation id="576835345334454681">Осветленоста на екранот се зголеми</translation>
 <translation id="57838592816432529">Исклучи звук</translation>
 <translation id="5784136236926853061">Висока латенција на HTTP</translation>
-<translation id="5809090008577139505">Аурора</translation>
 <translation id="5826644637650799838">За уметноста</translation>
 <translation id="5832805196449965646">Додај лице</translation>
 <translation id="583281660410589416">Непознат</translation>
@@ -590,7 +587,6 @@
 <translation id="5907649332524363701">боја на копчиња</translation>
 <translation id="5916084858004523819">Забранета</translation>
 <translation id="5916664084637901428">Вклучено</translation>
-<translation id="5918201491776799918">Изберете ексклузивни илустрации за Chromebook Plus</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Датотеката е успешно скенирана и зачувана во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Датотеките се успешно скенирани и зачувани во <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Датотеката не е најдена</translation>
 <translation id="5939518447894949180">Ресетирај</translation>
@@ -636,6 +632,7 @@
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6280912520669706465">ARC</translation>
 <translation id="6284632978374966585">Вклучи темна тема</translation>
+<translation id="6285899124799306373">отворање стартер</translation>
 <translation id="6302401976930124515">Тестот за <ph name="TEST_NAME" /> е откажан</translation>
 <translation id="631063167932043783">Апликација Explore</translation>
 <translation id="6319207335391420837">Ажурирајте го фирмверот на <ph name="DEVICE_NAME" /></translation>
@@ -651,6 +648,7 @@
 <translation id="6382182670717268353">Преглед на заштитник на екран</translation>
 <translation id="6388847657025262518">Фиоката за документи на скенерот е заглавена. Проверете ја и обидете се повторно.</translation>
 <translation id="6394634179843537518">Додај датотека</translation>
+<translation id="6401427872449207797">пребарување во прелистувач</translation>
 <translation id="6410257289063177456">Датотеки со слики</translation>
 <translation id="641081527798843608">Совпаѓање на предмети</translation>
 <translation id="6412715219990689313">Вградена тастатура</translation>
@@ -799,7 +797,6 @@
 <translation id="7656388927906093505">Уредот е глувче.</translation>
 <translation id="7658239707568436148">Откажи</translation>
 <translation id="7665800271478495366">Променете го аватарот</translation>
-<translation id="7675241868020048622">Aurora (Plus exclusive)</translation>
 <translation id="7690294790491645610">Потврдете ја новата лозинка</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -857,7 +854,6 @@
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8143951647992294073">Изберете <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Програмерски алатки</translation>
-<translation id="8153923300383192510">Ексклузивно за Chromebook Plus</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183974620058026102">Прикачи</translation>
 <translation id="8206859287963243715">Мобилен</translation>
@@ -876,6 +872,7 @@
 <translation id="8312330582793120272">пуштање аудиовизуелни содржини</translation>
 <translation id="8318753676953949627">Нема слики</translation>
 <translation id="8329018942023753850">апликација „Калкулатор“</translation>
+<translation id="8335869473001018124">отворање пребарување</translation>
 <translation id="8336739000755212683">Променете ја сликата за сметката на уредот</translation>
 <translation id="8347227221149377169">Налози за печатење</translation>
 <translation id="8351855506390808906">Мапирање клуч на точка на допир</translation>

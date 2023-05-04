@@ -547,7 +547,6 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="4642472735733036929">Monitoraggio del prezzo interrotto</translation>
 <translation id="4650125387981512669">Continua come <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Assicurati che le tue password siano al sicuro, scopri se sono state compromesse e ricevi consigli per proteggerti online. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Questa funzionalità viene attivata quando accedi al tuo Account Google.</translation>
 <translation id="4659667755519643272">Apri selettore di schede</translation>
 <translation id="46614316059270592">Salva password</translation>
 <translation id="4666531726415300315">Accesso eseguito come <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4979397965658815378">Accedi con il tuo Account Google per avere preferiti, password, cronologia e altre impostazioni su tutti i tuoi dispositivi</translation>
 <translation id="4986678885919050584">Rimuovi da questo dispositivo</translation>
 <translation id="498985224078955265">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su entrambi i dispositivi.</translation>
+<translation id="4996567535980789550">Attiva la sincronizzazione per gestire i contenuti visualizzati</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5016420433031926653">Invia a <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Ricordamelo dopo</translation>
@@ -666,6 +666,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="543338862236136125">Modifica password</translation>
 <translation id="5433691172869980887">Nome utente copiato</translation>
 <translation id="5439599923922718668">Visitati spesso</translation>
+<translation id="5439618055789623719">Accesso eseguito come <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Info sicurezza pagina</translation>
 <translation id="5443952882982198570">Carte di credito</translation>
 <translation id="5444892875087332195">Preferiti</translation>
@@ -1236,6 +1237,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="9034759925968272072">Non verrai disconnesso dal tuo Account Google. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione alla pagina <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Mostra originale</translation>
 <translation id="9039373489628511875">Larghezza di banda</translation>
+<translation id="9043368763795653245">Per personalizzare il tuo feed di Discover e Chrome, attiva la sincronizzazione.</translation>
 <translation id="9055772144595778347">Impossibile accedere</translation>
 <translation id="9055960261314198756">La Protezione avanzata non è attiva</translation>
 <translation id="9057972802061533987">Non è possibile seguire questi contenuti. Si è verificato un errore.</translation>

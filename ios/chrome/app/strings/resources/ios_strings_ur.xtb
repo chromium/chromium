@@ -547,7 +547,6 @@
 <translation id="4642472735733036929">قیمت کی ٹریکنگ بند کی گئی</translation>
 <translation id="4650125387981512669">بطور <ph name="FIRST_RUN_ACCOUNT_NAME" /> جاری رکھیں</translation>
 <translation id="4652817563047461855">اس بات کو یقینی بنائیں کہ آپ کے پاس ورڈز محفوظ ہیں، معلوم کریں کہ آیا ان سے سمجھوتہ کیا گیا ہے اور اپنے آپ کو آن لائن محفوظ رکھنے میں مدد کے لیے مشورہ حاصل کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">‏جب آپ اپنے Google اکاؤنٹ میں سائن ان کرتے ہیں، تو یہ خصوصیت آن ہو جاتی ہے۔</translation>
 <translation id="4659667755519643272">ٹیب سوئچ کنندہ میں داخل ہوں</translation>
 <translation id="46614316059270592">پاس ورڈ محفوظ کریں</translation>
 <translation id="4666531726415300315"><ph name="EMAIL" /> کے بطور سائن ان کردہ۔
@@ -610,6 +609,7 @@
 <translation id="4979397965658815378">‏اپنے سبھی آلات پر اپنے بُک مارکس، پاس ورڈز، سرگزشت اور دیگر ترتیبات حاصل کرنے کیلئے اپنے Google اکاؤنٹ کے ساتھ سائن ان کریں</translation>
 <translation id="4986678885919050584">اس آلہ سے ہٹائيں</translation>
 <translation id="498985224078955265">‏اس ٹیب کو دوسرے آلے پر بھیجنے کے لیے دونوں آلات پر Chrome میں سائن ان کریں۔</translation>
+<translation id="4996567535980789550">آپ جو مواد دیکھتے ہیں اس کا نظم کرنے کے لیے مطابقت پذیری کو آن کریں</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5016420433031926653"><ph name="USER_EMAIL" /> پر بھیجیں</translation>
 <translation id="5017828934289857214">مجھے بعد میں یاد دلائیں</translation>
@@ -666,6 +666,7 @@
 <translation id="543338862236136125">پاس ورڈ میں ترمیم کریں</translation>
 <translation id="5433691172869980887">صارف نام کاپی ہو گیا</translation>
 <translation id="5439599923922718668">اکثر ملاحظہ کردہ</translation>
+<translation id="5439618055789623719"><ph name="USER_EMAIL" /> کے بطور سائن ان ہیں</translation>
 <translation id="54401264925851789">صفحہ کی سیکیورٹی کی معلومات</translation>
 <translation id="5443952882982198570">کریڈٹ کارڈز</translation>
 <translation id="5444892875087332195">بُک مارکس</translation>
@@ -1236,6 +1237,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="9034759925968272072">‏آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوں گے۔ ممکن ہے کہ ‎<ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں۔</translation>
 <translation id="9037965129289936994">اصل دکھائیں</translation>
 <translation id="9039373489628511875">بینڈ وڈتھ</translation>
+<translation id="9043368763795653245">‏اپنی Discover فیڈ اور Chrome کو ذاتی نوعیت کا بنانے کے لیے، مطابقت پذیری کو آن کریں۔</translation>
 <translation id="9055772144595778347">سائن ان نہیں کر سکتے ہیں</translation>
 <translation id="9055960261314198756">بہتر کردہ حفاظت آف ہے</translation>
 <translation id="9057972802061533987">پیروی نہیں کر سکتے۔ کچھ غلط ہوگیا۔</translation>

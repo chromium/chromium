@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">隱藏咗攝錄機預覽</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">上鎖畫面</translation>
+<translation id="1962972976741217487">有 1 部裝置連線至您的 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="1967970931040389207">開啟熱點</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好：</translation>
@@ -930,6 +931,7 @@
 <translation id="5297704307811127955">已關閉</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5302048478445481009">語言</translation>
+<translation id="5303783651764314393">有 <ph name="DEVICECOUNT" /> 部裝置連線至您的 <ph name="DEVICE_NAME" /> 熱點</translation>
 <translation id="5308380583665731573">連線</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
@@ -998,7 +1000,6 @@
 <translation id="5597451508971090205"><ph name="DATE" /><ph name="SHORT_WEEKDAY" /></translation>
 <translation id="5600837773213129531">按下 Ctrl + Alt + Z 鍵即可停用朗讀功能。</translation>
 <translation id="5601503069213153581">PIN</translation>
-<translation id="5601571553788043181">在 Chrome 瀏覽器中開啟檔案</translation>
 <translation id="5618148318840095371">我們已將您的連線切換至更優質的網絡</translation>
 <translation id="5619862035903135339">管理員政策停用擷取螢幕截圖功能</translation>
 <translation id="5625955975703555628">LTE+</translation>
@@ -1336,6 +1337,7 @@
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解像度</translation>
 <translation id="7180611975245234373">重新整理</translation>
+<translation id="7187711731540696127">您的 <ph name="DEVICE_NAME" /> 熱點已開啟，但未連線至任何裝置</translation>
 <translation id="7188494361780961876">已經將選單移去螢幕左上角。</translation>
 <translation id="7189412385142492784">金星距離幾遠</translation>
 <translation id="7198435252016571249">攝錄機已經對齊右下角，同系統平台有衝突。</translation>
@@ -1415,7 +1417,6 @@
 <translation id="7569509451529460200">已啟用點字和 ChromeVox</translation>
 <translation id="7573585051776738856">用緊嘅視固定咗喺畫面右邊。</translation>
 <translation id="7579778809502851308">擷取螢幕畫面</translation>
-<translation id="7590883480672980941">輸入法設定</translation>
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暫停</translation>

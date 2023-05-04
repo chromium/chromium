@@ -547,7 +547,6 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="4642472735733036929">Sledenje cenam je ustavljeno</translation>
 <translation id="4650125387981512669">Nadaljuj kot <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Poskrbite za varnost gesel, preverite, ali so bila ogrožena, in poiščite nasvete za zaščito v spletu. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="4659126640776004816">Ko se prijavite v račun Google, se ta funkcija vklopi.</translation>
 <translation id="4659667755519643272">Enter Tab Switcher</translation>
 <translation id="46614316059270592">Shrani geslo</translation>
 <translation id="4666531726415300315">Prijavljeni ste kot <ph name="EMAIL" />.
@@ -610,6 +609,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4979397965658815378">Prijavite se z Google Računom, da boste zaznamke, gesla, zgodovino in druge nastavitve imeli na voljo v vseh napravah.</translation>
 <translation id="4986678885919050584">Odstrani iz te naprave</translation>
 <translation id="498985224078955265">Če želite ta zavihek poslati v drugo napravo, se v obeh napravah prijavite v Chrome.</translation>
+<translation id="4996567535980789550">Vklopite sinhronizacijo, če želite upravljati prikazano vsebino</translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>
 <translation id="5016420433031926653">Pošiljanje na <ph name="USER_EMAIL" /></translation>
 <translation id="5017828934289857214">Opomni me pozneje</translation>
@@ -666,6 +666,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="543338862236136125">Uredi geslo</translation>
 <translation id="5433691172869980887">Uporabniško ime kopirano</translation>
 <translation id="5439599923922718668">Pogosto obiskano</translation>
+<translation id="5439618055789623719">Prijavljeni ste kot <ph name="USER_EMAIL" /></translation>
 <translation id="54401264925851789">Informacije o varnosti strani</translation>
 <translation id="5443952882982198570">Kreditne kartice</translation>
 <translation id="5444892875087332195">Zaznamki</translation>
@@ -1236,6 +1237,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9034759925968272072">Iz Google Računa ne boste odjavljeni. V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="9037965129289936994">Pokaži izvirno besedilo</translation>
 <translation id="9039373489628511875">Pasovna širina</translation>
+<translation id="9043368763795653245">Če želite osebno prilagoditi vir Odkrivanje in Chrome, vklopite sinhronizacijo.</translation>
 <translation id="9055772144595778347">Prijava ni mogoča</translation>
 <translation id="9055960261314198756">Izboljšana zaščita je izklopljena</translation>
 <translation id="9057972802061533987">Ni mogoče spremljati. Prišlo je do napake.</translation>

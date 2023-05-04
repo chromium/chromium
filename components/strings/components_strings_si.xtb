@@ -191,6 +191,7 @@
 <translation id="1396259464226642517">මෙම ප්‍රතිඵලය අනපේක්‍ෂිත වූයේද? <ph name="BEGIN_LINK" />ප්‍රතිපෝෂණය යවන්න<ph name="END_LINK" /></translation>
 <translation id="1405567553485452995">ලා කොළ</translation>
 <translation id="1406500794671479665">තහවුරු කෙරෙමින්...</translation>
+<translation id="1406812885827747674">මෙම වතාවේ ඉඩ දෙන්න</translation>
 <translation id="1407135791313364759">සියල්ල විවෘත කරන්න</translation>
 <translation id="1408787208417187241">ඉහළට තුන් වරක් ස්ටේපල් කරන්න</translation>
 <translation id="1410941016594047814">ලියුම් කවරය ආරාධනාව</translation>
@@ -470,6 +471,7 @@
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="20817612488360358">පද්ධති ප්‍රොක්සි පසුතල සකසා ඇත්තේ භාවිතා කිරීමට වන නමුත් සවිස්තර ප්‍රොක්සි වින්‍යාසකරණයද නිශ්චිතව දක්වා තිබේ.</translation>
 <translation id="2082238445998314030">ප්‍රතිඵල <ph name="TOTAL_RESULTS" /> කින් <ph name="RESULT_NUMBER" /></translation>
+<translation id="2083256696566019397">සෑම පැමිණීමකම ඉඩ දෙන්න</translation>
 <translation id="2085876078937250610">සුරකින්න…</translation>
 <translation id="2088086323192747268">සමමුහුර්ත කිරීම කළමනාකරණය කරන්න බොත්තම, Chrome සැකසීම් තුළ ඔබ සමමුමුහුර්ත කරන්නේ කුමන තොරතුරුද යන්න කළමනාකරණය කිරීමට Enter ඔබන්න</translation>
 <translation id="2091887806945687916">හඬ</translation>
@@ -1058,6 +1060,7 @@
 <translation id="3587738293690942763">මැද</translation>
 <translation id="3595699422137460894">{NUM_DAYS,plural, =0{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දිනක් පමණ ගත වේ.}=1{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දිනක් පමණ ගත වේ.}one{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දින {NUM_DAYS}ක් ගත වේ.}other{ඔබට ඕනෑම වේලාවක ඔබගේ සමූහය යළි සැකසිය හැකිය. නව සමූහයකට එක් වීමට දින {NUM_DAYS}ක් ගත වේ.}}</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
+<translation id="360335678635752619">Chrome දින 30කට වඩා පැරණි දැන්වීම් යෝජනා කරන මාතෘකා සහ අඩවි ස්වයංව මකා දමයි. නැතහොත් ඔබ කැමති නැති විශේෂිත මාතෘකා සහ අඩවි අවහිර කළ හැක.</translation>
 <translation id="3603507503523709">ඔබේ පරිපාලකයා යෙදුම අවහිර කර ඇත</translation>
 <translation id="3605899229568538311">අඟ 5 x 5</translation>
 <translation id="3608932978122581043">පෝෂණ දිශානතිය</translation>
@@ -1187,6 +1190,7 @@
 <translation id="3906954721959377182">ටැබ්ලට්</translation>
 <translation id="3909695131102177774"><ph name="LABEL" /> <ph name="ERROR" /></translation>
 <translation id="3911401144270344103">ඔබට ඕනෑම වේලාවක Chrome සැකසීම් තුළ ඔබේ අදහස වෙනස් කළ හැක</translation>
+<translation id="3919748199683685809"><ph name="BEGIN_BOLD" />ඔබට ඔබේ දත්ත කළමනාකරණය කළ හැකි ආකාරය:<ph name="END_BOLD" /> Chrome දින 30කට වඩා පැරණි අඩවි ස්වයංව මකා දමයි. ඔබ නැවත පිවිසෙන අඩවියක් ලැයිස්තුවේ නැවත දිස් විය හැක. ඔබට අඩවියක් ඔබ වෙනුවෙන් දැන්වීම් යෝජනා කිරීමෙන් අවහිර කිරීමට සහ Chrome සැකසීම් තුළ ඕනෑම වේලාවක අඩවි-යෝජිත දැන්වීම් ක්‍රියා විරහිත කිරීමට ද හැක.</translation>
 <translation id="3921869355029467742">ඔබේ ආරක්ෂක කේතය ඇතුළු කරන්න</translation>
 <translation id="3927932062596804919">ප්‍රතික්ෂේප කරන්න</translation>
 <translation id="393316646445601645">අන්තර්ජාලය සහ විදුලි සන්නිවේදන</translation>
@@ -1352,6 +1356,8 @@
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{මෙම කාඩ්පත ඔබගේ Google ගිණුම තුළ සුරැකී ඇත}one{මෙම කාඩ්පත් ඔබගේ Google ගිණුම තුළ සුරැකී ඇත}other{මෙම කාඩ්පත් ඔබගේ Google ගිණුම තුළ සුරැකී ඇත}}</translation>
 <translation id="4287495839370498922">Chrome තුළ ඉහළ නංවන ලද දැන්වීම් පෞද්ගලිකත්වය</translation>
 <translation id="4287885627794386150">අත්හදා බැලීම සඳහා සුදුසු නමුත් සක්‍රිය නැත</translation>
+<translation id="4290920330097335010">කිසිවිටෙකත් ඉඩ නොදෙන්න</translation>
+<translation id="4296207570293932800">නව දැන්වීම් පෞද්ගලිකත්ව විශේෂාංගය දැන් තිබේ</translation>
 <translation id="4297502707443874121"><ph name="THUMBNAIL_PAGE" /> පිටුව සඳහා සිඟිති රුව</translation>
 <translation id="4298000214066716287">ආයෝජනය</translation>
 <translation id="42981349822642051">දිගහරින්න</translation>
@@ -1623,6 +1629,7 @@
 <translation id="495170559598752135">ක්‍රියාමාර්ග</translation>
 <translation id="4953689047182316270">ප්‍රවේශ්‍යතා සිදුවීම්වලට ප්‍රතිචාර දක්වන්න</translation>
 <translation id="4958444002117714549">විදහන ලැයිස්තුව</translation>
+<translation id="4960068118612257147">ඔබට Chrome දැන්වීම් පෞද්ගලිකත්ව සැකසීම් තුළ වෙනස්කම් කළ හැක</translation>
 <translation id="4964505745997821360">සෞඛ්‍ය රක්ෂණය</translation>
 <translation id="4968522289500246572">මෙම යෙදුම ජංගම සඳහා සැලසුම් කර ඇති අතර ප්‍රතිප්‍රමාණ නොවීමටද හැකිය. මෙම යෙදුම ගැටලු හෝ යළි ආරම්භ වීම අත්විඳිය හැකිය.</translation>
 <translation id="4968665849807487749">ඔබේ සියලු සංදර්ශකවල කවුළු කළමනාකරණය කිරීමට විමසිය හැක</translation>
