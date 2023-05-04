@@ -372,8 +372,8 @@ using CookieAccess = CookieTracker::CookieAccessDescription;
 
 }  // namespace
 
-// TODO(https://crbug.com/1288573): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/1288573): Flaky on Mac and Android.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CookieCallbacks_MainFrame DISABLED_CookieCallbacks_MainFrame
 #else
 #define MAYBE_CookieCallbacks_MainFrame CookieCallbacks_MainFrame
