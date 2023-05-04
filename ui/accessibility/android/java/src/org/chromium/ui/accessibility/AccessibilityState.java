@@ -433,7 +433,8 @@ public class AccessibilityState {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             AutofillManager autofillManager = context.getSystemService(AutofillManager.class);
 
-            if (autofillManager != null && autofillManager.isEnabled()) {
+            if (autofillManager != null && autofillManager.isEnabled()
+                    && autofillManager.hasEnabledAutofillServices()) {
                 // Confirm that autofill service is the only service running that requires
                 // accessibility.
                 if (runningServiceNames.isEmpty()

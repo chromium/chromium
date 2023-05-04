@@ -410,7 +410,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // generic Exception. (refer to crbug.com/1186406 or AutofillManagerWrapper ctor).
             try {
                 AutofillManager autofillManager = mContext.getSystemService(AutofillManager.class);
-                if (autofillManager != null && autofillManager.isEnabled()) {
+                if (autofillManager != null && autofillManager.isEnabled()
+                        && autofillManager.hasEnabledAutofillServices()) {
                     // Native accessibility is usually initialized when getAccessibilityNodeProvider
                     // is called, but the Autofill compatibility bridge only calls that method after
                     // it has received the first accessibility events. To solve the chicken-and-egg
