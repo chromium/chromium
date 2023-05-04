@@ -2511,6 +2511,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.EME.MediaLicenseDatabaseCreateDirectoryError"
+    enum="PlatformFileError" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Platform File specific errors reported while attempting to open the Media
+    License Database.
+  </summary>
+</histogram>
+
 <histogram name="Media.EME.MediaLicenseDatabaseOpenSQLiteError"
     enum="SqliteLoggedResultCode" expires_after="2024-04-11">
   <owner>vpasupathy@chromium.org</owner>
@@ -2518,6 +2528,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     SQLite specific errors reported while attempting to unsuccessfully open the
     Media License Database.
+  </summary>
+</histogram>
+
+<histogram name="Media.EME.MediaLicenseDatabaseSQLiteError"
+    enum="SqliteLoggedResultCode" expires_after="2024-04-11">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    SQLite specific errors reported while opening and using the Media License
+    Database.
   </summary>
 </histogram>
 
