@@ -1284,6 +1284,7 @@ grid .thumbnail-bottom .detail-icon:active {
 }
 
 .thumbnail-grid .thumbnail-frame {
+  background-color: var(--cros-sys-app_base_shaded);
   height: 100%;
   width: 100%;
 }
@@ -1305,6 +1306,7 @@ grid .thumbnail-bottom .detail-icon:active {
 }
 
 .thumbnail-grid .thumbnail-bottom {
+  background-color: var(--cros-sys-app_base);
   color: var(--cros-sys-on_surface);
   height: 48px;
 }
