@@ -790,7 +790,8 @@ void EmbeddedWorkerInstance::BindHidService(
     return;
   }
   if (hid_delegate->IsServiceWorkerAllowedForOrigin(origin)) {
-    HidService::Create(context_, origin, std::move(receiver));
+    HidService::Create(owner_version_->GetWeakPtr(), origin,
+                       std::move(receiver));
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

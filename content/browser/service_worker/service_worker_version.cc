@@ -2867,4 +2867,8 @@ void ServiceWorkerVersion::SetResources(
   sha256_script_checksum_ =
       MergeResourceRecordSHA256ScriptChecksum(script_url_, script_cache_map_);
 }
+
+base::WeakPtr<ServiceWorkerVersion> ServiceWorkerVersion::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 }  // namespace content

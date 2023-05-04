@@ -712,6 +712,12 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // Timeout for a request to be handled.
   static constexpr base::TimeDelta kRequestTimeout = base::Minutes(5);
 
+  base::WeakPtr<ServiceWorkerVersion> GetWeakPtr();
+
+  EmbeddedWorkerInstance* GetEmbeddedWorkerForTesting() {
+    return embedded_worker_.get();
+  }
+
  private:
   friend class base::RefCounted<ServiceWorkerVersion>;
   friend class EmbeddedWorkerTestHelper;

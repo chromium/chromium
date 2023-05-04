@@ -354,6 +354,11 @@ IN_PROC_BROWSER_TEST_F(WebHidExtensionFeatureEnabledBrowserTest,
         const devices = await navigator.hid.getDevices();
         device = devices[0];
         chrome.test.assertEq(1, devices.length);
+        // Bounce device a few times to make sure nothing unexpected happens.
+        await device.open();
+        await device.close();
+        await device.open();
+        await device.close();
         await device.open();
         chrome.test.notifyPass();
       } catch (e) {
