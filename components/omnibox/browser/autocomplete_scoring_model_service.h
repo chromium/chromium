@@ -63,8 +63,7 @@ class AutocompleteScoringModelService : public KeyedService {
   scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
 
   // Autocomplete URL scoring model.
-  std::unique_ptr<AutocompleteScoringModelHandler> url_scoring_model_handler_ =
-      nullptr;
+  std::unique_ptr<AutocompleteScoringModelHandler> url_scoring_model_handler_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_SCORING_MODEL_SERVICE_H_
