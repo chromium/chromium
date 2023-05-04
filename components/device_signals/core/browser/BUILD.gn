@@ -7,6 +7,7 @@ static_library("browser") {
     "base_signals_collector.h",
     "file_system_signals_collector.h",
     "metrics_utils.h",
+    "pref_names.h",
     "settings_client.h",
     "settings_signals_collector.h",
     "signals_aggregator.h",
@@ -24,6 +25,7 @@ static_library("browser") {
     "base_signals_collector.cc",
     "file_system_signals_collector.cc",
     "metrics_utils.cc",
+    "pref_names.cc",
     "settings_signals_collector.cc",
     "signals_aggregator_impl.cc",
     "signals_types.cc",
@@ -47,11 +49,6 @@ static_library("browser") {
 
   if (is_win) {
     public_deps += [ "//components/device_signals/core/common/win" ]
-  }
-
-  if (is_win || is_linux || is_mac) {
-    public += [ "pref_names.h" ]
-    sources += [ "pref_names.cc" ]
   }
 
   if (is_win || is_mac) {
@@ -110,6 +107,8 @@ source_set("unit_tests") {
     "//components/device_signals/core/common",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//testing/gtest",

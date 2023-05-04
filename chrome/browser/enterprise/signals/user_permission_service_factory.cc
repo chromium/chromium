@@ -59,7 +59,8 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
 
   return new device_signals::UserPermissionServiceImpl(
       management_service,
-      std::make_unique<UserDelegateImpl>(profile, identity_manager));
+      std::make_unique<UserDelegateImpl>(profile, identity_manager),
+      profile->GetPrefs());
 }
 
 }  // namespace enterprise_signals

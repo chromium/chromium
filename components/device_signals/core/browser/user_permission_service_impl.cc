@@ -5,19 +5,24 @@
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
 #include "base/check.h"
+#include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/prefs/pref_service.h"
 
 namespace device_signals {
 
 UserPermissionServiceImpl::UserPermissionServiceImpl(
     policy::ManagementService* management_service,
-    std::unique_ptr<UserDelegate> user_delegate)
+    std::unique_ptr<UserDelegate> user_delegate,
+    PrefService* user_prefs)
     : management_service_(management_service),
-      user_delegate_(std::move(user_delegate)) {
-  DCHECK(management_service_);
-  DCHECK(user_delegate_);
+      user_delegate_(std::move(user_delegate)),
+      user_prefs_(user_prefs) {
+  CHECK(management_service_);
+  CHECK(user_delegate_);
+  CHECK(user_prefs_);
 }
 
 UserPermissionServiceImpl::~UserPermissionServiceImpl() = default;
@@ -41,13 +46,14 @@ void UserPermissionServiceImpl::CanUserCollectSignals(
     return;
   }
 
-  // Automatically return "missing consent" if the browser is not managed. This
-  // specific check is temporary until there is a flow in Chrome to gather user
-  // consent, at which point lack of browser management would lead into a user
-  // consent check.
+  // User consent is required on unmanaged devices. Collection of the user's
+  // consent happens via its own flow and hooks, so only the resulting value
+  // needs to be evaluated here.
   if (!management_service_->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::CLOUD_DOMAIN)) {
-    std::move(callback).Run(UserPermission::kMissingConsent);
+    std::move(callback).Run(HasUserConsented()
+                                ? UserPermission::kGranted
+                                : UserPermission::kMissingConsent);
     return;
   }
 
@@ -77,6 +83,10 @@ void UserPermissionServiceImpl::CanCollectSignals(
     return;
   }
   std::move(callback).Run(UserPermission::kGranted);
+}
+
+bool UserPermissionServiceImpl::HasUserConsented() const {
+  return user_prefs_->GetBoolean(prefs::kDeviceSignalsConsentReceived);
 }
 
 }  // namespace device_signals

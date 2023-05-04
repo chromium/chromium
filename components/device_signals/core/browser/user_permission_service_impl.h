@@ -11,6 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/device_signals/core/browser/user_permission_service.h"
 
+class PrefService;
+
 namespace policy {
 class ManagementService;
 }  // namespace policy
@@ -22,7 +24,8 @@ class UserDelegate;
 class UserPermissionServiceImpl : public UserPermissionService {
  public:
   UserPermissionServiceImpl(policy::ManagementService* management_service,
-                            std::unique_ptr<UserDelegate> user_delegate);
+                            std::unique_ptr<UserDelegate> user_delegate,
+                            PrefService* user_prefs);
 
   UserPermissionServiceImpl(const UserPermissionServiceImpl&) = delete;
   UserPermissionServiceImpl& operator=(const UserPermissionServiceImpl&) =
@@ -36,8 +39,13 @@ class UserPermissionServiceImpl : public UserPermissionService {
   void CanCollectSignals(CanCollectCallback callback) override;
 
  private:
+  // Returns whether the user has explicitly agreed to device signals being
+  // shared or not.
+  bool HasUserConsented() const;
+
   raw_ptr<policy::ManagementService> management_service_;
   std::unique_ptr<UserDelegate> user_delegate_;
+  base::raw_ptr<PrefService> user_prefs_;
 
   base::WeakPtrFactory<UserPermissionServiceImpl> weak_factory_{this};
 };

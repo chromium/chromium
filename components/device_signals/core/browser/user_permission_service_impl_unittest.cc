@@ -8,10 +8,14 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/device_signals/core/browser/mock_user_delegate.h"
+#include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_registry.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,12 +50,14 @@ class UserPermissionServiceImplTest : public testing::Test {
   UserPermissionServiceImplTest()
       : scoped_override_(&management_service_,
                          EnterpriseManagementAuthority::CLOUD_DOMAIN) {
+    RegisterProfilePrefs(test_prefs_.registry());
+
     auto mock_user_delegate =
         std::make_unique<testing::StrictMock<MockUserDelegate>>();
     mock_user_delegate_ = mock_user_delegate.get();
 
     permission_service_ = std::make_unique<UserPermissionServiceImpl>(
-        &management_service_, std::move(mock_user_delegate));
+        &management_service_, std::move(mock_user_delegate), &test_prefs_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -59,6 +65,7 @@ class UserPermissionServiceImplTest : public testing::Test {
   TestManagementService management_service_;
   ScopedManagementServiceOverrideForTesting scoped_override_;
   raw_ptr<testing::StrictMock<MockUserDelegate>> mock_user_delegate_;
+  TestingPrefServiceSimple test_prefs_;
 
   std::unique_ptr<UserPermissionServiceImpl> permission_service_;
 };
@@ -106,8 +113,9 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_User_NotManaged) {
 }
 
 // Tests CanUserCollectSignals with a managed user ID but the browser is not
-// managed.
-TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_BrowserNotManaged) {
+// managed and the user has not given consent.
+TEST_F(UserPermissionServiceImplTest,
+       CanUserCollectSignals_BrowserNotManaged_NoConsent) {
   // Set management to something other than CLOUD_DOMAIN.
   ScopedManagementServiceOverrideForTesting another_scope(
       &management_service_, EnterpriseManagementAuthority::CLOUD);
@@ -123,6 +131,30 @@ TEST_F(UserPermissionServiceImplTest, CanUserCollectSignals_BrowserNotManaged) {
   permission_service_->CanUserCollectSignals(user_context,
                                              future.GetCallback());
   EXPECT_EQ(future.Get(), UserPermission::kMissingConsent);
+}
+
+// Tests CanUserCollectSignals with a managed user ID but the browser is not
+// managed and the user has given consent.
+TEST_F(UserPermissionServiceImplTest,
+       CanUserCollectSignals_BrowserNotManaged_WithConsent) {
+  // Set management to something other than CLOUD_DOMAIN.
+  ScopedManagementServiceOverrideForTesting another_scope(
+      &management_service_, EnterpriseManagementAuthority::CLOUD);
+
+  UserContext user_context;
+  user_context.user_id = kUserGaiaId;
+
+  EXPECT_CALL(*mock_user_delegate_, IsSameUser(kUserGaiaId))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_user_delegate_, IsManaged()).WillOnce(Return(true));
+
+  // Fake as if user has given consent.
+  test_prefs_.SetBoolean(prefs::kDeviceSignalsConsentReceived, true);
+
+  base::test::TestFuture<UserPermission> future;
+  permission_service_->CanUserCollectSignals(user_context,
+                                             future.GetCallback());
+  EXPECT_EQ(future.Get(), UserPermission::kGranted);
 }
 
 // Tests CanUserCollectSignals with a managed user ID and the browser is
