@@ -10783,15 +10783,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SYNC_CONFIRMATION_REFRESHED_SETTINGS_BUTTON_LABEL" desc="Label of the button in the sync confirmation screen to open sync settings">
         Sync settings
       </message>
-      <if expr="chromeos_lacros">
-        <!--  TODO(crbug.com/1383167): Move to Chrome-specific resource file -->
-        <message name="IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED" desc="Title of the sync confirmation dialog/screen on lacros when sync is not forced.">
-          Turn on Chrome browser sync?
-        </message>
-        <message name="IDS_SYNC_CONFIRMATION_SYNC_INFO_TITLE_LACROS" desc="Text in the information about sync on the sync confirmation dialog/screen on lacros.">
-          Your bookmarks, passwords, history, and more are synced on all your devices
-        </message>
-      </if>
 
       <!--  Tangible Sync version of the Sync Confirmation page -->
       <message name="IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE" desc="This string appears as a heading on a modal window that asks users if they want to turn on sync. 'Sync' is short for 'synchronization'. The tone should be informative and inviting.">

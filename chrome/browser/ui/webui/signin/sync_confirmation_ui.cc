@@ -198,7 +198,6 @@ void SyncConfirmationUI::InitializeMessageHandlerWithBrowser(Browser* browser) {
 void SyncConfirmationUI::InitializeForSyncConfirmation(
     content::WebUIDataSource* source,
     SyncConfirmationStyle style) {
-  int title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE;
   int info_title_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
   int info_desc_id = IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_DESC;
   int confirm_label_id = IDS_SYNC_CONFIRMATION_CONFIRM_BUTTON_LABEL;
@@ -260,7 +259,6 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
 
   // Default overrides without placeholders
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  title_id = IDS_SYNC_CONFIRMATION_TITLE_LACROS_NON_FORCED;
   // The sign-in intercept feature isn't enabled on Lacros, so only this title
   // will be used. Revisit the title when enabling it.
   DCHECK(!is_signin_intercept_promo);
@@ -297,7 +295,8 @@ void SyncConfirmationUI::InitializeForSyncConfirmation(
         source, "syncConfirmationTitle",
         IDS_SYNC_CONFIRMATION_WELCOME_TITLE_SIGNIN_INTERCEPT, gaia_name);
   } else {
-    AddStringResource(source, "syncConfirmationTitle", title_id);
+    AddStringResource(source, "syncConfirmationTitle",
+                      IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_TITLE);
   }
 
   // Registering and resolving the strings without placeholders
