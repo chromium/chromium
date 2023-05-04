@@ -1263,27 +1263,24 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest,
 }
 
 // Ensures audio files opened in the media app successfully autoplay.
-// Flaky on ChromeOS (crbug.com/1441607).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_Autoplay DISABLED_Autoplay
-#else
-#define MAYBE_Autoplay Autoplay
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MAYBE_Autoplay) {
+IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, Autoplay) {
   content::WebContents* web_ui = LaunchWithOneTestFile(kFileAudioOgg);
 
   EXPECT_EQ(kFileAudioOgg, WaitForAudioTrackTitle(web_ui));
 
   constexpr char kWaitForPlayedLength[] = R"(
       (async function waitForPlayedLength() {
-        const audioElement = await waitForNode('audio');
+        const audioElement = await waitForNode('audio[src^="blob:"]');
+        console.log(`<audio> has played.length=${audioElement.played.length}.`);
         if (audioElement.played.length > 0) {
           return audioElement.played.length;
         }
+        console.log(`Wait: timeupdate on <audio src="${audioElement.src}">...`);
         // Wait for a timeupdate. If autoplay malfunctions, this will timeout.
         await new Promise(resolve => {
           audioElement.addEventListener('timeupdate', resolve, {once: true});
         });
+        console.log(`Returning. played.length=${audioElement.played.length}.`);
         return audioElement.played.length;
       })();
   )";
