@@ -78,15 +78,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
   // Should be called at the beginning of the login.
   void ResetLoginData();
 
-  // Increments `knowledge_factor_auth_failure_count_` to reflect a failed
+  // Increment `knowledge_factor_auth_failure_count_` to reflect a failed
   // attempt to authenticate with a knowledge auth factor.
   void OnKnowledgeFactorAuthFailue();
 
-  // Logs the auth failure action and reason.
+  // Log the auth failure action and reason.
   void OnAuthFailure(const AuthFailure::FailureReason& failure_reason);
 
-  // Logs the login success action and reason.
-  void OnLoginSuccess(const SuccessReason& reason);
+  // Log the login success action and reason. Set whether the last successful
+  // login is a new user, is ephemeral, and whether the login was offline. May
+  // log the values to UMA if all information is available.
+  void OnLoginSuccess(const SuccessReason& reason,
+                      bool is_new_user,
+                      bool is_login_offline,
+                      bool is_ephemeral);
 
   // Logs the guest login success action.
   void OnGuestLoginSuccess();
@@ -98,18 +103,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
   // Set the policy setting whether to show users on sign in or not.
   // May log the values to UMA if all information is available.
   void OnShowUsersOnSignin(bool show_users_on_signin);
-
-  // Set the policy setting if ephemeral login are enforced.
-  // May log the values to UMA if all information is available.
-  void OnEnableEphemeralUsers(bool enable_ephemeral_users);
-
-  // Set whether the last successful login is a new user or not.
-  // May log the values to UMA if all information is available.
-  void OnIsUserNew(bool is_new_user);
-
-  // Set whether the last successful login is offline or not.
-  // May log the values to UMA if all information is available.
-  void OnIsLoginOffline(bool is_login_offline);
 
   // Set the current authentication surface (e.g. login screen, lock screen).
   void OnAuthenticationSurfaceChange(AuthenticationSurface surface);
@@ -143,9 +136,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
 
   static AuthEventsRecorder* instance_;
 
-  // Determine the user login type if 3 information are available:
-  // is_login_offline_, is_new_user_, enable_ephemeral_users_.
-  void MaybeUpdateUserLoginType();
+  // Determine the user login type from the provided information.
+  // Call `MaybeReportFlowMetrics`.
+  void MaybeUpdateUserLoginType(bool is_new_user,
+                                bool is_login_offline,
+                                bool is_ephemeral);
 
   // Report the user login type in association with policy and total user count
   // if 3 information are available: user_count_, show_users_on_signin_,
@@ -159,9 +154,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
   // All values should be reset to nullopt in `Reset()`;
   absl::optional<int> user_count_;
   absl::optional<bool> show_users_on_signin_;
-  absl::optional<bool> enable_ephemeral_users_;
-  absl::optional<bool> is_new_user_;
-  absl::optional<bool> is_login_offline_;
   absl::optional<UserLoginType> user_login_type_;
   absl::optional<AuthenticationSurface> auth_surface_;
 };

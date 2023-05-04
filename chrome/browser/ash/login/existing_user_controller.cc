@@ -433,10 +433,6 @@ void ExistingUserController::UpdateLoginDisplay(
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
   AuthEventsRecorder::Get()->OnShowUsersOnSignin(show_users_on_signin);
-  bool enable_ephemeral_users = false;
-  cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
-                             &enable_ephemeral_users);
-  AuthEventsRecorder::Get()->OnEnableEphemeralUsers(enable_ephemeral_users);
   // Counts regular device users that can log in.
   const int regular_users_counter = CountRegularUsers(users);
   // Allow offline login from the error screen if a regular user has already

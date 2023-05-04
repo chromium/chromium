@@ -36,50 +36,53 @@ TEST_F(AuthEventsRecorderTest, OnAuthFailure) {
       (int)AuthFailure::FailureReason::COULD_NOT_MOUNT_CRYPTOHOME, 1);
 }
 
-TEST_F(AuthEventsRecorderTest, OnLoginSuccess) {
-  base::HistogramTester histogram_tester;
-
-  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_ONLY);
-  histogram_tester.ExpectTotalCount("Login.SuccessReason", 1);
-  histogram_tester.ExpectBucketCount(
-      "Login.SuccessReason", static_cast<int>(SuccessReason::OFFLINE_ONLY), 1);
-}
-
 TEST_F(AuthEventsRecorderTest, LoginFlowShowUsers) {
   base::HistogramTester histogram_tester;
 
   recorder_->ResetLoginData();
   recorder_->OnShowUsersOnSignin(/*show_users_on_signin=*/true);
-  recorder_->OnEnableEphemeralUsers(/*enable_ephemeral_users=*/false);
   recorder_->OnUserCount(/*user_count=*/1);
-  recorder_->OnIsUserNew(/*is_new_user=*/false);
-  recorder_->OnIsLoginOffline(/*is_login_offline=*/true);
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_AND_ONLINE,
+                            /*is_new_user=*/false, /*is_login_offline=*/true,
+                            /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.ShowUsers.1", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.ShowUsers.1", static_cast<int>(AuthEventsRecorder::kOffline),
       1);
+  histogram_tester.ExpectTotalCount("Login.SuccessReason", 1);
+  histogram_tester.ExpectBucketCount(
+      "Login.SuccessReason",
+      static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 1);
 
   recorder_->ResetLoginData();
   recorder_->OnShowUsersOnSignin(/*show_users_on_signin=*/true);
-  recorder_->OnEnableEphemeralUsers(/*enable_ephemeral_users=*/false);
   recorder_->OnUserCount(/*user_count=*/3);
-  recorder_->OnIsUserNew(/*is_new_user=*/false);
-  recorder_->OnIsLoginOffline(/*is_login_offline=*/false);
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_AND_ONLINE,
+                            /*is_new_user=*/false, /*is_login_offline=*/false,
+                            /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.ShowUsers.Few", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.ShowUsers.Few",
       static_cast<int>(AuthEventsRecorder::kOnlineExisting), 1);
+  histogram_tester.ExpectTotalCount("Login.SuccessReason", 2);
+  histogram_tester.ExpectBucketCount(
+      "Login.SuccessReason",
+      static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 2);
 
   recorder_->ResetLoginData();
   recorder_->OnShowUsersOnSignin(/*show_users_on_signin=*/true);
-  recorder_->OnEnableEphemeralUsers(/*enable_ephemeral_users=*/false);
   recorder_->OnUserCount(/*user_count=*/33);
-  recorder_->OnIsUserNew(/*is_new_user=*/true);
-  recorder_->OnIsLoginOffline(/*is_login_offline=*/false);
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_AND_ONLINE,
+                            /*is_new_user=*/true, /*is_login_offline=*/false,
+                            /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.ShowUsers.Many", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.ShowUsers.Many",
       static_cast<int>(AuthEventsRecorder::kOnlineNew), 1);
+  histogram_tester.ExpectTotalCount("Login.SuccessReason", 3);
+  histogram_tester.ExpectBucketCount(
+      "Login.SuccessReason",
+      static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 3);
 }
 
 TEST_F(AuthEventsRecorderTest, LoginFlowHideUsers) {
@@ -87,36 +90,48 @@ TEST_F(AuthEventsRecorderTest, LoginFlowHideUsers) {
 
   recorder_->ResetLoginData();
   recorder_->OnShowUsersOnSignin(/*show_users_on_signin=*/false);
-  recorder_->OnEnableEphemeralUsers(/*enable_ephemeral_users=*/false);
   recorder_->OnUserCount(/*user_count=*/1);
-  recorder_->OnIsUserNew(/*is_new_user=*/false);
-  recorder_->OnIsLoginOffline(/*is_login_offline=*/true);
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_AND_ONLINE,
+                            /*is_new_user=*/false, /*is_login_offline=*/true,
+                            /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.HideUsers.1", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.HideUsers.1", static_cast<int>(AuthEventsRecorder::kOffline),
       1);
+  histogram_tester.ExpectTotalCount("Login.SuccessReason", 1);
+  histogram_tester.ExpectBucketCount(
+      "Login.SuccessReason",
+      static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 1);
 
   recorder_->ResetLoginData();
   recorder_->OnShowUsersOnSignin(/*show_users_on_signin=*/false);
-  recorder_->OnEnableEphemeralUsers(/*enable_ephemeral_users=*/false);
   recorder_->OnUserCount(/*user_count=*/3);
-  recorder_->OnIsUserNew(/*is_new_user=*/false);
-  recorder_->OnIsLoginOffline(/*is_login_offline=*/false);
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_AND_ONLINE,
+                            /*is_new_user=*/false, /*is_login_offline=*/false,
+                            /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.HideUsers.Few", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.HideUsers.Few",
       static_cast<int>(AuthEventsRecorder::kOnlineExisting), 1);
+  histogram_tester.ExpectTotalCount("Login.SuccessReason", 2);
+  histogram_tester.ExpectBucketCount(
+      "Login.SuccessReason",
+      static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 2);
 
   recorder_->ResetLoginData();
   recorder_->OnShowUsersOnSignin(/*show_users_on_signin=*/false);
-  recorder_->OnEnableEphemeralUsers(/*enable_ephemeral_users=*/false);
   recorder_->OnUserCount(/*user_count=*/33);
-  recorder_->OnIsUserNew(/*is_new_user=*/true);
-  recorder_->OnIsLoginOffline(/*is_login_offline=*/false);
+  recorder_->OnLoginSuccess(SuccessReason::OFFLINE_AND_ONLINE,
+                            /*is_new_user=*/true, /*is_login_offline=*/false,
+                            /*is_ephemeral=*/false);
   histogram_tester.ExpectTotalCount("Login.Flow.HideUsers.Many", 1);
   histogram_tester.ExpectBucketCount(
       "Login.Flow.HideUsers.Many",
       static_cast<int>(AuthEventsRecorder::kOnlineNew), 1);
+  histogram_tester.ExpectTotalCount("Login.SuccessReason", 3);
+  histogram_tester.ExpectBucketCount(
+      "Login.SuccessReason",
+      static_cast<int>(SuccessReason::OFFLINE_AND_ONLINE), 3);
 }
 
 TEST_F(AuthEventsRecorderTest, OnExistingUserLoginExit) {

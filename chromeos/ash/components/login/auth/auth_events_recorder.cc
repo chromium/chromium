@@ -223,10 +223,14 @@ void AuthEventsRecorder::OnAuthFailure(
                             AuthFailure::NUM_FAILURE_REASONS);
 }
 
-void AuthEventsRecorder::OnLoginSuccess(const SuccessReason& reason) {
+void AuthEventsRecorder::OnLoginSuccess(const SuccessReason& reason,
+                                        bool is_new_user,
+                                        bool is_login_offline,
+                                        bool is_ephemeral) {
   base::RecordAction(base::UserMetricsAction("Login_Success"));
   UMA_HISTOGRAM_ENUMERATION(kSuccessReasonHistogramName, reason,
                             SuccessReason::NUM_SUCCESS_REASONS);
+  MaybeUpdateUserLoginType(is_new_user, is_login_offline, is_ephemeral);
 }
 
 void AuthEventsRecorder::OnGuestLoginSuccess() {
@@ -241,21 +245,6 @@ void AuthEventsRecorder::OnUserCount(int user_count) {
 void AuthEventsRecorder::OnShowUsersOnSignin(bool show_users_on_signin) {
   show_users_on_signin_ = show_users_on_signin;
   MaybeReportFlowMetrics();
-}
-
-void AuthEventsRecorder::OnEnableEphemeralUsers(bool enable_ephemeral_users) {
-  enable_ephemeral_users_ = enable_ephemeral_users;
-  MaybeUpdateUserLoginType();
-}
-
-void AuthEventsRecorder::OnIsUserNew(bool is_new_user) {
-  is_new_user_ = is_new_user;
-  MaybeUpdateUserLoginType();
-}
-
-void AuthEventsRecorder::OnIsLoginOffline(bool is_login_offline) {
-  is_login_offline_ = is_login_offline;
-  MaybeUpdateUserLoginType();
 }
 
 void AuthEventsRecorder::OnAuthenticationSurfaceChange(
@@ -298,18 +287,15 @@ void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
   base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
 }
 
-void AuthEventsRecorder::MaybeUpdateUserLoginType() {
-  if (!is_login_offline_.has_value() || !is_new_user_.has_value() ||
-      !enable_ephemeral_users_.has_value()) {
-    return;
-  }
-
-  if (is_login_offline_.value()) {
+void AuthEventsRecorder::MaybeUpdateUserLoginType(bool is_new_user,
+                                                  bool is_login_offline,
+                                                  bool is_ephemeral) {
+  if (is_login_offline) {
     user_login_type_ = AuthEventsRecorder::kOffline;
-  } else if (!is_new_user_.value()) {
+  } else if (!is_new_user) {
     // The rest 3 online login types are with either existing user and new users
     user_login_type_ = AuthEventsRecorder::kOnlineExisting;
-  } else if (enable_ephemeral_users_.value()) {
+  } else if (is_ephemeral) {
     // The rest 2 new user login types are either ephemeral or new online users
     user_login_type_ = AuthEventsRecorder::kEphemeral;
   } else {
@@ -334,9 +320,6 @@ void AuthEventsRecorder::MaybeReportFlowMetrics() {
 void AuthEventsRecorder::Reset() {
   user_count_ = absl::nullopt;
   show_users_on_signin_ = absl::nullopt;
-  enable_ephemeral_users_ = absl::nullopt;
-  is_new_user_ = absl::nullopt;
-  is_login_offline_ = absl::nullopt;
   user_login_type_ = absl::nullopt;
   auth_surface_ = absl::nullopt;
   knowledge_factor_auth_failure_count_ = 0;
