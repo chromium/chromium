@@ -425,22 +425,6 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.assertEqual(result.expected, {'TIMEOUT'})
         self.assertFalse(result.unexpected)
 
-    def test_report_sanitizer_fail(self):
-        self._event(action='suite_start', run_info={'sanitizer_enabled': True})
-        self._event(action='test_start', test='/reftest.html')
-        self._event(action='test_end',
-                    test='/reftest.html',
-                    status='FAIL',
-                    expected='PASS')
-        self._event(action='suite_end')
-
-        result = self.processor.sink.report_individual_test_result.call_args.kwargs[
-            'result']
-        self.assertEqual(result.name, 'reftest.html')
-        self.assertEqual(result.actual, 'PASS')
-        self.assertEqual(result.expected, {'PASS'})
-        self.assertFalse(result.unexpected)
-
     def test_report_skip(self):
         self._event(action='test_start', test='/reftest.html')
         self._event(action='test_end', test='/reftest.html', status='SKIP')

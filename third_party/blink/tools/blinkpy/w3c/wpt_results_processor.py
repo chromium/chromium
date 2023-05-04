@@ -515,17 +515,10 @@ class WPTResultsProcessor:
         result.took = max(0, event.time - result.started) / 1000
         result.update_from_test(status, expected, message)
         result.artifacts = self._extract_artifacts(result, extra).artifacts
-        if result.unexpected:
-            if (self.run_info.get('sanitizer_enabled')
-                    and result.actual == ResultType.Failure):
-                # `--enable-sanitizer` is equivalent to running every test as a
-                # crashtest. It suffices for a crashtest to not suffer a timeout
-                # or low-level crash to pass:
-                #   https://web-platform-tests.org/writing-tests/crashtest.html
-                result.actual = ResultType.Pass
-                result.unexpected = False
-            if result.actual not in {ResultType.Pass, ResultType.Skip}:
-                self.has_regressions = True
+        if result.unexpected and result.actual not in {
+                ResultType.Pass, ResultType.Skip
+        }:
+            self.has_regressions = True
         if not self.run_info.get('used_upstream'):
             # We only need Wpt report when run with upstream
             self.sink.report_individual_test_result(

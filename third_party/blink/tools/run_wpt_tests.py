@@ -342,8 +342,10 @@ class WPTAdapter:
             '--force-fieldtrial-params='
             'DownloadServiceStudy.Enabled:start_up_delay_ms/0',
         ])
-        if options.retry_unexpected is None:
-            options.retry_unexpected = 3
+        if options.sanitizer_enabled and (options.timeout_multiplier or 1) < 2:
+            options.timeout_multiplier = 2
+            logger.info('Defaulting to 2x timeout multiplier because '
+                        'sanitizer is enabled')
         if not options.mojojs_path:
             options.mojojs_path = self.path_from_output_dir(
                 options.target, 'gen')
@@ -495,7 +497,7 @@ class WPTAdapter:
             'debug': self.port.get_option('configuration') == 'Debug',
             'flag_specific': options.flag_specific or '',
             'used_upstream': options.use_upstream_wpt,
-            'sanitizer_enabled': options.enable_sanitizer,
+            'sanitizer_enabled': options.sanitizer_enabled,
         }
         if options.use_upstream_wpt:
             # `run_wpt_tests` does not run in the upstream checkout's git
@@ -586,21 +588,15 @@ class WPTAdapter:
             '--isolated-script-test-launcher-retry-limit',
             metavar='RETRIES',
             type=lambda value: max(0, int(value)),
-            default=None,
-            help=(
-                'Maximum number of times to rerun unexpectedly failed tests. '
-                'Defaults to 3 unless given an explicit list of tests to run.'
-            ))
+            default=3,
+            help=('Maximum number of times to rerun unexpectedly failed '
+                  'tests. Defaults to 3.'))
         group.add_argument('--no-show-results',
                            dest='show_results',
                            action='store_false',
                            default=self.host.platform.interactive,
                            help=("Don't launch a browser with results after"
                                  "the tests are done"))
-        group.add_argument(
-            '--enable-sanitizer',
-            action='store_true',
-            help='Only report sanitizer-related errors and crashes.')
         group.add_argument('--enable-leak-detection',
                            action='append_const',
                            dest='binary_args',
