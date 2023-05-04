@@ -93,6 +93,7 @@
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
 #include "chrome/browser/page_load_metrics/observers/https_engagement_metrics/https_engagement_service_factory.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_memory_tracker_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/password_reuse_manager_factory.h"
@@ -787,6 +788,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   PasswordManagerSettingsServiceFactory::GetInstance();
   PasswordReuseManagerFactory::GetInstance();
   PasswordStoreFactory::GetInstance();
+  AccountPasswordStoreFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   PerformanceControlsHatsServiceFactory::GetInstance();
 #endif

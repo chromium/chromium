@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/bulk_leak_check_service_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,6 +102,7 @@ PasswordsPrivateDelegateFactory::PasswordsPrivateDelegateFactory()
               .Build()) {
   DependsOn(BulkLeakCheckServiceFactory::GetInstance());
   DependsOn(PasswordStoreFactory::GetInstance());
+  DependsOn(AccountPasswordStoreFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(PasswordsPrivateEventRouterFactory::GetInstance());
 }
