@@ -16,3 +16,7 @@
   --shortcuts-font-family-default: "Google Sans", Roboto, sans-serif;
   --shortcuts-font-size-default: 13px;
 }
+
+:host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+  border-radius: 20px;
+}
