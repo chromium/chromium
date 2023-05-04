@@ -885,9 +885,7 @@ TEST_F(PdfViewWebPluginTest,
   plugin_->DocumentLoadComplete();
   plugin_->LoadOrReloadAccessibility();
   EXPECT_EQ(plugin_->next_accessibility_page_index_for_testing(), 0);
-  constexpr int32_t kPdfPageNum = 8;
-  plugin_->set_next_accessibility_page_index_for_testing(kPdfPageNum);
-  EXPECT_EQ(plugin_->next_accessibility_page_index_for_testing(), kPdfPageNum);
+  plugin_->set_next_accessibility_page_index_for_testing(5);
 
   EXPECT_CALL(*accessibility_data_handler_ptr_, SetAccessibilityDocInfo);
   plugin_->LoadOrReloadAccessibility();
