@@ -1,9 +1,6 @@
 package com.ark.browser.ui.widget.homepage;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -11,22 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.android.launcher3.ItemInfo;
-import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.LauncherLayout;
-import com.android.launcher3.TabItemInfo;
-import com.android.launcher3.database.FavoriteItemTable;
-import com.android.launcher3.database.SQLite;
-import com.android.launcher3.model.FavoriteItem;
 import com.android.launcher3.popup.OptionItem;
 import com.android.launcher3.popup.OptionsPopupView;
-import com.ark.browser.ui.fragment.collection.CollectionFragment;
-import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
-import com.ark.browser.ui.fragment.download.DownloadFragment;
-import com.ark.browser.ui.fragment.manager.ManagerFragment;
-import com.ark.browser.ui.fragment.search.SearchFragment;
-import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
-import com.zpj.utils.Callback;
 
 import org.chromium.chrome.R;
 import org.chromium.ui.widget.Toast;
@@ -46,38 +31,6 @@ public class ArkLauncherLayout extends LauncherLayout {
 
     public ArkLauncherLayout(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setClickHandler(new LauncherLayout.ClickHandler() {
-            @Override
-            public void onClickAppShortcut(View v, ItemInfoWithIcon itemInfo) {
-                Toast.makeText(context, "title=" + itemInfo.title + " url=" + itemInfo.url, Toast.LENGTH_SHORT).show();
-                if (HomepageUtils.isDeepLink(itemInfo.url)) {
-                    switch (itemInfo.url) {
-                        case HomepageUtils.DEEPLINK_MANAGER:
-                            new ManagerFragment().show(context);
-                            break;
-                        case HomepageUtils.DEEPLINK_COLLECTIONS:
-                            CollectionFragment.newInstance(0).show(context);
-                            break;
-                        case HomepageUtils.DEEPLINK_BROWSER:
-                            new MainMenuDialog().show(context);
-                            break;
-                        case HomepageUtils.DEEPLINK_DOWNLOADS:
-                            DownloadFragment.newInstance(true).show(context);
-                            break;
-                        case HomepageUtils.DEEPLINK_SETTINGS:
-                            new SettingsFragment().show(context);
-                            break;
-                    }
-                } else {
-
-                }
-            }
-
-            @Override
-            public void onClickTabCard(View v, TabItemInfo itemInfo) {
-                Toast.makeText(context, "title=" + itemInfo.title + " url=" + itemInfo.url, Toast.LENGTH_SHORT).show();
-            }
-        });
 
         setOptionItemProvider(new LauncherLayout.OptionItemProvider() {
             @Override

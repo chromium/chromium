@@ -234,6 +234,7 @@ chrome_java_sources = [
   "java/src/com/ark/browser/ui/widget/homepage/HomepageItemLoader.java",
   "java/src/com/ark/browser/ui/widget/homepage/HomepageSearchBar.java",
   "java/src/com/ark/browser/ui/widget/homepage/HomepageUtils.java",
+  "java/src/com/ark/browser/ui/widget/homepage/NewTabTransformAnimation.java",
   "java/src/com/ark/browser/ui/widget/homepage/SwitcherRecyclerLayout.java",
   "java/src/com/ark/browser/ui/widget/homepage/TabSwitcherLayout.java",
   "java/src/com/ark/browser/ui/widget/homepage/TabSwitcherManager.java",

@@ -3,6 +3,7 @@ package com.ark.browser.ui.widget.homepage;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
@@ -10,28 +11,37 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 
+import com.android.launcher3.BubbleTextView;
+import com.android.launcher3.ItemInfoWithIcon;
 import com.android.launcher3.LauncherLayout;
+import com.android.launcher3.TabItemInfo;
 import com.ark.browser.core.ArkCompositorViewHolder;
 import com.ark.browser.settings.AppConfig;
 import com.ark.browser.tab.TabGroupManager;
 import com.ark.browser.tab.core.ITabGroup;
+import com.ark.browser.ui.fragment.collection.CollectionFragment;
+import com.ark.browser.ui.fragment.dialog.MainMenuDialog;
+import com.ark.browser.ui.fragment.download.DownloadFragment;
+import com.ark.browser.ui.fragment.manager.ManagerFragment;
 import com.ark.browser.ui.fragment.search.SearchFragment;
-import com.ark.browser.ui.fragment.wallpaper.WallpaperSelectFragment;
+import com.ark.browser.ui.fragment.settings.SettingsFragment;
 import com.ark.browser.ui.widget.BottomControlBar;
 import com.ark.browser.ui.widget.BottomController;
-import com.zpj.fragmentation.dialog.ZDialog;
-import com.zpj.utils.ClickHelper;
 import com.zpj.utils.ContextUtils;
 import com.zpj.utils.StatusBarUtils;
 
 import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.util.ColorUtils;
+import org.chromium.ui.widget.Toast;
 
 public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
 
 
+    private final Context mContext;
     private final ArkCompositorViewHolder mViewHolder;
     private final View mBrowserLayout;
     private final ArkLauncherLayout mLauncherLayout;
@@ -40,6 +50,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
     private final BottomController mBottomController;
 
     public TabSwitcherManager(View view, Bundle savedInstanceState) {
+        mContext = view.getContext();
         mViewHolder = view.findViewById(R.id.compositor_view_holder);
         mViewHolder.setRootView(view);
         mLauncherLayout = view.findViewById(R.id.launcher_layout);
@@ -53,31 +64,65 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
         bottomControlBar.setSwitcherManager(this);
         mBottomController = new BottomController(view);
 
-//        // TODO
-//        ClickHelper.with(mLauncherLayout)
-//                .setOnClickListener((view1, x, y) -> {
-//                    if (isInLauncher()) {
-//                        mSwitcher.open();
-//                    }
-//                })
-//                .setOnLongClickListener(new ClickHelper.OnLongClickListener() {
-//                    @Override
-//                    public boolean onLongClick(View view, float x, float y) {
-//                        ZDialog.attach()
-//                                .addItem("壁纸")
-//                                .setOnSelectListener((fragment, i, s) -> {
-//                                    if (i == 0) {
-//                                        fragment.start(new WallpaperSelectFragment());
-//                                    }
-//                                    fragment.dismiss();
-//                                })
-//                                .setTouchPoint(x, y)
-//                                .show(view);
-//                        return true;
-//                    }
-//                });
-
         mLauncherLayout.init(savedInstanceState);
+        mLauncherLayout.setClickHandler(new LauncherLayout.ClickHandler() {
+            @Override
+            public void onClickAppShortcut(View v, ItemInfoWithIcon itemInfo) {
+                Toast.makeText(mContext, "title=" + itemInfo.title + " url=" + itemInfo.url, Toast.LENGTH_SHORT).show();
+                if (HomepageUtils.isDeepLink(itemInfo.url)) {
+                    switch (itemInfo.url) {
+                        case HomepageUtils.DEEPLINK_MANAGER:
+                            new ManagerFragment().show(mContext);
+                            break;
+                        case HomepageUtils.DEEPLINK_COLLECTIONS:
+                            CollectionFragment.newInstance(0).show(mContext);
+                            break;
+                        case HomepageUtils.DEEPLINK_BROWSER:
+                            new MainMenuDialog().show(mContext);
+                            break;
+                        case HomepageUtils.DEEPLINK_DOWNLOADS:
+                            DownloadFragment.newInstance(true).show(mContext);
+                            break;
+                        case HomepageUtils.DEEPLINK_SETTINGS:
+                            new SettingsFragment().show(mContext);
+                            break;
+                    }
+                } else {
+                    LoadUrlParams params = new LoadUrlParams(itemInfo.url);
+                    TabGroupManager.global().getCurrentTabGroup().openNewTab(params, TabLaunchType.FROM_LAUNCHER_SHORTCUT);
+                    if (v instanceof BubbleTextView) {
+                        Rect rect = new Rect();
+                        ((BubbleTextView) v).getIconBounds(rect);
+
+                        int[] location = new int[2];
+                        v.getLocationOnScreen(location);
+
+                        int x = location[0] + rect.centerX();
+                        int y = location[1] + rect.centerY();
+
+                        NewTabTransformAnimation.with(mContext)
+                                .setCenterPosition(x, y)
+                                .onAnimationStart(() -> {
+                                    Toast.makeText(mContext, "start animation", Toast.LENGTH_SHORT).show();
+                                })
+                                .onAnimationEnd(() -> {
+                                    Toast.makeText(mContext, "dismiss animation", Toast.LENGTH_SHORT).show();
+                                    goToBrowser();
+                                })
+                                .start();
+
+                    } else {
+                        goToBrowser();
+                    }
+                }
+            }
+
+            @Override
+            public void onClickTabCard(View v, TabItemInfo itemInfo) {
+                Toast.makeText(mContext, "title=" + itemInfo.title + " url=" + itemInfo.url, Toast.LENGTH_SHORT).show();
+            }
+        });
+
         mLauncherLayout.setSlideListener(new LauncherLayout.SlideListener() {
             @Override
             public void onSlideStart(int direction) {
