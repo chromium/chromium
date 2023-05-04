@@ -3218,7 +3218,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   NSLayoutYAxisAnchor* bottomAnchor = [self shouldUseCompactLayout]
                                           ? self.bottomToolbar.topAnchor
                                           : self.view.bottomAnchor;
-  if (IsPinnedTabsEnabled() && !self.pinnedTabsViewController.view.hidden) {
+  if (IsPinnedTabsEnabled() && self.pinnedTabsViewController.visible) {
     bottomAnchor = self.pinnedTabsViewController.view.topAnchor;
   }
   [constraints addObjectsFromArray:@[
