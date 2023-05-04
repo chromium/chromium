@@ -27,8 +27,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android",
-                  "fetch_android_chromium_rust_toolchain"
+                  "android"
                 ],
                 "config": "chromium"
               }

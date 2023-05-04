@@ -241,9 +241,6 @@ vars = {
   # Fetch Rust toolchain.
   'checkout_rust': 'host_os == "linux"',
 
-  # Fetch the Android team's Rust toolchain.
-  'fetch_android_chromium_rust_toolchain': False,
-
   # See //docs/testing/regression-test-selection.md
   # for info on RTS
   'checkout_rts_model': False,
@@ -559,16 +556,6 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-  },
-  'src/third_party/android_rust_toolchain/toolchain': {
-    'packages': [
-      {
-        'package': 'chromium/third_party/android_rust_toolchain/linux-amd64',
-        'version': 'version:2@1.64.0.cr2',
-      },
-    ],
-    'dep_type': 'cipd',
-    'condition': 'fetch_android_chromium_rust_toolchain',
   },
 
   # We don't know target_cpu at deps time. At least until there's a universal

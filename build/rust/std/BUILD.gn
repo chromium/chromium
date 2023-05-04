@@ -70,12 +70,6 @@ if (toolchain_has_rust) {
     "unwind",
   ]
 
-  # rlibs explicitly ignored when copying prebuilt sysroot libraries.
-  # find_std_rlibs.py rightfully errors out if an unexpected prebuilt lib is
-  # encountered, since it usually indicates we missed something. This ignore
-  # list is also passed to it. This has no effect on the local std build.
-  ignore_stdlib_files = []
-
   # proc_macro is special: we only run proc macros on the host, so we only want
   # it for our host toolchain.
   if (current_toolchain == host_toolchain_no_sanitizers) {
@@ -83,10 +77,6 @@ if (toolchain_has_rust) {
     # includes proc_macro in the prebuilts copied in find_stdlib. Otherwise it
     # is not built or copied.
     stdlib_files += [ "proc_macro" ]
-  } else {
-    # Explicitly ignore it from the prebuilts. Nothing needs to be done for the
-    # local std build.
-    ignore_stdlib_files += [ "proc_macro" ]
   }
 
   # Different Rust toolchains may add or remove files relative to the above
@@ -198,9 +188,11 @@ if (toolchain_has_rust) {
     }
 
     group("local_stdlib_libs") {
-      assert(
-          enable_rust,
-          "Some C++ target is including Rust code even though enable_rust=false")
+      assert(toolchain_has_rust,
+             "Some C++ target is depending on Rust code even though " +
+                 "toolchain_has_rust=false. Usually this would mean" +
+                 "a NaCl target is depending on Rust, as there's no Rust " +
+                 "toolchain targetting NaCl.")
       all_dependent_configs = [ ":stdlib_dependent_libs" ]
       deps = []
       foreach(libname, stdlib_files + skip_stdlib_files) {
@@ -212,9 +204,6 @@ if (toolchain_has_rust) {
     # Builds the stdlib and points the rustc `--sysroot` to them. Used by
     # targets for which linking is driven by Rust (bins and dylibs).
     group("stdlib_for_rustc") {
-      assert(
-          enable_rust,
-          "Some C++ target is including Rust code even though enable_rust=false")
       all_dependent_configs = [ ":local_stdlib_sysroot" ]
       public_deps = [ ":local_stdlib_libs" ]
     }
@@ -228,27 +217,25 @@ if (toolchain_has_rust) {
         ":remap_alloc",
       ]
     }
-
-    not_needed([ "ignore_stdlib_files" ])
   } else {
     action("find_stdlib") {
-      # Collect prebuilt Rust libraries from toolchain package and copy to a known
-      # location.
+      # Collect prebuilt Rust libraries from toolchain package and copy to a
+      # known location.
       #
       # The Rust toolchain contains prebuilt rlibs for the standard library and
       # its dependencies. However, they have unstable names: an unpredictable
       # metadata hash is appended to the known crate name.
       #
       # We must depend on these rlibs explicitly when rustc is not in charge of
-      # linking. However, it is difficult to construct GN rules to do so when the
-      # names can't be known statically.
+      # linking. However, it is difficult to construct GN rules to do so when
+      # the names can't be known statically.
       #
       # This action copies the prebuilt rlibs to a known location, removing the
       # metadata part of the name. In the process it verifies we have all the
-      # libraries we expect and none that we don't. A depfile is generated so this
-      # step is re-run when any libraries change. The action script additionally
-      # verifies rustc matches the expected version, which is unrelated but this
-      # is a convenient place to do so.
+      # libraries we expect and none that we don't. A depfile is generated so
+      # this step is re-run when any libraries change. The action script
+      # additionally verifies rustc matches the expected version, which is
+      # unrelated but this is a convenient place to do so.
       #
       # The action refers to `stdlib_files`, `skip_stdlib_files`, and the
       # associated //build/config/rust.gni vars `removed_rust_stdlib_libs` and
@@ -259,8 +246,8 @@ if (toolchain_has_rust) {
       out_libdir = rebase_path(target_out_dir, root_build_dir)
       out_depfile = rebase_path(depfile, root_build_dir)
 
-      # For the rustc sysroot we must include even the rlibs we don't pass to the
-      # C++ linker.
+      # For the rustc sysroot we must include even the rlibs we don't pass to
+      # the C++ linker.
       all_stdlibs_to_copy = stdlib_files + skip_stdlib_files
       args = [
         "--rust-bin-dir",
@@ -281,20 +268,6 @@ if (toolchain_has_rust) {
         "--rustc-revision",
         rustc_revision,
       ]
-
-      if (!use_unverified_rust_toolchain) {
-        args += [
-          "--stdlibs",
-          string_join(",", all_stdlibs_to_copy),
-        ]
-
-        if (ignore_stdlib_files != []) {
-          args += [
-            "--ignore-stdlibs",
-            string_join(",", ignore_stdlib_files),
-          ]
-        }
-      }
 
       if (extra_sysroot_libs != []) {
         args += [
