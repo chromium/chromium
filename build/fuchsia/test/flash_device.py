@@ -16,8 +16,7 @@ from typing import Optional, Tuple
 import common
 from common import BootMode, boot_device, get_system_info, \
     find_image_in_sdk, register_device_args
-from compatible_utils import get_sdk_hash, get_ssh_keys, pave, \
-    running_unattended, add_exec_to_file, get_host_arch
+from compatible_utils import get_sdk_hash, pave, running_unattended
 from lockfile import lock
 
 # Flash-file lock. Used to restrict number of flash operations per host.
@@ -84,49 +83,25 @@ def update_required(
     return True, system_image_dir
 
 
-def _add_exec_to_flash_binaries(system_image_dir: str) -> None:
-    """Add exec to required flash files.
-
-    The flash files may vary depending if a product-bundle or a prebuilt images
-    directory is being used.
-    Args:
-      system_image_dir: string path to the directory containing the flash files.
-    """
-    pb_files = [
-        'flash.sh',
-        os.path.join(f'host_{get_host_arch()}', 'fastboot')
-    ]
-    image_files = ['flash.sh', f'fastboot.exe.linux-{get_host_arch()}']
-    use_pb_files = os.path.exists(os.path.join(system_image_dir, pb_files[1]))
-    for f in pb_files if use_pb_files else image_files:
-        add_exec_to_file(os.path.join(system_image_dir, f))
-
-
 def _run_flash_command(system_image_dir: str, target_id: Optional[str]):
     """Helper function for running `ffx target flash`."""
-
-    _add_exec_to_flash_binaries(system_image_dir)
-    # TODO(fxb/91843): Remove workaround when ffx has stable support for
-    # multiple hardware devices connected via USB.
-    if running_unattended():
-        flash_cmd = [
-            os.path.join(system_image_dir, 'flash.sh'),
-            '--ssh-key=%s' % get_ssh_keys()
-        ]
-        # Target ID could be the nodename or the Serial number.
-        if target_id:
-            flash_cmd.extend(('-s', target_id))
-        subprocess.run(flash_cmd, check=True, timeout=240)
-        return
-
     manifest = os.path.join(system_image_dir, 'flash-manifest.manifest')
+    configs = [
+        'fastboot.usb.disabled=true',
+        'ffx.fastboot.inline_target=true',
+        'fastboot.reboot.reconnect_timeout=120',
+    ]
+    if running_unattended():
+        # fxb/126212: The timeout rate determines the timeout for each file
+        # transfer based on the size of the file / this rate (in MB).
+        # Decreasing the rate to 1 (from 5) increases the timeout in swarming,
+        # where large files can take longer to transfer.
+        configs.append('fastboot.flash.timeout_rate=1')
+
     common.run_ffx_command(
         ('target', 'flash', manifest, '--no-bootloader-reboot'),
         target_id=target_id,
-        configs=[
-            'fastboot.usb.disabled=true', 'ffx.fastboot.inline_target=true',
-            'fastboot.reboot.reconnect_timeout=120'
-        ])
+        configs=configs)
 
 
 def flash(system_image_dir: str,
