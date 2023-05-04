@@ -159,6 +159,10 @@ const char kSamlPasswordExpirationTime[] = "saml.password_expiration_time";
 // to the SAML IdP.
 const char kSamlPasswordChangeUrl[] = "saml.password_change_url";
 
+// A dictionary pref that stores custom accelerators that overrides the default
+// system-provided accelerators.
+const char kShortcutCustomizationOverrides[] = "accelerator.overrides";
+
 // Boolean pref indicating whether the user has completed (or skipped) the
 // out-of-box experience (OOBE) sync consent screen. Before this pref is set
 // both OS and browser sync will be disabled. After this pref is set it's

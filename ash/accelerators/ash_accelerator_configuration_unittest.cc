@@ -8,10 +8,14 @@
 #include <string>
 
 #include "ash/accelerators/ash_accelerator_configuration.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accelerator_configuration.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +31,12 @@
 namespace {
 
 using ::ash::mojom::AcceleratorConfigResult;
+
+constexpr char kAcceleratorModifiersKey[] = "modifiers";
+constexpr char kAcceleratorKeyCodeKey[] = "key";
+constexpr char kAcceleratorModificationActionKey[] = "action";
+constexpr char kFakeUserEmail[] = "fakeuser@gmail.com";
+constexpr char kFakeUserEmail2[] = "fakeuser2@gmail.com";
 
 class UpdatedAcceleratorsObserver
     : public ash::AshAcceleratorConfiguration::Observer {
@@ -49,6 +59,29 @@ class UpdatedAcceleratorsObserver
  private:
   int num_times_accelerator_updated_called_ = 0;
 };
+
+base::Value::Dict GetOverridePref() {
+  return ash::Shell::Get()
+      ->session_controller()
+      ->GetActivePrefService()
+      ->GetDict(ash::prefs::kShortcutCustomizationOverrides)
+      .Clone();
+}
+
+AcceleratorModificationData ValueToAcceleratorModificationData(
+    const base::Value::Dict& value) {
+  absl::optional<int> keycode = value.FindInt(kAcceleratorKeyCodeKey);
+  absl::optional<int> modifier = value.FindInt(kAcceleratorModifiersKey);
+  absl::optional<int> modification_action =
+      value.FindInt(kAcceleratorModificationActionKey);
+  CHECK(keycode.has_value());
+  CHECK(modifier.has_value());
+  CHECK(modification_action.has_value());
+  ui::Accelerator accelerator(static_cast<ui::KeyboardCode>(*keycode),
+                              static_cast<int>(*modifier));
+  return {accelerator,
+          static_cast<AcceleratorModificationAction>(*modification_action)};
+}
 
 bool CompareAccelerators(const ash::AcceleratorData& expected_data,
                          const ui::Accelerator& actual_accelerator) {
@@ -79,17 +112,23 @@ void ExpectAllAcceleratorsEqual(
 
 namespace ash {
 
-class AshAcceleratorConfigurationTest : public testing::Test {
+class AshAcceleratorConfigurationTest : public AshTestBase {
  public:
-  AshAcceleratorConfigurationTest() {
+  AshAcceleratorConfigurationTest() = default;
+
+  ~AshAcceleratorConfigurationTest() override = default;
+
+  void SetUp() override {
+    AshTestBase::SetUp();
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kShortcutCustomization);
     config_ = std::make_unique<AshAcceleratorConfiguration>();
     config_->AddObserver(&observer_);
   }
 
-  ~AshAcceleratorConfigurationTest() override {
+  void TearDown() override {
     config_->RemoveObserver(&observer_);
+    AshTestBase::TearDown();
   }
 
  protected:
@@ -451,6 +490,10 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAccelerator) {
   ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
   EXPECT_EQ(1, observer_.num_times_accelerator_updated_called());
 
+  // Expect that there are no entries stored in the override pref.
+  const base::Value::Dict& pref_overrides = GetOverridePref();
+  EXPECT_TRUE(pref_overrides.empty());
+
   // Remove `SWITCH_TO_LAST_USE_IME`.
   const AcceleratorData updated_test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE,
@@ -464,6 +507,24 @@ TEST_F(AshAcceleratorConfigurationTest, RemoveAccelerator) {
       SWITCH_TO_LAST_USED_IME,
       ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN));
   EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  const base::Value::Dict& updated_overrides = GetOverridePref();
+  // There should now be an entry in the pref overrides.
+  EXPECT_EQ(1u, updated_overrides.size());
+  // Expect the pref to have one entry that has the key of
+  // `SWITCH_TO_LAST_USED_IME`.
+  const base::Value::List* accelerator_overrides =
+      updated_overrides.FindList(base::NumberToString(SWITCH_TO_LAST_USED_IME));
+  // Removing one accelerator in `SWITCH_TO_LAST_USED_IME` will result in
+  // the removed accelerator in the override with `kRemove`.
+  EXPECT_EQ(1u, accelerator_overrides->size());
+  AcceleratorModificationData override_data =
+      ValueToAcceleratorModificationData(
+          accelerator_overrides->front().GetDict());
+  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_SPACE,
+                       ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
+                      override_data.accelerator);
+  EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
 
   // Compare expected accelerators and that the observer was fired after
   // removing an accelerator.
@@ -1186,6 +1247,73 @@ TEST_F(AshAcceleratorConfigurationTest, ReplaceThenRestoreAccelerator) {
   config_->RestoreAllDefaults();
   EXPECT_EQ(3, observer_.num_times_accelerator_updated_called());
   ExpectAllAcceleratorsEqual(test_data, config_->GetAllAccelerators());
+}
+
+TEST_F(AshAcceleratorConfigurationTest, RemoveAcceleratorPref) {
+  SimulateNewUserFirstLogin(kFakeUserEmail);
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+
+  config_->Initialize(test_data);
+
+  // Expect that there are no entries stored in the override pref.
+  const base::Value::Dict& pref_overrides = GetOverridePref();
+  EXPECT_TRUE(pref_overrides.empty());
+
+  AcceleratorConfigResult result = config_->RemoveAccelerator(
+      SWITCH_TO_LAST_USED_IME,
+      ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN));
+  EXPECT_EQ(AcceleratorConfigResult::kSuccess, result);
+
+  const base::Value::Dict& updated_overrides = GetOverridePref();
+  // There should now be an entry in the pref overrides.
+  EXPECT_EQ(1u, updated_overrides.size());
+  // Expect the pref to have one entry that has the key of
+  // `SWITCH_TO_LAST_USED_IME`.
+  const base::Value::List* accelerator_overrides =
+      updated_overrides.FindList(base::NumberToString(SWITCH_TO_LAST_USED_IME));
+  // Removing one accelerator in `SWITCH_TO_LAST_USED_IME` will result in
+  // one default accelerator remaining.
+  EXPECT_EQ(1u, accelerator_overrides->size());
+  AcceleratorModificationData override_data =
+      ValueToAcceleratorModificationData(
+          accelerator_overrides->front().GetDict());
+  CompareAccelerators({/*trigger_on_press=*/true, ui::VKEY_SPACE,
+                       ui::EF_CONTROL_DOWN, SWITCH_TO_LAST_USED_IME},
+                      override_data.accelerator);
+  EXPECT_EQ(AcceleratorModificationAction::kRemove, override_data.action);
+
+  // Simulate login on another account, expect the pref to not be present.
+  GetSessionControllerClient()->LockScreen();
+  SimulateNewUserFirstLogin(kFakeUserEmail2);
+  const base::Value::Dict& other_user_pref_overrides = GetOverridePref();
+  EXPECT_TRUE(other_user_pref_overrides.empty());
+
+  // Now re-login to the original profile.
+  GetSessionControllerClient()->LockScreen();
+  config_->Initialize(test_data);
+  SimulateUserLogin(kFakeUserEmail);
+  const base::Value::Dict& original_pref_overrides = GetOverridePref();
+  EXPECT_FALSE(original_pref_overrides.empty());
+
+  // Verify pref overrides were applied correctly.
+  const AcceleratorData updated_test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE,
+       ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN, SWITCH_TO_LAST_USED_IME},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB, ui::EF_ALT_DOWN,
+       CYCLE_FORWARD_MRU},
+      {/*trigger_on_press=*/true, ui::VKEY_TAB,
+       ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN, CYCLE_BACKWARD_MRU},
+  };
+  ExpectAllAcceleratorsEqual(updated_test_data, config_->GetAllAccelerators());
 }
 
 }  // namespace ash

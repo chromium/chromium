@@ -73,6 +73,8 @@ extern const char kSamlPasswordExpirationTime[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSamlPasswordChangeUrl[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kShortcutCustomizationOverrides[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSyncOobeCompleted[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSystemWebAppLastUpdateVersion[];
