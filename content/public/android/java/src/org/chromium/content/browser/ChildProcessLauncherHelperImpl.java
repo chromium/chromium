@@ -463,9 +463,6 @@ public final class ChildProcessLauncherHelperImpl {
      */
     public static void startBindingManagement(final Context context) {
         assert ThreadUtils.runningOnUiThread();
-        final int maxConnections = ContentFeatureList.getFieldTrialParamByFeatureAsInt(
-                ContentFeatures.BINDING_MANAGER_CONNECTION_LIMIT, "max_connections",
-                BindingManager.NO_MAX_SIZE);
         LauncherThread.post(new Runnable() {
             @Override
             public void run() {
@@ -473,12 +470,9 @@ public final class ChildProcessLauncherHelperImpl {
                         getConnectionAllocator(context, true /* sandboxed */);
                 if (ChildProcessConnection.supportVariableConnections()) {
                     sBindingManager = new BindingManager(
-                            context, maxConnections, sSandboxedChildConnectionRanking);
+                            context, BindingManager.NO_MAX_SIZE, sSandboxedChildConnectionRanking);
                 } else {
-                    sBindingManager = new BindingManager(context,
-                            (maxConnections == BindingManager.NO_MAX_SIZE)
-                                    ? allocator.getNumberOfServices()
-                                    : Math.min(allocator.getNumberOfServices(), maxConnections),
+                    sBindingManager = new BindingManager(context, allocator.getNumberOfServices(),
                             sSandboxedChildConnectionRanking);
                 }
                 ChildProcessConnectionMetrics.getInstance().setBindingManager(sBindingManager);

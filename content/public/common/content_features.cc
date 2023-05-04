@@ -1499,12 +1499,6 @@ BASE_FEATURE(kBackgroundMediaRendererHasModerateBinding,
              "BackgroundMediaRendererHasModerateBinding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When this feature is enabled a cap is placed on the number of bindings held
-// by the BindingManager.
-BASE_FEATURE(kBindingManagerConnectionLimit,
-             "BindingManagerConnectionLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
 BASE_FEATURE(kReduceGpuPriorityOnBackground,

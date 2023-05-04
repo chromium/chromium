@@ -177,24 +177,6 @@
             ]
         }
     ],
-    "AndroidBindingManagerConnectionLimit": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled5Connections",
-                    "params": {
-                        "max_connections": "5"
-                    },
-                    "enable_features": [
-                        "BindingManagerConnectionLimit"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidFrameDeadline": [
         {
             "platforms": [

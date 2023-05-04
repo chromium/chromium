@@ -3641,14 +3641,6 @@ const char kBackGestureRefactorAndroidName[] = "Back Gesture Refactor";
 const char kBackGestureRefactorAndroidDescription[] =
     "Enable Back Gesture Refactor.";
 
-const char kBindingManagerConnectionLimitName[] =
-    "Binding manager connection limit";
-const char kBindingManagerConnectionLimitDescription[] =
-    "When enabled, limits the number of connections the binding manager can "
-    "hold to background renderers. This results in lower priorities for the "
-    "least important background renderers, which may cause them to be "
-    "reclaimed by the OS if memory is needed.";
-
 const char kCCTBrandTransparencyName[] =
     "Chrome Custom Tabs Brand Transparency";
 const char kCCTBrandTransparencyDescription[] =

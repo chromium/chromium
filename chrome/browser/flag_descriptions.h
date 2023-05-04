@@ -2099,9 +2099,6 @@ extern const char kBackGestureRefactorActivityAndroidDescription[];
 extern const char kBackGestureRefactorAndroidName[];
 extern const char kBackGestureRefactorAndroidDescription[];
 
-extern const char kBindingManagerConnectionLimitName[];
-extern const char kBindingManagerConnectionLimitDescription[];
-
 extern const char kCCTBrandTransparencyName[];
 extern const char kCCTBrandTransparencyDescription[];
 
