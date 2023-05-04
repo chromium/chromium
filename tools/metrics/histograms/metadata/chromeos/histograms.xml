@@ -2295,7 +2295,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Secagentd.Bpf.{Bpf}.AttachResult"
     enum="SecagentdBpfAttachResult" expires_after="2023-09-24">
-  <owner>aashay@google.com</owner>
+  <owner>rborzello@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>
     Records the initialization status of the {Bpf} BPF used by the CrOS
@@ -2303,6 +2303,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
     reporting is enabled it will be recorded once per daemon lifetime.
   </summary>
   <token key="Bpf">
+    <variant name="Network" summary="Network BPF"/>
     <variant name="Process" summary="Process BPF"/>
   </token>
 </histogram>
@@ -2321,7 +2322,7 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
 
 <histogram name="ChromeOS.Secagentd.Policy" enum="SecagentdPolicy"
     expires_after="2023-09-24">
-  <owner>aashay@google.com</owner>
+  <owner>rborzello@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>
     Records whether the XDR event reporting policy was found enabled for a

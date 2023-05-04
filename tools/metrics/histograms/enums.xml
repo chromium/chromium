@@ -92981,7 +92981,7 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SecagentdProcessEvent">
-  <int value="0" label="Process event fully filled"/>
+  <int value="0" label="Process hierarchy filled"/>
   <int value="1" label="Spawn process not found"/>
   <int value="2" label="Process not found"/>
   <int value="3" label="Parent process not found"/>
@@ -93009,10 +93009,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SecagentdTpm">
-  <int value="0" label="Tpm info successfully retrieved"/>
-  <int value="1" label="Tpm manager did not respond"/>
-  <int value="2" label="Tpm service unavailable"/>
-  <int value="3" label="Failed to retrieve Tpm"/>
+  <int value="0" label="TPM info successfully retrieved"/>
+  <int value="1" label="TPM manager did not respond"/>
+  <int value="2" label="TPM service unavailable"/>
+  <int value="3" label="Failed to retrieve TPM"/>
 </enum>
 
 <enum name="SecondaryAccountConsentLoggerResult">
