@@ -652,8 +652,13 @@ TEST_F(PopupViewViewsTest, VoiceOverTest) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
+#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ShowClickTest DISABLED_ShowClickTest
+#else
+#define MAYBE_ShowClickTest ShowClickTest
+#endif
 // Tests that (only) clickable items trigger an AcceptSuggestion event.
-TEST_P(PopupViewViewsTestWithAnyPopupItemId, ShowClickTest) {
+TEST_P(PopupViewViewsTestWithAnyPopupItemId, MAYBE_ShowClickTest) {
   CreateAndShowView({popup_item_id()});
   EXPECT_CALL(controller(), AcceptSuggestion(0))
       .Times(IsClickable(popup_item_id()));
