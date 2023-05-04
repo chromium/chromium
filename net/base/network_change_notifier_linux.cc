@@ -22,7 +22,8 @@ namespace net {
 class NetworkChangeNotifierLinux::BlockingThreadObjects {
  public:
   explicit BlockingThreadObjects(
-      const std::unordered_set<std::string>& ignored_interfaces);
+      const std::unordered_set<std::string>& ignored_interfaces,
+      scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner);
   BlockingThreadObjects(const BlockingThreadObjects&) = delete;
   BlockingThreadObjects& operator=(const BlockingThreadObjects&) = delete;
 
@@ -49,7 +50,8 @@ class NetworkChangeNotifierLinux::BlockingThreadObjects {
 };
 
 NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
-    const std::unordered_set<std::string>& ignored_interfaces)
+    const std::unordered_set<std::string>& ignored_interfaces,
+    scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner)
     : address_tracker_(
           base::BindRepeating(&NetworkChangeNotifierLinux::
                                   BlockingThreadObjects::OnIPAddressChanged,
@@ -58,7 +60,8 @@ NetworkChangeNotifierLinux::BlockingThreadObjects::BlockingThreadObjects(
               &NetworkChangeNotifierLinux::BlockingThreadObjects::OnLinkChanged,
               base::Unretained(this)),
           base::DoNothing(),
-          ignored_interfaces) {}
+          ignored_interfaces,
+          std::move(blocking_thread_runner)) {}
 
 void NetworkChangeNotifierLinux::BlockingThreadObjects::Init() {
   address_tracker_.Init();
@@ -117,7 +120,8 @@ NetworkChangeNotifierLinux::NetworkChangeNotifierLinux(
       blocking_thread_runner_(
           base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})),
       blocking_thread_objects_(
-          new BlockingThreadObjects(ignored_interfaces),
+          new BlockingThreadObjects(ignored_interfaces,
+                                    blocking_thread_runner_),
           // Ensure |blocking_thread_objects_| lives on
           // |blocking_thread_runner_| to prevent races where
           // NetworkChangeNotifierLinux outlives

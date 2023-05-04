@@ -167,14 +167,16 @@ AddressTrackerLinux::AddressTrackerLinux(
     const base::RepeatingClosure& address_callback,
     const base::RepeatingClosure& link_callback,
     const base::RepeatingClosure& tunnel_callback,
-    const std::unordered_set<std::string>& ignored_interfaces)
+    const std::unordered_set<std::string>& ignored_interfaces,
+    scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner)
     : get_interface_name_(GetInterfaceName),
       address_callback_(address_callback),
       link_callback_(link_callback),
       tunnel_callback_(tunnel_callback),
       ignored_interfaces_(ignored_interfaces),
       connection_type_initialized_cv_(&connection_type_lock_),
-      tracking_(true) {
+      tracking_(true),
+      sequenced_task_runner_(std::move(blocking_thread_runner)) {
   DCHECK(!address_callback.is_null());
   DCHECK(!link_callback.is_null());
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -375,7 +377,8 @@ void AddressTrackerLinux::DumpInitialAddressesAndWatch() {
   }
 
   if (tracking_) {
-    sequenced_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
+    DCHECK(!sequenced_task_runner_ ||
+           sequenced_task_runner_->RunsTasksInCurrentSequence());
 
     watcher_ = base::FileDescriptorWatcher::WatchReadable(
         netlink_fd_.get(),
