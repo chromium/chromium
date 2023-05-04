@@ -26,7 +26,6 @@ TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
       CreateFastCheckoutAutofillProfileFromJava(env, java_profile, "en-US");
 
   EXPECT_EQ(profile.guid(), parsed_profile->guid());
-  EXPECT_EQ(profile.origin(), parsed_profile->origin());
   EXPECT_EQ(profile.language_code(), parsed_profile->language_code());
 
   const autofill::ServerFieldType types[] = {

@@ -126,7 +126,6 @@ public class PersonalDataManager {
      */
     public static class AutofillProfile {
         private String mGUID;
-        private String mOrigin;
         private boolean mIsLocal;
         private @Source int mSource;
         private ValueWithStatus mHonorificPrefix;
@@ -145,10 +144,9 @@ public class PersonalDataManager {
         private String mLanguageCode;
 
         @CalledByNative("AutofillProfile")
-        private static AutofillProfile create(String guid, String origin, boolean isLocal,
-                @Source int source, String honorificPrefix,
-                @VerificationStatus int honorificPrefixStatus, String fullName,
-                @VerificationStatus int fullNameStatus, String companyName,
+        private static AutofillProfile create(String guid, boolean isLocal, @Source int source,
+                String honorificPrefix, @VerificationStatus int honorificPrefixStatus,
+                String fullName, @VerificationStatus int fullNameStatus, String companyName,
                 @VerificationStatus int companyNameStatus, String streetAddress,
                 @VerificationStatus int streetAddressStatus, String region,
                 @VerificationStatus int regionStatus, String locality,
@@ -159,7 +157,7 @@ public class PersonalDataManager {
                 @VerificationStatus int countryCodeStatus, String phoneNumber,
                 @VerificationStatus int phoneNumberStatus, String emailAddress,
                 @VerificationStatus int emailAddressStatus, String languageCode) {
-            return new AutofillProfile(guid, origin, isLocal, source,
+            return new AutofillProfile(guid, isLocal, source,
                     new ValueWithStatus(honorificPrefix, honorificPrefixStatus),
                     new ValueWithStatus(fullName, fullNameStatus),
                     new ValueWithStatus(companyName, companyNameStatus),
@@ -175,7 +173,7 @@ public class PersonalDataManager {
         }
 
         // TODO(crbug/1408117): remove duplicate constructors when the source is unnecessary.
-        private AutofillProfile(String guid, String origin, boolean isLocal, @Source int source,
+        private AutofillProfile(String guid, boolean isLocal, @Source int source,
                 ValueWithStatus honorificPrefix, ValueWithStatus fullName,
                 ValueWithStatus companyName, ValueWithStatus streetAddress, ValueWithStatus region,
                 ValueWithStatus locality, ValueWithStatus dependentLocality,
@@ -183,7 +181,6 @@ public class PersonalDataManager {
                 ValueWithStatus countryCode, ValueWithStatus phoneNumber,
                 ValueWithStatus emailAddress, String languageCode) {
             mGUID = guid;
-            mOrigin = origin;
             mIsLocal = isLocal;
             mSource = source;
             mHonorificPrefix = honorificPrefix;
@@ -202,27 +199,26 @@ public class PersonalDataManager {
         }
 
         @VisibleForTesting
-        AutofillProfile(String guid, String origin, boolean isLocal,
-                ValueWithStatus honorificPrefix, ValueWithStatus fullName,
-                ValueWithStatus companyName, ValueWithStatus streetAddress, ValueWithStatus region,
-                ValueWithStatus locality, ValueWithStatus dependentLocality,
-                ValueWithStatus postalCode, ValueWithStatus sortingCode,
-                ValueWithStatus countryCode, ValueWithStatus phoneNumber,
-                ValueWithStatus emailAddress, String languageCode) {
-            this(guid, origin, isLocal, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName,
-                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
-                    sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
+        AutofillProfile(String guid, boolean isLocal, ValueWithStatus honorificPrefix,
+                ValueWithStatus fullName, ValueWithStatus companyName,
+                ValueWithStatus streetAddress, ValueWithStatus region, ValueWithStatus locality,
+                ValueWithStatus dependentLocality, ValueWithStatus postalCode,
+                ValueWithStatus sortingCode, ValueWithStatus countryCode,
+                ValueWithStatus phoneNumber, ValueWithStatus emailAddress, String languageCode) {
+            this(guid, isLocal, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName, companyName,
+                    streetAddress, region, locality, dependentLocality, postalCode, sortingCode,
+                    countryCode, phoneNumber, emailAddress, languageCode);
         }
         /**
          * Builds a profile with the given values, assuming those are reviewed by the user and thus
          * are marked {@link VerificationStatus.USER_VERIFIED}.
          */
-        public AutofillProfile(String guid, String origin, boolean isLocal, @Source int source,
+        public AutofillProfile(String guid, boolean isLocal, @Source int source,
                 String honorificPrefix, String fullName, String companyName, String streetAddress,
                 String region, String locality, String dependentLocality, String postalCode,
                 String sortingCode, String countryCode, String phoneNumber, String emailAddress,
                 String languageCode) {
-            this(guid, origin, isLocal, source,
+            this(guid, isLocal, source,
                     new ValueWithStatus(honorificPrefix, VerificationStatus.USER_VERIFIED),
                     new ValueWithStatus(fullName, VerificationStatus.USER_VERIFIED),
                     new ValueWithStatus(companyName, VerificationStatus.USER_VERIFIED),
@@ -241,24 +237,26 @@ public class PersonalDataManager {
         /**
          * Builds a profile with the {@link Source.LOCAL_OR_SYNCABLE} source and with given user
          * verified values.
+         * TODO(crbug.com/1441905): Remove the origin parameter once the constructor
+         * is not used by the internal code anymore.
          */
         public AutofillProfile(String guid, String origin, boolean isLocal, String honorificPrefix,
                 String fullName, String companyName, String streetAddress, String region,
                 String locality, String dependentLocality, String postalCode, String sortingCode,
                 String countryCode, String phoneNumber, String emailAddress, String languageCode) {
-            this(guid, origin, isLocal, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName,
-                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
-                    sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
+            this(guid, isLocal, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName, companyName,
+                    streetAddress, region, locality, dependentLocality, postalCode, sortingCode,
+                    countryCode, phoneNumber, emailAddress, languageCode);
         }
 
         /**
-         * Builds an empty local profile with "settings" origin and country code from the default
-         * locale. All other fields are empty strings with {@link VerificationStatus.NO_STATUS},
+         * Builds an empty local profile with country code from the default locale.
+         * All other fields are empty strings with {@link VerificationStatus.NO_STATUS},
          * because JNI does not handle null strings.
          */
         public AutofillProfile() {
-            this("" /* guid */, AutofillEditorBase.SETTINGS_ORIGIN /* origin */, true /* isLocal */,
-                    Source.LOCAL_OR_SYNCABLE, ValueWithStatus.EMPTY /* honorificPrefix */,
+            this("" /* guid */, true /* isLocal */, Source.LOCAL_OR_SYNCABLE,
+                    ValueWithStatus.EMPTY /* honorificPrefix */,
                     ValueWithStatus.EMPTY /* fullName */, ValueWithStatus.EMPTY /* companyName */,
                     ValueWithStatus.EMPTY /* streetAddress */, ValueWithStatus.EMPTY /* region */,
                     ValueWithStatus.EMPTY /* locality */,
@@ -273,7 +271,6 @@ public class PersonalDataManager {
         /* Builds an AutofillProfile that is an exact copy of the one passed as parameter. */
         public AutofillProfile(AutofillProfile profile) {
             mGUID = profile.getGUID();
-            mOrigin = profile.getOrigin();
             mIsLocal = profile.getIsLocal();
             mSource = profile.getSource();
             mHonorificPrefix = new ValueWithStatus(
@@ -303,13 +300,13 @@ public class PersonalDataManager {
 
         /** TODO(estade): remove this constructor. */
         @VisibleForTesting
-        public AutofillProfile(String guid, String origin, String honorificPrefix, String fullName,
+        public AutofillProfile(String guid, String honorificPrefix, String fullName,
                 String companyName, String streetAddress, String region, String locality,
                 String dependentLocality, String postalCode, String sortingCode, String countryCode,
                 String phoneNumber, String emailAddress, String languageCode) {
-            this(guid, origin, true /* isLocal */, Source.LOCAL_OR_SYNCABLE, honorificPrefix,
-                    fullName, companyName, streetAddress, region, locality, dependentLocality,
-                    postalCode, sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
+            this(guid, true /* isLocal */, Source.LOCAL_OR_SYNCABLE, honorificPrefix, fullName,
+                    companyName, streetAddress, region, locality, dependentLocality, postalCode,
+                    sortingCode, countryCode, phoneNumber, emailAddress, languageCode);
         }
 
         @CalledByNative("AutofillProfile")
@@ -317,9 +314,12 @@ public class PersonalDataManager {
             return mGUID;
         }
 
-        @CalledByNative("AutofillProfile")
+        /**
+         * TODO(crbug.com/1441905): Remove this getter once it is not used by the
+         * internal code anymore.
+         */
         public String getOrigin() {
-            return mOrigin;
+            return "";
         }
 
         @CalledByNative("AutofillProfile")
@@ -477,10 +477,6 @@ public class PersonalDataManager {
 
         public void setLabel(String label) {
             mLabel = label;
-        }
-
-        public void setOrigin(String origin) {
-            mOrigin = origin;
         }
 
         public void setSource(@Source int source) {

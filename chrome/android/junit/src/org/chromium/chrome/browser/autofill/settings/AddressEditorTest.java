@@ -87,11 +87,11 @@ public class AddressEditorTest {
                     AddressField.STREET_ADDRESS, "street address label", true, true));
 
     private static final AutofillProfile sLocalProfile = new AutofillProfile("",
-            "https://example.com", true, Source.LOCAL_OR_SYNCABLE, "" /* honorific prefix */,
+            true, Source.LOCAL_OR_SYNCABLE, "" /* honorific prefix */,
             "Seb Doe", "Google", "111 First St", "CA", "Los Angeles", "", "90291", "", "US",
             "650-253-0000", "first@gmail.com", "en-US");
     private static final AutofillProfile sAccountProfile = new AutofillProfile("",
-            "https://example.com", true, Source.ACCOUNT, "" /* honorific prefix */, "Seb Doe",
+            true, Source.ACCOUNT, "" /* honorific prefix */, "Seb Doe",
             "Google", "111 First St", "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000",
             "first@gmail.com", "en-US");
 
