@@ -61,6 +61,10 @@ class CORE_EXPORT StylePropertySerializer {
   String GetShorthandValue(const StylePropertyShorthand&,
                            String separator = " ") const;
   String GetShorthandValueForColumns(const StylePropertyShorthand&) const;
+  // foo || bar || ... || baz
+  // https://drafts.csswg.org/css-values-4/#component-combinators
+  String GetShorthandValueForDoubleBarCombinator(
+      const StylePropertyShorthand&) const;
   String GetShorthandValueForGrid(const StylePropertyShorthand&) const;
   String GetShorthandValueForGridTemplate(const StylePropertyShorthand&) const;
   String ContainerValue() const;

@@ -2798,7 +2798,7 @@
     },
     {
       name: "flex-direction",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",
       field_template: "keyword",
       typedom_types: ["Keyword"],
@@ -2827,7 +2827,7 @@
     },
     {
       name: "flex-wrap",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
+      property_methods: ["CSSValueFromComputedStyleInternal", "InitialValue"],
       field_group: "*",
       field_template: "keyword",
       typedom_types: ["Keyword"],

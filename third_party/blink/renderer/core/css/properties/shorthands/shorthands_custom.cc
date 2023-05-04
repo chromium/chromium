@@ -1374,7 +1374,8 @@ bool FlexFlow::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   return css_parsing_utils::ConsumeShorthandGreedilyViaLonghands(
-      flexFlowShorthand(), important, context, range, properties);
+      flexFlowShorthand(), important, context, range, properties,
+      /* use_initial_value_function */ true);
 }
 
 const CSSValue* FlexFlow::CSSValueFromComputedStyleInternal(

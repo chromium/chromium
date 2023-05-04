@@ -391,7 +391,6 @@ static bool AllowInitialInShorthand(CSSPropertyID property_id) {
     case CSSPropertyID::kOutline:
     case CSSPropertyID::kColumnRule:
     case CSSPropertyID::kColumns:
-    case CSSPropertyID::kFlexFlow:
     case CSSPropertyID::kGridColumn:
     case CSSPropertyID::kGridRow:
     case CSSPropertyID::kGridArea:
@@ -570,7 +569,7 @@ String StylePropertySerializer::SerializeShorthand(
     case CSSPropertyID::kFlex:
       return GetShorthandValue(flexShorthand());
     case CSSPropertyID::kFlexFlow:
-      return GetShorthandValue(flexFlowShorthand());
+      return GetShorthandValueForDoubleBarCombinator(flexFlowShorthand());
     case CSSPropertyID::kGrid:
       return GetShorthandValueForGrid(gridShorthand());
     case CSSPropertyID::kGridTemplate:
@@ -1712,6 +1711,32 @@ String StylePropertySerializer::GetShorthandValueForColumns(
 
   if (result.empty()) {
     return "auto";
+  }
+
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForDoubleBarCombinator(
+    const StylePropertyShorthand& shorthand) const {
+  StringBuilder result;
+  for (unsigned i = 0; i < shorthand.length(); ++i) {
+    const Longhand* longhand = To<Longhand>(shorthand.properties()[i]);
+    DCHECK(!longhand->InitialValue()->IsInitialValue())
+        << "Without InitialValue() implemented, 'initial' will show up in the "
+           "serialization below.";
+    const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
+    if (*value == *longhand->InitialValue()) {
+      continue;
+    }
+    String value_text = value->CssText();
+    if (!result.empty()) {
+      result.Append(" ");
+    }
+    result.Append(value_text);
+  }
+
+  if (result.empty()) {
+    return To<Longhand>(shorthand.properties()[0])->InitialValue()->CssText();
   }
 
   return result.ReleaseString();

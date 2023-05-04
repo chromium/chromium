@@ -3212,6 +3212,10 @@ const CSSValue* FlexDirection::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.FlexDirection());
 }
 
+const CSSValue* FlexDirection::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kRow);
+}
+
 const CSSValue* FlexGrow::ParseSingleValue(CSSParserTokenRange& range,
                                            const CSSParserContext& context,
                                            const CSSParserLocalContext&) const {
@@ -3248,6 +3252,10 @@ const CSSValue* FlexWrap::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style) const {
   return CSSIdentifierValue::Create(style.FlexWrap());
+}
+
+const CSSValue* FlexWrap::InitialValue() const {
+  return CSSIdentifierValue::Create(CSSValueID::kNowrap);
 }
 
 const CSSValue* Float::CSSValueFromComputedStyleInternal(
