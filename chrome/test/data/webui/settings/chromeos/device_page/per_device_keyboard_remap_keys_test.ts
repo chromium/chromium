@@ -35,6 +35,18 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     page.remove();
   });
 
+  function changeKeyboardExternalState(isExternal: boolean): Promise<void> {
+    page.keyboard = {...page.keyboard, isExternal};
+    return flushTasks();
+  }
+
+  function getPageDescription(): string {
+    const description =
+        page.shadowRoot!.querySelector('#description')!.textContent;
+    assert(description);
+    return description;
+  }
+
   /**
    * Check that all the prefs are set to default keyboard value.
    */
@@ -286,5 +298,15 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
     assertEquals(
         ModifierKey.kControl, updatedRemapping[ModifierKey.kBackspace]);
     assertEquals(ModifierKey.kVoid, updatedRemapping[ModifierKey.kEscape]);
+  });
+
+  test('Keyboard description populated correctly', async () => {
+    assertTrue(page.get('isInitialized'));
+    assertEquals(
+        'For ERGO K860, choose an action for each key', getPageDescription());
+    await changeKeyboardExternalState(/* isExternal= */ false);
+    assertEquals(
+        'For Built-in Keyboard, choose an action for each key',
+        getPageDescription());
   });
 });

@@ -183,7 +183,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         subsection.shadowRoot!.querySelector('#remapKeyboardKeys');
     assert(remapKeysRow);
     assertEquals(
-        'Remap keyboard keys',
+        'Customize keyboard keys',
         remapKeysRow.shadowRoot!.querySelector('#label')!.textContent!.trim());
 
     const remapKeysSubLabel =
@@ -193,7 +193,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         2,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('2 remapped keys', remapKeysSubLabel.textContent!.trim());
+    assertEquals('2 customized keys', remapKeysSubLabel.textContent!.trim());
 
     subsection.set('keyboard', fakeKeyboards[2]);
     await flushTasks();
@@ -201,7 +201,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         1,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('1 remapped key', remapKeysSubLabel.textContent!.trim());
+    assertEquals('1 customized key', remapKeysSubLabel.textContent!.trim());
 
     subsection.set('keyboard', fakeKeyboards[1]);
     await flushTasks();
@@ -209,7 +209,7 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         0,
         Object.keys(subsection.get('keyboard.settings.modifierRemappings'))
             .length);
-    assertEquals('No keys remapped', remapKeysSubLabel.textContent!.trim());
+    assertEquals('No keys customized', remapKeysSubLabel.textContent!.trim());
   });
 
   /**

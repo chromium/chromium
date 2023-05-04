@@ -129,7 +129,7 @@ export class KeyboardRemapModifierKeyRowElement extends
         return this.i18n('perDeviceKeyboardKeyCommand');
       }
       case MetaKey.kExternalMeta: {
-        return this.i18n('perDeviceKeyboardKeyExternalMeta');
+        return this.i18n('keyboardKeyMeta');
       }
       // Launcher and Search key will display icon instead of text.
       case MetaKey.kLauncher:

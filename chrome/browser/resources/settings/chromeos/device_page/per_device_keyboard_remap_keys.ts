@@ -186,7 +186,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     return ModifierKey;
   }
 
-  protected keyboard: Keyboard;
+  keyboard: Keyboard;
   private keyboards: Keyboard[];
   protected keyboardId: number;
   protected defaultRemappings: {[key: number]: ModifierKey} = {
@@ -420,6 +420,16 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
 
   private hasKeyboards(): boolean {
     return this.keyboards?.length > 0;
+  }
+
+  private computeKeyboardKeysDescription(): string {
+    if (!this.keyboard?.name) {
+      return '';
+    }
+    const keyboardName = this.keyboard.isExternal ?
+        this.keyboard.name :
+        this.i18n('builtInKeyboardName');
+    return this.i18n('remapKeyboardKeysDescription', keyboardName);
   }
 }
 
