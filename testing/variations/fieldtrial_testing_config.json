@@ -4893,36 +4893,6 @@
             ]
         }
     ],
-    "EnableKidsManagementService": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableKidsManagementService"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableKidsManagementServiceChromeOs": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableKidsManagementService"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableOOPVDDisableVAAPILock": [
         {
             "platforms": [

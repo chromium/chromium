@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_EXTERNAL_FETCHER_H_
 #define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_EXTERNAL_FETCHER_H_
 
+#include <string>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_piece.h"
@@ -91,6 +93,9 @@ class KidsExternalFetcherStatus {
   bool IsTransientError() const;
   // Indicates whether the status is not ok and there is no point in retrying.
   bool IsPersistentError() const;
+
+  // Returns a message describing the status.
+  std::string ToString() const;
 
   State state() const;
   NetOrHttpErrorType net_or_http_error_code() const;

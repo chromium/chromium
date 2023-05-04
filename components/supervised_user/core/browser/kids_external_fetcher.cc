@@ -382,6 +382,25 @@ bool KidsExternalFetcherStatus::IsPersistentError() const {
   return false;
 }
 
+std::string KidsExternalFetcherStatus::ToString() const {
+  switch (state_) {
+    case KidsExternalFetcherStatus::OK:
+      return "KidsExternalFetcherStatus::OK";
+    case KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR:
+      return base::StrCat(
+          {"KidsExternalFetcherStatus::GOOGLE_SERVICE_AUTH_ERROR: ",
+           google_service_auth_error().ToString()});
+    case KidsExternalFetcherStatus::NET_OR_HTTP_ERROR:
+      return base::StringPrintf(
+          "KidsExternalFetcherStatus::NET_OR_HTTP_ERROR: %d",
+          net_or_http_error_code_.value());
+    case KidsExternalFetcherStatus::INVALID_RESPONSE:
+      return "KidsExternalFetcherStatus::INVALID_RESPONSE";
+    case KidsExternalFetcherStatus::DATA_ERROR:
+      return "KidsExternalFetcherStatus::DATA_ERROR";
+  }
+}
+
 KidsExternalFetcherStatus::State KidsExternalFetcherStatus::state() const {
   return state_;
 }

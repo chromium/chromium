@@ -15,11 +15,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/child_accounts/family_info_fetcher.h"
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/supervised_user/core/browser/kids_external_fetcher.h"
+#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
@@ -28,7 +29,6 @@ namespace ash {
 
 // Handler for EDU account login flow.
 class EduAccountLoginHandler : public content::WebUIMessageHandler,
-                               public FamilyInfoFetcher::Consumer,
                                public GaiaAuthConsumer {
  public:
   explicit EduAccountLoginHandler(
@@ -116,10 +116,14 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
       const std::string& parent_obfuscated_gaia_id,
       const std::string& parent_credential);
 
-  // FamilyInfoFetcher::Consumer implementation.
-  void OnGetFamilyMembersSuccess(
-      const std::vector<FamilyInfoFetcher::FamilyMember>& members) override;
-  void OnFailure(FamilyInfoFetcher::ErrorCode error) override;
+  // ListFamilyMembers fetch handlers.
+  void OnListFamilyMembersResponse(
+      KidsExternalFetcherStatus status,
+      std::unique_ptr<kids_chrome_management::ListFamilyMembersResponse>
+          response);
+  void OnListFamilyMembersSuccess(
+      const kids_chrome_management::ListFamilyMembersResponse& response);
+  void OnListFamilyMembersFailure(KidsExternalFetcherStatus status);
 
   // ProfileImageFetcher callback
   void OnParentProfileImagesFetched(
@@ -149,7 +153,10 @@ class EduAccountLoginHandler : public content::WebUIMessageHandler,
   // Reference to NetworkStateInformer that handles changes in network
   // state.
   scoped_refptr<NetworkStateInformer> network_state_informer_;
-  std::unique_ptr<FamilyInfoFetcher> family_fetcher_;
+  std::unique_ptr<
+      KidsExternalFetcher<kids_chrome_management::ListFamilyMembersRequest,
+                          kids_chrome_management::ListFamilyMembersResponse>>
+      list_family_members_fetcher_;
 
   std::unique_ptr<ProfileImageFetcher> profile_image_fetcher_;
   std::string get_parents_callback_id_;

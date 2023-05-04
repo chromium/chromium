@@ -60,11 +60,6 @@ BASE_FEATURE(kAllowHistoryDeletionForChildAccounts,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
-// Enables the new Kids Management Api.
-BASE_FEATURE(kEnableKidsManagementService,
-             "EnableKidsManagementService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the proto api for ClassifyURL calls.
 BASE_FEATURE(kEnableProtoApiForClassifyUrl,
              "EnableProtoApiForClassifyUrl",
@@ -125,10 +120,6 @@ bool IsLocalWebApprovalThePreferredButton() {
   DCHECK((preferred_button == kLocalWebApprovalsPreferredButtonLocal) ||
          (preferred_button == kLocalWebApprovalsPreferredButtonRemote));
   return (preferred_button == kLocalWebApprovalsPreferredButtonLocal);
-}
-
-bool IsKidsManagementServiceEnabled() {
-  return base::FeatureList::IsEnabled(kEnableKidsManagementService);
 }
 
 bool IsProtoApiForClassifyUrlEnabled() {

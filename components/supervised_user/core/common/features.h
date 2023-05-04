@@ -46,9 +46,6 @@ bool IsLocalWebApprovalsEnabled();
 // This should only be called if IsLocalWebApprovalsEnabled() returns true.
 bool IsLocalWebApprovalThePreferredButton();
 
-// Returns whether to use the new Api for fetching.
-bool IsKidsManagementServiceEnabled();
-
 // Returns whether the ClassifyUrl call uses proto apis.
 bool IsProtoApiForClassifyUrlEnabled();
 

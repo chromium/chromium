@@ -37,7 +37,7 @@ ChildAccountServiceFactory::ChildAccountServiceFactory()
   DependsOn(SupervisedUserServiceFactory::GetInstance());
 }
 
-ChildAccountServiceFactory::~ChildAccountServiceFactory() {}
+ChildAccountServiceFactory::~ChildAccountServiceFactory() = default;
 
 KeyedService* ChildAccountServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {

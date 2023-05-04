@@ -146,7 +146,6 @@ missing_new_fields,chrome/browser/sharing/web_push/web_push_sender.cc
 missing_new_fields,chrome/browser/spellchecker/spellcheck_hunspell_dictionary.cc
 missing_new_fields,chrome/browser/ssl/certificate_error_reporter.cc
 missing_new_fields,chrome/browser/ssl/sct_reporting_service.cc
-missing_new_fields,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
 missing_new_fields,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc
 missing_new_fields,chrome/browser/supervised_user/chromeos/supervised_user_favicon_request_handler.cc
 missing_new_fields,chrome/browser/supervised_user/supervised_user_service.cc
