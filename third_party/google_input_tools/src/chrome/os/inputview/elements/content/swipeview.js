@@ -199,24 +199,6 @@ i18n.input.chrome.inputview.elements.content.SwipeView = function(
   this.statistics_ = i18n.input.chrome.Statistics.getInstance();
 
   /**
-   * Total number of forward movements per swipe. This is relative to the track
-   * and so swiping left on a left-to-right track, or swiping right on a
-   * left-to-right track.
-   *
-   * @private {number}
-   */
-  this.forwardMoves_ = 0;
-
-  /**
-   * Total number of backward movements per swipe. This is relative to the track
-   * and so swiping right on a left-to-right track, or swiping left on a
-   * left-to-right track.
-   *
-   * @private {number}
-   */
-  this.backwardMoves_ = 0;
-
-  /**
    * Whether the current track is selection or deletion.
    *
    * @private {boolean}
@@ -515,7 +497,6 @@ SwipeView.prototype.swipeToDelete_ = function(e) {
   // Some finger swipes jump tracks, compensate for this.
   var delta = Math.abs(this.getHighlightedIndex() - previousIndex);
   if (direction & SwipeDirection.LEFT) {
-    this.forwardMoves_ += delta;
     for (var i = 0; i < delta; i++) {
       if (this.surroundingText_ == '') {
         // Empty text, nothing to delete.
@@ -529,7 +510,6 @@ SwipeView.prototype.swipeToDelete_ = function(e) {
       }
     }
   } else if (direction & SwipeDirection.RIGHT) {
-    this.backwardMoves_ += delta;
     for (var i = 0; i < delta; i++) {
       // Restore text we deleted before the track came up, but part of the
       // same gesture.
@@ -607,12 +587,6 @@ SwipeView.prototype.swipeToSelect_ = function(e) {
   var delta = Math.abs(index - previousIndex);
   if (delta < 0) {
     goog.log.warning(this.logger_, 'Swipe index did not change.');
-  }
-  if (this.ltr && code == KeyCodes.ARROW_LEFT ||
-      !this.ltr && code == KeyCodes.ARROW_RIGHT) {
-    this.forwardMoves_ += delta;
-  } else {
-    this.backwardMoves_ += delta;
   }
   // TODO: Investigate why pointerbundle skips some swipe events.
   for (var i = 0; i < delta; i++) {
@@ -709,10 +683,10 @@ SwipeView.prototype.handlePointerAction_ = function(e) {
     case ElementType.SWIPE_VIEW:
       if (e.type == EventType.POINTER_DOWN &&
           e.target == this.getCoverElement()) {
-        this.recordAndHide_();
+        this.hide_();
       } else if (e.type == EventType.POINTER_UP ||
                  e.type == EventType.POINTER_OUT) {
-        this.recordAndHide_();
+        this.hide_();
         // Reset the deleted words.
         this.deletedWords_ = [];
       }
@@ -722,7 +696,7 @@ SwipeView.prototype.handlePointerAction_ = function(e) {
         this.showSelectionTrack(e.x, e.y, e.identifier);
       }
       if (e.type == EventType.POINTER_UP) {
-        this.recordAndHide_();
+        this.hide_();
       }
       break;
   }
@@ -1071,17 +1045,6 @@ SwipeView.prototype.animateRipple_ = function(x, y) {
 
 
 /**
- * Records statistics for this swipe and hides the track.
- *
- * @private
- */
-SwipeView.prototype.recordAndHide_ = function() {
-  this.recordStatistics_();
-  this.hide_();
-};
-
-
-/**
  * Hides the swipe view.
  *
  * @private
@@ -1108,32 +1071,6 @@ SwipeView.prototype.hide_ = function() {
     Css.SWIPE_ACTIVE, Css.SELECTION_TRACK, Css.DELETION_TRACK,
     Css.LEFT_TO_RIGHT
   ]);
-};
-
-
-/**
- * Records statistics from this swipe.
- *
- * @private
- */
-SwipeView.prototype.recordStatistics_ = function() {
-  if (this.isSelection_) {
-    this.statistics_.recordValue(
-        'InputMethod.VirtualKeyboard.BackwardsMovesPerSwipe',
-        this.forwardMoves_, 100, 50);
-    this.statistics_.recordValue(
-        'InputMethod.VirtualKeyboard.MovesPerSwipe', this.backwardMoves_,
-        100, 50);
-  } else {
-    this.statistics_.recordValue(
-        'InputMethod.VirtualKeyboard.WordsDeletedPerSwipe', this.forwardMoves_,
-        100, 50);
-    this.statistics_.recordValue(
-        'InputMethod.VirtualKeyboard.WordsRestoredPerSwipe',
-        this.backwardMoves_, 100, 50);
-  }
-  this.forwardMoves_ = 0;
-  this.backwardMoves_ = 0;
 };
 
 

@@ -1350,19 +1350,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.BackwardsMovesPerSwipe"
-    units="moves" expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Chrome OS histogram that counts the number of times the cursor was moved to
-    the previous word by swiping backwards on the selection track. The count is
-    initialized when the user starts swiping from any side of the virtual
-    keyboard, incremented based on how far they swipe backwards on the selection
-    track, and recorded when they release their finger.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.CharactersCommitted" units="units"
     expires_after="2023-10-08">
   <owner>shend@chromium.org</owner>
@@ -1572,19 +1559,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="InputMethod.VirtualKeyboard.MovesPerSwipe" units="moves"
-    expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Chrome OS histogram that counts the number of times the cursor was moved to
-    the next word by swiping forward on the selection track. The count is
-    initialized when the user starts swiping from any side of the virtual
-    keyboard, incremented based on how far they swipe forwards on the selection
-    track, and recorded when they release their finger.
-  </summary>
-</histogram>
-
 <histogram name="InputMethod.VirtualKeyboard.Multipaste.Actions"
     enum="IMEMultipasteAction" expires_after="2022-04-03">
   <owner>jiwan@chromium.org</owner>
@@ -1680,32 +1654,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The count of user actions to switch keyboard mode (floating, docked).
     Recorded when the user clicks in the docked/floating keyboard menu option.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.WordsDeletedPerSwipe"
-    units="words" expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Chrome OS histogram that tracks the total number of words that were deleted
-    by swiping forward on the deletion track. The count is initialized when the
-    user starts swiping on the backspace key, incremented based on how far they
-    swipe forwards on the deletion track, and recorded when they release their
-    finger.
-  </summary>
-</histogram>
-
-<histogram name="InputMethod.VirtualKeyboard.WordsRestoredPerSwipe"
-    units="words" expires_after="M95">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    Chrome OS histogram that tracks the total number of words that were restored
-    by swiping backwards on the deletion track. The count is initialized when
-    the user starts swiping on the backspace key, incremented based on how far
-    they swipe backwards on the deletion track, and recorded when they release
-    their finger.
   </summary>
 </histogram>
 
