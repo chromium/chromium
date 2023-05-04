@@ -30,6 +30,8 @@ absl::optional<SkImageInfo> MakeSkImageInfo(
   if (!color_transfer_function.is_null() && !color_to_xyz_matrix.is_null()) {
     const float* data = color_transfer_function.data();
     skcms_TransferFunction transfer_function;
+    // TODO(crbug.com/1394542): Mojo should validate this array size. We can CHECK it instead
+    // when it does.
     if (color_transfer_function.size() != 7u) {
       return absl::nullopt;
     }
@@ -42,6 +44,8 @@ absl::optional<SkImageInfo> MakeSkImageInfo(
     transfer_function.f = data[6];
 
     skcms_Matrix3x3 to_xyz_matrix;
+    // TODO(crbug.com/1394542): Mojo should validate this array size. We can CHECK it instead
+    // when it does.
     if (color_to_xyz_matrix.size() != 9u) {
       return absl::nullopt;
     }
