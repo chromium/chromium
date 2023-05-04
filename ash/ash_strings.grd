@@ -996,8 +996,8 @@ Style notes:
       <message name="IDS_ASH_STATUS_TRAY_IME" desc="The label used as the header in the IME popup. [CHAR_LIMIT=18]">
         Input methods
       </message>
-      <message name="IDS_ASH_STATUS_TRAY_IME_SETTINGS" desc="The label used for IME settings entry.">
-        Input settings
+      <message name="IDS_ASH_STATUS_TRAY_IME_SETTINGS" desc="The tooltip and accessibility label used for the IME settings button.">
+        Input methods settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_IME_MANAGED" desc="Tooltip for the icon displayed when input methods are managed by enterprise policy">
         Input methods are configured by your administrator.
