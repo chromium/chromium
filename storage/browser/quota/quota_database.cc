@@ -216,15 +216,19 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
     int max_bucket_count) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  sqlite_error_code_ = 0;
   QuotaErrorOr<BucketInfo> bucket_result =
       GetBucket(params.storage_key, params.name, StorageType::kTemporary);
 
   if (!bucket_result.has_value()) {
-    if (bucket_result.error() != QuotaError::kNotFound) {
-      return bucket_result;
+    if (bucket_result.error() == QuotaError::kNotFound) {
+      bucket_result = CreateBucketInternal(params, StorageType::kTemporary,
+                                           max_bucket_count);
     }
-    return CreateBucketInternal(params, StorageType::kTemporary,
-                                max_bucket_count);
+    if (!bucket_result.has_value()) {
+      bucket_result.error().sqlite_error = sqlite_error_code_;
+    }
+    return bucket_result;
   }
 
   // Don't bother updating anything if the bucket is expired.
@@ -898,8 +902,11 @@ QuotaError QuotaDatabase::EnsureOpened() {
   db_->set_histogram_tag("Quota");
 
   db_->set_error_callback(base::BindRepeating(
-      [](base::RepeatingClosure full_disk_error_callback, int sqlite_error_code,
+      [](base::RepeatingClosure full_disk_error_callback,
+         int* sqlite_error_code_out, int sqlite_error_code,
          sql::Statement* statement) {
+        *sqlite_error_code_out = sqlite_error_code;
+
         sql::UmaHistogramSqliteResult("Quota.QuotaDatabaseError",
                                       sqlite_error_code);
 
@@ -909,7 +916,7 @@ QuotaError QuotaDatabase::EnsureOpened() {
           full_disk_error_callback.Run();
         }
       },
-      full_disk_error_callback_));
+      full_disk_error_callback_, &sqlite_error_code_));
 
   // Migrate an existing database from the old path.
   if (!db_file_path_.empty() && !MoveLegacyDatabase()) {
