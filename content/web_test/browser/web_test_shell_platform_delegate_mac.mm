@@ -11,6 +11,10 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/shell/browser/shell.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 // On mac, the WebTestShellPlatformDelegate replaces behaviour in the base class
@@ -138,13 +142,13 @@ void WebTestShellPlatformDelegate::ResizeWebContent(
   }
 
   NSView* web_view = shell->web_contents()->GetNativeView().GetNativeNSView();
-  NSRect frame = NSMakeRect(0, 0, content_size.width(), content_size.height());
-  [web_view setFrame:frame];
+  web_view.frame =
+      NSMakeRect(0, 0, content_size.width(), content_size.height());
 
   // The above code changes the RenderWidgetHostView's size, but does not change
-  // the widget's screen rects, since the RenerWidgetHostView is not attached to
-  // a window in headless mode. So this call causes them to be updated so they
-  // are not left as 0x0.
+  // the widget's screen rects, since the RenderWidgetHostView is not attached
+  // to a window in headless mode. So this call causes them to be updated so
+  // they are not left as 0x0.
   auto* rwhv_mac = shell->web_contents()->GetPrimaryMainFrame()->GetView();
   if (rwhv_mac)
     rwhv_mac->SetWindowFrameInScreen(gfx::Rect(content_size));
