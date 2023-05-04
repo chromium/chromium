@@ -79,6 +79,7 @@ public class PasswordGenerationDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "Disabled for flakiness, see https://crbug.com/1442595")
     public void testRejectedPasswordCallback() {
         onView(withId(R.id.negative_button)).perform(click());
         verify(mOnPasswordAcceptedOrRejectedCallback).onResult(false);
