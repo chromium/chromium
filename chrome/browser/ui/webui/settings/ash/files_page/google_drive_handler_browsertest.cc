@@ -182,6 +182,34 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
+                       NegativeRemainingSpaceReturnsEmptyStrings) {
+  SetUpSearchResultExpectations();
+
+  auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
+  EXPECT_CALL(*fake_drivefs, GetOfflineFilesSpaceUsage(_))
+      .WillOnce(RunOnceCallback<0>(drive::FILE_ERROR_OK, 1));
+
+  // Each item is 250 MB in size, total required space should be 1 GB.
+  int64_t file_size = 250 << 20;
+  fake_search_query_.SetSearchResults(
+      {{.size = file_size}, {.size = file_size}});
+  fake_search_query_.SetSearchResults(
+      {{.size = file_size}, {.size = file_size}});
+  fake_search_query_.SetSearchResults({});
+
+  // Mock negative remaining space, the required space is 1 GB and the free
+  // space is 500 MB, so the remaining space ends up being -500MB. This is
+  // indicated by a -1 on the UI layer.
+  int64_t free_space = 500 << 20;
+  ash::FakeSpacedClient::Get()->set_free_disk_space(free_space);
+
+  auto google_drive_settings = OpenGoogleDriveSettings();
+  google_drive_settings.AssertBulkPinningSpace(
+      FormatBytesToString(file_size * 4),
+      /*remaining_space=*/"-1");
+}
+
+IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
                        TotalPinnedSizeUpdatesValueOnElement) {
   SetUpSearchResultExpectations();
 

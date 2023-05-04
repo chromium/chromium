@@ -20,9 +20,15 @@ namespace {
 google_drive::mojom::StatusPtr CreateStatusPtr(const Progress& progress) {
   auto status = google_drive::mojom::Status::New();
   status->required_space =
-      base::UTF16ToUTF8(ui::FormatBytes(progress.required_space));
-  status->remaining_space = base::UTF16ToUTF8(
-      ui::FormatBytes(progress.free_space - progress.required_space));
+      (progress.required_space >= 0)
+          ? base::UTF16ToUTF8(ui::FormatBytes(progress.required_space))
+          : "";
+  int64_t remaining_space = progress.free_space - progress.required_space;
+  status->remaining_space =
+      (remaining_space >= 0)
+          ? base::UTF16ToUTF8(
+                ui::FormatBytes(progress.free_space - progress.required_space))
+          : "";
   status->stage = progress.stage;
   status->is_error = progress.IsError();
   return status;
@@ -36,27 +42,26 @@ GoogleDrivePageHandler::GoogleDrivePageHandler(
     Profile* profile)
     : profile_(profile),
       page_(std::move(page)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  drive::DriveIntegrationService* const drive_service = GetDriveService();
+  drive_service->AddObserver(this);
+}
 
 GoogleDrivePageHandler::~GoogleDrivePageHandler() {
-  auto* const pin_manager = GetPinManager();
-  if (!pin_manager || !pin_manager->HasObserver(this)) {
+  drive::DriveIntegrationService* const drive_service = GetDriveService();
+  if (!drive_service) {
     return;
   }
-  pin_manager->RemoveObserver(this);
+  drive_service->RemoveObserver(this);
 }
 
 void GoogleDrivePageHandler::CalculateRequiredSpace() {
-  auto* pin_manager = GetPinManager();
+  auto* const pin_manager = GetPinManager();
   if (!pin_manager) {
     page_->OnServiceUnavailable();
     return;
   }
-
   NotifyProgress(pin_manager->GetProgress());
-  if (!pin_manager->HasObserver(this)) {
-    pin_manager->AddObserver(this);
-  }
   pin_manager->CalculateRequiredSpace();
 }
 
@@ -81,18 +86,14 @@ drivefs::pinning::PinManager* GoogleDrivePageHandler::GetPinManager() {
   return service->GetPinManager();
 }
 
-void GoogleDrivePageHandler::OnProgress(const Progress& progress) {
-  auto* pin_manager = GetPinManager();
+void GoogleDrivePageHandler::OnBulkPinProgress(const Progress& progress) {
+  auto* const pin_manager = GetPinManager();
   if (!pin_manager) {
     page_->OnServiceUnavailable();
     return;
   }
 
   NotifyProgress(progress);
-}
-
-void GoogleDrivePageHandler::OnDrop() {
-  page_->OnServiceUnavailable();
 }
 
 void GoogleDrivePageHandler::GetTotalPinnedSize(

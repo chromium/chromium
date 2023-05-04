@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
-#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -21,7 +20,7 @@ namespace ash::settings {
 
 // ChromeOS "Google Drive" settings page UI handler.
 class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
-                               drivefs::pinning::PinManager::Observer {
+                               public drive::DriveIntegrationServiceObserver {
  public:
   GoogleDrivePageHandler(
       mojo::PendingReceiver<google_drive::mojom::PageHandler> receiver,
@@ -39,9 +38,8 @@ class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
   void GetTotalPinnedSize(GetTotalPinnedSizeCallback callback) override;
   void ClearPinnedFiles(ClearPinnedFilesCallback callback) override;
 
-  // drivefs::pinning::PinManager::Observer
-  void OnProgress(const drivefs::pinning::Progress& progress) override;
-  void OnDrop() override;
+  // drive::DriveIntegrationServiceObserver
+  void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;
 
   void NotifyServiceUnavailable();
   void NotifyProgress(const drivefs::pinning::Progress& progress);

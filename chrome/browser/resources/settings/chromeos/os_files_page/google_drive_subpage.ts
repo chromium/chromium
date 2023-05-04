@@ -143,7 +143,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * for testing.
    */
   get requiredSpace() {
-    return this.bulkPinningStatus_?.requiredSpace || -1;
+    return this.bulkPinningStatus_?.requiredSpace || '-1';
   }
 
   /**
@@ -151,7 +151,7 @@ export class SettingsGoogleDriveSubpageElement extends
    * Used for testing.
    */
   get remainingSpace() {
-    return this.bulkPinningStatus_?.remainingSpace || -1;
+    return this.bulkPinningStatus_?.remainingSpace || '-1';
   }
 
   /**
