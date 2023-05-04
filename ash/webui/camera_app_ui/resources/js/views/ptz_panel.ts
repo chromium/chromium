@@ -5,6 +5,7 @@
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {ClearableAsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
+import {SvgWrapper} from '../lit/svg_wrapper.js';
 import * as metrics from '../metrics.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
@@ -169,20 +170,8 @@ export class PTZPanel extends View {
              of [this.panRight, this.panLeft, this.tiltUp, this.tiltDown]) {
       btn.addEventListener(tooltip.TOOLTIP_POSITION_EVENT_NAME, (e) => {
         const target = assertInstanceof(e.target, HTMLElement);
-        assert(target.offsetParent !== null);
-        const pRect = target.offsetParent.getBoundingClientRect();
-        const style = getComputedStyle(target, '::before');
-        function getStyleValue(attr: string) {
-          const px = style.getPropertyValue(attr);
-          return Number(px.replace(/^([\d.]+)px$/, '$1'));
-        }
-        const offsetX = getStyleValue('left');
-        const offsetY = getStyleValue('top');
-        const width = getStyleValue('width');
-        const height = getStyleValue('height');
-        tooltip.position(new DOMRectReadOnly(
-            /* x */ pRect.left + offsetX, /* y */ pRect.top + offsetY, width,
-            height));
+        const icon = dom.getFrom(target, 'svg-wrapper', SvgWrapper);
+        tooltip.position(icon.getBoundingClientRect());
         e.preventDefault();
       });
     }
