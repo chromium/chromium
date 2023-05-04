@@ -92,8 +92,9 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
   ASSERT_TRUE(RunTest("update_theme_letter_spacing.js"));
 }
 
+// TODO(crbug.com/1442570): unflake and re-enable
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       ConnectedCallback_ShowLoadingScreen) {
+                       DISABLED_ConnectedCallback_ShowLoadingScreen) {
   ASSERT_TRUE(RunTest("connected_callback_show_loading_screen.js"));
 }
 
