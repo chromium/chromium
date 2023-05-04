@@ -297,7 +297,7 @@ def install(mac_toolchain, xcode_build_version, xcode_app_path, **runtime_args):
   # that something went wrong during the install process, and the Xcode should
   # be re-installed.
   if mac_util.is_macos_13_or_higher():
-    LOGGER.debug('checking if the cached Xcode is corruputed...')
+    LOGGER.debug('checking if the cached Xcode is corrupted...')
     for dir_name in XcodeCipdFiles:
       dir_path = os.path.join(xcode_app_path, dir_name)
       if os.path.exists(dir_path):
