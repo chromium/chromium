@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL overscroll-behavior prevents scroll-propagation in the area and direction as specified assert_equalhhs is not defined
-Harness: the test ran to completion.
-
