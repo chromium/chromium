@@ -134,6 +134,7 @@
 #include "ash/system/federated/federated_service_controller_impl.h"
 #include "ash/system/firmware_update/firmware_update_notification_controller.h"
 #include "ash/system/geolocation/geolocation_controller.h"
+#include "ash/system/hotspot/hotspot_info_cache.h"
 #include "ash/system/human_presence/human_presence_orientation_controller.h"
 #include "ash/system/human_presence/snooping_protection_controller.h"
 #include "ash/system/input_device_settings/input_device_key_alias_manager.h"
@@ -1562,6 +1563,10 @@ void Shell::Init(
   // hosts the WM mode tray button.
   if (features::IsWmModeEnabled()) {
     wm_mode_controller_ = std::make_unique<WmModeController>();
+  }
+
+  if (features::IsHotspotEnabled()) {
+    hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
   }
 
   window_tree_host_manager_->InitHosts();

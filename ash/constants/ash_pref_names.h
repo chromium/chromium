@@ -55,6 +55,8 @@ extern const char kQuirksClientLastServerCheck[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kDeviceWiFiFastTransitionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kHasHotspotUsedBefore[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kInputNoiseCancellationEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kMultitaskMenuNudgeClamshellShownCount[];

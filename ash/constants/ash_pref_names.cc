@@ -126,6 +126,9 @@ const char kQuirksClientLastServerCheck[] = "quirks_client.last_server_check";
 const char kDeviceWiFiFastTransitionEnabled[] =
     "net.device_wifi_fast_transition_enabled";
 
+// A boolean pref indicating whether hotspot has been used before.
+const char kHasHotspotUsedBefore[] = "ash.hotspot.has_used_before";
+
 // A boolean pref that controls whether input noise cancellation is enabled.
 const char kInputNoiseCancellationEnabled[] =
     "ash.input_noise_cancellation_enabled";

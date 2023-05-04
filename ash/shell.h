@@ -154,6 +154,7 @@ class GlanceablesController;
 class GlanceablesV2Controller;
 class ColorEnhancementController;
 class HoldingSpaceController;
+class HotspotInfoCache;
 class HumanPresenceOrientationController;
 class ImeControllerImpl;
 class InputDeviceKeyAliasManager;
@@ -549,6 +550,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   ColorEnhancementController* color_enhancement_controller() {
     return color_enhancement_controller_.get();
   }
+  HotspotInfoCache* hotspot_info_cache() { return hotspot_info_cache_.get(); }
   HumanPresenceOrientationController* human_presence_orientation_controller() {
     return human_presence_orientation_controller_.get();
   }
@@ -1095,6 +1097,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<DisplayColorManager> display_color_manager_;
   std::unique_ptr<DisplayErrorObserver> display_error_observer_;
   std::unique_ptr<ProjectingObserver> projecting_observer_;
+  std::unique_ptr<HotspotInfoCache> hotspot_info_cache_;
   std::unique_ptr<display::DisplayPortObserver> display_port_observer_;
 
   // Listens for output changes and updates the display manager.
