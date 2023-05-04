@@ -414,6 +414,10 @@ extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];
 
+// Title and description for the flag to enable history-sync opt-in.
+extern const char kHistorySyncOptInName[];
+extern const char kHistorySyncOptInDescription[];
+
 // Title and description for the flag to enable HTTPS-Only Mode setting.
 extern const char kHttpsOnlyModeName[];
 extern const char kHttpsOnlyModeDescription[];
