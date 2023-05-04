@@ -69,7 +69,7 @@ suite('<office-fallback>', () => {
    * the <cloud-upload> component.
    */
   teardown(() => {
-    container.innerHTML = '';
+    container.innerHTML = window.trustedTypes!.emptyHTML;
     testProxy.handler.reset();
   });
 
