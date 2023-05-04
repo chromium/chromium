@@ -346,7 +346,7 @@
   <if expr="enable_screen_ai_service">
     <!-- TODO(crbug.com/1393069): Remove translateable tags when strings are approved. -->
     <message name="IDS_PDF_OCR_FEATURE_ALERT" is_accessibility_with_no_ui="true" translateable="false" desc="Notification of the PDF OCR feature when the user encounters an inaccessible PDF.">
-      Convert image to text in more actions or context menu
+      Press search plus m and convert image to text in the context menu
     </message>
     <message name="IDS_PDF_OCR_IN_PROGRESS" is_accessibility_with_no_ui="true" translateable="false" desc="Notification to inform the user that OCR is in progress.">
       Image is being analyzed
