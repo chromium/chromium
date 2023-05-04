@@ -46,6 +46,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -2000,12 +2001,10 @@ public class AwSettingsTest {
                         views.getContainer1(), views.getClient1()));
     }
 
-    // Ideally, these three tests below should be combined into one, or tested using
-    // runPerViewSettingsTest. However, it seems the database setting cannot be toggled
-    // once set. Filed b/8186497.
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
     public void testDatabaseInitialValue() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2018,6 +2017,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
     public void testDatabaseEnabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -2031,6 +2031,7 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @RequiresRestart("setDatabaseEnabled is ignored after the first use of WebView in the process")
     public void testDatabaseDisabled() throws Throwable {
         TestAwContentsClient client = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
