@@ -200,6 +200,73 @@ TEST_P(MLGraphTest, ElementWiseBinaryTest) {
 }
 
 template <typename T>
+struct PReluTester {
+  OperandInfo<T> input;
+  OperandInfo<T> slope;
+  Vector<T> expected;
+
+  void Test(MLGraphTest& helper, V8TestingScope& scope) {
+    // Build the graph.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* slope_operand =
+        BuildConstant(builder, slope.dimensions, slope.type, slope.values,
+                      scope.GetExceptionState());
+    auto* output_operand =
+        builder->prelu(input_operand, slope_operand, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute the graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<T>(outputs[0].second);
+    EXPECT_EQ(results, expected);
+  }
+};
+
+TEST_P(MLGraphTest, PReluTest) {
+  V8TestingScope scope;
+  {
+    // Test prelu operator with input_shape = {3} and slope_shape =
+    // {3}.
+    PReluTester<float>{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {3},
+                                 .values = {1.0, -2.0, 3.0}},
+                       .slope = {.type = V8MLOperandType::Enum::kFloat32,
+                                 .dimensions = {3},
+                                 .values = {1.0, 2.0, 3.0}},
+                       .expected = {1.0, -4.0, 3.0}}
+        .Test(*this, scope);
+  }
+  {
+    // Test prelu operator with input_shape = {1, 2, 3, 3} and slope_shape = {1,
+    // 3}.
+    PReluTester<float>{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 3, 3},
+                  .values = {-1.0, -2.0, -3.0, -4.0, -5.0, -6.0, -7.0, -8.0,
+                             -9.0, -10.0, -11.0, -12.0, -13.0, -14.0, -15.0,
+                             -16.0, -17.0, -18.0}},
+        .slope = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 3},
+                  .values = {1.0, 2.0, 3.0}},
+        .expected = {-1.0, -4.0, -9.0, -4.0, -10.0, -18.0, -7.0, -16.0, -27.0,
+                     -10.0, -22.0, -36.0, -13.0, -28.0, -45.0, -16.0, -34.0,
+                     -54.0}}
+        .Test(*this, scope);
+  }
+}
+
+template <typename T>
 struct ReluTester {
   OperandInfo<T> input;
   Vector<T> expected;

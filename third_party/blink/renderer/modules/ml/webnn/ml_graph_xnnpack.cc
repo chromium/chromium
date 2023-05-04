@@ -1346,6 +1346,55 @@ xnn_status DefineXnnNodeForPool2d(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForPRelu(xnn_subgraph_t subgraph,
+                                 const MLOperator* prelu,
+                                 const OperandValueIdMap& operand_value_id_map,
+                                 String& error_message) {
+  CHECK_EQ(prelu->Inputs().size(), 2U);
+  const uint32_t input_id =
+      GetOperatorInputValueId(prelu, operand_value_id_map, 0);
+  const uint32_t slope_id =
+      GetOperatorInputValueId(prelu, operand_value_id_map, 1);
+  const auto* input = prelu->Inputs()[0].Get();
+  CHECK(input);
+  const auto* slope = prelu->Inputs()[1].Get();
+  CHECK(slope);
+
+  // XNNPACK prelu operator expects slope to be a static value (constant
+  // operand) but it currently misses checking it:
+  // https://github.com/google/XNNPACK/issues/4692. This issue would cause a
+  // crash if the slope is an external value (input operand). As a workaround,
+  // we check whether the slope is a constant operand here.
+  //
+  // TODO(crbug.com/1273291): Consider implementing prelu by other XNNPACK ops
+  // as max(0, x) + slope ∗ min(0, x) formula when slope is a non-constant
+  // operand.
+  if (slope->Kind() != MLOperand::OperandKind::kConstant) {
+    error_message = "Slope should be defined as a constant operand.";
+    return xnn_status_invalid_parameter;
+  }
+  const auto slope_rank = slope->Dimensions().size();
+  for (wtf_size_t i = 0; i < slope_rank - 1; i++) {
+    if (slope->Dimensions()[i] != 1) {
+      error_message =
+          "Expected all dimensions of slope to be 1 except the last dimension.";
+      return xnn_status_unsupported_parameter;
+    }
+  }
+  if (slope->Dimensions()[slope_rank - 1] !=
+      input->Dimensions()[input->Dimensions().size() - 1]) {
+    error_message = "The input and slope should have the same last dimension.";
+    return xnn_status_unsupported_parameter;
+  }
+
+  const uint32_t output_id =
+      GetOperatorOutputValueId(prelu, operand_value_id_map);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_prelu(subgraph, input_id, slope_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForRelu(xnn_subgraph_t subgraph,
                                 const MLOperator* relu,
                                 const OperandValueIdMap& operand_value_id_map,
@@ -1622,6 +1671,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     }
     case MLOperator::OperatorKind::kLeakyRelu:
       XNN_CHECK_STATUS(DefineXnnNodeForLeakyRelu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    case MLOperator::OperatorKind::kPRelu:
+      XNN_CHECK_STATUS(DefineXnnNodeForPRelu(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     case MLOperator::OperatorKind::kRelu:
