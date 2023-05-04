@@ -24,6 +24,10 @@ template("chrome_feature_module") {
       (defined(invoker.is_trichrome) && invoker.is_trichrome)
   not_needed(invoker, [ "is_trichrome" ])
 
+  _is_64_bit_browser =
+      android_64bit_target_cpu &&
+      (!defined(invoker.is_64_bit_browser) || invoker.is_64_bit_browser)
+
   _loadable_modules_32_bit = []
   if (defined(_module_desc.loadable_modules_32_bit)) {
     _loadable_modules_32_bit += _module_desc.loadable_modules_32_bit
@@ -34,31 +38,34 @@ template("chrome_feature_module") {
     _loadable_modules_64_bit += _module_desc.loadable_modules_64_bit
   }
 
-  not_needed([ "_loadable_modules_32_bit" ])
-  not_needed([ "_loadable_modules_64_bit" ])
+  not_needed([
+               "_is_64_bit_browser",
+               "_loadable_modules_32_bit",
+               "_loadable_modules_64_bit",
+             ])
 
   _shared_libraries = []
   if (defined(_module_desc.native_deps) && _module_desc.native_deps != []) {
-    _arch = ""
-    _toolchain = ""
-    if (android_64bit_target_cpu && _is_monochrome_or_trichrome) {
-      if (invoker.is_64_bit_browser) {
-        _arch = "_64"
-      } else {
-        _toolchain = "($android_secondary_abi_toolchain)"
-      }
-    }
     if (_is_monochrome_or_trichrome) {
-      _base_target_name = "libmonochrome${_arch}"
+      if (_is_64_bit_browser) {
+        _base_target_name = "libmonochrome_64"
+      } else {
+        _base_target_name = "libmonochrome"
+      }
     } else {
-      _base_target_name = "libchrome${_arch}"
+      _base_target_name = "libchrome"
+    }
+    if (android_64bit_target_cpu && !_is_64_bit_browser) {
+      _toolchain = "($android_secondary_abi_toolchain)"
+    } else {
+      _toolchain = ""
     }
     _shared_libraries += [
       "//chrome/android:${_base_target_name}_${_module_desc.name}${_toolchain}",
     ]
 
-    if (android_64bit_target_cpu && _is_monochrome_or_trichrome &&
-        invoker.is_64_bit_browser && build_hwasan_splits) {
+    if (_is_monochrome_or_trichrome && _is_64_bit_browser &&
+        build_hwasan_splits) {
       _hwasan_toolchain = "//build/toolchain/android:android_clang_arm64_hwasan"
       _shared_libraries += [ "//chrome/android:${_base_target_name}_${_module_desc.name}($_hwasan_toolchain)" ]
     }
@@ -129,7 +136,7 @@ template("chrome_feature_module") {
     # Determine whether to assign native libraries to the primary or secondary
     # ABI.
     if (android_64bit_target_cpu) {
-      if (invoker.is_64_bit_browser) {
+      if (_is_64_bit_browser) {
         loadable_modules = _loadable_modules_64_bit
         shared_libraries = _shared_libraries
       } else {
@@ -146,9 +153,8 @@ template("chrome_feature_module") {
     # library of the apk, to extract unwind tables.
     if (defined(_module_desc.include_unwind_assets) &&
         _module_desc.include_unwind_assets) {
-      _needs_32bit_lib = target_cpu == "arm" ||
-                         (_is_monochrome_or_trichrome &&
-                          target_cpu == "arm64" && !invoker.is_64_bit_browser)
+      _needs_32bit_lib =
+          target_cpu == "arm" || (target_cpu == "arm64" && !_is_64_bit_browser)
 
       if (_needs_32bit_lib) {
         if (_is_monochrome_or_trichrome) {
