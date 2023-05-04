@@ -644,7 +644,7 @@ void CertProvisioningWorkerDynamic::MarkKey(
   MarkKeyAsCorporate(cert_scope_, profile_, public_key_);
 
   platform_keys_service_->SetAttributeForKey(
-      GetPlatformKeysTokenId(cert_scope_), BytesToStr(public_key_),
+      GetPlatformKeysTokenId(cert_scope_), public_key_,
       chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
       StrToBytes(cert_profile_.profile_id),
       base::BindOnce(&CertProvisioningWorkerDynamic::OnMarkKeyDone,

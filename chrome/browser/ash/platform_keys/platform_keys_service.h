@@ -255,7 +255,7 @@ class PlatformKeysService : public KeyedService {
   // attribute is done, possibly with an error status.
   virtual void SetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::KeyAttributeType attribute_type,
       std::vector<uint8_t> attribute_value,
       SetAttributeForKeyCallback callback) = 0;
@@ -384,7 +384,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
                        const GetKeyLocationsCallback callback) override;
   void SetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::KeyAttributeType attribute_type,
       std::vector<uint8_t> attribute_value,
       SetAttributeForKeyCallback callback) override;
