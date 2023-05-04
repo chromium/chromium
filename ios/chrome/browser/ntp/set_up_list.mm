@@ -58,7 +58,7 @@ SetUpListItem* BuildItem(SetUpListItemType type,
       // Display in list this time, but remove from list next time.
       new_state = SetUpListItemState::kCompleteNotInList;
       set_up_list_prefs::SetItemState(local_state, type, new_state);
-      return [[SetUpListItem alloc] initWithType:type complete:complete];
+      return [[SetUpListItem alloc] initWithType:type complete:YES];
     case SetUpListItemState::kCompleteNotInList:
       return nil;
   }

@@ -113,6 +113,11 @@ class SetUpListTest : public PlatformTest {
     return set_up_list_prefs::GetItemState(local_state_.Get(), type);
   }
 
+  // Sets the state of the item with the given `type` from prefs.
+  void SetItemState(SetUpListItemType type, SetUpListItemState state) {
+    set_up_list_prefs::SetItemState(local_state_.Get(), type, state);
+  }
+
  protected:
   web::WebTaskEnvironment task_environment_;
   PrefService* prefs_;
@@ -129,6 +134,13 @@ TEST_F(SetUpListTest, BuildListWithSignInSync) {
   ExpectListToInclude(SetUpListItemType::kSignInSync, NO);
 
   SignInFakeIdentity();
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
+            SetUpListItemState::kCompleteNotInList);
+
+  SetItemState(SetUpListItemType::kSignInSync,
+               SetUpListItemState::kCompleteInList);
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kSignInSync, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kSignInSync),
@@ -151,6 +163,13 @@ TEST_F(SetUpListTest, BuildListWithDefaultBrowser) {
   EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
             SetUpListItemState::kCompleteNotInList);
 
+  SetItemState(SetUpListItemType::kDefaultBrowser,
+               SetUpListItemState::kCompleteInList);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kDefaultBrowser, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kDefaultBrowser),
+            SetUpListItemState::kCompleteNotInList);
+
   BuildSetUpList();
   ExpectListToNotInclude(SetUpListItemType::kDefaultBrowser);
 }
@@ -163,6 +182,13 @@ TEST_F(SetUpListTest, BuildListWithAutofill) {
   ExpectListToInclude(SetUpListItemType::kAutofill, NO);
 
   FakeEnableCredentialProvider(true);
+  BuildSetUpList();
+  ExpectListToInclude(SetUpListItemType::kAutofill, YES);
+  EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
+            SetUpListItemState::kCompleteNotInList);
+
+  SetItemState(SetUpListItemType::kAutofill,
+               SetUpListItemState::kCompleteInList);
   BuildSetUpList();
   ExpectListToInclude(SetUpListItemType::kAutofill, YES);
   EXPECT_EQ(GetItemState(SetUpListItemType::kAutofill),
