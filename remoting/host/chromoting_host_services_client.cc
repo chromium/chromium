@@ -18,6 +18,7 @@
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/win/sid.h"
 #include "remoting/host/win/acl_util.h"
 #endif
 
@@ -97,7 +98,8 @@ bool ChromotingHostServicesClient::Initialize() {
   // which normally isn't allowed to query process info like session ID of a
   // process running under a different account, so we add an ACL to allow it.
   g_initialized = AddProcessAccessRightForWellKnownSid(
-      WinLocalServiceSid, PROCESS_QUERY_LIMITED_INFORMATION);
+      base::win::WellKnownSid::kLocalService,
+      PROCESS_QUERY_LIMITED_INFORMATION);
 #else
   // Other platforms don't need initialization.
   g_initialized = true;

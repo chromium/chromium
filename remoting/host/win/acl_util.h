@@ -7,12 +7,15 @@
 
 #include <windows.h>
 
+#include "base/win/sid.h"
+
 namespace remoting {
 
 // Adds new access right to the current process for |type|. Returns a boolean
 // indicating whether the operation was successful.
-bool AddProcessAccessRightForWellKnownSid(WELL_KNOWN_SID_TYPE type,
-                                          DWORD new_right);
+bool AddProcessAccessRightForWellKnownSid(
+    base::win::WellKnownSid well_known_sid,
+    DWORD new_right);
 
 }  // namespace remoting
 
