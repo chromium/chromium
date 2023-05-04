@@ -93,29 +93,30 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
   return true;
 }
 
-// |credit_card_import_candidate| refers to the credit card that was most
-// recently submitted and |fetched_card_instrument_id| refers to the instrument
-// id of the most recently downstreamed (fetched from the server) credit card.
+// `extracted_credit_card` refers to the credit card that was most recently
+// submitted and |fetched_card_instrument_id| refers to the instrument id of the
+// most recently downstreamed (fetched from the server) credit card.
 // These need to match to offer virtual card enrollment for the
-// |credit_card_import_candidate|.
+// `extracted_credit_card`.
 bool ShouldOfferVirtualCardEnrollment(
-    const absl::optional<CreditCard>& credit_card_import_candidate,
+    const absl::optional<CreditCard>& extracted_credit_card,
     absl::optional<int64_t> fetched_card_instrument_id) {
   if (!base::FeatureList::IsEnabled(
           features::kAutofillEnableUpdateVirtualCardEnrollment)) {
     return false;
   }
 
-  if (!credit_card_import_candidate)
+  if (!extracted_credit_card) {
     return false;
+  }
 
-  if (credit_card_import_candidate->virtual_card_enrollment_state() !=
+  if (extracted_credit_card->virtual_card_enrollment_state() !=
       CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
     return false;
   }
 
   if (!fetched_card_instrument_id.has_value() ||
-      credit_card_import_candidate->instrument_id() !=
+      extracted_credit_card->instrument_id() !=
           fetched_card_instrument_id.value()) {
     return false;
   }
@@ -206,8 +207,8 @@ void FormDataImporter::ImportAndProcessFormData(
   credit_card_save_manager_->SetPreliminarilyImportedAutofillProfile(
       preliminary_imported_address_profiles);
 
-  bool cc_prompt_potentially_shown = ProcessCreditCardImportCandidate(
-      submitted_form, extracted_data.credit_card_import_candidate,
+  bool cc_prompt_potentially_shown = ProcessExtractedCreditCard(
+      submitted_form, extracted_data.extracted_credit_card,
       extracted_data.extracted_upi_id, payment_methods_autofill_enabled,
       credit_card_save_manager_->IsCreditCardUploadEnabled());
   fetched_card_instrument_id_.reset();
@@ -283,7 +284,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   ExtractedFormData extracted_form_data;
   // We try the same `form` for both credit card and address import/update.
   // - `ExtractCreditCard()` may update an existing card, or fill
-  //   `credit_card_import_candidate` contained in `extracted_form_data` with an
+  //   `extracted_credit_card` contained in `extracted_form_data` with an
   //   extracted card.
   // - `ExtractAddressProfiles()` collects all importable
   // profiles, but currently
@@ -293,7 +294,7 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
   // called or not.
   credit_card_import_type_ = CreditCardImportType::kNoCard;
   if (payment_methods_autofill_enabled) {
-    extracted_form_data.credit_card_import_candidate =
+    extracted_form_data.extracted_credit_card =
         ExtractCreditCard(submitted_form);
     extracted_form_data.extracted_upi_id = ExtractUpiId(submitted_form);
   }
@@ -322,13 +323,13 @@ FormDataImporter::ExtractedFormData FormDataImporter::ExtractFormData(
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kAddressForm);
     }
-    if (extracted_form_data.credit_card_import_candidate) {
+    if (extracted_form_data.extracted_credit_card) {
       form_associator_.TrackFormAssociations(
           origin, form_signature, FormAssociator::FormType::kCreditCardForm);
     }
   }
 
-  if (!extracted_form_data.credit_card_import_candidate &&
+  if (!extracted_form_data.extracted_credit_card &&
       !extracted_form_data.extracted_upi_id &&
       num_complete_address_profiles == 0 &&
       !extracted_form_data.iban_import_candidate) {
@@ -686,9 +687,9 @@ bool FormDataImporter::ProcessAddressProfileImportCandidates(
   return false;
 }
 
-bool FormDataImporter::ProcessCreditCardImportCandidate(
+bool FormDataImporter::ProcessExtractedCreditCard(
     const FormStructure& submitted_form,
-    const absl::optional<CreditCard>& credit_card_import_candidate,
+    const absl::optional<CreditCard>& extracted_credit_card,
     const absl::optional<std::string>& extracted_upi_id,
     bool payment_methods_autofill_enabled,
     bool is_credit_card_upstream_enabled) {
@@ -708,11 +709,10 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
     return false;
   }
 
-  if (ShouldOfferVirtualCardEnrollment(credit_card_import_candidate,
+  if (ShouldOfferVirtualCardEnrollment(extracted_credit_card,
                                        fetched_card_instrument_id_)) {
     virtual_card_enrollment_manager_->InitVirtualCardEnroll(
-        *credit_card_import_candidate,
-        VirtualCardEnrollmentSource::kDownstream);
+        *extracted_credit_card, VirtualCardEnrollmentSource::kDownstream);
     return true;
   }
 
@@ -722,7 +722,7 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   // migration in this case, as local cards could go either way.
   if (local_card_migration_manager_ &&
       local_card_migration_manager_->ShouldOfferLocalCardMigration(
-          credit_card_import_candidate, credit_card_import_type_)) {
+          extracted_credit_card, credit_card_import_type_)) {
     local_card_migration_manager_->AttemptToOfferLocalCardMigration(
         /*is_from_settings_page=*/false);
     return true;
@@ -732,7 +732,7 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   // Local card migration will not be offered. We check to see if it is valid to
   // offer upload save or local card save, which will happen below if we do not
   // early return false in this if-statement.
-  if (!ShouldOfferUploadCardOrLocalCardSave(credit_card_import_candidate,
+  if (!ShouldOfferUploadCardOrLocalCardSave(extracted_credit_card,
                                             is_credit_card_upstream_enabled)) {
     return false;
   }
@@ -749,7 +749,7 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
            credit_card_import_type_ == CreditCardImportType::kNewCard);
     credit_card_save_manager_->AttemptToOfferCardUploadSave(
         submitted_form, from_dynamic_change_form_, has_non_focusable_field_,
-        *credit_card_import_candidate,
+        *extracted_credit_card,
         /*uploading_local_card=*/credit_card_import_type_ ==
             CreditCardImportType::kLocalCard);
     return true;
@@ -758,7 +758,7 @@ bool FormDataImporter::ProcessCreditCardImportCandidate(
   DCHECK(credit_card_import_type_ == CreditCardImportType::kNewCard);
   if (credit_card_save_manager_->AttemptToOfferCardLocalSave(
           from_dynamic_change_form_, has_non_focusable_field_,
-          *credit_card_import_candidate)) {
+          *extracted_credit_card)) {
     return true;
   }
 
@@ -982,13 +982,14 @@ absl::optional<std::string> FormDataImporter::ExtractUpiId(
 }
 
 bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
-    const absl::optional<CreditCard>& credit_card_import_candidate,
+    const absl::optional<CreditCard>& extracted_credit_card,
     bool is_credit_card_upload_enabled) {
   // If we have an invalid card in the form, a duplicate field type, or we have
-  // entered a virtual card, |credit_card_import_candidate| will be set
+  // entered a virtual card, `extracted_credit_card` will be set
   // to nullptr and thus we do not want to offer upload save or local card save.
-  if (!credit_card_import_candidate)
+  if (!extracted_credit_card) {
     return false;
+  }
 
   // We do not want to offer upload save or local card save for server cards.
   if (credit_card_import_type_ == CreditCardImportType::kServerCard) {
@@ -1003,7 +1004,7 @@ bool FormDataImporter::ShouldOfferUploadCardOrLocalCardSave(
     return false;
   }
 
-  // We know |credit_card_import_candidate| is either a new card, or a local
+  // We know `extracted_credit_card` is either a new card, or a local
   // card with upload enabled.
   return true;
 }
