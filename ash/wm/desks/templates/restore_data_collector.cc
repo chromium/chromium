@@ -58,8 +58,9 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
 
     if (!delegate->IsWindowSupportedForSavedDesk(window)) {
       call.unsupported_apps.push_back(window);
-      if (delegate->IsIncognitoWindow(window))
-        call.incognito_window_count++;
+      if (!delegate->IsWindowPersistable(window)) {
+        ++call.non_persistable_window_count;
+      }
       continue;
     }
 
@@ -166,8 +167,9 @@ void RestoreDataCollector::SendDeskTemplate(uint32_t serial) {
     auto* dialog_controller = saved_desk_util::GetSavedDeskDialogController();
     DCHECK(dialog_controller);
     dialog_controller->ShowUnsupportedAppsDialog(
-        root_window_to_show, call.unsupported_apps, call.incognito_window_count,
-        std::move(call.callback), std::move(desk_template));
+        root_window_to_show, call.unsupported_apps,
+        call.non_persistable_window_count, std::move(call.callback),
+        std::move(desk_template));
   } else {
     std::move(call.callback).Run(std::move(desk_template));
   }

@@ -29,7 +29,7 @@ class MockSavedDeskDelegate : public SavedDeskDelegate {
               (aura::Window*, GetAppLaunchDataCallback),
               (const override));
   MOCK_METHOD(desks_storage::DeskModel*, GetDeskModel, (), (override));
-  MOCK_METHOD(bool, IsIncognitoWindow, (aura::Window*), (const override));
+  MOCK_METHOD(bool, IsWindowPersistable, (aura::Window*), (const override));
   MOCK_METHOD(absl::optional<gfx::ImageSkia>,
               MaybeRetrieveIconForSpecialIdentifier,
               (const std::string&, const ui::ColorProvider*),

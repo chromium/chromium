@@ -199,12 +199,12 @@ void SavedDeskIconContainer::PopulateIconContainerFromWindows(
     // If `window` is an incognito window, we want to display the incognito icon
     // instead of its favicons so denote it using
     // `DeskTemplate::kIncognitoWindowIdentifier`.
-    const bool is_incognito_window = delegate->IsIncognitoWindow(window);
+    const bool is_window_persistable = delegate->IsWindowPersistable(window);
     const std::string app_id =
-        is_incognito_window
-            ? DeskTemplate::kIncognitoWindowIdentifier
-            : ShelfID::Deserialize(window->GetProperty(kShelfIDKey)).app_id;
-    if (is_incognito_window && !incognito_window_color_provider_) {
+        is_window_persistable
+            ? ShelfID::Deserialize(window->GetProperty(kShelfIDKey)).app_id
+            : DeskTemplate::kIncognitoWindowIdentifier;
+    if (!is_window_persistable && !incognito_window_color_provider_) {
       incognito_window_color_provider_ =
           views::Widget::GetWidgetForNativeWindow(window)->GetColorProvider();
     }

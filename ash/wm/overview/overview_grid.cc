@@ -2613,7 +2613,8 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
   int addend = increment ? 1 : -1;
   if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id) {
     num_unsupported_windows_ += addend;
-  } else if (Shell::Get()->saved_desk_delegate()->IsIncognitoWindow(window)) {
+  } else if (!Shell::Get()->saved_desk_delegate()->IsWindowPersistable(
+                 window)) {
     num_incognito_windows_ += addend;
   }
 
