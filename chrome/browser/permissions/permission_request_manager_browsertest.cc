@@ -362,9 +362,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       browser(), embedded_test_server()->GetURL("/empty.html#0"), 1);
 
   // Request 'geolocation' permission.
-  ExecuteScriptAndGetValue(
+  ASSERT_TRUE(content::ExecJs(
       GetActiveMainFrame(),
-      "navigator.geolocation.getCurrentPosition(function(){});");
+      "navigator.geolocation.getCurrentPosition(function(){});"));
   bubble_factory()->WaitForPermissionBubble();
 
   EXPECT_EQ(1, bubble_factory()->show_count());
@@ -460,9 +460,10 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
       browser(), embedded_test_server()->GetURL("/empty.html"), 1);
 
   // Request Notifications, prompt should be shown.
-  ExecuteScriptAndGetValue(
+  ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
-      "Notification.requestPermission()");
+      "Notification.requestPermission()",
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
   bubble_factory()->WaitForPermissionBubble();
   EXPECT_TRUE(bubble_factory()->is_visible());
   EXPECT_EQ(1, bubble_factory()->show_count());
@@ -479,9 +480,9 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestManagerBrowserTest,
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
-  ExecuteScriptAndGetValue(
+  ASSERT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetWebContentsAt(0)->GetPrimaryMainFrame(),
-      "window.location = 'simple.html'");
+      "window.location = 'simple.html'"));
 
   observer.Wait();
   EXPECT_FALSE(bubble_factory()->is_visible());

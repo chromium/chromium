@@ -388,9 +388,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Future attempts to run script via GetAssociatedLocalFrame should succeed.
   // This timed out before the fix, since the message was dropped and no value
   // was retrieved.
-  base::Value result =
-      ExecuteScriptAndGetValue(web_contents->GetPrimaryMainFrame(), "'foo'");
-  EXPECT_EQ("foo", result.GetString());
+  EXPECT_EQ("foo", EvalJs(web_contents->GetPrimaryMainFrame(), "'foo'"));
 }
 
 // Test that when creating a new window, the main frame is correctly focused.

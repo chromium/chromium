@@ -444,9 +444,9 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
   // Execute and wait for specified string
   for (const auto& function_name : scenario_.execute) {
     DLOG(INFO) << "executing: " << function_name;
-    base::Value result = ExecuteScriptAndGetValue(
-        web_contents->GetPrimaryMainFrame(), function_name);
-    const std::string& str = result.is_string() ? result.GetString() : "";
+    const std::string str =
+        EvalJs(web_contents->GetPrimaryMainFrame(), function_name)
+            .ExtractString();
     // If no string is specified, do not wait.
     bool wait_for_string = str != "";
     while (wait_for_string) {
@@ -585,7 +585,7 @@ std::unique_ptr<AXTreeFormatter> DumpAccessibilityTestBase::CreateFormatter()
   return AXInspectFactory::CreateFormatter(GetParam());
 }
 
-std::pair<base::Value, std::vector<std::string>>
+std::pair<EvalJsResult, std::vector<std::string>>
 DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
                                          ui::AXMode mode) {
   // Create a new Event Recorder for the run.
@@ -617,7 +617,7 @@ DumpAccessibilityTestBase::CaptureEvents(InvokeAction invoke_action,
   // If an action was performed, we already waited for the kClicked event in
   // PerformAndWaitForDefaultActions(), which means the action is already
   // completed.
-  base::Value action_result = std::move(invoke_action).Run();
+  EvalJsResult action_result = std::move(invoke_action).Run();
 
   // Wait for at least one event. This may unblock either when |waiter|
   // observes either an ax::mojom::Event or ui::AXEventGenerator::Event, or

@@ -131,7 +131,7 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
                            base::Unretained(this), formatter.get(), root,
                            scenario_.script_instructions, start_index, index),
             ui::kAXModeComplete);
-        actual_contents = pair.first.GetString();
+        actual_contents = pair.first.ExtractString();
         for (auto event : pair.second) {
           if (base::StartsWith(event, wait_for)) {
             actual_contents += event + '\n';
@@ -167,14 +167,15 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     return dump;
   }
 
-  base::Value EvaluateScript(
+  EvalJsResult EvaluateScript(
       AXTreeFormatter* formatter,
       BrowserAccessibility* root,
       const std::vector<AXScriptInstruction>& instructions,
       size_t start_index,
       size_t end_index) {
-    return base::Value(
-        formatter->EvaluateScript(root, instructions, start_index, end_index));
+    return EvalJsResult(/*value=*/base::Value(formatter->EvaluateScript(
+                            root, instructions, start_index, end_index)),
+                        /*error=*/"");
   }
 
   RenderWidgetHost* GetWidgetHost() {

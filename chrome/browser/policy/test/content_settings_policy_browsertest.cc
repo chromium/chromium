@@ -49,9 +49,7 @@ const char kCookieOptions[] = ";expires=Wed Jan 01 2038 00:00:00 GMT";
 constexpr int kBlockAll = 2;
 
 bool IsJavascriptEnabled(content::WebContents* contents) {
-  base::Value value =
-      content::ExecuteScriptAndGetValue(contents->GetPrimaryMainFrame(), "123");
-  return value.is_int() && value.GetInt() == 123;
+  return content::ExecJs(contents->GetPrimaryMainFrame(), "123");
 }
 
 }  // namespace

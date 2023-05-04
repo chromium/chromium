@@ -216,10 +216,7 @@ class BaseSelectFileDialogExtensionBrowserTest
 
   void CheckJavascriptErrors() {
     content::RenderFrameHost* host = dialog_->GetPrimaryMainFrame();
-    base::Value value =
-        content::ExecuteScriptAndGetValue(host, "window.JSErrorCount");
-    int js_error_count = value.GetInt();
-    ASSERT_EQ(0, js_error_count);
+    ASSERT_EQ(0, content::EvalJs(host, "window.JSErrorCount"));
   }
 
   void ClickElement(const std::string& selector) {

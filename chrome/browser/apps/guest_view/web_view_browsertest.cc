@@ -3712,14 +3712,13 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, SendMessageToComponentExtensionFromGuest) {
   // Retrive the guestProcessId and guestRenderFrameRoutingId from the
   // extension.
   int guest_process_id =
-      content::ExecuteScriptAndGetValue(
-          embedder_web_contents->GetPrimaryMainFrame(), "window.guestProcessId")
-          .GetInt();
+      content::EvalJs(embedder_web_contents->GetPrimaryMainFrame(),
+                      "window.guestProcessId")
+          .ExtractInt();
   int guest_render_frame_routing_id =
-      content::ExecuteScriptAndGetValue(
-          embedder_web_contents->GetPrimaryMainFrame(),
-          "window.guestRenderFrameRoutingId")
-          .GetInt();
+      content::EvalJs(embedder_web_contents->GetPrimaryMainFrame(),
+                      "window.guestRenderFrameRoutingId")
+          .ExtractInt();
 
   auto* guest_rfh = content::RenderFrameHost::FromID(
       guest_process_id, guest_render_frame_routing_id);

@@ -414,11 +414,9 @@ class CertificateProviderApiMockedExtensionTest
     CheckCertificateProvidedByExtension(*certificate, *extension());
 
     // Fetch the data from the sign request.
-    const std::string request_algorithm =
-        ExecuteScriptAndGetValue(GetExtensionMainFrame(),
-                                 "signatureRequestAlgorithm;")
-            .GetString();
-    EXPECT_EQ(expected_request_signature_algorithm, request_algorithm);
+    EXPECT_EQ(
+        expected_request_signature_algorithm,
+        content::EvalJs(GetExtensionMainFrame(), "signatureRequestAlgorithm;"));
 
     base::test::TestFuture<base::Value> exec_js_future;
     GetExtensionMainFrame()->ExecuteJavaScriptForTests(

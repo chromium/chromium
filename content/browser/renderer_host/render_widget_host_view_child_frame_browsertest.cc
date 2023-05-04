@@ -151,16 +151,15 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest, Screen) {
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
   int main_frame_screen_width =
-      ExecuteScriptAndGetValue(shell()->web_contents()->GetPrimaryMainFrame(),
-                               "window.screen.width")
-          .GetInt();
+      EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
+             "window.screen.width")
+          .ExtractInt();
   EXPECT_NE(main_frame_screen_width, 0);
 
   shell()->web_contents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
       [&](RenderFrameHost* frame_host) {
-        int width = ExecuteScriptAndGetValue(frame_host, "window.screen.width")
-                        .GetInt();
-        EXPECT_EQ(width, main_frame_screen_width);
+        EXPECT_EQ(main_frame_screen_width,
+                  EvalJs(frame_host, "window.screen.width"));
       });
 }
 
@@ -713,12 +712,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                      "document.getElementById('mainframe_input_id').focus();"));
   root_widget->UpdateTextDirection(base::i18n::RIGHT_TO_LEFT);
   root_widget->NotifyTextDirection();
-  std::string mainframe_input_element_dir =
-      ExecuteScriptAndGetValue(
-          root->current_frame_host(),
-          "document.getElementById('mainframe_input_id').dir")
-          .GetString();
-  EXPECT_EQ(mainframe_input_element_dir, "rtl");
+  EXPECT_EQ("rtl", EvalJs(root->current_frame_host(),
+                          "document.getElementById('mainframe_input_id').dir"));
 
   // In-process frame.
   FrameTreeNode* ipchild = root->child_at(0);
@@ -731,12 +726,8 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                      "document.getElementById('ipchild_input_id').focus();"));
   ipchild_widget->UpdateTextDirection(base::i18n::LEFT_TO_RIGHT);
   ipchild_widget->NotifyTextDirection();
-  std::string ip_input_element_dir =
-      ExecuteScriptAndGetValue(
-          ipchild->current_frame_host(),
-          "document.getElementById('ipchild_input_id').dir")
-          .GetString();
-  EXPECT_EQ(ip_input_element_dir, "ltr");
+  EXPECT_EQ("ltr", EvalJs(ipchild->current_frame_host(),
+                          "document.getElementById('ipchild_input_id').dir"));
 
   // Out-of-process frame.
   FrameTreeNode* oopchild = root->child_at(1);
@@ -749,20 +740,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
                      "document.getElementById('oop_input_id').focus();"));
   oopchild_widget->UpdateTextDirection(base::i18n::RIGHT_TO_LEFT);
   oopchild_widget->NotifyTextDirection();
-  std::string oop_input_element_dir =
-      ExecuteScriptAndGetValue(oopchild->current_frame_host(),
-                               "document.getElementById('oop_input_id').dir")
-          .GetString();
-  EXPECT_EQ(oop_input_element_dir, "rtl");
+  EXPECT_EQ("rtl", EvalJs(oopchild->current_frame_host(),
+                          "document.getElementById('oop_input_id').dir"));
 
   // In case of UNKNOWN_DIRECTION, old value of direction is maintained.
   oopchild_widget->UpdateTextDirection(base::i18n::UNKNOWN_DIRECTION);
   oopchild_widget->NotifyTextDirection();
-  oop_input_element_dir =
-      ExecuteScriptAndGetValue(oopchild->current_frame_host(),
-                               "document.getElementById('oop_input_id').dir")
-          .GetString();
-  EXPECT_EQ(oop_input_element_dir, "rtl");
+  EXPECT_EQ("rtl", EvalJs(oopchild->current_frame_host(),
+                          "document.getElementById('oop_input_id').dir"));
 }
 
 }  // namespace

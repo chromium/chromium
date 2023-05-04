@@ -18,6 +18,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -219,12 +220,13 @@ Visibility GetVisibility(Browser* browser, const std::string& node_id) {
     }(document.getElementById(')" + node_id + R"(')));)";
   // clang-format on
 
-  base::Value value = content::ExecuteScriptAndGetValue(rfh, jsFindVisibility);
+  content::EvalJsResult result = content::EvalJs(rfh, jsFindVisibility);
 
-  if (!value.is_bool())
+  if (result != true && result != false) {
     return VISIBILITY_ERROR;
+  }
 
-  return value.GetBool() ? VISIBLE : HIDDEN;
+  return result == true ? VISIBLE : HIDDEN;
 }
 
 bool Click(Browser* browser, const std::string& node_id) {
@@ -235,7 +237,7 @@ bool Click(Browser* browser, const std::string& node_id) {
   content::RenderFrameHost* rfh = GetRenderFrameHost(browser);
   if (!rfh)
     return false;
-  // We don't use ExecuteScriptAndGetValue for this one, since clicking
+  // We don't use EvalJs for this one, since clicking
   // the button/link may navigate away before the injected javascript can
   // reply, hanging the test.
   rfh->ExecuteJavaScriptForTests(u"document.getElementById('" +

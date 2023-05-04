@@ -31,7 +31,6 @@
 
 namespace base {
 class CommandLine;
-class Value;
 }  // namespace base
 
 // A collection of functions designed for use with unit and browser tests.
@@ -77,13 +76,6 @@ void RunAllTasksUntilIdle();
 // TODO(gab): Assess the need for this API (see comment on
 // RunAllPendingInMessageLoop() above).
 base::OnceClosure GetDeferredQuitTaskForRunLoop(base::RunLoop* run_loop);
-
-// Executes the specified JavaScript in the specified frame, and runs a nested
-// MessageLoop. When the result is available, it is returned.
-// This should not be used; the use of the ExecuteScript functions in
-// browser_test_utils is preferable.
-base::Value ExecuteScriptAndGetValue(RenderFrameHost* render_frame_host,
-                                     const std::string& script);
 
 // Returns true if all sites are isolated. Typically used to bail from a test
 // that is incompatible with --site-per-process.

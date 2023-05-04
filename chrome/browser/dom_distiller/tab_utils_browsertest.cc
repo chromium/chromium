@@ -157,16 +157,16 @@ class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
   const GURL& article_url() const { return article_url_; }
 
   std::string GetDocumentTitle(content::WebContents* web_contents) const {
-    return content::ExecuteScriptAndGetValue(
-               web_contents->GetPrimaryMainFrame(), "document.title")
-        .GetString();
+    return content::EvalJs(web_contents->GetPrimaryMainFrame(),
+                           "document.title")
+        .ExtractString();
   }
 
   std::string GetArticleHeading(content::WebContents* web_contents) const {
-    return content::ExecuteScriptAndGetValue(
+    return content::EvalJs(
                web_contents->GetPrimaryMainFrame(),
                "document.getElementById('title-holder').textContent")
-        .GetString();
+        .ExtractString();
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
