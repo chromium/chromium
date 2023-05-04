@@ -840,6 +840,7 @@ source_set("web_applications_browser_tests") {
     "//chrome/test:test_support_ui",
     "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/site_engagement/content",
     "//components/user_manager",
     "//components/web_package",
     "//components/web_package/test_support",
