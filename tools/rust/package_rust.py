@@ -8,6 +8,7 @@ import lzma
 import os
 import platform
 import shutil
+import subprocess
 import sys
 import tarfile
 
@@ -90,6 +91,14 @@ def main():
         TeeCmd(build_cmd, log)
 
     BuildCrubit(args.build_mac_arm)
+
+    # Strip everything in bin/ to reduce the package size.
+    bin_dir_path = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin')
+    if sys.platform != 'win32' and os.path.exists(bin_dir_path):
+        for f in os.listdir(bin_dir_path):
+            file_path = os.path.join(bin_dir_path, f)
+            if not os.path.islink(file_path):
+                subprocess.call(['strip', file_path])
 
     with tarfile.open(os.path.join(THIRD_PARTY_DIR,
                                    RUST_TOOLCHAIN_PACKAGE_NAME),
