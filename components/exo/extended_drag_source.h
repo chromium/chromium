@@ -100,6 +100,7 @@ class ExtendedDragSource : public DataSourceObserver,
   void UnlockCursor();
   void StartDrag(aura::Window* toplevel);
   void OnDraggedWindowVisibilityChanging(bool visible);
+  void OnDraggedWindowVisibilityChanged(bool visible);
   void Cleanup();
 
   static ExtendedDragSource* instance_;
