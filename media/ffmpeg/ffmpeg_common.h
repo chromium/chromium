@@ -132,9 +132,6 @@ AVSampleFormatToSampleFormat(AVSampleFormat sample_format, AVCodecID codec_id);
 MEDIA_EXPORT VideoPixelFormat
 AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format);
 
-VideoColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
-                                         AVColorRange color_range);
-
 // Converts an AVERROR error number to a description.
 std::string AVErrorToString(int errnum);
 

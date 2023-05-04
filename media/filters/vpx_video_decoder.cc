@@ -364,9 +364,9 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
 
   // Prefer the color space from the config if available. It generally comes
   // from the color tag which is more expressive than the vp8 and vp9 bitstream.
-  if (config_.color_space_info().IsSpecified()) {
-    (*video_frame)
-        ->set_color_space(config_.color_space_info().ToGfxColorSpace());
+  auto config_cs = config_.color_space_info().ToGfxColorSpace();
+  if (config_cs.IsValid()) {
+    (*video_frame)->set_color_space(config_cs);
     return true;
   }
 

@@ -422,48 +422,45 @@ bool FFmpegVideoDecoder::OnNewFrame(AVFrame* frame) {
     return false;
   }
 
-  // Prefer the color space from the codec context. If it's not specified (or is
-  // set to an unsupported value), fall back on the value from the config.
-  auto color_space =
-      AVColorSpaceToColorSpace(frame->colorspace, frame->color_range);
-  if (!color_space.IsSpecified()) {
-    color_space = config_.color_space_info();
-  }
-  video_frame->set_color_space(color_space.ToGfxColorSpace());
+  auto config_cs = config_.color_space_info().ToGfxColorSpace();
 
+  gfx::ColorSpace color_space;
   if (codec_context_->codec_id == AV_CODEC_ID_VP8 &&
+      frame->color_range == AVCOL_RANGE_JPEG &&
       frame->color_primaries == AVCOL_PRI_UNSPECIFIED &&
       frame->color_trc == AVCOL_TRC_UNSPECIFIED &&
-      frame->colorspace == AVCOL_SPC_BT470BG) {
+      frame->colorspace == AVCOL_SPC_BT470BG && !config_cs.IsValid()) {
     // vp8 has no colorspace information, except for the color range, so prefer
     // the config color space if it exists.
     //
     // However, because of a comment in the vp8 spec, ffmpeg sets the
     // colorspace to BT470BG. We detect this and treat it as unset.
     // If the color range is set to full range, we use the jpeg color space.
-    if (config_.color_space_info().IsSpecified()) {
-      video_frame->set_color_space(
-          config_.color_space_info().ToGfxColorSpace());
-    } else if (codec_context_->color_range == AVCOL_RANGE_JPEG) {
-      video_frame->set_color_space(gfx::ColorSpace::CreateJpeg());
-    }
+    color_space = gfx::ColorSpace::CreateJpeg();
   } else if (codec_context_->codec_id == AV_CODEC_ID_H264 &&
              frame->colorspace == AVCOL_SPC_RGB &&
              video_frame->format() == PIXEL_FORMAT_I420) {
     // Some H.264 videos contain a VUI that specifies a color matrix of GBR,
     // when they are actually ordinary YUV. Only 4:2:0 formats are checked,
     // because GBR is reasonable for 4:4:4 content. See crbug.com/1067377.
-    video_frame->set_color_space(gfx::ColorSpace::CreateREC709());
+    color_space = gfx::ColorSpace::CreateREC709();
   } else if (frame->color_primaries != AVCOL_PRI_UNSPECIFIED ||
              frame->color_trc != AVCOL_TRC_UNSPECIFIED ||
              frame->colorspace != AVCOL_SPC_UNSPECIFIED) {
-    media::VideoColorSpace video_color_space = media::VideoColorSpace(
-        frame->color_primaries, frame->color_trc, frame->colorspace,
-        frame->color_range != AVCOL_RANGE_MPEG
-            ? gfx::ColorSpace::RangeID::FULL
-            : gfx::ColorSpace::RangeID::LIMITED);
-    video_frame->set_color_space(video_color_space.ToGfxColorSpace());
+    color_space = VideoColorSpace(frame->color_primaries, frame->color_trc,
+                                  frame->colorspace,
+                                  frame->color_range != AVCOL_RANGE_MPEG
+                                      ? gfx::ColorSpace::RangeID::FULL
+                                      : gfx::ColorSpace::RangeID::LIMITED)
+                      .ToGfxColorSpace();
+  } else if (frame->color_range == AVCOL_RANGE_JPEG) {
+    // None of primaries, transfer, or colorspace are specified at this point,
+    // so guess BT.709 full range for historical reasons.
+    color_space = gfx::ColorSpace::CreateJpeg();
   }
+
+  // Prefer the frame color space over what's in the config.
+  video_frame->set_color_space(color_space.IsValid() ? color_space : config_cs);
 
   video_frame->metadata().power_efficient = false;
   video_frame->AddDestructionObserver(

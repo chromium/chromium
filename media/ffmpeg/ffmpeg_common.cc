@@ -910,26 +910,6 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat pixel_format) {
   return PIXEL_FORMAT_UNKNOWN;
 }
 
-VideoColorSpace AVColorSpaceToColorSpace(AVColorSpace color_space,
-                                         AVColorRange color_range) {
-  // TODO(hubbe): make this better
-  if (color_range == AVCOL_RANGE_JPEG)
-    return VideoColorSpace::JPEG();
-
-  switch (color_space) {
-    case AVCOL_SPC_UNSPECIFIED:
-      break;
-    case AVCOL_SPC_BT709:
-      return VideoColorSpace::REC709();
-    case AVCOL_SPC_SMPTE170M:
-    case AVCOL_SPC_BT470BG:
-      return VideoColorSpace::REC601();
-    default:
-      DVLOG(1) << "Unknown AVColorSpace: " << color_space;
-  }
-  return VideoColorSpace();
-}
-
 std::string AVErrorToString(int errnum) {
   char errbuf[AV_ERROR_MAX_STRING_SIZE] = {0};
   av_strerror(errnum, errbuf, AV_ERROR_MAX_STRING_SIZE);
