@@ -173,11 +173,6 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
               (int64_t, OnceCallback<void(FileError, FileMetadataPtr)>),
               (override));
 
-  MOCK_METHOD(void,
-              SetDocsOfflineEnabled,
-              (bool, OnceCallback<void(FileError)>),
-              (override));
-
  private:
   std::list<mojo::Receiver<SearchQuery>> queries_;
 };
@@ -1808,40 +1803,6 @@ TEST_F(DriveFsPinManagerTest, CannotListFiles) {
   EXPECT_EQ(progress.pinned_files, 0);
 }
 
-// Tests what happens when PinManager cannot enable Docs offline during initial
-// setup.
-TEST_F(DriveFsPinManagerTest, CannotEnableDocsOffline) {
-  CompletionCallback completion_callback;
-  RunLoop run_loop;
-
-  // Mock Drive search to return 1 unpinned files that total to 256 MB.
-  const vector<DriveItem> items = {{.size = 256 << 20}};
-
-  EXPECT_CALL(drivefs_, SetDocsOfflineEnabled(true, _))
-      .WillOnce(RunOnceCallback<1>(drive::FILE_ERROR_SERVICE_UNAVAILABLE));
-  EXPECT_CALL(drivefs_, OnStartSearchQuery(_)).Times(1);
-  EXPECT_CALL(drivefs_, OnGetNextPage(_))
-      .WillOnce(DoAll(PopulateSearchItems(items), Return(kFileOk)))
-      .WillOnce(DoAll(PopulateNoSearchItems(), Return(kFileOk)));
-  EXPECT_CALL(space_getter_, GetFreeSpace(gcache_dir_, _))
-      .WillOnce(RunOnceCallback<1>(1 << 30));  // 1 GB.
-  EXPECT_CALL(completion_callback, Run(Stage::kCannotEnableDocsOffline))
-      .WillOnce(RunClosure(run_loop.QuitClosure()));
-
-  PinManager manager(temp_dir_.GetPath(), &drivefs_);
-  manager.SetSpaceGetter(GetSpaceGetter());
-  manager.SetCompletionCallback(completion_callback.Get());
-  manager.Start();
-  run_loop.Run();
-
-  const Progress progress = manager.GetProgress();
-  EXPECT_EQ(progress.stage, Stage::kCannotEnableDocsOffline);
-  EXPECT_EQ(progress.free_space, 1 << 30);
-  EXPECT_EQ(progress.required_space, 256 << 20);
-  EXPECT_EQ(progress.pinned_bytes, 0);
-  EXPECT_EQ(progress.pinned_files, 0);
-}
-
 // Tests what happens when PinManager cannot get enough free space during
 // the initial setup.
 TEST_F(DriveFsPinManagerTest, NotEnoughSpace) {
@@ -2493,9 +2454,6 @@ TEST_F(DriveFsPinManagerTest, StartWhenInProgress) {
 // Tests PinManager::StartPinning().
 TEST_F(DriveFsPinManagerTest, StartPinning) {
   PinManager manager(temp_dir_.GetPath(), &drivefs_);
-
-  EXPECT_CALL(drivefs_, SetDocsOfflineEnabled(true, _))
-      .WillRepeatedly(RunOnceCallback<1>(drive::FILE_ERROR_OK));
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(manager.sequence_checker_);
   manager.progress_.stage = Stage::kListingFiles;
