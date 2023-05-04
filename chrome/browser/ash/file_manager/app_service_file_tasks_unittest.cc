@@ -414,22 +414,6 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksText) {
   EXPECT_FALSE(tasks[0].is_generic_file_handler);
 }
 
-// Test that policy assigning .jpeg to an invalid app results in
-// kIncorrectAssignment.
-TEST_F(AppServiceFileTasksTestEnabled, WrongPolicyConfiguration) {
-  AddChromeApp();
-
-  profile()->AsTestingProfile()->GetTestingPrefService()->SetManagedPref(
-      prefs::kDefaultHandlersForFileExtensions,
-      base::Value(
-          base::Value::Dict().Set(".jpeg", "longandtediouschromeappid")));
-  // Find apps for a "text/plain" file.
-  std::unique_ptr<ResultingTasks> resulting_tasks =
-      FindAppServiceTasksWithPolicy({{"bar.jpeg", kMimeTypeImage}});
-  ASSERT_EQ(resulting_tasks->policy_default_handler_status,
-            PolicyDefaultHandlerStatus::kIncorrectAssignment);
-}
-
 // Test that between an image app and text app, the image app can be
 // found for an image file entry.
 TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceFileTasksImage) {

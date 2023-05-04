@@ -302,13 +302,6 @@ class FileManagerFileTaskPolicyDefaultHandlersTest
               0);
   }
 
-  static void RestoreOriginalState(ResultingTasks* resulting_tasks) {
-    resulting_tasks->policy_default_handler_status = {};
-    for (auto& task : resulting_tasks->tasks) {
-      task.is_default = false;
-    }
-  }
-
  protected:
   static constexpr char kWebAppId[] = "web-app-id";
   static constexpr char kChromeAppId[] = "chrome-app-id";
@@ -364,16 +357,16 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, CheckNoPolicyAssignment) {
   CheckNoPolicyAssignment();
 }
 
-// Check that setting policy to a non-existent app yields an error.
+// Check that a policy set to a non-existent app is ignored.
 TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
        CheckAssignmentToNonExistentApp) {
   entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
                          "text/plain", false);
 
   UpdateDefaultHandlersPrefs({{".txt", kNonExistentAppId}});
-  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
-                                                     resulting_tasks()));
-  CheckConflictingPolicyAssignment();
+  ASSERT_FALSE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                      resulting_tasks()));
+  CheckNoPolicyAssignment();
 }
 
 // Check that assigning different apps to handle different file extensions
@@ -389,6 +382,21 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
   ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
                                                      resulting_tasks()));
   CheckConflictingPolicyAssignment();
+}
+
+// Check that legacy arc app format is parsed correctly.
+TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, LegacyArcAppFormat) {
+  resulting_tasks()->tasks.emplace_back(
+      TaskDescriptor{"com.legacy.package/intentName", TASK_TYPE_ARC_APP,
+                     "view"},
+      /*task_title=*/"Task", GURL(), false, false, false);
+  entries().emplace_back(base::FilePath::FromUTF8Unsafe("foo.txt"),
+                         "text/plain", false);
+
+  UpdateDefaultHandlersPrefs({{".txt", "com.legacy.package"}});
+  ASSERT_TRUE(ChooseAndSetDefaultTaskFromPolicyPrefs(profile(), entries(),
+                                                     resulting_tasks()));
+  CheckCorrectPolicyAssignment("com.legacy.package/intentName");
 }
 
 class FileManagerFileTaskPolicyDefaultHandlersTestPerAppType

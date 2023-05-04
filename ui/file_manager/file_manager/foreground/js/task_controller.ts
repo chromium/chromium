@@ -530,7 +530,8 @@ export class TaskController {
         defaultTask != null && !defaultTask.isDlpBlocked;
     this.shouldHideDefaultTask_ = defaultTask == null;
     this.defaultTaskCommand_.canExecuteChange(this.ui_.listContainer.element);
-    this.canExecuteOpenActions_ = taskCount > 1;
+    this.canExecuteOpenActions_ = taskCount > 1 ||
+      (taskCount === 1 && !defaultTask);
     this.openWithCommand_.canExecuteChange(this.ui_.listContainer.element);
 
     this.ui_.tasksSeparator.hidden = taskCount === 0;

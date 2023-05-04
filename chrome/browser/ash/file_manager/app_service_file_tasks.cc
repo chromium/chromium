@@ -113,6 +113,20 @@ const char kImportCrostiniImageHandlerId[] =
 const char kInstallLinuxPackageHandlerId[] =
     "chrome://file-manager/?install-linux-package";
 
+bool MatchPolicyIdAgainstLegacyArcAppFormat(const TaskDescriptor& td,
+                                            base::StringPiece policy_id) {
+  DCHECK_EQ(td.task_type, TASK_TYPE_ARC_APP);
+  // Sometimes task descriptors for Android apps are stored in a
+  // legacy format (app id: "<package>/<activity>", action id: "view").
+  std::vector<std::string> app_id_info = base::SplitString(
+      td.app_id, "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (app_id_info.size() != 2) {
+    return false;
+  }
+  const auto& package_name = app_id_info[0];
+  return package_name == policy_id;
+}
+
 }  // namespace
 
 bool FileHandlerIsEnabled(Profile* profile,
@@ -379,28 +393,19 @@ void ExecuteAppServiceTask(
               std::move(done), task.task_type));
 }
 
-absl::optional<std::string> GetPolicyDefaultHandlerForFileExtension(
-    Profile* profile,
-    const std::string& file_extension) {
-  const auto& policy_default_handlers =
-      profile->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
-  if (auto* policy_default_handler =
-          policy_default_handlers.FindString(file_extension)) {
-    return *policy_default_handler;
-  }
-  return {};
-}
-
 bool ChooseAndSetDefaultTaskFromPolicyPrefs(
     Profile* profile,
     const std::vector<extensions::EntryInfo>& entries,
     ResultingTasks* resulting_tasks) {
+  const auto& policy_default_handlers =
+      profile->GetPrefs()->GetDict(prefs::kDefaultHandlersForFileExtensions);
+
   // Check that there are no conflicting assignments for the given set of
   // entries.
   base::flat_set<std::string> default_handlers_for_entries;
   for (const auto& entry : entries) {
-    if (auto policy_default_handler = GetPolicyDefaultHandlerForFileExtension(
-            profile, entry.path.Extension())) {
+    if (auto* policy_default_handler =
+            policy_default_handlers.FindString(entry.path.Extension())) {
       default_handlers_for_entries.insert(*policy_default_handler);
     }
   }
@@ -422,29 +427,29 @@ bool ChooseAndSetDefaultTaskFromPolicyPrefs(
 
   std::vector<std::string> app_ids =
       apps_util::GetAppIdsFromPolicyId(profile, policy_id);
-  if (app_ids.empty()) {
-    resulting_tasks->policy_default_handler_status =
-        PolicyDefaultHandlerStatus::kIncorrectAssignment;
-    return true;
-  }
 
   std::vector<FullTaskDescriptor*> filtered_tasks;
   for (auto& task : resulting_tasks->tasks) {
-    if (base::Contains(app_ids, task.task_descriptor.app_id)) {
+    const auto& td = task.task_descriptor;
+    if (base::Contains(app_ids, td.app_id) ||
+        (td.task_type == TASK_TYPE_ARC_APP &&
+         !ash::features::ShouldArcFileTasksUseAppService() &&
+         MatchPolicyIdAgainstLegacyArcAppFormat(td, policy_id))) {
       filtered_tasks.push_back(&task);
+      continue;
     }
   }
 
+  // If there are no tasks found, we resort to the standard flow to not ruin the
+  // user journey.
   if (filtered_tasks.size() == 1) {
     filtered_tasks.front()->is_default = true;
     resulting_tasks->policy_default_handler_status =
         PolicyDefaultHandlerStatus::kDefaultHandlerAssignedByPolicy;
-  } else {
-    // No tasks or multiple tasks were found
-    resulting_tasks->policy_default_handler_status =
-        PolicyDefaultHandlerStatus::kIncorrectAssignment;
+    return true;
   }
-  return true;
+
+  return false;
 }
 
 }  // namespace file_manager::file_tasks
