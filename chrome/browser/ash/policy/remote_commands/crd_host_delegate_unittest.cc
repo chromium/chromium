@@ -347,6 +347,21 @@ TEST_F(CrdHostDelegateTest, ShouldPassTerminateUponInputTrueToRemotingService) {
   EXPECT_EQ(actual_parameters.terminate_upon_input, true);
 }
 
+TEST_F(CrdHostDelegateTest, ShouldPassAdminEmailToRemotingService) {
+  SessionParameters parameters;
+  parameters.admin_email = "the.admin@email.com";
+
+  SupportSessionParamsPtr actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  delegate().StartCrdHostAndGetCode(parameters, success_callback(),
+                                    error_callback(),
+                                    session_finished_callback());
+
+  EXPECT_EQ(actual_parameters->authorized_helper, "the.admin@email.com");
+}
+
 TEST_F(CrdHostDelegateTest,
        ShouldPassCurtainLocalUserSessionFalseToRemotingService) {
   SessionParameters parameters;
