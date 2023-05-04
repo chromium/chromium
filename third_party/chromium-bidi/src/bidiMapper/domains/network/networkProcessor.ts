@@ -22,11 +22,11 @@
  */
 import Protocol from 'devtools-protocol';
 
-import {CdpClient} from '../../CdpConnection';
-import {IEventManager} from '../events/EventManager';
-import {DefaultMap} from '../../../utils/DefaultMap';
+import {CdpClient} from '../../CdpConnection.js';
+import {IEventManager} from '../events/EventManager.js';
+import {DefaultMap} from '../../../utils/DefaultMap.js';
 
-import {NetworkRequest} from './networkRequest';
+import {NetworkRequest} from './networkRequest.js';
 
 export class NetworkProcessor {
   readonly #eventManager: IEventManager;

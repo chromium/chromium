@@ -16,9 +16,9 @@
  */
 import {v4 as uuidv4} from 'uuid';
 
-import {CommonDataTypes, Script} from '../../../protocol/protocol';
+import {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 
-import {CdpTarget} from './cdpTarget';
+import {CdpTarget} from './cdpTarget.js';
 
 export type BidiPreloadScript = {
   /** BiDi ID, an automatically generated UUID. */

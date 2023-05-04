@@ -23,9 +23,9 @@
 
 import Protocol from 'devtools-protocol';
 
-import {Deferred} from '../../../utils/deferred';
-import {IEventManager} from '../events/EventManager';
-import {Network} from '../../../protocol/protocol';
+import {Deferred} from '../../../utils/deferred.js';
+import {IEventManager} from '../events/EventManager.js';
+import {Network} from '../../../protocol/protocol.js';
 
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';

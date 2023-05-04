@@ -16,13 +16,13 @@
  *
  */
 
-import {CdpClient} from '../../CdpConnection';
-import {LogManager} from '../log/logManager';
-import {RealmStorage} from '../script/realmStorage';
-import {IEventManager} from '../events/EventManager';
-import {CDP, Script} from '../../../protocol/protocol';
-import {Deferred} from '../../../utils/deferred';
-import {NetworkProcessor} from '../network/networkProcessor';
+import {CdpClient} from '../../CdpConnection.js';
+import {LogManager} from '../log/logManager.js';
+import {RealmStorage} from '../script/realmStorage.js';
+import {IEventManager} from '../events/EventManager.js';
+import {CDP, Script} from '../../../protocol/protocol.js';
+import {Deferred} from '../../../utils/deferred.js';
+import {NetworkProcessor} from '../network/networkProcessor.js';
 
 export class CdpTarget {
   readonly #targetId: string;

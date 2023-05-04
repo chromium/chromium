@@ -30,7 +30,7 @@ import {Realm} from '../script/realm.js';
 import {RealmStorage} from '../script/realmStorage.js';
 
 import {BrowsingContextStorage} from './browsingContextStorage.js';
-import {CdpTarget} from './cdpTarget';
+import {CdpTarget} from './cdpTarget.js';
 
 export class BrowsingContextImpl {
   /** The ID of the current context. */
