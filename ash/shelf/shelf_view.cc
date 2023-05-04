@@ -367,6 +367,7 @@ ShelfView::ShelfView(ShelfModel* model,
   shelf_->AddObserver(this);
   bounds_animator_->AddObserver(this);
   bounds_animator_->SetAnimationDuration(
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() *
       ShelfConfig::Get()->shelf_animation_duration());
   set_context_menu_controller(this);
   set_allow_deactivate_on_esc(true);
@@ -1225,8 +1226,13 @@ void ShelfView::EndDrag(bool cancel,
       // and it might have moved within the bounds. In that case the item need
       // to animate back to its correct location.
       AnimateToIdealBounds();
-      bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
-                                             std::move(animation_delegate));
+      // TODO(crbug/1442378): Remove the check below once the bounds animator
+      // works better with zero animation duration.
+      if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+        bounds_animator_->SetAnimationDelegate(drag_and_drop_view,
+                                               std::move(animation_delegate));
+      }
+
     } else {
       drag_and_drop_view->SetSize(pre_drag_and_drop_size_);
     }
@@ -2244,9 +2250,13 @@ void ShelfView::ShelfItemAdded(int model_index) {
   // it. When done we'll fade the view in.
   AnimateToIdealBounds();
   DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
-  bounds_animator_->SetAnimationDelegate(
-      view, std::unique_ptr<gfx::AnimationDelegate>(
-                new StartFadeAnimationDelegate(this, view)));
+  // TODO(crbug/1442378): Remove the check below once the bounds animator works
+  // better with zero animation duration.
+  if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+    bounds_animator_->SetAnimationDelegate(
+        view, std::unique_ptr<gfx::AnimationDelegate>(
+                  new StartFadeAnimationDelegate(this, view)));
+  }
 }
 
 void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
@@ -2296,9 +2306,13 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     // of the views to their target location.
     bounds_animator_->AnimateViewTo(view.get(), view->bounds());
     auto* const view_ptr = view.get();
-    bounds_animator_->SetAnimationDelegate(
-        view_ptr,
-        std::make_unique<FadeOutAnimationDelegate>(this, std::move(view)));
+    // TODO(crbug/1442378): Remove the check below once the bounds animator
+    // works better with zero animation duration.
+    if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+      bounds_animator_->SetAnimationDelegate(
+          view_ptr,
+          std::make_unique<FadeOutAnimationDelegate>(this, std::move(view)));
+    }
   } else {
     // Ensures that |view| is not used after destruction.
     StopAnimatingViewIfAny(view.get());

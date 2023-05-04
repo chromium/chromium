@@ -609,6 +609,7 @@ TEST_F(AppListControllerImplTest, DragItemFromAppsGridView) {
 
   // Add icons with the same app id to Shelf and AppsGridView respectively.
   ShelfViewTestAPI shelf_view_test_api(shelf->GetShelfViewForTesting());
+  shelf_view_test_api.SetAnimationDuration(base::Milliseconds(1));
   std::string app_id = shelf_view_test_api.AddItem(TYPE_PINNED_APP).app_id;
   AppListItem* item =
       GetAppListModel()->AddItem(std::make_unique<AppListItem>(app_id));
