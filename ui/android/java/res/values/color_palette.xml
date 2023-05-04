@@ -11,6 +11,7 @@ found in the LICENSE file.
     <color name="baseline_primary_0">@android:color/white</color>
     <color name="baseline_primary_100">#D3E3FD</color>
     <color name="baseline_primary_200">#A8C7FA</color>
+    <color name="baseline_primary_50">#ECF3FE</color>
     <color name="baseline_primary_200_alpha_10" tools:ignore="UnusedResources">#19A8C7FA</color>
     <color name="baseline_primary_200_alpha_20">#33A8C7FA</color>
     <color name="baseline_primary_200_alpha_50">#80A8C7FA</color>
@@ -157,4 +158,10 @@ found in the LICENSE file.
     <!-- Only use for older versions of Android mimics UI. -->
     <color name="google_blue_grey_900" tools:ignore="UnusedResources">#263238</color>
     <color name="google_blue_50" tools:ignore="UnusedResources">#E3F2FD</color>
+
+    <!-- GM3 dynamic colors that point to the baseline palette for below Android S.-->
+    <color name="material_primary_50">@color/baseline_primary_50</color>
+    <color name="material_primary_200">@color/baseline_primary_200</color>
+    <color name="material_primary_600">@color/baseline_primary_600</color>
+    <color name="material_primary_800">@color/baseline_primary_800</color>
 </resources>

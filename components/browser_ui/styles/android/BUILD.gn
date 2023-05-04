@@ -225,6 +225,7 @@ android_resources("java_resources") {
     "java/res/values-sw600dp-v27/styles.xml",
     "java/res/values-sw600dp/styles.xml",
     "java/res/values-v27/styles.xml",
+    "java/res/values-v31/colors.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/drawables.xml",

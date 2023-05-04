@@ -2867,6 +2867,12 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS" desc="Text appearing on an empty tab that indicates that downloaded files appear on this tab.">
         Files that you download appear here
       </message>
+      <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS_EMPTY_STATE" desc="Text appearing on an empty tab that indicates that downloaded files appear on this tab.">
+        You’ll find your downloads here
+      </message>
+      <message name="IDS_DOWNLOAD_MANAGER_NO_DOWNLOADS_VIEW_OFFLINE_OR_SHARE" desc="Text appearing on an empty tab that indicates that users can save downloaded files to view offline or share in other apps.">
+        You can save images and files to view offline or share in other apps
+      </message>
       <message name="IDS_DOWNLOAD_MANAGER_OPEN_WITH" desc="Menu item to open an item with another app.">
         Open with…
       </message>

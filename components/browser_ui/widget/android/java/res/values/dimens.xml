@@ -198,4 +198,8 @@ found in the LICENSE file.
 
     <!-- Vertical divider dimens -->
     <dimen name="horizontal_divider_vertical_margin">8dp</dimen>
+
+    <!-- Empty view layout dimensions -->
+    <dimen name="empty_state_text_width">341dp</dimen>
+    <dimen name="empty_state_subheading_padding_top">8dp</dimen>
 </resources>
