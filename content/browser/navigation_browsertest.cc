@@ -5466,6 +5466,7 @@ namespace {
 
 struct Result {
   GURL url;
+  absl::optional<url::Origin> origin;
   bool committed;
 };
 
@@ -5476,8 +5477,16 @@ class NavigationLogger : public WebContentsObserver {
 
   // WebContentsObserver overrides:
   void DidFinishNavigation(NavigationHandle* handle) override {
-    results_.push_back(
-        {.url = handle->GetURL(), .committed = handle->HasCommitted()});
+    if (handle->HasCommitted()) {
+      EXPECT_EQ(handle->GetRenderFrameHost()->GetLastCommittedURL(),
+                handle->GetURL());
+      RenderFrameHost* rfh = handle->GetRenderFrameHost();
+      results_.push_back({.url = rfh->GetLastCommittedURL(),
+                          .origin = rfh->GetLastCommittedOrigin(),
+                          .committed = true});
+    } else {
+      results_.push_back({.url = handle->GetURL(), .committed = false});
+    }
   }
 
   const std::vector<Result>& results() const { return results_; }
@@ -5599,8 +5608,10 @@ IN_PROC_BROWSER_TEST_F(UndoCommitNavigationBrowserTest,
   auto results = logger.results();
   ASSERT_EQ(2u, results.size());
   EXPECT_FALSE(results[0].committed);
+  EXPECT_EQ(absl::nullopt, results[0].origin);
   EXPECT_EQ(infinitely_loading_url, results[0].url);
   EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("c.com"), results[1].origin);
   EXPECT_EQ(final_url, results[1].url);
 }
 
@@ -5793,10 +5804,13 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   // navigation will be cancelled.
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
   } else {
     EXPECT_FALSE(results[0].committed);
+    EXPECT_EQ(absl::nullopt, results[0].origin);
   }
   EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("c.com"), results[1].origin);
   EXPECT_EQ(final_url, results[1].url);
 }
 
@@ -5810,7 +5824,7 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
       static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* first_subframe_node =
       web_contents->GetPrimaryMainFrame()->child_at(0);
-  RenderProcessHost* const a_com_render_process_host =
+  RenderProcessHost* const b_com_render_process_host =
       web_contents->GetPrimaryFrameTree()
           .root()
           ->render_manager()
@@ -5830,7 +5844,7 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   RenderFrameHostImpl* speculative_render_frame_host =
       first_subframe_node->render_manager()->speculative_frame_host();
   ASSERT_TRUE(speculative_render_frame_host);
-  EXPECT_EQ(a_com_render_process_host,
+  EXPECT_EQ(b_com_render_process_host,
             speculative_render_frame_host->GetProcess());
 
   // Simulates a race where a new navigation to c.com begins after the browser
@@ -5856,11 +5870,160 @@ IN_PROC_BROWSER_TEST_P(CommitNavigationRaceBrowserTest,
   // navigation will be cancelled.
   if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
     EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
   } else {
     EXPECT_FALSE(results[0].committed);
+    EXPECT_EQ(absl::nullopt, results[0].origin);
   }
   EXPECT_EQ(infinitely_loading_url, results[0].url);
   EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("c.com"), results[1].origin);
+  EXPECT_EQ(final_url, results[1].url);
+}
+
+// about:blank navigations do not require a URL loader and go through a
+// different path to commit the navigation in the renderer.
+IN_PROC_BROWSER_TEST_P(
+    CommitNavigationRaceBrowserTest,
+    BeginNewNavigationWithNoUrlLoaderAfterCommitNavigationInMainFrame) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
+
+  // The crash, if any, will manifest in the b.com renderer. Open a b.com window
+  // in the same browsing instance to ensure that the b.com renderer stays
+  // around even if the b.com speculative RenderFrameHost is discarded.
+  ASSERT_TRUE(ExecJs(
+      shell(), JsReplace("window.open($1)", embedded_test_server()->GetURL(
+                                                "b.com", "/title1.html"))));
+  ASSERT_EQ(2u, Shell::windows().size());
+  WebContentsImpl* new_web_contents =
+      static_cast<WebContentsImpl*>(Shell::windows()[1]->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(new_web_contents));
+  RenderProcessHost* const b_com_render_process_host =
+      new_web_contents->GetPrimaryMainFrame()->GetProcess();
+
+  NavigationLogger logger(shell()->web_contents());
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(shell(), infinitely_loading_url));
+
+  // Ensure the speculative RFH is in the expected process (i.e. the b.com
+  // process that was created for the navigation in the new window earlier).
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  RenderFrameHostImpl* speculative_render_frame_host =
+      web_contents->GetPrimaryFrameTree()
+          .root()
+          ->render_manager()
+          ->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Simulates a race where a new navigation to about:blank begins after the
+  // browser sends `CommitNavigation() to the b.com renderer, but before
+  // `DidCommitNavigation()` has been received from the b.com renderer. The
+  // navigation should be treated as if it started in the FrameTreeNode's
+  // current frame host, which has origin a.com, since the aforementioned
+  // navigation to b.com should not be treated as committed yet.
+  const GURL final_url("about:blank");
+  BeginNavigationInCommitCallbackInterceptor interceptor(
+      web_contents->GetPrimaryFrameTree().root(), final_url);
+  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
+      &interceptor);
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  // If navigation queueing is enabled, the first navigation will complete the
+  // commit as the new navigation gets queued until the first navigation's
+  // commit finished. If navigation queueing is disabled, the pending commit
+  // navigation will be cancelled.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
+  } else {
+    EXPECT_FALSE(results[0].committed);
+    EXPECT_EQ(absl::nullopt, results[0].origin);
+  }
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"), results[1].origin);
+  EXPECT_EQ(final_url, results[1].url);
+}
+
+IN_PROC_BROWSER_TEST_P(
+    CommitNavigationRaceBrowserTest,
+    BeginNewNavigationWithNoUrlLoaderAfterCommitNavigationInSubFrame) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "b.com", "/cross_site_iframe_factory.html?b(a)")));
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  FrameTreeNode* first_subframe_node =
+      web_contents->GetPrimaryMainFrame()->child_at(0);
+  RenderProcessHost* const b_com_render_process_host =
+      web_contents->GetPrimaryFrameTree()
+          .root()
+          ->render_manager()
+          ->current_frame_host()
+          ->GetProcess();
+
+  NavigationLogger logger(web_contents);
+
+  // Start a navigation that will create a speculative RFH in the existing
+  // render process for b.com.
+  const GURL infinitely_loading_url =
+      embedded_test_server()->GetURL("b.com", "/infinitely_loading_image.html");
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(first_subframe_node,
+                                             infinitely_loading_url));
+
+  // Ensure the speculative RFH is in the expected process.
+  RenderFrameHostImpl* speculative_render_frame_host =
+      first_subframe_node->render_manager()->speculative_frame_host();
+  ASSERT_TRUE(speculative_render_frame_host);
+  EXPECT_EQ(b_com_render_process_host,
+            speculative_render_frame_host->GetProcess());
+
+  // Simulates a race where a new navigation to about:blank begins after the
+  // browser sends `CommitNavigation() to the b.com renderer, but before
+  // `DidCommitNavigation()` has been received from the b.com renderer. The
+  // navigation should be treated as if it started in the FrameTreeNode's
+  // current frame host, which has origin a.com, since the aforementioned
+  // navigation to b.com should not be treated as committed yet.
+  const GURL final_url("about:blank");
+  BeginNavigationInCommitCallbackInterceptor interceptor(first_subframe_node,
+                                                         final_url);
+  speculative_render_frame_host->SetCommitCallbackInterceptorForTesting(
+      &interceptor);
+
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  EXPECT_EQ(final_url, first_subframe_node->render_manager()
+                           ->current_frame_host()
+                           ->GetLastCommittedURL());
+
+  auto results = logger.results();
+  ASSERT_EQ(2u, results.size());
+  // If navigation queueing is enabled, the first navigation will complete the
+  // commit as the new navigation gets queued until the first navigation's
+  // commit finished. If navigation queueing is disabled, the pending commit
+  // navigation will be cancelled.
+  if (ShouldQueueNavigationsWhenPendingCommitRFHExists()) {
+    EXPECT_TRUE(results[0].committed);
+    EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"), results[0].origin);
+  } else {
+    EXPECT_FALSE(results[0].committed);
+    EXPECT_EQ(absl::nullopt, results[0].origin);
+  }
+  EXPECT_EQ(infinitely_loading_url, results[0].url);
+  EXPECT_TRUE(results[1].committed);
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"), results[1].origin);
   EXPECT_EQ(final_url, results[1].url);
 }
 

@@ -2660,7 +2660,7 @@ void NavigationRequest::BeginNavigationImpl() {
           policy_container_builder_->FinalPolicies().cross_origin_opener_policy,
           origin, net::NetworkAnonymizationKey::CreateSameSite(site));
 
-      SelectFrameHostForBeginNavigationImpl();
+      SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader();
       return;
     }
   }
@@ -2674,7 +2674,10 @@ void NavigationRequest::BeginNavigationImpl() {
   // deleted by the previous calls.
 }
 
-void NavigationRequest::SelectFrameHostForBeginNavigationImpl() {
+void NavigationRequest::
+    SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader() {
+  DCHECK(!NeedsUrlLoader());
+
   if (auto result =
           frame_tree_node_->render_manager()->GetFrameHostForNavigation(
               this, &browsing_context_group_swap_);
@@ -2688,11 +2691,11 @@ void NavigationRequest::SelectFrameHostForBeginNavigationImpl() {
         // future.
         break;
       case GetFrameHostForNavigationFailed::kBlockedByPendingCommit:
-        // TODO(https://crbug.com/1220337): Split (part of?) the
-        // NeedsUrlLoader() block off into its own function and make it
-        // possible to resume the navigation request for a cross-document
-        // request that needs to assign a new RFH.
-        break;
+        resume_commit_closure_ = base::BindOnce(
+            &NavigationRequest::
+                SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader,
+            weak_factory_.GetWeakPtr());
+        return;
     }
   }
 
@@ -2700,16 +2703,10 @@ void NavigationRequest::SelectFrameHostForBeginNavigationImpl() {
       &*render_frame_host_.value(), GetUrlInfo(),
       /*is_renderer_initiated_check=*/false));
 
-  // TODO(crbug.com/1400535, crbug.com/1220337): Ideally this shouldn't need
-  // a null check, but see the notes about GetFrameHostForNavigation's return
-  // value above. If this navigation is deferred due to navigation queueing,
-  // ensure that this code will still run after the final RFH is picked.
-  if (HasRenderFrameHost()) {
-    auto* site_instance = render_frame_host_.value()->GetSiteInstance();
-    if (!site_instance->HasSite() &&
-        SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
-      site_instance->ConvertToDefaultOrSetSite(GetUrlInfo());
-    }
+  auto* site_instance = render_frame_host_.value()->GetSiteInstance();
+  if (!site_instance->HasSite() &&
+      SiteInstanceImpl::ShouldAssignSiteForUrlInfo(GetUrlInfo())) {
+    site_instance->ConvertToDefaultOrSetSite(GetUrlInfo());
   }
 
   WillCommitWithoutUrlLoader();

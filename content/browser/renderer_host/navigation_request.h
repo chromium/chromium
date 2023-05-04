@@ -1338,7 +1338,7 @@ class CONTENT_EXPORT NavigationRequest
       const network::URLLoaderCompletionStatus& status,
       bool skip_throttles,
       const absl::optional<std::string>& error_page_content);
-  void SelectFrameHostForBeginNavigationImpl();
+  void SelectFrameHostForCrossDocumentNavigationWithNoUrlLoader();
 
   // To be called whenever a navigation request fails. If |skip_throttles| is
   // true, the registered NavigationThrottle(s) won't get a chance to intercept
