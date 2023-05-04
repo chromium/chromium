@@ -207,8 +207,15 @@ class DragDropDelegate : public WallpaperDragDropDelegate {
     // sequences and reset the shelf to its natural state.
     if (!location_in_screen) {
       drag_drop_observer_.reset();
-      disable_shelf_auto_hide_.reset();
       force_holding_space_show_in_shelf_.reset();
+
+      // Reset shelf auto-hide behavior asynchronously so that it won't animate
+      // out and immediately back in again if the user drops a file from the
+      // Files app over the wallpaper.
+      if (disable_shelf_auto_hide_) {
+        base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+            FROM_HERE, std::move(disable_shelf_auto_hide_));
+      }
       return;
     }
 
