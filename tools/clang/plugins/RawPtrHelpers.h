@@ -322,11 +322,7 @@ AST_MATCHER_P2(clang::InitListExpr,
         break;
       }
       expr = designated_init_expr->getInit();
-#if defined(LLVM_FORCE_HEAD_REVISION)
       field_decl = designated_init_expr->getDesignator(0)->getFieldDecl();
-#else
-      field_decl = designated_init_expr->getDesignator(0)->getField();
-#endif
     } else {
       if (i >= field_decls.size()) {
         break;

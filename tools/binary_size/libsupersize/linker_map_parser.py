@@ -552,7 +552,7 @@ class MapFileParserLld:
             # merged data. Feature request is filed under:
             # https://bugs.llvm.org/show_bug.cgi?id=35248
             if cur_obj == '<internal>':
-              if cur_section == '.rodata' and mangled_name == '':
+              if cur_section == '.rodata':
                 # Treat all <internal> sections within .rodata as as string
                 # literals. Some may hold numeric constants or other data, but
                 # there is currently no way to distinguish them.
