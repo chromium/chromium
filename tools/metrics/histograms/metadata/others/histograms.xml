@@ -14801,22 +14801,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="XHR.Sync.BlockingTime.MainThread" units="ms"
-    expires_after="2021-01-01">
-  <owner>foolip@chromium.org</owner>
-  <summary>
-    Records the time spent in sync XHR requests on the main thread.
-  </summary>
-</histogram>
-
-<histogram name="XHR.Sync.BlockingTime.WorkerThread" units="ms"
-    expires_after="2021-01-01">
-  <owner>foolip@chromium.org</owner>
-  <summary>
-    Records the time spent in sync XHR requests in a worker thread.
-  </summary>
-</histogram>
-
 <histogram name="XHR.Sync.PageDismissal" enum="XHRPageDismissalState"
     expires_after="2020-06-28">
   <owner>panicker@chromium.org</owner>

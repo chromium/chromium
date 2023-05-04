@@ -28,7 +28,6 @@
 
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/header_util.h"
@@ -83,7 +82,6 @@
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -1171,13 +1169,6 @@ void XMLHttpRequest::CreateRequest(scoped_refptr<EncodedFormData> http_body,
 
   if (!async_) {
     base::TimeDelta blocking_time = base::TimeTicks::Now() - start_time;
-    if (execution_context.IsWindow()) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("XHR.Sync.BlockingTime.MainThread",
-                                 blocking_time);
-    } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("XHR.Sync.BlockingTime.WorkerThread",
-                                 blocking_time);
-    }
 
     probe::DidFinishSyncXHR(&execution_context, blocking_time);
 
