@@ -255,7 +255,7 @@ class Type(object):
             'Inline enum "%s" found in namespace "%s". These are not allowed. '
                 'See crbug.com/472279' % (name, namespace.name))
       self.property_type = PropertyType.ENUM
-      self.enum_values = [EnumValue(value) for value in json['enum']]
+      self.enum_values = [EnumValue(value, namespace) for value in json['enum']]
       self.cpp_enum_prefix_override = json.get('cpp_enum_prefix_override', None)
     elif json_type == 'any':
       self.property_type = PropertyType.ANY
@@ -551,13 +551,19 @@ class EnumValue(object):
   - |name| name of the property as in the json.
   - |description| a description of the property (if provided)
   """
-  def __init__(self, json):
+  def __init__(self, json, namespace):
     if isinstance(json, dict):
       self.name = json['name']
       self.description = json.get('description')
     else:
       self.name = json
       self.description = None
+
+    # Using empty string values as enum key is only allowed in a few namespaces,
+    # as an exception to the rule, and we should not add more.
+    if (not self.name and
+        namespace.name not in ['enums', 'dashboardPrivate', 'webstorePrivate']):
+      raise ValueError('Enum value cannot be an empty string')
 
   def CamelName(self):
     return CamelName(self.name)

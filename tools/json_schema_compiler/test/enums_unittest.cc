@@ -296,4 +296,6 @@ TEST(JsonSchemaCompilerEnumsTest, EnumCaptalisationTest) {
             enums::ParseEnumNameTransformation("Seventh_entry86_64_example"));
   EXPECT_EQ(enums::EnumNameTransformation::kEighthEntry86ArchExample,
             enums::ParseEnumNameTransformation("Eighth_entry86_ARCH_example"));
+  EXPECT_EQ(enums::EnumNameTransformation::kEmptyString,
+            enums::ParseEnumNameTransformation(""));
 }
