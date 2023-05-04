@@ -499,6 +499,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // when we should update VSync parameters.
   base::TimeTicks display_link_next_update_time_;
 
+  int64_t last_compositor_display_id_ = display::kInvalidDisplayId;
+
   // The geometry of the window and its contents view, in screen coordinates.
   gfx::Rect window_bounds_in_screen_;
   gfx::Rect content_bounds_in_screen_;
