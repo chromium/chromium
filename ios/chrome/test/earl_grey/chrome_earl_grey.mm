@@ -5,6 +5,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 
 #import <Foundation/Foundation.h>
+#import <WebKit/WebKit.h>
 
 #import "base/format_macros.h"
 #import "base/json/json_string_value_serializer.h"
@@ -170,6 +171,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   // After clearing browsing history via code, wait for the UI to be done
   // with any updates. This includes icons from the new tab page being removed.
   GREYWaitForAppToIdle(@"App failed to idle");
+}
+
+- (void)killWebKitNetworkProcess {
+  [ChromeEarlGreyAppInterface killWebKitNetworkProcess];
 }
 
 - (NSInteger)browsingHistoryEntryCount {

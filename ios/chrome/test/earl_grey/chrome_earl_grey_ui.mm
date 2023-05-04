@@ -491,6 +491,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
 - (void)selectAllBrowsingDataAndClear {
   // Check "Saved Passwords" and "Autofill Data" which are unchecked by
   // default.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:ClearSavedPasswordsButton()];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
   [[[EarlGrey

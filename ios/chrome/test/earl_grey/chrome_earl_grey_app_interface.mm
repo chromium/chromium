@@ -4,6 +4,8 @@
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 
+#import <WebKit/WebKit.h>
+
 #import "base/command_line.h"
 #import "base/containers/contains.h"
 #import "base/files/file_util.h"
@@ -147,8 +149,19 @@ NSString* SerializedValue(const base::Value* value) {
     return nil;
   }
 
+  [self killWebKitNetworkProcess];
   return testing::NSErrorWithLocalizedDescription(
       @"Clearing browser history timed out");
+}
+
++ (void)killWebKitNetworkProcess {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+  if (@available(iOS 15, *)) {
+    [[WKWebsiteDataStore defaultDataStore]
+        performSelector:@selector(_terminateNetworkProcess)];
+  }
+#pragma clang diagnostic pop
 }
 
 + (NSInteger)browsingHistoryEntryCountWithError:

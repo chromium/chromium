@@ -159,6 +159,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Some tests change the default values for the "Clear Browsing Data" settings
   // screen.
   [ChromeEarlGrey resetBrowsingDataPrefs];
+
+  // Shutdown network process after tests run to avoid hanging from
+  // clearing browsing history.
+  [ChromeEarlGrey killWebKitNetworkProcess];
   [super tearDown];
 }
 
@@ -792,6 +796,8 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 - (void)testAccessibilityOnHistory {
   [self loadTestURLs];
   [self openHistoryPanel];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kHistoryTableViewIdentifier)];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
   // Close history.
     id<GREYMatcher> exitMatcher =
@@ -799,29 +805,28 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
     [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
 }
 
-// TODO(crbug.com/1429491) Re-enable flaky test.
-- (void)DISABLED_testEmptyState {
-  [self loadTestURLs];
-  [self openHistoryPanel];
+- (void)testEmptyState {
+    [self loadTestURLs];
+    [self openHistoryPanel];
 
-  // The toolbar should contain the CBD and edit buttons.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryClearBrowsingDataButton()]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
-      assertWithMatcher:grey_notNil()];
+    // The toolbar should contain the CBD and edit buttons.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            HistoryClearBrowsingDataButton()]
+        assertWithMatcher:grey_notNil()];
+    [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
+        assertWithMatcher:grey_notNil()];
 
-  [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+    [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
 
-  // Toolbar should only contain CBD button and the background should contain
-  // the Illustrated empty view
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryClearBrowsingDataButton()]
-      assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:EmptyIllustratedTableViewBackground()]
-      assertWithMatcher:grey_notNil()];
+    // Toolbar should only contain CBD button and the background should contain
+    // the Illustrated empty view
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            HistoryClearBrowsingDataButton()]
+        assertWithMatcher:grey_notNil()];
+    [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
+        assertWithMatcher:grey_nil()];
+    [[EarlGrey selectElementWithMatcher:EmptyIllustratedTableViewBackground()]
+        assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark Multiwindow
