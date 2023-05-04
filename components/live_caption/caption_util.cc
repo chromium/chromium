@@ -10,6 +10,7 @@
 #include "base/cpu.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -26,6 +27,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #endif
 
 namespace {
@@ -155,6 +160,29 @@ bool IsLiveCaptionFeatureSupported() {
 #else
   return true;
 #endif
+}
+
+std::string GetCaptionSettingsUrl() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return "chrome://os-settings/audioAndCaptions";
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_LINUX)
+  return "chrome://settings/captions";
+#endif  // BUILDFLAG(IS_LINUX)
+
+#if BUILDFLAG(IS_WIN)
+  return base::win::GetVersion() >= base::win::Version::WIN10
+             ? "chrome://settings/accessibility"
+             : "chrome://settings/captions";
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+  return "chrome://settings/accessibility";
+#endif  // BUILDFLAG(IS_MAC)
+
+  NOTREACHED();
+  return std::string();
 }
 
 }  // namespace captions

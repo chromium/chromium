@@ -8,11 +8,18 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "components/live_caption/caption_bubble_session_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace captions {
+
+using OpenCaptionSettingsCallback = base::RepeatingCallback<void()>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // Caption Bubble Context
@@ -64,6 +71,12 @@ class CaptionBubbleContext {
   // TODO(launch/4200463): Implement this for Ash if necessary.
   virtual std::unique_ptr<CaptionBubbleSessionObserver>
   GetCaptionBubbleSessionObserver() = 0;
+
+  // Gets a callback that can be used to navigate to the caption settings page.
+  // This callback is attached to the caption bubble context because
+  // //components/live_caption:live_caption can't directly use the WebContents
+  // to trigger a navigation due to dependency restrictions.
+  virtual OpenCaptionSettingsCallback GetOpenCaptionSettingsCallback() = 0;
 };
 
 }  // namespace captions

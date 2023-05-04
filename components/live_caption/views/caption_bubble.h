@@ -104,6 +104,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   }
   views::Button* GetCloseButtonForTesting();
   views::Button* GetBackToTabButtonForTesting();
+  views::View* GetHeaderForTesting();
 
   void SetCaptionBubbleStyle();
 
@@ -139,6 +140,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   void SwapButtons(views::Button* first_button,
                    views::Button* second_button,
                    bool show_first_button);
+  void CaptionSettingsButtonPressed();
 
   // Called by CaptionBubbleModel to notify this object that the model's text
   // has changed. Sets the text of the caption bubble to the model's text.
@@ -218,6 +220,8 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   raw_ptr<views::Label> title_;
   raw_ptr<views::Label> generic_error_text_;
   raw_ptr<views::StyledLabel> live_translate_label_;
+  raw_ptr<views::View> header_container_;
+  raw_ptr<views::View> left_header_container_;
   std::u16string source_language_;
   std::u16string target_language_;
   std::vector<size_t> live_translate_label_offsets_;
@@ -229,6 +233,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   raw_ptr<views::ImageButton> collapse_button_;
   raw_ptr<views::ImageButton> pin_button_;
   raw_ptr<views::ImageButton> unpin_button_;
+  raw_ptr<views::ImageButton> caption_settings_button_;
   raw_ptr<CaptionBubbleFrameView> frame_;
 
 #if BUILDFLAG(IS_WIN)

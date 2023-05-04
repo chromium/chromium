@@ -20,12 +20,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/live_caption/views/caption_bubble_controller_views.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/base/buildflags.h"
@@ -35,7 +37,9 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -86,6 +90,11 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     return controller_
                ? controller_->caption_bubble_->GetLiveTranslateLabelForTesting()
                : nullptr;
+  }
+
+  views::View* GetHeader() {
+    return controller_ ? controller_->caption_bubble_->GetHeaderForTesting()
+                       : nullptr;
   }
 
   views::Label* GetTitle() {
@@ -271,6 +280,10 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     GetController()->caption_bubble_->set_tick_clock_for_testing(tick_clock);
+  }
+
+  void CaptionSettingsButtonPressed() {
+    GetController()->caption_bubble_->CaptionSettingsButtonPressed();
   }
 
  private:
@@ -1285,6 +1298,73 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
                                                false);
   ASSERT_FALSE(GetLiveTranslateLabel()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
+  OnPartialTranscription(
+      "Stoats are able to change their fur color from brown to white in the "
+      "winter.");
+  ASSERT_TRUE(GetHeader()->GetVisible());
+
+  EXPECT_EQ(2u, GetHeader()->children().size());
+  views::View* left_header_container = GetHeader()->children()[0];
+
+  // The left header container should contain the live translate label and the
+  // caption settings icon.
+  EXPECT_EQ(2u, left_header_container->children().size());
+
+  // With Live Translate disabled, only the caption settings icon should be
+  // visible in the left header container.
+  auto* live_translate_label = left_header_container->children()[0];
+  auto* caption_settings_icon = left_header_container->children()[1];
+  ASSERT_FALSE(live_translate_label->GetVisible());
+  ASSERT_TRUE(caption_settings_icon->GetVisible());
+  ASSERT_EQ(14, static_cast<views::BoxLayout*>(
+                    left_header_container->GetLayoutManager())
+                    ->inside_border_insets()
+                    .left());
+  EXPECT_EQ(464, left_header_container->GetPreferredSize().width());
+
+  // Enable Live Translate.
+  browser()->profile()->GetPrefs()->SetString(
+      prefs::kLiveTranslateTargetLanguageCode, "en");
+  browser()->profile()->GetPrefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                                              "fr");
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveTranslateEnabled,
+                                               true);
+
+  ASSERT_TRUE(live_translate_label->GetVisible());
+  ASSERT_TRUE(caption_settings_icon->GetVisible());
+  ASSERT_EQ(18, static_cast<views::BoxLayout*>(
+                    left_header_container->GetLayoutManager())
+                    ->inside_border_insets()
+                    .left());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       NavigateToCaptionSettings) {
+  OnPartialTranscription(
+      "Whale songs are so low in frequency that they can travel for thousands "
+      "of miles underwater.");
+  content::WebContents* original_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(original_web_contents);
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
+
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  CaptionSettingsButtonPressed();
+  tab_waiter.Wait();
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  // Activate the tab that was just launched.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  content::WebContents* new_web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(original_web_contents != new_web_contents);
+  content::TestNavigationObserver navigation_observer(new_web_contents, 1);
+  navigation_observer.Wait();
+
+  ASSERT_EQ(GetCaptionSettingsUrl(), new_web_contents->GetLastCommittedURL());
 }
 
 }  // namespace captions

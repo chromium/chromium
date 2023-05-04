@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "components/live_caption/caption_bubble_session_observer.h"
 #include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/gfx/geometry/rect.h"
@@ -104,6 +106,12 @@ void CaptionBubbleContextRemote::OnSessionEnded() {
   if (session_observer_) {
     session_observer_->OnSessionEnded();
   }
+}
+
+OpenCaptionSettingsCallback
+CaptionBubbleContextRemote::GetOpenCaptionSettingsCallback() {
+  NOTIMPLEMENTED();
+  return base::RepeatingClosure();
 }
 
 }  // namespace captions

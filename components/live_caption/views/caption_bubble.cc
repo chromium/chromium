@@ -471,10 +471,15 @@ void CaptionBubble::Init() {
   SetCanActivate(true);
 
   views::View* header_container = new views::View();
-  header_container
+  header_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal));
+
+  views::View* right_header_container = new views::View();
+  right_header_container
       ->SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal))
       ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  views::View* left_header_container = new views::View();
 
   views::View* content_container = new views::View();
   content_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -592,16 +597,16 @@ void CaptionBubble::Init() {
   auto pin_button =
       BuildImageButton(pin_or_unpin_callback, IDS_LIVE_CAPTION_BUBBLE_PIN);
   pin_button->SetVisible(!is_pinned_);
-  pin_button_ = header_container->AddChildView(std::move(pin_button));
+  pin_button_ = right_header_container->AddChildView(std::move(pin_button));
 
   auto unpin_button = BuildImageButton(std::move(pin_or_unpin_callback),
                                        IDS_LIVE_CAPTION_BUBBLE_UNPIN);
   unpin_button->SetVisible(is_pinned_);
-  unpin_button_ = header_container->AddChildView(std::move(unpin_button));
+  unpin_button_ = right_header_container->AddChildView(std::move(unpin_button));
 
   back_to_tab_button_ =
-      header_container->AddChildView(std::move(back_to_tab_button));
-  close_button_ = header_container->AddChildView(std::move(close_button));
+      right_header_container->AddChildView(std::move(back_to_tab_button));
+  close_button_ = right_header_container->AddChildView(std::move(close_button));
 
   title_ = content_container->AddChildView(std::move(title));
   label_ = content_container->AddChildView(std::move(label));
@@ -637,14 +642,7 @@ void CaptionBubble::Init() {
   collapse_button_ =
       content_container->AddChildView(std::move(collapse_button));
 
-  AddChildView(std::move(header_container));
   if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
-    views::View* live_translate_container = new views::View();
-    live_translate_container->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets::TLBR(0, kSidePaddingDip, 0, kSidePaddingDip)));
-
     auto live_translate_label = std::make_unique<views::StyledLabel>();
     live_translate_label->SetVisible(
         profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled));
@@ -664,10 +662,19 @@ void CaptionBubble::Init() {
         target_language_, &live_translate_label_offsets_);
     live_translate_label->SetText(label_text);
     live_translate_label_ =
-        live_translate_container->AddChildView(std::move(live_translate_label));
-    AddChildView(std::move(live_translate_container));
+        left_header_container->AddChildView(std::move(live_translate_label));
   }
 
+  auto caption_settings_button = BuildImageButton(
+      base::BindRepeating(&CaptionBubble::CaptionSettingsButtonPressed,
+                          base::Unretained(this)),
+      IDS_LIVE_CAPTION_BUBBLE_CAPTION_SETTINGS);
+  caption_settings_button_ =
+      left_header_container->AddChildView(std::move(caption_settings_button));
+  left_header_container_ =
+      header_container->AddChildView(std::move(left_header_container));
+  header_container->AddChildView(std::move(right_header_container));
+  header_container_ = AddChildView(std::move(header_container));
   AddChildView(std::move(content_container));
 
   UpdateContentSize();
@@ -692,6 +699,10 @@ CaptionBubble::CreateNonClientFrameView(views::Widget* widget) {
   std::vector<views::View*> buttons = {back_to_tab_button_, close_button_,
                                        expand_button_,      collapse_button_,
                                        pin_button_,         unpin_button_};
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    buttons.push_back(caption_settings_button_);
+  }
+
   auto frame = std::make_unique<CaptionBubbleFrameView>(
       buttons, base::BindRepeating(&CaptionBubble::ResetInactivityTimer,
                                    base::Unretained(this)));
@@ -787,6 +798,10 @@ void CaptionBubble::SwapButtons(views::Button* first_button,
 
   if (!first_button->HasFocus())
     first_button->RequestFocus();
+}
+
+void CaptionBubble::CaptionSettingsButtonPressed() {
+  model_->GetContext()->GetOpenCaptionSettingsCallback().Run();
 }
 
 void CaptionBubble::SetModel(CaptionBubbleModel* model) {
@@ -1079,6 +1094,12 @@ void CaptionBubble::SetTextColor() {
   views::SetImageFromVectorIconWithColor(unpin_button_, views::kUnpinIcon,
                                          kButtonDip, icon_color,
                                          icon_disabled_color);
+
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate)) {
+    views::SetImageFromVectorIconWithColor(
+        caption_settings_button_, vector_icons::kSettingsIcon, kButtonDip,
+        icon_color, icon_disabled_color);
+  }
 }
 
 void CaptionBubble::SetBackgroundColor() {
@@ -1151,7 +1172,20 @@ void CaptionBubble::UpdateContentSize() {
                          ? content_height - kLineHeightDip * text_scale_factor
                          : content_height;
   label_->SetPreferredSize(gfx::Size(width - kSidePaddingDip, label_height));
-
+  auto button_size = close_button_->GetPreferredSize();
+  left_header_container_->SetPreferredSize(
+      gfx::Size(width - 3 * button_size.width(), button_size.height()));
+  int left_header_padding =
+      base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+              live_translate_label_->GetVisible()
+          ? kSidePaddingDip
+          : kSidePaddingDip -
+                caption_settings_button_->GetBorder()->GetInsets().width() / 2;
+  left_header_container_
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal,
+          gfx::Insets::TLBR(0, left_header_padding, 0, 0), 0))
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
 #if BUILDFLAG(IS_WIN)
   // The Media Foundation renderer error message should not scale with the
   // user's caption style preference.
@@ -1161,16 +1195,6 @@ void CaptionBubble::UpdateContentSize() {
         media_foundation_renderer_error_message_->GetPreferredSize().height();
   }
 #endif
-
-  // The Live Translate label takes up 1 line.
-  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
-      live_translate_label_->GetVisible()) {
-    int live_translate_label_height =
-        kLiveTranslateLabelLineHeightDip * text_scale_factor;
-    live_translate_label_->SetPreferredSize(
-        gfx::Size(width - kSidePaddingDip, live_translate_label_height));
-    content_height += live_translate_label_height;
-  }
 
   // The header height is the same as the close button height. The footer height
   // is the same as the expand button height.
@@ -1293,6 +1317,10 @@ views::Button* CaptionBubble::GetCloseButtonForTesting() {
 
 views::Button* CaptionBubble::GetBackToTabButtonForTesting() {
   return back_to_tab_button_.get();
+}
+
+views::View* CaptionBubble::GetHeaderForTesting() {
+  return header_container_.get();
 }
 
 BEGIN_METADATA(CaptionBubble, views::BubbleDialogDelegateView)

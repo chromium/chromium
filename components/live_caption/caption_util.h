@@ -13,6 +13,12 @@ class PrefService;
 
 namespace captions {
 
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+extern const char kCaptionSettingsUrl[];
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_MAC)
+
 absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
     PrefService* prefs,
     bool record_metrics);
@@ -20,6 +26,8 @@ absl::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
 // Returns whether the Live Caption feature is supported in Chrome. This can
 // depend on e.g. Chrome feature flags, platform/OS, supported CPU instructions.
 bool IsLiveCaptionFeatureSupported();
+
+std::string GetCaptionSettingsUrl();
 
 }  // namespace captions
 
