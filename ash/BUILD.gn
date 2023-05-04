@@ -1156,6 +1156,8 @@ component("ash") {
     "style/style_viewer/typography_instances_grid_view_factory.cc",
     "style/switch.cc",
     "style/switch.h",
+    "style/system_dialog.cc",
+    "style/system_dialog.h",
     "style/system_dialog_delegate_view.cc",
     "style/system_dialog_delegate_view.h",
     "style/system_shadow.cc",
