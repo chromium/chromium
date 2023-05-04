@@ -141,7 +141,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::MouseEvent(ui::ET_MOUSE_PRESSED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-    action_view->touch_point()->ApplyMousePressed(press);
+    action_view->touch_point()->OnMousePressed(press);
   }
 
   void MouseDragActionViewBy(ActionView* action_view,
@@ -151,7 +151,7 @@ class ActionViewTest : public views::ViewsTestBase {
     auto drag =
         ui::MouseEvent(ui::ET_MOUSE_DRAGGED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0);
-    action_view->touch_point()->ApplyMouseDragged(drag);
+    action_view->touch_point()->OnMouseDragged(drag);
   }
 
   void ReleaseLeftMouse(ActionView* action_view) {
@@ -159,7 +159,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::MouseEvent(ui::ET_MOUSE_RELEASED, local_location_, root_location_,
                        ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                        ui::EF_LEFT_MOUSE_BUTTON);
-    action_view->touch_point()->ApplyMouseReleased(release);
+    action_view->touch_point()->OnMouseReleased(release);
   }
 
   void TouchPressAtActionView(ActionView* action_view) {
@@ -173,7 +173,7 @@ class ActionViewTest : public views::ViewsTestBase {
         root_location_.x(), root_location_.y(), ui::EF_NONE,
         base::TimeTicks::Now(),
         ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN, 0, 0));
-    action_view->touch_point()->ApplyGestureEvent(&scroll_begin);
+    action_view->touch_point()->OnGestureEvent(&scroll_begin);
   }
 
   void TouchMoveAtActionViewBy(ActionView* action_view,
@@ -184,7 +184,7 @@ class ActionViewTest : public views::ViewsTestBase {
                          base::TimeTicks::Now(),
                          ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE,
                                                  move.x(), move.y()));
-    action_view->touch_point()->ApplyGestureEvent(&scroll_update);
+    action_view->touch_point()->OnGestureEvent(&scroll_update);
   }
 
   void TouchReleaseAtActionView(ActionView* action_view) {
@@ -192,7 +192,7 @@ class ActionViewTest : public views::ViewsTestBase {
         ui::GestureEvent(root_location_.x(), root_location_.y(), ui::EF_NONE,
                          base::TimeTicks::Now(),
                          ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_END));
-    action_view->touch_point()->ApplyGestureEvent(&scroll_end);
+    action_view->touch_point()->OnGestureEvent(&scroll_end);
   }
 
   void SetDisplayMode(DisplayMode display_mode) {

@@ -110,6 +110,16 @@ enum class TapLabelPosition {
   kNone = 4,
 };
 
+// The UI state related to user operations.
+enum class UIState {
+  // UI is not hovered or dragged.
+  kDefault = 0,
+  // UI is under dragging.
+  kDrag,
+  // UI is mouse hovered.
+  kHover,
+};
+
 // These values are about how the reposition is achieved for the metrics record.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
