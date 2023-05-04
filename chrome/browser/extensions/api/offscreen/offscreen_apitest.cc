@@ -39,15 +39,17 @@ class AudioWaiter : public content::WebContentsObserver {
       : content::WebContentsObserver(contents) {}
 
   void WaitForAudible() {
-    if (web_contents()->IsCurrentlyAudible())
+    if (web_contents()->IsCurrentlyAudible()) {
       return;
+    }
     expected_state_ = true;
     run_loop_.Run();
   }
 
   void WaitForInaudible() {
-    if (!web_contents()->IsCurrentlyAudible())
+    if (!web_contents()->IsCurrentlyAudible()) {
       return;
+    }
     expected_state_ = false;
     run_loop_.Run();
   }

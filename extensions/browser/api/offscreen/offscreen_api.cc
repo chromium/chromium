@@ -30,8 +30,9 @@ content::BrowserContext& GetBrowserContextToUse(
     content::BrowserContext& calling_context,
     const Extension& extension) {
   // The on-the-record profile always uses itself.
-  if (!calling_context.IsOffTheRecord())
+  if (!calling_context.IsOffTheRecord()) {
     return calling_context;
+  }
 
   DCHECK(util::IsIncognitoEnabled(extension.id(), &calling_context))
       << "Only incognito-enabled extensions should have an incognito context";
@@ -65,8 +66,9 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(extension());
 
   GURL url(params->parameters.url);
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     url = extension()->GetResourceURL(params->parameters.url);
+  }
 
   if (!url.is_valid() || url::Origin::Create(url) != extension()->origin()) {
     return RespondNow(Error("Invalid URL."));
@@ -163,8 +165,9 @@ ExtensionFunction::ResponseAction OffscreenCloseDocumentFunction::Run() {
       GetManagerToUse(*browser_context(), *extension());
   OffscreenDocumentHost* offscreen_document =
       manager->GetOffscreenDocumentForExtension(*extension());
-  if (!offscreen_document)
+  if (!offscreen_document) {
     return RespondNow(Error("No current offscreen document."));
+  }
 
   host_observer_.Observe(offscreen_document);
 
