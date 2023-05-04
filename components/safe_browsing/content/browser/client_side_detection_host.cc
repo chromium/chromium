@@ -65,6 +65,8 @@ namespace {
 // Command-line flag that can be used to write extracted CSD features to disk.
 // This is also enables a few other behaviors that are useful for debugging.
 const char kCsdDebugFeatureDirectoryFlag[] = "csd-debug-feature-directory";
+const char kSkipCSDAllowlistOnPreclassification[] =
+    "safe-browsing-skip-csd-allowlist";
 
 void WriteFeaturesToDisk(const ClientPhishingRequest& features,
                          const base::FilePath& base_path) {
@@ -81,6 +83,11 @@ void WriteFeaturesToDisk(const ClientPhishingRequest& features,
 bool HasDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kCsdDebugFeatureDirectoryFlag);
+}
+
+bool ShouldSkipCSDAllowlist() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kSkipCSDAllowlistOnPreclassification);
 }
 
 base::FilePath GetDebugFeatureDirectory() {
@@ -268,7 +275,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
     // When doing debug feature dumps, ignore the allowlist.
     if (HasDebugFeatureDirectory()) {
-      OnAllowlistCheckDoneOnIO(url, NO_CLASSIFY_MAX,
+      OnAllowlistCheckDoneOnIO(url, phishing_reason,
                                /*match_allowlist=*/false);
       return;
     }
@@ -276,7 +283,15 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
     if (!database_manager_.get()) {
       // We cannot check the Safe Browsing allowlists so we stop here
       // for safety.
-      OnAllowlistCheckDoneOnIO(url, NO_CLASSIFY_NO_DATABASE_MANAGER,
+      OnAllowlistCheckDoneOnIO(
+          url, /*phishing_reason=*/NO_CLASSIFY_NO_DATABASE_MANAGER,
+          /*match_allowlist=*/false);
+      return;
+    }
+
+    if (ShouldSkipCSDAllowlist()) {
+      // Command line flag to skip the allowlist check has been set.
+      OnAllowlistCheckDoneOnIO(url, phishing_reason,
                                /*match_allowlist=*/false);
       return;
     }
