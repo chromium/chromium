@@ -4,6 +4,8 @@
 
 #include "components/history_clusters/core/test_history_clusters_service.h"
 
+#include "base/task/single_thread_task_runner.h"
+
 namespace history_clusters {
 
 TestHistoryClustersService::TestHistoryClustersService()
@@ -25,10 +27,14 @@ TestHistoryClustersService::QueryClusters(
     QueryClustersContinuationParams continuation_params,
     bool recluster,
     QueryClustersCallback callback) {
-  std::move(callback).Run(clusters_,
-                          next_query_is_done_
-                              ? QueryClustersContinuationParams::DoneParams()
-                              : continuation_params);
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback), clusters_,
+                     next_query_is_done_
+                         ? QueryClustersContinuationParams::DoneParams()
+                         : continuation_params));
+  // Set the next query to done so the query eventually finishes.
+  next_query_is_done_ = true;
   return nullptr;
 }
 

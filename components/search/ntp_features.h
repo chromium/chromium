@@ -77,6 +77,7 @@ BASE_DECLARE_FEATURE(kNtpModulesHeaderIcon);
 BASE_DECLARE_FEATURE(kNtpChromeCartInHistoryClusterModule);
 BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleUseModelRanking);
 BASE_DECLARE_FEATURE(kNtpChromeCartHistoryClusterCoexist);
+BASE_DECLARE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted);
 
 // Parameter for controlling the luminosity difference for NTP elements on light
 // backgrounds.

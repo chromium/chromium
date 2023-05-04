@@ -291,6 +291,13 @@ BASE_FEATURE(kNtpChromeCartHistoryClusterCoexist,
              "NtpChromeCartHistoryClusterCoexist",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the History Clusters module will attempt to fetch clusters until
+// it has enough clusters for the module or the History Clusters service says
+// that all visits have been exhausted.
+BASE_FEATURE(kNtpHistoryClustersModuleFetchClustersUntilExhausted,
+             "NtpHistoryClustersModuleFetchClustersUntilExhausted",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const base::FeatureParam<double>
     kNtpElementLuminosityChangeForLightBackgroundParam{
         &kNtpComprehensiveTheming,

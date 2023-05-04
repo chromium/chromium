@@ -26,7 +26,6 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/history_cluster_type_utils.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/history_clusters/core/history_clusters_service_task.h"
 #include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_clusters/public/mojom/history_cluster_types.mojom.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -191,7 +190,7 @@ void HistoryClustersPageHandler::GetClusters(GetClustersCallback callback) {
     std::move(callback).Run({});
     return;
   }
-  fetch_clusters_task_ = history_clusters_module_service->GetClusters(
+  history_clusters_module_service->GetClusters(
       base::BindOnce(&HistoryClustersPageHandler::CallbackWithClusterData,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

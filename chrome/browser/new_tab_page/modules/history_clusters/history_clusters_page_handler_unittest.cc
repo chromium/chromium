@@ -74,8 +74,7 @@ class MockHistoryClustersModuleService : public HistoryClustersModuleService {
 
   MOCK_METHOD1(
       GetClusters,
-      std::unique_ptr<history_clusters::HistoryClustersServiceTask>(
-          base::OnceCallback<void(std::vector<history::Cluster>)> callback));
+      void(base::OnceCallback<void(std::vector<history::Cluster>)> callback));
 };
 
 class MockHistoryService : public history::HistoryService {
@@ -241,11 +240,8 @@ TEST_F(HistoryClustersPageHandlerTest, GetClusters) {
   EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
       .WillOnce(testing::Invoke(
           [&sample_clusters](
-              base::OnceCallback<void(std::vector<history::Cluster>)> callback)
-              -> std::unique_ptr<history_clusters::HistoryClustersServiceTask> {
-            std::move(callback).Run(sample_clusters);
-            return nullptr;
-          }));
+              base::OnceCallback<void(std::vector<history::Cluster>)>
+                  callback) { std::move(callback).Run(sample_clusters); }));
 
   std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
   base::MockCallback<HistoryClustersPageHandler::GetClustersCallback> callback;
@@ -332,11 +328,8 @@ TEST_F(HistoryClustersPageHandlerTest,
 TEST_F(HistoryClustersPageHandlerTest, NoClusters) {
   EXPECT_CALL(mock_history_clusters_module_service(), GetClusters(testing::_))
       .WillOnce(testing::Invoke(
-          [&](base::OnceCallback<void(std::vector<history::Cluster>)> callback)
-              -> std::unique_ptr<history_clusters::HistoryClustersServiceTask> {
-            std::move(callback).Run({});
-            return nullptr;
-          }));
+          [&](base::OnceCallback<void(std::vector<history::Cluster>)>
+                  callback) { std::move(callback).Run({}); }));
 
   std::vector<history_clusters::mojom::ClusterPtr> clusters_mojom;
   base::MockCallback<HistoryClustersPageHandler::GetClustersCallback> callback;

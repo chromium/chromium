@@ -126,6 +126,8 @@ HistoryClustersModuleService::HistoryClustersModuleService(
       max_clusters_to_return_(GetMaxClusters()),
       category_boostlist_(GetCategories(
           ntp_features::kNtpHistoryClustersModuleCategoriesBoostlistParam)),
+      should_fetch_clusters_until_exhausted_(base::FeatureList::IsEnabled(
+          ntp_features::kNtpHistoryClustersModuleFetchClustersUntilExhausted)),
       history_clusters_service_(history_clusters_service),
       cart_service_(cart_service),
       template_url_service_(template_url_service) {
@@ -138,30 +140,48 @@ HistoryClustersModuleService::HistoryClustersModuleService(
 }
 HistoryClustersModuleService::~HistoryClustersModuleService() = default;
 
-std::unique_ptr<history_clusters::HistoryClustersServiceTask>
-HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
+void HistoryClustersModuleService::GetClusters(GetClustersCallback callback) {
   if (!template_url_service_) {
     std::move(callback).Run({});
-    return nullptr;
+    return;
   }
 
-  history_clusters::QueryClustersContinuationParams continuation_params;
+  GetClusters(GetBeginTime(),
+              history_clusters::QueryClustersContinuationParams(),
+              std::move(callback));
+}
 
-  return history_clusters_service_->QueryClusters(
-      history_clusters::ClusteringRequestSource::kNewTabPage, filter_params_,
-      GetBeginTime(), continuation_params,
-      /*recluster=*/false,
-      base::BindOnce(&HistoryClustersModuleService::OnGetFilteredClusters,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+void HistoryClustersModuleService::GetClusters(
+    base::Time begin_time,
+    history_clusters::QueryClustersContinuationParams continuation_params,
+    GetClustersCallback callback) {
+  // TODO(crbug/1442619): Encapsulate work done by this method in a task that
+  // gets returned to the caller.
+
+  size_t task_id = task_id_++;
+  std::unique_ptr<history_clusters::HistoryClustersServiceTask>
+      query_clusters_task = history_clusters_service_->QueryClusters(
+          history_clusters::ClusteringRequestSource::kNewTabPage,
+          filter_params_, begin_time, continuation_params,
+          /*recluster=*/false,
+          base::BindOnce(&HistoryClustersModuleService::OnGetFilteredClusters,
+                         weak_ptr_factory_.GetWeakPtr(), task_id, begin_time,
+                         std::move(callback)));
+  in_progress_query_clusters_tasks_.insert_or_assign(
+      task_id, std::move(query_clusters_task));
 }
 
 void HistoryClustersModuleService::OnGetFilteredClusters(
+    size_t pending_task_id,
+    base::Time begin_time,
     GetClustersCallback callback,
     std::vector<history::Cluster> clusters,
     history_clusters::QueryClustersContinuationParams continuation_params) {
   base::UmaHistogramBoolean(
       "NewTabPage.HistoryClusters.ExhaustedEligibleClusters",
       continuation_params.exhausted_all_visits);
+
+  in_progress_query_clusters_tasks_.erase(pending_task_id);
 
   // Do additional filtering on clusters.
   history_clusters::CoalesceRelatedSearches(clusters);
@@ -231,18 +251,31 @@ void HistoryClustersModuleService::OnGetFilteredClusters(
     return false;
   });
 
-  base::UmaHistogramEnumeration("NewTabPage.HistoryClusters.IneligibleReason",
-                                ineligible_reason);
-  base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
-                            !clusters.empty());
-  base::UmaHistogramCounts100("NewTabPage.HistoryClusters.NumClusterCandidates",
-                              clusters.size());
-
-  // TODO(b/279978799): If no clusters to show and visits have not been
-  // exhausted, fetch for more clusters.
+  bool should_fetch_more_clusters = should_fetch_clusters_until_exhausted_ &&
+                                    clusters.empty() &&
+                                    !continuation_params.exhausted_all_visits;
+  if (!should_fetch_more_clusters) {
+    // Only record metrics if we are ready to rank clusters or have no more
+    // clusters to query for.
+    base::UmaHistogramEnumeration("NewTabPage.HistoryClusters.IneligibleReason",
+                                  ineligible_reason);
+    base::UmaHistogramBoolean("NewTabPage.HistoryClusters.HasClusterToShow",
+                              !clusters.empty());
+    base::UmaHistogramCounts100(
+        "NewTabPage.HistoryClusters.NumClusterCandidates", clusters.size());
+  }
 
   if (clusters.empty()) {
-    std::move(callback).Run({});
+    if (should_fetch_more_clusters) {
+      // If no clusters to show and visits have not been exhausted, fetch for
+      // more clusters.
+      // TODO(crbug/1442074): This logic should probably change to just keep
+      // iterating until its over for the next phase of this project.
+      GetClusters(begin_time, continuation_params, std::move(callback));
+    } else {
+      std::move(callback).Run({});
+    }
+
     return;
   }
 

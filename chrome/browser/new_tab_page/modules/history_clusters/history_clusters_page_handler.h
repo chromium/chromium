@@ -27,10 +27,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace history_clusters {
-class HistoryClustersServiceTask;
-}  // namespace history_clusters
-
 class HistoryClustersPageHandler
     : public ntp::history_clusters::mojom::PageHandler {
  public:
@@ -61,10 +57,6 @@ class HistoryClustersPageHandler
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
 
-  // Tracks the current fetch clusters task. Will be `nullptr` or
-  // `Done()` will be true if there is no ongoing task.
-  std::unique_ptr<history_clusters::HistoryClustersServiceTask>
-      fetch_clusters_task_;
   base::CancelableTaskTracker hide_visits_task_tracker_;
   std::unique_ptr<CartProcessor> cart_processor_;
 
