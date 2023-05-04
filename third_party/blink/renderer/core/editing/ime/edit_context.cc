@@ -829,21 +829,15 @@ int EditContext::TextInputFlags() const {
   return flags;
 }
 
-WebRange EditContext::CompositionRange() {
+WebRange EditContext::CompositionRange() const {
   return WebRange(composition_range_start_,
                   composition_range_end_ - composition_range_start_);
 }
 
 bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
-  WebRange composition_range = CompositionRange();
-  if (composition_range.IsEmpty())
+  if (!HasValidCompositionBounds()) {
     return false;
-
-  // The number of character bounds provided by the authors has to be the same
-  // as the length of the composition (as we request in
-  // CompositionCharacterBoundsUpdate event).
-  if (static_cast<int>(character_bounds_.size()) != composition_range.length())
-    return false;
+  }
 
   TRACE_EVENT1("ime", "EditContext::GetCompositionCharacterBounds", "size",
                std::to_string(character_bounds_.size()));
@@ -861,6 +855,68 @@ bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
       });
 
   return true;
+}
+
+bool EditContext::FirstRectForCharacterRange(uint32_t location,
+                                             uint32_t length,
+                                             gfx::Rect& rect_in_viewport) {
+  if (HasValidCompositionBounds()) {
+    WebRange range = this->CompositionRange();
+
+    // If the requested range is within the current composition range,
+    // we'll use that to provide the result.
+    if (base::saturated_cast<int>(location) >= range.StartOffset() &&
+        base::saturated_cast<int>(location + length) <= range.EndOffset()) {
+      if (length == 0) {
+        if (location == character_bounds_.size()) {
+          // Zero-width rect after the last character in the composition range
+          rect_in_viewport =
+              gfx::Rect(character_bounds_[location - 1].right(),
+                        character_bounds_[location - 1].y(), 0,
+                        character_bounds_[location - 1].height());
+        } else {
+          // Zero-width rect before the next character in the composition range
+          rect_in_viewport = gfx::Rect(character_bounds_[location].x(),
+                                       character_bounds_[location].y(), 0,
+                                       character_bounds_[location].height());
+        }
+      } else {
+        const int start_in_composition = location - range.StartOffset();
+        const int end_in_composition = location + length - range.StartOffset();
+        gfx::Rect rect = character_bounds_[start_in_composition];
+        for (int i = start_in_composition + 1; i < end_in_composition; ++i) {
+          rect.Union(character_bounds_[i]);
+        }
+
+        rect_in_viewport = rect;
+      }
+      return true;
+    }
+  }
+
+  // If we couldn't get a result from the composition bounds, we'll fall back to
+  // using the control bounds. In this case the IME might not be drawn exactly
+  // in the right spot, but will at least be adjacent to the editable region
+  // rather than in the corner of the screen.
+  if (!control_bounds_.IsEmpty()) {
+    rect_in_viewport = control_bounds_;
+    return true;
+  }
+
+  return false;
+}
+
+bool EditContext::HasValidCompositionBounds() const {
+  WebRange composition_range = CompositionRange();
+  if (composition_range.IsEmpty()) {
+    return false;
+  }
+
+  // The number of character bounds provided by the authors has to be the same
+  // as the length of the composition (as we request in
+  // CompositionCharacterBoundsUpdate event).
+  return (base::saturated_cast<int>(character_bounds_.size()) ==
+          composition_range.length());
 }
 
 WebRange EditContext::GetSelectionOffsets() const {

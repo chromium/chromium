@@ -177,7 +177,7 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   int ComputeWebTextInputNextPreviousFlags() override { return 0; }
   WebTextInputType TextInputType() override;
   int TextInputFlags() const;
-  WebRange CompositionRange() override;
+  WebRange CompositionRange() const override;
   bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
   WebRange GetSelectionOffsets() const override;
 
@@ -226,6 +226,14 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // Extends the current selection range and removes the
   // characters from the buffer.
   void ExtendSelectionAndDelete(int before, int after);
+
+  // Sets rect_in_viewport to the surrounding rect, in CSS pixels,
+  // for the character range specified by `location` and `length`.
+  // Returns true on success, false on failure (in which case
+  // rect_in_viewport) is not changed.
+  bool FirstRectForCharacterRange(uint32_t location,
+                                  uint32_t length,
+                                  gfx::Rect& rect_in_viewport);
 
   void AttachElement(Element* element_to_attach);
   void DetachElement(Element* element_to_detach);
@@ -286,6 +294,8 @@ class CORE_EXPORT EditContext final : public EventTargetWithInlineData,
   // requested bounding boxes when receiving this event.
   void DispatchCharacterBoundsUpdateEvent(uint32_t range_start,
                                           uint32_t range_end);
+
+  bool HasValidCompositionBounds() const;
 
   // EditContext member variables.
   String text_;

@@ -1304,6 +1304,12 @@ bool WebLocalFrameImpl::FirstRectForCharacterRange(
   if ((location + length < location) && (location + length))
     length = 0;
 
+  if (EditContext* edit_context =
+          GetFrame()->GetInputMethodController().GetActiveEditContext()) {
+    return edit_context->FirstRectForCharacterRange(location, length,
+                                                    rect_in_viewport);
+  }
+
   Element* editable =
       GetFrame()->Selection().RootEditableElementOrDocumentElement();
   if (!editable)
