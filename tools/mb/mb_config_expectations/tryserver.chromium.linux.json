@@ -12,13 +12,15 @@
   },
   "chromeos-js-code-coverage": {
     "gn_args": {
+      "also_build_lacros_chrome": true,
       "dcheck_always_on": false,
       "enable_webui_inline_sourcemaps": true,
-      "is_clang": true,
+      "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
       "optimize_webui": false,
-      "symbol_level": 0,
+      "proprietary_codecs": true,
+      "target_os": "chromeos",
       "use_javascript_coverage": true,
       "use_remoteexec": true
     }
