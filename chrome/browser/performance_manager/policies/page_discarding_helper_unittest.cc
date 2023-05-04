@@ -5,6 +5,8 @@
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -44,6 +46,30 @@ class PageDiscardingHelperTest
     testing::GraphTestHarnessWithMockDiscarder::TearDown();
   }
 
+  // Helper to update the url of `page` and `frame` (or the default page_node()
+  // and frame_node() on nullptr). In production a real navigation will notify
+  // both.
+  void SetPageAndFrameUrl(const GURL& url,
+                          PageNodeImpl* page = nullptr,
+                          FrameNodeImpl* frame = nullptr) {
+    SetPageAndFrameUrlWithMimeType(url, "text/html", page, frame);
+  }
+
+  // Helper to update the url and Content-Type of `page` and `frame` (or the
+  // default page_node() and frame_node() on nullptr). In production a real
+  // navigation will notify both.
+  void SetPageAndFrameUrlWithMimeType(const GURL& url,
+                                      const std::string& mime_type,
+                                      PageNodeImpl* page = nullptr,
+                                      FrameNodeImpl* frame = nullptr) {
+    page = page ? page : page_node();
+    frame = frame ? frame : frame_node();
+    page->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(),
+                                         page->navigation_id() + 1, url,
+                                         mime_type);
+    frame->OnNavigationCommitted(url, false);
+  }
+
   // Convenience wrappers for PageNodeHelper::CanDiscard().
   bool CanDiscard(const PageNode* page_node, DiscardReason discard_reason) {
     return PageDiscardingHelper::GetFromGraph(graph())->CanDiscard(
@@ -65,6 +91,53 @@ class PageDiscardingHelperTest
  private:
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
+
+TEST_F(PageDiscardingHelperTest, TestCanDiscardMultipleCurrentMainFrames) {
+  // TODO(crbug.com/1441986): It shouldn't be possible to have two main frames
+  // both marked "current", but due to a state tracking bug this sometimes
+  // occurs. Until the bug is fixed, make sure CanDiscard works around it. (See
+  // comment at
+  // https://source.chromium.org/chromium/chromium/src/+/main:components/performance_manager/graph/frame_node_impl.cc;l=272;drc=6d331b84c048659c6a9a89bd81e92dfdddd6bae7.)
+  TestNodeWrapper<FrameNodeImpl> other_frame_node =
+      CreateFrameNodeAutoId(process_node(), page_node());
+  other_frame_node->SetIsCurrent(true);
+
+  // frame_node() is created with a URL. `other_frame_node` starts without.
+  ASSERT_FALSE(frame_node()->url().is_empty());
+  ASSERT_TRUE(frame_node()->is_current());
+  ASSERT_TRUE(other_frame_node->url().is_empty());
+  ASSERT_TRUE(other_frame_node->is_current());
+
+  // An arbitrary "current" frame will be returned by GetMainFrameNode(). Make
+  // sure the page can be discarded even if the one without a url is returned.
+  // Discarding is only blocked if neither have a url.
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
+
+  SetPageAndFrameUrl(GURL(), page_node(), frame_node());
+
+  ASSERT_TRUE(frame_node()->url().is_empty());
+  ASSERT_TRUE(frame_node()->is_current());
+  ASSERT_TRUE(other_frame_node->url().is_empty());
+  ASSERT_TRUE(other_frame_node->is_current());
+
+  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
+  EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
+
+  SetPageAndFrameUrl(GURL("https://foo.com"), page_node(),
+                     other_frame_node.get());
+
+  ASSERT_TRUE(frame_node()->url().is_empty());
+  ASSERT_TRUE(frame_node()->is_current());
+  ASSERT_FALSE(other_frame_node->url().is_empty());
+  ASSERT_TRUE(other_frame_node->is_current());
+
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
+  EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
+}
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardVisiblePage) {
   page_node()->SetIsVisible(true);
@@ -117,9 +190,8 @@ TEST_F(PageDiscardingHelperTest,
 #endif
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPdf) {
-  page_node()->OnMainFrameNavigationCommitted(false, base::TimeTicks::Now(), 53,
-                                              GURL("https://foo.com/doc.pdf"),
-                                              "application/pdf");
+  SetPageAndFrameUrlWithMimeType(GURL("https://foo.com/doc.pdf"),
+                                 "application/pdf");
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
@@ -133,14 +205,14 @@ TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithoutMainFrame) {
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardExtension) {
-  frame_node()->OnNavigationCommitted(GURL("chrome-extention://foo"), false);
+  SetPageAndFrameUrl(GURL("chrome-extension://foo"));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageWithInvalidURL) {
-  frame_node()->OnNavigationCommitted(GURL("foo42"), false);
+  SetPageAndFrameUrl(GURL("foo42"));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
@@ -275,38 +347,37 @@ TEST_F(PageDiscardingHelperTest,
 }
 
 TEST_F(PageDiscardingHelperTest, TestCannotDiscardPageOnNoDiscardList) {
-  // static_cast page_node because it's declared as a PageNodeImpl which hides
+  // static_cast page_node() because it's declared as a PageNodeImpl which hides
   // the members it overrides from PageNode.
+  const auto* page = static_cast<const PageNode*>(page_node());
   PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
-      static_cast<PageNode*>(page_node())->GetBrowserContextID(),
-      {"youtube.com"});
-  frame_node()->OnNavigationCommitted(GURL("https://www.youtube.com"), false);
+      page->GetBrowserContextID(), {"youtube.com"});
+  SetPageAndFrameUrl(GURL("https://www.youtube.com"));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 
-  frame_node()->OnNavigationCommitted(GURL("https://www.example.com"), false);
+  SetPageAndFrameUrl(GURL("https://www.example.com"));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 
   // Changing the no discard list rebuilds the matcher
   PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
-      static_cast<PageNode*>(page_node())->GetBrowserContextID(),
-      {"google.com"});
-  frame_node()->OnNavigationCommitted(GURL("https://www.youtube.com"), false);
+      page->GetBrowserContextID(), {"google.com"});
+  SetPageAndFrameUrl(GURL("https://www.youtube.com"));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
-  frame_node()->OnNavigationCommitted(GURL("https://www.google.com"), false);
+  SetPageAndFrameUrl(GURL("https://www.google.com"));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_FALSE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));
 
   // Setting the no discard list to empty makes all URLs discardable again.
   PageDiscardingHelper::GetFromGraph(graph())->SetNoDiscardPatternsForProfile(
-      static_cast<PageNode*>(page_node())->GetBrowserContextID(), {});
-  frame_node()->OnNavigationCommitted(GURL("https://www.google.com"), false);
+      page->GetBrowserContextID(), {});
+  SetPageAndFrameUrl(GURL("https://www.google.com"));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::URGENT));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::PROACTIVE));
   EXPECT_TRUE(CanDiscard(page_node(), DiscardReason::EXTERNAL));

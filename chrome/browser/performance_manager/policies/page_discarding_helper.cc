@@ -340,28 +340,31 @@ PageDiscardingHelper::CanDiscardResult PageDiscardingHelper::CanDiscard(
   }
 
   // Don't discard tabs that don't have a main frame yet.
-  auto* main_frame = page_node->GetMainFrameNode();
-  if (!main_frame) {
+  // TODO(crbug.com/1441986): Due to a state tracking bug, sometimes there are
+  // two frames marked "current". In that case GetMainFrameNode() returns an
+  // arbitrary one, which may not have the url set correctly. As a workaround
+  // ignore the returned frame and use GetMainFrameUrl() for the url.
+  if (!page_node->GetMainFrameNode()) {
     return CanDiscardResult::kProtected;
   }
 
   // Only discard http(s) pages and internal pages to make sure that we don't
   // discard extensions or other PageNode that don't correspond to a tab.
+  const GURL& main_frame_url = page_node->GetMainFrameUrl();
   bool is_web_page_or_internal_page =
-      main_frame->GetURL().SchemeIsHTTPOrHTTPS() ||
-      main_frame->GetURL().SchemeIs("chrome");
+      main_frame_url.SchemeIsHTTPOrHTTPS() || main_frame_url.SchemeIs("chrome");
   if (!is_web_page_or_internal_page) {
     return CanDiscardResult::kProtected;
   }
 
-  if (!main_frame->GetURL().is_valid() || main_frame->GetURL().is_empty()) {
+  if (!main_frame_url.is_valid() || main_frame_url.is_empty()) {
     return CanDiscardResult::kProtected;
   }
 
   // The enterprise policy to except pages from discarding applies to both
   // proactive and urgent discards.
   if (IsPageOptedOutOfDiscarding(page_node->GetBrowserContextID(),
-                                 main_frame->GetURL())) {
+                                 main_frame_url)) {
     return CanDiscardResult::kProtected;
   }
 
@@ -473,11 +476,8 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
   if (it != last_change_to_non_audible_time_.end()) {
     ret.Set("non_audible_change_time", TimeDeltaFromNowToValue(it->second));
   }
-  auto* main_frame = node->GetMainFrameNode();
-  if (main_frame) {
-    ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
-                                                    main_frame->GetURL()));
-  }
+  ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
+                                                  node->GetMainFrameUrl()));
   return ret;
 }
 
