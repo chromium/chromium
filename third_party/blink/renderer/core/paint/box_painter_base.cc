@@ -524,8 +524,7 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
   if (!one_tile_rect.Contains(dest_rect))
     return absl::nullopt;
 
-  const PhysicalOffset offset_in_tile =
-      geometry.SnappedDestRect().offset - dest_phase;
+  const PhysicalOffset offset_in_tile = dest_rect.offset - dest_phase;
   if (!image.HasIntrinsicSize()) {
     // This is a generated image sized according to the tile size so we can use
     // the snapped dest rect directly.
@@ -550,14 +549,14 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
 
   // Subset computation needs the same location as was used above, but needs the
   // unsnapped destination size to correctly calculate sprite subsets in the
-  // presence of zoom.
+  // presence of zoom. We rely on the caller to provide a suitable (snapped)
+  // size.
   const gfx::SizeF scale(
       geometry.TileSize().width / intrinsic_tile_size.width(),
       geometry.TileSize().height / intrinsic_tile_size.height());
   gfx::RectF visible_src_rect(
       offset_in_tile.left / scale.width(), offset_in_tile.top / scale.height(),
-      geometry.UnsnappedDestRect().Width() / scale.width(),
-      geometry.UnsnappedDestRect().Height() / scale.height());
+      dest_rect.Width() / scale.width(), dest_rect.Height() / scale.height());
 
   // Content providers almost always choose source pixels at integer locations,
   // so snap to integers. This is particularly important for sprite maps.
@@ -807,8 +806,13 @@ inline bool PaintFastBottomLayer(const Document* document,
       // Use FastAndLossyFromRectF when converting the image border rect.
       // At this point it should have been derived from a snapped rectangle, so
       // the conversion from float should be as precise as it can be.
+      // If the destination is not a rounded fill, then use the same rectangle
+      // as in DrawTiledBackground() to get consistent results.
       const PhysicalRect dest_rect =
-          PhysicalRect::FastAndLossyFromRectF(image_rect);
+          info.is_rounded_fill
+              ? PhysicalRect::FastAndLossyFromRectF(image_rect)
+              : PhysicalRect(geometry.SnappedDestRect().offset,
+                             geometry.UnsnappedDestRect().size);
 
       absl::optional<gfx::RectF> single_tile_src = OptimizeToSingleTileDraw(
           geometry, dest_rect, *image, info.respect_image_orientation);
