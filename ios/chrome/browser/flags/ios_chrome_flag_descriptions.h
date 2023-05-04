@@ -848,11 +848,6 @@ extern const char kTFLiteLanguageDetectionIgnoreDescription[];
 extern const char kToolbarContainerName[];
 extern const char kToolbarContainerDescription[];
 
-// Title and description for the flag to enable using Lens to search for an
-// image from the long press context menu.
-extern const char kUseLensToSearchForImageName[];
-extern const char kUseLensToSearchForImageDescription[];
-
 // Title and description for the flag to enable using Lens to search using
 // the device camera from the home screen widget.
 extern const char kEnableLensInHomeScreenWidgetName[];
