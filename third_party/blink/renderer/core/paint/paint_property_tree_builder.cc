@@ -1276,8 +1276,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateOffset() {
          gfx::Transform& matrix) {
         const ComputedStyle& style = box.StyleRef();
         style.ApplyTransform(
-            matrix, &box, size.ToLayoutSize(),
-            ComputedStyle::kExcludeTransformOperations,
+            matrix, &box, size, ComputedStyle::kExcludeTransformOperations,
             ComputedStyle::kExcludeTransformOrigin,
             ComputedStyle::kIncludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
@@ -1298,8 +1297,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
          gfx::Transform& matrix) {
         const ComputedStyle& style = box.StyleRef();
         style.ApplyTransform(
-            matrix, &box, size.ToLayoutSize(),
-            ComputedStyle::kIncludeTransformOperations,
+            matrix, &box, size, ComputedStyle::kIncludeTransformOperations,
             ComputedStyle::kExcludeTransformOrigin,
             ComputedStyle::kExcludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
@@ -3455,8 +3453,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
          gfx::Transform& matrix) {
         const ComputedStyle& style = box.StyleRef();
         style.ApplyTransform(
-            matrix, &box, size.ToLayoutSize(),
-            ComputedStyle::kIncludeTransformOperations,
+            matrix, &box, size, ComputedStyle::kIncludeTransformOperations,
             ComputedStyle::kExcludeTransformOrigin,
             ComputedStyle::kExcludeMotionPath,
             ComputedStyle::kExcludeIndependentTransformProperties);
