@@ -102166,6 +102166,8 @@ would be helpful to identify which type is being sent.
   <int value="0" label="TCSD_ORD_ERROR: tpm: TSS_SUCCESS"/>
   <int value="65536" label="TCSD_ORD_OPENCONTEXT: tpm: TSS_SUCCESS"/>
   <int value="77841" label="TCSD_ORD_OPENCONTEXT: tsp: TSS_E_COMM_FAILURE"/>
+  <int value="78083"
+      label="TCSD_ORD_OPENCONTEXT: tsp: TSS_E_CONNECTION_FAILED"/>
   <int value="131072" label="TCSD_ORD_CLOSECONTEXT: tpm: TSS_SUCCESS"/>
   <int value="143377" label="TCSD_ORD_CLOSECONTEXT: tsp: TSS_E_COMM_FAILURE"/>
   <int value="196608" label="TCSD_ORD_FREEMEMORY: tpm: TSS_SUCCESS"/>
@@ -102175,65 +102177,141 @@ would be helpful to identify which type is being sent.
   <int value="458752" label="TCSD_ORD_ENUMREGISTEREDKEYS: tpm: TSS_SUCCESS"/>
   <int value="524288" label="TCSD_ORD_GETREGISTEREDKEY: tpm: TSS_SUCCESS"/>
   <int value="589824" label="TCSD_ORD_GETREGISTEREDKEYBLOB: tpm: TSS_SUCCESS"/>
+  <int value="602129"
+      label="TCSD_ORD_GETREGISTEREDKEYBLOB: tsp: TSS_E_COMM_FAILURE"/>
   <int value="655360"
       label="TCSD_ORD_GETREGISTEREDKEYBYPUBLICINFO: tpm: TSS_SUCCESS"/>
   <int value="720896" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TSS_SUCCESS"/>
+  <int value="720897" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_AUTHFAIL"/>
+  <int value="720905" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_FAIL"/>
+  <int value="720908"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_INVALID_KEYHANDLE"/>
+  <int value="720921"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_BAD_PARAM_SIZE"/>
+  <int value="720924"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_FAILEDSELFTEST"/>
   <int value="720929" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="720930"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="720934"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="720936"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_BAD_KEY_PROPERTY"/>
+  <int value="720950" label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_NOTFIPS"/>
+  <int value="722947"
+      label="TCSD_ORD_LOADKEYBYBLOB: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
   <int value="725127" label="TCSD_ORD_LOADKEYBYBLOB: tddl: TDDL_E_IOERROR"/>
+  <int value="733201" label="TCSD_ORD_LOADKEYBYBLOB: tsp: TSS_E_COMM_FAILURE"/>
   <int value="786432" label="TCSD_ORD_LOADKEYBYUUID: tpm: TSS_SUCCESS"/>
+  <int value="798737" label="TCSD_ORD_LOADKEYBYUUID: tsp: TSS_E_COMM_FAILURE"/>
   <int value="851968" label="TCSD_ORD_EVICTKEY: tpm: TSS_SUCCESS"/>
   <int value="917504" label="TCSD_ORD_CREATEWRAPKEY: tpm: TSS_SUCCESS"/>
+  <int value="917538"
+      label="TCSD_ORD_CREATEWRAPKEY: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="921735" label="TCSD_ORD_CREATEWRAPKEY: tddl: TDDL_E_IOERROR"/>
+  <int value="929809" label="TCSD_ORD_CREATEWRAPKEY: tsp: TSS_E_COMM_FAILURE"/>
   <int value="983040" label="TCSD_ORD_GETPUBKEY: tpm: TSS_SUCCESS"/>
   <int value="983041" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_AUTHFAIL"/>
+  <int value="983046" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_DEACTIVATED"/>
+  <int value="983074"
+      label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="983078" label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_INVALID_POSTINIT"/>
   <int value="985091"
       label="TCSD_ORD_GETPUBKEY: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="987271" label="TCSD_ORD_GETPUBKEY: tddl: TDDL_E_IOERROR"/>
+  <int value="991434" label="TCSD_ORD_GETPUBKEY: tcs: TCS_E_KM_LOADFAILED"/>
   <int value="995345" label="TCSD_ORD_GETPUBKEY: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1048576" label="TCSD_ORD_MAKEIDENTITY: tpm: TSS_SUCCESS"/>
+  <int value="1052807" label="TCSD_ORD_MAKEIDENTITY: tddl: TDDL_E_IOERROR"/>
+  <int value="1060881" label="TCSD_ORD_MAKEIDENTITY: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1114112" label="TCSD_ORD_LOGPCREVENT: tpm: TSS_SUCCESS"/>
   <int value="1179648" label="TCSD_ORD_GETPCREVENT: tpm: TSS_SUCCESS"/>
   <int value="1245184" label="TCSD_ORD_GETPCREVENTBYPCR: tpm: TSS_SUCCESS"/>
   <int value="1310720" label="TCSD_ORD_GETPCREVENTLOG: tpm: TSS_SUCCESS"/>
   <int value="1376256" label="TCSD_ORD_SETOWNERINSTALL: tpm: TSS_SUCCESS"/>
   <int value="1441792" label="TCSD_ORD_TAKEOWNERSHIP: tpm: TSS_SUCCESS"/>
+  <int value="1441825"
+      label="TCSD_ORD_TAKEOWNERSHIP: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="1443843"
+      label="TCSD_ORD_TAKEOWNERSHIP: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
   <int value="1507328" label="TCSD_ORD_OIAP: tpm: TSS_SUCCESS"/>
   <int value="1507351" label="TCSD_ORD_OIAP: tpm: TPM_E_SIZE"/>
+  <int value="1507366" label="TCSD_ORD_OIAP: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="1509378" label="TCSD_ORD_OIAP: tpm: TPM_E_DOING_SELFTEST"/>
   <int value="1511559" label="TCSD_ORD_OIAP: tddl: TDDL_E_IOERROR"/>
   <int value="1519633" label="TCSD_ORD_OIAP: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1572864" label="TCSD_ORD_OSAP: tpm: TSS_SUCCESS"/>
+  <int value="1572887" label="TCSD_ORD_OSAP: tpm: TPM_E_SIZE"/>
+  <int value="1572889" label="TCSD_ORD_OSAP: tpm: TPM_E_BAD_PARAM_SIZE"/>
+  <int value="1572902" label="TCSD_ORD_OSAP: tpm: TPM_E_INVALID_POSTINIT"/>
   <int value="1577095" label="TCSD_ORD_OSAP: tddl: TDDL_E_IOERROR"/>
+  <int value="1585169" label="TCSD_ORD_OSAP: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1638400" label="TCSD_ORD_CHANGEAUTH: tpm: TSS_SUCCESS"/>
   <int value="1703936" label="TCSD_ORD_CHANGEAUTHOWNER: tpm: TSS_SUCCESS"/>
+  <int value="1703937" label="TCSD_ORD_CHANGEAUTHOWNER: tpm: TPM_E_AUTHFAIL"/>
+  <int value="1716241"
+      label="TCSD_ORD_CHANGEAUTHOWNER: tsp: TSS_E_COMM_FAILURE"/>
   <int value="1769472" label="TCSD_ORD_CHANGEAUTHASYMSTART: tpm: TSS_SUCCESS"/>
   <int value="1835008" label="TCSD_ORD_CHANGEAUTHASYMFINISH: tpm: TSS_SUCCESS"/>
   <int value="1900544" label="TCSD_ORD_TERMINATEHANDLE: tpm: TSS_SUCCESS"/>
   <int value="1966080" label="TCSD_ORD_ACTIVATETPMIDENTITY: tpm: TSS_SUCCESS"/>
+  <int value="1966114"
+      label="TCSD_ORD_ACTIVATETPMIDENTITY: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="1966118"
+      label="TCSD_ORD_ACTIVATETPMIDENTITY: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="1970311"
+      label="TCSD_ORD_ACTIVATETPMIDENTITY: tddl: TDDL_E_IOERROR"/>
   <int value="2031616" label="TCSD_ORD_EXTEND: tpm: TSS_SUCCESS"/>
   <int value="2097152" label="TCSD_ORD_PCRREAD: tpm: TSS_SUCCESS"/>
+  <int value="2097190" label="TCSD_ORD_PCRREAD: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="2101383" label="TCSD_ORD_PCRREAD: tddl: TDDL_E_IOERROR"/>
+  <int value="2109457" label="TCSD_ORD_PCRREAD: tsp: TSS_E_COMM_FAILURE"/>
   <int value="2162688" label="TCSD_ORD_QUOTE: tpm: TSS_SUCCESS"/>
+  <int value="2174993" label="TCSD_ORD_QUOTE: tsp: TSS_E_COMM_FAILURE"/>
   <int value="2228224" label="TCSD_ORD_DIRWRITEAUTH: tpm: TSS_SUCCESS"/>
   <int value="2293760" label="TCSD_ORD_DIRREAD: tpm: TSS_SUCCESS"/>
   <int value="2359296" label="TCSD_ORD_SEAL: tpm: TSS_SUCCESS"/>
+  <int value="2361347" label="TCSD_ORD_SEAL: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="2363527" label="TCSD_ORD_SEAL: tddl: TDDL_E_IOERROR"/>
   <int value="2424832" label="TCSD_ORD_UNSEAL: tpm: TSS_SUCCESS"/>
   <int value="2424833" label="TCSD_ORD_UNSEAL: tpm: TPM_E_AUTHFAIL"/>
   <int value="2424856" label="TCSD_ORD_UNSEAL: tpm: TPM_E_WRONGPCRVAL"/>
   <int value="2424861" label="TCSD_ORD_UNSEAL: tpm: TPM_E_AUTH2FAIL"/>
+  <int value="2424865" label="TCSD_ORD_UNSEAL: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="2424866" label="TCSD_ORD_UNSEAL: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="2424870" label="TCSD_ORD_UNSEAL: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="2426883" label="TCSD_ORD_UNSEAL: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="2429063" label="TCSD_ORD_UNSEAL: tddl: TDDL_E_IOERROR"/>
+  <int value="2437137" label="TCSD_ORD_UNSEAL: tsp: TSS_E_COMM_FAILURE"/>
   <int value="2490368" label="TCSD_ORD_UNBIND: tpm: TSS_SUCCESS"/>
+  <int value="2490371" label="TCSD_ORD_UNBIND: tpm: TPM_E_BAD_PARAMETER"/>
   <int value="2490401" label="TCSD_ORD_UNBIND: tpm: TPM_E_DECRYPT_ERROR"/>
+  <int value="2490402" label="TCSD_ORD_UNBIND: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="2494599" label="TCSD_ORD_UNBIND: tddl: TDDL_E_IOERROR"/>
   <int value="2498762" label="TCSD_ORD_UNBIND: tcs: TCS_E_KM_LOADFAILED"/>
+  <int value="2502673" label="TCSD_ORD_UNBIND: tsp: TSS_E_COMM_FAILURE"/>
   <int value="2555904" label="TCSD_ORD_CREATEMIGRATIONBLOB: tpm: TSS_SUCCESS"/>
   <int value="2621440" label="TCSD_ORD_CONVERTMIGRATIONBLOB: tpm: TSS_SUCCESS"/>
   <int value="2686976"
       label="TCSD_ORD_AUTHORIZEMIGRATIONKEY: tpm: TSS_SUCCESS"/>
   <int value="2752512" label="TCSD_ORD_CERTIFYKEY: tpm: TSS_SUCCESS"/>
+  <int value="2756743" label="TCSD_ORD_CERTIFYKEY: tddl: TDDL_E_IOERROR"/>
+  <int value="2764817" label="TCSD_ORD_CERTIFYKEY: tsp: TSS_E_COMM_FAILURE"/>
   <int value="2818048" label="TCSD_ORD_SIGN: tpm: TSS_SUCCESS"/>
   <int value="2883584" label="TCSD_ORD_GETRANDOM: tpm: TSS_SUCCESS"/>
+  <int value="2883622" label="TCSD_ORD_GETRANDOM: tpm: TPM_E_INVALID_POSTINIT"/>
+  <int value="2891778" label="TCSD_ORD_GETRANDOM: tcs: TSS_E_FAIL"/>
+  <int value="2895889" label="TCSD_ORD_GETRANDOM: tsp: TSS_E_COMM_FAILURE"/>
   <int value="2949120" label="TCSD_ORD_STIRRANDOM: tpm: TSS_SUCCESS"/>
   <int value="3014656" label="TCSD_ORD_GETCAPABILITY: tpm: TSS_SUCCESS"/>
   <int value="3014658" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BADINDEX"/>
   <int value="3014659"
       label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_PARAMETER"/>
+  <int value="3014666" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_ORDINAL"/>
   <int value="3014684"
       label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_FAILEDSELFTEST"/>
+  <int value="3014694"
+      label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_INVALID_POSTINIT"/>
   <int value="3014700" label="TCSD_ORD_GETCAPABILITY: tpm: TPM_E_BAD_MODE"/>
   <int value="3018887" label="TCSD_ORD_GETCAPABILITY: tddl: TDDL_E_IOERROR"/>
   <int value="3026961" label="TCSD_ORD_GETCAPABILITY: tsp: TSS_E_COMM_FAILURE"/>
@@ -102245,12 +102323,16 @@ would be helpful to identify which type is being sent.
       label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_DEACTIVATED"/>
   <int value="3147779"
       label="TCSD_ORD_GETCAPABILITYOWNER: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="3211263"
+      label="TCSD_ORD_GETCAPABILITYOWNER: Unknown TSS_RESULT 0xffff"/>
   <int value="3211264"
       label="TCSD_ORD_CREATEENDORSEMENTKEYPAIR: tpm: TSS_SUCCESS"/>
   <int value="3276800" label="TCSD_ORD_READPUBEK: tpm: TSS_SUCCESS"/>
   <int value="3276806" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DEACTIVATED"/>
   <int value="3276807" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DISABLED"/>
+  <int value="3276808" label="TCSD_ORD_READPUBEK: tpm: TPM_E_DISABLED_CMD"/>
   <int value="3276835" label="TCSD_ORD_READPUBEK: tpm: TPM_E_NO_ENDORSEMENT"/>
+  <int value="3342335" label="TCSD_ORD_READPUBEK: Unknown TSS_RESULT 0xffff"/>
   <int value="3342336" label="TCSD_ORD_DISABLEPUBEKREAD: tpm: TSS_SUCCESS"/>
   <int value="3407872" label="TCSD_ORD_OWNERREADPUBEK: tpm: TSS_SUCCESS"/>
   <int value="3473408" label="TCSD_ORD_SELFTESTFULL: tpm: TSS_SUCCESS"/>
@@ -102284,6 +102366,9 @@ would be helpful to identify which type is being sent.
   <int value="4915200" label="TCSD_ORD_DAASIGN: tpm: TSS_SUCCESS"/>
   <int value="4980736" label="TCSD_ORD_SETCAPABILITY: tpm: TSS_SUCCESS"/>
   <int value="5046272" label="TCSD_ORD_RESETLOCKVALUE: tpm: TSS_SUCCESS"/>
+  <int value="5046278" label="TCSD_ORD_RESETLOCKVALUE: tpm: TPM_E_DEACTIVATED"/>
+  <int value="5046300"
+      label="TCSD_ORD_RESETLOCKVALUE: tpm: TPM_E_FAILEDSELFTEST"/>
   <int value="5111808" label="TCSD_ORD_PCRRESET: tpm: TSS_SUCCESS"/>
   <int value="5177344" label="TCSD_ORD_READCOUNTER: tpm: TSS_SUCCESS"/>
   <int value="5242880" label="TCSD_ORD_CREATECOUNTER: tpm: TSS_SUCCESS"/>
@@ -102297,15 +102382,26 @@ would be helpful to identify which type is being sent.
       label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TSS_SUCCESS"/>
   <int value="5701634"
       label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TPM_E_BADINDEX"/>
+  <int value="5701649"
+      label="TCSD_ORD_NVDEFINEORRELEASESPACE: tpm: TPM_E_NOSPACE"/>
   <int value="5767168" label="TCSD_ORD_NVWRITEVALUE: tpm: TSS_SUCCESS"/>
   <int value="5767192" label="TCSD_ORD_NVWRITEVALUE: tpm: TPM_E_WRONGPCRVAL"/>
+  <int value="5767228" label="TCSD_ORD_NVWRITEVALUE: tpm: TPM_E_AREA_LOCKED"/>
   <int value="5832704" label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TSS_SUCCESS"/>
   <int value="5832764"
       label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TPM_E_AREA_LOCKED"/>
+  <int value="5834755"
+      label="TCSD_ORD_NVWRITEVALUEAUTH: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
+  <int value="5845009"
+      label="TCSD_ORD_NVWRITEVALUEAUTH: tsp: TSS_E_COMM_FAILURE"/>
   <int value="5898240" label="TCSD_ORD_NVREADVALUE: tpm: TSS_SUCCESS"/>
   <int value="5898264" label="TCSD_ORD_NVREADVALUE: tpm: TPM_E_WRONGPCRVAL"/>
   <int value="5898285" label="TCSD_ORD_NVREADVALUE: tpm: TPM_E_BAD_PRESENCE"/>
   <int value="5963776" label="TCSD_ORD_NVREADVALUEAUTH: tpm: TSS_SUCCESS"/>
+  <int value="5963810"
+      label="TCSD_ORD_NVREADVALUEAUTH: tpm: TPM_E_INVALID_AUTHHANDLE"/>
+  <int value="5965827"
+      label="TCSD_ORD_NVREADVALUEAUTH: tpm: TPM_E_DEFEND_LOCK_RUNNING"/>
   <int value="5976081"
       label="TCSD_ORD_NVREADVALUEAUTH: tsp: TSS_E_COMM_FAILURE"/>
   <int value="6029312" label="TCSD_ORD_ESTABLISHTRANSPORT: tpm: TSS_SUCCESS"/>
@@ -102322,6 +102418,9 @@ would be helpful to identify which type is being sent.
   <int value="6619136" label="TCSD_ORD_ENUMREGISTEREDKEYS2: tpm: TSS_SUCCESS"/>
   <int value="6684672" label="TCSD_ORD_SETTEMPDEACTIVATED2: tpm: TSS_SUCCESS"/>
   <int value="6750208" label="TCSD_ORD_DELEGATE_MANAGE: tpm: TSS_SUCCESS"/>
+  <int value="6750225" label="TCSD_ORD_DELEGATE_MANAGE: tpm: TPM_E_NOSPACE"/>
+  <int value="6762513"
+      label="TCSD_ORD_DELEGATE_MANAGE: tsp: TSS_E_COMM_FAILURE"/>
   <int value="6815744"
       label="TCSD_ORD_DELEGATE_CREATEKEYDELEGATION: tpm: TSS_SUCCESS"/>
   <int value="6881280"
@@ -102331,6 +102430,8 @@ would be helpful to identify which type is being sent.
   <int value="6946816"
       label="TCSD_ORD_DELEGATE_LOADOWNERDELEGATION: tpm: TSS_SUCCESS"/>
   <int value="7012352" label="TCSD_ORD_DELEGATE_READTABLE: tpm: TSS_SUCCESS"/>
+  <int value="7024657"
+      label="TCSD_ORD_DELEGATE_READTABLE: tsp: TSS_E_COMM_FAILURE"/>
   <int value="7077888"
       label="TCSD_ORD_DELEGATE_UPDATEVERIFICATIONCOUNT: tpm: TSS_SUCCESS"/>
   <int value="7143424"
@@ -102350,6 +102451,9 @@ would be helpful to identify which type is being sent.
   <int value="7864320" label="TCSD_ORD_FLUSHSPECIFIC: tpm: TSS_SUCCESS"/>
   <int value="7929856" label="TCSD_ORD_KEYCONTROLOWNER: tpm: TSS_SUCCESS"/>
   <int value="7995392" label="TCSD_ORD_DSAP: tpm: TSS_SUCCESS"/>
+  <int value="7995394" label="TCSD_ORD_DSAP: tpm: TPM_E_BADINDEX"/>
+  <int value="7995415" label="TCSD_ORD_DSAP: tpm: TPM_E_SIZE"/>
+  <int value="7995430" label="TCSD_ORD_DSAP: tpm: TPM_E_INVALID_POSTINIT"/>
   <int value="7999623" label="TCSD_ORD_DSAP: tddl: TDDL_E_IOERROR"/>
 </enum>
 
@@ -102364,18 +102468,35 @@ would be helpful to identify which type is being sent.
   </summary>
   <int value="18808832" label="TPM_CC_NV_UndefineSpaceSpecial: TPM_RC_SUCCESS"/>
   <int value="18874368" label="TPM_CC_EvictControl: TPM_RC_SUCCESS"/>
+  <int value="18874517" label="TPM_CC_EvictControl: TPM_RC_SIZE"/>
   <int value="18874530" label="TPM_CC_EvictControl: TPM_RC_BAD_AUTH"/>
+  <int value="18876696" label="TPM_CC_EvictControl: TPM_RC_REFERENCE_S0"/>
+  <int value="18876706" label="TPM_CC_EvictControl: TPM_RC_RETRY"/>
+  <int value="18903044" label="TPM_CC_EvictControl: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="18911248" label="TPM_CC_EvictControl: SAPI_RC_NO_CONNECTION"/>
   <int value="18939904" label="TPM_CC_HierarchyControl: TPM_RC_SUCCESS"/>
   <int value="19005440" label="TPM_CC_NV_UndefineSpace: TPM_RC_SUCCESS"/>
+  <int value="19005602" label="TPM_CC_NV_UndefineSpace: TPM_RC_BAD_AUTH"/>
+  <int value="19005769"
+      label="TPM_CC_NV_UndefineSpace: TPM_RC_NV_AUTHORIZATION"/>
   <int value="19136512" label="TPM_CC_ChangeEPS: TPM_RC_SUCCESS"/>
   <int value="19202048" label="TPM_CC_ChangePPS: TPM_RC_SUCCESS"/>
   <int value="19267584" label="TPM_CC_Clear: TPM_RC_SUCCESS"/>
   <int value="19333120" label="TPM_CC_ClearControl: TPM_RC_SUCCESS"/>
   <int value="19398656" label="TPM_CC_ClockSet: TPM_RC_SUCCESS"/>
   <int value="19464192" label="TPM_CC_HierarchyChangeAuth: TPM_RC_SUCCESS"/>
+  <int value="19464325" label="TPM_CC_HierarchyChangeAuth: TPM_RC_HIERARCHY"/>
   <int value="19464354" label="TPM_CC_HierarchyChangeAuth: TPM_RC_BAD_AUTH"/>
+  <int value="19492868"
+      label="TPM_CC_HierarchyChangeAuth: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="19501072"
+      label="TPM_CC_HierarchyChangeAuth: SAPI_RC_NO_CONNECTION"/>
   <int value="19529728" label="TPM_CC_NV_DefineSpace: TPM_RC_SUCCESS"/>
   <int value="19529890" label="TPM_CC_NV_DefineSpace: TPM_RC_BAD_AUTH"/>
+  <int value="19530057" label="TPM_CC_NV_DefineSpace: TPM_RC_NV_AUTHORIZATION"/>
+  <int value="19530060" label="TPM_CC_NV_DefineSpace: TPM_RC_NV_DEFINED"/>
+  <int value="19532066" label="TPM_CC_NV_DefineSpace: TPM_RC_RETRY"/>
+  <int value="19558404" label="TPM_CC_NV_DefineSpace: TRUNKS_RC_WRITE_ERROR"/>
   <int value="19566608" label="TPM_CC_NV_DefineSpace: SAPI_RC_NO_CONNECTION"/>
   <int value="19595264" label="TPM_CC_PCR_Allocate: TPM_RC_SUCCESS"/>
   <int value="19660800" label="TPM_CC_PCR_SetAuthPolicy: TPM_RC_SUCCESS"/>
@@ -102386,22 +102507,69 @@ would be helpful to identify which type is being sent.
   <int value="19988480" label="TPM_CC_CreatePrimary: TPM_RC_SUCCESS"/>
   <int value="19988612" label="TPM_CC_CreatePrimary: TPM_RC_VALUE"/>
   <int value="19988642" label="TPM_CC_CreatePrimary: TPM_RC_BAD_AUTH"/>
+  <int value="19988802" label="TPM_CC_CreatePrimary: TPM_RC_COMMAND_SIZE"/>
+  <int value="19990808" label="TPM_CC_CreatePrimary: TPM_RC_REFERENCE_S0"/>
+  <int value="19990818" label="TPM_CC_CreatePrimary: TPM_RC_RETRY"/>
+  <int value="20017156" label="TPM_CC_CreatePrimary: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20025360" label="TPM_CC_CreatePrimary: SAPI_RC_NO_CONNECTION"/>
   <int value="20054016" label="TPM_CC_NV_GlobalWriteLock: TPM_RC_SUCCESS"/>
   <int value="20119552" label="TPM_CC_GetCommandAuditDigest: TPM_RC_SUCCESS"/>
   <int value="20185088" label="TPM_CC_NV_Increment: TPM_RC_SUCCESS"/>
   <int value="20250624" label="TPM_CC_NV_SetBits: TPM_RC_SUCCESS"/>
   <int value="20316160" label="TPM_CC_NV_Extend: TPM_RC_SUCCESS"/>
   <int value="20381696" label="TPM_CC_NV_Write: TPM_RC_SUCCESS"/>
+  <int value="20381826" label="TPM_CC_NV_Write: TPM_RC_ATTRIBUTES"/>
+  <int value="20381838" label="TPM_CC_NV_Write: TPM_RC_AUTH_FAIL"/>
+  <int value="20381952" label="TPM_CC_NV_Write: TPM_RC_INITIALIZE"/>
+  <int value="20382022" label="TPM_CC_NV_Write: TPM_RC_NV_RANGE"/>
+  <int value="20382025" label="TPM_CC_NV_Write: TPM_RC_NV_AUTHORIZATION"/>
+  <int value="20384033" label="TPM_CC_NV_Write: TPM_RC_LOCKOUT"/>
+  <int value="20384034" label="TPM_CC_NV_Write: TPM_RC_RETRY"/>
+  <int value="20410372" label="TPM_CC_NV_Write: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20418576" label="TPM_CC_NV_Write: SAPI_RC_NO_CONNECTION"/>
+  <int value="20426901" label="TPM_CC_NV_Write: Resource Manager: TPM_RC_SIZE"/>
+  <int value="20426906"
+      label="TPM_CC_NV_Write: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="20447232" label="TPM_CC_NV_WriteLock: TPM_RC_SUCCESS"/>
+  <int value="20447374" label="TPM_CC_NV_WriteLock: TPM_RC_AUTH_FAIL"/>
+  <int value="20449560" label="TPM_CC_NV_WriteLock: TPM_RC_REFERENCE_S0"/>
+  <int value="20449569" label="TPM_CC_NV_WriteLock: TPM_RC_LOCKOUT"/>
+  <int value="20449570" label="TPM_CC_NV_WriteLock: TPM_RC_RETRY"/>
+  <int value="20475908" label="TPM_CC_NV_WriteLock: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20484112" label="TPM_CC_NV_WriteLock: SAPI_RC_NO_CONNECTION"/>
+  <int value="20492437"
+      label="TPM_CC_NV_WriteLock: Resource Manager: TPM_RC_SIZE"/>
   <int value="20512768"
       label="TPM_CC_DictionaryAttackLockReset: TPM_RC_SUCCESS"/>
+  <int value="20512910"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_AUTH_FAIL"/>
+  <int value="20513024"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_INITIALIZE"/>
   <int value="20515096"
       label="TPM_CC_DictionaryAttackLockReset: TPM_RC_REFERENCE_S0"/>
+  <int value="20515105"
+      label="TPM_CC_DictionaryAttackLockReset: TPM_RC_LOCKOUT"/>
   <int value="20515106" label="TPM_CC_DictionaryAttackLockReset: TPM_RC_RETRY"/>
   <int value="20541444"
       label="TPM_CC_DictionaryAttackLockReset: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="20549640"
+      label="TPM_CC_DictionaryAttackLockReset: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="20549648"
+      label="TPM_CC_DictionaryAttackLockReset: SAPI_RC_NO_CONNECTION"/>
+  <int value="20557963"
+      label="TPM_CC_DictionaryAttackLockReset: Resource Manager:
+             TPM_RC_HANDLE"/>
+  <int value="20557978"
+      label="TPM_CC_DictionaryAttackLockReset: Resource Manager:
+             TPM_RC_INSUFFICIENT"/>
   <int value="20578304"
       label="TPM_CC_DictionaryAttackParameters: TPM_RC_SUCCESS"/>
+  <int value="20578446"
+      label="TPM_CC_DictionaryAttackParameters: TPM_RC_AUTH_FAIL"/>
+  <int value="20580641"
+      label="TPM_CC_DictionaryAttackParameters: TPM_RC_LOCKOUT"/>
+  <int value="20606980"
+      label="TPM_CC_DictionaryAttackParameters: TRUNKS_RC_WRITE_ERROR"/>
   <int value="20643840" label="TPM_CC_NV_ChangeAuth: TPM_RC_SUCCESS"/>
   <int value="20709376" label="TPM_CC_PCR_Event: TPM_RC_SUCCESS"/>
   <int value="20774912" label="TPM_CC_PCR_Reset: TPM_RC_SUCCESS"/>
@@ -102415,88 +102583,216 @@ would be helpful to identify which type is being sent.
   <int value="21233664" label="TPM_CC_Startup: TPM_RC_SUCCESS"/>
   <int value="21299200" label="TPM_CC_Shutdown: TPM_RC_SUCCESS"/>
   <int value="21364736" label="TPM_CC_StirRandom: TPM_RC_SUCCESS"/>
+  <int value="21364992" label="TPM_CC_StirRandom: TPM_RC_INITIALIZE"/>
+  <int value="21393412" label="TPM_CC_StirRandom: TRUNKS_RC_WRITE_ERROR"/>
   <int value="21401616" label="TPM_CC_StirRandom: SAPI_RC_NO_CONNECTION"/>
+  <int value="21409943"
+      label="TPM_CC_StirRandom: Resource Manager: TPM_RC_TAG"/>
   <int value="21430272" label="TPM_CC_ActivateCredential: TPM_RC_SUCCESS"/>
+  <int value="21430404" label="TPM_CC_ActivateCredential: TPM_RC_VALUE"/>
+  <int value="21430414" label="TPM_CC_ActivateCredential: TPM_RC_AUTH_FAIL"/>
+  <int value="21430421" label="TPM_CC_ActivateCredential: TPM_RC_SIZE"/>
+  <int value="21430429" label="TPM_CC_ActivateCredential: TPM_RC_POLICY_FAIL"/>
   <int value="21430431" label="TPM_CC_ActivateCredential: TPM_RC_INTEGRITY"/>
+  <int value="21430437" label="TPM_CC_ActivateCredential: TPM_RC_BINDING"/>
+  <int value="21430439" label="TPM_CC_ActivateCredential: TPM_RC_ECC_POINT"/>
+  <int value="21432592" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_H0"/>
   <int value="21432593" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_H1"/>
   <int value="21432601" label="TPM_CC_ActivateCredential: TPM_RC_REFERENCE_S1"/>
   <int value="21432610" label="TPM_CC_ActivateCredential: TPM_RC_RETRY"/>
+  <int value="21458948"
+      label="TPM_CC_ActivateCredential: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="21467152"
+      label="TPM_CC_ActivateCredential: SAPI_RC_NO_CONNECTION"/>
   <int value="21495808" label="TPM_CC_Certify: TPM_RC_SUCCESS"/>
+  <int value="21495940" label="TPM_CC_Certify: TPM_RC_VALUE"/>
+  <int value="21495954" label="TPM_CC_Certify: TPM_RC_SCHEME"/>
+  <int value="21495967" label="TPM_CC_Certify: TPM_RC_INTEGRITY"/>
+  <int value="21498128" label="TPM_CC_Certify: TPM_RC_REFERENCE_H0"/>
+  <int value="21498129" label="TPM_CC_Certify: TPM_RC_REFERENCE_H1"/>
   <int value="21498146" label="TPM_CC_Certify: TPM_RC_RETRY"/>
+  <int value="21524484" label="TPM_CC_Certify: TRUNKS_RC_WRITE_ERROR"/>
   <int value="21532688" label="TPM_CC_Certify: SAPI_RC_NO_CONNECTION"/>
+  <int value="21541003"
+      label="TPM_CC_Certify: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="21541013" label="TPM_CC_Certify: Resource Manager: TPM_RC_SIZE"/>
+  <int value="21541018"
+      label="TPM_CC_Certify: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="21561344" label="TPM_CC_PolicyNV: TPM_RC_SUCCESS"/>
   <int value="21626880" label="TPM_CC_CertifyCreation: TPM_RC_SUCCESS"/>
   <int value="21692416" label="TPM_CC_Duplicate: TPM_RC_SUCCESS"/>
   <int value="21757952" label="TPM_CC_GetTime: TPM_RC_SUCCESS"/>
   <int value="21823488" label="TPM_CC_GetSessionAuditDigest: TPM_RC_SUCCESS"/>
   <int value="21889024" label="TPM_CC_NV_Read: TPM_RC_SUCCESS"/>
+  <int value="21889186" label="TPM_CC_NV_Read: TPM_RC_BAD_AUTH"/>
+  <int value="21889280" label="TPM_CC_NV_Read: TPM_RC_INITIALIZE"/>
+  <int value="21889281" label="TPM_CC_NV_Read: TPM_RC_FAILURE"/>
+  <int value="21889346" label="TPM_CC_NV_Read: TPM_RC_COMMAND_SIZE"/>
+  <int value="21889350" label="TPM_CC_NV_Read: TPM_RC_NV_RANGE"/>
+  <int value="21891361" label="TPM_CC_NV_Read: TPM_RC_LOCKOUT"/>
+  <int value="21891362" label="TPM_CC_NV_Read: TPM_RC_RETRY"/>
+  <int value="21917700" label="TPM_CC_NV_Read: TRUNKS_RC_WRITE_ERROR"/>
   <int value="21925904" label="TPM_CC_NV_Read: SAPI_RC_NO_CONNECTION"/>
+  <int value="21934229" label="TPM_CC_NV_Read: Resource Manager: TPM_RC_SIZE"/>
+  <int value="21934234"
+      label="TPM_CC_NV_Read: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="21954560" label="TPM_CC_NV_ReadLock: TPM_RC_SUCCESS"/>
   <int value="22020096" label="TPM_CC_ObjectChangeAuth: TPM_RC_SUCCESS"/>
   <int value="22085632" label="TPM_CC_PolicySecret: TPM_RC_SUCCESS"/>
+  <int value="22085771" label="TPM_CC_PolicySecret: TPM_RC_HANDLE"/>
+  <int value="22085794" label="TPM_CC_PolicySecret: TPM_RC_BAD_AUTH"/>
+  <int value="22087953" label="TPM_CC_PolicySecret: TPM_RC_REFERENCE_H1"/>
   <int value="22087960" label="TPM_CC_PolicySecret: TPM_RC_REFERENCE_S0"/>
+  <int value="22087970" label="TPM_CC_PolicySecret: TPM_RC_RETRY"/>
+  <int value="22122512" label="TPM_CC_PolicySecret: SAPI_RC_NO_CONNECTION"/>
+  <int value="22130827"
+      label="TPM_CC_PolicySecret: Resource Manager: TPM_RC_HANDLE"/>
   <int value="22151168" label="TPM_CC_Rewrap: TPM_RC_SUCCESS"/>
   <int value="22216704" label="TPM_CC_Create: TPM_RC_SUCCESS"/>
+  <int value="22216836" label="TPM_CC_Create: TPM_RC_VALUE"/>
+  <int value="22216853" label="TPM_CC_Create: TPM_RC_SIZE"/>
   <int value="22216854" label="TPM_CC_Create: TPM_RC_SYMMETRIC"/>
   <int value="22216866" label="TPM_CC_Create: TPM_RC_BAD_AUTH"/>
+  <int value="22216960" label="TPM_CC_Create: TPM_RC_INITIALIZE"/>
+  <int value="22216961" label="TPM_CC_Create: TPM_RC_FAILURE"/>
+  <int value="22217007" label="TPM_CC_Create: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22217026" label="TPM_CC_Create: TPM_RC_COMMAND_SIZE"/>
+  <int value="22217027" label="TPM_CC_Create: TPM_RC_COMMAND_CODE"/>
   <int value="22219032" label="TPM_CC_Create: TPM_RC_REFERENCE_S0"/>
   <int value="22219042" label="TPM_CC_Create: TPM_RC_RETRY"/>
   <int value="22245380" label="TPM_CC_Create: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22253576" label="TPM_CC_Create: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="22253584" label="TPM_CC_Create: SAPI_RC_NO_CONNECTION"/>
   <int value="22261899" label="TPM_CC_Create: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22261909" label="TPM_CC_Create: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22261914"
+      label="TPM_CC_Create: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="22282240" label="TPM_CC_ECDH_ZGen: TPM_RC_SUCCESS"/>
+  <int value="22282372" label="TPM_CC_ECDH_ZGen: TPM_RC_VALUE"/>
+  <int value="22282386" label="TPM_CC_ECDH_ZGen: TPM_RC_SCHEME"/>
+  <int value="22282399" label="TPM_CC_ECDH_ZGen: TPM_RC_INTEGRITY"/>
   <int value="22282402" label="TPM_CC_ECDH_ZGen: TPM_RC_BAD_AUTH"/>
+  <int value="22282407" label="TPM_CC_ECDH_ZGen: TPM_RC_ECC_POINT"/>
+  <int value="22282496" label="TPM_CC_ECDH_ZGen: TPM_RC_INITIALIZE"/>
+  <int value="22282543" label="TPM_CC_ECDH_ZGen: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22282562" label="TPM_CC_ECDH_ZGen: TPM_RC_COMMAND_SIZE"/>
+  <int value="22282563" label="TPM_CC_ECDH_ZGen: TPM_RC_COMMAND_CODE"/>
+  <int value="22282580" label="TPM_CC_ECDH_ZGen: TPM_RC_NO_RESULT"/>
   <int value="22284560" label="TPM_CC_ECDH_ZGen: TPM_RC_REFERENCE_H0"/>
   <int value="22284568" label="TPM_CC_ECDH_ZGen: TPM_RC_REFERENCE_S0"/>
   <int value="22284578" label="TPM_CC_ECDH_ZGen: TPM_RC_RETRY"/>
   <int value="22310916" label="TPM_CC_ECDH_ZGen: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22319120" label="TPM_CC_ECDH_ZGen: SAPI_RC_NO_CONNECTION"/>
   <int value="22327435"
       label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22327445"
+      label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22327450"
+      label="TPM_CC_ECDH_ZGen: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="22347776" label="TPM_CC_HMAC: TPM_RC_SUCCESS"/>
   <int value="22413312" label="TPM_CC_Import: TPM_RC_SUCCESS"/>
+  <int value="22413449" label="TPM_CC_Import: TPM_RC_MODE"/>
+  <int value="22413471" label="TPM_CC_Import: TPM_RC_INTEGRITY"/>
+  <int value="22413568" label="TPM_CC_Import: TPM_RC_INITIALIZE"/>
+  <int value="22413615" label="TPM_CC_Import: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22415618" label="TPM_CC_Import: TPM_RC_OBJECT_MEMORY"/>
+  <int value="22415640" label="TPM_CC_Import: TPM_RC_REFERENCE_S0"/>
+  <int value="22415650" label="TPM_CC_Import: TPM_RC_RETRY"/>
+  <int value="22441988" label="TPM_CC_Import: TRUNKS_RC_WRITE_ERROR"/>
   <int value="22450192" label="TPM_CC_Import: SAPI_RC_NO_CONNECTION"/>
+  <int value="22458517" label="TPM_CC_Import: Resource Manager: TPM_RC_SIZE"/>
   <int value="22478848" label="TPM_CC_Load: TPM_RC_SUCCESS"/>
+  <int value="22478979" label="TPM_CC_Load: TPM_RC_HASH"/>
+  <int value="22478980" label="TPM_CC_Load: TPM_RC_VALUE"/>
+  <int value="22478986" label="TPM_CC_Load: TPM_RC_TYPE"/>
+  <int value="22478987" label="TPM_CC_Load: TPM_RC_HANDLE"/>
   <int value="22478997" label="TPM_CC_Load: TPM_RC_SIZE"/>
+  <int value="22478998" label="TPM_CC_Load: TPM_RC_SYMMETRIC"/>
+  <int value="22479002" label="TPM_CC_Load: TPM_RC_INSUFFICIENT"/>
   <int value="22479007" label="TPM_CC_Load: TPM_RC_INTEGRITY"/>
+  <int value="22479009" label="TPM_CC_Load: TPM_RC_RESERVED_BITS"/>
+  <int value="22479010" label="TPM_CC_Load: TPM_RC_BAD_AUTH"/>
   <int value="22479104" label="TPM_CC_Load: TPM_RC_INITIALIZE"/>
+  <int value="22479151" label="TPM_CC_Load: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22479170" label="TPM_CC_Load: TPM_RC_COMMAND_SIZE"/>
+  <int value="22479171" label="TPM_CC_Load: TPM_RC_COMMAND_CODE"/>
+  <int value="22479189" label="TPM_CC_Load: TPM_RC_SENSITIVE"/>
+  <int value="22481154" label="TPM_CC_Load: TPM_RC_OBJECT_MEMORY"/>
   <int value="22481186" label="TPM_CC_Load: TPM_RC_RETRY"/>
   <int value="22507524" label="TPM_CC_Load: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22515720" label="TPM_CC_Load: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="22515728" label="TPM_CC_Load: SAPI_RC_NO_CONNECTION"/>
+  <int value="22524053" label="TPM_CC_Load: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22524055" label="TPM_CC_Load: Resource Manager: TPM_RC_TAG"/>
+  <int value="22524058"
+      label="TPM_CC_Load: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="22544384" label="TPM_CC_Quote: TPM_RC_SUCCESS"/>
+  <int value="22544516" label="TPM_CC_Quote: TPM_RC_VALUE"/>
+  <int value="22544530" label="TPM_CC_Quote: TPM_RC_SCHEME"/>
+  <int value="22573060" label="TPM_CC_Quote: TRUNKS_RC_WRITE_ERROR"/>
   <int value="22581264" label="TPM_CC_Quote: SAPI_RC_NO_CONNECTION"/>
   <int value="22609920" label="TPM_CC_RSA_Decrypt: TPM_RC_SUCCESS"/>
+  <int value="22610050" label="TPM_CC_RSA_Decrypt: TPM_RC_ATTRIBUTES"/>
   <int value="22610052" label="TPM_CC_RSA_Decrypt: TPM_RC_VALUE"/>
+  <int value="22610059" label="TPM_CC_RSA_Decrypt: TPM_RC_HANDLE"/>
   <int value="22610069" label="TPM_CC_RSA_Decrypt: TPM_RC_SIZE"/>
   <int value="22610070" label="TPM_CC_RSA_Decrypt: TPM_RC_SYMMETRIC"/>
+  <int value="22610076" label="TPM_CC_RSA_Decrypt: TPM_RC_KEY"/>
   <int value="22610079" label="TPM_CC_RSA_Decrypt: TPM_RC_INTEGRITY"/>
   <int value="22610082" label="TPM_CC_RSA_Decrypt: TPM_RC_BAD_AUTH"/>
+  <int value="22610085" label="TPM_CC_RSA_Decrypt: TPM_RC_BINDING"/>
+  <int value="22610176" label="TPM_CC_RSA_Decrypt: TPM_RC_INITIALIZE"/>
+  <int value="22610223" label="TPM_CC_RSA_Decrypt: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22610242" label="TPM_CC_RSA_Decrypt: TPM_RC_COMMAND_SIZE"/>
   <int value="22612240" label="TPM_CC_RSA_Decrypt: TPM_RC_REFERENCE_H0"/>
   <int value="22612248" label="TPM_CC_RSA_Decrypt: TPM_RC_REFERENCE_S0"/>
   <int value="22612258" label="TPM_CC_RSA_Decrypt: TPM_RC_RETRY"/>
   <int value="22638596" label="TPM_CC_RSA_Decrypt: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22646792"
+      label="TPM_CC_RSA_Decrypt: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="22646800" label="TPM_CC_RSA_Decrypt: SAPI_RC_NO_CONNECTION"/>
   <int value="22655115"
       label="TPM_CC_RSA_Decrypt: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22655125"
+      label="TPM_CC_RSA_Decrypt: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22655130"
+      label="TPM_CC_RSA_Decrypt: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="22740992" label="TPM_CC_HMAC_Start: TPM_RC_SUCCESS"/>
   <int value="22806528" label="TPM_CC_SequenceUpdate: TPM_RC_SUCCESS"/>
   <int value="22872064" label="TPM_CC_Sign: TPM_RC_SUCCESS"/>
   <int value="22872195" label="TPM_CC_Sign: TPM_RC_HASH"/>
   <int value="22872196" label="TPM_CC_Sign: TPM_RC_VALUE"/>
   <int value="22872214" label="TPM_CC_Sign: TPM_RC_SYMMETRIC"/>
+  <int value="22872223" label="TPM_CC_Sign: TPM_RC_INTEGRITY"/>
   <int value="22872226" label="TPM_CC_Sign: TPM_RC_BAD_AUTH"/>
+  <int value="22872229" label="TPM_CC_Sign: TPM_RC_BINDING"/>
+  <int value="22872320" label="TPM_CC_Sign: TPM_RC_INITIALIZE"/>
   <int value="22874384" label="TPM_CC_Sign: TPM_RC_REFERENCE_H0"/>
   <int value="22874392" label="TPM_CC_Sign: TPM_RC_REFERENCE_S0"/>
   <int value="22874402" label="TPM_CC_Sign: TPM_RC_RETRY"/>
   <int value="22900740" label="TPM_CC_Sign: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="22908936" label="TPM_CC_Sign: SAPI_RC_NO_RESPONSE_RECEIVED"/>
+  <int value="22908944" label="TPM_CC_Sign: SAPI_RC_NO_CONNECTION"/>
   <int value="22917259" label="TPM_CC_Sign: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22917269" label="TPM_CC_Sign: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22917274"
+      label="TPM_CC_Sign: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="22937600" label="TPM_CC_Unseal: TPM_RC_SUCCESS"/>
+  <int value="22937732" label="TPM_CC_Unseal: TPM_RC_VALUE"/>
   <int value="22937757" label="TPM_CC_Unseal: TPM_RC_POLICY_FAIL"/>
+  <int value="22937759" label="TPM_CC_Unseal: TPM_RC_INTEGRITY"/>
   <int value="22937762" label="TPM_CC_Unseal: TPM_RC_BAD_AUTH"/>
   <int value="22937903" label="TPM_CC_Unseal: TPM_RC_AUTH_UNAVAILABLE"/>
+  <int value="22937922" label="TPM_CC_Unseal: TPM_RC_COMMAND_SIZE"/>
+  <int value="22939920" label="TPM_CC_Unseal: TPM_RC_REFERENCE_H0"/>
   <int value="22939928" label="TPM_CC_Unseal: TPM_RC_REFERENCE_S0"/>
   <int value="22939938" label="TPM_CC_Unseal: TPM_RC_RETRY"/>
   <int value="22966276" label="TPM_CC_Unseal: TRUNKS_RC_WRITE_ERROR"/>
   <int value="22974480" label="TPM_CC_Unseal: SAPI_RC_NO_CONNECTION"/>
   <int value="22982795" label="TPM_CC_Unseal: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="22982805" label="TPM_CC_Unseal: Resource Manager: TPM_RC_SIZE"/>
+  <int value="22982810"
+      label="TPM_CC_Unseal: Resource Manager: TPM_RC_INSUFFICIENT"/>
   <int value="23068672" label="TPM_CC_PolicySigned: TPM_RC_SUCCESS"/>
   <int value="23071000" label="TPM_CC_PolicySigned: TPM_RC_REFERENCE_S0"/>
   <int value="23134208" label="TPM_CC_ContextLoad: TPM_RC_SUCCESS"/>
@@ -102504,22 +102800,38 @@ would be helpful to identify which type is being sent.
   <int value="23265280" label="TPM_CC_ECDH_KeyGen: TPM_RC_SUCCESS"/>
   <int value="23330816" label="TPM_CC_EncryptDecrypt: TPM_RC_SUCCESS"/>
   <int value="23396352" label="TPM_CC_FlushContext: TPM_RC_SUCCESS"/>
+  <int value="23396484" label="TPM_CC_FlushContext: TPM_RC_VALUE"/>
   <int value="23396491" label="TPM_CC_FlushContext: TPM_RC_HANDLE"/>
+  <int value="23396506" label="TPM_CC_FlushContext: TPM_RC_INSUFFICIENT"/>
   <int value="23396608" label="TPM_CC_FlushContext: TPM_RC_INITIALIZE"/>
+  <int value="23396609" label="TPM_CC_FlushContext: TPM_RC_FAILURE"/>
+  <int value="23396674" label="TPM_CC_FlushContext: TPM_RC_COMMAND_SIZE"/>
+  <int value="23396675" label="TPM_CC_FlushContext: TPM_RC_COMMAND_CODE"/>
   <int value="23425028" label="TPM_CC_FlushContext: TRUNKS_RC_WRITE_ERROR"/>
   <int value="23433224"
       label="TPM_CC_FlushContext: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="23433232" label="TPM_CC_FlushContext: SAPI_RC_NO_CONNECTION"/>
   <int value="23441547"
       label="TPM_CC_FlushContext: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="23441559"
+      label="TPM_CC_FlushContext: Resource Manager: TPM_RC_TAG"/>
   <int value="23527424" label="TPM_CC_LoadExternal: TPM_RC_SUCCESS"/>
   <int value="23592960" label="TPM_CC_MakeCredential: TPM_RC_SUCCESS"/>
   <int value="23658496" label="TPM_CC_NV_ReadPublic: TPM_RC_SUCCESS"/>
   <int value="23658635" label="TPM_CC_NV_ReadPublic: TPM_RC_HANDLE"/>
+  <int value="23658752" label="TPM_CC_NV_ReadPublic: TPM_RC_INITIALIZE"/>
+  <int value="23658818" label="TPM_CC_NV_ReadPublic: TPM_RC_COMMAND_SIZE"/>
   <int value="23660834" label="TPM_CC_NV_ReadPublic: TPM_RC_RETRY"/>
+  <int value="23687172" label="TPM_CC_NV_ReadPublic: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="23695368"
+      label="TPM_CC_NV_ReadPublic: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="23695376" label="TPM_CC_NV_ReadPublic: SAPI_RC_NO_CONNECTION"/>
+  <int value="23703703"
+      label="TPM_CC_NV_ReadPublic: Resource Manager: TPM_RC_TAG"/>
   <int value="23724032" label="TPM_CC_PolicyAuthorize: TPM_RC_SUCCESS"/>
   <int value="23789568" label="TPM_CC_PolicyAuthValue: TPM_RC_SUCCESS"/>
+  <int value="23789890" label="TPM_CC_PolicyAuthValue: TPM_RC_COMMAND_SIZE"/>
+  <int value="23791888" label="TPM_CC_PolicyAuthValue: TPM_RC_REFERENCE_H0"/>
   <int value="23791906" label="TPM_CC_PolicyAuthValue: TPM_RC_RETRY"/>
   <int value="23818244" label="TPM_CC_PolicyAuthValue: TRUNKS_RC_WRITE_ERROR"/>
   <int value="23855104" label="TPM_CC_PolicyCommandCode: TPM_RC_SUCCESS"/>
@@ -102530,19 +102842,44 @@ would be helpful to identify which type is being sent.
   <int value="24182784" label="TPM_CC_PolicyOR: TPM_RC_SUCCESS"/>
   <int value="24248320" label="TPM_CC_PolicyTicket: TPM_RC_SUCCESS"/>
   <int value="24313856" label="TPM_CC_ReadPublic: TPM_RC_SUCCESS"/>
+  <int value="24313987" label="TPM_CC_ReadPublic: TPM_RC_HASH"/>
   <int value="24313988" label="TPM_CC_ReadPublic: TPM_RC_VALUE"/>
+  <int value="24313993" label="TPM_CC_ReadPublic: TPM_RC_MODE"/>
+  <int value="24313994" label="TPM_CC_ReadPublic: TPM_RC_TYPE"/>
   <int value="24313995" label="TPM_CC_ReadPublic: TPM_RC_HANDLE"/>
+  <int value="24313996" label="TPM_CC_ReadPublic: TPM_RC_KDF"/>
+  <int value="24314002" label="TPM_CC_ReadPublic: TPM_RC_SCHEME"/>
+  <int value="24314005" label="TPM_CC_ReadPublic: TPM_RC_SIZE"/>
+  <int value="24314006" label="TPM_CC_ReadPublic: TPM_RC_SYMMETRIC"/>
+  <int value="24314015" label="TPM_CC_ReadPublic: TPM_RC_INTEGRITY"/>
+  <int value="24314017" label="TPM_CC_ReadPublic: TPM_RC_RESERVED_BITS"/>
+  <int value="24314022" label="TPM_CC_ReadPublic: TPM_RC_CURVE"/>
+  <int value="24314112" label="TPM_CC_ReadPublic: TPM_RC_INITIALIZE"/>
+  <int value="24314115" label="TPM_CC_ReadPublic: TPM_RC_SEQUENCE"/>
+  <int value="24314178" label="TPM_CC_ReadPublic: TPM_RC_COMMAND_SIZE"/>
+  <int value="24314179" label="TPM_CC_ReadPublic: TPM_RC_COMMAND_CODE"/>
   <int value="24316176" label="TPM_CC_ReadPublic: TPM_RC_REFERENCE_H0"/>
   <int value="24316194" label="TPM_CC_ReadPublic: TPM_RC_RETRY"/>
   <int value="24342532" label="TPM_CC_ReadPublic: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24350728"
+      label="TPM_CC_ReadPublic: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="24350736" label="TPM_CC_ReadPublic: SAPI_RC_NO_CONNECTION"/>
   <int value="24359051"
       label="TPM_CC_ReadPublic: Resource Manager: TPM_RC_HANDLE"/>
+  <int value="24359063"
+      label="TPM_CC_ReadPublic: Resource Manager: TPM_RC_TAG"/>
   <int value="24379392" label="TPM_CC_RSA_Encrypt: TPM_RC_SUCCESS"/>
   <int value="24510464" label="TPM_CC_StartAuthSession: TPM_RC_SUCCESS"/>
   <int value="24510594" label="TPM_CC_StartAuthSession: TPM_RC_ATTRIBUTES"/>
+  <int value="24510595" label="TPM_CC_StartAuthSession: TPM_RC_HASH"/>
   <int value="24510596" label="TPM_CC_StartAuthSession: TPM_RC_VALUE"/>
+  <int value="24510613" label="TPM_CC_StartAuthSession: TPM_RC_SIZE"/>
+  <int value="24510614" label="TPM_CC_StartAuthSession: TPM_RC_SYMMETRIC"/>
+  <int value="24510618" label="TPM_CC_StartAuthSession: TPM_RC_INSUFFICIENT"/>
   <int value="24510720" label="TPM_CC_StartAuthSession: TPM_RC_INITIALIZE"/>
+  <int value="24510786" label="TPM_CC_StartAuthSession: TPM_RC_COMMAND_SIZE"/>
+  <int value="24510787" label="TPM_CC_StartAuthSession: TPM_RC_COMMAND_CODE"/>
+  <int value="24512771" label="TPM_CC_StartAuthSession: TPM_RC_SESSION_MEMORY"/>
   <int value="24512802" label="TPM_CC_StartAuthSession: TPM_RC_RETRY"/>
   <int value="24539140" label="TPM_CC_StartAuthSession: TRUNKS_RC_WRITE_ERROR"/>
   <int value="24547336"
@@ -102554,19 +102891,37 @@ would be helpful to identify which type is being sent.
   <int value="24641536" label="TPM_CC_ECC_Parameters: TPM_RC_SUCCESS"/>
   <int value="24707072" label="TPM_CC_FirmwareRead: TPM_RC_SUCCESS"/>
   <int value="24772608" label="TPM_CC_GetCapability: TPM_RC_SUCCESS"/>
+  <int value="24772762" label="TPM_CC_GetCapability: TPM_RC_INSUFFICIENT"/>
   <int value="24772864" label="TPM_CC_GetCapability: TPM_RC_INITIALIZE"/>
+  <int value="24772865" label="TPM_CC_GetCapability: TPM_RC_FAILURE"/>
+  <int value="24772930" label="TPM_CC_GetCapability: TPM_RC_COMMAND_SIZE"/>
+  <int value="24772931" label="TPM_CC_GetCapability: TPM_RC_COMMAND_CODE"/>
   <int value="24801284" label="TPM_CC_GetCapability: TRUNKS_RC_WRITE_ERROR"/>
   <int value="24809480"
       label="TPM_CC_GetCapability: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="24809488" label="TPM_CC_GetCapability: SAPI_RC_NO_CONNECTION"/>
+  <int value="24817815"
+      label="TPM_CC_GetCapability: Resource Manager: TPM_RC_TAG"/>
   <int value="24838144" label="TPM_CC_GetRandom: TPM_RC_SUCCESS"/>
+  <int value="24838298" label="TPM_CC_GetRandom: TPM_RC_INSUFFICIENT"/>
+  <int value="24838400" label="TPM_CC_GetRandom: TPM_RC_INITIALIZE"/>
   <int value="24866820" label="TPM_CC_GetRandom: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="24875024" label="TPM_CC_GetRandom: SAPI_RC_NO_CONNECTION"/>
+  <int value="24883351" label="TPM_CC_GetRandom: Resource Manager: TPM_RC_TAG"/>
   <int value="24903680" label="TPM_CC_GetTestResult: TPM_RC_SUCCESS"/>
   <int value="24969216" label="TPM_CC_Hash: TPM_RC_SUCCESS"/>
   <int value="25034752" label="TPM_CC_PCR_Read: TPM_RC_SUCCESS"/>
+  <int value="25034884" label="TPM_CC_PCR_Read: TPM_RC_VALUE"/>
+  <int value="25034906" label="TPM_CC_PCR_Read: TPM_RC_INSUFFICIENT"/>
+  <int value="25035008" label="TPM_CC_PCR_Read: TPM_RC_INITIALIZE"/>
+  <int value="25035074" label="TPM_CC_PCR_Read: TPM_RC_COMMAND_SIZE"/>
+  <int value="25035075" label="TPM_CC_PCR_Read: TPM_RC_COMMAND_CODE"/>
   <int value="25063428" label="TPM_CC_PCR_Read: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="25071624" label="TPM_CC_PCR_Read: SAPI_RC_NO_RESPONSE_RECEIVED"/>
   <int value="25071632" label="TPM_CC_PCR_Read: SAPI_RC_NO_CONNECTION"/>
   <int value="25100288" label="TPM_CC_PolicyPCR: TPM_RC_SUCCESS"/>
+  <int value="25100544" label="TPM_CC_PolicyPCR: TPM_RC_INITIALIZE"/>
+  <int value="25102608" label="TPM_CC_PolicyPCR: TPM_RC_REFERENCE_H0"/>
   <int value="25102626" label="TPM_CC_PolicyPCR: TPM_RC_RETRY"/>
   <int value="25128964" label="TPM_CC_PolicyPCR: TRUNKS_RC_WRITE_ERROR"/>
   <int value="25137168" label="TPM_CC_PolicyPCR: SAPI_RC_NO_CONNECTION"/>
@@ -102575,7 +102930,14 @@ would be helpful to identify which type is being sent.
   <int value="25296896" label="TPM_CC_PCR_Extend: TPM_RC_SUCCESS"/>
   <int value="25362432" label="TPM_CC_PCR_SetAuthValue: TPM_RC_SUCCESS"/>
   <int value="25427968" label="TPM_CC_NV_Certify: TPM_RC_SUCCESS"/>
+  <int value="25428100" label="TPM_CC_NV_Certify: TPM_RC_VALUE"/>
+  <int value="25428107" label="TPM_CC_NV_Certify: TPM_RC_HANDLE"/>
+  <int value="25428114" label="TPM_CC_NV_Certify: TPM_RC_SCHEME"/>
+  <int value="25428130" label="TPM_CC_NV_Certify: TPM_RC_BAD_AUTH"/>
   <int value="25428294" label="TPM_CC_NV_Certify: TPM_RC_NV_RANGE"/>
+  <int value="25430288" label="TPM_CC_NV_Certify: TPM_RC_REFERENCE_H0"/>
+  <int value="25430306" label="TPM_CC_NV_Certify: TPM_RC_RETRY"/>
+  <int value="25456644" label="TPM_CC_NV_Certify: TRUNKS_RC_WRITE_ERROR"/>
   <int value="25464848" label="TPM_CC_NV_Certify: SAPI_RC_NO_CONNECTION"/>
   <int value="25493504" label="TPM_CC_EventSequenceComplete: TPM_RC_SUCCESS"/>
   <int value="25559040" label="TPM_CC_HashSequenceStart: TPM_RC_SUCCESS"/>
@@ -102583,6 +102945,8 @@ would be helpful to identify which type is being sent.
   <int value="25690112" label="TPM_CC_PolicyDuplicationSelect: TPM_RC_SUCCESS"/>
   <int value="25755648" label="TPM_CC_PolicyGetDigest: TPM_RC_SUCCESS"/>
   <int value="25757986" label="TPM_CC_PolicyGetDigest: TPM_RC_RETRY"/>
+  <int value="25784324" label="TPM_CC_PolicyGetDigest: TRUNKS_RC_WRITE_ERROR"/>
+  <int value="25792528" label="TPM_CC_PolicyGetDigest: SAPI_RC_NO_CONNECTION"/>
   <int value="25821184" label="TPM_CC_TestParms: TPM_RC_SUCCESS"/>
   <int value="25886720" label="TPM_CC_Commit: TPM_RC_SUCCESS"/>
   <int value="25952256" label="TPM_CC_PolicyPassword: TPM_RC_SUCCESS"/>
