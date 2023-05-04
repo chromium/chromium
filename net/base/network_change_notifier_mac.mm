@@ -20,10 +20,6 @@
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace {
 // The maximum number of seconds to wait for the connection type to be
 // determined.
@@ -121,10 +117,11 @@ NetworkChangeNotifierMac::CalculateConnectionType(
     return CONNECTION_WIFI;
   }
   if (@available(iOS 12, *)) {
-    CTTelephonyNetworkInfo* info = [[CTTelephonyNetworkInfo alloc] init];
+    CTTelephonyNetworkInfo* info =
+        [[[CTTelephonyNetworkInfo alloc] init] autorelease];
     NSDictionary<NSString*, NSString*>*
         service_current_radio_access_technology =
-            info.serviceCurrentRadioAccessTechnology;
+            [info serviceCurrentRadioAccessTechnology];
     NSSet<NSString*>* technologies_2g = [NSSet
         setWithObjects:CTRadioAccessTechnologyGPRS, CTRadioAccessTechnologyEdge,
                        CTRadioAccessTechnologyCDMA1x, nil];
@@ -282,7 +279,7 @@ void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
 
   // Set the notification keys.  This starts us receiving notifications.
   bool ret = SCDynamicStoreSetNotificationKeys(store, notification_keys.get(),
-                                               /*patterns=*/nullptr);
+                                               nullptr);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
 #endif  // BUILDFLAG(IS_IOS)
