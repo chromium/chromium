@@ -54,12 +54,14 @@ const ::ash::mojom::Touchpad kTouchpad1 =
                            /*is_external=*/false,
                            /*id=*/3,
                            /*device_key=*/"fake-device-key3",
+                           /*is_haptic=*/true,
                            ::ash::mojom::TouchpadSettings::New());
 const ::ash::mojom::Touchpad kTouchpad2 =
     ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
                            /*is_external=*/true,
                            /*id=*/4,
                            /*device_key=*/"fake-device-key4",
+                           /*is_haptic=*/false,
                            ::ash::mojom::TouchpadSettings::New());
 const ::ash::mojom::PointingStick kPointingStick1 =
     ::ash::mojom::PointingStick(/*name=*/"test pointing stick",

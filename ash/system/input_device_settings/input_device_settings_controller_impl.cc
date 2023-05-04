@@ -33,6 +33,7 @@
 #include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
+#include "ui/events/devices/touchpad_device.h"
 
 namespace ash {
 
@@ -89,7 +90,7 @@ mojom::MousePtr BuildMojomMouse(const ui::InputDevice& mouse) {
   return mojom_mouse;
 }
 
-mojom::TouchpadPtr BuildMojomTouchpad(const ui::InputDevice& touchpad) {
+mojom::TouchpadPtr BuildMojomTouchpad(const ui::TouchpadDevice& touchpad) {
   mojom::TouchpadPtr mojom_touchpad = mojom::Touchpad::New();
   mojom_touchpad->id = touchpad.id;
   mojom_touchpad->name = touchpad.name;
@@ -98,6 +99,7 @@ mojom::TouchpadPtr BuildMojomTouchpad(const ui::InputDevice& touchpad) {
           touchpad);
   mojom_touchpad->is_external =
       touchpad.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
+  mojom_touchpad->is_haptic = touchpad.is_haptic;
   return mojom_touchpad;
 }
 
