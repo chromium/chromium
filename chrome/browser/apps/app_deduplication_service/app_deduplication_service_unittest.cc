@@ -73,7 +73,6 @@ class AppDeduplicationServiceTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  // BrowserTaskEnvironment has to be the first member or test will break.
   content::BrowserTaskEnvironment task_environment_;
 };
 
@@ -448,40 +447,7 @@ TEST_F(AppDeduplicationServiceTest, AppPromisioningDataManagerUpdate) {
       service->AreDuplicates(not_duplicate_app_id, skype_web_entry_id));
 }
 
-class AppDeduplicationServiceAlmanacTest : public testing::Test {
- protected:
-  AppDeduplicationServiceAlmanacTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kAppDeduplicationServiceFondue);
-  }
-
-  void SetUp() override {
-    testing::Test::SetUp();
-    AppDeduplicationServiceFactory::SkipApiKeyCheckForTesting(true);
-
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetSharedURLLoaderFactory(
-        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &url_loader_factory_));
-    profile_ = profile_builder.Build();
-  }
-
-  void TearDown() override {
-    AppDeduplicationServiceFactory::SkipApiKeyCheckForTesting(false);
-  }
-
-  Profile* GetProfile() { return profile_.get(); }
-
-  network::TestURLLoaderFactory url_loader_factory_;
-
- private:
-  // BrowserTaskEnvironment has to be the first member or test will break.
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestingProfile> profile_;
-};
-
-TEST_F(AppDeduplicationServiceAlmanacTest, DeduplicateDataToEntries) {
+TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   proto::DeduplicateData data;
 
   auto* skype_group = data.add_app_group();
@@ -555,15 +521,27 @@ TEST_F(AppDeduplicationServiceAlmanacTest, DeduplicateDataToEntries) {
                           Entry(EntryId(duo_web_app_id, AppType::kWeb))));
 }
 
-TEST_F(AppDeduplicationServiceAlmanacTest, PrefUnchangedAfterServerError) {
-  url_loader_factory_.AddResponse(
+TEST_F(AppDeduplicationServiceTest, PrefUnchangedAfterServerError) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAppDeduplicationServiceFondue},
+      /*disabled_features=*/{features::kAppDeduplicationService});
+
+  TestingProfile::Builder profile_builder;
+  network::TestURLLoaderFactory url_loader_factory;
+  profile_builder.SetSharedURLLoaderFactory(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &url_loader_factory));
+
+  url_loader_factory.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(), /*content=*/"",
       net::HTTP_INTERNAL_SERVER_ERROR);
 
   base::test::TestFuture<bool> result;
+  auto profile = profile_builder.Build();
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(GetProfile()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(GetProfile());
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
   EXPECT_NE(nullptr, service);
 
   base::Time time_before = service->GetServerPref();
@@ -575,7 +553,18 @@ TEST_F(AppDeduplicationServiceAlmanacTest, PrefUnchangedAfterServerError) {
   EXPECT_EQ(time_before, time_after);
 }
 
-TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
+TEST_F(AppDeduplicationServiceTest, PrefSetAfterServerSuccess) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{features::kAppDeduplicationServiceFondue},
+      /*disabled_features=*/{features::kAppDeduplicationService});
+
+  TestingProfile::Builder profile_builder;
+  network::TestURLLoaderFactory url_loader_factory;
+  profile_builder.SetSharedURLLoaderFactory(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &url_loader_factory));
+
   proto::DeduplicateData data;
   auto* group = data.add_app_group();
   group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
@@ -585,14 +574,15 @@ TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
   app->set_app_id("com.skype.raider");
   app->set_platform("phonehub");
 
-  url_loader_factory_.AddResponse(
+  url_loader_factory.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(),
       data.SerializeAsString());
 
   base::test::TestFuture<bool> result;
+  auto profile = profile_builder.Build();
   ASSERT_TRUE(AppDeduplicationServiceFactory::
-                  IsAppDeduplicationServiceAvailableForProfile(GetProfile()));
-  auto* service = AppDeduplicationServiceFactory::GetForProfile(GetProfile());
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
   EXPECT_NE(nullptr, service);
 
   base::Time time_before = service->GetServerPref();
@@ -602,13 +592,6 @@ TEST_F(AppDeduplicationServiceAlmanacTest, PrefSetAfterServerSuccess) {
 
   base::Time time_after = service->GetServerPref();
   EXPECT_TRUE(time_before < time_after);
-}
-
-TEST_F(AppDeduplicationServiceAlmanacTest,
-       ServiceDisabledInTestsWhenTestModeIsOff) {
-  AppDeduplicationServiceFactory::SkipApiKeyCheckForTesting(false);
-  EXPECT_FALSE(AppDeduplicationServiceFactory::
-                   IsAppDeduplicationServiceAvailableForProfile(GetProfile()));
 }
 
 }  // namespace apps::deduplication

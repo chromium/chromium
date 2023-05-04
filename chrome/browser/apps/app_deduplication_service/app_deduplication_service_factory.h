@@ -19,21 +19,15 @@ class AppDeduplicationService;
 class AppDeduplicationServiceFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  AppDeduplicationServiceFactory(const AppDeduplicationServiceFactory&) =
-      delete;
-  AppDeduplicationServiceFactory& operator=(
-      const AppDeduplicationServiceFactory&) = delete;
-
   static AppDeduplicationService* GetForProfile(Profile* profile);
-
   static AppDeduplicationServiceFactory* GetInstance();
 
   static bool IsAppDeduplicationServiceAvailableForProfile(Profile* profile);
 
-  // For testing
-  // Marks whether or not we should skip the api key check, which must be done
-  // during testing for tests to run.
-  static void SkipApiKeyCheckForTesting(bool skip_api_key_check);
+  AppDeduplicationServiceFactory(const AppDeduplicationServiceFactory&) =
+      delete;
+  AppDeduplicationServiceFactory& operator=(
+      const AppDeduplicationServiceFactory&) = delete;
 
  private:
   friend base::NoDestructor<AppDeduplicationServiceFactory>;

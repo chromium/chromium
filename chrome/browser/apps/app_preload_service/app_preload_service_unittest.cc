@@ -51,7 +51,6 @@ class AppPreloadServiceTest : public testing::Test {
   AppPreloadServiceTest()
       : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
     scoped_feature_list_.InitAndEnableFeature(features::kAppPreloadService);
-    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(true);
   }
 
   void SetUp() override {
@@ -68,10 +67,6 @@ class AppPreloadServiceTest : public testing::Test {
     web_app::test::AwaitStartWebAppProviderAndSubsystems(GetProfile());
   }
 
-  void TearDown() override {
-    AppPreloadServiceFactory::SkipApiKeyCheckForTesting(false);
-  }
-
   Profile* GetProfile() { return profile_.get(); }
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -82,7 +77,6 @@ class AppPreloadServiceTest : public testing::Test {
   network::TestURLLoaderFactory url_loader_factory_;
 
  private:
-  // BrowserTaskEnvironment has to be the first member or test will break.
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
@@ -232,11 +226,6 @@ TEST_F(AppPreloadServiceTest, FirstLoginStartedNotCompletedAfterServerError) {
   // not "completed".
   EXPECT_EQ(flow_started, true);
   EXPECT_EQ(flow_completed, absl::nullopt);
-}
-
-TEST_F(AppPreloadServiceTest, ServiceDisabledInTestsWhenTestModeIsOff) {
-  AppPreloadServiceFactory::SkipApiKeyCheckForTesting(false);
-  ASSERT_FALSE(AppPreloadServiceFactory::IsAvailable(GetProfile()));
 }
 
 }  // namespace apps

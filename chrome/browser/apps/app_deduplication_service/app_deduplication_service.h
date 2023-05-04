@@ -53,13 +53,11 @@ class AppDeduplicationService : public KeyedService,
                            ExactDuplicateAllInstalled);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Installation);
   FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest, Websites);
-
-  friend class AppDeduplicationServiceAlmanacTest;
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            DeduplicateDataToEntries);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            PrefUnchangedAfterServerError);
-  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceAlmanacTest,
+  FRIEND_TEST_ALL_PREFIXES(AppDeduplicationServiceTest,
                            PrefSetAfterServerSuccess);
 
   enum class EntryStatus {
