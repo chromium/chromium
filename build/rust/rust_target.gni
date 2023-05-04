@@ -117,26 +117,21 @@ template("rust_target") {
   if (defined(invoker.edition)) {
     _edition = invoker.edition
   }
+
+  assert(!defined(configs))
   _configs = [ "//build/rust:edition_${_edition}" ]
   _test_configs = []
   if (invoker.target_type == "executable") {
-    if (defined(invoker.executable_configs)) {
-      _configs += invoker.executable_configs
-    }
+    _configs += invoker.executable_configs
   } else if (invoker.target_type == "rust_proc_macro") {
-    if (defined(invoker.proc_macro_configs)) {
-      _configs += invoker.proc_macro_configs
-      _test_configs += [ "//build/rust:proc_macro_extern" ]
-    }
-  } else if (invoker.target_type == "rust_proc_macro") {
-    if (defined(invoker.shared_library_configs)) {
-      _configs += invoker.shared_library_configs
-    }
+    _configs += invoker.proc_macro_configs
+    _test_configs += [ "//build/rust:proc_macro_extern" ]
+  } else if (invoker.target_type == "shared_library") {
+    _configs += invoker.shared_library_configs
   } else {
-    if (defined(invoker.library_configs)) {
-      _configs += invoker.library_configs
-    }
+    _configs += invoker.library_configs
   }
+
   _forward_to_host_toolchain = false
   if (invoker.target_type == "rust_proc_macro") {
     if (current_toolchain != host_toolchain_no_sanitizers) {
@@ -321,9 +316,7 @@ template("rust_target") {
         }
         if (defined(invoker.executable_configs)) {
           configs = []
-          configs = invoker.executable_configs
-        } else if (!defined(configs)) {
-          configs = []
+          configs += invoker.executable_configs
         }
         configs += _test_configs
         rustenv = _rustenv
@@ -339,6 +332,7 @@ template("rust_target") {
                    "_rustc_metadata",
                    "_test_configs",
                  ])
+      not_needed(invoker, [ "executable_configs" ])
     }
 
     target(invoker.target_type, "${_target_name}${_main_target_suffix}") {
@@ -424,11 +418,4 @@ template("rust_target") {
       not_needed([ "_cxx_deps" ])
     }
   }
-}
-
-set_defaults("rust_target") {
-  executable_configs = default_executable_configs
-  library_configs = default_compiler_configs
-  shared_library_configs = default_shared_library_configs
-  proc_macro_configs = default_rust_proc_macro_configs
 }

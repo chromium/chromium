@@ -8,14 +8,12 @@ import("//build/rust/rust_target.gni")
 # available as a rust_static_library. See rust_static_library.gni for
 # documentation.
 template("rust_shared_library") {
-  exclude_forwards = TESTONLY_AND_VISIBILITY + [ "configs" ]
   rust_target(target_name) {
-    forward_variables_from(invoker, "*", exclude_forwards)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "configs" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    if (defined(invoker.configs)) {
-      library_configs = []
-      library_configs = invoker.configs
-    }
+    shared_library_configs = invoker.configs
     target_type = "shared_library"
     crate_type = "cdylib"
   }

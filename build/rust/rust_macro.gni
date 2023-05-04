@@ -10,10 +10,15 @@ import("//build/rust/rust_target.gni")
 # code for compilation.
 template("rust_macro") {
   rust_target(target_name) {
-    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker,
+                           "*",
+                           TESTONLY_AND_VISIBILITY + [ "configs" ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    # Has rust_target generate a rust_proc_macro GN output.
+    proc_macro_configs = invoker.configs
     target_type = "rust_proc_macro"
   }
+}
+
+set_defaults("rust_macro") {
+  configs = default_rust_proc_macro_configs
 }

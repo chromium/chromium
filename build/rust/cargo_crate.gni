@@ -3,7 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/rust.gni")
-import("//build/rust/rust_target.gni")
+import("//build/rust/rust_executable.gni")
+import("//build/rust/rust_macro.gni")
+import("//build/rust/rust_static_library.gni")
 
 # This template allows for building Cargo crates within gn.
 #
@@ -142,8 +144,36 @@ template("cargo_crate") {
     _rustenv += [ "CARGO_PKG_DESCRIPTION=${invoker.cargo_pkg_description}" ]
   }
 
+  # cargo_crate() should set library_configs, executable_configs,
+  # proc_macro_configs. Not configs.
+  assert(!defined(invoker.configs))
+
+  # Work out what we're building.
+  _crate_type = "rlib"
+  if (defined(invoker.crate_type)) {
+    _crate_type = invoker.crate_type
+  }
+  if (_crate_type == "bin") {
+    _target_type = "rust_executable"
+    assert(!defined(invoker.epoch))
+    if (defined(invoker.executable_configs)) {
+      _configs = invoker.executable_configs
+    }
+  } else if (_crate_type == "proc-macro") {
+    _target_type = "rust_macro"
+    if (defined(invoker.proc_macro_configs)) {
+      _configs = invoker.proc_macro_configs
+    }
+  } else {
+    assert(_crate_type == "rlib")
+    _target_type = "rust_static_library"
+    if (defined(invoker.library_configs)) {
+      _configs = invoker.library_configs
+    }
+  }
+
   # The main target, either a Rust source set or an executable.
-  rust_target(target_name) {
+  target(_target_type, target_name) {
     forward_variables_from(invoker,
                            "*",
                            TESTONLY_AND_VISIBILITY + [
@@ -154,18 +184,14 @@ template("cargo_crate") {
                                  "build_script_outputs",
                                  "epoch",
                                  "unit_test_target",
-                                 "target_type",
                                  "configs",
+                                 "executable_configs",
+                                 "library_configs",
+                                 "proc_macro_configs",
                                  "rustenv",
                                  "dev_deps",
                                ])
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-
-    # Work out what we're building.
-    crate_type = "rlib"
-    if (defined(invoker.crate_type)) {
-      crate_type = invoker.crate_type
-    }
 
     rustc_metadata = _rustc_metadata
 
@@ -173,19 +199,22 @@ template("cargo_crate") {
     # third_party.toml and gnrt when generating third-party build targets.
     allow_unsafe = true
 
+    configs = []
+    if (defined(_configs)) {
+      configs += _configs
+    }
+
+    if (_crate_type == "rlib") {
+      # Forward configs for unit tests.
+      if (defined(invoker.executable_configs)) {
+        executable_configs = invoker.executable_configs
+      }
+    }
+
     if (!defined(rustflags)) {
       rustflags = []
     }
     rustenv = _rustenv
-    if (crate_type == "bin") {
-      target_type = "executable"
-      assert(!defined(invoker.epoch))
-    } else if (crate_type == "proc-macro") {
-      target_type = "rust_proc_macro"
-    } else {
-      assert(crate_type == "rlib")
-      target_type = "rust_library"
-    }
 
     if (!defined(build_native_rust_unit_tests)) {
       build_native_rust_unit_tests = true
@@ -210,7 +239,7 @@ template("cargo_crate") {
     }
     unit_test_target = "${_unit_test_unique_target_name}${_crate_name}_${_unit_test_unique_epoch}unittests"
 
-    if ((!defined(output_dir) || output_dir == "") && crate_type == "rlib") {
+    if ((!defined(output_dir) || output_dir == "") && _crate_type == "rlib") {
       # Cargo crate rlibs can be compiled differently for tests, and must not
       # collide with the production outputs. This does *not* override the
       # unit_test_output_dir, which is set above, as that target is not an rlib.
@@ -319,8 +348,7 @@ template("cargo_crate") {
     }
 
     if (current_toolchain == host_toolchain_no_sanitizers) {
-      rust_target(_build_script_name) {
-        target_type = "executable"
+      rust_executable(_build_script_name) {
         sources = invoker.build_sources
         crate_root = invoker.build_root
         if (defined(invoker.build_deps)) {
@@ -342,8 +370,8 @@ template("cargo_crate") {
                                  "edition",
                                  "rustflags",
                                ])
-        executable_configs -= [ "//build/config/compiler:chromium_code" ]
-        executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+        configs -= [ "//build/config/compiler:chromium_code" ]
+        configs += [ "//build/config/compiler:no_chromium_code" ]
       }
     } else {
       not_needed(invoker,
@@ -366,4 +394,5 @@ template("cargo_crate") {
 set_defaults("cargo_crate") {
   library_configs = default_compiler_configs
   executable_configs = default_executable_configs
+  proc_macro_configs = default_rust_proc_macro_configs
 }
