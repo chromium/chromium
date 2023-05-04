@@ -401,19 +401,17 @@ class AddressComponent {
   // This method is used to set the value given by a type different than the
   // storage type. It must implement the conversion logic specific to each type.
   // It returns true if conversion logic exists and the type can be set.
-  virtual bool ConvertAndSetValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      const std::u16string& value,
-      const VerificationStatus& status);
+  virtual bool SetValueForOtherSupportedType(ServerFieldType field_type,
+                                             const std::u16string& value,
+                                             const VerificationStatus& status);
 
   // This method is used to retrieve the value for a supported field type
   // different from the storage type. It must implement the conversion logic
   // specific to each type. It returns true if the type is supported and the
   // value can be written back to value.
   // The method must handle |nullptr|s for both the value and status.
-  virtual bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      std::u16string* value) const;
+  virtual bool GetValueForOtherSupportedType(ServerFieldType field_type,
+                                             std::u16string* value) const;
 
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();
@@ -478,7 +476,7 @@ class AddressComponent {
 
  private:
   // The method sets the value of the current node if its |storage_type_| is
-  // |type| or if |ConvertAndGetTheValueForAdditionalFieldTypeName()| supports
+  // |type| or if |GetValueForOtherSupportedType()| supports
   // retrieving |type|. Otherwise, the call is delegated recursively to the
   // node's children.
   // Returns true if the |value_| and |verification_status_| were successfully
@@ -495,7 +493,7 @@ class AddressComponent {
   // Returns false if the |type| is not supported by the structure.
   // The method returns |value_| and |validation_status_| of the current node
   // if its |storage_type_| is |type| or if
-  // |ConvertAndSetTheValueForAdditionalFieldTypeName()| supports setting
+  // |SetValueForOtherSupportedType()| supports setting
   // |type|. Otherwise, the call is delegated recursively to the node's
   // children. Returns false if the neither the node or one of its ancestors
   // supports |type|.

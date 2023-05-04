@@ -224,7 +224,7 @@ bool StreetAddressNode::IsValueValid() const {
   return !base::Contains(address_lines_, std::u16string());
 }
 
-bool StreetAddressNode::ConvertAndGetTheValueForAdditionalFieldTypeName(
+bool StreetAddressNode::GetValueForOtherSupportedType(
     ServerFieldType field_type,
     std::u16string* value) const {
   ServerFieldTypeSet supported_types;
@@ -248,7 +248,7 @@ std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
 }
 
 // Implements support for setting the value of the individual address lines.
-bool StreetAddressNode::ConvertAndSetValueForAdditionalFieldTypeName(
+bool StreetAddressNode::SetValueForOtherSupportedType(
     ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {

@@ -57,9 +57,8 @@ void NameMiddle::GetAdditionalSupportedFieldTypes(
   supported_types->insert(NAME_MIDDLE_INITIAL);
 }
 
-bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
-    ServerFieldType field_type,
-    std::u16string* value) const {
+bool NameMiddle::GetValueForOtherSupportedType(ServerFieldType field_type,
+                                               std::u16string* value) const {
   if (field_type == NAME_MIDDLE_INITIAL) {
     if (value) {
       // If the stored value has the characteristics of containing only
@@ -77,7 +76,7 @@ bool NameMiddle::ConvertAndGetTheValueForAdditionalFieldTypeName(
   return false;
 }
 
-bool NameMiddle::ConvertAndSetValueForAdditionalFieldTypeName(
+bool NameMiddle::SetValueForOtherSupportedType(
     ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {

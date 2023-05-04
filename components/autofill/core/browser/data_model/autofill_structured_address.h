@@ -133,15 +133,13 @@ class StreetAddressNode : public AddressComponentWithRewriter {
 
  protected:
   // Implements support for getting the value of the individual address lines.
-  bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      std::u16string* value) const override;
+  bool GetValueForOtherSupportedType(ServerFieldType field_type,
+                                     std::u16string* value) const override;
 
   // Implements support for setting the value of the individual address lines.
-  bool ConvertAndSetValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      const std::u16string& value,
-      const VerificationStatus& status) override;
+  bool SetValueForOtherSupportedType(ServerFieldType field_type,
+                                     const std::u16string& value,
+                                     const VerificationStatus& status) override;
 
   // Returns true of the address lines do not contain an empty line.
   bool IsValueValid() const override;

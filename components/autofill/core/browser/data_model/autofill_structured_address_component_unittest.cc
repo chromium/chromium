@@ -47,7 +47,7 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
     supported_types->insert(NAME_MIDDLE_INITIAL);
   }
 
-  bool ConvertAndSetValueForAdditionalFieldTypeName(
+  bool SetValueForOtherSupportedType(
       ServerFieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status) override {
@@ -58,9 +58,8 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
     return false;
   }
 
-  bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      std::u16string* value) const override {
+  bool GetValueForOtherSupportedType(ServerFieldType field_type,
+                                     std::u16string* value) const override {
     if (field_type == NAME_MIDDLE_INITIAL) {
       if (value) {
         *value = GetValue().substr(0, 1);

@@ -42,15 +42,13 @@ class NameMiddle : public AddressComponent {
  protected:
   // Implements support for getting the value for the |MIDDLE_NAME_INITIAL|
   // type.
-  bool ConvertAndGetTheValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      std::u16string* value) const override;
+  bool GetValueForOtherSupportedType(ServerFieldType field_type,
+                                     std::u16string* value) const override;
 
   // Implements support for setting the |MIDDLE_NAME_INITIAL| type.
-  bool ConvertAndSetValueForAdditionalFieldTypeName(
-      ServerFieldType field_type,
-      const std::u16string& value,
-      const VerificationStatus& status) override;
+  bool SetValueForOtherSupportedType(ServerFieldType field_type,
+                                     const std::u16string& value,
+                                     const VerificationStatus& status) override;
 };
 
 // Atomic component that represents the first part of a last name.

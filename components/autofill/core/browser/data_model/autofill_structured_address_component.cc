@@ -242,14 +242,14 @@ void AddressComponent::GetSupportedTypes(
   }
 }
 
-bool AddressComponent::ConvertAndSetValueForAdditionalFieldTypeName(
+bool AddressComponent::SetValueForOtherSupportedType(
     ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
   return false;
 }
 
-bool AddressComponent::ConvertAndGetTheValueForAdditionalFieldTypeName(
+bool AddressComponent::GetValueForOtherSupportedType(
     ServerFieldType field_type,
     std::u16string* value) const {
   return false;
@@ -306,18 +306,17 @@ bool AddressComponent::SetValueForTypeIfPossible(
   if (field_type == storage_type_) {
     SetValue(value, verification_status);
     value_set = true;
-  } else if (ConvertAndSetValueForAdditionalFieldTypeName(
-                 field_type, value, verification_status)) {
+  } else if (SetValueForOtherSupportedType(field_type, value,
+                                           verification_status)) {
     // The conversion using a field type was successful.
     value_set = true;
   }
-
   if (value_set) {
-    if (invalidate_child_nodes)
+    if (invalidate_child_nodes) {
       UnsetSubcomponents();
+    }
     return true;
   }
-
   // Finally, probe if the type is supported by one of the subcomponents.
   for (auto* subcomponent : subcomponents_) {
     if (subcomponent->SetValueForTypeIfPossible(
@@ -325,7 +324,6 @@ bool AddressComponent::SetValueForTypeIfPossible(
       return true;
     }
   }
-
   return false;
 }
 
@@ -361,23 +359,24 @@ bool AddressComponent::GetValueAndStatusForTypeIfPossible(
     ServerFieldType field_type,
     std::u16string* value,
     VerificationStatus* status) const {
-  // If the value is the storage type, it can be simply returned.
+  // If the type is the storage type of the component, it can be assigned.
   if (field_type == storage_type_) {
-    if (value)
-      *value = value_.value_or(std::u16string());
-    if (status)
+    if (value) {
+      *value = GetValue();
+    }
+    if (status) {
       *status = GetVerificationStatus();
+    }
     return true;
   }
-
-  // Otherwise, probe if it is a supported field type that can be converted.
-  if (this->ConvertAndGetTheValueForAdditionalFieldTypeName(field_type,
-                                                            value)) {
-    if (status)
+  // Otherwise if the type is supported, the node's value for that type can be
+  // assigned.
+  if (GetValueForOtherSupportedType(field_type, value)) {
+    if (status) {
       *status = GetVerificationStatus();
+    }
     return true;
   }
-
   // Finally, try to retrieve the value from one of the subcomponents.
   for (const auto* subcomponent : subcomponents_) {
     if (subcomponent->GetValueAndStatusForTypeIfPossible(field_type, value,
