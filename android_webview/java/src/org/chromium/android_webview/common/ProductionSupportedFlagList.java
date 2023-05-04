@@ -122,6 +122,8 @@ public final class ProductionSupportedFlagList {
                             + "support."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_THREAD_SAFE_MEDIA,
                     "Use thread-safe media path, requires Android P."),
+            Flag.baseFeature(VizFeatures.ALLOW_BYPASS_RENDER_PASS_QUADS,
+                    "Enable bypass render pass for RenderPassDrawQuads"),
             Flag.baseFeature(VizFeatures.WEBVIEW_NEW_INVALIDATE_HEURISTIC,
                     "More robust heuristic for calling Invalidate"),
             Flag.baseFeature(
