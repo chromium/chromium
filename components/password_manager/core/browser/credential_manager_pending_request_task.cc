@@ -88,10 +88,9 @@ void FilterDuplicates(std::vector<std::unique_ptr<PasswordForm>>* forms) {
 
   std::vector<const PasswordForm*> other_matches;
   std::vector<const PasswordForm*> best_matches;
-  const password_manager::PasswordForm* preferred_match = nullptr;
-  password_manager_util::FindBestMatches(
-      all_non_federated_forms, PasswordForm::Scheme::kHtml, &other_matches,
-      &best_matches, &preferred_match);
+  password_manager_util::FindBestMatches(all_non_federated_forms,
+                                         PasswordForm::Scheme::kHtml,
+                                         &other_matches, &best_matches);
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   for (const PasswordForm* best_match : best_matches) {

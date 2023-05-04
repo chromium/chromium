@@ -543,7 +543,10 @@ TEST(PasswordManagerUtil, FindBestMatches) {
 
     std::vector<const PasswordForm*> same_scheme_matches;
     FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
-                    &best_matches, &preferred_match);
+                    &best_matches);
+    if (!best_matches.empty()) {
+      preferred_match = best_matches[0];
+    }
 
     if (test_case.expected_preferred_match_index == kNotFound) {
       // Case of empty |matches|.
@@ -608,10 +611,9 @@ TEST(PasswordManagerUtil, FindBestMatchesInProfileAndAccountStores) {
   matches.push_back(&profile_form2);
 
   std::vector<const PasswordForm*> best_matches;
-  const PasswordForm* preferred_match = nullptr;
   std::vector<const PasswordForm*> same_scheme_matches;
   FindBestMatches(matches, PasswordForm::Scheme::kHtml, &same_scheme_matches,
-                  &best_matches, &preferred_match);
+                  &best_matches);
   // |profile_form1| is filtered out because it's the same as |account_form1|.
   EXPECT_EQ(best_matches.size(), 3U);
   EXPECT_TRUE(base::Contains(best_matches, &account_form1));

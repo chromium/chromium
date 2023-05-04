@@ -268,15 +268,12 @@ void FindBestMatches(
     const std::vector<const PasswordForm*>& non_federated_matches,
     PasswordForm::Scheme scheme,
     std::vector<const PasswordForm*>* non_federated_same_scheme,
-    std::vector<const PasswordForm*>* best_matches,
-    const PasswordForm** preferred_match) {
+    std::vector<const PasswordForm*>* best_matches) {
   DCHECK(base::ranges::none_of(non_federated_matches,
                                &PasswordForm::blocked_by_user));
   DCHECK(non_federated_same_scheme);
   DCHECK(best_matches);
-  DCHECK(preferred_match);
 
-  *preferred_match = nullptr;
   best_matches->clear();
   non_federated_same_scheme->clear();
 
@@ -317,8 +314,6 @@ void FindBestMatches(
       it->second.push_back(match);
     }
   }
-
-  *preferred_match = *non_federated_same_scheme->begin();
 }
 
 const PasswordForm* FindFormByUsername(

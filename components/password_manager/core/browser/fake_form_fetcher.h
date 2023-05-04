@@ -96,7 +96,6 @@ class FakeFormFetcher : public FormFetcher {
   std::vector<const PasswordForm*> insecure_credentials_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:
   // #addr-of
-  RAW_PTR_EXCLUSION const PasswordForm* preferred_match_ = nullptr;
   bool is_blocklisted_ = false;
   absl::optional<PasswordStoreBackendError> profile_store_backend_error_;
 };

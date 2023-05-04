@@ -207,7 +207,10 @@ const std::vector<const PasswordForm*>& FormFetcherImpl::GetBestMatches()
 }
 
 const PasswordForm* FormFetcherImpl::GetPreferredMatch() const {
-  return preferred_match_;
+  if (best_matches_.empty()) {
+    return nullptr;
+  }
+  return *best_matches_.begin();
 }
 
 std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
@@ -227,8 +230,7 @@ std::unique_ptr<FormFetcher> FormFetcherImpl::Clone() {
   result->is_blocklisted_in_profile_store_ = is_blocklisted_in_profile_store_;
   password_manager_util::FindBestMatches(
       MakeWeakCopies(result->non_federated_), form_digest_.scheme,
-      &result->non_federated_same_scheme_, &result->best_matches_,
-      &result->preferred_match_);
+      &result->non_federated_same_scheme_, &result->best_matches_);
 
   result->interactions_stats_ = interactions_stats_;
   result->insecure_credentials_ = MakeCopies(insecure_credentials_);
@@ -251,7 +253,7 @@ void FormFetcherImpl::FindMatchesAndNotifyConsumers(
 
   password_manager_util::FindBestMatches(
       MakeWeakCopies(non_federated_), form_digest_.scheme,
-      &non_federated_same_scheme_, &best_matches_, &preferred_match_);
+      &non_federated_same_scheme_, &best_matches_);
 
   state_ = State::NOT_WAITING;
   for (auto& consumer : consumers_)
