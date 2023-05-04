@@ -164,12 +164,6 @@ BASE_FEATURE(kNtpModulesRedesigned,
              "NtpModulesRedesigned",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, a different module layout where modules are organized in rows and
-// columns will be shown.
-BASE_FEATURE(kNtpModulesRedesignedLayout,
-             "NtpModulesRedesignedLayout",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, MostVisited tiles will reflow when overflowing.
 BASE_FEATURE(kNtpMostVisitedReflowOnOverflow,
              "NtpMostVisitedReflowOnOverflow",

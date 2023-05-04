@@ -239,12 +239,6 @@ export class AppElement extends AppElementBase {
         reflectToAttribute: true,
       },
 
-      modulesRedesignedLayoutEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
-        reflectToAttribute: true,
-      },
-
       middleSlotPromoEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('middleSlotPromoEnabled'),
@@ -351,7 +345,6 @@ export class AppElement extends AppElementBase {
   private oneGoogleBarEnabled_: boolean;
   private shortcutsEnabled_: boolean;
   private modulesFreShown: boolean;
-  private modulesRedesignedLayoutEnabled_: boolean;
   private middleSlotPromoEnabled_: boolean;
   private modulesEnabled_: boolean;
   private modulesRedesignedEnabled_: boolean;

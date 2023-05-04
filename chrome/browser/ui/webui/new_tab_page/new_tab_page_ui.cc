@@ -540,9 +540,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesRedesignedEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned));
-  source->AddBoolean(
-      "modulesRedesignedLayoutEnabled",
-      base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesignedLayout));
 
   std::vector<std::string> splitExperimentGroup = base::SplitString(
       base::GetFieldTrialParamValueByFeature(

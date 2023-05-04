@@ -19,12 +19,6 @@ export interface Module {
   descriptor: ModuleDescriptor;
 }
 
-export enum ModuleHeight {
-  DYNAMIC = -1,
-  SHORT = 166,
-  TALL = 358,
-}
-
 export class ModuleDescriptor {
   private id_: string;
   private initializeCallback_: InitializeModuleCallback;
@@ -36,10 +30,6 @@ export class ModuleDescriptor {
 
   get id(): string {
     return this.id_;
-  }
-
-  get height(): ModuleHeight {
-    return ModuleHeight.DYNAMIC;
   }
 
   /**
@@ -70,17 +60,8 @@ export class ModuleDescriptor {
 }
 
 export class ModuleDescriptorV2 extends ModuleDescriptor {
-  private height_: ModuleHeight;
-
-  constructor(
-      id: string, height: ModuleHeight,
-      initializeCallback: InitializeModuleCallbackV2) {
+  constructor(id: string, initializeCallback: InitializeModuleCallbackV2) {
     super(id, initializeCallback);
-    this.height_ = height;
-  }
-
-  override get height() {
-    return this.height_;
   }
 
   /**

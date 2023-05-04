@@ -2617,9 +2617,6 @@ extern const char kNtpModulesHeaderIconDescription[];
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 
-extern const char kNtpModulesRedesignedLayoutName[];
-extern const char kNtpModulesRedesignedLayoutDescription[];
-
 extern const char kNtpPhotosModuleOptInTitleName[];
 extern const char kNtpPhotosModuleOptInTitleDescription[];
 

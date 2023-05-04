@@ -44,7 +44,7 @@ export {SuggestTileModuleElement} from './modules/history_clusters/suggest_tile.
 export {TileModuleElement} from './modules/history_clusters/tile.js';
 export {HistoryClustersModuleElement as HistoryClustersV2ModuleElement, historyClustersV2Descriptor} from './modules/history_clusters_v2/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
-export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2, ModuleHeight} from './modules/module_descriptor.js';
+export {InitializeModuleCallback, Module, ModuleDescriptor, ModuleDescriptorV2} from './modules/module_descriptor.js';
 export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleHeaderElement} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';

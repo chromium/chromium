@@ -4560,10 +4560,6 @@ const char kNtpModulesHeaderIconName[] = "NTP Modules Header Icon";
 const char kNtpModulesHeaderIconDescription[] =
     "Shows icons in NTP module headers.";
 
-const char kNtpModulesRedesignedLayoutName[] = "Ntp Modules Redesigned Layout";
-const char kNtpModulesRedesignedLayoutDescription[] =
-    "Changes the layout of modules on New Tab Page";
-
 const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
 const char kNtpModulesRedesignedDescription[] =
     "Shows the redesigned modules on the New Tab Page.";

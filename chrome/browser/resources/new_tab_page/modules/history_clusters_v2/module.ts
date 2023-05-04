@@ -10,7 +10,7 @@ import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
 import {HistoryClustersProxyImpl} from '../history_clusters/history_clusters_proxy.js';
 import {InfoDialogElement} from '../info_dialog';
-import {ModuleDescriptorV2, ModuleHeight} from '../module_descriptor.js';
+import {ModuleDescriptorV2} from '../module_descriptor.js';
 
 import {getTemplate} from './module.html.js';
 
@@ -112,4 +112,4 @@ async function createElement(): Promise<HTMLElement> {
 
 export const historyClustersV2Descriptor: ModuleDescriptorV2 =
     new ModuleDescriptorV2(
-        /*id=*/ 'history_clusters', ModuleHeight.DYNAMIC, createElement);
+        /*id=*/ 'history_clusters', createElement);

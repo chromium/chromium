@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ModuleDescriptor, ModuleDescriptorV2, ModuleHeight, ModuleWrapperElement} from 'chrome://new-tab-page/lazy_load.js';
+import {ModuleDescriptor, ModuleWrapperElement} from 'chrome://new-tab-page/lazy_load.js';
 import {WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertThrows} from 'chrome://webui-test/chai_assert.js';
@@ -54,17 +54,6 @@ suite('NewTabPageModulesModuleWrapperTest', () => {
     assertEquals(1, metrics.count('NewTabPage.Modules.Impression.foo', 123));
   });
 
-  test('renders fixed height descriptor', async () => {
-    // Act.
-    moduleWrapper.module = {
-      descriptor: new ModuleDescriptorV2(
-          'foo', ModuleHeight.TALL, async () => createElement()),
-      element: createElement(),
-    };
-
-    // Assert.
-    assertEquals(ModuleHeight.TALL, moduleWrapper.$.moduleElement.offsetHeight);
-  });
 
   test('descriptor can only be set once', () => {
     const moduleElement = createElement();

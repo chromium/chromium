@@ -498,7 +498,6 @@ var NewTabPageModulesHistoryClustersV2ModuleTest =
       enabled: [
         'ntp_features::kNtpHistoryClustersModule',
         'ntp_features::kNtpModulesRedesigned',
-        'ntp_features::kNtpModulesRedesignedLayout'
       ],
     };
   }
