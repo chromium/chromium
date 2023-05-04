@@ -91,26 +91,53 @@ class ReceiverConfig {
   // remoting streams. These properties are based on the current control
   // protocol and allow remoting with current senders.
   struct RemotingConstraints {
-    // Current remoting senders take an "all or nothing" support for audio
-    // codec support. While Opus and AAC support is handled in our Constraints'
-    // |audio_codecs| property, support for the following codecs must be
-    // enabled or disabled all together:
-    // MP3
-    // PCM, including Mu-Law, S16BE, S24BE, and ALAW variants
-    // Ogg Vorbis
-    // FLAC
-    // AMR, including narrow band (NB) and wide band (WB) variants
-    // GSM Mobile Station (MS)
-    // EAC3 (Dolby Digital Plus)
-    // ALAC (Apple Lossless)
-    // AC-3 (Dolby Digital)
-    // These properties are tied directly to what Chrome supports. See:
-    // https://source.chromium.org/chromium/chromium/src/+/main:media/base/audio_codecs.h
-    bool supports_chrome_audio_codecs = false;
+    RemotingConstraints();
+    ~RemotingConstraints();
+
+    RemotingConstraints(RemotingConstraints&&) noexcept;
+    RemotingConstraints(const RemotingConstraints&);
+    RemotingConstraints& operator=(RemotingConstraints&&) noexcept;
+    RemotingConstraints& operator=(const RemotingConstraints&);
 
     // Current remoting senders assume that the receiver supports 4K for all
     // video codecs supplied in |video_codecs|, or none of them.
     bool supports_4k = false;
+
+    // Current remoting senders take an "all or nothing" support for audio
+    // codec support. While Opus and AAC support is handled in our Constraints'
+    // |audio_codecs| property, support for the following codecs must be
+    // enabled or disabled all together in the underlying remoting protocol. In
+    // the event that some of these codecs are marked as supported and others
+    // are not, then remoting requests will be accepted for unsupported codecs
+    // and then the remoting session will fall back to mirroring.
+    bool supports_ogg_vorbis = true;
+
+    bool supports_flac = true;
+
+    // Includes Mu-Law, S16BE, S24BE, and ALAW variants.
+    bool supports_pcm = true;
+
+    bool supports_mp3 = false;
+
+    bool supports_mpegh = false;
+
+    // Includes narrow band (NB) and wide band (WB) variants.
+    bool supports_amr = false;
+
+    // GSM Mobile Station (MS).
+    bool supports_gsm = false;
+
+    // Apple Lossless.
+    bool supports_alac = false;
+
+    // Dolby Digital Plus.
+    bool supports_eac3 = false;
+
+    // Dolby Digital.
+    bool supports_ac3 = false;
+
+    // Dolby True Sound. Includes DTS XP2 and DTSE
+    bool supports_dts = false;
   };
 
   ReceiverConfig();

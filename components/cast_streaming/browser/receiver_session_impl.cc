@@ -8,7 +8,6 @@
 #include "components/cast_streaming/browser/cast_message_port_converter.h"
 #include "components/cast_streaming/browser/public/network_context_getter.h"
 #include "components/cast_streaming/browser/public/receiver_config.h"
-#include "components/cast_streaming/browser/receiver_config_conversions.h"
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
@@ -18,16 +17,15 @@ namespace cast_streaming {
 
 // static
 std::unique_ptr<ReceiverSession> ReceiverSession::Create(
-    const ReceiverConfig& av_constraints,
+    ReceiverConfig av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     ReceiverSession::Client* client) {
   return std::make_unique<ReceiverSessionImpl>(
-      ToOpenscreenConstraints(av_constraints), std::move(message_port_provider),
-      client);
+      std::move(av_constraints), std::move(message_port_provider), client);
 }
 
 ReceiverSessionImpl::ReceiverSessionImpl(
-    openscreen::cast::ReceiverConstraints av_constraints,
+    ReceiverConfig av_constraints,
     ReceiverSession::MessagePortProvider message_port_provider,
     ReceiverSession::Client* client)
     : message_port_provider_(std::move(message_port_provider)),

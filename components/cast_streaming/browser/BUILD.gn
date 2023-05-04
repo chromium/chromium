@@ -11,16 +11,21 @@ source_set("network_context") {
   deps = [ "//components/openscreen_platform" ]
 }
 
-source_set("browser") {
-  public = [
-    "public/receiver_config.h",
-    "public/receiver_session.h",
+source_set("receiver_config") {
+  public = [ "public/receiver_config.h" ]
+  sources = [ "receiver_config.cc" ]
+  deps = [
+    "//base",
+    "//media",
   ]
+}
+
+source_set("browser") {
+  public = [ "public/receiver_session.h" ]
   sources = [
     "cast_message_port_converter.h",
     "cast_streaming_session.cc",
     "cast_streaming_session.h",
-    "receiver_config.cc",
     "receiver_config_conversions.cc",
     "receiver_config_conversions.h",
     "receiver_session_impl.cc",
@@ -28,6 +33,7 @@ source_set("browser") {
   ]
   public_deps = [
     ":network_context",
+    ":receiver_config",
     "//base",
     "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",

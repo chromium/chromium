@@ -17,6 +17,7 @@ source_set("control") {
   ]
   public_deps = [
     "//base",
+    "//components/cast_streaming/browser:receiver_config",
     "//components/cast_streaming/common:mojom",
     "//mojo/public/cpp/bindings",
   ]

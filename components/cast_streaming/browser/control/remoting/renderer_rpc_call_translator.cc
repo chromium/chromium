@@ -23,6 +23,12 @@ RendererRpcCallTranslator::RendererRpcCallTranslator(
 
 RendererRpcCallTranslator::~RendererRpcCallTranslator() = default;
 
+void RendererRpcCallTranslator::SendFallbackMessage() {
+  // TODO(crbug.com/1434469): Add a RPC_ONREMOTINGERROR call to report the
+  // specifics of this failure.
+  message_processor_.Run(remote_handle_, media::cast::CreateMessageForError());
+}
+
 void RendererRpcCallTranslator::OnRpcInitialize() {
   if (!has_been_initialized_) {
     has_been_initialized_ = true;

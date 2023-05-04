@@ -17,6 +17,7 @@
 #include "components/cast_streaming/browser/control/remoting/rpc_demuxer_stream_handler.h"
 #include "components/cast_streaming/browser/control/remoting/rpc_initialization_call_handler_base.h"
 #include "components/cast_streaming/browser/control/renderer_control_multiplexer.h"
+#include "components/cast_streaming/browser/public/receiver_config.h"
 #include "components/cast_streaming/common/public/mojom/renderer_controller.mojom.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
@@ -48,10 +49,17 @@ class PlaybackCommandDispatcher
       public remoting::RemotingSessionClient,
       public remoting::RpcDemuxerStreamHandler::Client {
  public:
+  // Creates a new PlaybackCommandDispatcher.
+  // |flush_until_cb| will be called when a Flush() remoting command is
+  // received, if remoting is enabled.
+  // |remoting_constraints| will be validated against received config values for
+  // configs received when configuring the remoting stream, if remoting is
+  // enabled.
   PlaybackCommandDispatcher(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       mojo::AssociatedRemote<mojom::RendererController> control_configuration,
-      remoting::RendererRpcCallTranslator::FlushUntilCallback flush_until_cb);
+      remoting::RendererRpcCallTranslator::FlushUntilCallback flush_until_cb,
+      absl::optional<ReceiverConfig::RemotingConstraints> remoting_constraints);
   ~PlaybackCommandDispatcher() override;
 
   void RegisterCommandSource(
@@ -129,6 +137,7 @@ class PlaybackCommandDispatcher
   // Handles for the demuxer stream data providers, to be used for dispatching
   // demuxer stream RPC commands.
   absl::optional<StreamingInitializationInfo> streaming_init_info_;
+  absl::optional<ReceiverConfig::RemotingConstraints> remoting_constraints_;
   raw_ptr<Dispatcher> streaming_dispatcher_ = nullptr;
   raw_ptr<const openscreen::cast::ReceiverSession> receiver_session_ = nullptr;
 

@@ -32,7 +32,6 @@ void StreamingControllerRemoting::ProcessConfig(
   if (!config.remoting) {
     DLOG(WARNING) << "Remoting configuration added to received ReceiverConfig";
     config.remoting.emplace();
-    config.remoting->supports_chrome_audio_codecs = true;
   }
 }
 

@@ -43,6 +43,8 @@ class RendererRpcCallTranslator
                                      FlushUntilCallback flush_until_cb);
   ~RendererRpcCallTranslator() override;
 
+  void SendFallbackMessage();
+
   // Sets the |handle| to be used for future outgoing RPC calls.
   void set_remote_handle(openscreen::cast::RpcMessenger::Handle handle) {
     remote_handle_ = handle;
