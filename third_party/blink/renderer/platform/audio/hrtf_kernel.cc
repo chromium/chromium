@@ -113,8 +113,8 @@ std::unique_ptr<HRTFKernel> HRTFKernel::CreateInterpolatedKernel(
   DCHECK_LT(x, 1.0);
   x = ClampTo(x, 0.0f, 1.0f);
 
-  const float sample_rate1 = kernel1->SampleRate();
-  const float sample_rate2 = kernel2->SampleRate();
+  const float sample_rate1 = kernel1->sample_rate_;
+  const float sample_rate2 = kernel2->sample_rate_;
   DCHECK_EQ(sample_rate1, sample_rate2);
 
   const float frame_delay =

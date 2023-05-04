@@ -74,8 +74,6 @@ class PLATFORM_EXPORT HRTFDatabaseLoader final
   // be called from the audio thread.
   HRTFDatabase* Database();
 
-  float DatabaseSampleRate() const { return database_sample_rate_; }
-
  private:
   // Both constructor and destructor must be called from the main thread.
   explicit HRTFDatabaseLoader(float sample_rate);
@@ -89,13 +87,13 @@ class PLATFORM_EXPORT HRTFDatabaseLoader final
   void LoadTask();
   void CleanupTask(base::WaitableEvent*);
 
-  // |lock_| MUST be held when accessing |hrtf_database_| or |thread_| because
+  // `lock_` MUST be held when accessing `hrtf_database_` or `thread_` because
   // it can be accessed by multiple threads (e.g multiple AudioContexts).
   base::Lock lock_;
   std::unique_ptr<HRTFDatabase> hrtf_database_ GUARDED_BY(lock_);
   std::unique_ptr<NonMainThread> thread_ GUARDED_BY(lock_);
 
-  float database_sample_rate_;
+  const float database_sample_rate_;
 };
 
 }  // namespace blink

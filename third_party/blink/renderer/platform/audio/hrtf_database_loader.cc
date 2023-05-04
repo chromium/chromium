@@ -52,7 +52,7 @@ HRTFDatabaseLoader::CreateAndLoadAsynchronouslyIfNecessary(float sample_rate) {
   auto it = GetLoaderMap().find(sample_rate);
   if (it != GetLoaderMap().end()) {
     scoped_refptr<HRTFDatabaseLoader> loader = it->value;
-    DCHECK_EQ(sample_rate, loader->DatabaseSampleRate());
+    DCHECK_EQ(sample_rate, loader->database_sample_rate_);
     return loader;
   }
 
@@ -77,7 +77,7 @@ HRTFDatabaseLoader::~HRTFDatabaseLoader() {
 void HRTFDatabaseLoader::LoadTask() {
   DCHECK(!IsMainThread());
 
-  // Protect access to |hrtf_database_|, which can be accessed from the audio
+  // Protect access to `hrtf_database_`, which can be accessed from the audio
   // thread.
   base::AutoLock locker(lock_);
   DCHECK(!hrtf_database_);
@@ -90,7 +90,7 @@ void HRTFDatabaseLoader::LoadAsynchronously() {
 
   base::AutoLock locker(lock_);
 
-  // |hrtf_database_| and |thread_| should both be unset because this should be
+  // `hrtf_database_` and `thread_` should both be unset because this should be
   // a new HRTFDatabaseLoader object that was just created by
   // CreateAndLoadAsynchronouslyIfNecessary and because we haven't started
   // LoadTask yet for this object.
