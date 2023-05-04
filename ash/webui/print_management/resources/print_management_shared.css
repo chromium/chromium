@@ -10,9 +10,21 @@
  * #include=cr-shared-style cros-color-overrides
  * #css_wrapper_metadata_end */
 
+:host-context(body.jelly-enabled) .main-container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+:host-context(body.jelly-enabled) .margin-border {
+  margin-inline: 16px;
+}
+
 :host-context(body.jelly-enabled) .data-container {
   background-color: var(--cros-sys-app_base);
-  border-radius: 8px;
+  border-radius: 16px 16px 0 0;
+  flex: 1 1 auto;
+  margin-top: 16px;
 }
 
 :host-context(body.jelly-enabled) .file-icon-blue {
@@ -40,7 +52,12 @@
 }
 
 :host-context(body.jelly-enabled) #headerContainer {
+  align-items: center;
   border-bottom: none;
+  display: flex;
+  flex: 0 1 auto;
+  height: 64px;
+  padding: 0;
 }
 
 .flex-center {
@@ -129,10 +146,6 @@
     padding: 0 20px;
   }
 
-  :host-context(body.jelly-enabled) .margin-border {
-    margin: 0 20px;
-  }
-
   .date-column {
     width: 56px;
   }
@@ -145,7 +158,7 @@
     width: 224px;
   }
 
-  .margin-border {
+  :host-context(body:not(.jelly-enabled)) .margin-border {
     margin: 0px 40px 0px 40px;
   }
 
@@ -177,10 +190,6 @@
     padding: 0 20px;
   }
 
-  :host-context(body.jelly-enabled) .margin-border {
-    margin: 0 20px;
-  }
-
   .date-column {
     width: 82px;
   }
@@ -193,7 +202,7 @@
     width: 264px;
   }
 
-  .margin-border {
+  :host-context(body:not(.jelly-enabled)) .margin-border {
     margin: 0px 40px 0px 40px;
   }
 
@@ -223,10 +232,6 @@
 
   :host-context(body.jelly-enabled) .data-container {
     padding: 0 32px;
-  }
-
-  :host-context(body.jelly-enabled) .margin-border {
-    margin: 0 32px;
   }
 
   .date-column {
@@ -273,10 +278,6 @@
     padding: 0 72px;
   }
 
-  :host-context(body.jelly-enabled) .margin-border {
-    margin: 0 72px;
-  }
-
   .date-column {
     width: 144px;
   }
@@ -289,7 +290,7 @@
     width: 356px;
   }
 
-  .margin-border {
+  :host-context(body:not(.jelly-enabled)) .margin-border {
     margin: 0px 144px 0px 144px;
   }
 
