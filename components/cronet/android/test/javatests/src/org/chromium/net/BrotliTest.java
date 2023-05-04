@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.net.CronetTestRule.SERVER_CERT_PEM;
-import static org.chromium.net.CronetTestRule.SERVER_KEY_PKCS8_PEM;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -37,9 +35,7 @@ public class BrotliTest {
 
     @Before
     public void setUp() throws Exception {
-        TestFilesInstaller.installIfNeeded(getContext());
-        assertTrue(Http2TestServer.startHttp2TestServer(
-                getContext(), SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM));
+        assertTrue(Http2TestServer.startHttp2TestServer(getContext()));
     }
 
     @After
