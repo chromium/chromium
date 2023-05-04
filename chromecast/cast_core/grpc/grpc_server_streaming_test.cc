@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
@@ -11,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chromecast/cast_core/grpc/grpc_server.h"
 #include "chromecast/cast_core/grpc/status_matchers.h"
 #include "chromecast/cast_core/grpc/test_service.castcore.pb.h"
@@ -32,10 +32,13 @@ class GrpcServerStreamingTest : public ::testing::Test {
  protected:
   GrpcServerStreamingTest() {
     CHECK(temp_dir_.CreateUniqueTempDir());
-    endpoint_ = "unix:" +
-                temp_dir_.GetPath()
-                    .AppendASCII("cast-uds-" + base::GenerateGUID().substr(24))
-                    .value();
+    endpoint_ =
+        "unix:" +
+        temp_dir_.GetPath()
+            .AppendASCII(
+                "cast-uds-" +
+                base::Uuid::GenerateRandomV4().AsLowercaseString().substr(24))
+            .value();
   }
 
   base::test::TaskEnvironment task_environment_{
