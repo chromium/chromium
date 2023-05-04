@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+
+    <script src="tsc/viewer.js"></script>
+    <link rel="stylesheet" href="viewer.css">
+
+    <title>iOS Documents Statistics Viewer</title>
+  </head>
+  <body id="drop_target">
+    <div id="report_upload">
+      <div>
+        <div id="centered_large_icon">
+          🔍 📂
+        </div>
+
+        <div id="instructions">
+          <h1>
+            Drag and drop your .json report onto this page to get started.
+          </h1>
+          <input type="file" id="report_file_input" accept=".json">
+        </div>
+
+        <div id="footer">
+          <h3>For more information, see the <a href="./README.md">README</a></h3>
+        </div>
+      </div>
+    </div>
+
+    <h1 id="loading" hidden></div>Loading, please wait...</h1>
+
+    <div id="viewer" hidden>
+      <div id="infobar">
+        <span>Current root: <span id="root_path"></span></span>
+        <span class="spacer"></span>
+        <span>File: <span id="local_file"></span></span>
+      </div>
+      <hr/>
+      <div id="toolbar">
+        <span>Search: <input id="searchbar" type="text"></input></span>
+        <span class="spacer"></span>
+        <span>
+          <button id="nav_up">Navigate Up One Directory</button>
+          <button onclick="window.location.hash='#'">Reset to Root Directory</button>
+        </span>
+        <span class="spacer"></span>
+        <span>
+          <button onclick="collapseAllDirectories()">Collapse All</button>
+          <button onclick="expandAllDirectories()">Expand All</button>
+        </span>
+        <span class="spacer"></span>
+        <span>
+          Sorting:
+          <select id="sorting">
+            <option value="nameAsc">Name A->Z</option>
+            <option value="nameDesc">Name Z->A</option>
+            <option value="sizeAsc">Smallest -> Largest</option>
+            <option value="sizeDesc">Largest -> Smallest</option>
+            <option value="accessedAsc">Accessed Most Recently</option>
+            <option value="accessedDesc">Accessed Least Recently</option>
+          </select>
+        </span>
+      </div>
+      <hr/>
+      <br/>
+      <div id="contents">
+        <div class="item_row header_row">
+          <span class="item_icon"></span>
+          <span class="item_spacing"></span>
+          <span class="item_name">Name</span>
+          <span class="item_size">Size</span>
+          <span class="item_accessed">Accessed</span>
+          <span class="item_created">Created</span>
+          <span class="item_modified">Modified</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
