@@ -73,7 +73,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/unique_identifier.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
-#include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -1418,8 +1417,6 @@ TEST_F(FrameFetchContextMockedLocalFrameClientTest,
 }
 
 TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
-  HistogramTester histograms;
-
   ResourceRequest request(KURL("https://localhost/"));
   // Sets Sec-CH-UA-Reduced, which should result in the reduced User-Agent
   // string being used.
@@ -1429,10 +1426,6 @@ TEST_F(FrameFetchContextTest, PrepareRequestHistogramCount) {
   ResourceLoaderOptions options(nullptr /* world */);
   GetFetchContext()->PrepareRequest(request, options, virtual_time_pauser,
                                     ResourceType::kRaw);
-
-  // There should be 1 occurrence for when Blink.Fetch.ReducedUserAgent is true.
-  histograms.ExpectBucketCount("Blink.Fetch.ReducedUserAgent", true, 1);
-  histograms.ExpectBucketCount("Blink.Fetch.ReducedUserAgent", false, 0);
 }
 
 TEST_F(FrameFetchContextTest, AddResourceTimingWhenDetached) {

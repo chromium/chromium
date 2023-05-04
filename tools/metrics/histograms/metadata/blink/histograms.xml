@@ -1377,20 +1377,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Fetch.ReducedUserAgent" enum="Boolean"
-    expires_after="2023-04-30">
-  <owner>miketaylr@chromium.org</owner>
-  <owner>victortan@chromium.org</owner>
-  <owner>potassium-katabolism@google.com</owner>
-  <summary>
-    Whether the User-Agent header that was sent for a subresource request had a
-    reduced user agent string value. The reduced user agent string is only sent
-    in the presence of a valid UserAgentReduction origin trial token. This
-    histogram is recorded when a frame's subresource fetch request is being
-    prepared.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Fetch.RequestResourceTime2{Scheme}" units="microseconds"
     expires_after="2023-05-02">
   <owner>cduvall@chromium.org</owner>

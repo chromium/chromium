@@ -349,7 +349,6 @@ void FrameFetchContext::PrepareRequest(
   String user_agent =
       ua_full ? GetFullUserAgent()
               : (ua_reduced ? GetReducedUserAgent() : GetUserAgent());
-  base::UmaHistogramBoolean("Blink.Fetch.ReducedUserAgent", ua_reduced);
   request.SetHTTPUserAgent(AtomicString(user_agent));
 
   if (GetResourceFetcherProperties().IsDetached())
