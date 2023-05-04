@@ -42,8 +42,10 @@ namespace {
 
 const char kAccountRequirementKey[] = "accountRequirement";
 const char kFlowTypeKey[] = "flowType";
+const char kDeviceTypeKey[] = "deviceType";
 const int kAccountRequirementSingle = 2;
 const int kFlowTypeTargetChallenge = 2;
+const int kDeviceTypeChrome = 7;
 
 const char kChallengeBase64Url[] = "testchallenge";
 
@@ -251,6 +253,7 @@ TEST_F(ConnectionTest, RequestAccountTransferAssertion) {
   EXPECT_EQ(*bootstrap_options.FindInt(kAccountRequirementKey),
             kAccountRequirementSingle);
   EXPECT_EQ(*bootstrap_options.FindInt(kFlowTypeKey), kFlowTypeTargetChallenge);
+  EXPECT_EQ(*bootstrap_options.FindInt(kDeviceTypeKey), kDeviceTypeChrome);
 
   // Emulate a BootstrapConfigurations response.
   fake_nearby_connection_->AppendReadableData(kTestBytes);
