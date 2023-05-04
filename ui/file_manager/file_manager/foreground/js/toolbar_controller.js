@@ -270,9 +270,11 @@ export class ToolbarController {
         'click', this.onSharesheetButtonClicked_.bind(this));
 
     if (util.isDriveFsBulkPinningEnabled()) {
-      const cloudPanel = document.querySelector('xf-cloud-panel');
+      const cloudPanel = queryRequiredElement('xf-cloud-panel');
       this.cloudButton_.addEventListener(
           'click', () => cloudPanel.showAt(this.cloudButton_));
+      /** @type {?boolean} */
+      this.bulkPinningPref_ = null;
     }
 
     this.togglePinnedCommand_.addEventListener(
@@ -502,17 +504,25 @@ export class ToolbarController {
    * @param {!State} state latest state from the store.
    */
   onStateChanged(state) {
-    this.updateCloudButton_(state);
+    this.updateBulkPinning_(state);
   }
 
   /**
-   * Updates the visibility of the cloud button.
+   * Updates the visibility of the cloud button and the "Available offline"
+   * toggle based on whether the bulk pinning is enabled or not.
    * @param {!State} state latest state from the store.
    * @private
    */
-  updateCloudButton_(state) {
+  updateBulkPinning_(state) {
     const bulkPinningPref = state.preferences?.driveFsBulkPinningEnabled;
     const bulkPinningStage = state.bulkPinning?.stage;
+    // If the bulk pinning preference is enabled, the user should not be able to
+    // toggle items offline.
+    if (this.bulkPinningPref_ !== bulkPinningPref) {
+      this.bulkPinningPref_ = bulkPinningPref;
+      this.togglePinnedCommand_.canExecuteChange(
+          this.listContainer_.currentList);
+    }
     if (util.canBulkPinningCloudPanelShow(bulkPinningStage, bulkPinningPref)) {
       this.cloudButton_.hidden = false;
       return;

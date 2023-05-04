@@ -18,8 +18,10 @@ import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {NudgeType} from '../../containers/nudge_container.js';
 import {CommandHandlerDeps} from '../../externs/command_handler_deps.js';
 import {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {State} from '../../externs/ts/state.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
+import {getStore} from '../../state/store.js';
 
 import {ActionsModel} from './actions_model.js';
 import {constants} from './constants.js';
@@ -2310,6 +2312,19 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
     if (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager)) {
       command.setHidden(true);
       return;
+    }
+
+    // When the bulk pinning panel is enabled, the "Available offline" toggle
+    // should not be visible as the underlying functionality is handled
+    // automatically.
+    if (util.isDriveFsBulkPinningEnabled()) {
+      const state = /** @type {State} */ (getStore().getState());
+      const bulkPinningPref = state.preferences.driveFsBulkPinningEnabled;
+      if (bulkPinningPref) {
+        command.setHidden(true);
+        command.canExecute = false;
+        return;
+      }
     }
 
     command.setHidden(false);

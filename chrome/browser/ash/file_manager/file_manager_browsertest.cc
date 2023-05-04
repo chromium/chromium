@@ -1550,6 +1550,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         // TODO(b/189173190): Enable
         // TestCase("drivePinFileMobileNetwork"),
         TestCase("drivePinToggleUpdatesInFakeEntries"),
+        TestCase("drivePinToggleIsDisabledAndHiddenWhenBulkPinningEnabled")
+            .EnableBulkPinning(),
         TestCase("driveClickFirstSearchResult"),
         TestCase("drivePressEnterToSearch").FilesExperimental(),
         TestCase("drivePressClearSearch"),
