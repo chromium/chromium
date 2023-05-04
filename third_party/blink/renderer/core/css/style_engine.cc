@@ -451,6 +451,11 @@ void StyleEngine::DocumentRulesSelectorsChanged() {
 
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
+
+  // The global rule set must be updated immediately, so that any DOM mutations
+  // that happen after this (but before the next style update) can use the
+  // updated invalidation sets.
+  UpdateActiveStyle();
 }
 
 bool StyleEngine::ShouldUpdateDocumentStyleSheetCollection() const {
