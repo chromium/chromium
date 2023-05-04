@@ -20,6 +20,7 @@
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
 #include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
@@ -69,10 +70,10 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     input_dir_ = input_dir_.AppendASCII(
         "attribution_reporting/aggregatable_report_goldens/latest");
 
-    absl::optional<PublicKeyset> keyset =
+    base::expected<PublicKeyset, std::string> keyset =
         aggregation_service::ReadAndParsePublicKeys(
             input_dir_.AppendASCII("public_key.json"), base::Time::Now());
-    ASSERT_TRUE(keyset);
+    ASSERT_TRUE(keyset.has_value());
     ASSERT_EQ(keyset->keys.size(), 1u);
 
     aggregation_service().SetPublicKeysForTesting(

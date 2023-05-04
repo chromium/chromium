@@ -109,7 +109,6 @@ base::expected<net::SchemefulSite, ParseErrorType> ParseSiteAndValidate(
       Canonicalize(item.GetString(), emit_errors);
   if (!maybe_site.has_value())
     return base::unexpected(maybe_site.error());
-
   const net::SchemefulSite& site = *maybe_site;
   if (base::Contains(
           set_entries, site,
@@ -185,7 +184,6 @@ base::expected<Aliases, ParseError> ParseCctlds(
         return base::unexpected(
             ParseError(alias_or_error.error(), {kCCTLDsField, site, static_cast<int>(i)}));
       }
-
       net::SchemefulSite alias = alias_or_error.value();
       const absl::optional<std::string> alias_site_without_tld =
           RemoveTldFromSite(alias);
@@ -333,7 +331,6 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
       set_declaration, set_entries, elements, emit_errors, warnings);
   if (!aliases_or_error.has_value())
     return base::unexpected(aliases_or_error.error());
-
   const Aliases& aliases = aliases_or_error.value();
 
   if (IsSingletonSet(set_entries, aliases)) {
@@ -383,12 +380,12 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
          it++) {
       it->PrependPath({SetTypeToString(set_type), i});
     }
-
     if (!parsed.has_value()) {
       ParseError error = parsed.error();
       error.PrependPath({SetTypeToString(set_type), i});
       return base::unexpected(error);
     }
+
     SetsMap& set = parsed.value().first;
     if (!parsed.value().second.empty()) {
       std::vector<SetsMap::value_type> alias_entries;
@@ -498,29 +495,28 @@ FirstPartySetParser::PolicyParseResult
 FirstPartySetParser::ParseSetsFromEnterprisePolicy(
     const base::Value::Dict& policy) {
   std::vector<ParseWarning> warnings;
-  base::flat_set<net::SchemefulSite> elements;
-
-  base::expected<std::vector<SingleSet>, ParseError> parsed_replacements =
-      GetPolicySetsFromList(
-          policy.FindList(kFirstPartySetPolicyReplacementsField), elements,
-          PolicySetType::kReplacement, warnings);
-  if (!parsed_replacements.has_value()) {
-    return FirstPartySetParser::PolicyParseResult(
-        base::unexpected(parsed_replacements.error()), warnings);
-  }
-
-  base::expected<std::vector<SingleSet>, ParseError> parsed_additions =
-      GetPolicySetsFromList(policy.FindList(kFirstPartySetPolicyAdditionsField),
-                            elements, PolicySetType::kAddition, warnings);
-  if (!parsed_additions.has_value()) {
-    return FirstPartySetParser::PolicyParseResult(
-        base::unexpected(parsed_additions.error()), warnings);
-  }
-
-  return FirstPartySetParser::PolicyParseResult(
-      ParsedPolicySetLists(std::move(parsed_replacements.value()),
-                           std::move(parsed_additions.value())),
-      warnings);
+  const auto get_set_lists =
+      [&]() -> base::expected<ParsedPolicySetLists,
+                              FirstPartySetsHandler::ParseError> {
+    base::flat_set<net::SchemefulSite> elements;
+    base::expected<std::vector<SingleSet>, ParseError> parsed_replacements =
+        GetPolicySetsFromList(
+            policy.FindList(kFirstPartySetPolicyReplacementsField), elements,
+            PolicySetType::kReplacement, warnings);
+    if (!parsed_replacements.has_value()) {
+      return base::unexpected(parsed_replacements.error());
+    }
+    base::expected<std::vector<SingleSet>, ParseError> parsed_additions =
+        GetPolicySetsFromList(
+            policy.FindList(kFirstPartySetPolicyAdditionsField), elements,
+            PolicySetType::kAddition, warnings);
+    if (!parsed_additions.has_value()) {
+      return base::unexpected(parsed_additions.error());
+    }
+    return ParsedPolicySetLists(std::move(parsed_replacements.value()),
+                                std::move(parsed_additions.value()));
+  };
+  return FirstPartySetParser::PolicyParseResult(get_set_lists(), warnings);
 }
 
 }  // namespace content

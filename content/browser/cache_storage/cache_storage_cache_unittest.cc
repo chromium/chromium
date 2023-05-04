@@ -2088,7 +2088,6 @@ TEST_P(CacheStorageCacheTestP, PutObeysBucketQuotaLimits) {
       bucket, base::SingleThreadTaskRunner::GetCurrentDefault(),
       future.GetCallback());
   auto value = future.Take();
-
   ASSERT_TRUE(value.has_value());
   InitCache(nullptr, value->ToBucketLocator());
 
