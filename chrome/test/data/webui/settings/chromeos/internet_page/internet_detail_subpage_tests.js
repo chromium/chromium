@@ -180,7 +180,6 @@ suite('InternetDetailPage', function() {
       internetKnownNetworksPageTitle: 'internetKnownNetworksPageTitle',
       showMeteredToggle: true,
       isApnRevampEnabled: false,
-      isPasspointEnabled: true,
     });
 
     PolymerTest.clearBody();
@@ -655,6 +654,7 @@ suite('InternetDetailPage', function() {
           async () => {
             loadTimeData.overrideValues({
               isPasspointEnabled: isPasspointEnabled,
+              isPasspointSettingsEnabled: false,
             });
             init();
             mojoApi_.resetForTest();

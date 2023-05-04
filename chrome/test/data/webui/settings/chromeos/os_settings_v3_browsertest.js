@@ -334,7 +334,14 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['InputPage', 'input_page_test.js'],
  ['InternetConfig', 'internet_config_test.js'],
  ['InternetDetailMenu', 'internet_detail_menu_test.js'],
- ['InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js'],
+ [
+   'InternetKnownNetworksSubpage', 'internet_known_networks_subpage_tests.js', {
+     enabled: [
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
+ ],
  [
    'InternetPage', 'internet_page_tests.js', {
      enabled: [
@@ -349,8 +356,13 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ],
  [
    'InternetPageInternetDetailSubpage',
-   'internet_page/internet_detail_subpage_tests.js',
-   {enabled: ['ash::features::kApnRevamp']}
+   'internet_page/internet_detail_subpage_tests.js', {
+     enabled: [
+       'ash::features::kApnRevamp',
+       'ash::features::kPasspointARCSupport',
+       'ash::features::kPasspointSettings',
+     ]
+   }
  ],
  ['InternetPageNetworkSummary', 'internet_page/network_summary_test.js'],
  [
