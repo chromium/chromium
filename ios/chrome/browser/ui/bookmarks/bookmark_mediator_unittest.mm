@@ -81,7 +81,9 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
     authentication_service_->SignIn(
         fake_identity,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
-    authentication_service_->GrantSyncConsent(fake_identity);
+    authentication_service_->GrantSyncConsent(
+        fake_identity,
+        signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER);
   }
 
   void setEmailInSnackbarFlag(bool enabled) {

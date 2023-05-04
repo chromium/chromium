@@ -69,7 +69,8 @@ class SetUpListTest : public PlatformTest {
     system_identity_manager->AddIdentity(identity);
     auth_service_->SignIn(identity,
                           signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-    auth_service_->GrantSyncConsent(identity);
+    auth_service_->GrantSyncConsent(
+        identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
   }
 
   // Ensures that Chrome is considered as default browser.
