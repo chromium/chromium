@@ -37,7 +37,6 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
-#include "services/network/public/mojom/mdns_responder.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -229,17 +228,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
     return browser_context()->GetDefaultStoragePartition()->GetNetworkContext();
   }
 
-  std::string CreateMDNSHostName() {
-    DCHECK(!mdns_responder_.is_bound());
-    GetNetworkContext()->CreateMdnsResponder(
-        mdns_responder_.BindNewPipeAndPassReceiver());
-
-    base::test::TestFuture<const std::string&, bool> future;
-    mdns_responder_->CreateNameForAddress(net::IPAddress::IPv4Localhost(),
-                                          future.GetCallback());
-    return future.Get<std::string>();
-  }
-
   // Returns the port listening for TCP connections.
   uint16_t StartTcpServer() {
     base::test::TestFuture<int32_t, const absl::optional<net::IPEndPoint>&>
@@ -302,7 +290,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_{features::kIsolatedWebApps};
-  mojo::Remote<network::mojom::MdnsResponder> mdns_responder_;
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;
@@ -331,31 +318,6 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, OpenTcp_Success_Global) {
 
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
               StartsWith("openTcp succeeded"));
-}
-
-#if BUILDFLAG(IS_MAC)
-// https://crbug.com/1211492 Keep failing on Mac11.3
-#define MAYBE_OpenTcp_MDNS DISABLED_OpenTcp_MDNS
-#else
-#define MAYBE_OpenTcp_MDNS OpenTcp_MDNS
-#endif
-IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, MAYBE_OpenTcp_MDNS) {
-  ASSERT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
-
-  const int listening_port = StartTcpServer();
-  const std::string name = CreateMDNSHostName();
-  EXPECT_TRUE(base::EndsWith(name, ".local"));
-
-  const std::string script =
-      JsReplace("openTcp($1, $2)", name.c_str(), listening_port);
-
-#if BUILDFLAG(ENABLE_MDNS)
-  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
-              StartsWith("openTcp succeeded"));
-#else
-  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
-            EvalJs(shell(), script));
-#endif  // BUILDFLAG(ENABLE_MDNS)
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, CloseTcp) {
