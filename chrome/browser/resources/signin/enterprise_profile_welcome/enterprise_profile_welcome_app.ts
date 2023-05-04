@@ -73,6 +73,12 @@ export class EnterpriseProfileWelcomeAppElement extends
       /** The detailed info about enterprise management */
       enterpriseInfo_: String,
 
+      /**
+       * Whether this page is being shown as a dialog.
+       *
+       * Reflected as an attribute to allow configuring variables and styles at
+       * the element host level.
+       */
       isModalDialog_: {
         type: Boolean,
         reflectToAttribute: true,
@@ -83,7 +89,6 @@ export class EnterpriseProfileWelcomeAppElement extends
 
       showLinkDataCheckbox_: {
         type: String,
-        reflectToAttribute: true,
         value() {
           return loadTimeData.getBoolean('showLinkDataCheckbox');
         },
@@ -109,13 +114,6 @@ export class EnterpriseProfileWelcomeAppElement extends
         value: false,
         observer: 'linkDataChanged_',
       },
-
-      isTangibleSyncStyleEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isTangibleSyncStyleEnabled');
-        },
-      },
     };
   }
 
@@ -130,7 +128,6 @@ export class EnterpriseProfileWelcomeAppElement extends
   private linkData_: boolean;
   private showCancelButton_: boolean;
   private defaultProceedLabel_: string;
-  private isTangibleSyncStyleEnabled_: boolean;
   private enterpriseProfileWelcomeBrowserProxy_:
       EnterpriseProfileWelcomeBrowserProxy =
           EnterpriseProfileWelcomeBrowserProxyImpl.getInstance();
@@ -162,11 +159,6 @@ export class EnterpriseProfileWelcomeAppElement extends
   }
 
   private setProfileInfo_(info: EnterpriseProfileInfo) {
-    // <if expr="not chromeos_lacros">
-    if (!this.isTangibleSyncStyleEnabled_) {
-      this.style.setProperty('--header-background-color', info.backgroundColor);
-    }
-    // </if>
     this.pictureUrl_ = info.pictureUrl;
     this.showEnterpriseBadge_ = info.showEnterpriseBadge;
     this.title_ = info.title;
@@ -178,12 +170,15 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.linkData_ = info.checkLinkDataCheckboxByDefault;
   }
 
-  private getTangibleSyncStyleClass_() {
-    if (!this.isTangibleSyncStyleEnabled_) {
-      return '';
-    }
-    return this.isModalDialog_ ? 'tangible-sync-style dialog' :
-                                 'tangible-sync-style';
+  /**
+   * Returns either "dialog" or an empty string.
+   *
+   * The returned value is intended to be added as a class on the root tags of
+   * the element. Some styles from `tangible_sync_style_shared.css` rely on the
+   * presence of this "dialog" class.
+   */
+  private getMaybeDialogClass_() {
+    return this.isModalDialog_ ? 'dialog' : '';
   }
 }
 

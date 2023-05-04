@@ -11,7 +11,6 @@ import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
 // Enterprise profile info sent from C++.
 export interface EnterpriseProfileInfo {
-  backgroundColor: string;
   pictureUrl: string;
   showEnterpriseBadge: boolean;
   title: string;
