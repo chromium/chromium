@@ -25,12 +25,21 @@
 #include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
 #include "ui/gfx/geometry/size.h"
 
-@implementation DeviceNameAndTransportType
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+@implementation DeviceNameAndTransportType {
+  NSString* __strong _deviceName;
+  // The transport type of the device (USB, PCI, etc), values are defined in
+  // <IOKit/audio/IOAudioTypes.h> as kIOAudioDeviceTransportType*.
+  media::VideoCaptureTransportType _transportType;
+}
 
 - (instancetype)initWithName:(NSString*)deviceName
                transportType:(media::VideoCaptureTransportType)transportType {
   if (self = [super init]) {
-    _deviceName.reset([deviceName copy]);
+    _deviceName = [deviceName copy];
     _transportType = transportType;
   }
   return self;
@@ -458,8 +467,8 @@ bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
   if (capture_api_type != VideoCaptureApi::MACOSX_AVFOUNDATION)
     return false;
 
-  capture_device_.reset(
-      [[VideoCaptureDeviceAVFoundation alloc] initWithFrameReceiver:this]);
+  capture_device_ =
+      [[VideoCaptureDeviceAVFoundation alloc] initWithFrameReceiver:this];
 
   if (!capture_device_)
     return false;

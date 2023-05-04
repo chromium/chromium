@@ -19,6 +19,10 @@
 #import "media/capture/video/mac/video_capture_device_decklink_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 void EnsureRunsOnCFRunLoopEnabledThread() {
@@ -26,7 +30,7 @@ void EnsureRunsOnCFRunLoopEnabledThread() {
   if (!has_checked_cfrunloop_for_video_capture) {
     base::ScopedCFTypeRef<CFRunLoopMode> mode(
         CFRunLoopCopyCurrentMode(CFRunLoopGetCurrent()));
-    CHECK(mode != NULL)
+    CHECK(mode != nullptr)
         << "The MacOS video capture code must be run on a CFRunLoop-enabled "
            "thread";
     has_checked_cfrunloop_for_video_capture = true;
@@ -42,8 +46,9 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
 
   AVCaptureDevice* device = nil;
   for (device in devices) {
-    if (base::SysNSStringToUTF8([device uniqueID]) == descriptor.device_id)
+    if (base::SysNSStringToUTF8(device.uniqueID) == descriptor.device_id) {
       break;
+    }
   }
   if (device == nil)
     return media::VideoCaptureFormats();
@@ -52,13 +57,13 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
     // as well according to CMFormatDescription.h
     const media::VideoPixelFormat pixelFormat = [VideoCaptureDeviceAVFoundation
         FourCCToChromiumPixelFormat:CMFormatDescriptionGetMediaSubType(
-                                        [device_format formatDescription])];
+                                        device_format.formatDescription)];
 
-    CMVideoDimensions dimensions = CMVideoFormatDescriptionGetDimensions(
-        [device_format formatDescription]);
+    CMVideoDimensions dimensions =
+        CMVideoFormatDescriptionGetDimensions(device_format.formatDescription);
 
-    for (AVFrameRateRange* frameRate in
-         [device_format videoSupportedFrameRateRanges]) {
+    for (AVFrameRateRange* frameRate in device_format
+             .videoSupportedFrameRateRanges) {
       media::VideoCaptureFormat format(
           gfx::Size(dimensions.width, dimensions.height),
           frameRate.maxFrameRate, pixelFormat);
@@ -96,8 +101,7 @@ VideoCaptureDeviceFactoryMac::VideoCaptureDeviceFactoryMac() {
   thread_checker_.DetachFromThread();
 }
 
-VideoCaptureDeviceFactoryMac::~VideoCaptureDeviceFactoryMac() {
-}
+VideoCaptureDeviceFactoryMac::~VideoCaptureDeviceFactoryMac() = default;
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
     const VideoCaptureDeviceDescriptor& descriptor) {
@@ -130,21 +134,21 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
   // Loop through all available devices and add to |devices_info|.
   std::vector<VideoCaptureDeviceInfo> devices_info;
   DVLOG(1) << "Enumerating video capture devices using AVFoundation";
-  base::scoped_nsobject<NSDictionary> capture_devices =
+  NSDictionary<NSString*, DeviceNameAndTransportType*>* capture_devices =
       GetVideoCaptureDeviceNames();
   // Enumerate all devices found by AVFoundation, translate the info for each
   // to class Name and add it to |device_names|.
-  for (NSString* key in capture_devices.get()) {
-    const std::string device_id = [key UTF8String];
+  for (NSString* key in capture_devices) {
+    const std::string device_id = base::SysNSStringToUTF8(key);
     const VideoCaptureApi capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
     VideoCaptureTransportType device_transport_type =
-        [[capture_devices valueForKey:key] deviceTransportType];
+        [capture_devices[key] deviceTransportType];
     const std::string model_id = VideoCaptureDeviceMac::GetDeviceModelId(
         device_id, capture_api, device_transport_type);
     const VideoCaptureControlSupport control_support =
         VideoCaptureDeviceMac::GetControlSupport(model_id);
     VideoCaptureDeviceDescriptor descriptor(
-        [[[capture_devices valueForKey:key] deviceName] UTF8String], device_id,
+        base::SysNSStringToUTF8([capture_devices[key] deviceName]), device_id,
         model_id, capture_api, control_support, device_transport_type);
     if (IsDeviceBlocked(descriptor))
       continue;

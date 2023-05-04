@@ -5,6 +5,7 @@
 #import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -15,6 +16,10 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace media {
 

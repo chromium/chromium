@@ -6,11 +6,16 @@
 
 #include <IOKit/IOCFPlugIn.h>
 
+#include "base/mac/bridging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/string_number_conversions.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace media {
 
@@ -102,9 +107,9 @@ static bool FindDeviceWithVendorAndProductIds(int vendor_id,
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query_dictionary(
       IOServiceMatching(kIOUSBDeviceClassName));
   CFDictionarySetValue(query_dictionary, CFSTR(kUSBVendorName),
-                       base::mac::NSToCFCast(@(vendor_id)));
+                       base::mac::NSToCFPtrCast(@(vendor_id)));
   CFDictionarySetValue(query_dictionary, CFSTR(kUSBProductName),
-                       base::mac::NSToCFCast(@(product_id)));
+                       base::mac::NSToCFPtrCast(@(product_id)));
 
   kern_return_t kr = IOServiceGetMatchingServices(
       kIOMasterPortDefault, query_dictionary.release(), usb_iterator);
@@ -123,16 +128,15 @@ static bool FindDeviceInterfaceInUsbDevice(
     const io_service_t usb_device,
     IOUSBDeviceInterface*** device_interface) {
   // Create a plugin, i.e. a user-side controller to manipulate USB device.
-  IOCFPlugInInterface** plugin;
+  base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin;
   SInt32 score;  // Unused, but required for IOCreatePlugInInterfaceForService.
   kern_return_t kr = IOCreatePlugInInterfaceForService(
-      usb_device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID, &plugin,
-      &score);
+      usb_device, kIOUSBDeviceUserClientTypeID, kIOCFPlugInInterfaceID,
+      plugin.InitializeInto(), &score);
   if (kr != kIOReturnSuccess || !plugin) {
     VLOG(1) << "IOCreatePlugInInterfaceForService";
     return false;
   }
-  base::mac::ScopedIOPluginInterface<IOCFPlugInInterface> plugin_ref(plugin);
 
   // Fetch the Device Interface from the plugin.
   HRESULT res = (*plugin)->QueryInterface(
@@ -153,7 +157,7 @@ static bool FindVideoControlInterfaceInDeviceInterface(
     IOCFPlugInInterface*** video_control_interface) {
   // Create an iterator to the list of Video-AVControl interfaces of the device,
   // then get the first interface in the list.
-  io_iterator_t interface_iterator;
+  base::mac::ScopedIOObject<io_iterator_t> interface_iterator;
   IOUSBFindInterfaceRequest interface_request = {
       .bInterfaceClass = kUSBVideoInterfaceClass,
       .bInterfaceSubClass = kUSBVideoControlSubClass,
@@ -162,21 +166,19 @@ static bool FindVideoControlInterfaceInDeviceInterface(
   kern_return_t kr =
       (*device_interface)
           ->CreateInterfaceIterator(device_interface, &interface_request,
-                                    &interface_iterator);
+                                    interface_iterator.InitializeInto());
   if (kr != kIOReturnSuccess) {
     VLOG(1) << "Could not create an iterator to the device's interfaces.";
     return false;
   }
-  base::mac::ScopedIOObject<io_iterator_t> iterator_ref(interface_iterator);
 
   // There should be just one interface matching the class-subclass desired.
-  io_service_t found_interface;
-  found_interface = IOIteratorNext(interface_iterator);
+  base::mac::ScopedIOObject<io_service_t> found_interface(
+      IOIteratorNext(interface_iterator));
   if (!found_interface) {
     VLOG(1) << "Could not find a Video-AVControl interface in the device.";
     return false;
   }
-  base::mac::ScopedIOObject<io_service_t> found_interface_ref(found_interface);
 
   // Create a user side controller (i.e. a "plugin") for the found interface.
   SInt32 score;
@@ -196,14 +198,14 @@ std::vector<uint8_t> ExtractControls(IOUSBDescriptorHeader* usb_descriptor) {
   if (descriptor->bControlSize > 0) {
     NSData* data = [[NSData alloc] initWithBytes:&descriptor->bmControls[0]
                                           length:descriptor->bControlSize];
-    const uint8_t* bytes = reinterpret_cast<const uint8_t*>([data bytes]);
-    return std::vector<uint8_t>(bytes, bytes + [data length]);
+    const uint8_t* bytes = reinterpret_cast<const uint8_t*>(data.bytes);
+    return std::vector<uint8_t>(bytes, bytes + data.length);
   }
   return std::vector<uint8_t>();
 }
 
 // Open the video class specific interface in a USB webcam identified by
-// |device_model|. Returns interface when it is succcessfully opened.
+// |device_model|. Returns interface when it is successfully opened.
 static ScopedIOUSBInterfaceInterface OpenVideoClassSpecificControlInterface(
     std::string device_model,
     int descriptor_subtype,

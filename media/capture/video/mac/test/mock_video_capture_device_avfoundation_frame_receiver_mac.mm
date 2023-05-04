@@ -4,6 +4,10 @@
 
 #import "media/capture/video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 MockVideoCaptureDeviceAVFoundationFrameReceiver::

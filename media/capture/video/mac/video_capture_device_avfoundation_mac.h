@@ -5,13 +5,10 @@
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
+
 #include "base/functional/callback_forward.h"
-#include "base/mac/scoped_dispatch_object.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -19,6 +16,10 @@
 #include "media/capture/video/mac/sample_buffer_transformer_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace media {
 
@@ -76,65 +77,7 @@ FindBestCaptureFormat(NSArray<AVCaptureDeviceFormat*>* formats,
 CAPTURE_EXPORT
 @interface VideoCaptureDeviceAVFoundation
     : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate,
-                AVCapturePhotoCaptureDelegate> {
- @private
-  // The following attributes are set via -setCaptureHeight:width:frameRate:.
-  float _frameRate;
-
-  // The capture format that best matches the above attributes.
-  base::scoped_nsobject<AVCaptureDeviceFormat> _bestCaptureFormat;
-
-  // A serial queue to deliver frames on, ensuring frames are delivered in
-  // order.
-  base::ScopedDispatchObject<dispatch_queue_t> _sampleQueue;
-
-  // Protects concurrent setting and using |frameReceiver_|. Note that the
-  // GUARDED_BY decoration below does not have any effect.
-  base::Lock _lock;
-  // Used to avoid UAF in -captureOutput.
-  base::Lock _destructionLock;
-  raw_ptr<media::VideoCaptureDeviceAVFoundationFrameReceiver> _frameReceiver
-      GUARDED_BY(_lock);  // weak.
-  bool _capturedFirstFrame GUARDED_BY(_lock);
-  bool _capturedFrameSinceLastStallCheck GUARDED_BY(_lock);
-  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
-      _weakPtrFactoryForStallCheck;
-  // Timestamp offset to subtract from all frames, to avoid leaking uptime.
-  base::TimeDelta start_timestamp_;
-
-  // Used to rate-limit crash reports for https://crbug.com/1168112.
-  bool _hasDumpedForFrameSizeMismatch;
-
-  base::scoped_nsobject<AVCaptureSession> _captureSession;
-
-  // |captureDevice_| is an object coming from AVFoundation, used only to be
-  // plugged in |captureDeviceInput_| and to query for session preset support.
-  base::scoped_nsobject<AVCaptureDevice> _captureDevice;
-  base::scoped_nsobject<AVCaptureDeviceInput> _captureDeviceInput;
-  base::scoped_nsobject<AVCaptureVideoDataOutput> _captureVideoDataOutput;
-
-  // When enabled, converts captured frames to NV12.
-  std::unique_ptr<media::SampleBufferTransformer> _sampleBufferTransformer;
-
-  // On macOS 10.15 or later, this has type AVCapturePhotoOutput.
-  // On earlier versions, this has type AVCaptureStillImageOutput.
-  // You say tomato, I say potato.
-  base::scoped_nsobject<id> _photoOutput;
-  // Only accessed on the main thread. The takePhoto() operation is considered
-  // pending until we're ready to take another photo, which involves a PostTask
-  // back to the main thread after the photo was taken.
-  size_t _pendingTakePhotos;
-  std::unique_ptr<base::WeakPtrFactory<VideoCaptureDeviceAVFoundation>>
-      _weakPtrFactoryForTakePhoto;
-
-  // For testing.
-  base::RepeatingCallback<void()> _onPhotoOutputStopped;
-  bool _forceLegacyStillImageApi;
-  absl::optional<bool> _isPortraitEffectSupportedForTesting;
-  absl::optional<bool> _isPortraitEffectActiveForTesting;
-
-  scoped_refptr<base::SingleThreadTaskRunner> _mainThreadTaskRunner;
-}
+                AVCapturePhotoCaptureDelegate>
 
 // Previous to any use, clients must call -initWithFrameReceiver: to
 // initialise an object of this class and register a |frameReceiver_|. This

@@ -17,6 +17,10 @@
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video_capture_types.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 namespace {
 
@@ -102,41 +106,6 @@ void MaybeWriteUma(int number_of_devices, int number_of_suspended_devices) {
   }
 }
 
-base::scoped_nsobject<NSDictionary> GetDeviceNames() {
-  // At this stage we already know that AVFoundation is supported and the whole
-  // library is loaded and initialised, by the device monitoring.
-  NSMutableDictionary* deviceNames = [[NSMutableDictionary alloc] init];
-
-  NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices(
-      base::FeatureList::IsEnabled(media::kUseAVCaptureDeviceDiscoverySession));
-
-  int number_of_suspended_devices = 0;
-  for (AVCaptureDevice* device in devices) {
-    if ([device hasMediaType:AVMediaTypeVideo] ||
-        [device hasMediaType:AVMediaTypeMuxed]) {
-      if ([device isSuspended]) {
-        ++number_of_suspended_devices;
-        continue;
-      }
-
-      // Transport types are defined for Audio devices and reused for video.
-      int transport_type = [device transportType];
-      VideoCaptureTransportType device_transport_type =
-          (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
-           transport_type == kIOAudioDeviceTransportTypeUSB)
-              ? VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN
-              : VideoCaptureTransportType::OTHER_TRANSPORT;
-      DeviceNameAndTransportType* nameAndTransportType =
-          [[[DeviceNameAndTransportType alloc]
-               initWithName:[device localizedName]
-              transportType:device_transport_type] autorelease];
-      deviceNames[[device uniqueID]] = nameAndTransportType;
-    }
-  }
-  MaybeWriteUma([deviceNames count], number_of_suspended_devices);
-  return base::scoped_nsobject<NSDictionary>(deviceNames,
-                                             base::scoped_policy::ASSUME);
-}
 }  // namespace
 
 std::string MacFourCCToString(OSType fourcc) {
@@ -162,11 +131,41 @@ bool ExtractBaseAddressAndLength(char** base_address,
   return status == noErr && length_at_offset == *length;
 }
 
-base::scoped_nsobject<NSDictionary> GetVideoCaptureDeviceNames() {
-  // The device name retrieval is not going to happen in the main thread, and
-  // this might cause instabilities (it did in QTKit), so keep an eye here.
-  return base::scoped_nsobject<NSDictionary>(GetDeviceNames(),
-                                             base::scoped_policy::RETAIN);
+NSDictionary<NSString*, DeviceNameAndTransportType*>*
+GetVideoCaptureDeviceNames() {
+  // At this stage we already know that AVFoundation is supported and the whole
+  // library is loaded and initialised, by the device monitoring.
+  NSMutableDictionary<NSString*, DeviceNameAndTransportType*>* device_names =
+      [[NSMutableDictionary alloc] init];
+
+  NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices(
+      base::FeatureList::IsEnabled(media::kUseAVCaptureDeviceDiscoverySession));
+
+  int number_of_suspended_devices = 0;
+  for (AVCaptureDevice* device in devices) {
+    if ([device hasMediaType:AVMediaTypeVideo] ||
+        [device hasMediaType:AVMediaTypeMuxed]) {
+      if (device.suspended) {
+        ++number_of_suspended_devices;
+        continue;
+      }
+
+      // Transport types are defined for Audio devices and reused for video.
+      int transport_type = device.transportType;
+      VideoCaptureTransportType device_transport_type =
+          (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
+           transport_type == kIOAudioDeviceTransportTypeUSB)
+              ? VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN
+              : VideoCaptureTransportType::OTHER_TRANSPORT;
+      DeviceNameAndTransportType* name_and_transport_type =
+          [[DeviceNameAndTransportType alloc]
+               initWithName:device.localizedName
+              transportType:device_transport_type];
+      device_names[device.uniqueID] = name_and_transport_type;
+    }
+  }
+  MaybeWriteUma(device_names.count, number_of_suspended_devices);
+  return device_names;
 }
 
 gfx::Size GetPixelBufferSize(CVPixelBufferRef pixel_buffer) {

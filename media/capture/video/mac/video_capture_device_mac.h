@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// MacOSX implementation of generic VideoCaptureDevice, using AVFoundation as
-// native capture API. AVFoundation is available in versions 10.7 (Lion) and
-// later.
+// macOS implementation of generic VideoCaptureDevice, using AVFoundation as
+// native capture API.
 
 #ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_MAC_H_
 #define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_MAC_H_
@@ -15,12 +14,15 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -32,13 +34,7 @@ class Location;
 
 // Small class to bundle device name and connection type into a dictionary.
 CAPTURE_EXPORT
-@interface DeviceNameAndTransportType : NSObject {
- @private
-  base::scoped_nsobject<NSString> _deviceName;
-  // The transport type of the device (USB, PCI, etc), values are defined in
-  // <IOKit/audio/IOAudioTypes.h> as kIOAudioDeviceTransportType*.
-  media::VideoCaptureTransportType _transportType;
-}
+@interface DeviceNameAndTransportType : NSObject
 
 - (instancetype)initWithName:(NSString*)name
                transportType:(media::VideoCaptureTransportType)transportType;
@@ -125,7 +121,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   InternalState state_;
 
-  base::scoped_nsobject<VideoCaptureDeviceAVFoundation> capture_device_;
+  VideoCaptureDeviceAVFoundation* __strong capture_device_;
 
   // To hold on to the TakePhotoCallback while the picture is being taken.
   TakePhotoCallback photo_callback_;

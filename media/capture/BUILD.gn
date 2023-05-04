@@ -200,6 +200,7 @@ component("capture_lib") {
       "//components/crash/core/common:crash_key",
       "//third_party/decklink",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AVFoundation.framework",
       "CoreFoundation.framework",
@@ -500,6 +501,7 @@ test("capture_unittests") {
       "video/mac/video_capture_device_mac_unittest.mm",
       "video/mac/video_capture_metrics_mac_unittest.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AVFoundation.framework",
       "CoreMedia.framework",

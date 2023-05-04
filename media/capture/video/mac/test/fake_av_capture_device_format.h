@@ -7,8 +7,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
+
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/scoped_nsobject.h"
 
 // Create a subclass of AVFrameRateRange because there is no API to initialize
 // a custom AVFrameRateRange.
@@ -22,11 +22,8 @@
 
 // Create a subclass of AVCaptureDeviceFormat because there is no API to
 // initialize a custom AVCaptureDeviceFormat.
-@interface FakeAVCaptureDeviceFormat : AVCaptureDeviceFormat {
-  base::ScopedCFTypeRef<CMVideoFormatDescriptionRef> _formatDescription;
-  base::scoped_nsobject<FakeAVFrameRateRange> _frameRateRange1;
-  base::scoped_nsobject<FakeAVFrameRateRange> _frameRateRange2;
-};
+@interface FakeAVCaptureDeviceFormat : AVCaptureDeviceFormat
+
 - (instancetype)initWithWidth:(int)width
                        height:(int)height
                        fourCC:(FourCharCode)fourCC

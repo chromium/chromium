@@ -10,6 +10,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace media {
 
 namespace {
@@ -63,8 +67,8 @@ TEST(PixelBufferPoolTest, CannotExceedMaxBuffersWhenIOSurfaceIsInUse) {
   EXPECT_TRUE(first_buffer);
   IOSurfaceRef io_surface = CVPixelBufferGetIOSurface(first_buffer);
   EXPECT_TRUE(io_surface);
-  // Incremet use count of raw ptr IOSurface reference while releasing the pixel
-  // buffer's only reference.
+  // Increment use count of raw ptr IOSurface reference while releasing the
+  // pixel buffer's only reference.
   IOSurfaceIncrementUseCount(io_surface);
   first_buffer.reset();
   // The pixel buffer has not been returned to the pool.

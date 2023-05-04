@@ -6,6 +6,7 @@
 #define MEDIA_CAPTURE_VIDEO_MAC_TEST_VIDEO_CAPTURE_TEST_UTILS_MAC_H_
 
 #import <Foundation/Foundation.h>
+
 #include <memory>
 
 #include "base/functional/callback_forward.h"

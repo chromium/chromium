@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
@@ -23,6 +22,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 using testing::_;
 using testing::Gt;
@@ -43,9 +46,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 
     testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
         frame_receiver;
-    base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice(
+    VideoCaptureDeviceAVFoundation* captureDevice =
         [[VideoCaptureDeviceAVFoundation alloc]
-            initWithFrameReceiver:&frame_receiver]);
+            initWithFrameReceiver:&frame_receiver];
 
     NSString* errorMessage = nil;
     ASSERT_TRUE([captureDevice setCaptureDevice:deviceId
@@ -75,12 +78,12 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
 class VideoCaptureDeviceAVFoundationMacTakePhotoTest
     : public testing::TestWithParam<bool> {
  public:
-  base::scoped_nsobject<VideoCaptureDeviceAVFoundation> CreateCaptureDevice(
+  VideoCaptureDeviceAVFoundation* CreateCaptureDevice(
       testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>*
           frame_receiver) {
-    base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice(
+    VideoCaptureDeviceAVFoundation* captureDevice =
         [[VideoCaptureDeviceAVFoundation alloc]
-            initWithFrameReceiver:frame_receiver]);
+            initWithFrameReceiver:frame_receiver];
     [captureDevice setForceLegacyStillImageApiForTesting:GetParam()];
     return captureDevice;
   }
@@ -97,7 +100,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest, TakePhoto) {
 
         testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
             frame_receiver;
-        base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice =
+        VideoCaptureDeviceAVFoundation* captureDevice =
             thiz->CreateCaptureDevice(&frame_receiver);
 
         NSString* errorMessage = nil;
@@ -134,7 +137,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest,
 
         testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
             frame_receiver;
-        base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice =
+        VideoCaptureDeviceAVFoundation* captureDevice =
             thiz->CreateCaptureDevice(&frame_receiver);
 
         NSString* errorMessage = nil;
@@ -167,7 +170,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest,
 
         testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
             frame_receiver;
-        base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice =
+        VideoCaptureDeviceAVFoundation* captureDevice =
             thiz->CreateCaptureDevice(&frame_receiver);
 
         NSString* errorMessage = nil;
@@ -200,7 +203,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest,
 
         testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
             frame_receiver;
-        base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice =
+        VideoCaptureDeviceAVFoundation* captureDevice =
             thiz->CreateCaptureDevice(&frame_receiver);
 
         NSString* errorMessage = nil;
@@ -217,7 +220,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest,
         [captureDevice takePhoto];
         [captureDevice takePhoto];
         // There is no risk that takePhoto() has successfully finishes before
-        // stopCapture() because the takePhoto() calls involes a
+        // stopCapture() because the takePhoto() calls involves a
         // PostDelayedTask() that cannot run until RunLoop::Run() below.
         [captureDevice stopCapture];
         run_loop.Run();
@@ -237,7 +240,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest,
 
         testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
             frame_receiver;
-        base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice =
+        VideoCaptureDeviceAVFoundation* captureDevice =
             thiz->CreateCaptureDevice(&frame_receiver);
 
         NSString* errorMessage = nil;
@@ -274,7 +277,7 @@ TEST_P(VideoCaptureDeviceAVFoundationMacTakePhotoTest,
 
         testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
             frame_receiver;
-        base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice =
+        VideoCaptureDeviceAVFoundation* captureDevice =
             thiz->CreateCaptureDevice(&frame_receiver);
 
         NSString* errorMessage = nil;
@@ -299,9 +302,9 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, ForwardsOddPixelBufferResolution) {
   RunTestCase(base::BindOnce([] {
     testing::NiceMock<MockVideoCaptureDeviceAVFoundationFrameReceiver>
         frame_receiver;
-    base::scoped_nsobject<VideoCaptureDeviceAVFoundation> captureDevice(
+    VideoCaptureDeviceAVFoundation* captureDevice =
         [[VideoCaptureDeviceAVFoundation alloc]
-            initWithFrameReceiver:&frame_receiver]);
+            initWithFrameReceiver:&frame_receiver];
 
     gfx::Size size(1280, 719);
     VideoCaptureFormat format(size, 30, PIXEL_FORMAT_YUY2);
@@ -346,11 +349,12 @@ TEST(VideoCaptureDeviceAVFoundationMacTest, FrameRateFloatInaccuracyIsHandled) {
     AVCaptureDeviceFormat* chosen_format =
         FindBestCaptureFormat(formats, 100, 100, desired_frame_rate);
 
-    ASSERT_EQ(1UL, [[chosen_format videoSupportedFrameRateRanges] count]);
+    ASSERT_EQ(1UL, chosen_format.videoSupportedFrameRateRanges.count);
     // The actual max_frame_rate should be chosen, even though the desired rate
     // was very slightly larger.
-    EXPECT_EQ(max_frame_rate, [[[chosen_format videoSupportedFrameRateRanges]
-                                  firstObject] minFrameRate]);
+    EXPECT_EQ(
+        max_frame_rate,
+        chosen_format.videoSupportedFrameRateRanges.firstObject.minFrameRate);
   }));
 }
 
