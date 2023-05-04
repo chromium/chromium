@@ -1222,7 +1222,7 @@
       },
       'mac-osxbeta-rel': {
         'swarming': {
-          'shards': 20,
+          'shards': 30,
         },
       },
       'mac-rel-cft': {
