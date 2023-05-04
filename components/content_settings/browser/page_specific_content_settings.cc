@@ -63,6 +63,10 @@ using LifecycleState = content::RenderFrameHost::LifecycleState;
 namespace content_settings {
 namespace {
 
+// Determines which taxonomy is used to generate sample topics for the Topics
+// API.
+constexpr int kTopicsAPISampleDataTaxonomy = 1;
+
 bool WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
     content::NavigationHandle* navigation_handle) {
   return navigation_handle->IsInMainFrame() &&
@@ -1210,12 +1214,10 @@ PageSpecificContentSettings::GetAccessedTopics() const {
            .Get()) &&
       page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
     // TODO(crbug.com/1286276): Remove sample topic when API is ready.
-    return {privacy_sandbox::CanonicalTopic(
-                browsing_topics::Topic(3),
-                privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY),
-            privacy_sandbox::CanonicalTopic(
-                browsing_topics::Topic(4),
-                privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+    return {privacy_sandbox::CanonicalTopic(browsing_topics::Topic(3),
+                                            kTopicsAPISampleDataTaxonomy),
+            privacy_sandbox::CanonicalTopic(browsing_topics::Topic(4),
+                                            kTopicsAPISampleDataTaxonomy)};
   }
   return {accessed_topics_.begin(), accessed_topics_.end()};
 }

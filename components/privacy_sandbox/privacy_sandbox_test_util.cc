@@ -24,6 +24,8 @@ namespace privacy_sandbox_test_util {
 
 namespace {
 
+constexpr int kTestTaxonomyVersion = 1;
+
 // Convenience function that unpacks a map keyed on both MultipleXKeys, and
 // single keys (e.g. keyed on the TestKey variant type), into a map key _only_
 // on single keys.
@@ -148,7 +150,7 @@ void ApplyTestState(
       }
       const auto kTopic = privacy_sandbox::CanonicalTopic(
           browsing_topics::Topic(24),  // "Blues"
-          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+          kTestTaxonomyVersion);
       const std::vector<privacy_sandbox::CanonicalTopic> topics = {kTopic};
 
       EXPECT_CALL(*mock_browsing_topics_service, GetTopTopicsForDisplay())
@@ -163,7 +165,7 @@ void ApplyTestState(
       }
       const auto kTopic = privacy_sandbox::CanonicalTopic(
           browsing_topics::Topic(25),  // "Classical Music"
-          privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+          kTestTaxonomyVersion);
       privacy_sandbox_service->SetTopicAllowed(kTopic, false);
       return;
     }

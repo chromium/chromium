@@ -51,6 +51,8 @@
 
 namespace {
 
+constexpr int kTopicsAPITestTaxonomyVersion = 1;
+
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
 constexpr char kAboutThisSiteUrl[] = "a.test";
 constexpr char kHistoryUrl[] = "b.test";
@@ -594,9 +596,8 @@ class PageInfoBubbleViewPrivacySandboxDialogBrowserTest
 
     pscs->OnTopicAccessed(
         url::Origin::Create(GURL("https://a.test")), false,
-        privacy_sandbox::CanonicalTopic(
-            browsing_topics::Topic(1),
-            privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY));
+        privacy_sandbox::CanonicalTopic(browsing_topics::Topic(1),
+                                        kTopicsAPITestTaxonomyVersion));
 
     OpenPageInfoBubble(browser());
 

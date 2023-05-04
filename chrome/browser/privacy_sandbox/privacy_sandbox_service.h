@@ -13,7 +13,6 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/privacy_sandbox/canonical_topic.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
@@ -565,16 +564,13 @@ class PrivacySandboxService : public KeyedService {
   std::set<Browser*> browsers_with_open_prompts_;
 
   // Fake implementation for current and blocked topics.
+  static constexpr int kFakeTaxonomyVersion = 1;
   std::set<privacy_sandbox::CanonicalTopic> fake_current_topics_ = {
-      {browsing_topics::Topic(1),
-       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
-      {browsing_topics::Topic(2),
-       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
+      {browsing_topics::Topic(1), kFakeTaxonomyVersion},
+      {browsing_topics::Topic(2), kFakeTaxonomyVersion}};
   std::set<privacy_sandbox::CanonicalTopic> fake_blocked_topics_ = {
-      {browsing_topics::Topic(3),
-       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY},
-      {browsing_topics::Topic(4),
-       privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY}};
+      {browsing_topics::Topic(3), kFakeTaxonomyVersion},
+      {browsing_topics::Topic(4), kFakeTaxonomyVersion}};
 
   // Informs the TrustSafetySentimentService, if it exists, that a
   // Privacy Sandbox 3 interaction for an area has occurred The area is

@@ -19,14 +19,12 @@ constexpr char kTaxonomyVersion[] = "taxonomyVersion";
 std::u16string GetLocalizedRepresentationInternal(
     browsing_topics::Topic topic_id,
     int taxonomy_version) {
-  // The available Taxonomy versions are included in the Chrome binary, and
-  // so can be CHECK'd against here.
-  CHECK_EQ(privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY,
-           taxonomy_version);
+  CHECK_GT(taxonomy_version, 0);
+  browsing_topics::SemanticTree semantic_tree;
+  CHECK_LE(taxonomy_version, semantic_tree.kHighestSupportedTaxonomyVersion);
 
   absl::optional<int> localized_name_message_id =
-      browsing_topics::SemanticTree().GetLocalizedNameMessageId(
-          topic_id, taxonomy_version);
+      semantic_tree.GetLocalizedNameMessageId(topic_id, taxonomy_version);
 
   // Topic IDs  are provided by a categorization model shipped over the network,
   // which could technically  provide Topic IDs outside the expected range, e.g.

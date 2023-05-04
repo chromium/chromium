@@ -37,6 +37,8 @@ using StorageType = mojom::ContentSettingsManager::StorageType;
 
 namespace {
 
+constexpr int kTopicsAPITestTaxonomyVersion = 1;
+
 class MockSiteDataObserver
     : public PageSpecificContentSettings::SiteDataObserver {
  public:
@@ -879,9 +881,8 @@ TEST_F(PageSpecificContentSettingsTest, Topics) {
   EXPECT_FALSE(pscs->HasAccessedTopics());
   EXPECT_THAT(pscs->GetAccessedTopics(), testing::IsEmpty());
 
-  privacy_sandbox::CanonicalTopic topic(
-      browsing_topics::Topic(1),
-      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  privacy_sandbox::CanonicalTopic topic(browsing_topics::Topic(1),
+                                        kTopicsAPITestTaxonomyVersion);
   pscs->OnTopicAccessed(url::Origin::Create(GURL("https://foo.com")), false,
                         topic);
   EXPECT_TRUE(pscs->HasAccessedTopics());

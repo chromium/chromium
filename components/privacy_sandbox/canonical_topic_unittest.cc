@@ -33,10 +33,8 @@ using CanonicalTopicTest = testing::Test;
 TEST_F(CanonicalTopicTest, LocalizedRepresentation) {
   // Confirm that topics at the boundaries convert to strings appropriately.
   base::HistogramTester histogram_tester;
-  CanonicalTopic first_topic(
-      kLowestTopicID, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic last_topic(
-      kHighestTopicID, privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic first_topic(kLowestTopicID, kAvailableTaxononmyVersion);
+  CanonicalTopic last_topic(kHighestTopicID, kAvailableTaxononmyVersion);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V1_TOPIC_ID_1),
             first_topic.GetLocalizedRepresentation());

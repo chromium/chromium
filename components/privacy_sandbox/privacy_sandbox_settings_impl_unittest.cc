@@ -111,6 +111,8 @@ constexpr auto CONTENT_SETTING_BLOCK = ContentSetting::CONTENT_SETTING_BLOCK;
 constexpr auto kBlockThirdParty =
     content_settings::CookieControlsMode::kBlockThirdParty;
 
+constexpr int kTestTaxonomyVersion = 1;
+
 using privacy_sandbox_test_util::MultipleInputKeys;
 using privacy_sandbox_test_util::MultipleOutputKeys;
 using privacy_sandbox_test_util::MultipleStateKeys;
@@ -861,11 +863,11 @@ TEST_F(PrivacySandboxSettingsTest, OnFirstPartySetsEnabledChanged) {
 TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed) {
   // Confirm that allowing / blocking topics is correctly reflected by
   // IsTopicsAllowed().
-  CanonicalTopic topic(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic child_topic(Topic(7), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic grandchild_topic(Topic(8), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic(Topic(1), kTestTaxonomyVersion);
+  CanonicalTopic child_topic(Topic(7), kTestTaxonomyVersion);
+  CanonicalTopic grandchild_topic(Topic(8), kTestTaxonomyVersion);
 
-  CanonicalTopic unrelated_topic(Topic(57), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic unrelated_topic(Topic(57), kTestTaxonomyVersion);
 
   // Check that a topic and its descendants get blocked.
   privacy_sandbox_settings()->SetTopicAllowed(topic, false);
@@ -926,8 +928,8 @@ TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed) {
 TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed_ByFinchSettings) {
   // Confirm that blocking topics in Finch is correctly reflected by
   // IsTopicAllowed().
-  CanonicalTopic topic(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic child_topic(Topic(7), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic(Topic(1), kTestTaxonomyVersion);
+  CanonicalTopic child_topic(Topic(7), kTestTaxonomyVersion);
 
   // Check that not setting the Finch setting does not cause an error or block a
   // topic.
@@ -950,21 +952,24 @@ TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed_ByFinchSettings) {
   // Try blocking a list of topics.
   ResetDisabledTopicsFeature("1,9,44,330");
   for (int topic_id : {1, 9, 44, 330}) {
-    CanonicalTopic canonical_topic = CanonicalTopic(Topic(topic_id), 1);
+    CanonicalTopic canonical_topic =
+        CanonicalTopic(Topic(topic_id), kTestTaxonomyVersion);
     EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(canonical_topic));
   }
 
   // Try blocking a list of topics with extra whitespace.
   ResetDisabledTopicsFeature(" 1  , 9,44, 330  ");
   for (int topic_id : {1, 9, 44, 330}) {
-    CanonicalTopic canonical_topic = CanonicalTopic(Topic(topic_id), 1);
+    CanonicalTopic canonical_topic =
+        CanonicalTopic(Topic(topic_id), kTestTaxonomyVersion);
     EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(canonical_topic));
   }
 
   // Try blocking a list of topics where some aren't real topics.
   ResetDisabledTopicsFeature(" 0,1,9,44,330,2920");
   for (int topic_id : {1, 9, 44, 330}) {
-    CanonicalTopic canonical_topic = CanonicalTopic(Topic(topic_id), 1);
+    CanonicalTopic canonical_topic =
+        CanonicalTopic(Topic(topic_id), kTestTaxonomyVersion);
     EXPECT_FALSE(privacy_sandbox_settings()->IsTopicAllowed(canonical_topic));
   }
 
@@ -975,9 +980,9 @@ TEST_F(PrivacySandboxSettingsTest, IsTopicAllowed_ByFinchSettings) {
 
 TEST_F(PrivacySandboxSettingsTest, ClearingTopicSettings) {
   // Confirm that time range deletions affect the correct settings.
-  CanonicalTopic topic_a(Topic(1), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_b(Topic(57), CanonicalTopic::AVAILABLE_TAXONOMY);
-  CanonicalTopic topic_c(Topic(86), CanonicalTopic::AVAILABLE_TAXONOMY);
+  CanonicalTopic topic_a(Topic(1), kTestTaxonomyVersion);
+  CanonicalTopic topic_b(Topic(57), kTestTaxonomyVersion);
+  CanonicalTopic topic_c(Topic(86), kTestTaxonomyVersion);
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_a));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_b));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicAllowed(topic_c));

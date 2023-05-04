@@ -1558,12 +1558,13 @@ TEST_F(PageInfoTest, TimeOpenMetrics) {
 }
 
 TEST_F(PageInfoTest, AdPersonalization) {
+  constexpr int kTaxonomyVersion = 1;
   privacy_sandbox::CanonicalTopic kFirstTopic(
       browsing_topics::Topic(24),  // "Blues"
-      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+      kTaxonomyVersion);
   privacy_sandbox::CanonicalTopic kSecondTopic(
       browsing_topics::Topic(23),  // "Music & audio"
-      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+      kTaxonomyVersion);
 
   std::vector<privacy_sandbox::CanonicalTopic> accessed_topics = {kFirstTopic,
                                                                   kSecondTopic};

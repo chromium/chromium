@@ -18,6 +18,7 @@ namespace browsing_topics {
 // message ids to use to get the topic names.
 class COMPONENT_EXPORT(BROWSING_TOPICS_COMMON) SemanticTree {
  public:
+  static constexpr int kHighestSupportedTaxonomyVersion = 1;
   SemanticTree();
   SemanticTree(const SemanticTree& other) = delete;
   ~SemanticTree();

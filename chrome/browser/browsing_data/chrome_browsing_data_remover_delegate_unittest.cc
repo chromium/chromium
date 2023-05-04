@@ -245,6 +245,8 @@ namespace constants = chrome_browsing_data_remover;
 
 namespace {
 
+constexpr int kTopicsAPITestTaxonomyVersion = 1;
+
 const char kTestRegisterableDomain1[] = "host1.com";
 const char kTestRegisterableDomain3[] = "host3.com";
 
@@ -3001,12 +3003,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveFledgeJoinSettings) {
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveTopicSettings) {
   auto* privacy_sandbox_settings =
       PrivacySandboxSettingsFactory::GetForProfile(GetProfile());
-  privacy_sandbox::CanonicalTopic topic_one(
-      browsing_topics::Topic(1),
-      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
-  privacy_sandbox::CanonicalTopic topic_two(
-      browsing_topics::Topic(2),
-      privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY);
+  privacy_sandbox::CanonicalTopic topic_one(browsing_topics::Topic(1),
+                                            kTopicsAPITestTaxonomyVersion);
+  privacy_sandbox::CanonicalTopic topic_two(browsing_topics::Topic(2),
+                                            kTopicsAPITestTaxonomyVersion);
   EXPECT_TRUE(privacy_sandbox_settings->IsTopicAllowed(topic_one));
   EXPECT_TRUE(privacy_sandbox_settings->IsTopicAllowed(topic_two));
 
