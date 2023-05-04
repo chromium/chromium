@@ -17,7 +17,6 @@
 #include "components/bookmarks/common/storage_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-class AuthenticationService;
 class ChromeBrowserState;
 class GURL;
 @class MDCSnackbarMessage;
@@ -27,6 +26,10 @@ namespace bookmarks {
 class BookmarkModel;
 class BookmarkNode;
 }  // namespace bookmarks
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace bookmark_utils_ios {
 
@@ -118,9 +121,9 @@ bookmarks::BookmarkModel* GetBookmarkModelForNode(
 bool ShouldDisplayCloudSlashIconForProfileModel(
     SyncSetupService* sync_setup_service);
 
-// Returns true if the account bookmark model is available.
-bool IsAccountBookmarkModelAvailable(
-    AuthenticationService* authenticationService);
+// Returns true if the user is signed in and they opted in for the account
+// bookmark storage.
+bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service);
 
 // Creates the bookmark if `node` is NULL. Otherwise updates `node`.
 // `folder` is the intended parent of `node`.

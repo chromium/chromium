@@ -27,8 +27,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
-#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -89,7 +87,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   base::WeakPtr<Browser> _browser;
   // The sync setup service for this mediator.
   SyncSetupService* _syncSetupService;
-  AuthenticationService* _authenticationService;
   // Base view controller to present sign-in UI.
   UIViewController* _baseViewController;
 }
@@ -172,8 +169,6 @@ bool IsABookmarkNodeSectionForIdentifier(
 
   _syncService = SyncServiceFactory::GetForBrowserState(browserState);
   _syncSetupService = SyncSetupServiceFactory::GetForBrowserState(browserState);
-  _authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
@@ -185,7 +180,6 @@ bool IsABookmarkNodeSectionForIdentifier(
   _bookmarkPromoController = nil;
   _syncSetupService = nullptr;
   _syncService = nullptr;
-  _authenticationService = nullptr;
   _syncedBookmarksObserver = nullptr;
   _browser = nullptr;
   self.consumer = nil;
@@ -248,8 +242,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   [self
       generateTableViewDataForModel:_profileBookmarkModel.get()
                           inSection:BookmarksHomeSectionIdentifierRootProfile];
-  if (!bookmark_utils_ios::IsAccountBookmarkModelAvailable(
-          _authenticationService)) {
+  if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(self.syncService)) {
     return;
   }
   [self updateHeaderForProfileRootNode];
@@ -317,8 +310,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   *query.word_phrase_query = base::SysNSStringToUTF16(searchText);
   // Total count of search result for both models.
   int totalSearchResultCount = 0;
-  if (bookmark_utils_ios::IsAccountBookmarkModelAvailable(
-          _authenticationService)) {
+  if (bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(self.syncService)) {
     totalSearchResultCount =
         [self populateNodeItemWithQuery:query
                           bookmarkModel:_accountBookmarkModel.get()

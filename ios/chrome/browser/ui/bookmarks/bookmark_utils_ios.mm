@@ -27,12 +27,14 @@
 #import "components/bookmarks/common/bookmark_metrics.h"
 #import "components/bookmarks/common/storage_type.h"
 #import "components/query_parser/query_parser.h"
+#import "components/signin/public/identity_manager/account_info.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/sync/driver/sync_user_settings.h"
 #import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_wrapper.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -199,18 +201,20 @@ bool ShouldDisplayCloudSlashIconForProfileModel(
   return true;
 }
 
-bool IsAccountBookmarkModelAvailable(
-    AuthenticationService* authenticationService) {
+bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
   if (!base::FeatureList::IsEnabled(
           bookmarks::kEnableBookmarksAccountStorage)) {
     return false;
   }
-  // TODO (crbug.com/1430453): Implements the distinction of profile/account
-  // models when both models are used.
-  return authenticationService->HasPrimaryIdentity(
-             signin::ConsentLevel::kSignin) &&
-         !authenticationService->HasPrimaryIdentity(
-             signin::ConsentLevel::kSync);
+  if (sync_service->GetAccountInfo().IsEmpty()) {
+    return false;
+  }
+  if (sync_service->HasSyncConsent()) {
+    return false;
+  }
+  syncer::UserSelectableTypeSet selected_types =
+      sync_service->GetUserSettings()->GetSelectedTypes();
+  return selected_types.Has(syncer::UserSelectableType::kBookmarks);
 }
 
 #pragma mark - Updating Bookmarks
