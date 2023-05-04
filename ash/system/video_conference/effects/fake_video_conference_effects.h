@@ -151,8 +151,9 @@ class ASH_EXPORT ShaggyFurEffect : public VcEffectsDelegate {
   void OnEffectControlActivated(VcEffectId effect_id,
                                 absl::optional<int> state) override;
 
-  // Returns the number of times the button for `state` has been activated.
-  int GetNumActivationsForTesting(int state);
+  // Returns the number of times the button for `state_value` has been
+  // activated.
+  int GetNumActivationsForTesting(int state_value);
 
  private:
   // Adds a `std::unique_ptr<VcEffectState>` to `effect`.

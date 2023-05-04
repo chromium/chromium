@@ -11,11 +11,14 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/tab_slider.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/system/camera/camera_effects_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
+#include "ash/system/video_conference/bubble/set_value_effects_view.h"
 #include "ash/system/video_conference/effects/fake_video_conference_effects.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
@@ -154,15 +157,6 @@ class BubbleViewTest : public AshTestBase {
     shaggy_fur_.reset();
     super_cuteness_.reset();
     controller_.reset();
-  }
-
-  views::View* GetSetValueEffectButton(int index) {
-    // Map `index` to a `BubbleViewID`, for lookup.
-    BubbleViewID id =
-        static_cast<BubbleViewID>(index + BubbleViewID::kSetValueButtonMin);
-    DCHECK_GE(id, BubbleViewID::kSetValueButtonMin);
-    DCHECK_LE(id, BubbleViewID::kSetValueButtonMax);
-    return bubble_view()->GetViewByID(id);
   }
 
   VideoConferenceTray* video_conference_tray() {
@@ -350,35 +344,34 @@ TEST_F(BubbleViewTest, SetValueButtonClicked) {
   // Add one set-value effect.
   controller()->effects_manager().RegisterDelegate(shaggy_fur());
 
-  // Click to open the bubble, effect value 0 button is present/visible.
+  // Ensures initial states are correct.
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(/*state_value=*/0), 0);
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(/*state_value=*/1), 0);
+
+  // Click to open the bubble. There should be 1 view in the set-value effects
+  // view, which belongs to the added test effect.
   LeftClickOn(toggle_bubble_button());
-  views::View* button = GetSetValueEffectButton(0);
-  EXPECT_TRUE(button);
-  EXPECT_TRUE(button->GetVisible());
 
-  // Effect button for value 0 has not yet been clicked.
-  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(0), 0);
+  EXPECT_EQ(1u, set_value_effects_view()->children().size());
 
-  // Click the effect value 0 button, verify that the value has been "activated"
+  auto* shaggy_fur_slider =
+      static_cast<video_conference::SetValueEffectSlider*>(
+          set_value_effects_view()->children()[0]);
+  EXPECT_EQ(VcEffectId::kTestEffect, shaggy_fur_slider->effect_id());
+
+  auto* tab_slider = shaggy_fur_slider->tab_slider();
+
+  // Click the effect value 1 button, verify that the value has been "activated"
   // once.
-  LeftClickOn(button);
-  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(0), 1);
+  LeftClickOn(tab_slider->GetButtonAtIndex(1));
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(/*state_value=*/1), 1);
 
-  // Now test another button, confirm that set-value effect button 1 is
-  // present/visible.
-  button = GetSetValueEffectButton(1);
-  EXPECT_TRUE(button);
-  EXPECT_TRUE(button->GetVisible());
-
-  // Effect button for value 1 has not yet been clicked.
-  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(1), 0);
-
-  // Click the effect value 1 button, verify that value 1 has been "activated"
-  // once, and confirm that value 0 has still only been activated once i.e. we
-  // just activated value 1 and not value 0.
-  LeftClickOn(button);
-  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(1), 1);
-  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(0), 1);
+  // Click the effect value 0 button, verify that value 0 has been "activated"
+  // once, and confirm that value 1 has still only been activated once i.e. we
+  // just activated value 0 and not value 1.
+  LeftClickOn(tab_slider->GetButtonAtIndex(0));
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(/*state_value=*/0), 1);
+  EXPECT_EQ(shaggy_fur()->GetNumActivationsForTesting(/*state_value=*/1), 1);
 }
 
 TEST_F(BubbleViewTest, ValidEffectState) {

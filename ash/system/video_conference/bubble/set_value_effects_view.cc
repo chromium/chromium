@@ -82,13 +82,6 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
             state->icon(), state->label_text()));
 
     slider_button->SetSelected(state->state_value().value() == current_state);
-
-    // See comments above `kSetValueButton*` in `BubbleViewID` for details
-    // on how the IDs of these buttons are set.
-    slider_button->SetID(i <= BubbleViewID::kSetValueButtonMax -
-                                     BubbleViewID::kSetValueButtonMin
-                             ? BubbleViewID::kSetValueButtonMin + i
-                             : BubbleViewID::kSetValueButtonMax);
   }
   tab_slider_ = AddChildView(std::move(tab_slider));
 }
