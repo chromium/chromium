@@ -17,8 +17,9 @@ namespace {
 // used as the primary key for a set of keys belonging to a device.
 static constexpr std::pair<const char*, const char*>
     kAliasToPrimaryDeviceKeyMap[] = {
-        // Apple Magic Keyboard
-        {"05ac:026c", "004c:026c"},
+        // Apple Magic Keyboard with Numeric Pad {Bluetooth, USB}
+        {"004c:026c", "05ac:026c"},
+        {"046d:b35b", "046d:408a"}  // Logitech MX Keys {Bluetooth, Receiver}
 };
 
 }  // namespace

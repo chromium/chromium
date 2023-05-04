@@ -5,6 +5,7 @@
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
 
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/export_template.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,7 +16,17 @@
 #include "ui/events/ash/mojom/modifier_key.mojom.h"
 
 namespace ash {
+
 namespace {
+
+struct VendorProductId {
+  uint16_t vendor_id;
+  uint16_t product_id;
+  constexpr bool operator<(const VendorProductId& other) const {
+    return vendor_id == other.vendor_id ? product_id < other.product_id
+                                        : vendor_id < other.vendor_id;
+  }
+};
 
 std::string HexEncode(uint16_t v) {
   // Load the bytes into the bytes array in reverse order as hex number should
@@ -107,6 +118,18 @@ const base::Value::Dict* GetLoginScreenSettingsDict(
     return nullptr;
   }
   return &dict_value->GetDict();
+}
+
+bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device) {
+  static constexpr auto kKeyboardsPretendingToBeMice =
+      base::MakeFixedFlatSet<VendorProductId>({
+          {0x046d, 0x408a},  // Logitech MX Keys (Universal Receiver)
+          {0x046d, 0xb35b},  // Logitech MX Keys (Bluetooth)
+          {0x0951, 0x16e6},  // HyperX Alloy Origins Core
+      });
+
+  return kKeyboardsPretendingToBeMice.contains(
+      {device.vendor_id, device.product_id});
 }
 
 }  // namespace ash

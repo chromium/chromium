@@ -9,6 +9,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
 #include "base/ranges/functional.h"
@@ -27,6 +28,15 @@ const ui::KeyboardDevice kSampleKeyboardBluetooth = {
     10, ui::INPUT_DEVICE_BLUETOOTH, "kSampleKeyboardBluetooth"};
 const ui::KeyboardDevice kSampleKeyboardUsb = {15, ui::INPUT_DEVICE_USB,
                                                "kSampleKeyboardUsb"};
+const ui::KeyboardDevice kLogitechMXKeysKeyboard = {
+    20,
+    ui::INPUT_DEVICE_BLUETOOTH,
+    "Logitech MX Keys",
+    /*phys=*/"",
+    /*sys_path=*/base::FilePath(),
+    /*vendor=*/0x046d,
+    /*product=*/0xb35b,
+    /*version=*/0x0};
 
 const ui::InputDevice kSampleMouseUsb = {20, ui::INPUT_DEVICE_USB,
                                          "kSampleMouseUsb"};
@@ -43,9 +53,9 @@ void SortDevices(std::vector<ui::KeyboardDevice>& devices, Comp comp = {}) {
 }
 }  // namespace
 
-struct InputDeviceStateNotifierTestData {
-  InputDeviceStateNotifierTestData() = default;
-  InputDeviceStateNotifierTestData(
+struct InputDeviceNotifierParamaterizedTestData {
+  InputDeviceNotifierParamaterizedTestData() = default;
+  InputDeviceNotifierParamaterizedTestData(
       std::vector<ui::KeyboardDevice> initial_devices,
       std::vector<ui::KeyboardDevice> updated_devices,
       std::vector<ui::KeyboardDevice> expected_devices_to_add,
@@ -70,9 +80,7 @@ struct InputDeviceStateNotifierTestData {
   std::vector<ui::KeyboardDevice> expected_devices_to_remove;
 };
 
-class InputDeviceStateNotifierTest
-    : public AshTestBase,
-      public testing::WithParamInterface<InputDeviceStateNotifierTestData> {
+class InputDeviceStateNotifierTest : public AshTestBase {
  public:
   InputDeviceStateNotifierTest() = default;
   InputDeviceStateNotifierTest(const InputDeviceStateNotifierTest&) = delete;
@@ -82,15 +90,106 @@ class InputDeviceStateNotifierTest
 
   // testing::Test:
   void SetUp() override {
-    test_data_ = GetParam();
     AshTestBase::SetUp();
-    Initialize();
 
     notifier_ = std::make_unique<
         InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>(
         &keyboards_,
         base::BindRepeating(&InputDeviceStateNotifierTest::SaveNotifierResults,
                             base::Unretained(this)));
+  }
+
+  void TearDown() override {
+    devices_to_add_.clear();
+    device_ids_to_remove_.clear();
+    AshTestBase::TearDown();
+  }
+
+  void SaveNotifierResults(std::vector<ui::KeyboardDevice> devices_to_add,
+                           std::vector<DeviceId> device_ids_to_remove) {
+    devices_to_add_ = std::move(devices_to_add);
+    device_ids_to_remove_ = std::move(device_ids_to_remove);
+  }
+
+ protected:
+  std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
+      notifier_;
+  base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
+
+  std::vector<ui::KeyboardDevice> devices_to_add_;
+  std::vector<DeviceId> device_ids_to_remove_;
+};
+
+TEST_F(InputDeviceStateNotifierTest, ImpostersRemoved) {
+  ui::KeyboardDevice imposter_keyboard = kSampleKeyboardBluetooth;
+  imposter_keyboard.suspected_imposter = true;
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {imposter_keyboard, kSampleKeyboardUsb});
+  ASSERT_EQ(1u, devices_to_add_.size());
+  EXPECT_EQ(kSampleKeyboardUsb.name, devices_to_add_[0].name);
+  EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[0].id);
+
+  imposter_keyboard.suspected_imposter = false;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {imposter_keyboard, kSampleKeyboardUsb});
+  ASSERT_EQ(2u, devices_to_add_.size());
+  EXPECT_EQ(imposter_keyboard.name, devices_to_add_[0].name);
+  EXPECT_EQ(imposter_keyboard.id, devices_to_add_[0].id);
+  EXPECT_EQ(kSampleKeyboardUsb.name, devices_to_add_[1].name);
+  EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[1].id);
+}
+
+// Since Logitech MX Keys pretends to be a mouse, it should always be shown as a
+// keyboard even if it is a suspected imposter. We know better due to our
+// block/allowlist.
+TEST_F(InputDeviceStateNotifierTest,
+       KeyboardWhichImpersonatesMouseAlwaysShown) {
+  ui::KeyboardDevice imposter_keyboard = kLogitechMXKeysKeyboard;
+  imposter_keyboard.suspected_imposter = true;
+
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {kSampleKeyboardUsb, imposter_keyboard});
+  ASSERT_EQ(2u, devices_to_add_.size());
+  EXPECT_EQ(kSampleKeyboardUsb.name, devices_to_add_[0].name);
+  EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[0].id);
+  EXPECT_EQ(imposter_keyboard.name, devices_to_add_[1].name);
+  EXPECT_EQ(imposter_keyboard.id, devices_to_add_[1].id);
+
+  imposter_keyboard.suspected_imposter = false;
+  ui::DeviceDataManagerTestApi().SetKeyboardDevices(
+      {kSampleKeyboardUsb, imposter_keyboard});
+  ASSERT_EQ(2u, devices_to_add_.size());
+  EXPECT_EQ(kSampleKeyboardUsb.name, devices_to_add_[0].name);
+  EXPECT_EQ(kSampleKeyboardUsb.id, devices_to_add_[0].id);
+  EXPECT_EQ(imposter_keyboard.name, devices_to_add_[1].name);
+  EXPECT_EQ(imposter_keyboard.id, devices_to_add_[1].id);
+}
+
+class InputDeviceNotifierParamaterizedTest
+    : public InputDeviceStateNotifierTest,
+      public testing::WithParamInterface<
+          InputDeviceNotifierParamaterizedTestData> {
+ public:
+  InputDeviceNotifierParamaterizedTest() = default;
+  InputDeviceNotifierParamaterizedTest(
+      const InputDeviceNotifierParamaterizedTest&) = delete;
+  InputDeviceNotifierParamaterizedTest& operator=(
+      const InputDeviceNotifierParamaterizedTest&) = delete;
+  ~InputDeviceNotifierParamaterizedTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    InputDeviceStateNotifierTest::SetUp();
+    test_data_ = GetParam();
+    Initialize();
+
+    notifier_ = std::make_unique<
+        InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>(
+        &keyboards_,
+        base::BindRepeating(
+            &InputDeviceNotifierParamaterizedTest::SaveNotifierResults,
+            base::Unretained(this)));
   }
 
   void TearDown() override {
@@ -136,7 +235,7 @@ class InputDeviceStateNotifierTest
   }
 
  protected:
-  InputDeviceStateNotifierTestData test_data_;
+  InputDeviceNotifierParamaterizedTestData test_data_;
   std::unique_ptr<InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>
       notifier_;
   base::flat_map<DeviceId, mojom::KeyboardPtr> keyboards_;
@@ -148,13 +247,13 @@ class InputDeviceStateNotifierTest
 INSTANTIATE_TEST_SUITE_P(
     // Empty to simplify gtest output
     ,
-    InputDeviceStateNotifierTest,
+    InputDeviceNotifierParamaterizedTest,
     testing::Values(
         // Empty input and update results in empty output.
-        InputDeviceStateNotifierTestData({}, {}, {}, {}),
+        InputDeviceNotifierParamaterizedTestData({}, {}, {}, {}),
 
         // Empty at start and add 3 devices.
-        InputDeviceStateNotifierTestData(
+        InputDeviceNotifierParamaterizedTestData(
             {},
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
              kSampleKeyboardUsb},
@@ -163,7 +262,7 @@ INSTANTIATE_TEST_SUITE_P(
             {}),
 
         // 3 devices at start and all are removed.
-        InputDeviceStateNotifierTestData(
+        InputDeviceNotifierParamaterizedTestData(
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
              kSampleKeyboardUsb},
             {},
@@ -172,7 +271,7 @@ INSTANTIATE_TEST_SUITE_P(
              kSampleKeyboardUsb}),
 
         // 3 devices at start and none are removed.
-        InputDeviceStateNotifierTestData(
+        InputDeviceNotifierParamaterizedTestData(
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
              kSampleKeyboardUsb},
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
@@ -181,7 +280,7 @@ INSTANTIATE_TEST_SUITE_P(
             {}),
 
         // 2 devices at start and middle id device is added.
-        InputDeviceStateNotifierTestData(
+        InputDeviceNotifierParamaterizedTestData(
             {kSampleKeyboardInternal, kSampleKeyboardUsb},
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
              kSampleKeyboardUsb},
@@ -189,13 +288,13 @@ INSTANTIATE_TEST_SUITE_P(
             {}),
 
         // 1 device at start which is removed when another is added.
-        InputDeviceStateNotifierTestData({kSampleKeyboardInternal},
-                                         {kSampleKeyboardBluetooth},
-                                         {kSampleKeyboardBluetooth},
-                                         {kSampleKeyboardInternal}),
+        InputDeviceNotifierParamaterizedTestData({kSampleKeyboardInternal},
+                                                 {kSampleKeyboardBluetooth},
+                                                 {kSampleKeyboardBluetooth},
+                                                 {kSampleKeyboardInternal}),
 
         // 2 devices at start and a low id device is added.
-        InputDeviceStateNotifierTestData(
+        InputDeviceNotifierParamaterizedTestData(
             {kSampleKeyboardBluetooth, kSampleKeyboardUsb},
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
              kSampleKeyboardUsb},
@@ -203,20 +302,21 @@ INSTANTIATE_TEST_SUITE_P(
             {}),
 
         // 2 devices at start and a high id device is added.
-        InputDeviceStateNotifierTestData(
+        InputDeviceNotifierParamaterizedTestData(
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth},
             {kSampleKeyboardInternal, kSampleKeyboardBluetooth,
              kSampleKeyboardUsb},
             {kSampleKeyboardUsb},
             {})));
 
-TEST_P(InputDeviceStateNotifierTest, OnInputDeviceConfigurationChanged) {
+TEST_P(InputDeviceNotifierParamaterizedTest,
+       OnInputDeviceConfigurationChanged) {
   ui::DeviceDataManagerTestApi()
       .NotifyObserversKeyboardDeviceConfigurationChanged();
   CheckNotifierResults();
 }
 
-TEST_P(InputDeviceStateNotifierTest, OnDeviceListsComplete) {
+TEST_P(InputDeviceNotifierParamaterizedTest, OnDeviceListsComplete) {
   ui::DeviceDataManagerTestApi().OnDeviceListsComplete();
   CheckNotifierResults();
 }
@@ -253,7 +353,7 @@ class InputDeviceMouseNotifierTest : public AshTestBase {
   }
 
  protected:
-  InputDeviceStateNotifierTestData test_data_;
+  InputDeviceNotifierParamaterizedTestData test_data_;
   std::unique_ptr<InputDeviceNotifier<mojom::MousePtr, ui::InputDevice>>
       notifier_;
   base::flat_map<DeviceId, mojom::MousePtr> mice_;

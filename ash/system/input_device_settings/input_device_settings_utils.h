@@ -84,6 +84,8 @@ ASH_EXPORT const base::Value::Dict* GetLoginScreenSettingsDict(
     AccountId account_id,
     const std::string& pref_name);
 
+ASH_EXPORT bool IsKeyboardPretendingToBeMouse(const ui::InputDevice& device);
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_INPUT_DEVICE_SETTINGS_INPUT_DEVICE_SETTINGS_UTILS_H_

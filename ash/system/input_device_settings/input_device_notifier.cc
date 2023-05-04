@@ -5,20 +5,54 @@
 #include "ash/system/input_device_settings/input_device_notifier.h"
 
 #include "ash/public/cpp/input_device_settings_controller.h"
+#include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/system/input_device_settings/input_device_settings_utils.h"
 #include "base/containers/cxx20_erase_vector.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 
 namespace ash {
 
 namespace {
+
 using DeviceId = InputDeviceSettingsController::DeviceId;
 
 DeviceId ExtractDeviceIdFromInputDevice(const ui::InputDevice& device) {
   return device.id;
+}
+
+template <class DeviceMojomPtr>
+bool IsDeviceASuspectedImposter(const ui::InputDevice& device) {
+  return device.suspected_imposter;
+}
+
+template <>
+bool IsDeviceASuspectedImposter<mojom::KeyboardPtr>(
+    const ui::InputDevice& device) {
+  // If the device is a keyboard that is known to pretend to have mouse-like
+  // functionality, do not use the `suspected_imposter` field.
+  if (IsKeyboardPretendingToBeMouse(device)) {
+    return false;
+  }
+
+  return device.suspected_imposter;
+}
+
+template <>
+bool IsDeviceASuspectedImposter<mojom::MousePtr>(
+    const ui::InputDevice& device) {
+  // If the device is a keyboard that is known to pretend to have mouse-like
+  // functionality, the device should always be considered an imposter.
+  if (IsKeyboardPretendingToBeMouse(device)) {
+    return true;
+  }
+
+  return device.suspected_imposter;
 }
 
 template <typename T>
@@ -42,11 +76,15 @@ void GetAddedAndRemovedDevices(
 
   // Sort input device list by id as `base::ranges::set_difference` requires
   // input lists are sorted.
+  // Remove any devices marked as imposters as well.
   base::ranges::sort(updated_device_list, base::ranges::less(),
                      ExtractDeviceIdFromInputDevice);
+  base::EraseIf(updated_device_list,
+                IsDeviceASuspectedImposter<DeviceMojomPtr>);
 
-  // Generate a vector with only the device ids from the connected_devices map.
-  // Guaranteed to be sorted as flat_map is always in sorted order by key.
+  // Generate a vector with only the device ids from the connected_devices
+  // map. Guaranteed to be sorted as flat_map is always in sorted order by
+  // key.
   std::vector<DeviceId> connected_devices_ids;
   connected_devices_ids.reserve(connected_devices.size());
   base::ranges::transform(connected_devices,

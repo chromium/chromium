@@ -225,9 +225,9 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   static get observers() {
     return [
       'pointersChanged_(hasMouse_, hasPointingStick_, hasTouchpad_)',
-      'mouseChanged_(hasMouse_)',
-      'touchpadChanged_(hasTouchpad_)',
-      'pointingStickChanged_(hasPointingStick_)',
+      'mouseChanged_(mice)',
+      'touchpadChanged_(touchpads)',
+      'pointingStickChanged_(pointingSticks)',
     ];
   }
 
@@ -241,6 +241,7 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
   private hasTouchpad_: boolean;
+  private hasHapticTouchpad_: boolean;
   private isDeviceSettingsSplitEnabled_: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
@@ -265,16 +266,19 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.addWebUiListener(
-        'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
-    this.addWebUiListener(
-        'has-pointing-stick-changed', this.set.bind(this, 'hasPointingStick_'));
-    this.addWebUiListener(
-        'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
-    this.addWebUiListener(
-        'has-haptic-touchpad-changed',
-        this.set.bind(this, 'hasHapticTouchpad_'));
-    this.browserProxy_.initializePointers();
+    if (!this.isDeviceSettingsSplitEnabled_) {
+      this.addWebUiListener(
+          'has-mouse-changed', this.set.bind(this, 'hasMouse_'));
+      this.addWebUiListener(
+          'has-pointing-stick-changed',
+          this.set.bind(this, 'hasPointingStick_'));
+      this.addWebUiListener(
+          'has-touchpad-changed', this.set.bind(this, 'hasTouchpad_'));
+      this.addWebUiListener(
+          'has-haptic-touchpad-changed',
+          this.set.bind(this, 'hasHapticTouchpad_'));
+      this.browserProxy_.initializePointers();
+    }
 
     this.addWebUiListener(
         'has-stylus-changed', this.set.bind(this, 'hasStylus_'));
@@ -468,22 +472,22 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
     this.checkPointerSubpage_();
   }
 
-  private mouseChanged_(hasMouse: boolean) {
-    if (hasMouse === false &&
+  private mouseChanged_() {
+    if ((!this.mice || this.mice.length === 0) &&
         Router.getInstance().currentRoute === routes.PER_DEVICE_MOUSE) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }
 
-  private touchpadChanged_(hasTouchpad: boolean) {
-    if (hasTouchpad === false &&
+  private touchpadChanged_() {
+    if ((!this.touchpads || this.touchpads.length === 0) &&
         Router.getInstance().currentRoute === routes.PER_DEVICE_TOUCHPAD) {
       Router.getInstance().navigateTo(routes.DEVICE);
     }
   }
 
-  private pointingStickChanged_(hasPointingStick: boolean) {
-    if (hasPointingStick === false &&
+  private pointingStickChanged_() {
+    if ((!this.pointingSticks || this.pointingSticks.length === 0) &&
         Router.getInstance().currentRoute ===
             routes.PER_DEVICE_POINTING_STICK) {
       Router.getInstance().navigateTo(routes.DEVICE);
@@ -496,15 +500,18 @@ class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   }
 
   private showPerDeviceMouseRow_(): boolean {
-    return this.hasMouse_ && this.isDeviceSettingsSplitEnabled_;
+    return this.isDeviceSettingsSplitEnabled_ && this.mice &&
+        this.mice.length !== 0;
   }
 
-  private showPerDeviceTouchpadRow_(): boolean {
-    return this.hasTouchpad_ && this.isDeviceSettingsSplitEnabled_;
+  private showPerDeviceTouchpadRow_(touchpads: Touchpad[]): boolean {
+    return this.isDeviceSettingsSplitEnabled_ && touchpads &&
+        touchpads.length !== 0;
   }
 
   private showPerDevicePointingStickRow_(): boolean {
-    return this.hasPointingStick_ && this.isDeviceSettingsSplitEnabled_;
+    return this.isDeviceSettingsSplitEnabled_ && this.pointingSticks &&
+        this.pointingSticks.length !== 0;
   }
 
   protected restoreDefaults(): void {
