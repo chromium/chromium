@@ -7,7 +7,7 @@
 
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/login/auth/recovery/cryptohome_recovery_service_client.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH)
 
   // Record the result of the recovery and time taken.
   void RecordRecoveryResult(
-      AuthMetricsRecorder::CryptohomeRecoveryResult result);
+      AuthEventsRecorder::CryptohomeRecoveryResult result);
 
   std::unique_ptr<UserContext> user_context_;
   AuthOperationCallback callback_;

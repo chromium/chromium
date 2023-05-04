@@ -156,7 +156,7 @@ void KioskProfileLoader::Start() {
 
 void KioskProfileLoader::LoginAsKioskAccount() {
   login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthMetricsRecorder::Get());
+      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
   switch (app_type_) {
     case KioskAppType::kArcApp:
       login_performer_->LoginAsArcKioskAccount(account_id_);

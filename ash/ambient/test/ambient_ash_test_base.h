@@ -22,7 +22,7 @@
 #include "ash/test/test_ash_web_view_factory.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -253,7 +253,7 @@ class AmbientAshTestBase : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
   power_manager::PowerSupplyProperties proto_;
   TestImageDownloader image_downloader_;
-  std::unique_ptr<ash::AuthMetricsRecorder> recorder_;
+  std::unique_ptr<ash::AuthEventsRecorder> recorder_;
 };
 
 }  // namespace ash

@@ -57,7 +57,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/timer/mock_timer.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -136,8 +136,8 @@ class LockContentsViewUnitTest : public LoginTestBase {
  public:
   LockContentsViewUnitTest() {
     set_start_session(true);
-    AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(
-        AuthMetricsRecorder::AuthenticationSurface::kLogin);
+    AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(
+        AuthEventsRecorder::AuthenticationSurface::kLogin);
   }
   LockContentsViewUnitTest(LockContentsViewUnitTest&) = delete;
   LockContentsViewUnitTest& operator=(LockContentsViewUnitTest&) = delete;

@@ -51,7 +51,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -193,7 +193,7 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
 
 AmbientAshTestBase::AmbientAshTestBase()
     : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  recorder_ = AuthMetricsRecorder::CreateForTesting();
+  recorder_ = AuthEventsRecorder::CreateForTesting();
 }
 
 AmbientAshTestBase::~AmbientAshTestBase() = default;

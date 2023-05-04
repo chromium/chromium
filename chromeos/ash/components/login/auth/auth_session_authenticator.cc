@@ -19,7 +19,7 @@
 #include "chromeos/ash/components/cryptohome/userdataauth_util.h"
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -37,7 +37,7 @@ namespace {
 
 std::unique_ptr<UserContext> RecordConfiguredFactors(
     std::unique_ptr<UserContext> context) {
-  AuthMetricsRecorder::Get()->RecordUserAuthFactors(
+  AuthEventsRecorder::Get()->RecordUserAuthFactors(
       context->GetAuthFactorsData().GetSessionFactors());
   return context;
 }

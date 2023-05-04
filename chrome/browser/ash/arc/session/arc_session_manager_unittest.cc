@@ -63,7 +63,7 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -276,7 +276,7 @@ class ArcSessionManagerTestBase : public testing::Test {
         test_local_state_.registry());
     ash::device_settings_cache::RegisterPrefs(test_local_state_.registry());
     user_manager::KnownUser::RegisterPrefs(test_local_state_.registry());
-    auth_metrics_recorder_ = ash::AuthMetricsRecorder::CreateForTesting();
+    auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 
   ArcSessionManagerTestBase(const ArcSessionManagerTestBase&) = delete;
@@ -371,7 +371,7 @@ class ArcSessionManagerTestBase : public testing::Test {
   user_manager::ScopedUserManager user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple test_local_state_;
-  std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 };
 
 class ArcSessionManagerTest : public ArcSessionManagerTestBase {

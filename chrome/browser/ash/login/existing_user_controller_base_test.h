@@ -16,7 +16,7 @@
 namespace ash {
 
 class FakeChromeUserManager;
-class AuthMetricsRecorder;
+class AuthEventsRecorder;
 
 namespace {
 
@@ -57,7 +57,7 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
  private:
   ScopedTestingLocalState scoped_local_state_;
   const user_manager::ScopedUserManager scoped_user_manager_;
-  std::unique_ptr<AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;
 };
 
 }  // namespace ash

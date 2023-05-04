@@ -34,7 +34,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "components/account_id/account_id.h"
@@ -416,7 +416,7 @@ class ASH_EXPORT LockContentsView
   // Record the number of password attempts for the given account id to UMA.
   // Afterwards reset the number of attempts.
   void RecordAndResetPasswordAttempts(
-      AuthMetricsRecorder::AuthenticationOutcome outcome,
+      AuthEventsRecorder::AuthenticationOutcome outcome,
       AccountId account_id);
 
   const LockScreen::ScreenType screen_type_;

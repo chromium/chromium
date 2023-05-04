@@ -21,9 +21,8 @@
 
 namespace ash {
 
-ChromeLoginPerformer::ChromeLoginPerformer(
-    Delegate* delegate,
-    AuthMetricsRecorder* metrics_recorder)
+ChromeLoginPerformer::ChromeLoginPerformer(Delegate* delegate,
+                                           AuthEventsRecorder* metrics_recorder)
     : LoginPerformer(delegate, metrics_recorder) {}
 
 ChromeLoginPerformer::~ChromeLoginPerformer() {}

@@ -53,7 +53,7 @@
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/ash/components/dbus/spaced/spaced_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
@@ -433,7 +433,7 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
                                             ash::DemoSession::GetDemoConfig()));
   response->emplace(
       kFailedKnowledgeFactorAttempts,
-      base::NumberToString(ash::AuthMetricsRecorder::Get()
+      base::NumberToString(ash::AuthEventsRecorder::Get()
                                ->knowledge_factor_auth_failure_count()));
   PopulateLocalStateSettings(response.get());
   PopulateOnboardingTime(response.get());

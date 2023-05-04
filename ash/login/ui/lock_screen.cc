@@ -26,7 +26,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/wm/core/capture_controller.h"
@@ -40,16 +40,16 @@ LockScreen* instance_ = nullptr;
 
 // Record screen type for metrics.
 void RecordScreenType(LockScreen::ScreenType type) {
-  AuthMetricsRecorder::AuthenticationSurface screen_type;
+  AuthEventsRecorder::AuthenticationSurface screen_type;
   switch (type) {
     case LockScreen::ScreenType::kLogin:
-      screen_type = AuthMetricsRecorder::AuthenticationSurface::kLogin;
+      screen_type = AuthEventsRecorder::AuthenticationSurface::kLogin;
       break;
     case LockScreen::ScreenType::kLock:
-      screen_type = AuthMetricsRecorder::AuthenticationSurface::kLock;
+      screen_type = AuthEventsRecorder::AuthenticationSurface::kLock;
       break;
   }
-  AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(screen_type);
+  AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(screen_type);
 }
 
 }  // namespace

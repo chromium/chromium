@@ -23,7 +23,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/auth_factor.pb.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/login/auth/challenge_response/key_label_utils.h"
 #include "chromeos/ash/components/login/auth/cryptohome_parameter_utils.h"
 #include "chromeos/ash/components/login/auth/public/auth_session_intent.h"
@@ -236,7 +236,7 @@ void AuthPerformer::MaybeRecordKnowledgeFactorAuthFailure(
     absl::optional<user_data_auth::AuthenticateAuthFactorReply> reply) {
   if (auto error = user_data_auth::ReplyToCryptohomeError(reply);
       error == user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND) {
-    AuthMetricsRecorder::Get()->OnKnowledgeFactorAuthFailue();
+    AuthEventsRecorder::Get()->OnKnowledgeFactorAuthFailue();
   }
   OnAuthenticateAuthFactor(std::move(context), std::move(callback),
                            std::move(reply));

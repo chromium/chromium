@@ -76,7 +76,7 @@ class HatsBluetoothRevampTriggerImpl;
 class IdleActionWarningObserver;
 class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
-class AuthMetricsRecorder;
+class AuthEventsRecorder;
 class MultiCaptureLoginNotification;
 class MultiCaptureNotification;
 class NetworkChangeManagerClient;
@@ -301,7 +301,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
 
   std::unique_ptr<traffic_counters::TrafficCountersHandler>
       traffic_counters_handler_;
-  std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
   std::unique_ptr<ash::AuthParts> auth_parts_;
 
   std::unique_ptr<video_conference::VideoConferenceManagerClientImpl>

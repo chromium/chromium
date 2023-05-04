@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 
 #include <vector>
 
@@ -21,9 +21,9 @@
 namespace ash {
 namespace {
 
-using AuthenticationSurface = AuthMetricsRecorder::AuthenticationSurface;
-using AuthenticationOutcome = AuthMetricsRecorder::AuthenticationOutcome;
-using CryptohomeRecoveryResult = AuthMetricsRecorder::CryptohomeRecoveryResult;
+using AuthenticationSurface = AuthEventsRecorder::AuthenticationSurface;
+using AuthenticationOutcome = AuthEventsRecorder::AuthenticationOutcome;
+using CryptohomeRecoveryResult = AuthEventsRecorder::CryptohomeRecoveryResult;
 
 // Histogram for tracking the reason of auth failure
 constexpr char kFailureReasonHistogramName[] = "Login.FailureReason";
@@ -74,17 +74,21 @@ std::string ShowUserPrefix(bool show_users_on_signin) {
 // Login.Flow.{HideUsers, ShowUsers}.* metrics in metadata/ash/histograms.xml
 std::string UserCountSuffix(int user_count) {
   DCHECK_GE(user_count, 0);
-  if (user_count <= 0)
+  if (user_count <= 0) {
     return "0";
+  }
 
-  if (user_count == 1)
+  if (user_count == 1) {
     return "1";
+  }
 
-  if (user_count == 2)
+  if (user_count == 2) {
     return "2";
+  }
 
-  if (user_count < kManyUserLimit)
+  if (user_count < kManyUserLimit) {
     return "Few";
+  }
 
   return "Many";
 }
@@ -180,86 +184,86 @@ std::string GetRecoveryDurationHistogramName(CryptohomeRecoveryResult result) {
 }  // namespace
 
 // static
-AuthMetricsRecorder* AuthMetricsRecorder::instance_ = nullptr;
+AuthEventsRecorder* AuthEventsRecorder::instance_ = nullptr;
 
-AuthMetricsRecorder::AuthMetricsRecorder() {
+AuthEventsRecorder::AuthEventsRecorder() {
   DCHECK(!instance_);
   instance_ = this;
 }
 
-AuthMetricsRecorder::~AuthMetricsRecorder() {
+AuthEventsRecorder::~AuthEventsRecorder() {
   instance_ = nullptr;
 }
 
 // static
-AuthMetricsRecorder* AuthMetricsRecorder::Get() {
+AuthEventsRecorder* AuthEventsRecorder::Get() {
   CHECK(instance_) << "If there is no instance in test, use "
-                      "AuthMetricsRecorder::CreateForTesting()";
+                      "AuthEventsRecorder::CreateForTesting()";
   return instance_;
 }
 
 // static
-std::unique_ptr<ash::AuthMetricsRecorder>
-AuthMetricsRecorder::CreateForTesting() {
-  return base::WrapUnique<AuthMetricsRecorder>(new AuthMetricsRecorder());
+std::unique_ptr<ash::AuthEventsRecorder>
+AuthEventsRecorder::CreateForTesting() {
+  return base::WrapUnique<AuthEventsRecorder>(new AuthEventsRecorder());
 }
 
-void AuthMetricsRecorder::ResetLoginData() {
+void AuthEventsRecorder::ResetLoginData() {
   Reset();
 }
 
-void AuthMetricsRecorder::OnKnowledgeFactorAuthFailue() {
+void AuthEventsRecorder::OnKnowledgeFactorAuthFailue() {
   knowledge_factor_auth_failure_count_++;
 }
 
-void AuthMetricsRecorder::OnAuthFailure(
+void AuthEventsRecorder::OnAuthFailure(
     const AuthFailure::FailureReason& reason) {
   base::RecordAction(base::UserMetricsAction("Login_Failure"));
   UMA_HISTOGRAM_ENUMERATION(kFailureReasonHistogramName, reason,
                             AuthFailure::NUM_FAILURE_REASONS);
 }
 
-void AuthMetricsRecorder::OnLoginSuccess(const SuccessReason& reason) {
+void AuthEventsRecorder::OnLoginSuccess(const SuccessReason& reason) {
   base::RecordAction(base::UserMetricsAction("Login_Success"));
   UMA_HISTOGRAM_ENUMERATION(kSuccessReasonHistogramName, reason,
                             SuccessReason::NUM_SUCCESS_REASONS);
 }
 
-void AuthMetricsRecorder::OnGuestLoginSuccess() {
+void AuthEventsRecorder::OnGuestLoginSuccess() {
   base::RecordAction(base::UserMetricsAction("Login_GuestLoginSuccess"));
 }
 
-void AuthMetricsRecorder::OnUserCount(int user_count) {
+void AuthEventsRecorder::OnUserCount(int user_count) {
   user_count_ = user_count;
   MaybeReportFlowMetrics();
 }
 
-void AuthMetricsRecorder::OnShowUsersOnSignin(bool show_users_on_signin) {
+void AuthEventsRecorder::OnShowUsersOnSignin(bool show_users_on_signin) {
   show_users_on_signin_ = show_users_on_signin;
   MaybeReportFlowMetrics();
 }
 
-void AuthMetricsRecorder::OnEnableEphemeralUsers(bool enable_ephemeral_users) {
+void AuthEventsRecorder::OnEnableEphemeralUsers(bool enable_ephemeral_users) {
   enable_ephemeral_users_ = enable_ephemeral_users;
   MaybeUpdateUserLoginType();
 }
 
-void AuthMetricsRecorder::OnIsUserNew(bool is_new_user) {
+void AuthEventsRecorder::OnIsUserNew(bool is_new_user) {
   is_new_user_ = is_new_user;
   MaybeUpdateUserLoginType();
 }
 
-void AuthMetricsRecorder::OnIsLoginOffline(bool is_login_offline) {
+void AuthEventsRecorder::OnIsLoginOffline(bool is_login_offline) {
   is_login_offline_ = is_login_offline;
   MaybeUpdateUserLoginType();
 }
 
-void AuthMetricsRecorder::OnAuthenticationSurfaceChange(
+void AuthEventsRecorder::OnAuthenticationSurfaceChange(
     AuthenticationSurface surface) {
   auth_surface_ = surface;
 }
 
-void AuthMetricsRecorder::OnExistingUserLoginExit(
+void AuthEventsRecorder::OnExistingUserLoginExit(
     AuthenticationOutcome exit_type,
     int num_login_attempts) const {
   CHECK(auth_surface_);
@@ -273,7 +277,7 @@ void AuthMetricsRecorder::OnExistingUserLoginExit(
       num_login_attempts);
 }
 
-void AuthMetricsRecorder::RecordUserAuthFactors(
+void AuthEventsRecorder::RecordUserAuthFactors(
     const std::vector<cryptohome::AuthFactorType>& auth_factors) const {
   // These histograms are recorded only for login at the moment.
   // If we need to record the auth factors configured for unlock as well, the
@@ -288,36 +292,38 @@ void AuthMetricsRecorder::RecordUserAuthFactors(
   }
 }
 
-void AuthMetricsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
-                                         const base::TimeDelta& time) {
+void AuthEventsRecorder::OnRecoveryDone(CryptohomeRecoveryResult result,
+                                        const base::TimeDelta& time) {
   base::UmaHistogramMediumTimes(GetRecoveryDurationHistogramName(result), time);
   base::UmaHistogramEnumeration(kRecoveryResultHistogramName, result);
 }
 
-void AuthMetricsRecorder::MaybeUpdateUserLoginType() {
+void AuthEventsRecorder::MaybeUpdateUserLoginType() {
   if (!is_login_offline_.has_value() || !is_new_user_.has_value() ||
-      !enable_ephemeral_users_.has_value())
+      !enable_ephemeral_users_.has_value()) {
     return;
+  }
 
   if (is_login_offline_.value()) {
-    user_login_type_ = AuthMetricsRecorder::kOffline;
+    user_login_type_ = AuthEventsRecorder::kOffline;
   } else if (!is_new_user_.value()) {
     // The rest 3 online login types are with either existing user and new users
-    user_login_type_ = AuthMetricsRecorder::kOnlineExisting;
+    user_login_type_ = AuthEventsRecorder::kOnlineExisting;
   } else if (enable_ephemeral_users_.value()) {
     // The rest 2 new user login types are either ephemeral or new online users
-    user_login_type_ = AuthMetricsRecorder::kEphemeral;
+    user_login_type_ = AuthEventsRecorder::kEphemeral;
   } else {
-    user_login_type_ = AuthMetricsRecorder::kOnlineNew;
+    user_login_type_ = AuthEventsRecorder::kOnlineNew;
   }
 
   MaybeReportFlowMetrics();
 }
 
-void AuthMetricsRecorder::MaybeReportFlowMetrics() {
+void AuthEventsRecorder::MaybeReportFlowMetrics() {
   if (!show_users_on_signin_.has_value() || !user_count_.has_value() ||
-      !user_login_type_.has_value())
+      !user_login_type_.has_value()) {
     return;
+  }
 
   base::UmaHistogramEnumeration(
       GetLoginFlowHistogramName(show_users_on_signin_.value(),
@@ -325,7 +331,7 @@ void AuthMetricsRecorder::MaybeReportFlowMetrics() {
       user_login_type_.value());
 }
 
-void AuthMetricsRecorder::Reset() {
+void AuthEventsRecorder::Reset() {
   user_count_ = absl::nullopt;
   show_users_on_signin_ = absl::nullopt;
   enable_ephemeral_users_ = absl::nullopt;

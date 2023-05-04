@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
-#define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_EVENTS_RECORDER_H_
+#define CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_EVENTS_RECORDER_H_
 
 #include <vector>
 
@@ -14,10 +14,11 @@
 
 namespace ash {
 
-// This class encapsulates metrics reporting. User actions and behaviors are
-// reported in multiple stages of the login flow. This metrics reporter would
-// centralize the tracking and reporting.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
+// This class encapsulates the auth data reporting.
+// User actions and behaviors are recorded by AuthEventsRecorder in multiple
+// stages of the login flow. It will set the appropriate crash keys, and send
+// UMA metrics.
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthEventsRecorder {
  public:
   // Enum used for UMA. Do NOT reorder or remove entry. Don't forget to
   // update LoginFlowUserLoginType enum in enums.xml when adding new entries.
@@ -63,15 +64,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
     kMaxValue = kMountCryptohomeError,
   };
 
-  AuthMetricsRecorder(const AuthMetricsRecorder&) = delete;
-  AuthMetricsRecorder& operator=(const AuthMetricsRecorder&) = delete;
-  AuthMetricsRecorder(AuthMetricsRecorder&&) = delete;
-  AuthMetricsRecorder& operator=(AuthMetricsRecorder&&) = delete;
-  ~AuthMetricsRecorder();
+  AuthEventsRecorder(const AuthEventsRecorder&) = delete;
+  AuthEventsRecorder& operator=(const AuthEventsRecorder&) = delete;
+  AuthEventsRecorder(AuthEventsRecorder&&) = delete;
+  AuthEventsRecorder& operator=(AuthEventsRecorder&&) = delete;
+  ~AuthEventsRecorder();
 
-  static AuthMetricsRecorder* Get();
+  static AuthEventsRecorder* Get();
 
-  static std::unique_ptr<ash::AuthMetricsRecorder> CreateForTesting();
+  static std::unique_ptr<ash::AuthEventsRecorder> CreateForTesting();
 
   // Reset the login data (user type, user count etc).
   // Should be called at the beginning of the login.
@@ -138,9 +139,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
 
   // Only ChromeBrowserMainPartsAsh can create an instance, in tests - use
   // `CreateForTesting`.
-  AuthMetricsRecorder();
+  AuthEventsRecorder();
 
-  static AuthMetricsRecorder* instance_;
+  static AuthEventsRecorder* instance_;
 
   // Determine the user login type if 3 information are available:
   // is_login_offline_, is_new_user_, enable_ephemeral_users_.
@@ -167,4 +168,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthMetricsRecorder {
 
 }  // namespace ash
 
-#endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_METRICS_RECORDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_AUTH_EVENTS_RECORDER_H_

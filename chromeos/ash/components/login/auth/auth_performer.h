@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthPerformer {
                                      AuthOperationCallback callback);
 
   // After attempting authentication with `AuthenticateUsingKnowledgeKey`, if
-  // attempt failed, record it in `AuthMetricsRecorder`.
+  // attempt failed, record it in `AuthEventsRecorder`.
   void MaybeRecordKnowledgeFactorAuthFailure(
       std::unique_ptr<UserContext> context,
       AuthOperationCallback callback,

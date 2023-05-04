@@ -25,17 +25,17 @@
 
 namespace ash {
 namespace {
-AuthMetricsRecorder::CryptohomeRecoveryResult
+AuthEventsRecorder::CryptohomeRecoveryResult
 GetRecoveryResultFromCryptohomeError(
     user_data_auth::CryptohomeErrorCode error) {
   switch (error) {
     case user_data_auth::CRYPTOHOME_ERROR_RECOVERY_TRANSIENT:
-      return AuthMetricsRecorder::CryptohomeRecoveryResult::
+      return AuthEventsRecorder::CryptohomeRecoveryResult::
           kRecoveryTransientError;
     case user_data_auth::CRYPTOHOME_ERROR_RECOVERY_FATAL:
-      return AuthMetricsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError;
+      return AuthEventsRecorder::CryptohomeRecoveryResult::kRecoveryFatalError;
     default:
-      return AuthMetricsRecorder::CryptohomeRecoveryResult::
+      return AuthEventsRecorder::CryptohomeRecoveryResult::
           kAuthenticateRecoveryFactorError;
   }
 }
@@ -87,7 +87,7 @@ void CryptohomeRecoveryPerformer::OnGetTokenFailure(
   LOGIN_LOG(EVENT) << "Failed to fetch access token for recovery, error: "
                    << error.ToString();
   RecordRecoveryResult(
-      AuthMetricsRecorder::CryptohomeRecoveryResult::kOAuthTokenFetchError);
+      AuthEventsRecorder::CryptohomeRecoveryResult::kOAuthTokenFetchError);
   std::move(callback_).Run(
       std::move(user_context_),
       AuthenticationError{AuthFailure::CRYPTOHOME_RECOVERY_OAUTH_TOKEN_ERROR});
@@ -102,7 +102,7 @@ void CryptohomeRecoveryPerformer::OnNetworkFetchEpoch(
     CryptohomeRecoveryServerStatusCode status) {
   if (status != CryptohomeRecoveryServerStatusCode::kSuccess) {
     RecordRecoveryResult(
-        AuthMetricsRecorder::CryptohomeRecoveryResult::kEpochFetchError);
+        AuthEventsRecorder::CryptohomeRecoveryResult::kEpochFetchError);
     std::move(callback_).Run(std::move(user_context_),
                              AuthenticationError(AuthFailure(status)));
     return;
@@ -140,8 +140,8 @@ void CryptohomeRecoveryPerformer::OnGetRecoveryRequest(
   if (error != user_data_auth::CRYPTOHOME_ERROR_NOT_SET) {
     LOGIN_LOG(EVENT) << "Failed to obtain recovery request, error code "
                      << error;
-    RecordRecoveryResult(AuthMetricsRecorder::CryptohomeRecoveryResult::
-                             kGetRecoveryRequestError);
+    RecordRecoveryResult(
+        AuthEventsRecorder::CryptohomeRecoveryResult::kGetRecoveryRequestError);
     std::move(callback_).Run(std::move(user_context_),
                              AuthenticationError{error});
     return;
@@ -162,7 +162,7 @@ void CryptohomeRecoveryPerformer::OnFetchRecoveryServiceResponse(
     absl::optional<CryptohomeRecoveryResponse> opt_response,
     CryptohomeRecoveryServerStatusCode status) {
   if (status != CryptohomeRecoveryServerStatusCode::kSuccess) {
-    RecordRecoveryResult(AuthMetricsRecorder::CryptohomeRecoveryResult::
+    RecordRecoveryResult(AuthEventsRecorder::CryptohomeRecoveryResult::
                              kRecoveryResponseFetchError);
     std::move(callback_).Run(std::move(user_context_),
                              AuthenticationError(AuthFailure(status)));
@@ -208,7 +208,7 @@ void CryptohomeRecoveryPerformer::OnAuthenticateAuthFactor(
     NOTREACHED() << "Authentication via recovery factor failed to authorize "
                     "for decryption";
     RecordRecoveryResult(
-        AuthMetricsRecorder::CryptohomeRecoveryResult::kMountCryptohomeError);
+        AuthEventsRecorder::CryptohomeRecoveryResult::kMountCryptohomeError);
     std::move(callback_).Run(
         std::move(user_context_),
         AuthenticationError(AuthFailure::COULD_NOT_MOUNT_CRYPTOHOME));
@@ -216,13 +216,13 @@ void CryptohomeRecoveryPerformer::OnAuthenticateAuthFactor(
   }
   LOGIN_LOG(EVENT) << "Authenticated successfully";
   RecordRecoveryResult(
-      AuthMetricsRecorder::CryptohomeRecoveryResult::kSucceeded);
+      AuthEventsRecorder::CryptohomeRecoveryResult::kSucceeded);
   std::move(callback_).Run(std::move(user_context_), absl::nullopt);
 }
 
 void CryptohomeRecoveryPerformer::RecordRecoveryResult(
-    AuthMetricsRecorder::CryptohomeRecoveryResult result) {
-  AuthMetricsRecorder::Get()->OnRecoveryDone(result, timer_->Elapsed());
+    AuthEventsRecorder::CryptohomeRecoveryResult result) {
+  AuthEventsRecorder::Get()->OnRecoveryDone(result, timer_->Elapsed());
   timer_.reset();
 }
 

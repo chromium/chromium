@@ -233,8 +233,8 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     test::UserSessionManagerTestApi(UserSessionManager::GetInstance())
         .SetShouldLaunchBrowserInTests(false);
 
-    ash::AuthMetricsRecorder::Get()->OnAuthenticationSurfaceChange(
-        AuthMetricsRecorder::AuthenticationSurface::kLogin);
+    ash::AuthEventsRecorder::Get()->OnAuthenticationSurfaceChange(
+        AuthEventsRecorder::AuthenticationSurface::kLogin);
   }
 
   void TearDownOnMainThread() override {

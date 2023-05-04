@@ -432,11 +432,11 @@ void ExistingUserController::UpdateLoginDisplay(
   bool show_users_on_signin = true;
   cros_settings_->GetBoolean(kAccountsPrefShowUserNamesOnSignIn,
                              &show_users_on_signin);
-  AuthMetricsRecorder::Get()->OnShowUsersOnSignin(show_users_on_signin);
+  AuthEventsRecorder::Get()->OnShowUsersOnSignin(show_users_on_signin);
   bool enable_ephemeral_users = false;
   cros_settings_->GetBoolean(kAccountsPrefEphemeralUsersEnabled,
                              &enable_ephemeral_users);
-  AuthMetricsRecorder::Get()->OnEnableEphemeralUsers(enable_ephemeral_users);
+  AuthEventsRecorder::Get()->OnEnableEphemeralUsers(enable_ephemeral_users);
   // Counts regular device users that can log in.
   const int regular_users_counter = CountRegularUsers(users);
   // Allow offline login from the error screen if a regular user has already
@@ -445,7 +445,7 @@ void ExistingUserController::UpdateLoginDisplay(
   // Records total number of users on the login screen.
   base::UmaHistogramCounts100("Login.NumberOfUsersOnLoginScreen",
                               regular_users_counter);
-  AuthMetricsRecorder::Get()->OnUserCount(regular_users_counter);
+  AuthEventsRecorder::Get()->OnUserCount(regular_users_counter);
   const auto saml_users_for_password_sync = ExtractSamlLoginUsers(users);
 
   // ExistingUserController owns PasswordSyncTokenLoginCheckers only if user
@@ -572,8 +572,8 @@ void ExistingUserController::PerformLogin(
   if (!login_performer_.get() || num_login_attempts_ <= 1) {
     // Only one instance of LoginPerformer should exist at a time.
     login_performer_.reset(nullptr);
-    login_performer_ = std::make_unique<ChromeLoginPerformer>(
-        this, AuthMetricsRecorder::Get());
+    login_performer_ =
+        std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
   }
   if (user_context.GetAccountId().GetAccountType() ==
           AccountType::ACTIVE_DIRECTORY &&
@@ -1225,7 +1225,7 @@ void ExistingUserController::LoginAsGuest() {
   // Only one instance of LoginPerformer should exist at a time.
   login_performer_.reset(nullptr);
   login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthMetricsRecorder::Get());
+      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
   login_performer_->LoginOffTheRecord();
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_OFFRECORD));
@@ -1500,7 +1500,7 @@ void ExistingUserController::LoginAsPublicSessionInternal(
           << user_context.GetAccountId();
   login_performer_.reset(nullptr);
   login_performer_ =
-      std::make_unique<ChromeLoginPerformer>(this, AuthMetricsRecorder::Get());
+      std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
   login_performer_->LoginAsPublicSession(user_context);
   SendAccessibilityAlert(
       l10n_util::GetStringUTF8(IDS_CHROMEOS_ACC_LOGIN_SIGNIN_PUBLIC_ACCOUNT));

@@ -18,7 +18,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/session_manager/core/session_manager.h"
@@ -47,7 +47,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   ExistingUserControllerAutoLoginTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
         scoped_user_manager_(std::make_unique<FakeChromeUserManager>()) {
-    auth_metrics_recorder_ = ash::AuthMetricsRecorder::CreateForTesting();
+    auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 
   void SetUp() override {
@@ -156,7 +156,7 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
   // `existing_user_controller_` must be destroyed before
   // `device_settings_test_helper_`.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
-  std::unique_ptr<ash::AuthMetricsRecorder> auth_metrics_recorder_;
+  std::unique_ptr<ash::AuthEventsRecorder> auth_events_recorder_;
 };
 
 TEST_F(ExistingUserControllerAutoLoginTest, StartAutoLoginTimer) {

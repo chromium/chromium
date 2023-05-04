@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/ash/components/login/auth/auth_metrics_recorder.h"
+#include "chromeos/ash/components/login/auth/auth_events_recorder.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -14,7 +14,7 @@ namespace ash {
 ExistingUserControllerBaseTest::ExistingUserControllerBaseTest()
     : scoped_local_state_(TestingBrowserProcess::GetGlobal()),
       scoped_user_manager_(std::make_unique<FakeChromeUserManager>()),
-      auth_metrics_recorder_(ash::AuthMetricsRecorder::CreateForTesting()) {}
+      auth_events_recorder_(ash::AuthEventsRecorder::CreateForTesting()) {}
 
 ExistingUserControllerBaseTest::~ExistingUserControllerBaseTest() = default;
 
