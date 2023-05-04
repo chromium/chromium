@@ -386,6 +386,22 @@ void GPUBuffer::OnMapAsyncCallback(ScriptPromiseResolver* resolver,
           DOMExceptionCode::kAbortError,
           "Buffer is unmapped before the mapping is resolved"));
       break;
+    case WGPUBufferMapAsyncStatus_MappingAlreadyPending:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "A mapping is already pending"));
+      break;
+    case WGPUBufferMapAsyncStatus_OffsetOutOfRange:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "The offset is out of range"));
+      break;
+    case WGPUBufferMapAsyncStatus_SizeOutOfRange:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "The size is out of range"));
+      break;
+    case WGPUBufferMapAsyncStatus_ValidationError:
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kOperationError, "Buffer is invalid"));
+      break;
     default:
       NOTREACHED();
   }
