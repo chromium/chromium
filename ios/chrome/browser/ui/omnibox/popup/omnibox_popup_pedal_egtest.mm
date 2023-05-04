@@ -7,12 +7,14 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -74,6 +76,31 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxContainingText(
                             base::SysNSStringToUTF8(kDinoPedalString))];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
+// Tests that open incognito pedal is present and it opens incognito tab.
+- (void)testOpenNewIncognitoTabPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalincognitotab"];
+
+  NSString* incognitoPedalString =
+      l10n_util::GetNSString(IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_LAUNCH_INCOGNITO);
+
+  // Matcher for the incognito pedal suggestion.
+  id<GREYMatcher> incognitoPedal = popupRowWithString(incognitoPedalString);
+
+  // Incognito pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:incognitoPedal];
+
+  // Tap on incognito pedal.
+  [[EarlGrey selectElementWithMatcher:incognitoPedal] performAction:grey_tap()];
+
+  // New tab incognito page should be displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::NTPIncognitoView()];
 
   [ChromeEarlGrey closeCurrentTab];
 }
