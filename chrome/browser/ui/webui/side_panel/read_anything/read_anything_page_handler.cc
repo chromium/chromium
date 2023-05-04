@@ -48,8 +48,8 @@ ReadAnythingPageHandler::ReadAnythingPageHandler(
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   if (features::IsReadAnythingWithScreen2xEnabled()) {
-    if (screen_ai::ScreenAIInstallState::GetInstance()
-            ->IsComponentAvailable()) {
+    if (screen_ai::ScreenAIInstallState::GetInstance()->get_state() ==
+        screen_ai::ScreenAIInstallState::State::kReady) {
       // Notify that the screen ai service is already ready so we can bind to
       // the content extractor.
       page_->ScreenAIServiceReady();
