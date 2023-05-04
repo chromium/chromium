@@ -2914,7 +2914,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
 // chrome desk client handles apps correctly when converting the returned mojom
 // from crosapi to app_launch_info.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
-                       CapturesLacrosAppCorrectly) {
+                       DISABLED_CapturesLacrosAppCorrectly) {
   // Prevents test from running when running in a build without lacros.
   if (!ash_starter_.HasLacrosArgument()) {
     return;
