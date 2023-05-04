@@ -399,13 +399,12 @@ void ExtensionFunctionDispatcher::Dispatch(
       "extensions", "frame.GetSiteInstance()",
       frame.GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
 
-  if (auto bad_message_code =
-          ValidateRequest(*params, &frame, *frame.GetProcess())) {
+  content::RenderProcessHost& process = *frame.GetProcess();
+  if (auto bad_message_code = ValidateRequest(*params, &frame, process)) {
     // Kill the renderer if it's an invalid request.
-    const char* msg = ToString(*bad_message_code);
-    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(), msg,
-                            nullptr);
-    mojo::ReportBadMessage(msg);
+    bad_message::ReceivedBadMessage(&process, *bad_message_code);
+    std::move(callback).Run(ExtensionFunction::FAILED, base::Value::List(),
+                            ToString(*bad_message_code), nullptr);
     return;
   }
 
