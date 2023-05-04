@@ -1583,7 +1583,7 @@ enum class ToolbarKind {
 #endif  // !defined(NDEBUG)
 
 - (void)focusFakebox {
-  if (self.isNTPActiveForCurrentWebState) {
+  if ([self isNTPActiveForCurrentWebState]) {
     [_NTPCoordinator focusFakebox];
   }
 }
@@ -2626,7 +2626,14 @@ enum class ToolbarKind {
 #pragma mark - WebNavigationNTPDelegate
 
 - (BOOL)isNTPActiveForCurrentWebState {
-  return [_NTPCoordinator isNTPActiveForCurrentWebState];
+  web::WebState* currentWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  if (currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(currentWebState);
+    return NTPHelper && NTPHelper->IsActive();
+  }
+  return NO;
 }
 
 - (void)reloadNTPForWebState:(web::WebState*)webState {

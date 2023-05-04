@@ -1026,8 +1026,7 @@ enum HeaderBehaviour {
   self.primaryToolbarHeightConstraint.constant =
       [self primaryToolbarHeightWithInset];
 
-  if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
-      self.webUsageEnabled) {
+  if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
     self.ntpCoordinator.viewController.view.frame =
         [self ntpFrameForWebState:self.currentWebState];
   }
@@ -1922,6 +1921,19 @@ enum HeaderBehaviour {
   _lastTapTime = CACurrentMediaTime();
 }
 
+#pragma mark - Private Methods: Reading List
+
+// TODO(crbug.com/1345210) Remove `isNTPActiveForCurrentWebState` method from
+// BVC
+- (BOOL)isNTPActiveForCurrentWebState {
+  if (self.currentWebState) {
+    NewTabPageTabHelper* NTPHelper =
+        NewTabPageTabHelper::FromWebState(self.currentWebState);
+    return NTPHelper && NTPHelper->IsActive();
+  }
+  return NO;
+}
+
 #pragma mark - ** Protocol Implementations and Helpers **
 
 #pragma mark - ThumbStripSupporting
@@ -2077,7 +2089,7 @@ enum HeaderBehaviour {
 
   // Stop scrolling in the current web state when transitioning.
   if (self.currentWebState) {
-    if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
+    if (self.isNTPActiveForCurrentWebState) {
       [self.ntpCoordinator stopScrolling];
     } else {
       CRWWebViewScrollViewProxy* scrollProxy =
@@ -2202,7 +2214,7 @@ enum HeaderBehaviour {
   DCHECK(bubblePresenter == _bubblePresenter);
 
   // If NTP exists, check if it is scrolled to top.
-  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
+  if (self.isNTPActiveForCurrentWebState) {
     return [self.ntpCoordinator isScrolledToTop];
   }
 
@@ -2553,7 +2565,7 @@ enum HeaderBehaviour {
 #pragma mark - OmniboxFocusDelegate (Public)
 
 - (void)omniboxDidBecomeFirstResponder {
-  if (self.ntpCoordinator.isNTPActiveForCurrentWebState) {
+  if (self.isNTPActiveForCurrentWebState) {
     [self.ntpCoordinator locationBarDidBecomeFirstResponder];
   }
   [_sideSwipeController setEnabled:NO];
@@ -2800,8 +2812,7 @@ enum HeaderBehaviour {
     [self.contentArea addSubview:toolbarSnapshot];
     newPage.frame = self.view.bounds;
   } else {
-    if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
-        self.webUsageEnabled) {
+    if (self.isNTPActiveForCurrentWebState && self.webUsageEnabled) {
       newPage.frame = [self ntpFrameForWebState:self.currentWebState];
     } else {
       newPage.frame = self.contentArea.bounds;
@@ -3013,8 +3024,8 @@ enum HeaderBehaviour {
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  NewTabPageCoordinator* coordinator = self.ntpCoordinator;
-  if (coordinator.isNTPActiveForCurrentWebState) {
+  if (self.isNTPActiveForCurrentWebState) {
+    NewTabPageCoordinator* coordinator = self.ntpCoordinator;
     if ([coordinator logoAnimationControllerOwner]) {
       // If NTP coordinator is showing a GLIF view (e.g. the NTP when there is
       // no doodle), use that GLIFControllerOwner.
