@@ -249,7 +249,8 @@ void SpeculativeReportQueueImpl::AddProducedRecord(
       FROM_HERE,
       base::BindOnce(&SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer,
                      weak_ptr_factory_.GetWeakPtr(), priority,
-                     std::move(callback), std::move(record_producer)));
+                     base::BindPostTaskToCurrentDefault(std::move(callback)),
+                     std::move(record_producer)));
 }
 
 void SpeculativeReportQueueImpl::MaybeEnqueueRecordProducer(

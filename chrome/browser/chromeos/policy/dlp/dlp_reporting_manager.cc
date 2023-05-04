@@ -337,7 +337,7 @@ void DlpReportingManager::ReportEvent(DlpPolicyEvent event) {
     return;
   }
   reporting::ReportQueue::EnqueueCallback callback = base::BindOnce(
-      &DlpReportingManager::OnEventEnqueued, base::Unretained(this));
+      &DlpReportingManager::OnEventEnqueued, weak_factory_.GetWeakPtr());
 
   switch (event.mode()) {
     case DlpPolicyEvent_Mode_BLOCK:
