@@ -1685,7 +1685,8 @@ IN_PROC_BROWSER_TEST_P(InputMethodLacrosBrowserTest,
   SendKeyEventsSync(
       input_method_async_waiter,
       KeySequenceBuilder()
-          .PressAndRelease(ui::DomKey::BACKSPACE, ui::DomCode::BACKSPACE)
+          .PressAndRelease(ui::DomKey::BACKSPACE, ui::DomCode::BACKSPACE,
+                           ui::KeyboardCode::VKEY_BACK)
           .Build());
 
   WaitUntilSurroundingTextIs(input_method_async_waiter, "abc",
