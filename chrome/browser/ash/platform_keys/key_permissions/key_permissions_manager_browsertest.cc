@@ -154,12 +154,10 @@ class KeyPermissionsManagerBrowserTestBase
   // fake chaps.
   bool IsKeyAllowedForUsageInChaps(KeyUsage usage,
                                    const std::vector<uint8_t>& public_key) {
-    std::string public_key_str(public_key.begin(), public_key.end());
-
     base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
         get_attr_waiter;
     GetPlatformKeysService()->GetAttributeForKey(
-        GetToken(), public_key_str, KeyAttributeType::kKeyPermissions,
+        GetToken(), public_key, KeyAttributeType::kKeyPermissions,
         get_attr_waiter.GetCallback());
     EXPECT_TRUE(get_attr_waiter.Wait());
 

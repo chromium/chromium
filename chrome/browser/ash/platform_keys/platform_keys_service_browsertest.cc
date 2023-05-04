@@ -373,9 +373,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerProfileBrowserTest,
     // Get key attribute.
     base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
         get_attr_waiter;
-    platform_keys_service()->GetAttributeForKey(token_id, BytesToStr(spki_der),
-                                                kAttributeType,
-                                                get_attr_waiter.GetCallback());
+    platform_keys_service()->GetAttributeForKey(
+        token_id, spki_der, kAttributeType, get_attr_waiter.GetCallback());
     ASSERT_TRUE(get_attr_waiter.Wait());
 
     EXPECT_EQ(get_attr_waiter.Get<Status>(), Status::kSuccess);
@@ -597,9 +596,9 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   // Get key attribute.
   base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
       get_attr_waiter;
-  platform_keys_service()->GetAttributeForKey(
-      token_id, BytesToStr(public_key_spki_der), kAttributeType,
-      get_attr_waiter.GetCallback());
+  platform_keys_service()->GetAttributeForKey(token_id, public_key_spki_der,
+                                              kAttributeType,
+                                              get_attr_waiter.GetCallback());
   ASSERT_TRUE(get_attr_waiter.Wait());
 
   EXPECT_EQ(get_attr_waiter.Get<Status>(), Status::kSuccess);
@@ -616,13 +615,14 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const KeyAttributeType kAttributeType =
       KeyAttributeType::kCertificateProvisioningId;
   const TokenId token_id = GetParam().token_id;
-  const std::string kPublicKey = "Non Existing public key";
+  const std::vector<uint8_t> kNonExistingPublicKey = {1, 2, 3};
 
   // Get key attribute.
   base::test::TestFuture<absl::optional<std::vector<uint8_t>>, Status>
       get_attr_waiter;
-  platform_keys_service()->GetAttributeForKey(
-      token_id, kPublicKey, kAttributeType, get_attr_waiter.GetCallback());
+  platform_keys_service()->GetAttributeForKey(token_id, kNonExistingPublicKey,
+                                              kAttributeType,
+                                              get_attr_waiter.GetCallback());
   ASSERT_TRUE(get_attr_waiter.Wait());
 
   EXPECT_NE(get_attr_waiter.Get<Status>(), Status::kSuccess);

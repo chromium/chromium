@@ -400,10 +400,9 @@ void KeyPermissionsManagerImpl::IsKeyAllowedForUsage(
     return;
   }
 
-  std::string public_key_str(public_key_spki_der.begin(),
-                             public_key_spki_der.end());
   platform_keys_service_->GetAttributeForKey(
-      token_id_, std::move(public_key_str), KeyAttributeType::kKeyPermissions,
+      token_id_, std::move(public_key_spki_der),
+      KeyAttributeType::kKeyPermissions,
       base::BindOnce(
           &KeyPermissionsManagerImpl::IsKeyAllowedForUsageWithPermissions,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), usage));

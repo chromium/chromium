@@ -72,8 +72,8 @@ void CertIterator::OnGetCertificatesDone(
   wait_counter_ = existing_certs->size();
 
   for (const auto& cert : *existing_certs) {
-    std::string public_key =
-        chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
+    std::vector<uint8_t> public_key =
+        chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert);
     platform_keys_service_->GetAttributeForKey(
         GetPlatformKeysTokenId(cert_scope_), public_key,
         chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,

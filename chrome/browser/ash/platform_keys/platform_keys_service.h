@@ -267,7 +267,7 @@ class PlatformKeysService : public KeyedService {
   // |status| and absl::nullopt |attribute_value| will be returned.
   virtual void GetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::KeyAttributeType attribute_type,
       GetAttributeForKeyCallback callback) = 0;
 
@@ -390,7 +390,7 @@ class PlatformKeysServiceImpl final : public PlatformKeysService {
       SetAttributeForKeyCallback callback) override;
   void GetAttributeForKey(
       chromeos::platform_keys::TokenId token_id,
-      const std::string& public_key_spki_der,
+      std::vector<uint8_t> public_key_spki_der,
       chromeos::platform_keys::KeyAttributeType attribute_type,
       GetAttributeForKeyCallback callback) override;
   void IsKeyOnToken(chromeos::platform_keys::TokenId token_id,
