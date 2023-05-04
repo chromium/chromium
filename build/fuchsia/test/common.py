@@ -297,7 +297,6 @@ def run_ffx_command(cmd: Iterable[str],
         env['FFX_ISOLATE_DIR'] = _FFX_ISOLATE_DIR
 
     try:
-        logging.warning('Running FFX command [%s]', ' '.join(ffx_cmd))
         if not suppress_repair:
             # If we want to repair, we need to capture output in STDOUT and
             # STDERR. This could conflict with expectations of the caller.
