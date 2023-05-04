@@ -7,28 +7,15 @@ package org.chromium.chrome.browser.local_passwords_migration_warning;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.ui.modelutil.PropertyModel;
 
 /** The coordinator of the password migration warning. */
-public class PasswordMigrationWarningCoordinator {
-    private final PasswordMigrationWarningMediator mMediator =
-            new PasswordMigrationWarningMediator();
-
+class PasswordMigrationWarningCoordinator {
     public PasswordMigrationWarningCoordinator(
-            @Nullable Context context, BottomSheetController sheetController) {
-        mMediator.initialize(
-                PasswordMigrationWarningProperties.createDefaultModel(mMediator::onDismissed));
-    }
+            @Nullable Context context, BottomSheetController sheetController) {}
 
     public void showWarning() {
-        mMediator.showWarning();
-    }
-
-    @VisibleForTesting
-    PropertyModel getModelForTesting() {
-        return mMediator.getModel();
+        // TODO(crbug.com/1439761): Implement.
     }
 }
