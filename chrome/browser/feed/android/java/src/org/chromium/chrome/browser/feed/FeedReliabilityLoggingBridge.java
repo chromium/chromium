@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.feed;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -18,7 +20,7 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 public class FeedReliabilityLoggingBridge {
     private final long mNativePtr;
     private FeedLaunchReliabilityLogger mLaunchLogger;
-    private FeedUserInteractionReliabilityLogger mUserInteractionLogger;
+    private @Nullable FeedUserInteractionReliabilityLogger mUserInteractionLogger;
     private DiscoverAboveTheFoldRenderResult mRenderResult;
     private boolean mRenderingStarted;
     private DiscoverLaunchResult mLaunchResult;
@@ -158,22 +160,31 @@ public class FeedReliabilityLoggingBridge {
 
     @CalledByNative
     public void logLoadMoreActionUploadRequestStarted() {
-        // TODO(jianli): add corresponding xsurface method.
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationActionUploadRequestStarted();
+        }
     }
 
     @CalledByNative
     public void logLoadMoreRequestSent() {
-        // TODO(jianli): add corresponding xsurface method.
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationRequestSent();
+        }
     }
 
     @CalledByNative
     public void logLoadMoreResponseReceived(long serverRecvTimestamp, long serverSendTimestamp) {
-        // TODO(jianli): add corresponding xsurface method.
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationResponseReceived(
+                    serverRecvTimestamp, serverSendTimestamp);
+        }
     }
 
     @CalledByNative
     public void logLoadMoreRequestFinished(int canonicalStatus) {
-        // TODO(jianli): add corresponding xsurface method.
+        if (mUserInteractionLogger != null) {
+            mUserInteractionLogger.onPaginationRequestFinished(canonicalStatus);
+        }
     }
 
     @CalledByNative
