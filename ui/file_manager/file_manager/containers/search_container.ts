@@ -227,6 +227,7 @@ export class SearchContainer extends EventTarget {
 
     // The button that allows the user to clear the query.
     this.clearButton_ = this.searchBox_.querySelector('.clear') as HTMLElement;
+    this.updateClearButton_('');
 
     // The list showing possible matches to the current query.
     this.autocompleteList_ =
@@ -668,11 +669,21 @@ export class SearchContainer extends EventTarget {
   }
 
   /**
+   * Updates the visibility of clear button.
+   */
+  private updateClearButton_(query: string) {
+    if (util.isSearchV2Enabled()) {
+      this.clearButton_.hidden = (query.length <= 0);
+    }
+  }
+
+  /**
    * Generates a custom event with the current value of the input element as the
    * search query.
    */
   private onQueryChanged_() {
     const query = this.inputElement_.value.trimStart();
+    this.updateClearButton_(query);
     this.dispatchEvent(new CustomEvent(SEARCH_QUERY_CHANGED, {
       bubbles: true,
       composed: true,
