@@ -13,6 +13,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {Cart} from '../../cart.mojom-webui.js';
 import {Cluster, URLVisit} from '../../history_cluster_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../i18n_setup.js';
+import {NewTabPageProxy} from '../../new_tab_page_proxy.js';
 import {InfoDialogElement} from '../info_dialog';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -86,7 +87,10 @@ export class HistoryClustersModuleElement extends I18nMixin
       cluster: Object,
 
       /** The cart displayed by this element, could be null. */
-      cart: Object,
+      cart: {
+        type: Object,
+        value: null,
+      },
 
       searchResultPage: Object,
     };
@@ -96,6 +100,7 @@ export class HistoryClustersModuleElement extends I18nMixin
   cart: Cart|null;
   layoutType: HistoryClusterLayoutType;
   searchResultPage: URLVisit;
+  private setDisabledModulesListenerId_: number|null = null;
 
   override ready() {
     super.ready();
@@ -114,6 +119,36 @@ export class HistoryClustersModuleElement extends I18nMixin
               this.layoutType}.ImageDisplayState`,
           state, Object.keys(HistoryClusterImageDisplayState).length);
     });
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    if (loadTimeData.getBoolean(
+            'modulesChromeCartInHistoryClustersModuleEnabled')) {
+      this.setDisabledModulesListenerId_ =
+          NewTabPageProxy.getInstance()
+              .callbackRouter.setDisabledModules.addListener(
+                  async (_: boolean, ids: string[]) => {
+                    if (ids.includes('chrome_cart')) {
+                      this.cart = null;
+                    } else if (!this.cart) {
+                      const {cart} =
+                          await HistoryClustersProxyImpl.getInstance()
+                              .handler.getCartForCluster(this.cluster);
+                      this.cart = cart;
+                    }
+                  });
+    }
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+
+    if (this.setDisabledModulesListenerId_) {
+      NewTabPageProxy.getInstance().callbackRouter.removeListener(
+          this.setDisabledModulesListenerId_);
+    }
   }
 
   private isLayout_(type: HistoryClusterLayoutType): boolean {
@@ -195,10 +230,10 @@ export class HistoryClustersModuleElement extends I18nMixin
     HistoryClustersProxyImpl.getInstance().handler.openUrlsInTabGroup(urls);
   }
 
-  private shouldShowCartTile_(): boolean {
+  private shouldShowCartTile_(cart: Object): boolean {
     return loadTimeData.getBoolean(
                'modulesChromeCartInHistoryClustersModuleEnabled') &&
-        !!this.cart;
+        !!cart;
   }
 }
 

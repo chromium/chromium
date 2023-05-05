@@ -111,12 +111,12 @@
           visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
           on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
-      <template is="dom-if" if="[[shouldShowCartTile_()]]" restamp>
+      <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
         <ntp-history-clusters-cart-tile
             id="cartTile" cart="[[cart]]">
         </ntp-history-clusters-cart-tile>
       </template>
-      <template is="dom-if" if="[[!shouldShowCartTile_()]]" restamp>
+      <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
         <ntp-history-clusters-tile class="secondary-tile" medium-format
             visit="[[cluster.visits.1]]" on-click="onVisitTileClick_"
             on-aux-click="onVisitTileClick_">
@@ -134,12 +134,12 @@
           visit="[[cluster.visits.0]]" on-click="onVisitTileClick_"
           on-aux-click="onVisitTileClick_">
       </ntp-history-clusters-tile>
-      <template is="dom-if" if="[[shouldShowCartTile_()]]" restamp>
+      <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
         <ntp-history-clusters-cart-tile
             id="cartTile" cart="[[cart]]">
         </ntp-history-clusters-cart-tile>
       </template>
-      <template is="dom-if" if="[[!shouldShowCartTile_()]]" restamp>
+      <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
         <div class="small-tiles">
           <ntp-history-clusters-tile small-format visit="[[cluster.visits.1]]"
               on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
@@ -165,12 +165,12 @@
             on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
         </ntp-history-clusters-tile>
       </div>
-      <template is="dom-if" if="[[shouldShowCartTile_()]]" restamp>
+      <template is="dom-if" if="[[shouldShowCartTile_(cart)]]" restamp>
         <ntp-history-clusters-cart-tile
             id="cartTile" cart="[[cart]]">
         </ntp-history-clusters-cart-tile>
       </template>
-      <template is="dom-if" if="[[!shouldShowCartTile_()]]" restamp>
+      <template is="dom-if" if="[[!shouldShowCartTile_(cart)]]" restamp>
         <div class="small-tiles">
           <ntp-history-clusters-tile small-format visit="[[cluster.visits.2]]"
               on-click="onVisitTileClick_" on-aux-click="onVisitTileClick_">
