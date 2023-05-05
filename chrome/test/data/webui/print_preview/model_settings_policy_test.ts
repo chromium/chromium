@@ -180,27 +180,23 @@ suite('ModelSettingsPolicyTest', function() {
        expectedShortEdgeEnforced: false,
      },
      {
-       // Policy sets duplex type, overriding default.
-       duplexCap: {
-         option: [
-           {type: 'NO_DUPLEX'},
-           {type: 'LONG_EDGE', is_default: true},
-           {type: 'SHORT_EDGE'},
-         ],
-       },
-       duplexPolicy: DuplexModeRestriction.SHORT_EDGE,
-       // Default mismatches restriction and is ignored.
-       duplexDefault: DuplexModeRestriction.LONG_EDGE,
-       expectedValue: true,
-       expectedAvailable: true,
-       expectedManaged: true,
-       expectedEnforced: true,
-       expectedShortEdge: true,
-       expectedShortEdgeAvailable: true,
-       expectedShortEdgeEnforced: true,
+       // Policies are unset.
+       duplexCap: {option: [{type: 'NO_DUPLEX', is_default: true}]},
+       duplexPolicy: DuplexModeRestriction.UNSET,
+       duplexDefault: DuplexModeRestriction.UNSET,
+       expectedValue: false,
+       expectedAvailable: false,
+       expectedManaged: false,
+       expectedEnforced: false,
+       expectedShortEdge: false,
+       expectedShortEdgeAvailable: false,
+       expectedShortEdgeEnforced: false,
      },
+     // Couple of tests that verify the default and available duplex values set
+     // by policies.
+     // Default printing destination duplex mode should always be overwritten by
+     // the policy default.
      {
-       // Default defined by policy but setting is modifiable.
        duplexCap: {
          option: [
            {type: 'NO_DUPLEX', is_default: true},
@@ -208,11 +204,48 @@ suite('ModelSettingsPolicyTest', function() {
            {type: 'SHORT_EDGE'},
          ],
        },
+       duplexPolicy: DuplexModeRestriction.DUPLEX,
+       duplexDefault: DuplexModeRestriction.SHORT_EDGE,
+       expectedValue: true,
+       expectedAvailable: true,
+       expectedManaged: true,
+       expectedEnforced: true,
+       expectedShortEdge: true,
+       expectedShortEdgeAvailable: true,
+       expectedShortEdgeEnforced: false,
+     },
+     {
+       duplexCap: {
+         option: [
+           {type: 'NO_DUPLEX'},
+           {type: 'LONG_EDGE'},
+           {type: 'SHORT_EDGE', is_default: true},
+         ],
+       },
+       duplexPolicy: DuplexModeRestriction.UNSET,
        duplexDefault: DuplexModeRestriction.LONG_EDGE,
        expectedValue: true,
        expectedAvailable: true,
        expectedManaged: false,
        expectedEnforced: false,
+       expectedShortEdge: false,
+       expectedShortEdgeAvailable: true,
+       expectedShortEdgeEnforced: false,
+     },
+     {
+       duplexCap: {
+         option: [
+           {type: 'NO_DUPLEX'},
+           {type: 'LONG_EDGE', is_default: true},
+           {type: 'SHORT_EDGE'},
+         ],
+       },
+       duplexPolicy: DuplexModeRestriction.SIMPLEX,
+       duplexDefault: DuplexModeRestriction.SIMPLEX,
+       expectedValue: false,
+       expectedAvailable: true,
+       expectedManaged: true,
+       expectedEnforced: true,
        expectedShortEdge: false,
        expectedShortEdgeAvailable: true,
        expectedShortEdgeEnforced: false,

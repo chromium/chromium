@@ -464,8 +464,8 @@ suite(policy_tests.suiteName, function() {
     const tests = [
       {
         // No policies.
-        allowedMode: undefined,
-        defaultMode: undefined,
+        allowedMode: DuplexModeRestriction.UNSET,
+        defaultMode: DuplexModeRestriction.UNSET,
         expectedChecked: false,
         expectedOpened: false,
         expectedDisabled: false,
@@ -473,7 +473,7 @@ suite(policy_tests.suiteName, function() {
       },
       {
         // No restriction, default set to SIMPLEX.
-        allowedMode: undefined,
+        allowedMode: DuplexModeRestriction.UNSET,
         defaultMode: DuplexModeRestriction.SIMPLEX,
         expectedChecked: false,
         expectedOpened: false,
@@ -481,26 +481,8 @@ suite(policy_tests.suiteName, function() {
         expectedValue: DuplexMode.LONG_EDGE,
       },
       {
-        // No restriction, default set to UNSET.
-        allowedMode: undefined,
-        defaultMode: DuplexModeRestriction.UNSET,
-        expectedChecked: true,
-        expectedOpened: true,
-        expectedDisabled: false,
-        expectedValue: DuplexMode.LONG_EDGE,
-      },
-      {
-        // Allowed mode set to UNSET.
-        allowedMode: DuplexModeRestriction.UNSET,
-        defaultMode: undefined,
-        expectedChecked: false,
-        expectedOpened: false,
-        expectedDisabled: false,
-        expectedValue: DuplexMode.LONG_EDGE,
-      },
-      {
         // No restriction, default set to LONG_EDGE.
-        allowedMode: undefined,
+        allowedMode: DuplexModeRestriction.UNSET,
         defaultMode: DuplexModeRestriction.LONG_EDGE,
         expectedChecked: true,
         expectedOpened: true,
@@ -509,7 +491,7 @@ suite(policy_tests.suiteName, function() {
       },
       {
         // No restriction, default set to SHORT_EDGE.
-        allowedMode: undefined,
+        allowedMode: DuplexModeRestriction.UNSET,
         defaultMode: DuplexModeRestriction.SHORT_EDGE,
         expectedChecked: true,
         expectedOpened: true,
@@ -517,58 +499,58 @@ suite(policy_tests.suiteName, function() {
         expectedValue: DuplexMode.SHORT_EDGE,
       },
       {
-        // No restriction, default set to DUPLEX.
-        allowedMode: undefined,
-        defaultMode: DuplexModeRestriction.DUPLEX,
-        expectedChecked: true,
-        expectedOpened: true,
-        expectedDisabled: false,
-        expectedValue: DuplexMode.LONG_EDGE,
-      },
-      {
-        // No restriction, default set to SHORT_EDGE.
+        // Restricted to SIMPLEX.
         allowedMode: DuplexModeRestriction.SIMPLEX,
-        defaultMode: undefined,
+        defaultMode: DuplexModeRestriction.UNSET,
         expectedChecked: false,
         expectedOpened: false,
         expectedDisabled: false,
         expectedValue: DuplexMode.LONG_EDGE,
       },
       {
-        // Restricted to LONG_EDGE.
-        allowedMode: DuplexModeRestriction.LONG_EDGE,
-        defaultMode: undefined,
-        expectedChecked: true,
-        expectedOpened: true,
-        expectedDisabled: true,
-        expectedValue: DuplexMode.LONG_EDGE,
-      },
-      {
-        // Restricted to SHORT_EDGE.
-        allowedMode: DuplexModeRestriction.SHORT_EDGE,
-        defaultMode: undefined,
-        expectedChecked: true,
-        expectedOpened: true,
-        expectedDisabled: true,
-        expectedValue: DuplexMode.SHORT_EDGE,
-      },
-      {
         // Restricted to DUPLEX.
         allowedMode: DuplexModeRestriction.DUPLEX,
-        defaultMode: undefined,
+        defaultMode: DuplexModeRestriction.UNSET,
         expectedChecked: true,
         expectedOpened: true,
         expectedDisabled: false,
         expectedValue: DuplexMode.LONG_EDGE,
       },
       {
-        // Restricted to SHORT_EDGE, default is ignored.
-        allowedMode: DuplexModeRestriction.SHORT_EDGE,
+        // Restricted to DUPLEX, default set to SHORT_EDGE.
+        allowedMode: DuplexModeRestriction.DUPLEX,
+        defaultMode: DuplexModeRestriction.SHORT_EDGE,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.SHORT_EDGE,
+      },
+      {
+        // Restricted to DUPLEX, default set to SHORT_EDGE.
+        allowedMode: DuplexModeRestriction.DUPLEX,
         defaultMode: DuplexModeRestriction.LONG_EDGE,
         expectedChecked: true,
         expectedOpened: true,
-        expectedDisabled: true,
-        expectedValue: DuplexMode.SHORT_EDGE,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to DUPLEX, default is ignored.
+        allowedMode: DuplexModeRestriction.DUPLEX,
+        defaultMode: DuplexModeRestriction.SIMPLEX,
+        expectedChecked: true,
+        expectedOpened: true,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
+      },
+      {
+        // Restricted to SIMPLEX, default is ignored.
+        allowedMode: DuplexModeRestriction.SIMPLEX,
+        defaultMode: DuplexModeRestriction.LONG_EDGE,
+        expectedChecked: false,
+        expectedOpened: false,
+        expectedDisabled: false,
+        expectedValue: DuplexMode.LONG_EDGE,
       },
     ];
     for (const subtestParams of tests) {
