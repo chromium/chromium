@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -430,10 +431,10 @@ bool IsShowingWebContentsModalDialog(Browser* browser) {
 bool PrintPreviewShowing(const Browser* browser) {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
-  printing::PrintPreviewDialogController* controller =
-      printing::PrintPreviewDialogController::GetInstance();
-  return controller && (controller->GetPrintPreviewForContents(contents) ||
-                        controller->is_creating_print_preview_dialog());
+  auto* controller = printing::PrintPreviewDialogController::GetInstance();
+  CHECK(controller);
+  return controller->GetPrintPreviewForContents(contents) ||
+         controller->is_creating_print_preview_dialog();
 #else
   return false;
 #endif

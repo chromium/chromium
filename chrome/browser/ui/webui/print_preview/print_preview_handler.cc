@@ -975,10 +975,8 @@ void PrintPreviewHandler::SendPrinterCapabilities(
 }
 
 WebContents* PrintPreviewHandler::GetInitiator() {
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller)
-    return nullptr;
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   return dialog_controller->GetInitiator(preview_web_contents());
 }
 
@@ -1089,10 +1087,9 @@ void PrintPreviewHandler::ClearInitiatorDetails() {
   // We no longer require the initiator details. Remove those details associated
   // with the preview dialog to allow the initiator to create another preview
   // dialog.
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (dialog_controller)
-    dialog_controller->EraseInitiatorInfo(preview_web_contents());
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
+  dialog_controller->EraseInitiatorInfo(preview_web_contents());
 }
 
 PrinterHandler* PrintPreviewHandler::GetPrinterHandler(

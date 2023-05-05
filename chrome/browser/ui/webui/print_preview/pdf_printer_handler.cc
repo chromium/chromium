@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
@@ -287,11 +288,10 @@ void PdfPrinterHandler::StartPrint(
   DCHECK(!print_callback_);
   print_callback_ = std::move(callback);
 
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   content::WebContents* initiator =
-      dialog_controller ? dialog_controller->GetInitiator(preview_web_contents_)
-                        : nullptr;
+      dialog_controller->GetInitiator(preview_web_contents_);
 
   GURL initiator_url;
   bool is_savable = false;

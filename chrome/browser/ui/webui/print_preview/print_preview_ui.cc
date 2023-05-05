@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
@@ -128,10 +129,8 @@ bool ShouldUseCompositor(PrintPreviewUI* print_preview_ui) {
 }
 
 WebContents* GetInitiator(content::WebUI* web_ui) {
-  PrintPreviewDialogController* dialog_controller =
-      PrintPreviewDialogController::GetInstance();
-  if (!dialog_controller)
-    return nullptr;
+  auto* dialog_controller = PrintPreviewDialogController::GetInstance();
+  CHECK(dialog_controller);
   return dialog_controller->GetInitiator(web_ui->GetWebContents());
 }
 
