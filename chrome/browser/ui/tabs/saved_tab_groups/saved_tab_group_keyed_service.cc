@@ -45,12 +45,6 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
       listener_(model(), profile),
       bridge_(model(), GetStoreFactory(), CreateChangeProcessor()) {
   model()->AddObserver(this);
-
-  // Perform the necessary setup, if the model is already loaded before we start
-  // observing it. Otherwise, the model will notify us when it has loaded.
-  if (model()->is_loaded()) {
-    SavedTabGroupModelLoaded();
-  }
 }
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
@@ -66,13 +60,22 @@ syncer::OnceModelTypeStoreFactory SavedTabGroupKeyedService::GetStoreFactory() {
 void SavedTabGroupKeyedService::StoreLocalToSavedId(
     const base::Uuid& saved_guid,
     const tab_groups::TabGroupId local_group_id) {
-  const SavedTabGroup* const group = model()->Get(local_group_id);
-  if (model()->is_loaded() && group->saved_guid() == saved_guid) {
+  // Avoid linking SavedTabGroups that are already open.
+  const SavedTabGroup* const group = model()->Get(saved_guid);
+  if (group && group->local_group_id().has_value()) {
     return;
   }
 
-  saved_guid_to_local_group_id_mapping_.emplace_back(saved_guid,
-                                                     local_group_id);
+  // The model could already be loaded when restoring groups from a previously
+  // crashed session / window. This means we will have to manually trigger the
+  // local to saved group linking.
+  if (model()->is_loaded()) {
+    model_.OnGroupOpenedInTabStrip(saved_guid, local_group_id);
+    ConnectLocalTabGroup(local_group_id, saved_guid);
+  } else {
+    saved_guid_to_local_group_id_mapping_.emplace_back(saved_guid,
+                                                       local_group_id);
+  }
 }
 
 void SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
