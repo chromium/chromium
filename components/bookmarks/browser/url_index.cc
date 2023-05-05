@@ -7,6 +7,7 @@
 #include <iterator>
 
 #include "base/containers/adapters.h"
+#include "base/logging.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/url_and_title.h"
 #include "components/bookmarks/common/url_load_stats.h"
@@ -65,13 +66,26 @@ void AddStatsForBookmarksWithSameUrl(
       duplicate_title_and_parent_count;
 }
 
-void AddTimeStatsForBookmark(BookmarkNode* node, UrlLoadStats* stats) {
-  stats->avg_num_days_since_added +=
-      (base::Time::Now() - node->date_added()).InDays();
+void AddTimeStatsForBookmark(BookmarkNode* node,
+                             base::Time now,
+                             UrlLoadStats* stats) {
+  stats->avg_num_days_since_added += (now - node->date_added()).InDays();
 
+  // It's possible that date_last_used hasn't been populated for this node.
   if (node->date_last_used() != base::Time()) {
     stats->used_url_bookmark_count += 1;
+    int mru_days = std::max(0, (now - node->date_last_used()).InDays());
+    stats->most_recently_used_bookmark_days =
+        std::min<size_t>(mru_days, stats->most_recently_used_bookmark_days);
   }
+
+  stats->most_recently_saved_bookmark_days =
+      std::min<size_t>(std::max(0, (now - node->date_added()).InDays()),
+                       stats->most_recently_saved_bookmark_days);
+
+  stats->most_recently_saved_folder_days = std::min<size_t>(
+      std::max(0, (now - node->parent()->date_added()).InDays()),
+      stats->most_recently_saved_folder_days);
 }
 
 }  // namespace
@@ -138,10 +152,12 @@ bool UrlIndex::HasBookmarks() const {
 
 UrlLoadStats UrlIndex::ComputeStats() const {
   base::AutoLock url_lock(url_lock_);
+
+  base::Time now = base::Time::Now();
   UrlLoadStats stats;
   stats.total_url_bookmark_count = nodes_ordered_by_url_set_.size();
   if (nodes_ordered_by_url_set_.begin() != nodes_ordered_by_url_set_.end()) {
-    AddTimeStatsForBookmark(*nodes_ordered_by_url_set_.begin(), &stats);
+    AddTimeStatsForBookmark(*nodes_ordered_by_url_set_.begin(), now, &stats);
   }
 
   if (stats.total_url_bookmark_count <= 1)
@@ -158,7 +174,7 @@ UrlLoadStats UrlIndex::ComputeStats() const {
     }
     bookmarks_with_same_url.push_back(*i);
 
-    AddTimeStatsForBookmark(*i, &stats);
+    AddTimeStatsForBookmark(*i, now, &stats);
   }
 
   stats.avg_num_days_since_added /= nodes_ordered_by_url_set_.size();

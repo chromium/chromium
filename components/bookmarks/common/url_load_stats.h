@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_BOOKMARKS_COMMON_URL_LOAD_STATS_H_
 #define COMPONENTS_BOOKMARKS_COMMON_URL_LOAD_STATS_H_
 
+#include <cstdint>
+
 namespace bookmarks {
 
 // Returns some stats about number of URL bookmarks stored, for UMA purposes.
@@ -29,6 +31,12 @@ struct UrlLoadStats {
   // This hints that this bookmark has been used before, but isn't conclusive
   // as this number is reset with history clear events.
   size_t used_url_bookmark_count = 0;
+  // The most recent time any bookmark was opened, in days.
+  size_t most_recently_used_bookmark_days = SIZE_MAX;
+  // The most recent time any bookmark was created, in days.
+  size_t most_recently_saved_bookmark_days = SIZE_MAX;
+  // The most recent time any folder was created, in days.
+  size_t most_recently_saved_folder_days = SIZE_MAX;
 };
 
 }  // namespace bookmarks

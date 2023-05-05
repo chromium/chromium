@@ -587,6 +587,72 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays"
+    units="days" expires_after="2023-08-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records how long ago (in days) the most recently added folder was added.
+    Only emitted if the user has a folder with at least one child. Days are
+    computed by comparing the current time to the added time for the folder,
+    this value is truncated (std::trunc behavior). Only emitted if there's a
+    valid value which replaces the default SIZE_MAX value. The default SIZE_MAX
+    won't overlap with values coming from real bookmarks.
+
+    Since bookmarks are synced, this histogram is emitted to regardless of the
+    platform the bookmark originated from.
+
+    Opening a guest session (guest profile) also causes an emit to this
+    histogram under certain enterpise configurations where guest sessions can
+    have bookmarks.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlySavedBookmarkInDays"
+    units="days" expires_after="2023-08-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records how long ago (in days) the most recently saved bookmark was saved.
+    Only emitted if the user has a bookmark. Days are computed by comparing the
+    current time to the added time for the bookmark, this value is truncated
+    (std::trunc behavior). Only emitted if there's a valid value which replaces
+    the default SIZE_MAX value. The default SIZE_MAX won't overlap with values
+    coming from real bookmarks.
+
+    Since bookmarks are synced, this histogram is emitted to regardless of the
+    platform the bookmark originated from.
+
+    Opening a guest session (guest profile) also causes an emit to this
+    histogram under certain enterpise configurations where guest sessions can
+    have bookmarks.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.Times.OnProfileLoad.MostRecentlyUsedBookmarkInDays"
+    units="days" expires_after="2023-08-08">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <component>UI&gt;Browser&gt;Bookmarks</component>
+  <summary>
+    Records how long ago (in days) the most recently saved bookmark was used.
+    Only emitted if the user has a bookmark which has been opened. Days are
+    computed by comparing the current time to the used time for the bookmark,
+    this value is truncated (std::trunc behavior). Only emitted if there's a
+    valid value which replaces the default SIZE_MAX value. The default SIZE_MAX
+    won't overlap with values coming from real bookmarks.
+
+    Since bookmarks are synced, this histogram is emitted to regardless of the
+    platform the bookmark originated from.
+
+    Opening a guest session (guest profile) also causes an emit to this
+    histogram under certain enterpise configurations where guest sessions can
+    have bookmarks.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.Times.OnProfileLoad.TimeSinceAdded" units="days"
     expires_after="2023-06-08">
   <obsolete>
