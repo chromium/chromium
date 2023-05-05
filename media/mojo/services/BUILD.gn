@@ -188,6 +188,8 @@ component("services") {
       "media_foundation_gpu_info_monitor.h",
       "media_foundation_mojo_media_client.cc",
       "media_foundation_mojo_media_client.h",
+      "media_foundation_preferences.cc",
+      "media_foundation_preferences.h",
       "media_foundation_renderer_wrapper.cc",
       "media_foundation_renderer_wrapper.h",
       "media_foundation_service.cc",

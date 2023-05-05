@@ -70,6 +70,7 @@ mojom("mojom") {
   if (is_win) {
     sources += [
       "dcomp_surface_registry.mojom",
+      "media_foundation_preferences.mojom",
       "media_foundation_service.mojom",
     ]
   }
