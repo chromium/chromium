@@ -1025,6 +1025,11 @@ std::string AwContentBrowserClient::GetUserAgent() {
   return android_webview::GetUserAgent();
 }
 
+blink::UserAgentMetadata AwContentBrowserClient::GetUserAgentMetadata() {
+  return embedder_support::GetUserAgentMetadata(
+      browser_context_->GetPrefService());
+}
+
 content::ContentBrowserClient::WideColorGamutHeuristic
 AwContentBrowserClient::GetWideColorGamutHeuristic() {
   if (base::FeatureList::IsEnabled(features::kWebViewWideColorGamutSupport)) {

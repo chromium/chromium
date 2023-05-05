@@ -86,4 +86,8 @@ const char kWebViewEnableAppRecovery[] = "webview-enable-app-recovery";
 const char kWebViewEnableTrustTokensComponent[] =
     "webview-enable-trust-tokens-component";
 
+// Enables user agent client hints.
+const char kWebViewEnableUserAgentClientHints[] =
+    "webview-enable-user-agent-client-hints";
+
 }  // namespace switches

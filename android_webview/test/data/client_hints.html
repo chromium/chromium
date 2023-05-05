@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head><title>running</title></head>
+<body><script>
+window.onload = async function () {
+  document.title = navigator.userAgentData.platform;
+  document.title += "|";
+  document.title += navigator.userAgentData.mobile;
+  document.title += "|";
+  document.title += JSON.stringify(navigator.userAgentData.brands);
+};
+</script></body>
+</html>
