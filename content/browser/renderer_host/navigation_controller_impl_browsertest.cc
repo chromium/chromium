@@ -19933,6 +19933,60 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 }
 
+namespace {
+// WebContentsDelegate that ensures CanGoBack returns false during all
+// NavigationStateChanged notifications.
+class CantGoBackNavigationStateChangedDelegate : public WebContentsDelegate {
+ public:
+  CantGoBackNavigationStateChangedDelegate() = default;
+
+  CantGoBackNavigationStateChangedDelegate(
+      const CantGoBackNavigationStateChangedDelegate&) = delete;
+  CantGoBackNavigationStateChangedDelegate& operator=(
+      const CantGoBackNavigationStateChangedDelegate&) = delete;
+
+  ~CantGoBackNavigationStateChangedDelegate() override = default;
+
+  void NavigationStateChanged(WebContents* source,
+                              InvalidateTypes changed_flags) override {
+    if (changed_flags == INVALIDATE_TYPE_ALL) {
+      EXPECT_FALSE(source->GetController().CanGoBack());
+    }
+  }
+};
+}  // namespace
+
+// Test that CanGoBack does not return true after it starts returning false
+// during a back navigation. See https://crbug.com/1439948.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       CanGoBackConsistencyForDelegate) {
+  DisableBackForwardCacheForTesting(contents(),
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+
+  // Start a back navigation but do not allow it to commit.  CanGoBack should
+  // change from true before the navigation starts to false after.
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  TestNavigationManager nav_manager(contents(), url_1);
+  ASSERT_TRUE(controller.CanGoBack());
+  controller.GoBack();
+  EXPECT_TRUE(nav_manager.WaitForRequestStart());
+  EXPECT_FALSE(controller.CanGoBack());
+
+  // Observe any further NavigationStateChanged calls as the navigation resumes.
+  // If CanGoBack starts returning true again, the test will fail.
+  CantGoBackNavigationStateChangedDelegate navigation_state_changed_delegate;
+  contents()->SetDelegate(&navigation_state_changed_delegate);
+  nav_manager.ResumeNavigation();
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+  EXPECT_FALSE(controller.CanGoBack());
+}
+
 // Verify that calling Restore() with a non-empty entry list on a new
 // NavigationController will not result in an initial NavigationEntry.
 // See https://crbug.com/1295723.
