@@ -11,11 +11,10 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_network_context.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,8 +27,7 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace network_diagnostics {
+namespace ash::network_diagnostics {
 
 namespace {
 
@@ -48,7 +46,7 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
       const UdpProberWithFakeNetworkContextTest&) = delete;
 
   void InitializeProberNetworkContext(
-      std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result,
+      std::unique_ptr<FakeNetworkContext::DnsResult> fake_dns_result,
       absl::optional<net::Error> udp_connect_complete_code,
       absl::optional<net::Error> udp_send_complete_code,
       absl::optional<net::Error> udp_on_received_code,
@@ -90,30 +88,20 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
                                  UdpProber::UdpProbeCompleteCallback callback) {
     ASSERT_TRUE(fake_network_context_);
     udp_prober_ = UdpProber::Start(
-        base::BindRepeating(
-            [](network::mojom::NetworkContext* network_context) {
-              return network_context;
-            },
-            fake_network_context_.get()),
+        base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+          return fake_network_context();
+        }),
         kFakeHostPortPair, std::move(data), kStunTag,
         kTimeoutAfterHostResolution, std::move(callback));
   }
 
   void RunProberExpectingResult(int expected_result,
                                 ProbeExitEnum expected_exit_enum) {
-    int probe_result = -1;
-    ProbeExitEnum probe_exit_enum = ProbeExitEnum::kConnectFailure;
-    base::RunLoop run_loop;
-    CreateAndExecuteUdpProber(
-        kValidStunData,
-        base::BindLambdaForTesting([&](int result, ProbeExitEnum exit_enum) {
-          probe_result = result;
-          probe_exit_enum = exit_enum;
-          EXPECT_EQ(expected_result, probe_result);
-          EXPECT_EQ(expected_exit_enum, probe_exit_enum);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
+    base::test::TestFuture<int, ProbeExitEnum> future;
+    CreateAndExecuteUdpProber(kValidStunData, future.GetCallback());
+    auto [probe_result, probe_exit_enum] = future.Take();
+    ASSERT_EQ(probe_result, expected_result);
+    ASSERT_EQ(probe_exit_enum, expected_exit_enum);
   }
 
   FakeNetworkContext* fake_network_context() {
@@ -137,7 +125,7 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
 };
 
 TEST_F(UdpProberWithFakeNetworkContextTest, SuccessfulEndToEndResponse) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   std::array<uint8_t, 1> udp_on_received_data = {0x00};
@@ -153,9 +141,10 @@ TEST_F(UdpProberWithFakeNetworkContextTest, SuccessfulEndToEndResponse) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, FailedDnsLookup) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::ERR_NAME_NOT_RESOLVED,
-      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED), net::AddressList(),
+      net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
+      /*resolved_addresses=*/absl::nullopt,
       /*endpoint_results_with_metadata=*/absl::nullopt);
   // UDP connect and subsequent steps will not happen in this scenario.
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -175,12 +164,11 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDnsLookup) {
                                  /*udp_on_received_code=*/absl::nullopt,
                                  /*udp_on_received_data=*/absl::nullopt);
   fake_network_context()->set_disconnect_during_host_resolution(true);
-  RunProberExpectingResult(net::ERR_NAME_NOT_RESOLVED,
-                           ProbeExitEnum::kDnsFailure);
+  RunProberExpectingResult(net::ERR_FAILED, ProbeExitEnum::kDnsFailure);
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpConnection) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(
@@ -197,7 +185,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpConnection) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpConnection) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -214,7 +202,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpConnection) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpSend) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -230,7 +218,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, FailedUdpSend) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpSend) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   net::Error udp_connect_code = net::OK;
@@ -247,7 +235,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpSend) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, BadUdpNetworkCodeOnReceive) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(
@@ -264,7 +252,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, BadUdpNetworkCodeOnReceive) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, NoDataReceivedOnReceiveFailure) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -280,7 +268,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, NoDataReceivedOnReceiveFailure) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpReceive) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -297,7 +285,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, MojoDisconnectDuringUdpReceive) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpConnection) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -312,7 +300,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpConnection) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpSend) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -327,7 +315,7 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpSend) {
 }
 
 TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpReceive) {
-  auto fake_dns_result = std::make_unique<FakeHostResolver::DnsResult>(
+  auto fake_dns_result = std::make_unique<FakeNetworkContext::DnsResult>(
       net::OK, net::ResolveErrorInfo(net::OK), net::AddressList(kFakeIPAddress),
       /*endpoint_results_with_metadata=*/absl::nullopt);
   InitializeProberNetworkContext(std::move(fake_dns_result),
@@ -341,5 +329,4 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpReceive) {
   RunProberExpectingResult(net::ERR_TIMED_OUT, ProbeExitEnum::kTimeout);
 }
 
-}  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace ash::network_diagnostics

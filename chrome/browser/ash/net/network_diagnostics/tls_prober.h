@@ -9,7 +9,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/ash/net/network_diagnostics/host_resolver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
@@ -18,8 +17,11 @@
 #include "services/network/public/mojom/tls_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace network_diagnostics {
+namespace network {
+class SimpleHostResolver;
+}  // namespace network
+
+namespace ash::network_diagnostics {
 
 // Uses either a TCP or TLS socket to determine whether a socket connection to a
 // host can be established. No read or write functionality is exposed by this
@@ -59,7 +61,10 @@ class TlsProber {
 
   // Processes the results of the DNS resolution done by |host_resolver_|.
   void OnHostResolutionComplete(
-      HostResolver::ResolutionResult& resolution_result);
+      int result,
+      const net::ResolveErrorInfo&,
+      const absl::optional<net::AddressList>& resolved_addresses,
+      const absl::optional<net::HostResolverEndpointResults>&);
 
  protected:
   // Test-only constructor.
@@ -104,7 +109,7 @@ class TlsProber {
   // Indicates whether TLS support must be added to the underlying socket.
   const bool negotiate_tls_;
   // Host resolver used for DNS lookup.
-  std::unique_ptr<HostResolver> host_resolver_;
+  std::unique_ptr<network::SimpleHostResolver> host_resolver_;
   // Holds socket if socket was connected via TCP.
   mojo::Remote<network::mojom::TCPConnectedSocket> tcp_connected_socket_remote_;
   // Holds socket if socket was upgraded to TLS.
@@ -116,7 +121,6 @@ class TlsProber {
   base::WeakPtrFactory<TlsProber> weak_factory_{this};
 };
 
-}  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace ash::network_diagnostics
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_TLS_PROBER_H_

@@ -18,10 +18,10 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/simple_host_resolver.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace ash {
-namespace network_diagnostics {
+namespace ash::network_diagnostics {
 
 namespace {
 
@@ -62,100 +62,6 @@ std::unique_ptr<HttpRequestManager> GetHttpRequestManager() {
 }
 
 }  // namespace
-
-class HttpsLatencyRoutine::HostResolver
-    : public network::ResolveHostClientBase {
- public:
-  HostResolver(network::mojom::NetworkContext* network_context,
-               HttpsLatencyRoutine* https_latency);
-  HostResolver(const HostResolver&) = delete;
-  HostResolver& operator=(const HostResolver&) = delete;
-  ~HostResolver() override;
-
-  // network::mojom::ResolveHostClient:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const absl::optional<net::AddressList>& resolved_addresses,
-                  const absl::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override;
-
-  // Performs the DNS resolution.
-  void Run(const GURL& url);
-
-  network::mojom::NetworkContext* network_context() const {
-    return network_context_;
-  }
-
- private:
-  void CreateHostResolver();
-  void OnMojoConnectionError();
-
-  raw_ptr<network::mojom::NetworkContext, ExperimentalAsh> network_context_ =
-      nullptr;                                                   // Unowned
-  raw_ptr<HttpsLatencyRoutine, ExperimentalAsh> https_latency_;  // Unowned
-  mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
-  mojo::Remote<network::mojom::HostResolver> host_resolver_;
-};
-
-HttpsLatencyRoutine::HostResolver::HostResolver(
-    network::mojom::NetworkContext* network_context,
-    HttpsLatencyRoutine* https_latency)
-    : network_context_(network_context), https_latency_(https_latency) {
-  DCHECK(network_context_);
-  DCHECK(https_latency_);
-}
-
-HttpsLatencyRoutine::HostResolver::~HostResolver() = default;
-
-void HttpsLatencyRoutine::HostResolver::OnComplete(
-    int result,
-    const net::ResolveErrorInfo& resolve_error_info,
-    const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
-  receiver_.reset();
-  host_resolver_.reset();
-
-  https_latency_->OnHostResolutionComplete(result, resolve_error_info,
-                                           resolved_addresses,
-                                           endpoint_results_with_metadata);
-}
-
-void HttpsLatencyRoutine::HostResolver::Run(const GURL& url) {
-  CreateHostResolver();
-  DCHECK(host_resolver_);
-  DCHECK(!receiver_.is_bound());
-
-  network::mojom::ResolveHostParametersPtr parameters =
-      network::mojom::ResolveHostParameters::New();
-  parameters->dns_query_type = net::DnsQueryType::A;
-  parameters->source = net::HostResolverSource::DNS;
-  parameters->cache_usage =
-      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
-
-  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
-  // DNS resource record query.
-  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
-                                  net::HostPortPair::FromURL(url)),
-                              net::NetworkAnonymizationKey::CreateTransient(),
-                              std::move(parameters),
-                              receiver_.BindNewPipeAndPassRemote());
-}
-
-void HttpsLatencyRoutine::HostResolver::CreateHostResolver() {
-  network_context()->CreateHostResolver(
-      net::DnsConfigOverrides(), host_resolver_.BindNewPipeAndPassReceiver());
-  // Disconnect handler will be invoked if the network service crashes.
-  host_resolver_.set_disconnect_handler(base::BindOnce(
-      &HostResolver::OnMojoConnectionError, base::Unretained(this)));
-}
-
-void HttpsLatencyRoutine::HostResolver::OnMojoConnectionError() {
-  host_resolver_.reset();
-  OnComplete(net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-             /*resolved_addresses=*/absl::nullopt,
-             /*endpoint_results_with_metadata=*/absl::nullopt);
-}
 
 HttpsLatencyRoutine::HttpsLatencyRoutine()
     : network_context_getter_(base::BindRepeating(&GetNetworkContext)),
@@ -219,22 +125,37 @@ void HttpsLatencyRoutine::AttemptNextResolution() {
       network_context_getter_.Run();
   DCHECK(network_context);
 
-  host_resolver_ = std::make_unique<HostResolver>(network_context, this);
+  host_resolver_ = network::SimpleHostResolver::Create(network_context);
 
   GURL url = hostnames_to_query_dns_.back();
   hostnames_to_query_dns_.pop_back();
-  host_resolver_->Run(url);
+
+  network::mojom::ResolveHostParametersPtr parameters =
+      network::mojom::ResolveHostParameters::New();
+  parameters->dns_query_type = net::DnsQueryType::A;
+  parameters->source = net::HostResolverSource::DNS;
+  parameters->cache_usage =
+      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
+
+  // TODO(crbug.com/1355169): Consider passing a SchemeHostPort to trigger HTTPS
+  // DNS resource record query.
+  // Unretained(this) is safe here because the callback is invoked directly by
+  // |host_resolver_| which is owned by |this|.
+  host_resolver_->ResolveHost(
+      network::mojom::HostResolverHost::NewHostPortPair(
+          net::HostPortPair::FromURL(url)),
+      net::NetworkAnonymizationKey::CreateTransient(), std::move(parameters),
+      base::BindOnce(&HttpsLatencyRoutine::OnHostResolutionComplete,
+                     base::Unretained(this)));
 }
 
 void HttpsLatencyRoutine::OnHostResolutionComplete(
     int result,
-    const net::ResolveErrorInfo& resolve_error_info,
+    const net::ResolveErrorInfo&,
     const absl::optional<net::AddressList>& resolved_addresses,
-    const absl::optional<net::HostResolverEndpointResults>&
-        endpoint_results_with_metadata) {
-  bool success = result == net::OK && !resolved_addresses->empty() &&
-                 resolved_addresses.has_value();
-  if (!success) {
+    const absl::optional<net::HostResolverEndpointResults>&) {
+  if (result != net::OK) {
+    CHECK(!resolved_addresses);
     successfully_resolved_hosts_ = false;
     AnalyzeResultsAndExecuteCallback();
     return;
@@ -272,5 +193,4 @@ void HttpsLatencyRoutine::OnHttpsRequestComplete(bool connected) {
   AnalyzeResultsAndExecuteCallback();
 }
 
-}  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace ash::network_diagnostics

@@ -10,28 +10,44 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
-#include "chrome/browser/ash/net/network_diagnostics/fake_host_resolver.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_tcp_connected_socket.h"
 #include "chrome/browser/ash/net/network_diagnostics/fake_udp_socket.h"
 #include "services/network/test/test_network_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
-namespace network_diagnostics {
+namespace ash::network_diagnostics {
 
 // Used in unit tests, the FakeNetworkContext class simulates the behavior of a
 // network context.
 class FakeNetworkContext : public network::TestNetworkContext {
  public:
+  struct DnsResult {
+   public:
+    DnsResult(int32_t result,
+              net::ResolveErrorInfo resolve_error_info,
+              absl::optional<net::AddressList> resolved_addresses,
+              absl::optional<net::HostResolverEndpointResults>
+                  endpoint_results_with_metadata);
+    ~DnsResult();
+
+    int result_;
+    net::ResolveErrorInfo resolve_error_info_;
+    absl::optional<net::AddressList> resolved_addresses_;
+    absl::optional<net::HostResolverEndpointResults>
+        endpoint_results_with_metadata_;
+  };
   FakeNetworkContext();
   FakeNetworkContext(const FakeNetworkContext&) = delete;
   FakeNetworkContext& operator=(const FakeNetworkContext&) = delete;
   ~FakeNetworkContext() override;
 
   // network::TestNetworkContext:
-  void CreateHostResolver(
-      const absl::optional<net::DnsConfigOverrides>& config_overrides,
-      mojo::PendingReceiver<network::mojom::HostResolver> receiver) override;
+  void ResolveHost(
+      network::mojom::HostResolverHostPtr host,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      network::mojom::ResolveHostParametersPtr optional_parameters,
+      mojo::PendingRemote<network::mojom::ResolveHostClient> response_client)
+      override;
 
   void CreateTCPConnectedSocket(
       const absl::optional<net::IPEndPoint>& local_addr,
@@ -86,9 +102,17 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void SetUdpReceiveDelay(base::TimeDelta receive_delay);
 
   // Sets the fake DNS result. Used to test a single host resolution.
-  void set_fake_dns_result(
-      std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result) {
+  void set_fake_dns_result(std::unique_ptr<DnsResult> fake_dns_result) {
+    CHECK(fake_dns_results_.empty());
     fake_dns_result_ = std::move(fake_dns_result);
+  }
+
+  // Sets the deque of fake DNS results. Used to test a sequence of host
+  // resolutions.
+  void set_fake_dns_results(
+      base::circular_deque<std::unique_ptr<DnsResult>> fake_dns_results) {
+    CHECK(!fake_dns_result_);
+    fake_dns_results_ = std::move(fake_dns_results);
   }
 
   // If set to true, the binding pipe will be disconnected when attempting to
@@ -116,12 +140,13 @@ class FakeNetworkContext : public network::TestNetworkContext {
   }
 
  private:
-  // Fake host resolver.
-  std::unique_ptr<FakeHostResolver> resolver_;
-  // Fake DNS lookup results.
-  base::circular_deque<FakeHostResolver::DnsResult*> fake_dns_results_;
-  // Fake DNS lookup result.
-  std::unique_ptr<FakeHostResolver::DnsResult> fake_dns_result_;
+  // Fake DNS lookup result. Persists across resolutions.
+  // Cannot be set together with |fake_dns_results_|.
+  std::unique_ptr<DnsResult> fake_dns_result_;
+  // Fake DNS lookup results -- for every query the resolver pops and returns
+  // the front entry.
+  // Cannot be set together with |fake_dns_result_|.
+  base::circular_deque<std::unique_ptr<DnsResult>> fake_dns_results_;
   // Provides the TCP socket functionality for tests.
   std::unique_ptr<FakeTCPConnectedSocket> fake_tcp_connected_socket_;
   // Provides the UDP socket functionality for tests.
@@ -145,7 +170,6 @@ class FakeNetworkContext : public network::TestNetworkContext {
   bool udp_connection_attempt_disconnect_ = false;
 };
 
-}  // namespace network_diagnostics
-}  // namespace ash
+}  // namespace ash::network_diagnostics
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_FAKE_NETWORK_CONTEXT_H_
