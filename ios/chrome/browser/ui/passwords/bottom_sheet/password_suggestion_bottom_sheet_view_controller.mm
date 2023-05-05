@@ -6,7 +6,11 @@
 
 #import "base/mac/foundation_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
@@ -199,6 +203,8 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
         PasswordSuggestionBottomSheetViewController* strongSelf = weakSelf;
         if (strongSelf) {
           [menuElements addObject:[strongSelf openPasswordManagerAction]];
+          [menuElements
+              addObject:[strongSelf openPasswordDetailsForIndexPath:indexPath]];
         }
 
         return [UIMenu menuWithTitle:@"" children:menuElements];
@@ -330,12 +336,25 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 // Returns the string to display at a given row in the table view.
 - (NSString*)suggestionAtRow:(NSInteger)row {
   FormSuggestion* formSuggestion = [_suggestions objectAtIndex:row];
-  return formSuggestion.value;
+
+  // Removing suffix ' ••••••••' appended to the username in the suggestion.
+  NSString* username = formSuggestion.value;
+  if ([username containsString:kPasswordFormSuggestionSuffix]) {
+    username = [username
+        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
+                                  withString:@""];
+  }
+  return username;
 }
 
 // Returns the display description at a given row in the table view.
 - (NSString*)descriptionAtRow:(NSInteger)row {
   FormSuggestion* formSuggestion = [_suggestions objectAtIndex:row];
+  GURL URL(base::SysNSStringToUTF8(formSuggestion.displayDescription));
+  if (!URL.is_empty()) {
+    return base::SysUTF8ToNSString(
+        password_manager::GetShownOrigin(url::Origin::Create(URL)));
+  }
   return formSuggestion.displayDescription;
 }
 
@@ -394,23 +413,13 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   DCHECK(cell);
 
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
-
-  // Set the cell identifier to the associated URL, which we use to fetch the
-  // favicon.
-  NSString* cellIdentifier = [self descriptionAtRow:indexPath.row];
-  URLCell.cellUniqueIdentifier = cellIdentifier;
-
   auto faviconLoadedBlock = ^(FaviconAttributes* attributes) {
-    // If the user scrolls quickly, the cell could be reused, so make sure the
-    // favicon still matches the URL used to fetch the favicon (as the favicon
-    // fetch is asynchronous).
-    if ([URLCell.cellUniqueIdentifier isEqualToString:cellIdentifier]) {
-      DCHECK(attributes);
-      [URLCell.faviconView configureWithAttributes:attributes];
-    }
+    DCHECK(attributes);
+    // It doesn't matter which cell the user sees here, all the credentials
+    // listed are for the same page and thus share the same favicon.
+    [URLCell.faviconView configureWithAttributes:attributes];
   };
-  [self.delegate loadFaviconAtIndexPath:indexPath
-                    faviconBlockHandler:faviconLoadedBlock];
+  [self.delegate loadFaviconWithBlockHandler:faviconLoadedBlock];
 }
 
 // Sets the password bottom sheet's table view to full height.
@@ -498,18 +507,19 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
   [_handler displayPasswordManager];
 }
 
+// Opens the password details for form suggestion.
+- (void)displayPasswordDetailsForFormSuggestion:
+    (FormSuggestion*)formSuggestion {
+  [_handler displayPasswordDetailsForFormSuggestion:formSuggestion];
+}
+
 // Creates the UI action used to open the password manager.
 - (UIAction*)openPasswordManagerAction {
   __weak __typeof(self) weakSelf = self;
   void (^passwordManagerButtonTapHandler)(UIAction*) = ^(UIAction* action) {
     // Open Password Manager.
     [weakSelf.delegate disableRefocus];
-    [weakSelf dismissViewControllerAnimated:NO
-                                 completion:^{
-                                   // Send some message to open the password
-                                   // manager.
-                                   [weakSelf displayPasswordManager];
-                                 }];
+    [weakSelf displayPasswordManager];
   };
   UIImage* keyIcon =
       CustomSymbolWithPointSize(kPasswordSymbol, kSymbolActionPointSize);
@@ -517,8 +527,29 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
       actionWithTitle:l10n_util::GetNSString(
                           IDS_IOS_PASSWORD_BOTTOM_SHEET_PASSWORD_MANAGER)
                 image:keyIcon
-           identifier:@"kBottomSheetPopupMenuPasswordManagerActionIdentifier"
+           identifier:nil
               handler:passwordManagerButtonTapHandler];
+}
+
+// Creates the UI action used to open the password details for form suggestion
+// at index path.
+- (UIAction*)openPasswordDetailsForIndexPath:(NSIndexPath*)indexPath {
+  __weak __typeof(self) weakSelf = self;
+  FormSuggestion* formSuggestion = [_suggestions objectAtIndex:indexPath.row];
+  void (^showDetailsButtonTapHandler)(UIAction*) = ^(UIAction* action) {
+    // Open Password Details.
+    [weakSelf.delegate disableRefocus];
+    [weakSelf displayPasswordDetailsForFormSuggestion:formSuggestion];
+  };
+
+  UIImage* infoIcon =
+      DefaultSymbolWithPointSize(kInfoCircleSymbol, kSymbolActionPointSize);
+  return
+      [UIAction actionWithTitle:l10n_util::GetNSString(
+                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_SHOW_DETAILS)
+                          image:infoIcon
+                     identifier:nil
+                        handler:showDetailsButtonTapHandler];
 }
 
 @end

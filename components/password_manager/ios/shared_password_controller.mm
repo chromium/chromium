@@ -91,10 +91,9 @@ namespace {
 // Password is considered not generated when user edits it below 4 characters.
 constexpr int kMinimumLengthForEditedPassword = 4;
 
-// The string ' •••' appended to the username in the suggestion.
-NSString* const kSuggestionSuffix = @" ••••••••";
-
 }  // namespace
+
+NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
 
 @interface SharedPasswordController ()
 
@@ -460,8 +459,8 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       continue;
     }
     DCHECK(self.delegate.passwordManagerClient);
-    NSString* value =
-        [rawSuggestion.value stringByAppendingString:kSuggestionSuffix];
+    NSString* value = [rawSuggestion.value
+        stringByAppendingString:kPasswordFormSuggestionSuffix];
     FormSuggestion* suggestion =
         [FormSuggestion suggestionWithValue:value
                          displayDescription:rawSuggestion.displayDescription
@@ -559,9 +558,10 @@ NSString* const kSuggestionSuffix = @" ••••••••";
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kPassword,
           [self IsOffTheRecord]);
-      DCHECK([suggestion.value hasSuffix:kSuggestionSuffix]);
+      DCHECK([suggestion.value hasSuffix:kPasswordFormSuggestionSuffix]);
       NSString* username = [suggestion.value
-          substringToIndex:suggestion.value.length - kSuggestionSuffix.length];
+          substringToIndex:suggestion.value.length -
+                           kPasswordFormSuggestionSuffix.length];
       std::unique_ptr<password_manager::FillData> fillData =
           [self.suggestionHelper passwordFillDataForUsername:username
                                                      inFrame:frame];

@@ -8,17 +8,23 @@
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_exit_reason.h"
 
+#import "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace autofill {
 struct FormActivityParams;
 }  // namespace autofill
 
 namespace password_manager {
-class SavedPasswordsPresenter;
+struct CredentialUIEntry;
+class PasswordStoreInterface;
 }  // namespace password_manager
 
 class FaviconLoader;
 class PrefService;
 class WebStateList;
+class GURL;
+
+@class FormSuggestion;
 
 @protocol PasswordSuggestionBottomSheetConsumer;
 @protocol ReauthenticationProtocol;
@@ -33,16 +39,25 @@ class WebStateList;
                        faviconLoader:(FaviconLoader*)faviconLoader
                          prefService:(PrefService*)prefService
                               params:(const autofill::FormActivityParams&)params
-             savedPasswordsPresenter:
-                 (raw_ptr<password_manager::SavedPasswordsPresenter>)
-                     passwordPresenter
-                        reauthModule:(id<ReauthenticationProtocol>)reauthModule;
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
+                                 URL:(const GURL&)URL
+                profilePasswordStore:
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
+                        profilePasswordStore
+                accountPasswordStore:
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
+                        accountPasswordStore;
 
 // Disconnects the mediator.
 - (void)disconnect;
 
 // Whether the mediator has any suggestions for the user.
 - (BOOL)hasSuggestions;
+
+// Return the credential associated with the form suggestion. It is an optional,
+// in case the credential can't be find.
+- (absl::optional<password_manager::CredentialUIEntry>)
+    getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion;
 
 // The bottom sheet suggestions consumer.
 @property(nonatomic, strong) id<PasswordSuggestionBottomSheetConsumer> consumer;

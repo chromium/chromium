@@ -7,12 +7,15 @@
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/password_manager/ios/shared_password_controller.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
@@ -20,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
-#import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
@@ -30,6 +32,7 @@
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -42,10 +45,9 @@ using ReauthenticationEvent::kFailure;
 using ReauthenticationEvent::kMissingPasscode;
 using ReauthenticationEvent::kSuccess;
 
-@interface PasswordSuggestionBottomSheetMediator () <
-    WebStateListObserving,
-    CRWWebStateObserver,
-    SavedPasswordsPresenterObserver>
+@interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
+                                                     CRWWebStateObserver,
+                                                     PasswordFetcherDelegate>
 
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> suggestionsProvider;
@@ -56,21 +58,26 @@ using ReauthenticationEvent::kSuccess;
 // Default globe favicon when no favicon is available.
 @property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
 
+// The password fetcher to query the user profile.
+@property(nonatomic, strong) PasswordFetcher* passwordFetcher;
+
 @end
 
 @implementation PasswordSuggestionBottomSheetMediator {
+  // The interfaces for getting and manipulating a user's saved passwords.
+  scoped_refptr<password_manager::PasswordStoreInterface> _profilePasswordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _accountPasswordStore;
+
+  // Origin to fetch passwords for.
+  GURL _URL;
+
   // The WebStateList observed by this mediator and the observer bridge.
   raw_ptr<WebStateList> _webStateList;
   std::unique_ptr<web::WebStateObserverBridge> _observer;
   std::unique_ptr<ActiveWebStateObservationForwarder> _forwarder;
 
-  // A helper object for passing data about saved passwords from a finished
-  // password store request to the PasswordSuggestionBottomSheetViewController.
-  std::unique_ptr<SavedPasswordsPresenterObserverBridge>
-      _passwordsPresenterObserver;
-
-  // Service which gives us a view on users' saved passwords.
-  raw_ptr<password_manager::SavedPasswordsPresenter> _savedPasswordsPresenter;
+  // Vector of credentials related to the current page.
+  std::vector<password_manager::CredentialUIEntry> _credentials;
 
   // Whether the field that triggered the bottom sheet will need to refocus when
   // the bottom sheet is dismissed. Default is true.
@@ -92,20 +99,28 @@ using ReauthenticationEvent::kSuccess;
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
 
-- (instancetype)
-       initWithWebStateList:(WebStateList*)webStateList
-              faviconLoader:(FaviconLoader*)faviconLoader
-                prefService:(PrefService*)prefService
-                     params:(const autofill::FormActivityParams&)params
-    savedPasswordsPresenter:
-        (raw_ptr<password_manager::SavedPasswordsPresenter>)passwordPresenter
-               reauthModule:(id<ReauthenticationProtocol>)reauthModule {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                       faviconLoader:(FaviconLoader*)faviconLoader
+                         prefService:(PrefService*)prefService
+                              params:(const autofill::FormActivityParams&)params
+                        reauthModule:(id<ReauthenticationProtocol>)reauthModule
+                                 URL:(const GURL&)URL
+                profilePasswordStore:
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
+                        profilePasswordStore
+                accountPasswordStore:
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
+                        accountPasswordStore {
   if (self = [super init]) {
     _needsRefocus = true;
     _frameId = params.frame_id;
     _faviconLoader = faviconLoader;
     _prefService = prefService;
     _reauthenticationModule = reauthModule;
+
+    _profilePasswordStore = profilePasswordStore;
+    _accountPasswordStore = accountPasswordStore;
+    _URL = URL;
 
     _webStateList = webStateList;
     web::WebState* activeWebState = _webStateList->GetActiveWebState();
@@ -114,12 +129,6 @@ using ReauthenticationEvent::kSuccess;
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
     _forwarder = std::make_unique<ActiveWebStateObservationForwarder>(
         webStateList, _observer.get());
-
-    _savedPasswordsPresenter = passwordPresenter;
-    _passwordsPresenterObserver =
-        std::make_unique<SavedPasswordsPresenterObserverBridge>(
-            self, _savedPasswordsPresenter);
-    _savedPasswordsPresenter->Init();
 
     if (activeWebState) {
       FormSuggestionTabHelper* tabHelper =
@@ -137,6 +146,14 @@ using ReauthenticationEvent::kSuccess;
                 id<FormInputSuggestionsProvider> formInputSuggestionsProvider) {
               self.suggestions = suggestions;
             }];
+
+      // Fetch passwords related to the suggestions.
+      _credentials.clear();
+      self.passwordFetcher = [[PasswordFetcher alloc]
+          initWithProfilePasswordStore:_profilePasswordStore
+                  accountPasswordStore:_accountPasswordStore
+                              delegate:self
+                                   URL:_URL];
     }
   }
   return self;
@@ -146,10 +163,6 @@ using ReauthenticationEvent::kSuccess;
 }
 
 - (void)disconnect {
-  DCHECK(_savedPasswordsPresenter);
-  DCHECK(_passwordsPresenterObserver);
-  _savedPasswordsPresenter->RemoveObserver(_passwordsPresenterObserver.get());
-  _passwordsPresenterObserver.reset();
   _prefService = nullptr;
   _faviconLoader = nullptr;
   _forwarder = nullptr;
@@ -159,6 +172,31 @@ using ReauthenticationEvent::kSuccess;
 
 - (BOOL)hasSuggestions {
   return [self.suggestions count] > 0;
+}
+
+- (absl::optional<password_manager::CredentialUIEntry>)
+    getCredentialForFormSuggestion:(FormSuggestion*)formSuggestion {
+  NSString* username = formSuggestion.value;
+  if ([username containsString:kPasswordFormSuggestionSuffix]) {
+    username = [username
+        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
+                                  withString:@""];
+  }
+  auto it = base::ranges::find_if(
+      _credentials,
+      [username](const password_manager::CredentialUIEntry& credential) {
+        CHECK(!credential.facets.empty());
+        for (auto facet : credential.facets) {
+          if ([base::SysUTF16ToNSString(credential.username)
+                  isEqualToString:username]) {
+            return true;
+          }
+        }
+        return false;
+      });
+  return it != _credentials.end()
+             ? absl::optional<password_manager::CredentialUIEntry>(*it)
+             : absl::nullopt;
 }
 
 - (void)logExitReason:(PasswordSuggestionBottomSheetExitReason)exitReason {
@@ -234,15 +272,12 @@ using ReauthenticationEvent::kSuccess;
   _needsRefocus = false;
 }
 
-- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-           faviconBlockHandler:(FaviconLoader::FaviconAttributesCompletionBlock)
-                                   faviconLoadedBlock {
+- (void)loadFaviconWithBlockHandler:
+    (FaviconLoader::FaviconAttributesCompletionBlock)faviconLoadedBlock {
   CHECK(_faviconLoader);
-  // Try loading the url's favicon.
-  GURL URL(base::SysNSStringToUTF8([self descriptionAtRow:indexPath.row]));
-  if (!URL.is_empty()) {
+  if (!_URL.is_empty()) {
     _faviconLoader->FaviconForPageUrl(
-        URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
+        _URL, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
         /*fallback_to_google_server=*/NO, faviconLoadedBlock);
   } else {
     faviconLoadedBlock([self defaultGlobeIconAttributes]);
@@ -290,18 +325,17 @@ using ReauthenticationEvent::kSuccess;
   [self.consumer dismiss];
 }
 
-#pragma mark - SavedPasswordsPresenterObserver
+#pragma mark - PasswordFetcherDelegate
 
-- (void)savedPasswordsDidChange {
-  std::vector<password_manager::CredentialUIEntry> savedCredentials =
-      _savedPasswordsPresenter->GetSavedCredentials();
-  if (!savedCredentials.empty()) {
-    // TODO(crbug.com/1422362): Get the CredentialUIEntry associated to this
-    // FormSuggestion. From the saved credentials, we will find the ones
-    // associated with the current suggestions, store them and send that
-    // information to the consumer.
-    [self.consumer setSuggestions:self.suggestions];
+- (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
+      didFetchPasswords:
+          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+              passwords {
+  std::vector<password_manager::CredentialUIEntry> credentials;
+  for (const auto& form : passwords) {
+    credentials.push_back(password_manager::CredentialUIEntry(*form));
   }
+  _credentials = credentials;
 }
 
 #pragma mark - Private
@@ -310,12 +344,6 @@ using ReauthenticationEvent::kSuccess;
 - (void)selectSuggestion:(FormSuggestion*)suggestion {
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
   [self.suggestionsProvider didSelectSuggestion:suggestion];
-}
-
-// Returns the display description at a given row in the table view.
-- (NSString*)descriptionAtRow:(NSInteger)row {
-  FormSuggestion* formSuggestion = [self.suggestions objectAtIndex:row];
-  return formSuggestion.displayDescription;
 }
 
 // Returns the default favicon attributes after making sure they are

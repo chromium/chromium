@@ -91,7 +91,7 @@ bool ShouldDisplayCredentialAsCompromised(
   std::vector<CredentialUIEntry> _credentials;
 
   // Password Check manager.
-  raw_ptr<IOSChromePasswordCheckManager> _manager;
+  scoped_refptr<IOSChromePasswordCheckManager> _manager;
 
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
@@ -125,7 +125,7 @@ bool ShouldDisplayCredentialAsCompromised(
 - (instancetype)
        initWithPasswords:(const std::vector<CredentialUIEntry>&)credentials
              displayName:(NSString*)displayName
-    passwordCheckManager:(IOSChromePasswordCheckManager*)manager
+    passwordCheckManager:(scoped_refptr<IOSChromePasswordCheckManager>)manager
              prefService:(PrefService*)prefService
              syncService:(syncer::SyncService*)syncService
                  context:(DetailsContext)context
@@ -139,10 +139,10 @@ bool ShouldDisplayCredentialAsCompromised(
   }
 
   _manager = manager;
+  _passwordCheckObserver =
+      std::make_unique<PasswordCheckObserverBridge>(self, manager.get());
   _credentials = credentials;
   _displayName = displayName;
-  _passwordCheckObserver =
-      std::make_unique<PasswordCheckObserverBridge>(self, manager);
   _context = context;
   _prefService = prefService;
   _syncService = syncService;

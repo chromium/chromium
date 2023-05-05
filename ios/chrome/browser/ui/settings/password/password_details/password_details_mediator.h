@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/mac/foundation_util.h"
+#import "base/memory/scoped_refptr.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
@@ -31,15 +32,15 @@ class IOSChromePasswordCheckManager;
 // Vector of CredentialUIEntry is converted to an array of PasswordDetails and
 // passed to a consumer with the display name (title) for the Password Details
 // view.
-- (instancetype)initWithPasswords:
-                    (const std::vector<password_manager::CredentialUIEntry>&)
-                        credentials
-                      displayName:(NSString*)displayName
-             passwordCheckManager:(IOSChromePasswordCheckManager*)manager
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                          context:(DetailsContext)context
-                         delegate:(id<PasswordDetailsMediatorDelegate>)delegate
+- (instancetype)
+       initWithPasswords:
+           (const std::vector<password_manager::CredentialUIEntry>&)credentials
+             displayName:(NSString*)displayName
+    passwordCheckManager:(scoped_refptr<IOSChromePasswordCheckManager>)manager
+             prefService:(PrefService*)prefService
+             syncService:(syncer::SyncService*)syncService
+                 context:(DetailsContext)context
+                delegate:(id<PasswordDetailsMediatorDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

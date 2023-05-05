@@ -23,11 +23,9 @@
 // Disables future refocus requests.
 - (void)disableRefocus;
 
-// Loads the favicon associated with the provided index path.
-// Defaults to the globe symbol if no URL is found.
-- (void)loadFaviconAtIndexPath:(NSIndexPath*)indexPath
-           faviconBlockHandler:(FaviconLoader::FaviconAttributesCompletionBlock)
-                                   faviconLoadedBlock;
+// Loads the favicon for cell. Defaults to the globe symbol if the URL is empty.
+- (void)loadFaviconWithBlockHandler:
+    (FaviconLoader::FaviconAttributesCompletionBlock)faviconLoadedBlock;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PASSWORDS_BOTTOM_SHEET_PASSWORD_SUGGESTION_BOTTOM_SHEET_DELEGATE_H_

@@ -19,6 +19,9 @@
 #import "ios/web/public/js_messaging/web_frames_manager_observer_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
+// The string ' ••••••••' appended to the username in the suggestion.
+extern NSString* const kPasswordFormSuggestionSuffix;
+
 namespace password_manager {
 class PasswordManagerClient;
 }  // namespace password_manager
