@@ -43,6 +43,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
 
   using DailyGooglePhotosIdCache = base::HashingLRUCacheSet<uint32_t>;
 
+  using LoadPreviewImageCallback =
+      base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
+
   WallpaperController();
   virtual ~WallpaperController();
 
@@ -305,9 +308,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Returns the wallpaper image currently being shown.
   virtual gfx::ImageSkia GetWallpaperImage() = 0;
 
-  // Returns the preview image of the currently shown wallpaper. Nullable if the
-  // current wallpaper is not available.
-  virtual scoped_refptr<base::RefCountedMemory> GetPreviewImage() = 0;
+  // Loads the preview image of the currently shown wallpaper. Callback is
+  // called after the operation completes.
+  virtual void LoadPreviewImage(LoadPreviewImageCallback callback) = 0;
 
   // Returns whether the current wallpaper is blurred on lock/login screen.
   virtual bool IsWallpaperBlurredForLockState() const = 0;

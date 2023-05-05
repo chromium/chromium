@@ -412,25 +412,20 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest,
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, GetWallpaperAsJpegBytes) {
-  test_wallpaper_controller()->ShowWallpaperImage(
-      CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorRED));
+  auto image = CreateSolidImageSkia(/*width=*/1, /*height=*/1, SK_ColorRED);
+  test_wallpaper_controller()->ShowWallpaperImage(image);
+  scoped_refptr<base::RefCountedMemory> expected_jpeg_bytes =
+      gfx::Image(image).As1xPNGBytes();
 
-  scoped_refptr<base::RefCountedMemory> jpeg_bytes;
-
+  // Jpeg bytes of the preview image.
   base::RunLoop loop;
-  delegate()->GetWallpaperAsJpegBytes(base::BindLambdaForTesting(
-      [quit = loop.QuitClosure(),
-       &jpeg_bytes](scoped_refptr<base::RefCountedMemory> bytes) {
-        bytes.swap(jpeg_bytes);
+  test_wallpaper_controller()->LoadPreviewImage(base::BindLambdaForTesting(
+      [quit = loop.QuitClosure(), &expected_jpeg_bytes](
+          scoped_refptr<base::RefCountedMemory> preview_bytes) {
+        EXPECT_TRUE(preview_bytes->Equals(expected_jpeg_bytes));
         std::move(quit).Run();
       }));
   loop.Run();
-
-  // Jpeg bytes of the preview image.
-  scoped_refptr<base::RefCountedMemory> expected_jpeg_bytes =
-      test_wallpaper_controller()->GetPreviewImage();
-
-  EXPECT_TRUE(expected_jpeg_bytes->Equals(jpeg_bytes));
 }
 
 TEST_F(PersonalizationAppWallpaperProviderImplTest, SetDailyRefreshBanned) {

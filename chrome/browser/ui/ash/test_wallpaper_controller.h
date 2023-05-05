@@ -169,7 +169,7 @@ class TestWallpaperController : public ash::WallpaperController {
   void AddObserver(ash::WallpaperControllerObserver* observer) override;
   void RemoveObserver(ash::WallpaperControllerObserver* observer) override;
   gfx::ImageSkia GetWallpaperImage() override;
-  scoped_refptr<base::RefCountedMemory> GetPreviewImage() override;
+  void LoadPreviewImage(LoadPreviewImageCallback callback) override;
   bool IsWallpaperBlurredForLockState() const override;
   bool IsActiveUserWallpaperControlledByPolicy() override;
   bool IsWallpaperControlledByPolicy(

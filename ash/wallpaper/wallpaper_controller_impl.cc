@@ -55,6 +55,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -413,6 +414,19 @@ user_manager::UserType GetUserType(const AccountId& id) {
   }
 
   return user_session->user_info.type;
+}
+
+scoped_refptr<base::RefCountedMemory> ReadFile(
+    const base::FilePath& file_path) {
+  if (file_path.empty()) {
+    return nullptr;
+  }
+
+  std::string data;
+  if (!base::ReadFileToString(file_path, &data)) {
+    return nullptr;
+  }
+  return base::MakeRefCounted<base::RefCountedString>(std::move(data));
 }
 
 // Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the
@@ -1491,15 +1505,20 @@ gfx::ImageSkia WallpaperControllerImpl::GetWallpaperImage() {
   return GetWallpaper();
 }
 
-scoped_refptr<base::RefCountedMemory>
-WallpaperControllerImpl::GetPreviewImage() {
+void WallpaperControllerImpl::LoadPreviewImage(
+    LoadPreviewImageCallback callback) {
   if (!current_wallpaper_) {
-    return nullptr;
+    std::move(callback).Run(nullptr);
+    return;
   }
+
   auto image = current_wallpaper_->image();
   image.MakeThreadSafe();
   if (!IsOnlineWallpaper(current_wallpaper_->wallpaper_info().type)) {
-    return EncodeAndResizeImage(image);
+    sequenced_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&EncodeAndResizeImage, image),
+        std::move(callback));
+    return;
   }
 
   auto variants = current_wallpaper_->wallpaper_info().variants;
@@ -1509,18 +1528,19 @@ WallpaperControllerImpl::GetPreviewImage() {
   // No image with |backdrop::Image::IMAGE_TYPE_PREVIEW_MODE|, fallback to
   // |resized|.
   if (it == variants.end()) {
-    return EncodeAndResizeImage(image);
+    sequenced_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE, base::BindOnce(&EncodeAndResizeImage, image),
+        std::move(callback));
+    return;
   }
-  const auto preview_variant = *it;
-  const auto url_to_file_path_map =
-      GetOnlineWallpaperVariantPaths({preview_variant});
-  const base::FilePath& preview_file_path =
-      url_to_file_path_map.at(preview_variant.raw_url.spec());
-  DCHECK(!preview_file_path.empty());
 
-  std::string data;
-  base::ReadFileToString(preview_file_path, &data);
-  return base::MakeRefCounted<base::RefCountedString>(std::move(data));
+  const auto& preview_variant = *it;
+  sequenced_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetExistingOnlineWallpaperPath,
+                     preview_variant.raw_url.spec())
+          .Then(base::BindOnce(&ReadFile)),
+      std::move(callback));
 }
 
 bool WallpaperControllerImpl::IsWallpaperBlurredForLockState() const {

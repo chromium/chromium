@@ -1075,7 +1075,15 @@ TEST_F(WallpaperControllerTest, ColorsCalculatedForMostRecentWallpaper) {
   EXPECT_EQ(controller_->calculated_colors()->k_mean_color, SK_ColorBLUE);
   EXPECT_FALSE(pref_manager_->GetCachedKMeanColor("old"));
   EXPECT_TRUE(pref_manager_->GetCachedKMeanColor("new"));
-  EXPECT_TRUE(controller_->GetPreviewImage());
+
+  base::RunLoop load_preview_image_loop;
+  controller_->LoadPreviewImage(base::BindLambdaForTesting(
+      [quit = load_preview_image_loop.QuitClosure()](
+          scoped_refptr<base::RefCountedMemory> image_bytes) {
+        EXPECT_TRUE(image_bytes);
+        std::move(quit).Run();
+      }));
+  load_preview_image_loop.Run();
 }
 
 TEST_F(WallpaperControllerTest, CelebiNotSavedWhenJellyIsDisabled) {
