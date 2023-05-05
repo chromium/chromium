@@ -2722,6 +2722,9 @@ void View::AfterPropertyChange(const void* key, int64_t old_value) {
                                                               this);
     }
   }
+  for (auto& observer : observers_) {
+    observer.OnViewPropertyChanged(this, key, old_value);
+  }
 }
 
 void View::OnPropertyChanged(ui::metadata::PropertyKey property,
