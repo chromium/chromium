@@ -515,6 +515,10 @@ class MockNavigationPredictorForTesting : public NavigationPredictor {
   absl::optional<base::TimeDelta> navigation_start_to_click() {
     return navigation_start_to_click_;
   }
+  int GetAnchorIndex(AnchorId anchor_id) {
+    auto it = tracked_anchor_id_to_index_.find(anchor_id);
+    return (it != tracked_anchor_id_to_index_.end()) ? it->second : -1;
+  }
 
  private:
   MockNavigationPredictorForTesting(
@@ -1097,4 +1101,28 @@ TEST_F(NavigationPredictorUserInteractionsTest,
   using UkmEntry = ukm::builders::NavigationPredictorUserInteractions;
   auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
   ASSERT_EQ(0u, entries.size());
+}
+
+TEST_F(NavigationPredictorUserInteractionsTest,
+       ClickOnNotSampledAnchorElement) {
+  mojo::Remote<blink::mojom::AnchorElementMetricsHost> predictor_service;
+  auto* predictor_service_host = MockNavigationPredictorForTesting::Create(
+      main_rfh(), predictor_service.BindNewPipeAndPassReceiver());
+  NavigationPredictorMetricsDocumentData* navigation_predictor_metrics_data =
+      NavigationPredictorMetricsDocumentData::GetOrCreateForCurrentDocument(
+          main_rfh());
+
+  auto anchor_id = ReportNewAnchorElement(predictor_service.get());
+  // Here, we simulate a not-sampled anchor by calling `ReportNewAnchorElement`
+  // without dispatching `ReportAnchorElement.*Viewport` or
+  // `ReportAnchorElementPointer.*` events.
+  const auto navigation_start_to_click = base::Milliseconds(200);
+  ReportAnchorElementClick(predictor_service.get(), anchor_id,
+                           GURL("https://example.com/test.html"),
+                           navigation_start_to_click);
+  base::RunLoop().RunUntilIdle();
+  auto anchor_index = predictor_service_host->GetAnchorIndex(anchor_id);
+  EXPECT_EQ(0u,
+            navigation_predictor_metrics_data->GetUserInteractionsData().count(
+                anchor_index));
 }

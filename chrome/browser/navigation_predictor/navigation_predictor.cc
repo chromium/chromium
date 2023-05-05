@@ -198,6 +198,8 @@ void NavigationPredictor::ReportAnchorElementClick(
     return;
   }
 
+  auto& navigation_predictor_metrics_data =
+      GetNavigationPredictorMetricsDocumentData();
   // An anchor index of -1 indicates that we are not going to log details about
   // the anchor that was clicked.
   int anchor_index = -1;
@@ -207,39 +209,46 @@ void NavigationPredictor::ReportAnchorElementClick(
     anchor_index = index_it->second;
 
     // Record PreloadOnHover.HoverTakenMs and PreloadOnHover.PointerDownTakenMs
-    // to UKM.
-    auto& navigation_predictor_metrics_data =
-        GetNavigationPredictorMetricsDocumentData();
+    // to UKM. We should make sure that we only process the `sampled` anchor
+    // elements here, as `AnchorElementMetricsSender` reports all new anchor
+    // elements to `NavigationPredictor`, but only reports user interactions
+    // events for the  `sampled` anchors. Otherwise, we will end up creating
+    // empty `UserInteractionsData` UKM records.
     auto& user_interactions =
         navigation_predictor_metrics_data.GetUserInteractionsData();
-    auto& user_interaction = user_interactions[index_it->second];
-    // navigation_start_to_click_ is set to click->navigation_start_to_click and
-    // should always has a value.
-    CHECK(navigation_start_to_click_.has_value());
-    if (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
-        user_interaction.last_navigation_start_to_last_pointer_down
-            .has_value()) {
-      NavigationPredictorMetricsDocumentData::PreloadOnHoverData
-          preload_on_hover;
-      preload_on_hover.taken = true;
-      if (user_interaction.last_navigation_start_to_pointer_over.has_value()) {
-        // `hover_dwell_time` measures the time delta from the last mouse over
-        // event to the last mouse click event.
-        preload_on_hover.hover_dwell_time =
-            navigation_start_to_click_.value() -
-            user_interaction.last_navigation_start_to_pointer_over.value();
-      }
-      if (user_interaction.last_navigation_start_to_last_pointer_down
+    auto user_interaction_it = user_interactions.find(index_it->second);
+    if (user_interaction_it != user_interactions.end()) {
+      auto& user_interaction = user_interactions[index_it->second];
+      // navigation_start_to_click_ is set to click->navigation_start_to_click
+      // and should always have a value.
+      CHECK(navigation_start_to_click_.has_value());
+      if (user_interaction.last_navigation_start_to_pointer_over.has_value() ||
+          user_interaction.last_navigation_start_to_last_pointer_down
               .has_value()) {
-        // `pointer_down_duration` measures the time delta from the last mouse
-        // down event to the last mouse click event.
-        preload_on_hover.pointer_down_duration =
-            navigation_start_to_click_.value() -
-            user_interaction.last_navigation_start_to_last_pointer_down.value();
-        user_interaction.last_navigation_start_to_last_pointer_down.reset();
+        NavigationPredictorMetricsDocumentData::PreloadOnHoverData
+            preload_on_hover;
+        preload_on_hover.taken = true;
+        if (user_interaction.last_navigation_start_to_pointer_over
+                .has_value()) {
+          // `hover_dwell_time` measures the time delta from the last mouse over
+          // event to the last mouse click event.
+          preload_on_hover.hover_dwell_time =
+              navigation_start_to_click_.value() -
+              user_interaction.last_navigation_start_to_pointer_over.value();
+        }
+        if (user_interaction.last_navigation_start_to_last_pointer_down
+                .has_value()) {
+          // `pointer_down_duration` measures the time delta from the last mouse
+          // down event to the last mouse click event.
+          preload_on_hover.pointer_down_duration =
+              navigation_start_to_click_.value() -
+              user_interaction.last_navigation_start_to_last_pointer_down
+                  .value();
+          user_interaction.last_navigation_start_to_last_pointer_down.reset();
+        }
+        navigation_predictor_metrics_data.AddPreloadOnHoverData(
+            std::move(preload_on_hover));
       }
-      navigation_predictor_metrics_data.AddPreloadOnHoverData(
-          std::move(preload_on_hover));
     }
   }
 
@@ -252,15 +261,15 @@ void NavigationPredictor::ReportAnchorElementClick(
   }
   navigation_start_to_click_ = click->navigation_start_to_click;
   // navigation_start_to_click_ is set to click->navigation_start_to_click and
-  // should always has a value.
+  // should always have a value.
   CHECK(navigation_start_to_click_.has_value());
 
-  GetNavigationPredictorMetricsDocumentData().SetNavigationStartToClick(
+  navigation_predictor_metrics_data.SetNavigationStartToClick(
       navigation_start_to_click_.value());
 
   page_link_click.navigation_start_to_link_clicked_ =
       navigation_start_to_click_.value();
-  GetNavigationPredictorMetricsDocumentData().AddPageLinkClickData(
+  navigation_predictor_metrics_data.AddPageLinkClickData(
       std::move(page_link_click));
 }
 
