@@ -90,11 +90,21 @@ HidStatusIcon::~HidStatusIcon() {
 }
 
 void HidStatusIcon::ProfileAdded(Profile* profile) {
+  if (profiles_.size() == 1) {
+    auto* profile_manager = g_browser_process->profile_manager();
+    CHECK(profile_manager);
+    profile_manager->GetProfileAttributesStorage().AddObserver(this);
+  }
   RefreshIcon();
 }
 
 void HidStatusIcon::ProfileRemoved(Profile* profile) {
   RefreshIcon();
+  if (profiles_.empty()) {
+    auto* profile_manager = g_browser_process->profile_manager();
+    CHECK(profile_manager);
+    profile_manager->GetProfileAttributesStorage().RemoveObserver(this);
+  }
 }
 
 void HidStatusIcon::NotifyConnectionCountUpdated(Profile* profile) {
@@ -216,4 +226,14 @@ void HidStatusIcon::AddItem(StatusIconMenuModel* menu,
   }
   menu->AddItem(index, label);
   command_id_callbacks_.push_back(std::move(callback));
+}
+
+void HidStatusIcon::OnProfileNameChanged(
+    const base::FilePath& profile_path,
+    const std::u16string& old_profile_name) {
+  auto* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  if (profiles_.contains(profile)) {
+    NotifyConnectionCountUpdated(profile);
+  }
 }

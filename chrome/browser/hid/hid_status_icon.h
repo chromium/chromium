@@ -8,12 +8,15 @@
 #include <memory>
 #include <string>
 #include <vector>
-
+#include "base/files/file_path.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/status_icons/status_icon.h"
 
 class HidStatusIcon : public HidSystemTrayIcon,
-                      public StatusIconMenuModel::Delegate {
+                      public StatusIconMenuModel::Delegate,
+                      public ProfileAttributesStorage::Observer {
  public:
   HidStatusIcon();
   HidStatusIcon(const HidStatusIcon&) = delete;
@@ -46,6 +49,10 @@ class HidStatusIcon : public HidSystemTrayIcon,
   // To refresh the system tray icon when there is a button (for a profile)
   // added/removed.
   void RefreshIcon();
+
+  // Overrides from ProfileAttributesStorage::Observer
+  void OnProfileNameChanged(const base::FilePath& profile_path,
+                            const std::u16string& old_profile_name) override;
 
   // Reference to our status icon (if any) - owned by the StatusTray.
   raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;
