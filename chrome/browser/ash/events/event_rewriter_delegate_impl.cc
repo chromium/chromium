@@ -91,7 +91,7 @@ EventRewriterDelegateImpl::GetKeyboardRemappedModifierValue(
   const mojom::KeyboardSettings* settings =
       input_device_settings_controller_->GetKeyboardSettings(device_id);
   if (!settings) {
-    return modifier_key;
+    return absl::nullopt;
   }
 
   auto iter = settings->modifier_remappings.find(modifier_key);
