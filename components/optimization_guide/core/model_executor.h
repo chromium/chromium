@@ -62,6 +62,21 @@ class ModelExecutor {
                                 base::TimeTicks start_time,
                                 InputType input) = 0;
 
+  // Some callers define their InputType as a const ref type, but you can't make
+  // vectors of references. Strip those qualifiers off and add them back to the
+  // vector instead.
+  using ConstRefInputVector = const std::vector<typename std::remove_const<
+      typename std::remove_reference<InputType>::type>::type>&;
+
+  // It is guaranteed that the output passed to |BatchExecutionCallback| will
+  // always be in the same order as the input vector.
+  using BatchExecutionCallback =
+      base::OnceCallback<void(const std::vector<absl::optional<OutputType>>&)>;
+  virtual void SendForBatchExecution(
+      BatchExecutionCallback callback_on_complete,
+      base::TimeTicks start_time,
+      ConstRefInputVector inputs) = 0;
+
   // IMPORTANT: These WeakPointers must only be dereferenced on the
   // |execution_task_runner| thread.
   base::WeakPtr<ModelExecutor> GetWeakPtrForExecutionThread() {
