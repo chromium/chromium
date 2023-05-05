@@ -54,6 +54,7 @@ class SavedTabGroupKeyedService : public KeyedService,
 
   // SavedTabGroupModelObserver
   void SavedTabGroupModelLoaded() override;
+  void SavedTabGroupRemovedFromSync(const SavedTabGroup* group) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
       const absl::optional<base::Uuid>& tab_guid) override;

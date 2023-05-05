@@ -315,16 +315,21 @@ void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(
     return;
   }
 
-  if (tab_guid.has_value()) {
-    // TODO(dljames): Update tabs in the tabstrip if the respective group is
-    // open with the updated tab metadata. Figure out if the tab should be
-    // added, removed, or updated based on the data in saved_group.
-    NOTIMPLEMENTED();
-  } else {
-    // Update the visual data of the saved group if it exists and is open in
-    // the tabstrip.
-    UpdateGroupVisualData(group_guid, saved_group->local_group_id().value());
+  // Update the local group's metadata to match the saved group's.
+  UpdateGroupVisualData(group_guid, saved_group->local_group_id().value());
+  // Update the local group's contents to match the saved group's.
+  listener_.UpdateLocalGroupFromSync(saved_group->local_group_id().value());
+}
+
+void SavedTabGroupKeyedService::SavedTabGroupRemovedFromSync(
+    const SavedTabGroup* removed_group) {
+  // Do nothing if `removed_group` is not open in the tabstrip.
+  if (!removed_group->local_group_id().has_value()) {
+    return;
   }
+
+  // Update the local group's contents to match the saved group's.
+  listener_.RemoveLocalGroupFromSync(removed_group->local_group_id().value());
 }
 
 const TabStripModel* SavedTabGroupKeyedService::GetTabStripModelWithTabGroupId(

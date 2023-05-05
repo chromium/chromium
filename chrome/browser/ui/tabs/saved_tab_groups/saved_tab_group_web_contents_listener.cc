@@ -22,6 +22,15 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
 
 SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() = default;
 
+void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
+  content::NavigationHandle* navigation_handle =
+      web_contents()
+          ->GetController()
+          .LoadURLWithParams(content::NavigationController::LoadURLParams(url))
+          .get();
+  handle_from_sync_update_ = navigation_handle;
+}
+
 void SavedTabGroupWebContentsListener::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   ui::PageTransition page_transition = navigation_handle->GetPageTransition();
@@ -29,6 +38,14 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
       ui::PageTransitionIsRedirect(page_transition) ||
       !ui::PageTransitionIsMainFrame(page_transition)) {
     return;
+  }
+
+  // If the navigation was the result of a sync update we don't want to update
+  // the SavedTabGroupModel.
+  if (navigation_handle == handle_from_sync_update_) {
+    return;
+  } else {
+    handle_from_sync_update_ = nullptr;
   }
 
   SavedTabGroup* group = model_->GetGroupContainingTab(token_);

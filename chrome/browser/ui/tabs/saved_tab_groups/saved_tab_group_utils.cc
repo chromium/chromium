@@ -28,10 +28,14 @@ content::WebContents* SavedTabGroupUtils::OpenTabInBrowser(
     const GURL& url,
     Browser* browser,
     Profile* profile,
-    WindowOpenDisposition disposition) {
+    WindowOpenDisposition disposition,
+    absl::optional<int> tabstrip_index,
+    absl::optional<tab_groups::TabGroupId> local_group_id) {
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = disposition;
   params.browser = browser;
+  params.tabstrip_index = tabstrip_index.value_or(params.tabstrip_index);
+  params.group = local_group_id;
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
   return handle ? handle->GetWebContents() : nullptr;
 }
