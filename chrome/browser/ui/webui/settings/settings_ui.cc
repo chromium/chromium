@@ -416,6 +416,9 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "importPasswordsFailuresSummary",
       IDS_SETTINGS_PASSWORDS_IMPORT_FAILURES_SUMMARY);
   plural_string_handler->AddLocalizedString(
+      "safetyCheckExtensionsReviewLabel",
+      IDS_SETTINGS_SAFETY_CHECK_REVIEW_EXTENSIONS);
+  plural_string_handler->AddLocalizedString(
       "safetyCheckNotificationPermissionReviewHeaderLabel",
       IDS_SETTINGS_SAFETY_CHECK_REVIEW_NOTIFICATION_PERMISSIONS_HEADER_LABEL);
   plural_string_handler->AddLocalizedString(

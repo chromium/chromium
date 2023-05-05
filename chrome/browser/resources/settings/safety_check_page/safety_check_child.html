@@ -18,6 +18,7 @@
 
   .icon-blue {
     fill: var(--google-blue-600);
+    padding-inline-end: 0;
   }
 
   .icon-red {
@@ -52,6 +53,10 @@
   <cr-button id="button" class$="[[buttonClass]]" on-click="onButtonClick_"
       aria-label="[[buttonAriaLabel]]" no-search>
     [[buttonLabel]]
+    <template is="dom-if" if="[[showButtonIcon_(buttonIcon)]]">
+      <iron-icon class="icon-blue" icon="[[buttonIcon]]" slot="suffix-icon">
+      </iron-icon>
+    </template>
   </cr-button>
 </template>
 <template is="dom-if" if="[[showManagedIcon_(managedIcon)]]">

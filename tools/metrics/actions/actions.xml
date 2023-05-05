@@ -29824,6 +29824,13 @@ should be able to be added at any place in this file.
   <description>User clicks the extensions row in safety check.</description>
 </action>
 
+<action name="Settings.SafetyCheck.ReviewExtensionsThroughSafetyCheck">
+  <owner>psarouthakis@google.com</owner>
+  <description>
+    User clicks the review button in the extensions safety check.
+  </description>
+</action>
+
 <action name="Settings.SafetyCheck.ReviewUnusedSitePermissions">
   <owner>sideyilmaz@chromium.org</owner>
   <owner>msramek@chromium.org</owner>

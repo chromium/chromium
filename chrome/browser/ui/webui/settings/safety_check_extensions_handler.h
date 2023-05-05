@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_EXTENSIONS_SAFETY_CHECK_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SETTINGS_EXTENSIONS_SAFETY_CHECK_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_CHECK_EXTENSIONS_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_CHECK_EXTENSIONS_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -13,20 +13,20 @@ namespace settings {
 
 // Settings page UI handler that checks for any extensions that trigger
 // a review by the safety check.
-class ExtensionsSafetyCheckHandler : public settings::SettingsPageUIHandler {
+class SafetyCheckExtensionsHandler : public settings::SettingsPageUIHandler {
  public:
-  ExtensionsSafetyCheckHandler();
-  ~ExtensionsSafetyCheckHandler() override;
+  SafetyCheckExtensionsHandler();
+  ~SafetyCheckExtensionsHandler() override;
 
  protected:
   // Return the display string that represents how many extensions
   // need to be reviewed by the user.
-  std::u16string GetExtensionsThatNeedReview();
+  int GetNumberOfExtensionsThatNeedReview();
 
  private:
   // Calculate the number of extensions that need to be reviewed by the
   // user.
-  void HandleGetExtensionsThatNeedReview(const base::Value::List& args);
+  void HandleGetNumberOfExtensionsThatNeedReview(const base::Value::List& args);
 
   // SettingsPageUIHandler implementation.
   void OnJavascriptDisallowed() override;
@@ -35,9 +35,9 @@ class ExtensionsSafetyCheckHandler : public settings::SettingsPageUIHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
 
-  base::WeakPtrFactory<ExtensionsSafetyCheckHandler> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SafetyCheckExtensionsHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace settings
 
-#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_EXTENSIONS_SAFETY_CHECK_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SAFETY_CHECK_EXTENSIONS_HANDLER_H_
