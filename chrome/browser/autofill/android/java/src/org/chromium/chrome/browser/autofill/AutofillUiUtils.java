@@ -447,14 +447,6 @@ public class AutofillUiUtils {
      */
     public static GURL getCreditCardIconUrlWithParams(
             GURL customIconUrl, @Px int width, @Px int height) {
-        // TODO(crbug.com/1313616): There is only one gstatic card art image we are using currently.
-        // Remove this logic and append FIFE URL suffix by default when the static image is
-        // deprecated.
-        // Check if the image is gstatic stored in Static Content Service. If not append the
-        // dimension params to the FIFE URL.
-        if (customIconUrl.getSpec().equals(CAPITAL_ONE_ICON_URL)) {
-            return customIconUrl;
-        }
         // Params can be added to a FIFE URL by appending them at the end like URL[=params]. "w"
         // option is used to set the width in pixels, and "h" is used to set the height in pixels.
         StringBuilder url = new StringBuilder(customIconUrl.getSpec());
