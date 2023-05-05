@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui;
 
 import android.app.Fragment;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CancellationSignal;
@@ -45,6 +47,7 @@ import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonControll
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
@@ -55,6 +58,7 @@ import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.directactions.DirectActionInitializer;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeToolbarButtonController;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
@@ -93,6 +97,8 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.HistoryClustersProce
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
+import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -301,8 +307,6 @@ public class RootUiCoordinator
     private final ActionChipsDelegate mActionChipsDelegate;
     private final boolean mInitializeUiWithIncognitoColors;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
-    private final OneshotSupplierImpl<HistoryClustersCoordinator>
-            mHistoryClustersCoordinatorSupplier = new OneshotSupplierImpl<>();
     private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Nullable
     private final BackPressManager mBackPressManager;
@@ -427,8 +431,32 @@ public class RootUiCoordinator
         mMenuOrKeyboardActionController.registerMenuOrKeyboardActionHandler(this);
         mActivityTabProvider = tabProvider;
 
-        mActionChipsDelegate = new ActionChipsDelegateImpl(
-                mActivity, mHistoryClustersCoordinatorSupplier, mActivityTabProvider);
+        mActionChipsDelegate = new ActionChipsDelegateImpl(mActivity, mActivityTabProvider,
+                new SettingsLauncherImpl(),
+                // TODO(ender): phase out callbacks when the modules below are components.
+                // Open URL in an existing, else new regular tab.
+                url
+                -> {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    intent.setComponent(new ComponentName(mActivity, ChromeLauncherActivity.class));
+                    intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
+                    mActivity.startActivity(intent);
+                },
+                // Open Incognito Tab callback:
+                ()
+                        -> mActivity.startActivity(
+                                IntentHandler.createTrustedOpenNewTabIntent(mActivity, true)),
+                // Open Password Settings callback:
+                ()
+                        -> PasswordManagerLauncher.showPasswordSettings(mActivity,
+                                ManagePasswordsReferrer.CHROME_SETTINGS,
+                                mModalDialogManagerSupplier, /*managePasskeys=*/false),
+                // Open History Clusters UI for Query:
+                query -> {
+                    if (mHistoryClustersCoordinator != null) {
+                        mHistoryClustersCoordinator.openHistoryClustersUi(query);
+                    }
+                });
 
         // This little bit of arithmetic is necessary because of Java doesn't like accepting
         // Supplier<BaseImpl> where Supplier<Base> is expected. We should remove the need for
@@ -870,7 +898,6 @@ public class RootUiCoordinator
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity,
                     TemplateUrlServiceFactory.getForProfile(profile), historyClustersDelegate,
                     ChromeAccessibilityUtil.get(), mSnackbarManagerSupplier.get());
-            mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }
 

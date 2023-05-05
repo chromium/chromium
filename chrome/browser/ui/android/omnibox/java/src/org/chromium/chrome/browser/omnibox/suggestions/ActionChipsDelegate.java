@@ -8,6 +8,7 @@ import org.chromium.components.omnibox.action.OmniboxAction;
 
 /**
  * An interface for handling interactions for Omnibox Action Chips.
+ * TODO(crbug/1418077): repurpose as a OmniboxActionFactory.
  */
 public interface ActionChipsDelegate {
     /**

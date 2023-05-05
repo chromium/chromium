@@ -5,24 +5,15 @@
 package org.chromium.chrome.browser.app.omnibox;
 
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.ActionChipsDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionsMetrics;
-import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
-import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
@@ -36,23 +27,34 @@ import org.chromium.components.omnibox.action.OmniboxPedalType;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 
 /**
  * Handle the events related to {@link OmniboxAction}.
+ * TODO(crbug/1418077): repurpose as a OmniboxActionFactoryImpl, move `execute()` to OmniboxAction
+ * instances.
  */
 public class ActionChipsDelegateImpl implements ActionChipsDelegate {
     private final @NonNull Context mContext;
     private final @NonNull SettingsLauncher mSettingsLauncher;
-    private final @NonNull Supplier<HistoryClustersCoordinator> mHistoryClustersCoordinatorSupplier;
+    private final @NonNull Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
+    private final @NonNull Runnable mOpenIncognitoTabCb;
+    private final @NonNull Runnable mOpenPasswordSettingsCb;
+    private final @NonNull Consumer<String> mOpenHistoryClustersForQueryCb;
     private final @NonNull Supplier<Tab> mTabSupplier;
 
-    public ActionChipsDelegateImpl(@NonNull Context context,
-            @NonNull Supplier<HistoryClustersCoordinator> historyClustersCoordinatorSupplier,
-            @NonNull Supplier<Tab> tabSupplier) {
+    public ActionChipsDelegateImpl(@NonNull Context context, @NonNull Supplier<Tab> tabSupplier,
+            @NonNull SettingsLauncher settingsLauncher,
+            @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
+            @NonNull Runnable openIncognitoTabCb, @NonNull Runnable openPasswordSettingsCb,
+            @NonNull Consumer<String> openHistoryClustersForQueryCb) {
         mContext = context;
-        mSettingsLauncher = new SettingsLauncherImpl();
-        mHistoryClustersCoordinatorSupplier = historyClustersCoordinatorSupplier;
         mTabSupplier = tabSupplier;
+        mSettingsLauncher = settingsLauncher;
+        mOpenUrlInExistingTabElseNewTabCb = openUrlInExistingTabElseNewTabCb;
+        mOpenIncognitoTabCb = openIncognitoTabCb;
+        mOpenPasswordSettingsCb = openPasswordSettingsCb;
+        mOpenHistoryClustersForQueryCb = openHistoryClustersForQueryCb;
     }
 
     private void executePedalAction(OmniboxPedal pedal) {
@@ -85,18 +87,11 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
             case OmniboxPedalType.PLAY_CHROME_DINO_GAME:
                 loadPageInCurrentTab(UrlConstants.CHROME_DINO_URL);
                 break;
-
             case OmniboxPedalType.MANAGE_PASSWORDS:
-                PasswordManagerLauncher.showPasswordSettings(mContext,
-                        ManagePasswordsReferrer.CHROME_SETTINGS,
-                        // clang-format off: trying to be clever even with curly braces.
-                        () -> mTabSupplier.get().getWindowAndroid().getModalDialogManager(),
-                        // clang-format on
-                        /*managePasskeys=*/false);
+                mOpenPasswordSettingsCb.run();
                 break;
             case OmniboxPedalType.LAUNCH_INCOGNITO:
-                startActivity(IntentHandler.createTrustedOpenNewTabIntent(
-                        mContext.getApplicationContext(), /*incognito=*/true));
+                mOpenIncognitoTabCb.run();
                 break;
         }
         SuggestionsMetrics.recordPedalUsed(pedalId);
@@ -110,11 +105,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
                 break;
 
             case OmniboxActionType.HISTORY_CLUSTERS:
-                var historyClustersCoordinator = mHistoryClustersCoordinatorSupplier.get();
-                if (historyClustersCoordinator != null) {
-                    historyClustersCoordinator.openHistoryClustersUi(
-                            HistoryClustersAction.from(action).query);
-                }
+                mOpenHistoryClustersForQueryCb.accept(HistoryClustersAction.from(action).query);
                 break;
 
             case OmniboxActionType.ACTION_IN_SUGGEST:
@@ -135,11 +126,7 @@ public class ActionChipsDelegateImpl implements ActionChipsDelegate {
         if (tab.isUserInteractable()) {
             tab.loadUrl(new LoadUrlParams(url));
         } else {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            intent.setComponent(new ComponentName(
-                    mContext.getApplicationContext(), ChromeLauncherActivity.class));
-            intent.putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-            startActivity(intent);
+            mOpenUrlInExistingTabElseNewTabCb.accept(url);
         }
     }
 
