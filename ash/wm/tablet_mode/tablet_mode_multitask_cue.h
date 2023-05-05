@@ -40,9 +40,6 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   ~TabletModeMultitaskCue() override;
 
   ui::Layer* cue_layer() { return cue_layer_.get(); }
-  chromeos::MultitaskMenuNudgeController* nudge_controller() {
-    return &nudge_controller_;
-  }
 
   // Shows the cue if `active_window` is an maximizable app window that is not
   // floated. Also sets a `OneShotTimer` to dismiss the cue after a short
@@ -61,6 +58,10 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
   // still visible.
   void ResetPosition();
 
+  // If the cue is visible, checks to see if it is on the same window as the
+  // multitask menu, and shows it on the correct window if not.
+  void OnMenuOpened(aura::Window* active_window);
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowBoundsChanged(aura::Window* window,
@@ -78,8 +79,15 @@ class ASH_EXPORT TabletModeMultitaskCue : aura::WindowObserver,
                                    chromeos::WindowStateType old_type) override;
 
   void FireCueDismissTimerForTesting() { cue_dismiss_timer_.FireNow(); }
+  chromeos::MultitaskMenuNudgeController* nudge_controller_for_testing() {
+    return &nudge_controller_;
+  }
 
  private:
+  friend class TabletModeMultitaskMenu;
+  FRIEND_TEST_ALL_PREFIXES(TabletModeMultitaskMenuEventHandlerTest,
+                           CueCorrectWindowInSplitView);
+
   // Updates the bounds of the cue relative to the window if the window is
   // still available.
   void UpdateCueBounds();

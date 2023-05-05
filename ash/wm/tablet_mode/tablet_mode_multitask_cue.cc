@@ -140,6 +140,13 @@ void TabletModeMultitaskCue::ResetPosition() {
                     gfx::Tween::ACCEL_20_DECEL_100);
 }
 
+void TabletModeMultitaskCue::OnMenuOpened(aura::Window* active_window) {
+  if (cue_layer_ && window_ != active_window) {
+    MaybeShowCue(active_window);
+  }
+  nudge_controller_.OnMenuOpened(/*tablet_mode=*/true);
+}
+
 void TabletModeMultitaskCue::OnWindowDestroying(aura::Window* window) {
   DismissCue();
 }

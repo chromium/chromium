@@ -246,7 +246,7 @@ void TabletModeMultitaskMenu::Animate(bool show) {
                                       kVerticalPosition),
                     gfx::Tween::ACCEL_20_DECEL_100);
   ui::Layer* cue_layer = event_handler_->multitask_cue()->cue_layer();
-  if (cue_layer && !cue_layer->GetAnimator()->is_animating()) {
+  if (cue_layer) {
     animation_builder.GetCurrentSequence().SetTransform(
         cue_layer,
         show ? gfx::Transform::MakeTranslation(

@@ -648,6 +648,34 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueTransformOnShowMenu) {
   EXPECT_FALSE(multitask_cue->cue_layer());
 }
 
+// Tests that the cue appears on the correct window when the multitask menu is
+// activated on different windows in split view.
+TEST_F(TabletModeMultitaskMenuEventHandlerTest, CueCorrectWindowInSplitView) {
+  auto window1 = CreateAppWindow();
+  PressPartialPrimary(*window1);
+  auto window2 = CreateAppWindow();
+  PressPartialSecondary(*window2);
+
+  auto* split_view_controller =
+      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(split_view_controller->IsWindowInSplitView(window1.get()));
+  ASSERT_TRUE(split_view_controller->IsWindowInSplitView(window2.get()));
+
+  // Show the menu and cue on the first window.
+  ShowMultitaskMenu(*window1);
+  auto* multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
+  ASSERT_TRUE(multitask_cue);
+  EXPECT_TRUE(multitask_cue->cue_layer());
+  EXPECT_EQ(window1.get(), multitask_cue->window_);
+
+  // Show the menu and cue on the second window.
+  ShowMultitaskMenu(*window2);
+  multitask_cue = GetMultitaskMenuEventHandler()->multitask_cue();
+  ASSERT_TRUE(multitask_cue);
+  EXPECT_TRUE(multitask_cue->cue_layer());
+  EXPECT_EQ(window2.get(), multitask_cue->window_);
+}
+
 // Tests that the bottom window can open the multitask menu in portrait mode. In
 // portrait primary view, the bottom window is on the right.
 // ----------------------

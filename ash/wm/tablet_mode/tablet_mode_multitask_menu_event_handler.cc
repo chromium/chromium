@@ -99,7 +99,7 @@ void TabletModeMultitaskMenuEventHandler::OnGestureEvent(
         // We may need to recreate `multitask_menu_` on the new active window.
         multitask_menu_ =
             std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-        multitask_cue_->nudge_controller()->OnMenuOpened(/*tablet_mode=*/true);
+        multitask_cue_->OnMenuOpened(active_window);
         multitask_menu_->BeginDrag(window_location.y(), /*down=*/true);
         event->SetHandled();
         is_drag_active_ = true;
@@ -158,7 +158,7 @@ void TabletModeMultitaskMenuEventHandler::MaybeCreateMultitaskMenu(
   if (!multitask_menu_) {
     multitask_menu_ =
         std::make_unique<TabletModeMultitaskMenu>(this, active_window);
-    multitask_cue_->nudge_controller()->OnMenuOpened(/*tablet_mode=*/true);
+    multitask_cue_->OnMenuOpened(active_window);
   }
 }
 
