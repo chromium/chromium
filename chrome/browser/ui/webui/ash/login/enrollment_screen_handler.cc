@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
@@ -154,9 +153,9 @@ std::string GetGaiaButtonsTypeString(
   switch (type) {
     case EnrollmentScreenView::GaiaButtonsType::kDefault:
       return "default";
-    case EnrollmentScreenView::GaiaButtonsType::kEnterprisePreffered:
+    case EnrollmentScreenView::GaiaButtonsType::kEnterprisePreferred:
       return "enterprise-preferred";
-    case EnrollmentScreenView::GaiaButtonsType::kKioskPreffered:
+    case EnrollmentScreenView::GaiaButtonsType::kKioskPreferred:
       return "kiosk-preferred";
   }
 }
@@ -515,7 +514,7 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
                IDS_ENTERPRISE_ENROLLMENT_ENROLL_ENTERPRISE);
   builder->Add("kioskEnrollmentButton", IDS_ENTERPRISE_ENROLLMENT_ENROLL_KIOSK);
 
-  builder->Add("enollmentInProgress",
+  builder->Add("enrollmentInProgress",
                IDS_ENTERPRISE_ENROLLMENT_SCREEN_PROGRESS_LABEL);
   builder->Add("oauthEnrollRetry", IDS_ENTERPRISE_ENROLLMENT_RETRY);
   builder->Add("oauthEnrollManualEnrollment",
@@ -570,14 +569,14 @@ void EnrollmentScreenHandler::DeclareLocalizedValues(
   builder->Add("TPMCheckSubtitle", IDS_TPM_CHECK_SUBTITLE);
   builder->Add("cancelButton", IDS_CANCEL);
 
-  // Skip Confirmation Dialogue strings
+  // Skip Confirmation Dialogue strings.
   builder->Add("skipConfirmationDialogTitle", IDS_SKIP_ENROLLMENT_DIALOG_TITLE);
   builder->Add("skipConfirmationDialogText", IDS_SKIP_ENROLLMENT_DIALOG_TEXT);
   builder->Add("skipConfirmationDialogEducationTitle",
                IDS_SKIP_ENROLLMENT_DIALOG_EDUCATION_TITLE);
   builder->Add("skipConfirmationDialogEducationText",
                IDS_SKIP_ENROLLMENT_DIALOG_EDUCATION_TEXT);
-  builder->Add("skipConfirmationgoBackButton",
+  builder->Add("skipConfirmationGoBackButton",
                IDS_SKIP_ENROLLMENT_DIALOG_GO_BACK_BUTTON);
   builder->Add("skipConfirmationSkipButton",
                IDS_SKIP_ENROLLMENT_DIALOG_SKIP_BUTTON);

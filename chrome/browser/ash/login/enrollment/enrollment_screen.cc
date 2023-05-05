@@ -38,7 +38,6 @@
 #include "chrome/browser/ash/policy/handlers/tpm_auto_update_mode_policy_handler.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -312,10 +311,10 @@ void EnrollmentScreen::UpdateFlowType() {
     if (context()->enrollment_preference_ ==
         WizardContext::EnrollmentPreference::kKiosk) {
       view_->SetGaiaButtonsType(
-          EnrollmentScreenView::GaiaButtonsType::kKioskPreffered);
+          EnrollmentScreenView::GaiaButtonsType::kKioskPreferred);
     } else {
       view_->SetGaiaButtonsType(
-          EnrollmentScreenView::GaiaButtonsType::kEnterprisePreffered);
+          EnrollmentScreenView::GaiaButtonsType::kEnterprisePreferred);
     }
   }
 }
