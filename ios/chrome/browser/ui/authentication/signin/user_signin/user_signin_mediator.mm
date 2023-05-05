@@ -152,9 +152,6 @@
       if ([self.authenticationService->GetPrimaryIdentity(
               signin::ConsentLevel::kSignin)
               isEqual:self.delegate.signinIdentityOnStart]) {
-        // Call StopAndClear() to clear the encryption passphrase, in case the
-        // user entered it before canceling the sync opt-in flow.
-        _syncService->StopAndClear();
         if (completion)
           completion();
       } else {

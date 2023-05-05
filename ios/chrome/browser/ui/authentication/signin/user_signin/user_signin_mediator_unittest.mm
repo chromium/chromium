@@ -479,6 +479,8 @@ TEST_F(UserSigninMediatorTest,
 // Tests a user sign-in operation cancel and dismiss without animation when
 // authentication is in progress.
 TEST_F(UserSigninMediatorTest, CancelSyncAndStaySignin) {
+  EXPECT_CALL(*sync_service_mock_, StopAndClear()).Times(0);
+
   CreateAuthenticationFlow(PostSignInAction::kCommitSync);
   SetPerformerSigninExpectations(PostSignInAction::kCommitSync);
 
@@ -509,6 +511,7 @@ TEST_F(UserSigninMediatorTest, CancelSyncAndStaySignin) {
   EXPECT_TRUE(completion_called);
   EXPECT_TRUE(authentication_service()->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(sync_setup_service_mock_->IsSyncRequested());
 }
 
 // Tests the following scenario:
