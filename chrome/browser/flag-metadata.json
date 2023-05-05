@@ -6175,10 +6175,10 @@
   {
     "name": "privacy-guide-android",
     "owners": [
-      "andzaytsev",
+      "rubindl",
       "msramek",
       "chrome-friendly-settings@google.com"],
-    "expiry_milestone": 114
+    "expiry_milestone": 120
   },
   {
     "name": "privacy-sandbox-ads-apis",
