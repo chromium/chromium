@@ -38,6 +38,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       base::TimeDelta expiry_deadline) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo&,
+      base::Time source_time,
       base::Time event_report_window_time) override;
   base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
                            base::Time source_time,

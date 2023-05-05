@@ -131,7 +131,7 @@ absl::optional<AggregatableReportRequest> CreateAggregatableReportRequest(
       base::Overloaded{
           [](const AttributionReport::EventLevelData&) { NOTREACHED(); },
           [&](const AttributionReport::AggregatableAttributionData& data) {
-            source_time = data.source.common_info().source_time();
+            source_time = data.source.source_time();
             source_debug_key = data.source.debug_key();
             common_aggregatable_data = &data.common_data;
             base::ranges::transform(

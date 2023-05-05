@@ -19,17 +19,14 @@ namespace content {
 
 struct AttributionConfig;
 
-struct AttributionTriggerAndTime {
-  AttributionTrigger trigger;
-  base::Time time;
-};
-
 struct AttributionSimulationEvent {
-  absl::variant<StorableSource, AttributionTriggerAndTime> event;
+  absl::variant<StorableSource, AttributionTrigger> event;
+  base::Time time;
   bool debug_permission;
 
   AttributionSimulationEvent(
-      absl::variant<StorableSource, AttributionTriggerAndTime> event,
+      absl::variant<StorableSource, AttributionTrigger> event,
+      base::Time time,
       bool debug_permission);
 
   ~AttributionSimulationEvent();
@@ -40,6 +37,10 @@ struct AttributionSimulationEvent {
 
   AttributionSimulationEvent(AttributionSimulationEvent&&);
   AttributionSimulationEvent& operator=(AttributionSimulationEvent&&);
+
+  bool operator<(const AttributionSimulationEvent& other) const {
+    return time < other.time;
+  }
 };
 
 using AttributionSimulationEvents = std::vector<AttributionSimulationEvent>;
@@ -56,8 +57,6 @@ base::expected<AttributionConfig, std::string> ParseAttributionConfig(
 // Returns a non-empty string on failure.
 [[nodiscard]] std::string MergeAttributionConfig(const base::Value::Dict&,
                                                  AttributionConfig&);
-
-base::Time GetEventTime(const AttributionSimulationEvent&);
 
 }  // namespace content
 

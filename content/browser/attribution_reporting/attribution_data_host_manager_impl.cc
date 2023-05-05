@@ -652,7 +652,6 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   attribution_manager_->HandleSource(
       StorableSource(std::move(reporting_origin), std::move(data),
-                     /*source_time=*/base::Time::Now(),
                      /*source_origin=*/context->context_origin(), source_type,
                      context->is_within_fenced_frame()),
       context->render_frame_id());
@@ -808,10 +807,10 @@ void AttributionDataHostManagerImpl::OnWebSourceParsed(
       if (!registration.has_value()) {
         return base::unexpected(registration.error());
       }
-      return StorableSource(
-          pending_decode.reporting_origin, std::move(*registration),
-          /*source_time=*/base::Time::Now(), registrations->source_origin(),
-          source_type, registrations->is_within_fenced_frame());
+      return StorableSource(pending_decode.reporting_origin,
+                            std::move(*registration),
+                            registrations->source_origin(), source_type,
+                            registrations->is_within_fenced_frame());
     }();
 
     if (source.has_value()) {

@@ -136,6 +136,7 @@ class CONTENT_EXPORT AttributionStorageDelegate {
   // should not be randomized.
   virtual RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source,
+      base::Time source_time,
       base::Time event_report_window_time) = 0;
 
   virtual base::Time GetExpiryTime(

@@ -162,7 +162,7 @@ bool RateLimitTable::AddRateLimit(
   statement.BindString(2, common_info.source_site().Serialize());
   statement.BindString(4, context_origin.Serialize());
   statement.BindString(5, common_info.reporting_origin().Serialize());
-  statement.BindTime(6, common_info.source_time());
+  statement.BindTime(6, source.source_time());
   statement.BindTime(7, source_expiry_or_attribution_time);
 
   const base::flat_set<net::SchemefulSite>* destination_sites =
@@ -227,17 +227,18 @@ RateLimitResult RateLimitTable::AttributionAllowedForAttributionLimit(
 
 RateLimitResult RateLimitTable::SourceAllowedForReportingOriginLimit(
     sql::Database* db,
-    const StorableSource& source) {
+    const StorableSource& source,
+    base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AllowedForReportingOriginLimit(
-      db, Scope::kSource, source.common_info(),
-      source.common_info().source_time(),
+      db, Scope::kSource, source.common_info(), source_time,
       source.registration().destination_set.destinations());
 }
 
 RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
     sql::Database* db,
-    const StorableSource& source) {
+    const StorableSource& source,
+    base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   static_assert(static_cast<int>(Scope::kSource) == 0,
@@ -252,7 +253,7 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   const CommonSourceInfo& common_info = source.common_info();
   statement.BindString(0, common_info.source_site().Serialize());
   statement.BindString(1, common_info.reporting_origin().Serialize());
-  statement.BindTime(2, common_info.source_time());
+  statement.BindTime(2, source_time);
 
   const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingOrigin();
   DCHECK_GT(limit, 0);

@@ -215,8 +215,7 @@ SourceBuilder& SourceBuilder::SetDebugReporting(bool debug_reporting) {
 }
 
 CommonSourceInfo SourceBuilder::BuildCommonInfo() const {
-  return CommonSourceInfo(source_origin_, reporting_origin_, source_time_,
-                          source_type_);
+  return CommonSourceInfo(source_origin_, reporting_origin_, source_type_);
 }
 
 StorableSource SourceBuilder::Build() const {
@@ -231,14 +230,14 @@ StorableSource SourceBuilder::Build() const {
   registration.aggregation_keys = aggregation_keys_;
   registration.debug_reporting = debug_reporting_;
   return StorableSource(reporting_origin_, std::move(registration),
-                        source_time_, source_origin_, source_type_,
-                        is_within_fenced_frame_);
+                        source_origin_, source_type_, is_within_fenced_frame_);
 }
 
 StoredSource SourceBuilder::BuildStored() const {
   base::Time expiry_time = GetExpiryTimeForTesting(expiry_, source_time_);
   StoredSource source(
-      BuildCommonInfo(), source_event_id_, destination_sites_, expiry_time,
+      BuildCommonInfo(), source_event_id_, destination_sites_, source_time_,
+      expiry_time,
       ComputeReportWindowTime(
           GetReportWindowTimeForTesting(event_report_window_, source_time_),
           expiry_time),
@@ -508,8 +507,7 @@ AttributionReport ReportBuilder::BuildNullAggregatable() const {
           AttributionReport::CommonAggregatableData(
               aggregation_coordinator_, verification_token_,
               source_registration_time_config_),
-          source_.common_info().reporting_origin(),
-          source_.common_info().source_time()));
+          source_.common_info().reporting_origin(), source_.source_time()));
 }
 
 bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
@@ -523,7 +521,7 @@ bool operator==(const AttributionTrigger& a, const AttributionTrigger& b) {
 bool operator==(const CommonSourceInfo& a, const CommonSourceInfo& b) {
   const auto tie = [](const CommonSourceInfo& source) {
     return std::make_tuple(source.source_origin(), source.reporting_origin(),
-                           source.source_time(), source.source_type());
+                           source.source_type());
   };
   return tie(a) == tie(b);
 }
@@ -566,7 +564,7 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
   const auto tie = [](const StoredSource& source) {
     return std::make_tuple(
         source.common_info(), source.source_event_id(),
-        source.destination_sites(), source.expiry_time(),
+        source.destination_sites(), source.source_time(), source.expiry_time(),
         source.event_report_window_time(),
         source.aggregatable_report_window_time(), source.priority(),
         source.filter_data(), source.debug_key(), source.aggregation_keys(),
@@ -772,7 +770,6 @@ std::ostream& operator<<(std::ostream& out,
 std::ostream& operator<<(std::ostream& out, const CommonSourceInfo& source) {
   return out << "{source_origin=" << source.source_origin()
              << "reporting_origin=" << source.reporting_origin()
-             << ",source_time=" << source.source_time()
              << ",source_type=" << source.source_type() << "}";
 }
 
@@ -803,6 +800,7 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
   out << "{common_info=" << source.common_info()
       << ",source_event_id=" << source.source_event_id()
       << "destination_sites=" << source.destination_sites()
+      << ",source_time=" << source.source_time()
       << ",expiry_time=" << source.expiry_time()
       << ",event_report_window_time=" << source.event_report_window_time()
       << ",aggregatable_report_window_time="

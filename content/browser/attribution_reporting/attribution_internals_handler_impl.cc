@@ -82,7 +82,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
   return attribution_internals::mojom::WebUISource::New(
       source.source_event_id(), common_info.source_origin(),
       source.destination_sites(), common_info.reporting_origin(),
-      common_info.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
+      source.source_time().ToJsTime(), source.expiry_time().ToJsTime(),
       source.event_report_window_time().ToJsTime(),
       source.aggregatable_report_window_time().ToJsTime(),
       common_info.source_type(), source.priority(), source.debug_key(),
@@ -340,15 +340,16 @@ attribution_internals::mojom::WebUIRegistrationPtr GetRegistration(
 
 void AttributionInternalsHandlerImpl::OnSourceHandled(
     const StorableSource& source,
+    base::Time source_time,
     absl::optional<uint64_t> cleared_debug_key,
     attribution_reporting::mojom::StoreSourceResult result) {
   auto web_ui_source = WebUISourceRegistration::New();
-  web_ui_source->registration = GetRegistration(
-      source.common_info().source_time(), source.common_info().source_origin(),
-      source.common_info().reporting_origin(),
-      SerializeAttributionJson(source.registration().ToJson(),
-                               /*pretty_print=*/true),
-      cleared_debug_key);
+  web_ui_source->registration =
+      GetRegistration(source_time, source.common_info().source_origin(),
+                      source.common_info().reporting_origin(),
+                      SerializeAttributionJson(source.registration().ToJson(),
+                                               /*pretty_print=*/true),
+                      cleared_debug_key);
   web_ui_source->type = source.common_info().source_type();
   web_ui_source->status =
       attribution_internals::mojom::SourceStatus::NewStoreSourceResult(result);

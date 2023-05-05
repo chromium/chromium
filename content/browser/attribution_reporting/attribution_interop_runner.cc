@@ -266,8 +266,8 @@ class AttributionEventHandler : public AttributionObserver {
                       manager_->HandleSource(std::move(source),
                                              GlobalRenderFrameHostId());
                     },
-                    [&](AttributionTriggerAndTime trigger) {
-                      manager_->HandleTrigger(std::move(trigger.trigger),
+                    [&](AttributionTrigger trigger) {
+                      manager_->HandleTrigger(std::move(trigger),
                                               GlobalRenderFrameHostId());
                     },
                 },
@@ -386,12 +386,13 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
     return base::Value::Dict();
   }
 
-  DCHECK(base::ranges::is_sorted(*events, /*comp=*/{}, &GetEventTime));
-  DCHECK(base::ranges::adjacent_find(*events, /*pred=*/{}, &GetEventTime) ==
-         events->end());
+  DCHECK(base::ranges::is_sorted(*events));
+  DCHECK(base::ranges::adjacent_find(
+             *events, /*pred=*/{},
+             [](const auto& event) { return event.time; }) == events->end());
 
-  const base::Time min_event_time = GetEventTime(events->front());
-  const base::Time max_event_time = GetEventTime(events->back());
+  const base::Time min_event_time = events->front().time;
+  const base::Time max_event_time = events->back().time;
 
   task_environment.FastForwardBy(min_event_time - time_origin);
 
@@ -427,7 +428,7 @@ base::expected<base::Value::Dict, std::string> RunAttributionInteropSimulation(
                        /*expiry_time=*/base::Time::Max()));
 
   for (auto& event : *events) {
-    base::Time event_time = GetEventTime(event);
+    base::Time event_time = event.time;
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AttributionEventHandler::Handle,

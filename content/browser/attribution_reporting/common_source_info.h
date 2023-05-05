@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_COMMON_SOURCE_INFO_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_COMMON_SOURCE_INFO_H_
 
-#include "base/time/time.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/common/content_export.h"
@@ -18,7 +17,6 @@ class CONTENT_EXPORT CommonSourceInfo {
  public:
   CommonSourceInfo(attribution_reporting::SuitableOrigin source_origin,
                    attribution_reporting::SuitableOrigin reporting_origin,
-                   base::Time source_time,
                    attribution_reporting::mojom::SourceType);
 
   ~CommonSourceInfo();
@@ -37,8 +35,6 @@ class CONTENT_EXPORT CommonSourceInfo {
     return reporting_origin_;
   }
 
-  base::Time source_time() const { return source_time_; }
-
   attribution_reporting::mojom::SourceType source_type() const {
     return source_type_;
   }
@@ -49,7 +45,6 @@ class CONTENT_EXPORT CommonSourceInfo {
   net::SchemefulSite source_site_;
   attribution_reporting::SuitableOrigin source_origin_;
   attribution_reporting::SuitableOrigin reporting_origin_;
-  base::Time source_time_;
   attribution_reporting::mojom::SourceType source_type_;
 
   // When adding new members, the corresponding `operator==()` definition in

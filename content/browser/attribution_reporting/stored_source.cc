@@ -34,6 +34,7 @@ StoredSource::StoredSource(
     CommonSourceInfo common_info,
     uint64_t source_event_id,
     attribution_reporting::DestinationSet destination_sites,
+    base::Time source_time,
     base::Time expiry_time,
     base::Time event_report_window_time,
     base::Time aggregatable_report_window_time,
@@ -48,6 +49,7 @@ StoredSource::StoredSource(
     : common_info_(std::move(common_info)),
       source_event_id_(source_event_id),
       destination_sites_(std::move(destination_sites)),
+      source_time_(source_time),
       expiry_time_(expiry_time),
       event_report_window_time_(event_report_window_time),
       aggregatable_report_window_time_(aggregatable_report_window_time),
@@ -61,12 +63,11 @@ StoredSource::StoredSource(
       aggregatable_budget_consumed_(aggregatable_budget_consumed) {
   DCHECK_GE(aggregatable_budget_consumed_, 0);
 
-  base::Time source_time = common_info_.source_time();
-  DCHECK(IsExpiryOrReportWindowTimeValid(expiry_time_, source_time));
+  DCHECK(IsExpiryOrReportWindowTimeValid(expiry_time_, source_time_));
   DCHECK(
-      IsExpiryOrReportWindowTimeValid(event_report_window_time_, source_time));
+      IsExpiryOrReportWindowTimeValid(event_report_window_time_, source_time_));
   DCHECK(IsExpiryOrReportWindowTimeValid(aggregatable_report_window_time_,
-                                         source_time));
+                                         source_time_));
 }
 
 StoredSource::~StoredSource() = default;

@@ -1542,7 +1542,7 @@ TEST_F(AttributionStorageSqlTest, ReportTimes) {
     reg.aggregatable_report_window = test_case.aggregatable_report_window;
 
     storage()->StoreSource(
-        StorableSource(reporting_origin, std::move(reg), kSourceTime,
+        StorableSource(reporting_origin, std::move(reg),
                        *SuitableOrigin::Deserialize("https://source.test"),
                        attribution_reporting::mojom::SourceType::kNavigation,
                        /*is_within_fenced_frame=*/false));

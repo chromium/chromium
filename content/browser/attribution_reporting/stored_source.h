@@ -50,6 +50,7 @@ class CONTENT_EXPORT StoredSource {
   StoredSource(CommonSourceInfo common_info,
                uint64_t source_event_id,
                attribution_reporting::DestinationSet,
+               base::Time source_time,
                base::Time expiry_time,
                base::Time event_report_window_time,
                base::Time aggregatable_report_window_time,
@@ -77,6 +78,8 @@ class CONTENT_EXPORT StoredSource {
   const attribution_reporting::DestinationSet& destination_sites() const {
     return destination_sites_;
   }
+
+  base::Time source_time() const { return source_time_; }
 
   base::Time expiry_time() const { return expiry_time_; }
 
@@ -129,6 +132,7 @@ class CONTENT_EXPORT StoredSource {
 
   uint64_t source_event_id_;
   attribution_reporting::DestinationSet destination_sites_;
+  base::Time source_time_;
   base::Time expiry_time_;
   base::Time event_report_window_time_;
   base::Time aggregatable_report_window_time_;

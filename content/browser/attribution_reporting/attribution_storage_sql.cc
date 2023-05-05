@@ -578,13 +578,12 @@ absl::optional<StoredSourceData> ReadSourceFromStatement(
   return StoredSourceData{
       .source = StoredSource(
           CommonSourceInfo(std::move(*source_origin),
-                           std::move(*reporting_origin), source_time,
-                           *source_type),
-          source_event_id, std::move(*destination_set), expiry_time,
-          event_report_window_time, aggregatable_report_window_time, priority,
-          std::move(*filter_data), debug_key, std::move(*aggregation_keys),
-          *attribution_logic, *active_state, source_id,
-          aggregatable_budget_consumed),
+                           std::move(*reporting_origin), *source_type),
+          source_event_id, std::move(*destination_set), source_time,
+          expiry_time, event_report_window_time,
+          aggregatable_report_window_time, priority, std::move(*filter_data),
+          debug_key, std::move(*aggregation_keys), *attribution_logic,
+          *active_state, source_id, aggregatable_budget_consumed),
       .num_conversions = num_conversions};
 }
 
@@ -671,12 +670,12 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const base::TimeDelta delete_frequency =
       delegate_->GetDeleteExpiredSourcesFrequency();
   DCHECK_GE(delete_frequency, base::TimeDelta());
-  const base::Time now = base::Time::Now();
-  if (now - last_deleted_expired_sources_ >= delete_frequency) {
+  const base::Time source_time = base::Time::Now();
+  if (source_time - last_deleted_expired_sources_ >= delete_frequency) {
     if (!DeleteExpiredSources()) {
       return StoreSourceResult(StorableSource::Result::kInternalError);
     }
-    last_deleted_expired_sources_ = now;
+    last_deleted_expired_sources_ = source_time;
   }
 
   const CommonSourceInfo& common_info = source.common_info();
@@ -691,7 +690,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
         delegate_->GetMaxSourcesPerOrigin());
   }
 
-  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source)) {
+  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
+                                                             source_time)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -703,8 +703,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(
       return StoreSourceResult(StorableSource::Result::kInternalError);
   }
 
-  switch (
-      rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source)) {
+  switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
+                                                                 source_time)) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
@@ -722,18 +722,18 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   const attribution_reporting::SourceRegistration& reg = source.registration();
 
   const base::Time expiry_time = delegate_->GetExpiryTime(
-      reg.expiry, common_info.source_time(), common_info.source_type());
+      reg.expiry, source_time, common_info.source_type());
   const base::Time event_report_window_time = ComputeReportWindowTime(
-      delegate_->GetReportWindowTime(reg.event_report_window,
-                                     common_info.source_time()),
+      delegate_->GetReportWindowTime(reg.event_report_window, source_time),
       expiry_time);
-  const base::Time aggregatable_report_window_time = ComputeReportWindowTime(
-      delegate_->GetReportWindowTime(reg.aggregatable_report_window,
-                                     common_info.source_time()),
-      expiry_time);
+  const base::Time aggregatable_report_window_time =
+      ComputeReportWindowTime(delegate_->GetReportWindowTime(
+                                  reg.aggregatable_report_window, source_time),
+                              expiry_time);
 
   AttributionStorageDelegate::RandomizedResponse randomized_response =
-      delegate_->GetRandomizedResponse(common_info, event_report_window_time);
+      delegate_->GetRandomizedResponse(common_info, source_time,
+                                       event_report_window_time);
 
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
@@ -762,7 +762,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   statement.BindInt64(0, SerializeUint64(reg.source_event_id));
   statement.BindString(1, serialized_source_origin);
   statement.BindString(2, common_info.reporting_origin().Serialize());
-  statement.BindTime(3, common_info.source_time());
+  statement.BindTime(3, source_time);
   statement.BindTime(4, expiry_time);
   statement.BindTime(5, event_report_window_time);
   statement.BindTime(6, aggregatable_report_window_time);
@@ -805,9 +805,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(
 
   const StoredSource stored_source(
       source.common_info(), reg.source_event_id, reg.destination_set,
-      expiry_time, event_report_window_time, aggregatable_report_window_time,
-      reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
-      attribution_logic, *active_state, source_id,
+      source_time, expiry_time, event_report_window_time,
+      aggregatable_report_window_time, reg.priority, reg.filter_data,
+      reg.debug_key, reg.aggregation_keys, attribution_logic, *active_state,
+      source_id,
       /*aggregatable_budget_consumed=*/0);
 
   if (!rate_limit_table_.AddRateLimitForSource(&db_, stored_source)) {
@@ -822,7 +823,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
                 delegate_->SanitizeTriggerData(fake_report.trigger_data,
                                                common_info.source_type()));
 
-      DCHECK_LT(common_info.source_time(), fake_report.trigger_time);
+      DCHECK_LT(source_time, fake_report.trigger_time);
       DCHECK_LT(fake_report.trigger_time, fake_report.report_time);
 
       // Set the `context_origin` to be the source origin for fake reports,
@@ -854,7 +855,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(
   if (attribution_logic != StoredSource::AttributionLogic::kTruthfully) {
     if (!rate_limit_table_.AddRateLimitForAttribution(
             &db_,
-            AttributionInfo(/*time=*/common_info.source_time(),
+            AttributionInfo(/*time=*/source_time,
                             /*debug_key=*/absl::nullopt,
                             /*context_origin=*/common_info.source_origin()),
             stored_source)) {
@@ -1423,8 +1424,8 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   // complicating the DB schema, we hardcode the values for now and will wait
   // for the first time the values are changed before complicating the codebase.
   const double randomized_response_rate = delegate_->GetRandomizedResponseRate(
-      source_type, ExpiryDeadline(source.common_info().source_time(),
-                                  source.event_report_window_time()));
+      source_type,
+      ExpiryDeadline(source.source_time(), source.event_report_window_time()));
 
   // TODO(apaseltiner): Consider informing the manager if the trigger
   // data was out of range for DevTools issue reporting.
@@ -1600,7 +1601,7 @@ AttributionStorageSql::ReadReportFromStatement(sql::Statement& statement) {
         return absl::nullopt;
       }
       base::TimeDelta expiry_deadline =
-          ExpiryDeadline(source_data->source.common_info().source_time(),
+          ExpiryDeadline(source_data->source.source_time(),
                          source_data->source.event_report_window_time());
       double randomized_response_rate = delegate_->GetRandomizedResponseRate(
           source_data->source.common_info().source_type(), expiry_deadline);
@@ -2915,7 +2916,7 @@ bool AttributionStorageSql::GenerateNullAggregatableReportsAndStoreReports(
         absl::get_if<AttributionReport::AggregatableAttributionData>(
             &new_aggregatable_report->data());
     DCHECK(data);
-    attributed_source_time = data->source.common_info().source_time();
+    attributed_source_time = data->source.source_time();
 
     reports.push_back(std::move(*new_aggregatable_report));
     new_aggregatable_report.reset();

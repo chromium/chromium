@@ -58,8 +58,9 @@ void MockAttributionManager::NotifySourceHandled(
     const StorableSource& source,
     StorableSource::Result result,
     absl::optional<uint64_t> cleared_debug_key) {
+  base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnSourceHandled(source, cleared_debug_key, result);
+    observer.OnSourceHandled(source, now, cleared_debug_key, result);
   }
 }
 

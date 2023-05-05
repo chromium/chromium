@@ -15,10 +15,6 @@ namespace attribution_reporting {
 class SuitableOrigin;
 }  // namespace attribution_reporting
 
-namespace base {
-class Time;
-}  // namespace base
-
 namespace content {
 
 // Contains attributes specific to a source that hasn't been stored yet.
@@ -28,7 +24,6 @@ class CONTENT_EXPORT StorableSource {
 
   StorableSource(attribution_reporting::SuitableOrigin reporting_origin,
                  attribution_reporting::SourceRegistration,
-                 base::Time source_time,
                  attribution_reporting::SuitableOrigin source_origin,
                  attribution_reporting::mojom::SourceType,
                  bool is_within_fenced_frame);

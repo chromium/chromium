@@ -67,7 +67,8 @@ void RunRandomFakeReportsTest(const SourceType source_type,
   for (int i = 0; i < num_samples; i++) {
     std::vector<FakeReport> fake_reports =
         AttributionStorageDelegateImpl().GetRandomFakeReports(
-            source.common_info(), source.event_report_window_time());
+            source.common_info(), source.source_time(),
+            source.event_report_window_time());
     output_counts[fake_reports]++;
   }
 
@@ -243,10 +244,11 @@ TEST(AttributionStorageDelegateImplTest,
   for (auto source_type : kSourceTypes) {
     const auto source =
         SourceBuilder().SetSourceType(source_type).BuildStored();
-    EXPECT_EQ(AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
-                  .GetRandomizedResponse(source.common_info(),
-                                         source.event_report_window_time()),
-              absl::nullopt);
+    EXPECT_EQ(
+        AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
+            .GetRandomizedResponse(source.common_info(), source.source_time(),
+                                   source.event_report_window_time()),
+        absl::nullopt);
   }
 }
 
@@ -368,14 +370,15 @@ TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
                             .SetSourceType(test_case.source_type)
                             .SetExpiry(kExpiry)
                             .BuildStored();
-    base::TimeDelta expiry_deadline = ExpiryDeadline(
-        source.common_info().source_time(), source.event_report_window_time());
+    base::TimeDelta expiry_deadline =
+        ExpiryDeadline(source.source_time(), source.event_report_window_time());
     std::vector<base::TimeDelta> deadlines =
         AttributionStorageDelegateImpl().EffectiveDeadlines(
             source.common_info().source_type(), expiry_deadline);
     EXPECT_EQ(test_case.expected,
               AttributionStorageDelegateImpl().GetFakeReportsForSequenceIndex(
-                  source.common_info(), deadlines, test_case.sequence_index))
+                  source.common_info(), source.source_time(), deadlines,
+                  test_case.sequence_index))
         << test_case.sequence_index;
   }
 }

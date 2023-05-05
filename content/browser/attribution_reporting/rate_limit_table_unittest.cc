@@ -226,14 +226,14 @@ class RateLimitTableTest : public testing::Test {
       const RateLimitInput& input) {
     CHECK_EQ(input.scope, RateLimitScope::kSource);
     return table_.SourceAllowedForReportingOriginLimit(
-        &db_, input.NewSourceBuilder().Build());
+        &db_, input.NewSourceBuilder().Build(), input.time);
   }
 
   [[nodiscard]] RateLimitResult SourceAllowedForDestinationLimit(
       const RateLimitInput& input) {
     CHECK_EQ(input.scope, RateLimitScope::kSource);
     return table_.SourceAllowedForDestinationLimit(
-        &db_, input.NewSourceBuilder().Build());
+        &db_, input.NewSourceBuilder().Build(), input.time);
   }
 
   [[nodiscard]] RateLimitResult AttributionAllowedForReportingOriginLimit(
@@ -466,7 +466,7 @@ TEST_F(RateLimitTableTest, SourceAllowedForReportingOriginLimit) {
   // reporting origins: https://a.r.test and https://b.r.test, even though
   // the other destination site is unique.
   ASSERT_EQ(RateLimitResult::kNotAllowed,
-            table_.SourceAllowedForReportingOriginLimit(&db_, input_1))
+            table_.SourceAllowedForReportingOriginLimit(&db_, input_1, now))
       << input_1;
 
   task_environment_.FastForwardBy(kTimeWindow);
@@ -972,7 +972,7 @@ TEST_F(RateLimitTableTest, SourceAllowedForDestinationLimit) {
           .Build();
 
   ASSERT_EQ(RateLimitResult::kNotAllowed,
-            table_.SourceAllowedForDestinationLimit(&db_, input_1))
+            table_.SourceAllowedForDestinationLimit(&db_, input_1, now))
       << input_1;
 
   task_environment_.FastForwardBy(expiry);

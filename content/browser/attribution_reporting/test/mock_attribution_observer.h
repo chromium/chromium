@@ -38,6 +38,7 @@ class MockAttributionObserver : public AttributionObserver {
   MOCK_METHOD(void,
               OnSourceHandled,
               (const StorableSource&,
+               base::Time source_time,
                absl::optional<uint64_t> cleared_debug_key,
                StorableSource::Result),
               (override));

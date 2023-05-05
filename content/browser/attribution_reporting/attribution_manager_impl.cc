@@ -625,8 +625,9 @@ void AttributionManagerImpl::OnSourceStored(
     StoreSourceResult result) {
   RecordStoreSourceStatus(result);
 
+  base::Time now = base::Time::Now();
   for (auto& observer : observers_) {
-    observer.OnSourceHandled(source, cleared_debug_key, result.status);
+    observer.OnSourceHandled(source, now, cleared_debug_key, result.status);
   }
 
   scheduler_timer_.MaybeSet(result.min_fake_report_time);

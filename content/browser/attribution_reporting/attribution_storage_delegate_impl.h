@@ -81,6 +81,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       base::TimeDelta expiry_deadline) const override;
   RandomizedResponse GetRandomizedResponse(
       const CommonSourceInfo& source,
+      base::Time source_time,
       base::Time event_report_window_time) override;
   base::Time GetExpiryTime(absl::optional<base::TimeDelta> declared_expiry,
                            base::Time source_time,
@@ -99,6 +100,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   // Exposed for testing.
   std::vector<FakeReport> GetRandomFakeReports(
       const CommonSourceInfo& source,
+      base::Time source_time,
       base::Time event_report_window_time);
 
   // Generates fake reports from the "stars and bars" sequence index of a
@@ -113,6 +115,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   // Exposed for testing.
   std::vector<FakeReport> GetFakeReportsForSequenceIndex(
       const CommonSourceInfo& source,
+      base::Time source_time,
       const std::vector<base::TimeDelta>& deadlines,
       int random_stars_and_bars_sequence_index) const;
 
@@ -136,7 +139,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
  private:
   std::vector<base::TimeDelta> EarlyDeadlines(
       attribution_reporting::mojom::SourceType source_type) const;
-  base::Time ReportTimeAtWindow(const CommonSourceInfo&,
+  base::Time ReportTimeAtWindow(base::Time source_time,
                                 const std::vector<base::TimeDelta>& deadlines,
                                 int window_index) const;
   std::vector<NullAggregatableReport> GetNullAggregatableReportsImpl(

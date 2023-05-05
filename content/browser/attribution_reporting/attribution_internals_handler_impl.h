@@ -62,6 +62,7 @@ class AttributionInternalsHandlerImpl
   void OnReportsChanged() override;
   void OnSourceHandled(
       const StorableSource& source,
+      base::Time source_time,
       absl::optional<uint64_t> cleared_debug_key,
       attribution_reporting::mojom::StoreSourceResult) override;
   void OnReportSent(const AttributionReport& report,

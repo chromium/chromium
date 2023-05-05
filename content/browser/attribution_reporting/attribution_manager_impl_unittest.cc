@@ -1556,7 +1556,7 @@ TEST_F(AttributionManagerImplTest,
 
   EXPECT_CALL(
       observer,
-      OnSourceHandled(source, testing::Eq(absl::nullopt),
+      OnSourceHandled(source, base::Time::Now(), testing::Eq(absl::nullopt),
                       StorableSource::Result::kProhibitedByBrowserPolicy));
 
   MockAttributionReportingContentBrowserClient browser_client;
@@ -2078,8 +2078,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_DebugKey) {
   observation.Observe(attribution_manager_.get());
 
   for (const auto& test_case : kDebugKeyTestCases) {
-    EXPECT_CALL(observer,
-                OnSourceHandled(_, test_case.expected_cleared_key, _));
+    EXPECT_CALL(observer, OnSourceHandled(_, base::Time::Now(),
+                                          test_case.expected_cleared_key, _));
     attribution_manager_->HandleSource(
         SourceBuilder()
             .SetReportingOrigin(
@@ -2237,7 +2237,8 @@ TEST_F(AttributionManagerImplTest,
 
   const StorableSource source = SourceBuilder().Build();
 
-  EXPECT_CALL(observer, OnSourceHandled(source, testing::Eq(absl::nullopt),
+  EXPECT_CALL(observer, OnSourceHandled(source, base::Time::Now(),
+                                        testing::Eq(absl::nullopt),
                                         StorableSource::Result::kSuccess));
 
   attribution_manager_->HandleSource(source, kFrameId);

@@ -337,7 +337,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
 
     base::RunLoop loop;
     EXPECT_CALL(observer,
-                OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+                OnSourceHandled(_, _, _, StorableSource::Result::kSuccess))
         .WillOnce([&]() { loop.Quit(); });
 
     EXPECT_TRUE(ExecJs(web_contents(), JsReplace("createAttributionSrcImg($1);",
@@ -387,7 +387,7 @@ class AttributionsBrowserTest : public ContentBrowserTest {
     base::RunLoop loop;
     bool received = false;
     EXPECT_CALL(source_observer,
-                OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+                OnSourceHandled(_, _, _, StorableSource::Result::kSuccess))
         .WillOnce([&]() {
           received = true;
           loop.Quit();
@@ -868,7 +868,8 @@ IN_PROC_BROWSER_TEST_F(
   observation.Observe(attribution_manager());
 
   base::RunLoop loop;
-  EXPECT_CALL(observer, OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+  EXPECT_CALL(observer,
+              OnSourceHandled(_, _, _, StorableSource::Result::kSuccess))
       .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(
@@ -948,7 +949,8 @@ IN_PROC_BROWSER_TEST_F(
   observation.Observe(attribution_manager());
 
   base::RunLoop loop;
-  EXPECT_CALL(observer, OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+  EXPECT_CALL(observer,
+              OnSourceHandled(_, _, _, StorableSource::Result::kSuccess))
       .WillOnce([&]() { loop.Quit(); });
 
   EXPECT_TRUE(ExecJs(
@@ -1409,7 +1411,8 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
   observation.Observe(attribution_manager());
 
   base::RunLoop loop;
-  EXPECT_CALL(observer, OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+  EXPECT_CALL(observer,
+              OnSourceHandled(_, _, _, StorableSource::Result::kSuccess))
       .WillOnce([&]() { loop.Quit(); });
 
   ASSERT_TRUE(ExecJs(fenced_frame_root_node, R"(
@@ -1510,7 +1513,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsFencedFrameBrowserTest,
 
   // We wait for the 2 sources to be processed before registering triggers.
   EXPECT_CALL(attribution_manager_observer,
-              OnSourceHandled(_, _, StorableSource::Result::kSuccess))
+              OnSourceHandled(_, _, _, StorableSource::Result::kSuccess))
       .WillOnce([]() {})
       .WillOnce([&loop]() { loop.Quit(); });
   loop.Run();

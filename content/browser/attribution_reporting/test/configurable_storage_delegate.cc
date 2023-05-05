@@ -76,7 +76,7 @@ base::Time ConfigurableStorageDelegate::GetEventLevelReportTime(
     const StoredSource& source,
     base::Time trigger_time) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return source.common_info().source_time() + report_delay_;
+  return source.source_time() + report_delay_;
 }
 
 base::Time ConfigurableStorageDelegate::GetAggregatableReportTime(
@@ -126,6 +126,7 @@ double ConfigurableStorageDelegate::GetRandomizedResponseRate(
 AttributionStorageDelegate::RandomizedResponse
 ConfigurableStorageDelegate::GetRandomizedResponse(
     const CommonSourceInfo& source,
+    base::Time source_time,
     base::Time event_report_window_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_;
