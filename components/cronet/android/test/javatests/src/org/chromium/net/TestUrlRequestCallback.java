@@ -64,9 +64,6 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     // Signals when request is done either successfully or not.
     private final ConditionVariable mDone = new ConditionVariable();
 
-    // Hangs the calling thread until a terminal method has started executing.
-    private final ConditionVariable mWaitForTerminalToStart = new ConditionVariable();
-
     // Signaled on each step when mAutoAdvance is false.
     private final ConditionVariable mStepBlock = new ConditionVariable();
 
@@ -178,14 +175,6 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         mDone.block();
     }
 
-    /**
-     * Blocks the calling thread until one of the final states has been called.
-     * This is called before the callback has finished executed.
-     */
-    public void waitForTerminalToStart() {
-        mWaitForTerminalToStart.block();
-    }
-
     public void waitForNextStep() {
         mStepBlock.block();
         mStepBlock.close();
@@ -288,9 +277,8 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
         mResponseStep = ResponseStep.ON_SUCCEEDED;
         mResponseInfo = info;
-        mWaitForTerminalToStart.open();
-        mBlockOnTerminalState.block();
         openDone();
+        mBlockOnTerminalState.block();
         maybeThrowCancelOrPause(request);
     }
 
@@ -320,9 +308,8 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         mResponseStep = ResponseStep.ON_FAILED;
         mOnErrorCalled = true;
         mError = error;
-        mWaitForTerminalToStart.open();
-        mBlockOnTerminalState.block();
         openDone();
+        mBlockOnTerminalState.block();
         maybeThrowCancelOrPause(request);
     }
 
@@ -337,9 +324,8 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
         mResponseStep = ResponseStep.ON_CANCELED;
         mOnCanceledCalled = true;
-        mWaitForTerminalToStart.open();
-        mBlockOnTerminalState.block();
         openDone();
+        mBlockOnTerminalState.block();
         maybeThrowCancelOrPause(request);
     }
 

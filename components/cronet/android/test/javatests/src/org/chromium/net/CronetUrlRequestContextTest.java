@@ -636,7 +636,7 @@ public class CronetUrlRequestContextTest {
         callback.startNextRead(request);
         callback.waitForNextStep();
         callback.startNextRead(request);
-        callback.waitForTerminalToStart();
+        callback.blockForDone();
         assertEquals(0, cronetEngine.getActiveRequestCount());
         callback.setBlockOnTerminalState(false);
     }
@@ -655,7 +655,7 @@ public class CronetUrlRequestContextTest {
         request.start();
         assertEquals(1, cronetEngine.getActiveRequestCount());
         request.cancel();
-        callback.waitForTerminalToStart();
+        callback.blockForDone();
         assertEquals(0, cronetEngine.getActiveRequestCount());
         callback.setBlockOnTerminalState(false);
         assertTrue(callback.mOnCanceledCalled);
@@ -676,7 +676,7 @@ public class CronetUrlRequestContextTest {
                 cronetEngine.newUrlRequestBuilder(badUrl, callback, callback.getExecutor()).build();
         request.start();
         assertEquals(1, cronetEngine.getActiveRequestCount());
-        callback.waitForTerminalToStart();
+        callback.blockForDone();
         assertEquals(0, cronetEngine.getActiveRequestCount());
         callback.setBlockOnTerminalState(false);
         assertTrue(callback.mOnErrorCalled);
