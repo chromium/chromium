@@ -296,28 +296,35 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "turnOffSyncAllowedForManagedProfiles",
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout));
 
-  html_source->AddBoolean("enablePasswordsImportM2",
-                          base::FeatureList::IsEnabled(
-                              password_manager::features::kPasswordsImportM2));
+  const bool enable_new_password_manager_page = base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordManagerRedesign);
+
+  // Turn-off all Password related features when kPasswordManagerRedesign is on.
+  html_source->AddBoolean(
+      "enablePasswordsImportM2",
+      !enable_new_password_manager_page &&
+          base::FeatureList::IsEnabled(
+              password_manager::features::kPasswordsImportM2));
 
   html_source->AddBoolean(
       "enablePasswordViewPage",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordViewPageInSettings) ||
-          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+      !enable_new_password_manager_page &&
+          (base::FeatureList::IsEnabled(
+               password_manager::features::kPasswordViewPageInSettings) ||
+           base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)));
 
   html_source->AddBoolean(
       "enablePasswordNotes",
-      base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
+      !enable_new_password_manager_page &&
+          base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup));
 
-  html_source->AddBoolean(
-      "enableSendPasswords",
-      base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
+  html_source->AddBoolean("enableSendPasswords",
+                          !enable_new_password_manager_page &&
+                              base::FeatureList::IsEnabled(
+                                  password_manager::features::kSendPasswords));
 
-  html_source->AddBoolean(
-      "enableNewPasswordManagerPage",
-      base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordManagerRedesign));
+  html_source->AddBoolean("enableNewPasswordManagerPage",
+                          enable_new_password_manager_page);
 
   commerce::ShoppingService* shopping_service =
       commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
