@@ -455,9 +455,9 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   EXPECT_FALSE(public_key_spki_der.empty());
 
   base::test::TestFuture<std::vector<uint8_t>, Status> sign_waiter;
-  platform_keys_service()->SignRSAPKCS1Digest(
-      token_id, kDataToSign, public_key_spki_der, kHashAlgorithm,
-      sign_waiter.GetCallback());
+  platform_keys_service()->SignRsaPkcs1(token_id, kDataToSign,
+                                        public_key_spki_der, kHashAlgorithm,
+                                        sign_waiter.GetCallback());
   ASSERT_TRUE(sign_waiter.Wait());
   EXPECT_EQ(sign_waiter.Get<Status>(), Status::kSuccess);
 

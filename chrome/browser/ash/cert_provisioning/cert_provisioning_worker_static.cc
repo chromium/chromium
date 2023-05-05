@@ -606,7 +606,7 @@ void CertProvisioningWorkerStatic::SignCsr() {
                             base::TimeTicks::Now()));
     return;
   }
-  platform_keys_service_->SignRSAPKCS1Digest(
+  platform_keys_service_->SignRsaPkcs1(
       GetPlatformKeysTokenId(cert_scope_), StrToBytes(csr_), public_key_,
       hashing_algorithm_.value(),
       base::BindRepeating(&CertProvisioningWorkerStatic::OnSignCsrDone,

@@ -598,10 +598,10 @@ TEST_F(CertProvisioningWorkerStaticTest, Success) {
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
-        ::testing::Optional(TokenId::kUser), GetDataToSign(), GetPublicKeyBin(),
-        HashAlgorithm::HASH_ALGORITHM_SHA256,
-        /*callback=*/_));
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(
+        SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
+                     GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                     /*callback=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
         .WillOnce(VerifyNoBackendErrorsSeen);
 
@@ -682,10 +682,10 @@ TEST_F(CertProvisioningWorkerStaticTest, NoVaSuccess) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
-        ::testing::Optional(TokenId::kUser), GetDataToSign(), GetPublicKeyBin(),
-        HashAlgorithm::HASH_ALGORITHM_SHA256,
-        /*callback=*/_));
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(
+        SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
+                     GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                     /*callback=*/_));
 
     EXPECT_FINISH_CSR_OK(FinishCsr(Eq(std::ref(provisioning_process)),
                                    /*va_challenge_response=*/"",
@@ -851,7 +851,7 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterManualRetry) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest);
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRsaPkcs1);
 
     EXPECT_FINISH_CSR_TRY_LATER(FinishCsr(Eq(std::ref(provisioning_process)),
                                           kChallengeResponse, GetSignatureStr(),
@@ -963,10 +963,10 @@ TEST_F(CertProvisioningWorkerStaticTest, TryLaterWait) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
-        ::testing::Optional(TokenId::kUser), GetDataToSign(), GetPublicKeyBin(),
-        HashAlgorithm::HASH_ALGORITHM_SHA256,
-        /*callback=*/_));
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(
+        SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
+                     GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                     /*callback=*/_));
 
     EXPECT_FINISH_CSR_TRY_LATER(FinishCsr(Eq(std::ref(provisioning_process)),
                                           kChallengeResponse, GetSignatureStr(),
@@ -1086,10 +1086,10 @@ TEST_F(CertProvisioningWorkerStaticTest, ServiceActivationPendingResponse) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
-        ::testing::Optional(TokenId::kUser), GetDataToSign(), GetPublicKeyBin(),
-        HashAlgorithm::HASH_ALGORITHM_SHA256,
-        /*callback=*/_));
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(
+        SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
+                     GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                     /*callback=*/_));
 
     EXPECT_FINISH_CSR_SERVICE_ACTIVATION_PENDING(
         FinishCsr(Eq(std::ref(provisioning_process)), kChallengeResponse,
@@ -1212,10 +1212,10 @@ TEST_F(CertProvisioningWorkerStaticTest, InvalidationRespected) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
-        ::testing::Optional(TokenId::kUser), GetDataToSign(), GetPublicKeyBin(),
-        HashAlgorithm::HASH_ALGORITHM_SHA256,
-        /*callback=*/_));
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(
+        SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
+                     GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                     /*callback=*/_));
 
     EXPECT_FINISH_CSR_TRY_LATER(FinishCsr(Eq(std::ref(provisioning_process)),
                                           kChallengeResponse, GetSignatureStr(),
@@ -1779,10 +1779,10 @@ TEST_F(CertProvisioningWorkerStaticTest, SerializationSuccess) {
                            KeyAttributeType::kCertificateProvisioningId,
                            GetCertProfileIdBin(), _));
 
-    EXPECT_SIGN_RSAPKC1_DIGEST_OK(SignRSAPKCS1Digest(
-        ::testing::Optional(TokenId::kUser), GetDataToSign(), GetPublicKeyBin(),
-        HashAlgorithm::HASH_ALGORITHM_SHA256,
-        /*callback=*/_));
+    EXPECT_SIGN_RSAPKC1_DIGEST_OK(
+        SignRsaPkcs1(::testing::Optional(TokenId::kUser), GetDataToSign(),
+                     GetPublicKeyBin(), HashAlgorithm::HASH_ALGORITHM_SHA256,
+                     /*callback=*/_));
 
     EXPECT_FINISH_CSR_OK(FinishCsr(Eq(std::ref(provisioning_process)),
                                    kChallengeResponse, GetSignatureStr(),

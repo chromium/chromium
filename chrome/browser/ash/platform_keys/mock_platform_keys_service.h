@@ -51,7 +51,7 @@ class MockPlatformKeysService : public PlatformKeysService {
               (override));
 
   MOCK_METHOD(void,
-              SignRSAPKCS1Digest,
+              SignRsaPkcs1,
               (absl::optional<chromeos::platform_keys::TokenId> token_id,
                std::vector<uint8_t> data,
                std::vector<uint8_t> public_key_spki_der,
@@ -68,7 +68,7 @@ class MockPlatformKeysService : public PlatformKeysService {
               (override));
 
   MOCK_METHOD(void,
-              SignECDSADigest,
+              SignEcdsa,
               (absl::optional<chromeos::platform_keys::TokenId> token_id,
                std::vector<uint8_t> data,
                std::vector<uint8_t> public_key_spki_der,

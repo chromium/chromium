@@ -765,12 +765,12 @@ void KeystoreServiceAsh::Sign(bool is_keystore_provided,
         service->SignRSAPKCS1Raw(token_id, data, public_key, std::move(cb));
         return;
       }
-      service->SignRSAPKCS1Digest(token_id, data, public_key, hash_algorithm,
-                                  std::move(cb));
+      service->SignRsaPkcs1(token_id, data, public_key, hash_algorithm,
+                            std::move(cb));
       return;
     case chromeos::platform_keys::KeyType::kEcdsa:
-      service->SignECDSADigest(token_id, data, public_key, hash_algorithm,
-                               std::move(cb));
+      service->SignEcdsa(token_id, data, public_key, hash_algorithm,
+                         std::move(cb));
       return;
   }
 }

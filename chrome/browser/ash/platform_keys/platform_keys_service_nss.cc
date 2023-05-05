@@ -1543,7 +1543,7 @@ void PlatformKeysServiceImpl::GenerateECKey(TokenId token_id,
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::SignRSAPKCS1Digest(
+void PlatformKeysServiceImpl::SignRsaPkcs1(
     absl::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
@@ -1596,7 +1596,7 @@ void PlatformKeysServiceImpl::SignRSAPKCS1Raw(
                   delegate_.get(), state_ptr);
 }
 
-void PlatformKeysServiceImpl::SignECDSADigest(
+void PlatformKeysServiceImpl::SignEcdsa(
     absl::optional<TokenId> token_id,
     std::vector<uint8_t> data,
     std::vector<uint8_t> public_key_spki_der,
