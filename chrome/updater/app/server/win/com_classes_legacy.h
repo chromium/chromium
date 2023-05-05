@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -43,38 +44,36 @@ using WrlRuntimeDispatchClass = Microsoft::WRL::RuntimeClass<
 
 }  // namespace
 
-// The `IDispatchImpl*` classes implement `IDispatch` for interface
+// The `IDispatchImpl` class implements `IDispatch` for interface
 // `TDualInterface`, where `TDualInterface` is a dual interface. The IDispatch
 // implementation relies on the typelib/typeinfo for interface `TDualInterface`.
 //
 // If the class supports more interfaces other than `TDualInterface`, these
-// interfaces (up to 2 more interfaces) can be passed in via inheriting from the
-// `IDispatchImpl2` and `IDispatchImpl3` classes.
+// interfaces can be passed in via `TInterfaces...`.
 //
-// The REFIIDs `iid_*_user` and `iid_*_system` are to allow for distinct
-// TypeLibs to be registered and marshaled for user/system.
+// The `user_iid_map` and `system_iid_map` passed to the constructor are to
+// allow for distinct TypeLibs to be registered and marshaled for user/system.
+// See the code below for examples.
 //
-// Note that the `IDispatchImpl*` classes only implement the `IDispatch` methods
+// Note that the `IDispatchImpl` class only implements the `IDispatch` methods
 // for the `TDualInterface` interface.
-template <typename TDualInterface,
-          REFIID iid_dual_interface_user,
-          REFIID iid_dual_interface_system,
-          typename... TInterfaces>
+template <typename TDualInterface, typename... TInterfaces>
 class IDispatchImpl
     : public WrlRuntimeDispatchClass<TDualInterface, TInterfaces...> {
  public:
-  IDispatchImpl() : hr_load_typelib_(InitializeTypeInfo()) {}
-  IDispatchImpl(const IDispatchImpl&) = delete;
-  IDispatchImpl& operator=(const IDispatchImpl&) = delete;
+  IDispatchImpl(const std::unordered_map<IID, IID>& user_iid_map,
+                const std::unordered_map<IID, IID>& system_iid_map)
+      : iid_map_(IsSystemInstall() ? system_iid_map : user_iid_map),
+        hr_load_typelib_(InitializeTypeInfo()) {}
+  IDispatchImpl(const IDispatchImpl&) = default;
+  IDispatchImpl& operator=(const IDispatchImpl&) = default;
   ~IDispatchImpl() override = default;
 
   // IUnknown override.
   IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
+    const auto find_iid = iid_map_.find(riid);
     return WrlRuntimeDispatchClass<TDualInterface, TInterfaces...>::
-        QueryInterface(riid == (IsSystemInstall() ? iid_dual_interface_system
-                                                  : iid_dual_interface_user)
-                           ? __uuidof(TDualInterface)
-                           : riid,
+        QueryInterface(find_iid != iid_map_.end() ? find_iid->second : riid,
                        object);
   }
 
@@ -165,84 +164,14 @@ class IDispatchImpl
   }
 
  private:
+  const std::unordered_map<IID, IID> iid_map_;
   Microsoft::WRL::ComPtr<ITypeInfo> type_info_;
   const HRESULT hr_load_typelib_;
 };
 
-template <typename TDualInterface,
-          REFIID iid_dual_interface_user,
-          REFIID iid_dual_interface_system,
-          typename TInterface2,
-          REFIID iid_user2,
-          REFIID iid_system2,
-          typename... TInterfaces>
-class IDispatchImpl2 : public IDispatchImpl<TDualInterface,
-                                            iid_dual_interface_user,
-                                            iid_dual_interface_system,
-                                            TInterface2,
-                                            TInterfaces...> {
- public:
-  IDispatchImpl2() = default;
-  IDispatchImpl2(const IDispatchImpl2&) = delete;
-  IDispatchImpl2& operator=(const IDispatchImpl2&) = delete;
-  ~IDispatchImpl2() override = default;
-
-  // IUnknown override.
-  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
-    return IDispatchImpl<
-        TDualInterface, iid_dual_interface_user, iid_dual_interface_system,
-        TInterface2, TInterfaces...>::QueryInterface(riid == (IsSystemInstall()
-                                                                  ? iid_system2
-                                                                  : iid_user2)
-                                                         ? __uuidof(TInterface2)
-                                                         : riid,
-                                                     object);
-  }
-};
-
-template <typename TDualInterface,
-          REFIID iid_dual_interface_user,
-          REFIID iid_dual_interface_system,
-          typename TInterface2,
-          REFIID iid_user2,
-          REFIID iid_system2,
-          typename TInterface3,
-          REFIID iid_user3,
-          REFIID iid_system3,
-          typename... TInterfaces>
-class IDispatchImpl3 : public IDispatchImpl2<TDualInterface,
-                                             iid_dual_interface_user,
-                                             iid_dual_interface_system,
-                                             TInterface2,
-                                             iid_user2,
-                                             iid_system2,
-                                             TInterface3,
-                                             TInterfaces...> {
- public:
-  IDispatchImpl3() = default;
-  IDispatchImpl3(const IDispatchImpl3&) = delete;
-  IDispatchImpl3& operator=(const IDispatchImpl3&) = delete;
-  ~IDispatchImpl3() override = default;
-
-  // IUnknown override.
-  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
-    return IDispatchImpl2<
-        TDualInterface, iid_dual_interface_user, iid_dual_interface_system,
-        TInterface2, iid_user2, iid_system2, TInterface3,
-        TInterfaces...>::QueryInterface(riid == (IsSystemInstall() ? iid_system3
-                                                                   : iid_user3)
-                                            ? __uuidof(TInterface3)
-                                            : riid,
-                                        object);
-  }
-};
-
 // This class implements the legacy Omaha3 IGoogleUpdate3Web interface as
 // expected by Chrome's on-demand client.
-class LegacyOnDemandImpl
-    : public IDispatchImpl<IGoogleUpdate3Web,
-                           __uuidof(IGoogleUpdate3WebUser),
-                           __uuidof(IGoogleUpdate3WebSystem)> {
+class LegacyOnDemandImpl : public IDispatchImpl<IGoogleUpdate3Web> {
  public:
   LegacyOnDemandImpl();
   LegacyOnDemandImpl(const LegacyOnDemandImpl&) = delete;
@@ -320,10 +249,7 @@ class LegacyProcessLauncherImpl
 //
 // Placeholders may be embedded within words, and appropriate quoting of
 // back-slash, double-quotes, space, and tab is applied if necessary.
-class LegacyAppCommandWebImpl
-    : public IDispatchImpl<IAppCommandWeb,
-                           __uuidof(IAppCommandWebUser),
-                           __uuidof(IAppCommandWebSystem)> {
+class LegacyAppCommandWebImpl : public IDispatchImpl<IAppCommandWeb> {
  public:
   LegacyAppCommandWebImpl();
   LegacyAppCommandWebImpl(const LegacyAppCommandWebImpl&) = delete;
@@ -374,15 +300,8 @@ class LegacyAppCommandWebImpl
 // and device management.
 //
 // This class is used by chrome://policy to show the current updater policies.
-class PolicyStatusImpl : public IDispatchImpl3<IPolicyStatus3,
-                                               __uuidof(IPolicyStatus3User),
-                                               __uuidof(IPolicyStatus3System),
-                                               IPolicyStatus2,
-                                               __uuidof(IPolicyStatus2User),
-                                               __uuidof(IPolicyStatus2System),
-                                               IPolicyStatus,
-                                               __uuidof(IPolicyStatusUser),
-                                               __uuidof(IPolicyStatusSystem)> {
+class PolicyStatusImpl
+    : public IDispatchImpl<IPolicyStatus3, IPolicyStatus2, IPolicyStatus> {
  public:
   PolicyStatusImpl();
   PolicyStatusImpl(const PolicyStatusImpl&) = delete;
@@ -451,10 +370,7 @@ class PolicyStatusImpl : public IDispatchImpl3<IPolicyStatus3,
 // This class implements the legacy Omaha3 IPolicyStatusValue interface. Each
 // instance stores a single updater policy returned by the properties in
 // IPolicyStatus2 and IPolicyStatus3.
-class PolicyStatusValueImpl
-    : public IDispatchImpl<IPolicyStatusValue,
-                           __uuidof(IPolicyStatusValueUser),
-                           __uuidof(IPolicyStatusValueSystem)> {
+class PolicyStatusValueImpl : public IDispatchImpl<IPolicyStatusValue> {
  public:
   PolicyStatusValueImpl();
   PolicyStatusValueImpl(const PolicyStatusValueImpl&) = delete;

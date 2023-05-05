@@ -100,11 +100,12 @@ std::string GetStringFromValue(const std::vector<std::string>& value) {
 namespace updater {
 
 // Implements `IAppVersionWeb`.
-class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb,
-                                               __uuidof(IAppVersionWebUser),
-                                               __uuidof(IAppVersionWebSystem)> {
+class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb> {
  public:
-  AppVersionWebImpl() = default;
+  AppVersionWebImpl()
+      : IDispatchImpl<IAppVersionWeb>(
+            {{__uuidof(IAppVersionWebUser), __uuidof(IAppVersionWeb)}},
+            {{__uuidof(IAppVersionWebSystem), __uuidof(IAppVersionWeb)}}) {}
   AppVersionWebImpl(const AppVersionWebImpl&) = delete;
   AppVersionWebImpl& operator=(const AppVersionWebImpl&) = delete;
 
@@ -140,11 +141,12 @@ class AppVersionWebImpl : public IDispatchImpl<IAppVersionWeb,
 
 // Implements `ICurrentState`. Initialized with a snapshot of the current state
 // of the install.
-class CurrentStateImpl : public IDispatchImpl<ICurrentState,
-                                              __uuidof(ICurrentStateUser),
-                                              __uuidof(ICurrentStateSystem)> {
+class CurrentStateImpl : public IDispatchImpl<ICurrentState> {
  public:
-  CurrentStateImpl() = default;
+  CurrentStateImpl()
+      : IDispatchImpl<ICurrentState>(
+            {{__uuidof(ICurrentStateUser), __uuidof(ICurrentState)}},
+            {{__uuidof(ICurrentStateSystem), __uuidof(ICurrentState)}}) {}
   CurrentStateImpl(const CurrentStateImpl&) = delete;
   CurrentStateImpl& operator=(const CurrentStateImpl&) = delete;
 
@@ -338,12 +340,12 @@ class CurrentStateImpl : public IDispatchImpl<ICurrentState,
 
 // This class implements the legacy Omaha3 IAppWeb interface as expected by
 // Chrome's on-demand client.
-class AppWebImpl : public IDispatchImpl<IAppWeb,
-                                        __uuidof(IAppWebUser),
-                                        __uuidof(IAppWebSystem)> {
+class AppWebImpl : public IDispatchImpl<IAppWeb> {
  public:
   AppWebImpl()
-      : task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+      : IDispatchImpl<IAppWeb>({{__uuidof(IAppWebUser), __uuidof(IAppWeb)}},
+                               {{__uuidof(IAppWebSystem), __uuidof(IAppWeb)}}),
+        task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::WithBaseSyncPrimitives()})) {}
   AppWebImpl(const AppWebImpl&) = delete;
   AppWebImpl& operator=(const AppWebImpl&) = delete;
@@ -644,11 +646,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb,
 
 // This class implements the legacy Omaha3 IAppBundleWeb interface as expected
 // by Chrome's on-demand client.
-class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb,
-                                              __uuidof(IAppBundleWebUser),
-                                              __uuidof(IAppBundleWebSystem)> {
+class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
  public:
-  AppBundleWebImpl() = default;
+  AppBundleWebImpl()
+      : IDispatchImpl<IAppBundleWeb>(
+            {{__uuidof(IAppBundleWebUser), __uuidof(IAppBundleWeb)}},
+            {{__uuidof(IAppBundleWebSystem), __uuidof(IAppBundleWeb)}}) {}
   AppBundleWebImpl(const AppBundleWebImpl&) = delete;
   AppBundleWebImpl& operator=(const AppBundleWebImpl&) = delete;
 
@@ -779,7 +782,10 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb,
   bool is_install_ = false;
 };
 
-LegacyOnDemandImpl::LegacyOnDemandImpl() = default;
+LegacyOnDemandImpl::LegacyOnDemandImpl()
+    : IDispatchImpl<IGoogleUpdate3Web>(
+          {{__uuidof(IGoogleUpdate3WebUser), __uuidof(IGoogleUpdate3Web)}},
+          {{__uuidof(IGoogleUpdate3WebSystem), __uuidof(IGoogleUpdate3Web)}}) {}
 
 LegacyOnDemandImpl::~LegacyOnDemandImpl() = default;
 
@@ -851,7 +857,10 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLineEx(
   return E_NOTIMPL;
 }
 
-LegacyAppCommandWebImpl::LegacyAppCommandWebImpl() = default;
+LegacyAppCommandWebImpl::LegacyAppCommandWebImpl()
+    : IDispatchImpl<IAppCommandWeb>(
+          {{__uuidof(IAppCommandWebUser), __uuidof(IAppCommandWeb)}},
+          {{__uuidof(IAppCommandWebSystem), __uuidof(IAppCommandWeb)}}) {}
 LegacyAppCommandWebImpl::~LegacyAppCommandWebImpl() = default;
 
 HRESULT LegacyAppCommandWebImpl::RuntimeClassInitialize(
@@ -926,7 +935,14 @@ STDMETHODIMP LegacyAppCommandWebImpl::execute(VARIANT substitution1,
 }
 
 PolicyStatusImpl::PolicyStatusImpl()
-    : policy_service_(
+    : IDispatchImpl<IPolicyStatus3, IPolicyStatus2, IPolicyStatus>(
+          {{__uuidof(IPolicyStatus3User), __uuidof(IPolicyStatus3)},
+           {__uuidof(IPolicyStatus2User), __uuidof(IPolicyStatus2)},
+           {__uuidof(IPolicyStatusUser), __uuidof(IPolicyStatus)}},
+          {{__uuidof(IPolicyStatus3System), __uuidof(IPolicyStatus3)},
+           {__uuidof(IPolicyStatus2System), __uuidof(IPolicyStatus2)},
+           {__uuidof(IPolicyStatusSystem), __uuidof(IPolicyStatus)}}),
+      policy_service_(
           AppServerSingletonInstance()->config()->GetPolicyService()) {}
 PolicyStatusImpl::~PolicyStatusImpl() = default;
 
@@ -1362,7 +1378,11 @@ STDMETHODIMP PolicyStatusImpl::get_forceInstallApps(
              : E_FAIL;
 }
 
-PolicyStatusValueImpl::PolicyStatusValueImpl() = default;
+PolicyStatusValueImpl::PolicyStatusValueImpl()
+    : IDispatchImpl<IPolicyStatusValue>(
+          {{__uuidof(IPolicyStatusValueUser), __uuidof(IPolicyStatusValue)}},
+          {{__uuidof(IPolicyStatusValueSystem),
+            __uuidof(IPolicyStatusValue)}}) {}
 PolicyStatusValueImpl::~PolicyStatusValueImpl() = default;
 
 template <typename T>
