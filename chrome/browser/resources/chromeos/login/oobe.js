@@ -9,9 +9,10 @@ import './components/api_keys_notice.js';
 // clang-format on
 
 
+
 import {assert} from '//resources/ash/common/assert.js';
 import {$} from '//resources/ash/common/util.js';
-import {startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import {refreshColorCss, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
@@ -93,7 +94,11 @@ function initializeOobe() {
 
   const isOobeJellyEnabled = loadTimeData.getBoolean('isOobeJellyEnabled');
   if (isOobeJellyEnabled) {
+    // Start listening for color changes in 'chrome://theme/colors.css'. Force
+    // reload it once to account for any missed color change events between
+    // loading oobe.html and here.
     startColorChangeUpdater();
+    refreshColorCss();
   }
 
   // Initialize the on-screen debugger if present.
