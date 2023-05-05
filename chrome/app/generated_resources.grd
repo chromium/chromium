@@ -12775,7 +12775,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
       <message name="IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT" desc="Spoken by screen readers when a tab group header that has not been named by the user gets focused but is not visually rendered. Example: 'Unnamed group - Google Search and 3 other tabs - Expanded'">
-      Unnamed group - <ph name="GROUP_CONTENTS">$2<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$1</ph>
+        Unnamed group - <ph name="GROUP_CONTENTS">$2<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$1</ph>
       </message>
       <message name="IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT" desc="Spoken by screen readers when a tab group header that has been named by the user gets focused but is not visually rendered. Example: 'Group MyGroupName - Google Search and 3 other tabs - Collapsed'">
         Group <ph name="GROUP_NAME">$2</ph> - <ph name="GROUP_CONTENTS">$3<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$1</ph>
@@ -12785,6 +12785,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_GROUP_AX_LABEL_EXPANDED" desc="Used as part of the accessibility label text of a group header for an expanded tab group.">
         Expanded
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_UNNAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has not been named by the user gets focused in the bookmarks bar. Example: 'Unnamed group - Opened'">
+        Unnamed group - <ph name="OPENED_STATE">$1</ph>
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_NAMED_SAVED_GROUP_FORMAT" desc="Spoken by screen readers when a saved group that has been named by the user gets focused in the bookmarks bar. Example: 'MyGroupName group - Closed'">
+        <ph name="GROUP_NAME">$1</ph> group - <ph name="OPENED_STATE">$2</ph>
+      </message>
+      <message name="IDS_SAVED_GROUP_AX_LABEL_OPENED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is opened in the tabstrip.">
+        Opened
+      </message>
+      <message name="IDS_SAVED_GROUP_AX_LABEL_CLOSED" desc="Used as part of the accessibility label text of a saved group button to describe if a saved group is closed in the tabstrip.">
+        Closed
       </message>
       <message name="IDS_TAB_AX_ANNOUNCE_MOVED_RIGHT" is_accessibility_with_no_ui="true" desc="Screen reader announcement when the user inputs a hotkey for moving the currently-selected tab to the right">
         Tab moved right

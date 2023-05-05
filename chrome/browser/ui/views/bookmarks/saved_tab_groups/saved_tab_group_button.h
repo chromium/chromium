@@ -78,6 +78,8 @@ class SavedTabGroupButton : public views::MenuButton,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMoveGroupToNewWindowMenuItem);
 
  private:
+  std::u16string GetAccessibleNameForButton();
+  void SetTextProperties(const SavedTabGroup& group);
   void UpdateButtonLayout();
   void TabMenuItemPressed(const GURL& url, int event_flags);
   void MoveGroupToNewWindowPressed(int event_flags);
