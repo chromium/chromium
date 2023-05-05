@@ -782,13 +782,7 @@ void FocusFakebox() {
 // Tests that tapping on omnibox in pre-edit state in SRP or webpage would
 // display a callout menu with cut,copy and paste (if there is a text on the
 // pasteboard).
-// TODO(crbug.com/1435485): Test is failing on official device builds.
-#if !TARGET_OS_SIMULATOR && defined(OFFICIAL_BUILD)
-#define MAYBE_testTapOmniboxOnPreEditState DISABLED_testTapOmniboxOnPreEditState
-#else
-#define MAYBE_testTapOmniboxOnPreEditState testTapOmniboxOnPreEditState
-#endif
-- (void)MAYBE_testTapOmniboxOnPreEditState {
+- (void)testTapOmniboxOnPreEditState {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -802,8 +796,9 @@ void FocusFakebox() {
   [ChromeEarlGrey copyTextToPasteboard:@"hello"];
 
   // Tap on Omnibox on pre edit state.
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Wait for callout copy button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -822,13 +817,7 @@ void FocusFakebox() {
 
 // Tests that Cut callout button would erase the current url and copy it on the
 // pasteboard.
-// TODO(crbug.com/1435485): Test is failing on official device builds.
-#if !TARGET_OS_SIMULATOR && defined(OFFICIAL_BUILD)
-#define MAYBE_testCutCalloutButton DISABLED_testCutCalloutButton
-#else
-#define MAYBE_testCutCalloutButton testCutCalloutButton
-#endif
-- (void)MAYBE_testCutCalloutButton {
+- (void)testCutCalloutButton {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -839,8 +828,9 @@ void FocusFakebox() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap on Omnibox on pre edit state.
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Wait for callout cut button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
@@ -858,13 +848,7 @@ void FocusFakebox() {
 
 // Tests that Paste callout button would erase the current url and replace it
 // with text on pasteboard.
-// TODO(crbug.com/1435485): Test is failing on official device builds.
-#if !TARGET_OS_SIMULATOR && defined(OFFICIAL_BUILD)
-#define MAYBE_testPasteCalloutButton DISABLED_testPasteCalloutButton
-#else
-#define MAYBE_testPasteCalloutButton testPasteCalloutButton
-#endif
-- (void)MAYBE_testPasteCalloutButton {
+- (void)testPasteCalloutButton {
   // Load a web page.
   [ChromeEarlGrey loadURL:_URL];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -878,8 +862,9 @@ void FocusFakebox() {
   [ChromeEarlGrey copyTextToPasteboard:@"hello"];
 
   // Tap on Omnibox on pre edit state.
+  // TODO(crbug.com/1442458): Find a better way to tap on the selected url.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_tap()];
+      performAction:grey_tapAtPoint(CGPointMake(0, 0))];
 
   // Wait for callout paste button to be displayed.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
