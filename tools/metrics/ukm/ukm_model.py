@@ -91,34 +91,28 @@ _METRIC_TYPE =  models.ObjectNodeType(
             _AGGREGATION_TYPE.tag, _AGGREGATION_TYPE, multiple=True),
     ])
 
-_EVENT_TYPE = models.ObjectNodeType('event',
-                                    attributes=[
-                                        ('name', str, r'^[A-Za-z0-9.]+$'),
-                                        ('singular', str,
-                                         r'(?i)^(|true|false)$'),
-                                    ],
-                                    alphabetization=[
-                                        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
-                                        (_OWNER_TYPE.tag, _KEEP_ORDER),
-                                        (_SUMMARY_TYPE.tag, _KEEP_ORDER),
-                                        (_METRIC_TYPE.tag,
-                                         _LOWERCASE_FN('name')),
-                                    ],
-                                    extra_newlines=(1, 1, 1),
-                                    children=[
-                                        models.ChildType(_OBSOLETE_TYPE.tag,
-                                                         _OBSOLETE_TYPE,
-                                                         multiple=False),
-                                        models.ChildType(_OWNER_TYPE.tag,
-                                                         _OWNER_TYPE,
-                                                         multiple=True),
-                                        models.ChildType(_SUMMARY_TYPE.tag,
-                                                         _SUMMARY_TYPE,
-                                                         multiple=False),
-                                        models.ChildType(_METRIC_TYPE.tag,
-                                                         _METRIC_TYPE,
-                                                         multiple=True),
-                                    ])
+_EVENT_TYPE = models.ObjectNodeType(
+    'event',
+    attributes=[
+        ('name', str, r'^[A-Za-z0-9.]+$'),
+        ('singular', str, r'(?i)^(|true|false)$'),
+        # This event will be omitted from the generated readable_event.proto
+        # file if skip_proto_reason is a non-empty string.
+        ('skip_proto_reason', str, None),
+    ],
+    alphabetization=[
+        (_OBSOLETE_TYPE.tag, _KEEP_ORDER),
+        (_OWNER_TYPE.tag, _KEEP_ORDER),
+        (_SUMMARY_TYPE.tag, _KEEP_ORDER),
+        (_METRIC_TYPE.tag, _LOWERCASE_FN('name')),
+    ],
+    extra_newlines=(1, 1, 1),
+    children=[
+        models.ChildType(_OBSOLETE_TYPE.tag, _OBSOLETE_TYPE, multiple=False),
+        models.ChildType(_OWNER_TYPE.tag, _OWNER_TYPE, multiple=True),
+        models.ChildType(_SUMMARY_TYPE.tag, _SUMMARY_TYPE, multiple=False),
+        models.ChildType(_METRIC_TYPE.tag, _METRIC_TYPE, multiple=True),
+    ])
 
 _UKM_CONFIGURATION_TYPE = models.ObjectNodeType(
     'ukm-configuration',

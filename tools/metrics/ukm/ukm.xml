@@ -24277,7 +24277,8 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="V8CompileHints.Version5">
+<event name="V8CompileHints.Version5"
+    skip_proto_reason="Too many metrics causing scalability issue b/275678348">
   <owner>marja@chromium.org</owner>
   <owner>v8-loading@google.com</owner>
   <summary>
