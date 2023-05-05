@@ -185,12 +185,11 @@ class ConnectJobFactoryTest : public TestWithTaskEnvironment {
       /*websocket_endpoint_lock_manager=*/nullptr};
   TestConnectJobDelegate delegate_;
 
+  std::unique_ptr<ConnectJobFactory> factory_;
   raw_ptr<TestHttpProxyConnectJobFactory> http_proxy_job_factory_;
   raw_ptr<TestSocksConnectJobFactory> socks_job_factory_;
   raw_ptr<TestSslConnectJobFactory> ssl_job_factory_;
   raw_ptr<TestTransportConnectJobFactory> transport_job_factory_;
-
-  std::unique_ptr<ConnectJobFactory> factory_;
 };
 
 TEST_F(ConnectJobFactoryTest, CreateConnectJob) {
