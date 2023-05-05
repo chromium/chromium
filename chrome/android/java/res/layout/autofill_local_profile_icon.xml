@@ -12,6 +12,6 @@ found in the LICENSE file.
     android:id="@+id/local_profile_icon"
     android:layout_width="24dp"
     android:layout_height="24dp"
-    app:tint="@color/default_icon_color_tint_list"
+    app:tint="@color/default_icon_color_secondary_tint_list"
     app:srcCompat="@drawable/ic_cloud_offline_24dp"
     android:contentDescription="@string/autofill_local_profile_accessibility_label" />
