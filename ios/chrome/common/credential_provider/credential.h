@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Contains the data for a Credential that can be used with iOS AutoFill.
+// Implementations must provide hash and equality methods.
 @protocol Credential <NSObject>
 
 // Associated favicon name.
