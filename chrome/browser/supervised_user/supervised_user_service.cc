@@ -65,6 +65,10 @@ void SupervisedUserService::RegisterProfilePrefs(
   for (const char* pref : supervised_user::kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
   }
+  registry->RegisterIntegerPref(
+      prefs::kFirstTimeInterstitialBannerState,
+      static_cast<int>(
+          supervised_user::FirstTimeInterstitialBannerState::kUnknown));
 }
 
 void SupervisedUserService::Init() {
@@ -77,7 +81,26 @@ void SupervisedUserService::Init() {
       prefs::kSupervisedUserId,
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
                           base::Unretained(this)));
+  supervised_user::FirstTimeInterstitialBannerState banner_state =
+      static_cast<supervised_user::FirstTimeInterstitialBannerState>(
+          user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (banner_state ==
+          supervised_user::FirstTimeInterstitialBannerState::kUnknown &&
+      !profile_->IsNewProfile()) {
+    banner_state =
+        supervised_user::FirstTimeInterstitialBannerState::kNeedToShow;
+  } else {
+    banner_state =
+        supervised_user::FirstTimeInterstitialBannerState::kSetupComplete;
+  }
+#else
+  banner_state =
+      supervised_user::FirstTimeInterstitialBannerState::kSetupComplete;
+#endif
 
+  user_prefs_->SetInteger(prefs::kFirstTimeInterstitialBannerState,
+                          static_cast<int>(banner_state));
   SetActive(IsSubjectToParentalControls());
 }
 
@@ -403,4 +426,18 @@ void SupervisedUserService::Shutdown() {
 void SupervisedUserService::OnSiteListUpdated() {
   for (SupervisedUserServiceObserver& observer : observer_list_)
     observer.OnURLFilterChanged();
+}
+
+void SupervisedUserService::MarkFirstTimeInterstitialBannerShown() const {
+  supervised_user::FirstTimeInterstitialBannerState banner_state =
+      static_cast<supervised_user::FirstTimeInterstitialBannerState>(
+          user_prefs_->GetInteger(prefs::kFirstTimeInterstitialBannerState));
+
+  if (banner_state ==
+      supervised_user::FirstTimeInterstitialBannerState::kNeedToShow) {
+    user_prefs_->SetInteger(
+        prefs::kFirstTimeInterstitialBannerState,
+        static_cast<int>(
+            supervised_user::FirstTimeInterstitialBannerState::kSetupComplete));
+  }
 }

@@ -146,6 +146,11 @@ class SupervisedUserService
   // is no dedicated method for the feature (e.g IsURLFilteringEnabled).
   bool IsSubjectToParentalControls() const;
 
+  // Updates the kFirstTimeInterstitialBannerState pref to indicate that the
+  // user has been shown the interstitial banner. This will only update users
+  // who haven't yet seen the banner.
+  void MarkFirstTimeInterstitialBannerShown() const;
+
  private:
   friend class SupervisedUserServiceExtensionTestBase;
   friend class SupervisedUserServiceFactory;

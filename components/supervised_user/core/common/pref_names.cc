@@ -101,4 +101,11 @@ const char kSupervisedUserSharedSettings[] = "profile.managed.shared_settings";
 const char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";
 
+// An integer pref that stores the current state of the interstitial banner for
+// a supervised user (SupervisedUserFilter::FirstTimeInterstitialBannerState):
+// 0: kNeedToShow
+// 1: kSetupComplete
+// 2: kUnknown
+const char kFirstTimeInterstitialBannerState[] = "profile.managed.banner_state";
+
 }  // namespace prefs

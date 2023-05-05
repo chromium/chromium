@@ -34,6 +34,8 @@ extern const char kSupervisedUserSharedSettings[];
 
 extern const char kDefaultSupervisedUserFilteringBehavior[];
 
+extern const char kFirstTimeInterstitialBannerState[];
+
 }  // namespace prefs
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_COMMON_PREF_NAMES_H_
