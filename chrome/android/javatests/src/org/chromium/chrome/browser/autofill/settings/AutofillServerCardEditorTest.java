@@ -267,7 +267,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create("Visa 1234", 0, new GURL(""));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -367,7 +367,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create("Visa 1234", 0, new GURL(""));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -444,7 +444,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create("Visa 1234", 0, new GURL(""));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(
@@ -512,7 +512,7 @@ public class AutofillServerCardEditorTest {
         Callback<VirtualCardEnrollmentFields> virtualCardEnrollmentFieldsCallback =
                 callbackArgumentCaptor.getValue();
         VirtualCardEnrollmentFields fakeVirtualCardEnrollmentFields =
-                VirtualCardEnrollmentFields.create("Visa 1234", 0, new GURL(""));
+                VirtualCardEnrollmentFields.create("Visa", "1234", 0, new GURL(""));
         fakeVirtualCardEnrollmentFields.mGoogleLegalMessages.add(new LegalMessageLine("google"));
         fakeVirtualCardEnrollmentFields.mIssuerLegalMessages.add(new LegalMessageLine("issuer"));
         TestThreadUtils.runOnUiThreadBlocking(

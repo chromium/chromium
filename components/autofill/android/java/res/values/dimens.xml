@@ -58,6 +58,7 @@ found in the LICENSE file.
     <dimen name="card_unmask_dialog_credit_card_icon_height">20dp</dimen>
     <dimen name="card_unmask_dialog_credit_card_icon_width_new">40dp</dimen>
     <dimen name="card_unmask_dialog_credit_card_icon_height_new">24dp</dimen>
+    <dimen name="card_unmask_dialog_credit_card_icon_end_margin">16dp</dimen>
 
     <!-- Card art -->
     <dimen name="card_art_border_width">1dp</dimen>

@@ -22,19 +22,25 @@ public class VirtualCardEnrollmentFields {
     final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
     @VisibleForTesting
     final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();
-    private final String mCardIdentifierString;
+    private final String mCardName;
+    private final String mCardNumber;
     private final int mNetworkIconId;
     private final GURL mCardArtUrl;
 
     public VirtualCardEnrollmentFields(
-            String cardIdentifierString, int networkIconId, GURL cardArtUrl) {
-        mCardIdentifierString = cardIdentifierString;
+            String cardName, String cardNumber, int networkIconId, GURL cardArtUrl) {
+        mCardName = cardName;
+        mCardNumber = cardNumber;
         mNetworkIconId = networkIconId;
         mCardArtUrl = cardArtUrl;
     }
 
-    public String getCardIdentifierString() {
-        return mCardIdentifierString;
+    public String getCardName() {
+        return mCardName;
+    }
+
+    public String getCardNumber() {
+        return mCardNumber;
     }
 
     public int getNetworkIconId() {
@@ -56,16 +62,16 @@ public class VirtualCardEnrollmentFields {
     /**
      * Returns an instance of {@link VirtualCardEnrollmentFields}.
      *
-     * @param cardIdentifierString The text to be displayed in the enrollment dialog to help with
-     *         identifying the card.
+     * @param cardName The name of the card.
+     * @param cardNumber The card's last 4 digits.
      * @param networkIconId The resource Id for the card's network icon.
      * @param cardArtUrl The URL to fetch the card art associated with the card being enrolled.
      */
     @CalledByNative
     @VisibleForTesting
     static VirtualCardEnrollmentFields create(
-            String cardIdentifierString, int networkIconId, GURL cardArtUrl) {
-        return new VirtualCardEnrollmentFields(cardIdentifierString, networkIconId, cardArtUrl);
+            String cardName, String cardNumber, int networkIconId, GURL cardArtUrl) {
+        return new VirtualCardEnrollmentFields(cardName, cardNumber, networkIconId, cardArtUrl);
     }
 
     /**

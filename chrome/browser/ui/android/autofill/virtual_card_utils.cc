@@ -24,16 +24,19 @@ ScopedJavaLocalRef<jobject> CreateVirtualCardEnrollmentFieldsJavaObject(
     autofill::VirtualCardEnrollmentFields* virtual_card_enrollment_fields) {
   JNIEnv* env = AttachCurrentThread();
   // Create VirtualCardEnrollmentFields java object.
-  ScopedJavaLocalRef<jstring> card_identifier_string = ConvertUTF16ToJavaString(
+  ScopedJavaLocalRef<jstring> card_name = ConvertUTF16ToJavaString(
+      env,
+      virtual_card_enrollment_fields->credit_card.CardNameForAutofillDisplay());
+  ScopedJavaLocalRef<jstring> card_number = ConvertUTF16ToJavaString(
       env, virtual_card_enrollment_fields->credit_card
-               .CardIdentifierStringForAutofillDisplay());
+               .ObfuscatedNumberWithVisibleLastFourDigits());
   int network_icon_id = ResourceMapper::MapToJavaDrawableId(
       GetIconResourceID(virtual_card_enrollment_fields->credit_card
                             .CardIconStringForAutofillSuggestion()));
   ScopedJavaLocalRef<jobject> card_art_url = url::GURLAndroid::FromNativeGURL(
       env, virtual_card_enrollment_fields->credit_card.card_art_url());
   ScopedJavaLocalRef<jobject> java_object =
-      Java_VirtualCardEnrollmentFields_create(env, card_identifier_string,
+      Java_VirtualCardEnrollmentFields_create(env, card_name, card_number,
                                               network_icon_id, card_art_url);
   // Add Google legal messages.
   for (const auto& legal_message_line :

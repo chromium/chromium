@@ -184,9 +184,12 @@ public class CardUnmaskPrompt implements TextWatcher, OnClickListener,
             mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt_new, null);
             AutofillUiUtils.addCardDetails(context, mMainView, cardName, cardLastFourDigits,
                     cardExpiration, cardArtUrl, cardIconId,
-                    R.style.TextAppearance_TextLarge_Primary,
-                    R.style.TextAppearance_TextMedium_Secondary,
-                    isVirtualCard
+                    AutofillUiUtils.getCardUnmaskDialogIconWidthId(),
+                    AutofillUiUtils.getCardUnmaskDialogIconHeightId(),
+                    R.dimen.card_unmask_dialog_credit_card_icon_end_margin,
+                    /* cardNameAndNumberTextAppearance= */ R.style.TextAppearance_TextLarge_Primary,
+                    /* cardLabelTextAppearance= */ R.style.TextAppearance_TextMedium_Secondary,
+                    /* showCustomIcon= */ isVirtualCard
                             || ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE));
         } else {
