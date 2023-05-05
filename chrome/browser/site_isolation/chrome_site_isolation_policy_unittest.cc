@@ -12,6 +12,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
+#include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_features.h"
@@ -62,6 +63,13 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
     EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemoryMB());
 
     mode_feature_.InitAndEnableFeature(features::kSitePerProcess);
+    site_isolation::SiteIsolationPolicy::
+        SetDisallowMemoryThresholdCachingForTesting(true);
+  }
+
+  void TearDown() override {
+    site_isolation::SiteIsolationPolicy::
+        SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
   // Note that this only sets the memory threshold for strict site isolation,
@@ -89,8 +97,7 @@ TEST_F(ChromeSiteIsolationPolicyTest, NoIsolationBelowMemoryThreshold) {
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 
-// Disabled since it's flaky. https://crbug.com/1406992
-TEST_F(ChromeSiteIsolationPolicyTest, DISABLED_IsolationAboveMemoryThreshold) {
+TEST_F(ChromeSiteIsolationPolicyTest, IsolationAboveMemoryThreshold) {
   if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
 
@@ -98,9 +105,7 @@ TEST_F(ChromeSiteIsolationPolicyTest, DISABLED_IsolationAboveMemoryThreshold) {
   EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 
-// Disabled since it's flaky. https://crbug.com/1406992
-TEST_F(ChromeSiteIsolationPolicyTest,
-       DISABLED_IsolatedOriginsContainChromeOrigins) {
+TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {
   if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
 
