@@ -105,7 +105,7 @@ class ChromeWebAuthnCredentialsDelegateTest
 #else
     delegate_->OnWebAuthnRequestPending(
         main_rfh(), creds, /*is_conditional_request=*/true,
-        base::BindOnce(
+        base::BindRepeating(
             &ChromeWebAuthnCredentialsDelegateTest::OnAccountSelected,
             base::Unretained(this)));
 #endif

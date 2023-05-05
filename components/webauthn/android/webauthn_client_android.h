@@ -36,11 +36,12 @@ class WebAuthnClientAndroid {
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       bool is_conditional_request,
-      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback) = 0;
+      base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
+          callback) = 0;
 
-  // Cancels a request if one is outstanding. Revokes the credential list and
-  // causes the callback to be called with an empty credential.
-  virtual void CancelWebAuthnRequest(content::RenderFrameHost* frame_host) = 0;
+  // Closes an outstanding conditional UI request, so passkeys will no longer be
+  // displayed through autofill.
+  virtual void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host) = 0;
 
   // Called when a pendingGetCredential call is completed. The provided closure
   // can be used to trigger CredMan UI flows. Android U+ only.

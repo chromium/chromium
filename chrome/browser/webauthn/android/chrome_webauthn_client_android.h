@@ -23,10 +23,9 @@ class ChromeWebAuthnClientAndroid : public components::WebAuthnClientAndroid {
       content::RenderFrameHost* frame_host,
       const std::vector<device::DiscoverableCredentialMetadata>& credentials,
       bool is_conditional_request,
-      base::OnceCallback<void(const std::vector<uint8_t>& id)> callback)
+      base::RepeatingCallback<void(const std::vector<uint8_t>& id)> callback)
       override;
-
-  void CancelWebAuthnRequest(content::RenderFrameHost* frame_host) override;
+  void CleanupWebAuthnRequest(content::RenderFrameHost* frame_host) override;
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_CHROME_WEBAUTHN_CLIENT_ANDROID_H_

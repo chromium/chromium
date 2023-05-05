@@ -56,11 +56,6 @@ void ChromeWebAuthnCredentialsDelegate::SelectPasskey(
   if (!request_delegate) {
     return;
   }
-  // TODO(https:/crbug.com/1439659): This clears the passkey list because
-  // Android does not allow a second attempt at account selection, but this
-  // should be changed later when we better recover from user cancellation
-  // of the GMSCore UI.
-  passkeys_ = absl::nullopt;
   request_delegate->OnWebAuthnAccountSelected(*selected_credential_id);
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
