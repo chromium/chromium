@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     private int mTexName;
 
     private AtomicInteger mUseCount;
-    private boolean mIsLocked = false;
 
     @CalledByNative
     private static WVRSurfaceTexture create(long handle, SurfaceTexture surfaceTexture) {

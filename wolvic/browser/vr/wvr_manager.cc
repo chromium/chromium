@@ -123,8 +123,7 @@ WvrManager::~WvrManager() {
   webxr_->EndPresentation();
 }
 
-void WvrManager::InitializeGl(ui::WindowAndroid* root_window,
-                              const gfx::Size& frame_size,
+void WvrManager::InitializeGl(const gfx::Size& frame_size,
                               base::OnceClosure callback) {
   screen_size_ = frame_size;
 
