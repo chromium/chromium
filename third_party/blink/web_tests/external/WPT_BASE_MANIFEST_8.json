@@ -271534,16 +271534,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "ccbd784210aa32c19b0927bef6c7bea43a2a5c8a",
-     []
-    ],
-    "mtime.json": [
-     "3d245c916304376b8234c83eedb24140610a8e54",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -345031,8 +345021,24 @@
        "c928fc36a1aea86c6d409aff651730def242d36b",
        []
       ],
+      "response-null-body.any-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
+       []
+      ],
       "response-null-body.any.js.ini": [
        "1a623948a5e63fba491dd628a8272d1ee3d95768",
+       []
+      ],
+      "response-null-body.any.serviceworker-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
+       []
+      ],
+      "response-null-body.any.sharedworker-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
+       []
+      ],
+      "response-null-body.any.worker-expected.txt": [
+       "fa818f443d303b3903069f46bc8824dd2bf8bb27",
        []
       ]
      },
@@ -376715,7 +376721,7 @@
       []
      ],
      "window_state_context.js": [
-      "fa96bf3b760ea95d2eb04a322a9ee15680a2caa0",
+      "844c440812cfdd0a58a53269e3d4c39df51de804",
       []
      ]
     },
