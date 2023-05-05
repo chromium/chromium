@@ -90,9 +90,8 @@ class CONTENT_EXPORT PrefetchContainer {
 
   const net::SchemefulSite& GetReferringSite() const { return referring_site_; }
 
-  const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchExpected()
-      const {
-    return no_vary_search_expected_;
+  const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchHint() const {
+    return no_vary_search_hint_;
   }
 
   base::WeakPtr<PrefetchContainer> GetWeakPtr() {
@@ -366,7 +365,7 @@ class CONTENT_EXPORT PrefetchContainer {
   net::SchemefulSite referring_site_;
 
   // The No-Vary-Search hint of the prefetch.
-  const absl::optional<net::HttpNoVarySearchData> no_vary_search_expected_;
+  const absl::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
   // The |PrefetchDocumentManager| that requested |this|. Initially it owns
   // |this|, but once the network request for the prefetch is started,

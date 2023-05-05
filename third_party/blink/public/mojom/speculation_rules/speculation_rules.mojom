@@ -84,7 +84,7 @@ struct SpeculationCandidate {
 
   // The expected No-Vary-Search header if specified.
   // Explainer: https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
-  network.mojom.NoVarySearch? no_vary_search_expected;
+  network.mojom.NoVarySearch? no_vary_search_hint;
 
   // The v8 world where the JavaScript runs if the speculation rule is injected
   // by the JavaScript.

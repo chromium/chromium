@@ -84,7 +84,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
     }
     if (RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
             context)) {
-      conditional_known_keys.push_back("no_vary_search_expected");
+      conditional_known_keys.push_back("expects_no_vary_search");
     }
     return conditional_known_keys;
   }();
@@ -326,20 +326,20 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
   }
 
   network::mojom::blink::NoVarySearchPtr no_vary_search = nullptr;
-  if (JSONValue* no_vary_search_value = input->Get("no_vary_search_expected")) {
+  if (JSONValue* no_vary_search_value = input->Get("expects_no_vary_search")) {
     CHECK(RuntimeEnabledFeatures::SpeculationRulesNoVarySearchHintEnabled(
         context));
     String no_vary_search_str;
     if (!no_vary_search_value->AsString(&no_vary_search_str)) {
       SetParseErrorMessage(out_error,
-                           "no_vary_search_expected's value must be a string.");
+                           "expects_no_vary_search's value must be a string.");
       return nullptr;
     }
     // Parse No-Vary-Search hint value.
-    auto no_vary_search_expected = blink::ParseNoVarySearch(no_vary_search_str);
-    CHECK(no_vary_search_expected);
-    if (no_vary_search_expected->is_parse_error()) {
-      const auto& parse_error = no_vary_search_expected->get_parse_error();
+    auto no_vary_search_hint = blink::ParseNoVarySearch(no_vary_search_str);
+    CHECK(no_vary_search_hint);
+    if (no_vary_search_hint->is_parse_error()) {
+      const auto& parse_error = no_vary_search_hint->get_parse_error();
       CHECK_NE(parse_error, network::mojom::NoVarySearchParseError::kOk);
       if (parse_error !=
           network::mojom::NoVarySearchParseError::kDefaultValue) {
@@ -348,7 +348,7 @@ SpeculationRule* ParseSpeculationRule(JSONObject* input,
         return nullptr;
       }
     } else {
-      no_vary_search = std::move(no_vary_search_expected->get_no_vary_search());
+      no_vary_search = std::move(no_vary_search_hint->get_no_vary_search());
     }
   }
 

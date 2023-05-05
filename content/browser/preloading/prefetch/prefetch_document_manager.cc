@@ -166,7 +166,7 @@ void PrefetchDocumentManager::ProcessCandidates(
                 /*use_prefetch_proxy=*/
                 candidate->requires_anonymous_client_ip_when_cross_origin,
                 candidate->eagerness),
-            *candidate->referrer, candidate->no_vary_search_expected.Clone(),
+            *candidate->referrer, candidate->no_vary_search_hint.Clone(),
             candidate->injection_world);
         return true;
       };

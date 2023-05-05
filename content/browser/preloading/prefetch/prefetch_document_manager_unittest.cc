@@ -187,9 +187,9 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidate1->requires_anonymous_client_ip_when_cross_origin = false;
   candidate1->url = test_url1;
   candidate1->referrer = blink::mojom::Referrer::New();
-  candidate1->no_vary_search_expected = network::mojom::NoVarySearch::New();
-  candidate1->no_vary_search_expected->vary_on_key_order = false;
-  candidate1->no_vary_search_expected->search_variance =
+  candidate1->no_vary_search_hint = network::mojom::NoVarySearch::New();
+  candidate1->no_vary_search_hint->vary_on_key_order = false;
+  candidate1->no_vary_search_hint->search_variance =
       network::mojom::SearchParamsVariance::NewNoVaryParams({"a"});
 
   auto candidate2 = blink::mojom::SpeculationCandidate::New();
@@ -198,9 +198,9 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   candidate2->requires_anonymous_client_ip_when_cross_origin = false;
   candidate2->url = test_url2;
   candidate2->referrer = blink::mojom::Referrer::New();
-  candidate2->no_vary_search_expected = network::mojom::NoVarySearch::New();
-  candidate2->no_vary_search_expected->vary_on_key_order = true;
-  candidate2->no_vary_search_expected->search_variance =
+  candidate2->no_vary_search_hint = network::mojom::NoVarySearch::New();
+  candidate2->no_vary_search_hint->vary_on_key_order = true;
+  candidate2->no_vary_search_hint->search_variance =
       network::mojom::SearchParamsVariance::NewVaryParams({"a"});
 
   auto candidate3 = blink::mojom::SpeculationCandidate::New();
@@ -221,23 +221,23 @@ TEST_F(PrefetchDocumentManagerTest, PopulateNoVarySearchHint) {
   {
     auto& prefetch = GetPrefetches()[0];
     ASSERT_TRUE(prefetch);
-    ASSERT_TRUE(prefetch->GetNoVarySearchExpected().has_value());
-    EXPECT_FALSE(prefetch->GetNoVarySearchExpected()->vary_on_key_order());
-    EXPECT_THAT(prefetch->GetNoVarySearchExpected()->no_vary_params(),
+    ASSERT_TRUE(prefetch->GetNoVarySearchHint().has_value());
+    EXPECT_FALSE(prefetch->GetNoVarySearchHint()->vary_on_key_order());
+    EXPECT_THAT(prefetch->GetNoVarySearchHint()->no_vary_params(),
                 UnorderedElementsAreArray({"a"}));
   }
   {
     auto& prefetch = GetPrefetches()[1];
     ASSERT_TRUE(prefetch);
-    ASSERT_TRUE(prefetch->GetNoVarySearchExpected().has_value());
-    EXPECT_TRUE(prefetch->GetNoVarySearchExpected()->vary_on_key_order());
-    EXPECT_THAT(prefetch->GetNoVarySearchExpected()->vary_params(),
+    ASSERT_TRUE(prefetch->GetNoVarySearchHint().has_value());
+    EXPECT_TRUE(prefetch->GetNoVarySearchHint()->vary_on_key_order());
+    EXPECT_THAT(prefetch->GetNoVarySearchHint()->vary_params(),
                 UnorderedElementsAreArray({"a"}));
   }
   {
     auto& prefetch = GetPrefetches()[2];
     ASSERT_TRUE(prefetch);
-    EXPECT_FALSE(prefetch->GetNoVarySearchExpected().has_value());
+    EXPECT_FALSE(prefetch->GetNoVarySearchHint().has_value());
   }
 }
 

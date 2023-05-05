@@ -438,7 +438,7 @@ TEST_F(SpeculationRuleSetTest, DropUnrecognizedRules) {
       R"nvs({
         "source": "list",
         "urls": ["no-source.html"],
-        "no_vary_search_expected": "params=(a)"
+        "expects_no_vary_search": "params=(a)"
       }]})nvs",
       KURL("https://example.com/"), execution_context());
   ASSERT_TRUE(rule_set);
@@ -1511,7 +1511,7 @@ TEST_F(DocumentRulesTest, HrefMatchesWithBaseURLAndRelativeTo) {
 TEST_F(DocumentRulesTest, DropInvalidRules) {
   ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
       enable_selector_matches{true};
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
   auto* rule_set = CreateRuleSet(
       R"({"prefetch": [)"
@@ -1628,10 +1628,10 @@ TEST_F(DocumentRulesTest, DropInvalidRules) {
         "where": {"selector_matches": [".valid", "#invalid#"]}
         },)"
 
-      // Invalid no_vary_search_expected value.
+      // Invalid expects_no_vary_search value.
       R"({"source": "list",
         "urls": ["https://example.com/prefetch/list/page1.html"],
-        "no_vary_search_expected": 0
+        "expects_no_vary_search": 0
         },)"
 
       // valid document rule.
@@ -1923,18 +1923,18 @@ auto HasReferrerPolicy(
 }
 
 auto HasNoVarySearchHint() {
-  return ::testing::Pointee(::testing::Field(
-      "no_vary_search_expected",
-      &mojom::blink::SpeculationCandidate::no_vary_search_expected,
-      ::testing::IsTrue()));
+  return ::testing::Pointee(
+      ::testing::Field("no_vary_search_hint",
+                       &mojom::blink::SpeculationCandidate::no_vary_search_hint,
+                       ::testing::IsTrue()));
 }
 
 auto NVSVariesOnKeyOrder() {
   return ::testing::AllOf(
       HasNoVarySearchHint(),
       ::testing::Pointee(::testing::Field(
-          "no_vary_search_expected",
-          &mojom::blink::SpeculationCandidate::no_vary_search_expected,
+          "no_vary_search_hint",
+          &mojom::blink::SpeculationCandidate::no_vary_search_hint,
           testing::Pointee(::testing::Field(
               "vary_on_key_order",
               &network::mojom::blink::NoVarySearch::vary_on_key_order,
@@ -1946,14 +1946,12 @@ auto NVSHasNoVaryParams(Matchers&&... params) {
   return ::testing::ResultOf(
       "no_vary_params",
       [](const auto& nvs) {
-        if (!nvs->no_vary_search_expected ||
-            !nvs->no_vary_search_expected->search_variance ||
-            !nvs->no_vary_search_expected->search_variance
-                 ->is_no_vary_params()) {
+        if (!nvs->no_vary_search_hint ||
+            !nvs->no_vary_search_hint->search_variance ||
+            !nvs->no_vary_search_hint->search_variance->is_no_vary_params()) {
           return Vector<String>();
         }
-        return nvs->no_vary_search_expected->search_variance
-            ->get_no_vary_params();
+        return nvs->no_vary_search_hint->search_variance->get_no_vary_params();
       },
       ::testing::UnorderedElementsAre(params...));
 }
@@ -2003,7 +2001,7 @@ TEST_F(DocumentRulesTest, SpeculationCandidatesReportedAfterInitialization) {
 // No-Vary-Search hint.
 TEST_F(DocumentRulesTest,
        SpeculationCandidatesReportedAfterInitializationWithNVS) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
   DummyPageHolder page_holder;
   StubSpeculationHost speculation_host;
@@ -2017,7 +2015,7 @@ TEST_F(DocumentRulesTest,
     {"prefetch": [{
       "source": "document",
       "where": {"href_matches": "https://foo.com/*"},
-      "no_vary_search_expected": "params=(\"a\")"
+      "expects_no_vary_search": "params=(\"a\")"
     }]}
   )nvs";
   PropagateRulesToStubSpeculationHost(page_holder, speculation_host,
@@ -3942,7 +3940,7 @@ TEST_F(SpeculationRuleSetTest, InvalidEagernessValue) {
 // Test that a valid No-Vary-Search hint will generate a speculation
 // candidate.
 TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
 
   DummyPageHolder page_holder;
@@ -3952,7 +3950,7 @@ TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
     "prefetch": [{
         "source": "list",
         "urls": ["https://example.com/prefetch/list/page1.html"],
-        "no_vary_search_expected": "params=(\"a\") "
+        "expects_no_vary_search": "params=(\"a\") "
       }]
     })";
 
@@ -3970,7 +3968,7 @@ TEST_F(SpeculationRuleSetTest, ValidNoVarySearchHintValueGeneratesCandidate) {
 // Test that an empty but valid No-Vary-Search hint will generate a speculation
 // candidate.
 TEST_F(SpeculationRuleSetTest, EmptyNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
 
   DummyPageHolder page_holder;
@@ -3980,7 +3978,7 @@ TEST_F(SpeculationRuleSetTest, EmptyNoVarySearchHintValueGeneratesCandidate) {
     "prefetch": [{
         "source": "list",
         "urls": ["https://example.com/prefetch/list/page1.html"],
-        "no_vary_search_expected": ""
+        "expects_no_vary_search": ""
       }]
     })";
 
@@ -3996,7 +3994,7 @@ TEST_F(SpeculationRuleSetTest, EmptyNoVarySearchHintValueGeneratesCandidate) {
 // Test that a No-Vary-Search hint equivalent to the default
 // will generate a speculation candidate.
 TEST_F(SpeculationRuleSetTest, DefaultNoVarySearchHintValueGeneratesCandidate) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
 
   DummyPageHolder page_holder;
@@ -4006,7 +4004,7 @@ TEST_F(SpeculationRuleSetTest, DefaultNoVarySearchHintValueGeneratesCandidate) {
     "prefetch": [{
         "source": "list",
         "urls": ["https://example.com/prefetch/list/page1.html"],
-        "no_vary_search_expected": "key-order=?0"
+        "expects_no_vary_search": "key-order=?0"
       }]
     })";
 
@@ -4022,7 +4020,7 @@ TEST_F(SpeculationRuleSetTest, DefaultNoVarySearchHintValueGeneratesCandidate) {
 // Tests that No-Vary-Search errors that cause the speculation rules to be
 // ignored are logged to the console.
 TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHint) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
 
   auto* chrome_client = MakeGarbageCollected<ConsoleCapturingChromeClient>();
@@ -4038,7 +4036,7 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHint) {
     "prefetch": [{
         "source": "list",
         "urls": ["https://example.com/prefetch/list/page1.html"],
-        "no_vary_search_expected": 0
+        "expects_no_vary_search": 0
       }]
     })");
   document.head()->appendChild(script);
@@ -4046,12 +4044,12 @@ TEST_F(SpeculationRuleSetTest, ConsoleWarningForNoVarySearchHint) {
   EXPECT_TRUE(base::ranges::any_of(
       chrome_client->ConsoleMessages(), [](const String& message) {
         return message.Contains(
-            "no_vary_search_expected's value must be a string");
+            "expects_no_vary_search's value must be a string");
       }));
 }
 
 TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
-  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_expected{
+  ScopedSpeculationRulesNoVarySearchHintForTest enable_no_vary_search_hint{
       true};
   {
     auto* rule_set =
@@ -4059,13 +4057,13 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": 0
+          "expects_no_vary_search": 0
         }]
       })",
                       KURL("https://example.com"), execution_context());
     EXPECT_THAT(rule_set->error_message().Utf8(),
                 ::testing::HasSubstr(
-                    "no_vary_search_expected's value must be a string"));
+                    "expects_no_vary_search's value must be a string"));
   }
   {
     auto* rule_set =
@@ -4073,7 +4071,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "?1"
+          "expects_no_vary_search": "?1"
         }]
       })",
                       KURL("https://example.com"), execution_context());
@@ -4087,7 +4085,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "params=?0"
+          "expects_no_vary_search": "params=?0"
         }
       ]
     })",
@@ -4100,7 +4098,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": ""
+          "expects_no_vary_search": ""
         }
       ]
     })",
@@ -4113,7 +4111,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "para"
+          "expects_no_vary_search": "para"
         }
       ]
     })",
@@ -4129,7 +4127,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "key-order=a"
+          "expects_no_vary_search": "key-order=a"
         }
       ]
     })",
@@ -4146,7 +4144,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
         {
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "params=a"
+          "expects_no_vary_search": "params=a"
         }
       ]
     })",
@@ -4162,7 +4160,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "params,except=a"
+          "expects_no_vary_search": "params,except=a"
         }
       ]
     })",
@@ -4177,7 +4175,7 @@ TEST_F(SpeculationRuleSetTest, NoVarySearchHintParseError) {
       "prefetch": [{
           "source": "list",
           "urls": ["https://example.com/prefetch/list/page1.html"],
-          "no_vary_search_expected": "except=(\"a\") "
+          "expects_no_vary_search": "except=(\"a\") "
         }
       ]
     })",
