@@ -121,10 +121,12 @@ rustc_revision = ""
 if (enable_rust) {
   if (use_chromium_rust_toolchain) {
     toolchain_has_rust = chromium_toolchain_supports_platform
-    update_rust_args = [ "--print-package-version" ]
-    rustc_revision = exec_script("//tools/rust/update_rust.py",
-                                 update_rust_args,
-                                 "trim string")
+    if (toolchain_has_rust) {
+      update_rust_args = [ "--print-package-version" ]
+      rustc_revision = exec_script("//tools/rust/update_rust.py",
+                                   update_rust_args,
+                                   "trim string")
+    }
   } else {
     toolchain_has_rust = custom_toolchain_supports_platform
     rustc_revision = rustc_version
