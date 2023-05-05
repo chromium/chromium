@@ -171,6 +171,13 @@ class MediaRouterIntegrationBrowserTest
 
   void WaitUntilNoRoutes(content::WebContents* web_contents);
 
+  // Get the full path of the resource file.
+  // |relative_path|: The relative path to
+  //                  <chromium src>/out/<build config>/media_router/
+  //                  browser_test_resources/
+  base::FilePath GetResourceFile(
+      base::FilePath::StringPieceType relative_path) const;
+
   // Returns whether actual media route providers (as opposed to
   // TestMediaRouteProvider) should be loaded.
   virtual bool RequiresMediaRouteProviders() const;
@@ -193,13 +200,6 @@ class MediaRouterIntegrationBrowserTest
   virtual Browser* browser();
 
  private:
-  // Get the full path of the resource file.
-  // |relative_path|: The relative path to
-  //                  <chromium src>/out/<build config>/media_router/
-  //                  browser_test_resources/
-  base::FilePath GetResourceFile(
-      base::FilePath::StringPieceType relative_path) const;
-
   std::unique_ptr<content::TestNavigationObserver> test_navigation_observer_;
   policy::MockConfigurationPolicyProvider provider_;
   base::test::ScopedFeatureList feature_list_;

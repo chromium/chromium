@@ -31,7 +31,6 @@ const char kCastAppPresentationUrl[] =
     "cast:BE6E4473?clientId=143692175507258981";
 const char kVideo[] = "video";
 const char kBearVP9Video[] = "bear-vp9.webm";
-const char kPlayer[] = "player.html";
 const char kOrigin[] = "http://origin/";
 }  // namespace
 
@@ -121,8 +120,8 @@ void MediaRouterE2EBrowserTest::OpenMediaPage() {
   base::StringPairs query_params;
   query_params.push_back(std::make_pair(kVideo, kBearVP9Video));
   std::string query = media::GetURLQueryString(query_params);
-  GURL gurl =
-      content::GetFileUrlWithQuery(media::GetTestDataFilePath(kPlayer), query);
+  GURL gurl = content::GetFileUrlWithQuery(
+      GetResourceFile(FILE_PATH_LITERAL("player.html")), query);
   ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), gurl, 1);
 }
 

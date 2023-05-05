@@ -57,7 +57,10 @@ source_set("browser_tests") {
     "//ui/views:test_support",
     "//url",
   ]
-  data_deps = [ ":browser_test_resources" ]
+  data_deps = [
+    ":browser_test_resources",
+    ":e2e_test_resources",
+  ]
 }
 
 copy("browser_test_resources") {
@@ -99,8 +102,8 @@ if (enable_downstream_media_tests) {
 copy("e2e_test_resources") {
   testonly = true
   sources = [
-    "../../../media/test/data/bear-vp9.webm",
-    "../../../media/test/data/player.html",
+    "//media/test/data/bear-vp9.webm",
+    "//media/test/data/player.html",
   ]
   outputs = [
     "$root_out_dir/media_router/browser_test_resources/{{source_file_part}}",
