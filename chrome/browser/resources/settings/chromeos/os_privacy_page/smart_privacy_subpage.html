@@ -16,18 +16,18 @@
     border-bottom: var(--cr-separator-line);
   }
 
-  .left-float-graphic,
-  #smartPrivacyIllo {
+  .left-float-graphic {
     float: left;
     height: 200px;
     margin-inline-end: 10px;
+    width: 200px;
   }
 
-  :host-context(body.jelly-enabled) .left-float-graphic {
+  :host-context(body.jelly-enabled) #smartPrivacyIllo {
     display: none;
   }
 
-  :host-context(body:not(.jelly-enabled)) #smartPrivacyIllo {
+  :host-context(body:not(.jelly-enabled)) #smartPrivacyIlloJelly {
     display: none;
   }
 
@@ -51,13 +51,15 @@
 </iron-media-query>
 <div class="banner underbar">
   <!-- No alt since image is purely decorative. -->
-  <img class="left-float-graphic"
-       src="[[getImageSource_(isDarkModeActive_)]]"
-       alt="" aria-hidden="true">
+  <img id="smartPrivacyIllo"
+      class="left-float-graphic"
+      src="[[getImageSource_(isDarkModeActive_)]]"
+      alt="" aria-hidden="true">
 
-  <svg id="smartPrivacyIllo" role="img" viewBox="0 0 246 268">
-    <use href="images/smart_privacy_jelly.svg#export"></use>
-  </svg>
+  <iron-icon id="smartPrivacyIlloJelly"
+      icon="os-settings-illo:smart-privacy"
+      class="left-float-graphic">
+  </iron-icon>
 
   <div>
     <iron-icon class="large-icon" icon="cr:security">
