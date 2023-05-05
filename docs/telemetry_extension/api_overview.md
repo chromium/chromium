@@ -521,6 +521,11 @@ Source:
 | version | UsbVersion | The recognized usb version. It may not be the highest USB version supported by the hardware |
 | spec_speed | UsbSpecSpeed | The spec usb speed |
 
+### UsbDevicesInfo
+| Property Name | Type | Description |
+------------ | ------- | ----------- |
+| devices | Array<UsbBusInfo\> | Information about all connected USB devices |
+
 ## Functions
 
 | Function Name | Definition | Permission needed to access | Released in Chrome version |
@@ -537,4 +542,4 @@ Source:
 | getTpmInfo | () => Promise\<TpmInfo\> | `os.telemetry` | M108 |
 | getAudioInfo | () => Promise\<AudioInfo\> | `os.telemetry` | M111 |
 | getMarketingInfo | () => Promise\<MarketingInfo\> | `os.telemetry` | M111 |
-| getUsbBusInfo | () => Promise\<UsbBusInfo\> | `os.telemetry` | M114 |
+| getUsbBusInfo | () => Promise<UsbDevicesInfo\> | `os.telemetry`, `os.attached_device_info` | M114 |
