@@ -7,7 +7,7 @@ import '../page_favicon.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Cart} from '../../../cart.mojom-webui.js';
-import {I18nMixin} from '../../../i18n_setup.js';
+import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
 
 import {getTemplate} from './cart_tile.html.js';
 
@@ -25,10 +25,18 @@ export class CartTileModuleElement extends I18nMixin
     return {
       /* The cart to display. */
       cart: Object,
+
+      /* The label of the tile in a11y mode. */
+      tileLabel_: {
+        type: String,
+        computed: `computeTileLabel_(cart)`,
+      },
     };
   }
 
   cart: Cart;
+
+  private tileLabel_: string;
 
   override ready() {
     super.ready();
@@ -63,6 +71,28 @@ export class CartTileModuleElement extends I18nMixin
 
   private getExtraImagesCountString_(): string {
     return '+' + (this.cart.productImageUrls.length - 3).toString();
+  }
+
+  private computeTileLabel_(): string {
+    const productCount = this.cart.productImageUrls.length;
+    const discountText = this.cart.discountText;
+    const merchantName = this.cart.merchant;
+    const merchantDomain = this.cart.domain;
+    const relativeDate = this.cart.relativeDate;
+
+    if (productCount === 0) {
+      return loadTimeData.getStringF(
+          'modulesJourneysCartTileLabelDefault', discountText, merchantName,
+          merchantDomain, relativeDate);
+    } else if (productCount === 1) {
+      return loadTimeData.getStringF(
+          'modulesJourneysCartTileLabelSingular', discountText, merchantName,
+          merchantDomain, relativeDate);
+    } else {
+      return loadTimeData.getStringF(
+          'modulesJourneysCartTileLabelPlural', productCount, discountText,
+          merchantName, merchantDomain, relativeDate);
+    }
   }
 }
 
