@@ -56,10 +56,15 @@ found in the LICENSE file.
       on-click="onCopyUrlClick_" disabled="[[buttonDisabled_]]">
     Copy link
   </cr-button>
+  <cr-button id="copyTokenButton" class="navigation-buttons action-button"
+      on-click="onCopyTokenClick_" disabled="[[buttonDisabled_]]"
+      hidden="[[hideTokenButton_]]">
+    Copy token
+  </cr-button>
 </div>
 <cr-toast id="copyToast" duration="5000" tabindex="0"
     aria-labelledby="link-copied-message">
-  <span id="link-copied-message">Link copied</span>
+  <span id="link-copied-message">[[copiedToastMessage_]]</span>
 </cr-toast>
 <cr-toast id="errorMessageToast" duration="0" tabindex="0"
     aria-labelledby="error-message">

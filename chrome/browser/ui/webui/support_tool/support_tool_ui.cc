@@ -59,6 +59,9 @@ void CreateAndAddSupportToolHTMLSource(Profile* profile, const GURL& url) {
   source->AddString("caseId", GetSupportCaseIDFromURL(url));
   source->AddBoolean("enableScreenshot", base::FeatureList::IsEnabled(
                                              features::kSupportToolScreenshot));
+  source->AddBoolean(
+      "enableCopyTokenButton",
+      base::FeatureList::IsEnabled(features::kSupportToolCopyTokenButton));
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kSupportToolResources, kSupportToolResourcesSize),
@@ -108,6 +111,8 @@ class SupportToolMessageHandler : public content::WebUIMessageHandler,
   void HandleShowExportedDataInFolder(const base::Value::List& args);
 
   void HandleGenerateCustomizedURL(const base::Value::List& args);
+
+  void HandleGenerateSupportToken(const base::Value::List& args);
 
   // SelectFileDialog::Listener implementation.
   void FileSelected(const base::FilePath& path,
@@ -181,6 +186,11 @@ void SupportToolMessageHandler::RegisterMessages() {
       "generateCustomizedUrl",
       base::BindRepeating(
           &SupportToolMessageHandler::HandleGenerateCustomizedURL,
+          weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "generateSupportToken",
+      base::BindRepeating(
+          &SupportToolMessageHandler::HandleGenerateSupportToken,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -412,9 +422,18 @@ void SupportToolMessageHandler::HandleGenerateCustomizedURL(
   const base::Value& callback_id = args[0];
   std::string case_id = args[1].GetString();
   const base::Value::List* data_collectors = args[2].GetIfList();
-  DCHECK(data_collectors);
+  CHECK(data_collectors);
   ResolveJavascriptCallback(callback_id,
                             GenerateCustomizedURL(case_id, data_collectors));
+}
+
+void SupportToolMessageHandler::HandleGenerateSupportToken(
+    const base::Value::List& args) {
+  CHECK_EQ(2U, args.size());
+  const base::Value& callback_id = args[0];
+  const base::Value::List* data_collectors = args[1].GetIfList();
+  CHECK(data_collectors);
+  ResolveJavascriptCallback(callback_id, GenerateSupportToken(data_collectors));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

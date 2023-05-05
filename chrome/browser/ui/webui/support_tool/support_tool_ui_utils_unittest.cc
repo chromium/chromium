@@ -147,15 +147,16 @@ TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
   base::Value::Dict url_generation_result =
       GenerateCustomizedURL(test_case_id, &expected_data_collectors);
   // The result must be successful.
-  EXPECT_TRUE(url_generation_result
-                  .FindBool(support_tool_ui::kUrlGenerationResultSuccess)
-                  .value());
+  EXPECT_TRUE(
+      url_generation_result
+          .FindBool(support_tool_ui::kSupportTokenGenerationResultSuccess)
+          .value());
   // Error string must be empty.
   EXPECT_EQ(*url_generation_result.FindString(
-                support_tool_ui::kUrlGenerationResultErrorMessage),
+                support_tool_ui::kSupportTokenGenerationResultErrorMessage),
             std::string());
   const std::string* url_output = url_generation_result.FindString(
-      support_tool_ui::kUrlGenerationResultUrl);
+      support_tool_ui::kSupportTokenGenerationResultToken);
   ASSERT_TRUE(url_output);
   // URL output shouldn't be empty.
   EXPECT_THAT(*url_output, Not(IsEmpty()));
@@ -168,6 +169,60 @@ TEST_F(SupportToolUiUtilsTest, CustomizedUrl) {
   EXPECT_THAT(data_collector_module, Not(IsEmpty()));
   base::Value::List data_collector_items_result =
       GetDataCollectorItemsInQuery(data_collector_module);
+  // Check that the output data collector list is equal to expected.
+  EXPECT_EQ(data_collector_items_result.size(),
+            expected_data_collectors.size());
+  for (size_t i = 0; i < data_collector_items_result.size(); i++) {
+    const base::Value::Dict& actual_data_collector_item =
+        data_collector_items_result[i].GetDict();
+    const base::Value::Dict& extected_data_collector_item =
+        expected_data_collectors[i].GetDict();
+    EXPECT_EQ(actual_data_collector_item
+                  .FindInt(support_tool_ui::kDataCollectorProtoEnum)
+                  .value(),
+              extected_data_collector_item
+                  .FindInt(support_tool_ui::kDataCollectorProtoEnum)
+                  .value());
+    EXPECT_EQ(actual_data_collector_item
+                  .FindBool(support_tool_ui::kDataCollectorIncluded)
+                  .value(),
+              extected_data_collector_item
+                  .FindBool(support_tool_ui::kDataCollectorIncluded)
+                  .value());
+  }
+  // Check if the output of GetIncludedDataCollectorTypes is equal to expected
+  // set of included data collectors.
+  EXPECT_THAT(GetIncludedDataCollectorTypes(&data_collector_items_result),
+              ContainerEq(included_data_collectors));
+}
+
+TEST_F(SupportToolUiUtilsTest, SupportToken) {
+  // Get list of all data collectors.
+  base::Value::List expected_data_collectors =
+      GetAllDataCollectorItemsForDeviceForTesting();
+  std::set<support_tool::DataCollectorType> included_data_collectors = {
+      support_tool::DataCollectorType::CHROME_INTERNAL,
+      support_tool::DataCollectorType::CRASH_IDS};
+  MarkDataCollectorsAsIncluded(expected_data_collectors,
+                               included_data_collectors);
+  base::Value::Dict support_token_generation_result =
+      GenerateSupportToken(&expected_data_collectors);
+  // The result must be successful.
+  EXPECT_TRUE(
+      support_token_generation_result
+          .FindBool(support_tool_ui::kSupportTokenGenerationResultSuccess)
+          .value());
+  // Error string must be empty.
+  EXPECT_EQ(*support_token_generation_result.FindString(
+                support_tool_ui::kSupportTokenGenerationResultErrorMessage),
+            std::string());
+  const std::string* token_output = support_token_generation_result.FindString(
+      support_tool_ui::kSupportTokenGenerationResultToken);
+  ASSERT_TRUE(token_output);
+  // Output shouldn't be empty.
+  EXPECT_THAT(*token_output, Not(IsEmpty()));
+  base::Value::List data_collector_items_result =
+      GetDataCollectorItemsInQuery(*token_output);
   // Check that the output data collector list is equal to expected.
   EXPECT_EQ(data_collector_items_result.size(),
             expected_data_collectors.size());
