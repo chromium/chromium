@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Pair;
@@ -16,7 +17,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.Source;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
@@ -37,16 +38,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
 /**
  * An address editor. Can be used for either shipping or billing address editing.
  */
-public class AddressEditor extends EditorBase<AutofillAddress> {
+public class AddressEditor {
     private final Handler mHandler = new Handler();
     private final Map<Integer, EditorFieldModel> mAddressFields = new HashMap<>();
     private final Set<CharSequence> mPhoneNumbers = new HashSet<>();
+    private final EditorDialog mEditorDialog;
+    private final Context mContext;
     private final boolean mSaveToDisk;
     private final boolean mIsUpdate;
     private final boolean mIsMigrationToAccount;
@@ -128,7 +132,11 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
      * @param isMigrationToAccount Whether this editor is shown during address profile migration to
      *         Google account.
      */
-    public AddressEditor(boolean saveToDisk, boolean isUpdate, boolean isMigrationToAccount) {
+    public AddressEditor(EditorDialog editorDialog, boolean saveToDisk, boolean isUpdate,
+            boolean isMigrationToAccount) {
+        Objects.requireNonNull(editorDialog, "editor dialog can't be null");
+        mEditorDialog = editorDialog;
+        mContext = editorDialog.getContext();
         mSaveToDisk = saveToDisk;
         mIsUpdate = isUpdate;
         mIsMigrationToAccount = isMigrationToAccount;
@@ -187,12 +195,9 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
      *
      * TODO(crbug.com/1421056): Split this method for better code readability.
      */
-    @Override
     public void edit(@Nullable final AutofillAddress toEdit,
             final Callback<AutofillAddress> doneCallback,
             final Callback<AutofillAddress> cancelCallback) {
-        super.edit(toEdit, doneCallback, cancelCallback);
-
         if (mAutofillProfileBridge == null) mAutofillProfileBridge = new AutofillProfileBridge();
 
         mIsProfileNew = toEdit == null;
