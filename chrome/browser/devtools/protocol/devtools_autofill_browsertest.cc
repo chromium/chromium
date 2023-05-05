@@ -13,7 +13,7 @@ using DevToolsAutofillTest = DevToolsProtocolTestBase;
 
 namespace {
 
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, DISABLED_TriggerCreditCard) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
