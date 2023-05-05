@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 
 #import "base/check.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -14,8 +14,9 @@
 
 namespace {
 int NavigationIndexFromWebState(web::WebState* web_state) {
-  if (!web_state)
+  if (!web_state) {
     return -1;
+  }
 
   DCHECK(web_state->GetNavigationManager());
   return web_state->GetNavigationManager()->GetLastCommittedItemIndex();

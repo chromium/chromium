@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 TabMatcherImpl::TabMatcherImpl(ChromeBrowserState* browser_state)
     : browser_state_{browser_state} {

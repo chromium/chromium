@@ -6,9 +6,9 @@
 
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"

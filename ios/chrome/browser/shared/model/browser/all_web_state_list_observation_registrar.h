@@ -9,8 +9,8 @@
 
 #include "base/scoped_multi_source_observation.h"
 #include "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class BrowserList;
 class ChromeBrowserState;

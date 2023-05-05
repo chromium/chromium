@@ -7,8 +7,8 @@
 
 #include <set>
 
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #include "ios/web/public/web_state_observer.h"
 
 class FullscreenController;

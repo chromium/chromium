@@ -6,13 +6,13 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model.h"
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_model_test_util.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/test/test_fullscreen_mediator.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"

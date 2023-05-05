@@ -9,7 +9,7 @@
 
 #import <set>
 
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class Browser;
 

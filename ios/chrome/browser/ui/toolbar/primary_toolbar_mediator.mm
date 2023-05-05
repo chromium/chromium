@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_mediator.h"
 
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"

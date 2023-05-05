@@ -38,7 +38,7 @@ source_set("badge") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/web",
   ]
 }
@@ -82,12 +82,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/main",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/badges:util",
     "//ios/chrome/browser/ui/infobars:test_support",
     "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

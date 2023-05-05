@@ -93,6 +93,7 @@ source_set("main") {
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/store_kit",
@@ -122,7 +123,6 @@ source_set("main") {
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_helper_delegates",
     "//ios/chrome/browser/web:web_internal",
-    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/common/ui/colors",
     "//net",
   ]

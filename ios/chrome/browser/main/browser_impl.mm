@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

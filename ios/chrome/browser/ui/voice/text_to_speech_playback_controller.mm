@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_notification_handler.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

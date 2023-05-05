@@ -18,7 +18,7 @@ source_set("price_card") {
     "price_card/resources:colors",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce:commerce",
-    "//ios/chrome/browser/web_state_list:web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/web",
     "//ui/base:base",

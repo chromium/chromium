@@ -15,10 +15,10 @@
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/serializable_user_data_manager.h"
 #import "ios/web/public/web_state.h"
@@ -219,18 +219,21 @@ void DeserializeWebStateList(WebStateList* web_state_list,
         user_data_manager->GetValueForSerializationKey(
             kOpenerNavigationIndexKey));
 
-    if (!boxed_opener_index || !boxed_opener_navigation_index)
+    if (!boxed_opener_index || !boxed_opener_navigation_index) {
       continue;
+    }
 
     // If opener index is out of bound then assume there is no opener.
     const int opener_index = [boxed_opener_index intValue] + old_count;
-    if (opener_index < old_count || opener_index >= web_state_list->count())
+    if (opener_index < old_count || opener_index >= web_state_list->count()) {
       continue;
+    }
 
     // A WebState cannot be its own opener. If this is the case, assume the
     // serialized state has been tampered with and ignore the opener.
-    if (opener_index == index)
+    if (opener_index == index) {
       continue;
+    }
 
     web::WebState* opener = web_state_list->GetWebStateAt(opener_index);
     web_state_list->SetOpenerOfWebStateAt(

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
@@ -15,7 +16,6 @@
 #import "ios/chrome/browser/ui/presenters/contained_presenter_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/accessory/toolbar_accessory_presenter.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class Browser;
 class WebStateList;

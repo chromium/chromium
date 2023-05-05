@@ -6,7 +6,7 @@
 
 #import <algorithm>
 
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,11 +39,13 @@ bool WebStateListRemovingIndexes::OneIndexStorage::ContainsIndex(
 
 int WebStateListRemovingIndexes::OneIndexStorage::IndexAfterRemoval(
     int index) const {
-  if (index == index_)
+  if (index == index_) {
     return WebStateList::kInvalidIndex;
+  }
 
-  if (index > index_)
+  if (index > index_) {
     return index - 1;
+  }
 
   return index;
 }
@@ -82,8 +84,9 @@ int WebStateListRemovingIndexes::VectorStorage::IndexAfterRemoval(
   const auto lower_bound =
       std::lower_bound(indexes_.begin(), indexes_.end(), index);
 
-  if (lower_bound == indexes_.end() || *lower_bound != index)
+  if (lower_bound == indexes_.end() || *lower_bound != index) {
     return index - std::distance(indexes_.begin(), lower_bound);
+  }
 
   return WebStateList::kInvalidIndex;
 }
@@ -132,11 +135,13 @@ WebStateListRemovingIndexes::StorageFromVector(std::vector<int> indexes) {
   std::sort(indexes.begin(), indexes.end());
   indexes.erase(std::unique(indexes.begin(), indexes.end()), indexes.end());
 
-  if (indexes.empty())
+  if (indexes.empty()) {
     return EmptyStorage();
+  }
 
-  if (indexes.size() == 1)
+  if (indexes.size() == 1) {
     return OneIndexStorage(indexes[0]);
+  }
 
   return VectorStorage(indexes);
 }
@@ -144,11 +149,13 @@ WebStateListRemovingIndexes::StorageFromVector(std::vector<int> indexes) {
 WebStateListRemovingIndexes::Storage
 WebStateListRemovingIndexes::StorageFromInitializerList(
     std::initializer_list<int> indexes) {
-  if (indexes.size() == 0)
+  if (indexes.size() == 0) {
     return EmptyStorage();
+  }
 
-  if (indexes.size() == 1)
+  if (indexes.size() == 1) {
     return OneIndexStorage(*indexes.begin());
+  }
 
   // Use the vector overload.
   return StorageFromVector(std::vector<int>(std::move(indexes)));

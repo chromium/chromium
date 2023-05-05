@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/overlays/public/overlay_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 class OverlayResponse;
 

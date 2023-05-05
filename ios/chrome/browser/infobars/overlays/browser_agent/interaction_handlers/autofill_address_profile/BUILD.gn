@@ -25,8 +25,8 @@ source_set("autofill_address_profile") {
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/autofill:autofill_ui_type",
-    "//ios/chrome/browser/web_state_list",
   ]
 }
 
@@ -54,8 +54,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/web_state_list",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

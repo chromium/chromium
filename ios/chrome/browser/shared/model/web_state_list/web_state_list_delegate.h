@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
 
 namespace web {
 class WebState;
@@ -33,4 +33,4 @@ class WebStateListDelegate {
   virtual void WebStateDetached(web::WebState* web_state) = 0;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_DELEGATE_H_

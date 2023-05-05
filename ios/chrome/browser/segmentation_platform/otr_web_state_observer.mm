@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_info_cache.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -13,11 +13,11 @@
 #import "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
-#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/session_metrics.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -44,8 +44,9 @@ WebStateListMetricsBrowserAgent::WebStateListMetricsBrowserAgent(
 
   SessionRestorationBrowserAgent* restoration_agent =
       SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent)
+  if (restoration_agent) {
     restoration_agent->AddObserver(this);
+  }
 }
 
 WebStateListMetricsBrowserAgent::~WebStateListMetricsBrowserAgent() = default;
@@ -64,8 +65,9 @@ void WebStateListMetricsBrowserAgent::WebStateInsertedAt(
     web::WebState* web_state,
     int index,
     bool activating) {
-  if (metric_collection_paused_)
+  if (metric_collection_paused_) {
     return;
+  }
   base::RecordAction(base::UserMetricsAction("MobileNewTabOpened"));
 }
 
@@ -73,8 +75,9 @@ void WebStateListMetricsBrowserAgent::WebStateDetachedAt(
     WebStateList* web_state_list,
     web::WebState* web_state,
     int index) {
-  if (metric_collection_paused_)
+  if (metric_collection_paused_) {
     return;
+  }
 }
 
 void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
@@ -82,16 +85,18 @@ void WebStateListMetricsBrowserAgent::WillCloseWebStateAt(
     web::WebState* web_state,
     int index,
     bool user_action) {
-  if (metric_collection_paused_)
+  if (metric_collection_paused_) {
     return;
+  }
 
   base::TimeDelta age_at_deletion =
       base::Time::Now() - web_state->GetCreationTime();
   base::UmaHistogramCustomTimes("Tab.AgeAtDeletion", age_at_deletion,
                                 base::Minutes(1), base::Days(24), 50);
 
-  if (user_action)
+  if (user_action) {
     base::RecordAction(base::UserMetricsAction("MobileTabClosed"));
+  }
 }
 
 void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
@@ -100,11 +105,13 @@ void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
     web::WebState* new_web_state,
     int active_index,
     ActiveWebStateChangeReason reason) {
-  if (metric_collection_paused_)
+  if (metric_collection_paused_) {
     return;
+  }
   session_metrics_->OnWebStateActivated();
-  if (reason == ActiveWebStateChangeReason::Replaced)
+  if (reason == ActiveWebStateChangeReason::Replaced) {
     return;
+  }
 
   base::RecordAction(base::UserMetricsAction("MobileTabSwitched"));
 }
@@ -112,8 +119,9 @@ void WebStateListMetricsBrowserAgent::WebStateActivatedAt(
 void WebStateListMetricsBrowserAgent::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (!navigation_context->HasCommitted())
+  if (!navigation_context->HasCommitted()) {
     return;
+  }
 
   if (!navigation_context->IsSameDocument() &&
       !web_state->GetBrowserState()->IsOffTheRecord()) {
@@ -154,8 +162,9 @@ void WebStateListMetricsBrowserAgent::BrowserDestroyed(Browser* browser) {
 
   SessionRestorationBrowserAgent* restoration_agent =
       SessionRestorationBrowserAgent::FromBrowser(browser);
-  if (restoration_agent)
+  if (restoration_agent) {
     restoration_agent->RemoveObserver(this);
+  }
 
   web_state_forwarder_.reset(nullptr);
   web_state_list_->RemoveObserver(this);

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
@@ -49,7 +50,6 @@
 #import "ios/chrome/browser/ui/omnibox/popup/popup_debug_info_view_controller.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/device_form_factor.h"
 

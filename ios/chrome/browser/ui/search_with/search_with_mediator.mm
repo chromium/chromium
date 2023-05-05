@@ -12,12 +12,12 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_service.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web_selection/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/web_selection_tab_helper.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 

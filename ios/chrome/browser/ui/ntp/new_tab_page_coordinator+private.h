@@ -8,9 +8,9 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
 @class ContentSuggestionsCoordinator;
 @class FeedHeaderViewController;

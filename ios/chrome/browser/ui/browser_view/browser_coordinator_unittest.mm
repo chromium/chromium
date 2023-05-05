@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/sessions/test_session_service.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/fake_authentication_service_delegate.h"
@@ -55,7 +56,6 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/web_state_observer.h"
 

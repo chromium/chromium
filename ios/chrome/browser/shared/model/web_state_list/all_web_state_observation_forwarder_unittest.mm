@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 
 #import <memory>
 #import <vector>
 
 #import "base/containers/contains.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/web_state_observer.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -43,11 +43,11 @@ class TestObserver : public web::WebStateObserver {
   std::vector<web::WebState*> invoker_web_states_;
 };
 
-class ActiveWebStateObservationForwarderTest : public PlatformTest,
-                                               public WebStateListDelegate {
+class AllWebStateObservationForwarderTest : public PlatformTest,
+                                            public WebStateListDelegate {
  public:
-  ActiveWebStateObservationForwarderTest() : web_state_list_(this) {
-    forwarder_ = std::make_unique<ActiveWebStateObservationForwarder>(
+  AllWebStateObservationForwarderTest() : web_state_list_(this) {
+    forwarder_ = std::make_unique<AllWebStateObservationForwarder>(
         &web_state_list_, &observer_);
   }
 
@@ -68,12 +68,12 @@ class ActiveWebStateObservationForwarderTest : public PlatformTest,
  protected:
   WebStateList web_state_list_;
   TestObserver observer_;
-  std::unique_ptr<ActiveWebStateObservationForwarder> forwarder_;
+  std::unique_ptr<AllWebStateObservationForwarder> forwarder_;
 };
 
 }  // namespace
 
-TEST_F(ActiveWebStateObservationForwarderTest, TestInsertActiveWebState) {
+TEST_F(AllWebStateObservationForwarderTest, TestInsertActiveWebState) {
   // Insert two webstates into the list and mark the second one active.  Send
   // observer notifications for both and verify the result.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
@@ -83,12 +83,12 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestInsertActiveWebState) {
   web_state_a->OnRenderProcessGone();
   web_state_b->OnRenderProcessGone();
 
-  // The observer should only be notified for the active web state B.
+  // The observer should get notifications for both web states.
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_a));
 }
 
-TEST_F(ActiveWebStateObservationForwarderTest, TestInsertNonActiveWebState) {
+TEST_F(AllWebStateObservationForwarderTest, TestInsertNonActiveWebState) {
   // Insert two webstates into the list, but do not mark the second one active.
   // Send observer notifications for both and verify the result.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
@@ -98,12 +98,12 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestInsertNonActiveWebState) {
   web_state_a->OnRenderProcessGone();
   web_state_b->OnRenderProcessGone();
 
-  // The observer should only be notified for the active web state A.
+  // The observer should get notifications for both web states.
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_b));
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
 }
 
-TEST_F(ActiveWebStateObservationForwarderTest, TestDetachActiveWebState) {
+TEST_F(AllWebStateObservationForwarderTest, TestDetachActiveWebState) {
   // Insert three webstates into the list.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
   web::FakeWebState* web_state_b = AddWebStateToList(true);
@@ -113,21 +113,18 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestDetachActiveWebState) {
   // Remove the active web state and send observer notifications.
   std::unique_ptr<web::WebState> detached_web_state =
       web_state_list_.DetachWebStateAt(web_state_list_.active_index());
-  web::WebState* active_web_state = web_state_list_.GetActiveWebState();
-  web::WebState* non_active_web_state =
-      (active_web_state == web_state_a ? web_state_b : web_state_a);
 
   web_state_a->OnRenderProcessGone();
   web_state_b->OnRenderProcessGone();
   web_state_c->OnRenderProcessGone();
 
-  // The observer should only be notified for the new active web state.
-  EXPECT_TRUE(observer_.WasInvokedFor(active_web_state));
-  EXPECT_FALSE(observer_.WasInvokedFor(non_active_web_state));
+  // The observer should get notifications for the two remaining web states.
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
   EXPECT_FALSE(observer_.WasInvokedFor(web_state_c));
 }
 
-TEST_F(ActiveWebStateObservationForwarderTest, TestDetachNonActiveWebState) {
+TEST_F(AllWebStateObservationForwarderTest, TestDetachNonActiveWebState) {
   // Insert three webstates into the list.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
   web::FakeWebState* web_state_b = AddWebStateToList(true);
@@ -144,20 +141,20 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestDetachNonActiveWebState) {
   web_state_b->OnRenderProcessGone();
   web_state_c->OnRenderProcessGone();
 
-  // The observer should only be notified for the active web state.
+  // The observer should get notifications for the two remaining web states.
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_c));
   EXPECT_FALSE(observer_.WasInvokedFor(web_state_a));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_b));
 }
 
-TEST_F(ActiveWebStateObservationForwarderTest, TestReplaceActiveWebState) {
+TEST_F(AllWebStateObservationForwarderTest, TestReplaceActiveWebState) {
   // Insert two webstates into the list and mark the second one active.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
   web::FakeWebState* web_state_b = AddWebStateToList(true);
   ASSERT_EQ(web_state_b, web_state_list_.GetActiveWebState());
 
   // Replace the active web state.  Send notifications and verify the result.
-  auto replacement_web_state = std::make_unique<web::FakeWebState>();
+  auto replacement_web_state(std::make_unique<web::FakeWebState>());
   web::FakeWebState* web_state_c = replacement_web_state.get();
 
   std::unique_ptr<web::WebState> detached_web_state =
@@ -169,13 +166,13 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestReplaceActiveWebState) {
   web_state_b->OnRenderProcessGone();
   web_state_c->OnRenderProcessGone();
 
-  // The observer should only be notified for the new active web state C.
+  // The observer should get notifications for the two remaining web states.
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_c));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_a));
   EXPECT_FALSE(observer_.WasInvokedFor(web_state_b));
 }
 
-TEST_F(ActiveWebStateObservationForwarderTest, TestChangeActiveWebState) {
+TEST_F(AllWebStateObservationForwarderTest, TestChangeActiveWebState) {
   // Insert two webstates into the list and mark the second one active.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
   web::FakeWebState* web_state_b = AddWebStateToList(true);
@@ -187,9 +184,9 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestChangeActiveWebState) {
   web_state_a->OnRenderProcessGone();
   web_state_b->OnRenderProcessGone();
 
-  // The observer should only be notified for the active web state A.
+  // The observer should get notifications for both web states.
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_b));
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
 
   // Make web state B active and send notifications.
   observer_.Reset();
@@ -198,13 +195,12 @@ TEST_F(ActiveWebStateObservationForwarderTest, TestChangeActiveWebState) {
   web_state_a->OnRenderProcessGone();
   web_state_b->OnRenderProcessGone();
 
-  // The observer should only be notified for the active web state B.
+  // The observer should get notifications for both web states.
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_a));
 }
 
-TEST_F(ActiveWebStateObservationForwarderTest,
-       TestNonEmptyInitialWebStateList) {
+TEST_F(AllWebStateObservationForwarderTest, TestNonEmptyInitialWebStateList) {
   // Insert two webstates into the list.
   web::FakeWebState* web_state_a = AddWebStateToList(true);
   web::FakeWebState* web_state_b = AddWebStateToList(true);
@@ -213,14 +209,14 @@ TEST_F(ActiveWebStateObservationForwarderTest,
   // Recreate the multi observer to simulate creation with an already-populated
   // WebStateList.
   forwarder_.reset();
-  forwarder_ = std::make_unique<ActiveWebStateObservationForwarder>(
+  forwarder_ = std::make_unique<AllWebStateObservationForwarder>(
       &web_state_list_, &observer_);
 
   // Send notifications and verify the result.
   web_state_a->OnRenderProcessGone();
   web_state_b->OnRenderProcessGone();
 
-  // The observer should only be notified for the active web state B.
+  // The observer should get notifications for both web states.
+  EXPECT_TRUE(observer_.WasInvokedFor(web_state_a));
   EXPECT_TRUE(observer_.WasInvokedFor(web_state_b));
-  EXPECT_FALSE(observer_.WasInvokedFor(web_state_a));
 }

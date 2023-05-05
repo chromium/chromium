@@ -23,9 +23,9 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/variations/ios_chrome_variations_service_client.h"
 #import "ios/chrome/browser/variations/ios_ui_string_overrider_factory.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 #import <algorithm>
 #import <utility>
@@ -10,11 +10,11 @@
 #import "base/auto_reset.h"
 #import "base/check_op.h"
 #import "base/containers/adapters.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_order_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_removing_indexes.h"
-#import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -120,11 +120,13 @@ bool WebStateList::WebStateWrapper::WasOpenedBy(const web::WebState* opener,
                                                 int opener_navigation_index,
                                                 bool use_group) const {
   DCHECK(opener);
-  if (opener_.opener != opener)
+  if (opener_.opener != opener) {
     return false;
+  }
 
-  if (!use_group)
+  if (!use_group) {
     return true;
+  }
 
   return opener_.navigation_index == opener_navigation_index;
 }
@@ -185,8 +187,9 @@ web::WebState* WebStateList::GetWebStateAt(int index) const {
 int WebStateList::GetIndexOfWebState(const web::WebState* web_state) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (int index = 0; index < count(); ++index) {
-    if (web_state_wrappers_[index]->web_state() == web_state)
+    if (web_state_wrappers_[index]->web_state() == web_state) {
       return index;
+    }
   }
   return kInvalidIndex;
 }
@@ -194,8 +197,9 @@ int WebStateList::GetIndexOfWebState(const web::WebState* web_state) const {
 int WebStateList::GetIndexOfWebStateWithURL(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (int index = 0; index < count(); ++index) {
-    if (web_state_wrappers_[index]->web_state()->GetVisibleURL() == url)
+    if (web_state_wrappers_[index]->web_state()->GetVisibleURL() == url) {
       return index;
+    }
   }
   return kInvalidIndex;
 }
@@ -203,10 +207,12 @@ int WebStateList::GetIndexOfWebStateWithURL(const GURL& url) const {
 int WebStateList::GetIndexOfInactiveWebStateWithURL(const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (int index = 0; index < count(); ++index) {
-    if (index == active_index_)
+    if (index == active_index_) {
       continue;
-    if (web_state_wrappers_[index]->web_state()->GetVisibleURL() == url)
+    }
+    if (web_state_wrappers_[index]->web_state()->GetVisibleURL() == url) {
       return index;
+    }
   }
   return kInvalidIndex;
 }
@@ -356,22 +362,26 @@ int WebStateList::InsertWebStateImpl(int index,
       web_state_wrappers_.begin() + index,
       std::make_unique<WebStateWrapper>(std::move(web_state), pinned));
 
-  if (active_index_ >= index)
+  if (active_index_ >= index) {
     ++active_index_;
+  }
 
   if (IsInsertionFlagSet(insertion_flags, INSERT_INHERIT_OPENER)) {
     const auto& wrapper = web_state_wrappers_[index];
     wrapper->SetShouldResetOpenerOnActiveWebStateChange(true);
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WebStateInsertedAt(this, web_state_ptr, index, activating);
+  }
 
-  if (opener.opener)
+  if (opener.opener) {
     SetOpenerOfWebStateAt(index, opener);
+  }
 
-  if (activating)
+  if (activating) {
     ActivateWebStateAtImpl(index, ActiveWebStateChangeReason::Inserted);
+  }
 
   return index;
 }
@@ -382,8 +392,9 @@ void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
   DCHECK(ContainsIndex(from_index));
   DCHECK(ContainsIndex(to_index));
 
-  if (from_index == to_index)
+  if (from_index == to_index) {
     return;
+  }
 
   std::unique_ptr<WebStateWrapper> web_state_wrapper =
       std::move(web_state_wrappers_[from_index]);
@@ -398,12 +409,14 @@ void WebStateList::MoveWebStateAtImpl(int from_index, int to_index) {
     int min = std::min(from_index, to_index);
     int max = std::max(from_index, to_index);
     int delta = from_index < to_index ? -1 : +1;
-    if (min <= active_index_ && active_index_ <= max)
+    if (min <= active_index_ && active_index_ <= max) {
       active_index_ += delta;
+    }
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WebStateMoved(this, web_state, from_index, to_index);
+  }
 }
 
 std::unique_ptr<web::WebState> WebStateList::ReplaceWebStateAtImpl(
@@ -440,8 +453,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   DCHECK(locked_);
   DCHECK(ContainsIndex(index));
   web::WebState* web_state = web_state_wrappers_[index]->web_state();
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WillDetachWebStateAt(this, web_state, index);
+  }
 
   // Update the active index to prevent observer from seeing an invalid WebState
   // as the active one but only send the WebStateActivatedAt notification after
@@ -459,8 +473,9 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   // Check that the active element (if there is one) is valid.
   DCHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WebStateDetachedAt(this, web_state, index);
+  }
 
   if (active_web_state_was_closed) {
     NotifyIfActiveWebStateChanged(web_state,
@@ -521,8 +536,9 @@ void WebStateList::ActivateWebStateAtImpl(int index,
   DCHECK(ContainsIndex(index) || index == kInvalidIndex);
   WebStateWrapper* old_web_state_wrapper = GetActiveWebStateWrapper();
   if (old_web_state_wrapper) {
-    if (old_web_state_wrapper->ShouldResetOpenerOnActiveWebStateChange())
+    if (old_web_state_wrapper->ShouldResetOpenerOnActiveWebStateChange()) {
       old_web_state_wrapper->SetOpener(WebStateOpener());
+    }
   }
 
   active_index_ = index;
@@ -548,20 +564,24 @@ void WebStateList::PerformBatchOperation(
   DCHECK(!batch_operation_in_progress_);
   base::AutoReset<bool> lock(&batch_operation_in_progress_, /*locked=*/true);
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.WillBeginBatchOperation(this);
-  if (!operation.is_null())
+  }
+  if (!operation.is_null()) {
     std::move(operation).Run(this);
-  for (auto& observer : observers_)
+  }
+  for (auto& observer : observers_) {
     observer.BatchOperationEnded(this);
+  }
 }
 
 void WebStateList::ClearOpenersReferencing(int index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web::WebState* old_web_state = web_state_wrappers_[index]->web_state();
   for (auto& web_state_wrapper : web_state_wrappers_) {
-    if (web_state_wrapper->opener().opener == old_web_state)
+    if (web_state_wrapper->opener().opener == old_web_state) {
       web_state_wrapper->SetOpener(WebStateOpener());
+    }
   }
 }
 
@@ -570,8 +590,9 @@ void WebStateList::NotifyIfActiveWebStateChanged(
     ActiveWebStateChangeReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   web::WebState* new_web_state = GetActiveWebState();
-  if (old_web_state == new_web_state)
+  if (old_web_state == new_web_state) {
     return;
+  }
 
   if (new_web_state) {
     // Do not trigger a CheckForOverRealization here, as it's expected
@@ -593,8 +614,9 @@ int WebStateList::GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
                                                 int n) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GT(n, 0);
-  if (!opener || !ContainsIndex(start_index))
+  if (!opener || !ContainsIndex(start_index)) {
     return kInvalidIndex;
+  }
 
   const int opener_navigation_index =
       use_group ? opener->GetNavigationManager()->GetLastCommittedItemIndex()
@@ -607,12 +629,14 @@ int WebStateList::GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
     DCHECK_NE(index, start_index);
 
     const auto& wrapper = web_state_wrappers_[index];
-    if (!wrapper->WasOpenedBy(opener, opener_navigation_index, use_group))
+    if (!wrapper->WasOpenedBy(opener, opener_navigation_index, use_group)) {
       continue;
+    }
 
     found_index = index;
-    if (--n == 0)
+    if (--n == 0) {
       break;
+    }
   }
 
   return found_index;
@@ -620,8 +644,9 @@ int WebStateList::GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
 
 int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (web_state_wrappers_[index]->pinned() == pinned)
+  if (web_state_wrappers_[index]->pinned() == pinned) {
     return index;
+  }
 
   // The tab's position may have to change as the pinned tab state is changing.
   int non_pinned_web_state_index = GetIndexOfFirstNonPinnedWebState();
@@ -663,8 +688,9 @@ int WebStateList::ConstrainMoveIndex(int index, bool pinned) const {
 
 WebStateList::WebStateWrapper* WebStateList::GetActiveWebStateWrapper() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (active_index_ != kInvalidIndex)
+  if (active_index_ != kInvalidIndex) {
     return GetWebStateWrapperAt(active_index_);
+  }
   return nullptr;
 }
 

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
 // Protocol that correspond to WebStateListObserver API. Allows registering
 // Objective-C objects to listen to WebStateList events.
-@protocol WebStateListObserving<NSObject>
+@protocol WebStateListObserving <NSObject>
 
 @optional
 
@@ -139,4 +139,4 @@ class WebStateListObserverBridge final : public WebStateListObserver {
   __weak id<WebStateListObserving> observer_ = nil;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_BRIDGE_H_

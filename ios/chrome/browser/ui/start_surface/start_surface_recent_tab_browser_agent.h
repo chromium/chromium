@@ -10,7 +10,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state_observer.h"
 
 namespace web {

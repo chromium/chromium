@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 
 #import "base/check.h"
 
@@ -33,6 +33,7 @@ void ActiveWebStateObservationForwarder::WebStateActivatedAt(
     int active_index,
     ActiveWebStateChangeReason reason) {
   web_state_observation_.Reset();
-  if (new_web_state)
+  if (new_web_state) {
     web_state_observation_.Observe(new_web_state);
+  }
 }

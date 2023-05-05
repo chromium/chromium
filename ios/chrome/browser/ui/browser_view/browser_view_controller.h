@@ -12,6 +12,7 @@
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -30,7 +31,6 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_navigation_ntp_delegate.h"
 #import "ios/chrome/browser/web/web_state_container_view_provider.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 
 @protocol ApplicationCommands;

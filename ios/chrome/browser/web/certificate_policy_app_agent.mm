@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/thread/web_task_traits.h"

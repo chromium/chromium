@@ -32,8 +32,9 @@ bool WebUsageEnablerBrowserAgent::IsWebUsageEnabled() const {
 }
 
 void WebUsageEnablerBrowserAgent::SetWebUsageEnabled(bool web_usage_enabled) {
-  if (web_usage_enabled_ == web_usage_enabled)
+  if (web_usage_enabled_ == web_usage_enabled) {
     return;
+  }
 
   web_usage_enabled_ = web_usage_enabled;
   UpdateWebUsageForAllWebStates();

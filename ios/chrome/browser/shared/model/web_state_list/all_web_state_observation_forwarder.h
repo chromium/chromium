@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_WEB_STATE_LIST_ALL_WEB_STATE_OBSERVATION_FORWARDER_H_
-#define IOS_CHROME_BROWSER_WEB_STATE_LIST_ALL_WEB_STATE_OBSERVATION_FORWARDER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ALL_WEB_STATE_OBSERVATION_FORWARDER_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ALL_WEB_STATE_OBSERVATION_FORWARDER_H_
 
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
-#include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#include "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 
@@ -50,4 +50,4 @@ class AllWebStateObservationForwarder : public WebStateListObserver {
       web_state_observations_;
 };
 
-#endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_ALL_WEB_STATE_OBSERVATION_FORWARDER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_ALL_WEB_STATE_OBSERVATION_FORWARDER_H_

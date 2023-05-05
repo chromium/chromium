@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 
 #import "base/check.h"
 

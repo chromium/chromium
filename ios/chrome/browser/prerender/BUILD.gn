@@ -45,10 +45,10 @@ source_set("prerender") {
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/web",
-    "//ios/chrome/browser/web_state_list",
     "//ui/base",
     "//url",
   ]
