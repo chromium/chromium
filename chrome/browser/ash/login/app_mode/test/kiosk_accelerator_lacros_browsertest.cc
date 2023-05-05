@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/login/app_mode/test/ash_accelerator_helpers.h"
-#include "chrome/browser/ash/login/app_mode/test/web_kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/web_kiosk_lacros_base_test.h"
 #include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/test/browser_test.h"
@@ -18,41 +18,6 @@
 namespace ash {
 
 namespace {
-
-// Helper based on AshBrowserTestStarter, sets up Lacros in a kiosk session.
-class KioskAshBrowserTestStarter {
- public:
-  bool HasLacrosArgument() {
-    return base::CommandLine::ForCurrentProcess()->HasSwitch(
-        ash::switches::kLacrosChromePath);
-  }
-  // Must be called in SetUpInProcessBrowserTestFixture.
-  void PrepareEnvironmentForKioskLacros() {
-    DCHECK(HasLacrosArgument());
-    std::unique_ptr<base::Environment> env(base::Environment::Create());
-    ASSERT_TRUE(scoped_temp_dir_xdg_.CreateUniqueTempDir());
-    env->SetVar("XDG_RUNTIME_DIR",
-                scoped_temp_dir_xdg_.GetPath().AsUTF8Unsafe());
-
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        ash::switches::kAshEnableWaylandServer);
-  }
-
-  // Must be called in SetUpOnMainThread.
-  void SetLacrosAvailabilityPolicy() {
-    DCHECK(HasLacrosArgument());
-    policy::PolicyMap policy;
-    policy.Set(policy::key::kLacrosAvailability, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(GetLacrosAvailabilityPolicyName(
-                   ash::standalone_browser::LacrosAvailability::kLacrosOnly)),
-               /*external_data_fetcher=*/nullptr);
-    crosapi::browser_util::CacheLacrosAvailability(policy);
-  }
-
- private:
-  base::ScopedTempDir scoped_temp_dir_xdg_;
-};
 
 // Observes BrowserServiceHostAsh and blocks until a BrowserService disconnects.
 class BrowserServiceDisconnectedWaiter
@@ -91,24 +56,7 @@ class BrowserServiceDisconnectedWaiter
 }  // namespace
 
 // Tests system accelerators (ash-side) do not work with Lacros in kiosk.
-class WebKioskAcceleratorLacrosTest : public WebKioskBaseTest {
-  void SetUpInProcessBrowserTestFixture() override {
-    if (kiosk_ash_starter_.HasLacrosArgument()) {
-      kiosk_ash_starter_.PrepareEnvironmentForKioskLacros();
-    }
-    WebKioskBaseTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpOnMainThread() override {
-    WebKioskBaseTest::SetUpOnMainThread();
-    if (kiosk_ash_starter_.HasLacrosArgument()) {
-      kiosk_ash_starter_.SetLacrosAvailabilityPolicy();
-    }
-  }
-
- protected:
-  KioskAshBrowserTestStarter kiosk_ash_starter_;
-};
+using WebKioskAcceleratorLacrosTest = WebKioskLacrosBaseTest;
 
 IN_PROC_BROWSER_TEST_F(WebKioskAcceleratorLacrosTest, SignOutDoesNotWork) {
   if (!kiosk_ash_starter_.HasLacrosArgument()) {
