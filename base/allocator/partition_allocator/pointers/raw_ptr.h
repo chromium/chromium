@@ -1193,12 +1193,7 @@ constexpr auto AllowPtrArithmetic = base::RawPtrTraits::kAllowPtrArithmetic;
 // https://docs.google.com/document/d/105OVhNl-2lrfWElQSk5BXYv-nLynfxUrbC4l8cZ0CoU/edit
 //
 // This is not meant to be added manually. You can ignore this flag.
-//
-// kMayDangle is added only temporarily to avoid triggering DPD CQ bot.
-// TODO(arthursonzogni): Remove kMayDangle from here and annotate necessary
-// `raw_ptr`s explicitly.
-constexpr auto ExperimentalAsh =
-    base::RawPtrTraits::kExperimentalAsh | base::RawPtrTraits::kMayDangle;
+constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
 
 namespace std {
 
