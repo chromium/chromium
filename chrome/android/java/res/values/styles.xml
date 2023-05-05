@@ -186,9 +186,10 @@ found in the LICENSE file.
              The custom styling can be removed once Android N is deprecated. -->
         <item name="background">@color/dark_action_bar_color</item>
     </style>
-    <!-- Sets the color of the back arrow (to match the color of the title text) -->
     <style name="ManageSpaceActionBarTheme">
+        <!-- Sets the color of the back arrow (to match the color of the title text) -->
         <item name="colorControlNormal">@color/default_icon_color_light_tint_list</item>
+        <item name="colorControlHighlight">@color/ripple_material_dark</item>
     </style>
     <style name="ManageSpaceToolbarStyle" parent="SettingsToolbarStyle">
         <item name="titleTextColor">@color/default_text_color_light</item>
