@@ -4,12 +4,16 @@
 
 #include <va/va.h>
 #include <va/va_drm.h>
+#include <xf86drm.h>
 
 #include <algorithm>
 
+#include "base/files/file.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "media/gpu/vaapi/va_stubs.h"
@@ -31,7 +35,36 @@ class FakeDriverTest : public testing::Test {
   ~FakeDriverTest() override = default;
 
   void SetUp() override {
-    display_ = vaGetDisplayDRM(0);
+    constexpr char kRenderNodeFilePattern[] = "/dev/dri/renderD%d";
+    // This loop ends on either the first card that does not exist or the first
+    // render node that is not vgem.
+    for (int i = 128;; i++) {
+      base::FilePath dev_path(FILE_PATH_LITERAL(
+          base::StringPrintf(kRenderNodeFilePattern, i).c_str()));
+      base::File drm_file =
+          base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                   base::File::FLAG_WRITE);
+      if (!drm_file.IsValid()) {
+        break;
+      }
+      // Skip the virtual graphics memory manager device.
+      drmVersionPtr version = drmGetVersion(drm_file.GetPlatformFile());
+      if (!version) {
+        continue;
+      }
+      std::string version_name(
+          version->name,
+          base::checked_cast<std::string::size_type>(version->name_len));
+      drmFreeVersion(version);
+      if (base::EqualsCaseInsensitiveASCII(version_name, "vgem")) {
+        continue;
+      }
+      drm_fd_.reset(drm_file.TakePlatformFile());
+      break;
+    }
+
+    ASSERT_TRUE(drm_fd_.is_valid());
+    display_ = vaGetDisplayDRM(drm_fd_.get());
     ASSERT_TRUE(vaDisplayIsValid(display_));
     int major_version;
     int minor_version;
@@ -45,6 +78,7 @@ class FakeDriverTest : public testing::Test {
   }
 
  protected:
+  base::ScopedFD drm_fd_;
   VADisplay display_ = nullptr;
 };
 
