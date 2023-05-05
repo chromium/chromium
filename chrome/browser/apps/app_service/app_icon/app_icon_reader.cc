@@ -45,9 +45,8 @@ void AppIconReader::ReadIcons(const std::string& app_id,
                               LoadIconCallback callback) {
   IconEffects icon_effects = static_cast<IconEffects>(icon_key.icon_effects);
   int resource_id = GetResourceIdForIcon(app_id, size_in_dip, icon_key);
-
   if (resource_id != IconKey::kInvalidResourceId) {
-    LoadIconFromResource(icon_type, size_in_dip, resource_id,
+    LoadIconFromResource(profile_, app_id, icon_type, size_in_dip, resource_id,
                          /*is_placeholder_icon=*/false, icon_effects,
                          std::move(callback));
     return;
@@ -64,13 +63,14 @@ void AppIconReader::ReadIcons(const std::string& app_id,
       base_path, app_id, size_in_dip,
       base::BindOnce(&AppIconReader::OnUncompressedIconRead,
                      weak_ptr_factory_.GetWeakPtr(), size_in_dip, icon_effects,
-                     icon_type, std::move(callback))));
+                     icon_type, app_id, std::move(callback))));
   decodes_.back()->Start();
 }
 
 void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
                                            IconEffects icon_effects,
                                            IconType icon_type,
+                                           const std::string& app_id,
                                            LoadIconCallback callback,
                                            AppIconDecoder* decoder,
                                            IconValuePtr iv) {
@@ -122,7 +122,7 @@ void AppIconReader::OnUncompressedIconRead(int32_t size_in_dip,
   }
 
   apps::ApplyIconEffects(
-      icon_effects, size_in_dip, std::move(iv),
+      profile_, app_id, icon_effects, size_in_dip, std::move(iv),
       base::BindOnce(&AppIconReader::OnCompleteWithIconValue,
                      weak_ptr_factory_.GetWeakPtr(), size_in_dip, icon_type,
                      std::move(callback)));

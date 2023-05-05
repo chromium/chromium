@@ -32,8 +32,9 @@ void EnsureRepresentationsLoaded(gfx::ImageSkia& output_image_skia) {
 void LoadDefaultIcon(gfx::ImageSkia& output_image_skia, int resource_id) {
   base::RunLoop run_loop;
   apps::LoadIconFromResource(
+      /*profile=*/nullptr, /*app_id=*/absl::nullopt,
       apps::IconType::kUncompressed, kSizeInDip, resource_id,
-      false /* is_placeholder_icon */, apps::IconEffects::kNone,
+      /*is_placeholder_icon=*/false, apps::IconEffects::kNone,
       base::BindOnce(
           [](gfx::ImageSkia* image, base::OnceClosure load_app_icon_callback,
              apps::IconValuePtr icon) {

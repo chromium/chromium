@@ -608,7 +608,7 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
     auto reg = GetRegistration(app_id);
     if (reg && reg->VmType() == VmType::TERMINA) {
       callback = base::BindOnce(
-          &GuestOsRegistryService::ApplyContainerBadge,
+          &GuestOsRegistryService::ApplyContainerBadgeWithCallback,
           weak_ptr_factory_.GetWeakPtr(),
           crostini::GetContainerBadgeColor(
               profile_, guest_os::GuestId(reg->VmType(), reg->VmName(),
@@ -621,7 +621,8 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
     // The icon is a resource built into the Chrome OS binary.
     constexpr bool is_placeholder_icon = false;
     apps::LoadIconFromResource(
-        icon_type, size_hint_in_dip, icon_key.resource_id, is_placeholder_icon,
+        profile_, app_id, icon_type, size_hint_in_dip, icon_key.resource_id,
+        is_placeholder_icon,
         static_cast<apps::IconEffects>(icon_key.icon_effects),
         std::move(callback));
     return;
@@ -654,6 +655,38 @@ void GuestOsRegistryService::LoadIcon(const std::string& app_id,
 }
 
 void GuestOsRegistryService::ApplyContainerBadge(
+    const absl::optional<std::string>& app_id,
+    gfx::ImageSkia* image_skia) {
+  if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+    auto reg = GetRegistration(*app_id);
+    if (reg && reg->VmType() == guest_os::VmType::TERMINA) {
+      ApplyContainerBadgeForImageSkiaIcon(
+          crostini::GetContainerBadgeColor(
+              profile_, guest_os::GuestId(reg->VmType(), reg->VmName(),
+                                          reg->ContainerName())),
+          image_skia);
+    }
+  }
+}
+
+void GuestOsRegistryService::ApplyContainerBadgeForImageSkiaIcon(
+    SkColor badge_color,
+    gfx::ImageSkia* icon_out) {
+  gfx::ImageSkia badge_mask =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_ICON_BADGE_MASK);
+
+  if (badge_mask.size() != icon_out->size()) {
+    badge_mask = gfx::ImageSkiaOperations::CreateResizedImage(
+        badge_mask, skia::ImageOperations::RESIZE_BEST, icon_out->size());
+  }
+  badge_mask =
+      gfx::ImageSkiaOperations::CreateColorMask(badge_mask, badge_color);
+  *icon_out =
+      gfx::ImageSkiaOperations::CreateSuperimposedImage(*icon_out, badge_mask);
+}
+
+void GuestOsRegistryService::ApplyContainerBadgeWithCallback(
     SkColor badge_color,
     apps::LoadIconCallback callback,
     apps::IconValuePtr icon) {
@@ -731,9 +764,10 @@ void GuestOsRegistryService::OnLoadIconFromVM(
       // We load the fallback icon, but we tell AppsService that this is not
       // a placeholder to avoid endless repeat calls since we don't expect to
       // find a better icon than this any time soon.
-      apps::LoadIconFromResource(
-          icon_type, size_hint_in_dip, fallback_icon_resource_id,
-          /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
+      apps::LoadIconFromResource(profile_, app_id, icon_type, size_hint_in_dip,
+                                 fallback_icon_resource_id,
+                                 /*is_placeholder_icon=*/false, icon_effects,
+                                 std::move(callback));
     } else {
       std::move(callback).Run(std::make_unique<apps::IconValue>());
     }

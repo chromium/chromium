@@ -114,7 +114,8 @@ void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
 
       if (icon_effects != apps::IconEffects::kNone) {
         apps::ApplyIconEffects(
-            icon_effects, size_hint_in_dip, std::move(iv),
+            /*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_effects,
+            size_hint_in_dip, std::move(iv),
             base::BindOnce(&UpdateIconImage, std::move(callback)));
         return;
       }
@@ -1348,8 +1349,9 @@ void ArcApps::LoadPlayStoreIcon(apps::IconType icon_type,
   int resource_id = (size_hint_in_px <= 32) ? IDR_ARC_SUPPORT_ICON_32_PNG
                                             : IDR_ARC_SUPPORT_ICON_192_PNG;
   constexpr bool is_placeholder_icon = false;
-  LoadIconFromResource(icon_type, size_hint_in_dip, resource_id,
-                       is_placeholder_icon, icon_effects, std::move(callback));
+  LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
+                       size_hint_in_dip, resource_id, is_placeholder_icon,
+                       icon_effects, std::move(callback));
 }
 
 AppPtr ArcApps::CreateApp(ArcAppListPrefs* prefs,

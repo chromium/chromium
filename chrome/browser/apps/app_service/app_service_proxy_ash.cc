@@ -590,7 +590,8 @@ void AppServiceProxyAsh::LoadIconForDialog(const apps::AppUpdate& update,
 
   // Load the family link kite logo icon for the app pause dialog or the app
   // block dialog for the child profile.
-  LoadIconFromResource(icon_type, kIconSize, IDR_SUPERVISED_USER_ICON,
+  LoadIconFromResource(/*profile=*/nullptr, /*app_id=*/absl::nullopt, icon_type,
+                       kIconSize, IDR_SUPERVISED_USER_ICON,
                        kAllowPlaceholderIcon, IconEffects::kNone,
                        std::move(callback));
 }
@@ -793,9 +794,9 @@ void AppServiceProxyAsh::OnIconRead(AppType app_type,
     auto* publisher = GetPublisher(app_type);
     if (!publisher) {
       LOG(WARNING) << "No publisher for requested icon";
-      LoadIconFromResource(icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
-                           /*is_placeholder_icon=*/false, icon_effects,
-                           std::move(callback));
+      LoadIconFromResource(
+          profile_, app_id, icon_type, size_in_dip, IDR_APP_DEFAULT_ICON,
+          /*is_placeholder_icon=*/false, icon_effects, std::move(callback));
       return;
     }
 
@@ -821,7 +822,7 @@ void AppServiceProxyAsh::OnIconInstalled(AppType app_type,
   if (!install_success) {
     int resource_id = app_type == AppType::kCrostini ? IDR_LOGO_CROSTINI_DEFAULT
                                                      : IDR_APP_DEFAULT_ICON;
-    LoadIconFromResource(icon_type, size_in_dip, resource_id,
+    LoadIconFromResource(profile_, app_id, icon_type, size_in_dip, resource_id,
                          /*is_placeholder_icon=*/false, icon_effects,
                          std::move(callback));
     return;

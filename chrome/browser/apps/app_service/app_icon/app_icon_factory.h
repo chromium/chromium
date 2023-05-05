@@ -109,7 +109,9 @@ gfx::ImageSkia ConvertIconBitmapsToImageSkia(
 
 // Modifies |iv| to apply icon post-processing effects (like badging and
 // desaturation to gray) to an uncompressed icon.
-void ApplyIconEffects(IconEffects icon_effects,
+void ApplyIconEffects(Profile* profile,
+                      const absl::optional<std::string>& app_id,
+                      IconEffects icon_effects,
                       int size_hint_in_dip,
                       IconValuePtr iv,
                       LoadIconCallback callback);
@@ -198,7 +200,9 @@ void LoadIconFromCompressedData(IconType icon_type,
 
 // Loads an icon from a compiled-into-the-binary resource, with a resource_id
 // named IDR_XXX, for some value of XXX.
-void LoadIconFromResource(IconType icon_type,
+void LoadIconFromResource(Profile* profile,
+                          absl::optional<std::string> app_id,
+                          IconType icon_type,
                           int size_hint_in_dip,
                           int resource_id,
                           bool is_placeholder_icon,

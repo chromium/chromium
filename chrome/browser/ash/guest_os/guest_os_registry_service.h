@@ -240,6 +240,11 @@ class GuestOsRegistryService : public KeyedService {
 
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
 
+  // Apply a coloured badge to the app icon if Crostini multi-container
+  // feature is enabled.
+  void ApplyContainerBadge(const absl::optional<std::string>& app_id,
+                           gfx::ImageSkia* image_skia);
+
   // Returns the AppId that will be used to refer to the given GuestOs
   // application.
   static std::string GenerateAppId(const std::string& desktop_file_id,
@@ -260,11 +265,16 @@ class GuestOsRegistryService : public KeyedService {
   // Removes all the icons installed for an application.
   void RemoveAppData(const std::string& app_id);
 
-  // Apply container-specific badging to `icon`. This is run after the generic
-  // icon loading code.
-  void ApplyContainerBadge(SkColor badge_color,
-                           apps::LoadIconCallback callback,
-                           apps::IconValuePtr icon);
+  // Apply container-specific badging to `icon_out`. This is used by
+  // ApplyContainerBadge.
+  void ApplyContainerBadgeForImageSkiaIcon(SkColor badge_color,
+                                           gfx::ImageSkia* icon_out);
+
+  // Apply container-specific badging to `icon` before running the callback.
+  // This is run after the generic icon loading code.
+  void ApplyContainerBadgeWithCallback(SkColor badge_color,
+                                       apps::LoadIconCallback callback,
+                                       apps::IconValuePtr icon);
 
   // Call the callbacks |active_icon_requests_| for |app_id|.
   void InvokeActiveIconCallbacks(std::string app_id,

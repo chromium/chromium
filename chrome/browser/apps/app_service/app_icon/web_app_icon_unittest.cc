@@ -216,8 +216,8 @@ class WebAppIconFactoryTest : public testing::Test {
       auto iv = std::make_unique<apps::IconValue>();
       iv->icon_type = apps::IconType::kUncompressed;
       iv->uncompressed = image_skia;
-      apps::ApplyIconEffects(icon_effects, kSizeInDip, std::move(iv),
-                             iv_with_icon_effects.GetCallback());
+      apps::ApplyIconEffects(profile(), app_id, icon_effects, kSizeInDip,
+                             std::move(iv), iv_with_icon_effects.GetCallback());
       image_skia = iv_with_icon_effects.Take()->uncompressed;
     }
 

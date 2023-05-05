@@ -407,9 +407,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   auto iv = std::make_unique<apps::IconValue>();
   iv->icon_type = apps::IconType::kStandard;
   iv->uncompressed = icon;
-  apps::ApplyIconEffects(apps::IconEffects::kCrOsStandardIcon,
-                         /*size_hint_in_dip=*/64, std::move(iv),
-                         future.GetCallback());
+  apps::ApplyIconEffects(
+      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is the downloaded icon.
   CheckIconsEqual(future.Get()->uncompressed, item->GetDefaultIcon());
@@ -438,9 +438,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppPlaceholderIcon) {
   iv->uncompressed =
       manager_->GetPlaceholderIcon(kId1, /*size_hint_in_dip=*/64);
   iv->is_placeholder_icon = true;
-  apps::ApplyIconEffects(apps::IconEffects::kCrOsStandardIcon,
-                         /*size_hint_in_dip=*/64, std::move(iv),
-                         future.GetCallback());
+  apps::ApplyIconEffects(
+      profile_, /*app_id=*/absl::nullopt, apps::IconEffects::kCrOsStandardIcon,
+      /*size_hint_in_dip=*/64, std::move(iv), future.GetCallback());
 
   // App's icon is placeholder.
   // TODO(https://crbug.com/1345682): add a pixel diff test for this scenario.

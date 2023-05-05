@@ -297,6 +297,7 @@ bool AdaptiveIconPaths::IsEmpty() {
 }
 
 AppIconLoader::AppIconLoader(Profile* profile,
+                             absl::optional<std::string> app_id,
                              IconType icon_type,
                              int size_hint_in_dip,
                              bool is_placeholder_icon,
@@ -304,6 +305,7 @@ AppIconLoader::AppIconLoader(Profile* profile,
                              int fallback_icon_resource,
                              LoadIconCallback callback)
     : AppIconLoader(profile,
+                    app_id,
                     icon_type,
                     size_hint_in_dip,
                     is_placeholder_icon,
@@ -314,6 +316,7 @@ AppIconLoader::AppIconLoader(Profile* profile,
 
 AppIconLoader::AppIconLoader(
     Profile* profile,
+    absl::optional<std::string> app_id,
     IconType icon_type,
     int size_hint_in_dip,
     bool is_placeholder_icon,
@@ -322,6 +325,7 @@ AppIconLoader::AppIconLoader(
     base::OnceCallback<void(LoadIconCallback)> fallback,
     LoadIconCallback callback)
     : profile_(profile),
+      app_id_(app_id),
       icon_type_(icon_type),
       size_hint_in_dip_(size_hint_in_dip),
       icon_size_in_px_(apps_util::ConvertDipToPx(
@@ -334,6 +338,17 @@ AppIconLoader::AppIconLoader(
       fallback_icon_resource_(fallback_icon_resource),
       callback_(std::move(callback)),
       fallback_callback_(std::move(fallback)) {
+  if (profile) {
+    profile_observation_.Observe(profile);
+  }
+}
+
+AppIconLoader::AppIconLoader(Profile* profile,
+                             int size_hint_in_dip,
+                             LoadIconCallback callback)
+    : profile_(profile),
+      size_hint_in_dip_(size_hint_in_dip),
+      callback_(std::move(callback)) {
   if (profile) {
     profile_observation_.Observe(profile);
   }
@@ -365,6 +380,7 @@ AppIconLoader::~AppIconLoader() {
 }
 
 void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
+                                     const absl::optional<std::string>& app_id,
                                      IconValuePtr iv) {
   if (!iv || iv->uncompressed.isNull())
     return;
@@ -388,10 +404,25 @@ void AppIconLoader::ApplyIconEffects(IconEffects icon_effects,
       base::BindOnce(&ApplyEffects, icon_effects, size_hint_in_dip_,
                      std::move(iv), mask_image),
       base::BindOnce(&AppIconLoader::ApplyBadges, base::WrapRefCounted(this),
-                     icon_effects));
+                     icon_effects, app_id));
 }
 
-void AppIconLoader::ApplyBadges(IconEffects icon_effects, IconValuePtr iv) {
+void AppIconLoader::ApplyBadges(IconEffects icon_effects,
+                                const absl::optional<std::string>& app_id,
+                                IconValuePtr iv) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (icon_effects & apps::IconEffects::kGuestOsBadge) {
+    CHECK(profile_ != nullptr && app_id.has_value());
+    auto* registry =
+        guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile_);
+    if (registry) {
+      registry->ApplyContainerBadge(app_id, &iv->uncompressed);
+    }
+    std::move(callback_).Run(std::move(iv));
+    return;
+  }
+#endif
+
   const bool from_bookmark = icon_effects & apps::IconEffects::kRoundCorners;
 
   bool app_launchable = true;
@@ -970,7 +1001,8 @@ void AppIconLoader::MaybeApplyEffectsAndComplete(const gfx::ImageSkia image) {
   // an uncompressed icon, return the uncompressed result; otherwise, encode
   // the icon to a compressed icon, return the compressed result.
   if (icon_effects_) {
-    apps::ApplyIconEffects(icon_effects_, size_hint_in_dip_, std::move(iv),
+    apps::ApplyIconEffects(profile_, app_id_, icon_effects_, size_hint_in_dip_,
+                           std::move(iv),
                            base::BindOnce(&AppIconLoader::CompleteWithIconValue,
                                           base::WrapRefCounted(this)));
     return;

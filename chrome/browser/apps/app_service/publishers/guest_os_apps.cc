@@ -12,6 +12,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_base.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -106,8 +107,11 @@ AppPtr GuestOSApps::CreateApp(
   }
 
   if (generate_new_icon_key) {
-    app->icon_key = std::move(
-        *icon_key_factory_.CreateIconKey(IconEffects::kCrOsStandardIcon));
+    IconEffects icon_effects = IconEffects::kCrOsStandardIcon;
+    if (crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
+      icon_effects |= IconEffects::kGuestOsBadge;
+    }
+    app->icon_key = std::move(*icon_key_factory_.CreateIconKey(icon_effects));
   }
 
   app->last_launch_time = registration.LastLaunchTime();

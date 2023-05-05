@@ -111,10 +111,10 @@ void StandaloneBrowserApps::LoadIcon(const std::string& app_id,
                                      bool allow_placeholder_icon,
                                      apps::LoadIconCallback callback) {
   DCHECK_NE(icon_key.resource_id, apps::IconKey::kInvalidResourceId);
-  LoadIconFromResource(icon_type, size_hint_in_dip, icon_key.resource_id,
-                       /*is_placeholder_icon=*/false,
-                       static_cast<IconEffects>(icon_key.icon_effects),
-                       std::move(callback));
+  LoadIconFromResource(
+      profile_, app_id, icon_type, size_hint_in_dip, icon_key.resource_id,
+      /*is_placeholder_icon=*/false,
+      static_cast<IconEffects>(icon_key.icon_effects), std::move(callback));
 }
 
 void StandaloneBrowserApps::Launch(const std::string& app_id,
