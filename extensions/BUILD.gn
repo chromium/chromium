@@ -204,7 +204,6 @@ repack("shell_and_test_pak") {
   sources = [
     "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/content/shell/shell_resources.pak",
     "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
     "$root_gen_dir/extensions/extensions_browser_resources_100_percent.pak",
@@ -227,7 +226,6 @@ repack("shell_and_test_pak") {
   deps = [
     ":extensions_resources",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/browser/devtools:devtools_resources",
     "//content/shell:resources",
     "//device/bluetooth/strings",

@@ -1608,7 +1608,6 @@ test("content_browsertests") {
     ":test_interfaces",
     ":web_ui_mojo_test_resources",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
   ]
 
   deps = [
@@ -2794,10 +2793,7 @@ test("content_unittests") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  public_deps = [
-    "//content:content_resources",
-    "//content:dev_ui_content_resources",
-  ]
+  public_deps = [ "//content:content_resources" ]
 
   deps = [
     ":content_test_mojo_bindings",

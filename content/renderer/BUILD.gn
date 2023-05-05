@@ -251,7 +251,6 @@ target(link_target_type, "renderer") {
     "//components/viz/client",
     "//components/viz/common",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/child",
     "//content/common",
     "//content/common:buildflags",

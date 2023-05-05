@@ -512,7 +512,6 @@ source_set("weblayer_lib_base") {
     "//components/webdata_services",
     "//components/webrtc",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/public/app",
     "//content/public/browser",
     "//content/public/child",

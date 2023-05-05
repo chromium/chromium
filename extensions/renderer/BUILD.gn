@@ -262,7 +262,6 @@ source_set("renderer") {
     "//components/guest_view/renderer",
     "//components/version_info",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/public/renderer",
     "//extensions:extensions_resources",
     "//extensions/common",

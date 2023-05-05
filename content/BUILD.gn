@@ -106,15 +106,6 @@ grit("content_resources") {
   }
 }
 
-grit("dev_ui_content_resources") {
-  source = "dev_ui_content_resources.grd"
-
-  outputs = [
-    "grit/dev_ui_content_resources.h",
-    "dev_ui_content_resources.pak",
-  ]
-}
-
 # This target exists to "hold" the content_export header so we can do proper
 # inclusion testing of it.
 source_set("export") {

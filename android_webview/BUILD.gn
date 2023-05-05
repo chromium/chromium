@@ -904,13 +904,6 @@ repack("repack_pack") {
   if (webview_includes_weblayer) {
     sources += [ "$root_gen_dir/weblayer/weblayer_resources.pak" ]
     deps += [ "//weblayer:resources" ]
-
-    # These resources are primarily useful for developers. To avoid increasing
-    # the size of WebView they are only included in non-stable channels.
-    if (android_channel != "stable") {
-      sources += [ "$root_gen_dir/content/dev_ui_content_resources.pak" ]
-      deps += [ "//content:dev_ui_content_resources" ]
-    }
   }
 }
 

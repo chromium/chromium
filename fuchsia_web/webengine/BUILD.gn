@@ -129,7 +129,6 @@ repack("web_engine_pak") {
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
-    "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/content/gpu_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
@@ -141,7 +140,6 @@ repack("web_engine_pak") {
   deps = [
     "//components/resources:components_resources",
     "//content:content_resources",
-    "//content:dev_ui_content_resources",
     "//content/browser/resources/gpu:resources",
     "//content/browser/tracing:resources",
     "//gpu/command_buffer/service",

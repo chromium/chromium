@@ -553,9 +553,6 @@
     "META": {"sizes": {"includes": [20],}},
     "includes": [2600],
   },
-  "content/dev_ui_content_resources.grd": {
-    "includes": [2620],
-  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/feed/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [2640],

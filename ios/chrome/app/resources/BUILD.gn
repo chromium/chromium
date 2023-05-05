@@ -98,7 +98,6 @@ repack("repack_unscaled_resources") {
       "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
       "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
       "$root_gen_dir/content/content_resources.pak",
-      "$root_gen_dir/content/dev_ui_content_resources.pak",
       "$root_gen_dir/content/quota_internals_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
       "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
@@ -110,7 +109,6 @@ repack("repack_unscaled_resources") {
     deps += [
       "//base/tracing/protos:chrome_track_event_resources",
       "//content:content_resources",
-      "//content:dev_ui_content_resources",
       "//content/browser/resources:resources",
       "//content/browser/resources/media:resources",
       "//content/browser/webrtc/resources",
