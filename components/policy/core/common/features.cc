@@ -39,7 +39,7 @@ BASE_FEATURE(kPolicyMergeMultiSource,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPolicyLogsPageIOS,
              "PolicyLogsPageIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace features
