@@ -27,6 +27,10 @@
     height: 8px;
   }
 
+  :host-context([chrome-refresh-2023]) .sp-card {
+    max-width: calc(320px - 2 * var(--sp-body-padding));
+  }
+
   customize-chrome-appearance {
     margin-bottom: 16px;
   }
@@ -38,6 +42,7 @@
   customize-chrome-themes,
   customize-chrome-chrome-colors {
     display: block;
+    max-width: 320px;
     width: 100%;
   }
 </style>
