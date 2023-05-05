@@ -518,6 +518,32 @@ class SettingsSwitchAccessSetupGuideDialogElement extends
         this.shadowRoot!.getElementById(SetupElement.ASSIGN_SWITCH_CONTENT)!
             .querySelector('.sa-setup-contents'));
   }
+
+  private getAssignSwitchIllo_(): string {
+    switch (this.switchToAssign_) {
+      case SwitchAccessCommand.SELECT:
+        return 'os-settings-illo:switch-access-setup-guide-assign-select';
+      case SwitchAccessCommand.NEXT:
+        return 'os-settings-illo:switch-access-setup-guide-assign-next';
+      case SwitchAccessCommand.PREVIOUS:
+        return 'os-settings-illo:switch-access-setup-guide-assign-previous';
+      default:
+        return '';
+    }
+  }
+
+  private getSwitchCountIllo_(): string {
+    switch (this.switchCount_) {
+      case 1:
+        return 'os-settings-illo:switch-access-setup-guide-choose-1-switch';
+      case 2:
+        return 'os-settings-illo:switch-access-setup-guide-choose-2-switches';
+      case 3:
+        return 'os-settings-illo:switch-access-setup-guide-choose-3-switches';
+      default:
+        return '';
+    }
+  }
 }
 
 declare global {

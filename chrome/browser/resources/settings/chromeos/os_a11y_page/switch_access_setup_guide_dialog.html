@@ -138,31 +138,6 @@
     display: none;
   }
 
-  /* Hide all the multiple illustrations by default */
-  #assignSwitch .illustration-jelly,
-  #chooseSwitchCount .illustration-jelly {
-    display: none;
-  }
-
-  /* Show the correct illustration based on the active step */
-  :host-context(body.jelly-enabled)
-    #assignSwitch[data-switch='select'] #assignSelectIllo,
-  :host-context(body.jelly-enabled)
-    #assignSwitch[data-switch='next'] #assignNextIllo,
-  :host-context(body.jelly-enabled)
-    #assignSwitch[data-switch='previous'] #assignPreviousIllo {
-    display: unset;
-  }
-
-  :host-context(body.jelly-enabled)
-    #chooseSwitchCount[data-switch-count='1'] #oneSwitchIllo,
-  :host-context(body.jelly-enabled)
-    #chooseSwitchCount[data-switch-count='2'] #twoSwitchesIllo,
-  :host-context(body.jelly-enabled)
-    #chooseSwitchCount[data-switch-count='3'] #threeSwitchesIllo {
-    display: unset;
-  }
-
   #buttonContainer {
     padding: 24px;
   }
@@ -205,27 +180,18 @@
       </div>
 
       <div class="illustration"></div>
-      <svg class="illustration-jelly" role="img" viewBox="0 0 217 216">
-        <use href="images/switch_access_setup_guide_start_pairing_jelly.svg#export"></use>
-      </svg>
+      <iron-icon icon="os-settings-illo:switch-access-setup-guide-start-pairing"
+          class="illustration-jelly">
+      </iron-icon>
     </div>
     <div id="assignSwitch" class="flex" hidden
         data-switch$="[[switchToAssign_]]">
       <div class="sa-setup-contents"></div>
 
       <div class="illustration"></div>
-      <svg id="assignSelectIllo" class="illustration-jelly" role="img"
-          viewBox="0 0 216 216">
-        <use href="images/switch_access_setup_guide_assign_select_jelly.svg#export"></use>
-      </svg>
-      <svg id="assignNextIllo" class="illustration-jelly" role="img"
-          viewBox="0 0 216 216">
-        <use href="images/switch_access_setup_guide_assign_next_jelly.svg#export"></use>
-      </svg>
-      <svg id="assignPreviousIllo" class="illustration-jelly" role="img"
-          viewBox="0 0 216 216">
-        <use href="images/switch_access_setup_guide_assign_previous_jelly.svg#export"></use>
-      </svg>
+      <iron-icon icon="[[getAssignSwitchIllo_(switchToAssign_)]]"
+          class="illustration-jelly">
+      </iron-icon>
     </div>
     <div id="autoScanEnabled" class="flex" hidden>
       <div class="sa-setup-contents">
@@ -234,9 +200,9 @@
       </div>
 
       <div class="illustration"></div>
-      <svg class="illustration-jelly" role="img" viewBox="0 0 217 216">
-        <use href="images/switch_access_setup_guide_auto_scan_enabled_jelly.svg#export"></use>
-      </svg>
+      <iron-icon icon="os-settings-illo:switch-access-setup-guide-auto-scan"
+          class="illustration-jelly">
+      </iron-icon>
     </div>
     <div id="chooseSwitchCount" class="flex" hidden
         data-switch-count$="[[switchCount_]]">
@@ -271,18 +237,9 @@
       </div>
 
       <div class="illustration"></div>
-      <svg id="oneSwitchIllo" class="illustration-jelly" role="img"
-          viewBox="0 0 217 216">
-        <use href="images/switch_access_setup_guide_choose_one_switch_jelly.svg#export"></use>
-      </svg>
-      <svg id="twoSwitchesIllo" class="illustration-jelly" role="img"
-          viewBox="0 0 217 216">
-        <use href="images/switch_access_setup_guide_choose_two_switches_jelly.svg#export"></use>
-      </svg>
-      <svg id="threeSwitchesIllo" class="illustration-jelly" role="img"
-          viewBox="0 0 217 216">
-        <use href="images/switch_access_setup_guide_choose_three_switches_jelly.svg#export"></use>
-      </svg>
+      <iron-icon icon="[[getSwitchCountIllo_(switchCount_)]]"
+          class="illustration-jelly">
+      </iron-icon>
     </div>
     <div id="autoScanSpeed" hidden>
       <p>$i18n{switchAccessSetupAutoScanSpeedDescription}</p>
@@ -309,9 +266,9 @@
       </div>
 
       <div class="illustration"></div>
-      <svg class="illustration-jelly" role="img" viewBox="0 0 217 216">
-        <use href="images/switch_access_setup_guide_closing_jelly.svg#export"></use>
-      </svg>
+      <iron-icon icon="os-settings-illo:switch-access-setup-guide-closing"
+          class="illustration-jelly">
+      </iron-icon>
     </div>
   </div>
   <div id="buttonContainer" slot="button-container">
