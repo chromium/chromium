@@ -124,6 +124,7 @@ packager_builder(
                 "tools/android/avd/proto/creation/generic_playstore_android32_foldable.textpb",
                 "tools/android/avd/proto/creation/generic_android33.textpb",
                 "tools/android/avd/proto/creation/generic_playstore_android33.textpb",
+                "tools/android/avd/proto/creation/generic_androidu.textpb",
             ],
             "gclient_config": "chromium",
             "gclient_apply_config": ["android"],
