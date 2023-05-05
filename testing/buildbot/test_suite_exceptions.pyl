@@ -1495,57 +1495,6 @@
       },
     },
   },
-  'chrome_public_test_apk_with_playstore': {
-    # TODO(crbug.com/1442470): This test suite fails on these builders.
-    'remove_from': [
-      'android-12-x64-rel',
-      'android-pie-x86-rel',
-    ],
-    'modifications': {
-      'android-11-x86-rel': {
-        'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android30.textpb',
-        ],
-        'swarming': {
-          # soft affinity so that bots with caches will be picked first
-          'optional_dimensions': {
-            '60': [
-              {
-                'caches': 'generic_playstore_android30',
-              }
-            ],
-          },
-          'named_caches': [
-            {
-              'name': 'generic_playstore_android30',
-              'path': '.android_emulator/generic_playstore_android30',
-            },
-          ],
-        },
-      },
-      'android-pie-x86-rel': {
-        'args': [
-          '--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb',
-        ],
-        'swarming': {
-          # soft affinity so that bots with caches will be picked first
-          'optional_dimensions': {
-            '60': [
-              {
-                'caches': 'generic_playstore_android28',
-              }
-            ],
-          },
-          'named_caches': [
-            {
-              'name': 'generic_playstore_android28',
-              'path': '.android_emulator/generic_playstore_android28',
-            },
-          ],
-        },
-      },
-    },
-  },
   'chrome_public_test_vr_apk': {
     'remove_from': [
       'android-pie-arm64-rel', # https://crbug.com/1010211
