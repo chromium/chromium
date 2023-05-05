@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -587,23 +588,29 @@ TEST_F(DIPSBounceDetectorTest, DetectStatefulRedirect_Client_Uncommitted) {
 
 TEST_F(DIPSBounceDetectorTest,
        ReportRedirectorsInChain_OnEachFinishedNavigation) {
-  // Visit initial page on a.test
+  // Visit initial page on a.test and access cookies via JS.
   NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate with a click (not a redirect) to b.test, which S-redirects to
-  // c.test
+  // c.test.
   StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
-  // Navigate without a click (i.e. by C-redirecting) to d.test
+  // Navigate without a click (i.e. by C-redirecting) to d.test.
   NavigateTo("http://d.test", kNoUserGesture);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "c.test"));
+  // Access cookies on d.test.
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
-  // S-redirects to f.test
+  // S-redirects to f.test.
   StartNavigation("http://e.test", kNoUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://f.test")
       .Finish(true);
   EXPECT_THAT(GetReportedSites(),
@@ -612,23 +619,57 @@ TEST_F(DIPSBounceDetectorTest,
 
 TEST_F(DIPSBounceDetectorTest,
        ReportRedirectorsInChain_IncludingUncommittedNavigations) {
-  // Visit initial page on a.test
+  // Visit initial page on a.test and access cookies via JS.
   NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
 
   // Start a redirect chain that doesn't commit.
   StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://d.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(false);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test, c.test"));
 
   // Because the previous navigation didn't commit, the following chain still
   // starts from http://a.test/.
   StartNavigation("http://e.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://f.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(),
               testing::ElementsAre("b.test, c.test", "e.test"));
+}
+
+TEST_F(DIPSBounceDetectorTest,
+       ReportRedirectorsInChain_OmitNonStatefulRedirects) {
+  // Visit initial page on a.test and access cookies via JS.
+  NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
+
+  // Navigate with a click (not a redirect) to b.test, which S-redirects to
+  // c.test (which doesn't access cookies).
+  StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
+      .RedirectTo("http://c.test")
+      .Finish(true);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
+
+  // Navigate without a click (i.e. by C-redirecting) to d.test (which doesn't
+  // access cookies).
+  NavigateTo("http://d.test", kNoUserGesture);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
+
+  // Navigate without a click (i.e. by C-redirecting) to e.test, which
+  // S-redirects to f.test.
+  StartNavigation("http://e.test", kNoUserGesture)
+      .AccessCookie(CookieOperation::kChange)
+      .RedirectTo("http://f.test")
+      .Finish(true);
+  EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "e.test"));
 }
 
 // This test verifies that sites in a redirect chain that are the same as the
@@ -636,26 +677,35 @@ TEST_F(DIPSBounceDetectorTest,
 // reported.
 TEST_F(DIPSBounceDetectorTest,
        ReportRedirectorsInChain_OmitSitesMatchingStartSite) {
-  // Visit initial page on a.test.
+  // Visit initial page on a.test and access cookies via JS.
   NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate with a click (not a redirect) to b.test, which S-redirects to
   // a.test, which S-redirects to c.test.
   StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://a.test")
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to a.test.
   NavigateTo("http://a.test", kNoUserGesture);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "c.test"));
+  // Access cookies via JS on a.test.
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate without a click (i.e. by C-redirecting) to d.test, which
   // S-redirects to e.test, which S-redirects to f.test.
   StartNavigation("http://d.test", kNoUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://e.test")
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://f.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(),
               testing::ElementsAre("b.test", "c.test", "d.test, e.test"));
@@ -665,26 +715,35 @@ TEST_F(DIPSBounceDetectorTest,
 // as the ending site of a navigation are not reported.
 TEST_F(DIPSBounceDetectorTest,
        ReportRedirectorsInChain_OmitSitesMatchingEndSite) {
-  // Visit initial page on a.test.
+  // Visit initial page on a.test and access cookies via JS.
   NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate with a click (not a redirect) to b.test, which S-redirects to
   // c.test, which S-redirects to c.test.
   StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
   // Navigate without a click (i.e. by C-redirecting) to d.test.
   NavigateTo("http://d.test", kNoUserGesture);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test", "c.test"));
+  // Access cookies via JS on d.test.
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
   // S-redirects to f.test, which S-redirects to e.test.
   StartNavigation("http://e.test", kNoUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://f.test")
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://e.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(true);
   EXPECT_THAT(GetReportedSites(),
               testing::ElementsAre("b.test", "c.test", "d.test, f.test"));
@@ -692,14 +751,18 @@ TEST_F(DIPSBounceDetectorTest,
 
 TEST_F(DIPSBounceDetectorTest,
        ReportRedirectorsInChain_OmitSitesMatchingEndSite_Uncommitted) {
-  // Visit initial page on a.test.
+  // Visit initial page on a.test and access cookies via JS.
   NavigateTo("http://a.test", kWithUserGesture);
+  AccessClientCookie(CookieOperation::kChange);
 
   // Navigate with a click (not a redirect) to b.test, which S-redirects to
   // c.test, which S-redirects to c.test.
   StartNavigation("http://b.test", kWithUserGesture)
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .RedirectTo("http://c.test")
+      .AccessCookie(CookieOperation::kChange)
       .Finish(false);
   EXPECT_THAT(GetReportedSites(), testing::ElementsAre("b.test"));
 
@@ -1000,11 +1063,13 @@ MATCHER_P(HasLength, length, "") {
 TEST(DIPSRedirectContextTest, OneAppend) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}));
+      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.EndChain(GURL("http://d.test/"));
 
@@ -1019,14 +1084,17 @@ TEST(DIPSRedirectContextTest, OneAppend) {
 TEST(DIPSRedirectContextTest, TwoAppends_NoClientRedirect) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}));
+      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(GURL("http://d.test/"),
-                          MakeServerRedirects(0, {"http://e.test/"}));
+                          MakeServerRedirects(0, {"http://e.test/"}),
+                          GURL("http://f.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.EndChain(GURL("http://f.test/"));
 
@@ -1046,15 +1114,18 @@ TEST(DIPSRedirectContextTest, TwoAppends_NoClientRedirect) {
 TEST(DIPSRedirectContextTest, TwoAppends_WithClientRedirect) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}));
+      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       MakeClientRedirect(2, "http://d.test/"),
-      MakeServerRedirects(3, {"http://e.test/", "http://f.test/"}));
+      MakeServerRedirects(3, {"http://e.test/", "http://f.test/"}),
+      GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.EndChain(GURL("http://g.test/"));
 
@@ -1078,13 +1149,16 @@ TEST(DIPSRedirectContextTest, TwoAppends_WithClientRedirect) {
 TEST(DIPSRedirectContextTest, OnlyClientRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
-  context.AppendCommitted(GURL("http://a.test/"), {});
+  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"));
   ASSERT_EQ(chains.size(), 0u);
-  context.AppendCommitted(MakeClientRedirect(0, "http://b.test/"), {});
+  context.AppendCommitted(MakeClientRedirect(0, "http://b.test/"), {},
+                          GURL("http://c.test/"));
   ASSERT_EQ(chains.size(), 0u);
-  context.AppendCommitted(MakeClientRedirect(1, "http://c.test/"), {});
+  context.AppendCommitted(MakeClientRedirect(1, "http://c.test/"), {},
+                          GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.EndChain(GURL("http://d.test"));
 
@@ -1099,11 +1173,13 @@ TEST(DIPSRedirectContextTest, OnlyClientRedirects) {
 TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}));
+      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   context.HandleUncommitted(
       GURL("http://d.test/"),
@@ -1111,7 +1187,8 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
       GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(GURL("http://h.test/"),
-                          MakeServerRedirects(0, {"http://i.test/"}));
+                          MakeServerRedirects(0, {"http://i.test/"}),
+                          GURL("http://j.test/"));
   ASSERT_EQ(chains.size(), 2u);
   context.EndChain(GURL("http://j.test/"));
 
@@ -1138,11 +1215,13 @@ TEST(DIPSRedirectContextTest, Uncommitted_NoClientRedirects) {
 TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
   context.AppendCommitted(
       GURL("http://a.test/"),
-      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}));
+      MakeServerRedirects(0, {"http://b.test/", "http://c.test/"}),
+      GURL("http://d.test/"));
   ASSERT_EQ(chains.size(), 0u);
   // Uncommitted navigation:
   context.HandleUncommitted(
@@ -1151,7 +1230,8 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
       GURL("http://g.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.AppendCommitted(MakeClientRedirect(2, "http://h.test/"),
-                          MakeServerRedirects(3, {"http://i.test/"}));
+                          MakeServerRedirects(3, {"http://i.test/"}),
+                          GURL("http://j.test/"));
   ASSERT_EQ(chains.size(), 1u);
   context.EndChain(GURL("http://j.test/"));
 
@@ -1179,13 +1259,14 @@ TEST(DIPSRedirectContextTest, Uncommitted_IncludingClientRedirects) {
 TEST(DIPSRedirectContextTest, NoRedirects) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
   ASSERT_EQ(chains.size(), 0u);
 
-  context.AppendCommitted(GURL("http://a.test/"), {});
+  context.AppendCommitted(GURL("http://a.test/"), {}, GURL("http://b.test/"));
   ASSERT_EQ(chains.size(), 0u);
 
-  context.AppendCommitted(GURL("http://b.test/"), {});
+  context.AppendCommitted(GURL("http://b.test/"), {}, GURL("http://c.test/"));
   ASSERT_EQ(chains.size(), 1u);
 
   context.HandleUncommitted(GURL("http://c.test/"), {}, GURL("http://d.test/"));
@@ -1213,13 +1294,15 @@ TEST(DIPSRedirectContextTest, NoRedirects) {
 TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   std::vector<ChainPair> chains;
   DIPSRedirectContext context(
-      base::BindRepeating(AppendChainPair, std::ref(chains)), GURL());
+      base::BindRepeating(AppendChainPair, std::ref(chains)), base::DoNothing(),
+      GURL());
 
   context.AppendCommitted(
       GURL("http://a.test/"),
       MakeServerRedirects(
           0, {"http://b.test/", "http://c.test/", "http://d.test/"},
-          CookieAccessType::kNone));
+          CookieAccessType::kNone),
+      GURL("http://e.test/"));
 
   EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://b.test/"),
                                           CookieOperation::kChange));
@@ -1239,7 +1322,8 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   context.AppendCommitted(
       MakeClientRedirect(3, "http://e.test/", CookieAccessType::kNone),
       MakeServerRedirects(4, {"http://f.test/", "http://g.test/"},
-                          CookieAccessType::kRead));
+                          CookieAccessType::kRead),
+      GURL("http://h.test/"));
 
   // This late "write" will be merged with the "read" already recorded.
   EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://g.test/"),
@@ -1247,7 +1331,8 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
 
   context.AppendCommitted(
       MakeClientRedirect(6, "http://h.test/", CookieAccessType::kNone),
-      MakeServerRedirects(7, {"http://i.test/"}, CookieAccessType::kRead));
+      MakeServerRedirects(7, {"http://i.test/"}, CookieAccessType::kRead),
+      GURL("http://j.test/"));
 
   // Can't modify h.test since i.test already has a known cookie access.
   EXPECT_FALSE(context.AddLateCookieAccess(GURL("http://h.test/"),

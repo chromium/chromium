@@ -53,29 +53,6 @@ using testing::Pair;
 
 namespace {
 
-class FrameCookieAccessObserver : public content::WebContentsObserver {
- public:
-  explicit FrameCookieAccessObserver(WebContents* web_contents,
-                                     RenderFrameHost* render_frame_host)
-      : WebContentsObserver(web_contents),
-        render_frame_host_(render_frame_host) {}
-
-  // Wait until the frame accesses cookies.
-  void Wait() { run_loop_.Run(); }
-
-  // WebContentsObserver override
-  void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
-                         const content::CookieAccessDetails& details) override {
-    if (render_frame_host_ == render_frame_host) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
-  base::RunLoop run_loop_;
-};
-
 // Histogram names
 constexpr char kTimeToInteraction[] =
     "Privacy.DIPS.TimeFromStorageToInteraction.Standard";
@@ -339,7 +316,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, StorageRecordedInSingleFrame) {
 
   // Write a cookie in the b.test iframe.
   SetDIPSTime(time);
-  FrameCookieAccessObserver observer(web_contents, iframe);
+  FrameCookieAccessObserver observer(web_contents, iframe,
+                                     CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(content::ExecJs(
       iframe, "document.cookie = 'foo=bar; SameSite=None; Secure';",
       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
@@ -385,7 +363,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // b.test.
   SetDIPSTime(time + base::Seconds(10));
   FrameCookieAccessObserver observer(web_contents,
-                                     web_contents->GetPrimaryMainFrame());
+                                     web_contents->GetPrimaryMainFrame(),
+                                     CookieAccessDetails::Type::kRead);
   ASSERT_TRUE(content::ExecJs(web_contents,
                               content::JsReplace(
                                   R"(
@@ -527,7 +506,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, Histograms_ClickThenStorage) {
 
   // Write a cookie now that the click has been handled.
   SetDIPSTime(time + base::Seconds(10));
-  FrameCookieAccessObserver cookie_observer(web_contents, frame);
+  FrameCookieAccessObserver cookie_observer(web_contents, frame,
+                                            CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   cookie_observer.Wait();
@@ -629,7 +609,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
   // Write a cookie now that both clicks have been handled.
   SetDIPSTime(time + DIPSBounceDetector::kTimestampUpdateInterval +
               base::Seconds(10));
-  FrameCookieAccessObserver cookie_observer(web_contents, frame);
+  FrameCookieAccessObserver cookie_observer(web_contents, frame,
+                                            CookieAccessDetails::Type::kChange);
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   cookie_observer.Wait();

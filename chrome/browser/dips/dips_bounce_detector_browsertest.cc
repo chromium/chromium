@@ -40,6 +40,7 @@
 #endif
 
 using base::Bucket;
+using content::CookieAccessDetails;
 using content::NavigationHandle;
 using content::WebContents;
 using testing::ElementsAre;
@@ -133,8 +134,7 @@ void WCOCallbackLogger::OnCookiesAccessed(
 
   log_.push_back(base::StringPrintf(
       "OnCookiesAccessed(RenderFrameHost, %s: %s)",
-      details.type == content::CookieAccessDetails::Type::kChange ? "Change"
-                                                                  : "Read",
+      details.type == CookieOperation::kChange ? "Change" : "Read",
       FormatURL(details.url).c_str()));
 }
 
@@ -143,8 +143,7 @@ void WCOCallbackLogger::OnCookiesAccessed(
     const content::CookieAccessDetails& details) {
   log_.push_back(base::StringPrintf(
       "OnCookiesAccessed(NavigationHandle, %s: %s)",
-      details.type == content::CookieAccessDetails::Type::kChange ? "Change"
-                                                                  : "Read",
+      details.type == CookieOperation::kChange ? "Change" : "Read",
       FormatURL(details.url).c_str()));
 }
 
@@ -245,7 +244,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
     const auto url =
         embedded_test_server()->GetURL(host, "/set-cookie?name=value");
     URLCookieAccessObserver observer(web_contents, url,
-                                     URLCookieAccessObserver::Type::kChange);
+                                     CookieOperation::kChange);
     bool success = content::NavigateToURL(web_contents, url);
     if (success) {
       observer.Wait();
@@ -256,7 +255,7 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
   void CreateImageAndWaitForCookieAccess(const GURL& image_url) {
     WebContents* web_contents = GetActiveWebContents();
     URLCookieAccessObserver observer(web_contents, image_url,
-                                     URLCookieAccessObserver::Type::kRead);
+                                     CookieOperation::kRead);
     ASSERT_TRUE(content::ExecJs(web_contents,
                                 content::JsReplace(
                                     R"(
@@ -323,7 +322,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   // Visit the redirect.
   URLCookieAccessObserver observer(web_contents, final_url,
-                                   URLCookieAccessObserver::Type::kChange);
+                                   CookieOperation::kChange);
   ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_url, final_url));
   observer.Wait();
 
@@ -458,24 +457,42 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(
       web_contents, embedded_test_server()->GetURL("a.test", "/title1.html")));
 
-  // Navigate with a click (not a redirect) to b.test, which S-redirects to
-  // c.test.
+  // Navigate with a click (not a redirect) to b.test, which statefully
+  // S-redirects to c.test.
   ASSERT_TRUE(content::NavigateToURLFromRenderer(
       web_contents,
-      embedded_test_server()->GetURL("b.test",
-                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL(
+          "b.test", "/cross-site-with-cookie/c.test/title1.html"),
       embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  // Write a cookie via JS on c.test.
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
+  FrameCookieAccessObserver c_cookie_observer(web_contents, frame,
+                                              CookieOperation::kChange);
+  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  c_cookie_observer.Wait();
 
   // Navigate without a click (i.e. by C-redirecting) to d.test.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, embedded_test_server()->GetURL("d.test", "/title1.html")));
 
+  // Write a cookie via JS on d.test.
+  frame = web_contents->GetPrimaryMainFrame();
+  FrameCookieAccessObserver d_cookie_observer(web_contents, frame,
+                                              CookieOperation::kChange);
+  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  d_cookie_observer.Wait();
+
   // Navigate without a click (i.e. by C-redirecting) to e.test, which
-  // S-redirects to f.test, which S-redirects to g.test.
+  // statefully S-redirects to f.test, which statefully S-redirects to g.test.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents,
       embedded_test_server()->GetURL(
-          "e.test", "/cross-site/f.test/cross-site/g.test/title1.html"),
+          "e.test",
+          "/cross-site-with-cookie/f.test/cross-site-with-cookie/g.test/"
+          "title1.html"),
       embedded_test_server()->GetURL("g.test", "/title1.html")));
   EndRedirectChain();
   BlockUntilHelperProcessesPendingRequests();
@@ -753,10 +770,18 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceTrackingDevToolsIssueTest,
   // c.test.
   ASSERT_TRUE(content::NavigateToURLFromRenderer(
       web_contents,
-      embedded_test_server()->GetURL("b.test",
-                                     "/cross-site/c.test/title1.html"),
+      embedded_test_server()->GetURL(
+          "b.test", "/cross-site-with-cookie/c.test/title1.html"),
       embedded_test_server()->GetURL("c.test", "/title1.html")));
   WaitForIssueAndCheckTrackingSites({"b.test"});
+
+  // Write a cookie via JS on c.test.
+  content::RenderFrameHost* frame = web_contents->GetPrimaryMainFrame();
+  FrameCookieAccessObserver cookie_observer(web_contents, frame,
+                                            CookieOperation::kChange);
+  ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  cookie_observer.Wait();
 
   // Navigate without a click (i.e. by C-redirecting) to d.test.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
@@ -768,7 +793,11 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceTrackingDevToolsIssueTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents,
       embedded_test_server()->GetURL(
-          "e.test", "/cross-site/f.test/cross-site/g.test/title1.html"),
+          "e.test",
+          "/cross-site-with-cookie/f.test/cross-site-with-cookie/g.test/"
+          "title1.html"),
       embedded_test_server()->GetURL("g.test", "/title1.html")));
-  WaitForIssueAndCheckTrackingSites({"d.test", "e.test", "f.test"});
+  // Note d.test is not listed as a potentially tracking site since it did not
+  // write cookies before bouncing the user.
+  WaitForIssueAndCheckTrackingSites({"e.test", "f.test"});
 }
