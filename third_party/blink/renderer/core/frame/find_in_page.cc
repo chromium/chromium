@@ -220,7 +220,8 @@ void FindInPage::SetClient(
   // TODO(crbug.com/984878): Having to call reset() to try to bind a remote that
   // might be bound is questionable behavior and suggests code may be buggy.
   client_.reset();
-  client_.Bind(std::move(remote));
+  client_.Bind(std::move(remote),
+               frame_->GetTaskRunner(blink::TaskType::kInternalDefault));
 }
 
 #if BUILDFLAG(IS_ANDROID)
