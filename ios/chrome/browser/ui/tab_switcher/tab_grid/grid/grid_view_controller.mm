@@ -624,7 +624,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
     case TabGridModeInactive:
       // The Inactive Tabs grid has a header to inform about the feature and a
       // link to its settings.
-      DCHECK(IsInactiveTabsEnabled());
+      CHECK(IsInactiveTabsEnabled());
       InactiveTabsPreambleHeader* header = [collectionView
           dequeueReusableSupplementaryViewOfKind:kind
                              withReuseIdentifier:

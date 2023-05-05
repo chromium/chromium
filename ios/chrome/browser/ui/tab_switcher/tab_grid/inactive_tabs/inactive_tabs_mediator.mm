@@ -132,7 +132,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
         (SessionRestorationBrowserAgent*)sessionRestorationAgent
               snapshotAgent:(SnapshotBrowserAgent*)snapshotAgent
           tabRestoreService:(sessions::TabRestoreService*)tabRestoreService {
-  CHECK(IsInactiveTabsEnabled());
+  CHECK(IsInactiveTabsAvailable());
   CHECK(consumer);
   CHECK(webStateList);
   CHECK(prefService);
