@@ -1,0 +1,34 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generated_grd = "$target_gen_dir/resources.grd"
+
+generate_grd("build_grd") {
+  out_grd = generated_grd
+  grd_prefix = "network_errors"
+  input_files = [
+    "network_errors_listing.css",
+    "network_errors_listing.html",
+    "network_errors_listing.js",
+  ]
+
+  input_files_base_dir = rebase_path(".", "//")
+}
+
+grit("resources") {
+  source = generated_grd
+  enable_input_discovery_for_gn_analyze = false
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/network_errors_resources.h",
+    "grit/network_errors_resources_map.cc",
+    "grit/network_errors_resources_map.h",
+    "network_errors_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/content"
+}

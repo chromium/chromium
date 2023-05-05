@@ -533,6 +533,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2580],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/net/resources.grd": {
+    "META": {"sizes": {"includes": [5],}},
+    "includes": [2583],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/content/browser/resources/process/resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2585],

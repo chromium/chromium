@@ -9,6 +9,7 @@ group("resources") {
     "gpu:resources",
     "histograms:resources",
     "indexed_db:resources",
+    "net:resources",
     "process:resources",
     "quota:resources",
     "service_worker:resources",

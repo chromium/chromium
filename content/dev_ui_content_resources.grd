@@ -15,9 +15,8 @@ files that belong there instead.
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_NETWORK_ERROR_LISTING_HTML" file="browser/resources/net/network_errors_listing.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
-      <include name="IDR_NETWORK_ERROR_LISTING_JS" file="browser/resources/net/network_errors_listing.js" type="BINDATA" />
-      <include name="IDR_NETWORK_ERROR_LISTING_CSS" file="browser/resources/net/network_errors_listing.css" type="BINDATA" />
+      <!-- TODO(dpapad): Delete this entire file, no longer used. -->
+      <include name="IDR_NETWORK_ERROR_IGNORED" file="browser/resources/net/network_errors_listing.css" type="BINDATA" />
     </includes>
   </release>
 </grit>
