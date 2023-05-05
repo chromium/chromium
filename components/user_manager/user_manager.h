@@ -181,6 +181,12 @@ class USER_MANAGER_EXPORT UserManager {
   // no owner for the device.
   virtual const AccountId& GetOwnerAccountId() const = 0;
 
+  // Provides the caller with account Id of the Owner user once it is loaded.
+  // Would provide empty account id if there is no owner on the device (e.g.
+  // if device is enterprise-owned).
+  virtual void GetOwnerAccountIdAsync(
+      base::OnceCallback<void(const AccountId&)> callback) const = 0;
+
   // Returns account Id of the user that was active in the previous session.
   virtual const AccountId& GetLastSessionActiveAccountId() const = 0;
 

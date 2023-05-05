@@ -171,7 +171,7 @@ class MultiProfileUserControllerTest
   }
 
   void SetOwner(size_t user_index) {
-    fake_user_manager_->set_owner_id(test_users_[user_index]);
+    fake_user_manager_->SetOwnerId(test_users_[user_index]);
   }
 
   PrefService* GetUserPrefs(size_t user_index) {

@@ -157,6 +157,7 @@ class FakeChromeUserManager : public ChromeUserManager {
       const AccountId& account_id) const override;
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
+  // Just make it public for tests.
   void SetOwnerId(const AccountId& account_id) override;
 
   // UserManagerInterface override.
@@ -180,11 +181,6 @@ class FakeChromeUserManager : public ChromeUserManager {
 
   void set_ephemeral_mode_config(EphemeralModeConfig ephemeral_mode_config) {
     fake_ephemeral_mode_config_ = std::move(ephemeral_mode_config);
-  }
-
-  // TODO(mukai): remove this.
-  void set_owner_id(const AccountId& owner_account_id) {
-    SetOwnerId(owner_account_id);
   }
 
   void set_multi_profile_user_controller(

@@ -721,7 +721,7 @@ void ChromeUserManagerImpl::RetrieveTrustedDevicePolicies() {
     return;
 
   SetEphemeralModeConfig(EphemeralModeConfig());
-  SetOwnerId(EmptyAccountId());
+  ResetOwnerId();
 
   // Schedule a callback if device policy has not yet been verified.
   if (CrosSettingsProvider::TRUSTED !=

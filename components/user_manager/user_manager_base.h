@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -86,6 +87,9 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   const UserList& GetLoggedInUsers() const override;
   const UserList& GetLRULoggedInUsers() const override;
   const AccountId& GetOwnerAccountId() const override;
+  void GetOwnerAccountIdAsync(
+      base::OnceCallback<void(const AccountId&)> callback) const override;
+
   const AccountId& GetLastSessionActiveAccountId() const override;
   void UserLoggedIn(const AccountId& account_id,
                     const std::string& user_id_hash,
@@ -289,6 +293,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void SetEphemeralModeConfig(
       EphemeralModeConfig ephemeral_mode_config);
 
+  virtual void ResetOwnerId();
   virtual void SetOwnerId(const AccountId& owner_account_id);
 
   virtual const AccountId& GetPendingUserSwitchID() const;
@@ -393,7 +398,10 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Cached name of device owner. Defaults to empty if the value has not
   // been read from trusted device policy yet.
-  AccountId owner_account_id_ = EmptyAccountId();
+  absl::optional<AccountId> owner_account_id_ = absl::nullopt;
+
+  mutable base::OnceCallbackList<void(const AccountId&)>
+      pending_owner_callbacks_;
 
   base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
 

@@ -72,7 +72,7 @@ class SigninPrepareUserListTest : public testing::Test,
         fake_user_manager_->AddUser(AccountId::FromUserEmail(kOwner));
     }
 
-    fake_user_manager_->set_owner_id(AccountId::FromUserEmail(kOwner));
+    fake_user_manager_->SetOwnerId(AccountId::FromUserEmail(kOwner));
   }
 
   void TearDown() override {

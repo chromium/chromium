@@ -194,7 +194,19 @@ const UserList& UserManagerBase::GetLRULoggedInUsers() const {
 }
 
 const AccountId& UserManagerBase::GetOwnerAccountId() const {
-  return owner_account_id_;
+  if (!owner_account_id_.has_value()) {
+    return EmptyAccountId();
+  }
+  return *owner_account_id_;
+}
+
+void UserManagerBase::GetOwnerAccountIdAsync(
+    base::OnceCallback<void(const AccountId&)> callback) const {
+  if (owner_account_id_.has_value()) {
+    std::move(callback).Run(*owner_account_id_);
+    return;
+  }
+  pending_owner_callbacks_.AddUnsafe(std::move(callback));
 }
 
 const AccountId& UserManagerBase::GetLastSessionActiveAccountId() const {
@@ -645,8 +657,8 @@ void UserManagerBase::ParseUserList(const base::Value::List& users_list,
 
 bool UserManagerBase::IsOwnerUser(const User* user) const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return user && !owner_account_id_.empty() &&
-         user->GetAccountId() == owner_account_id_;
+  return user && owner_account_id_.has_value() &&
+         user->GetAccountId() == *owner_account_id_;
 }
 
 bool UserManagerBase::IsPrimaryUser(const User* user) const {
@@ -677,8 +689,8 @@ bool UserManagerBase::IsEphemeralUser(const User* user) const {
 
 bool UserManagerBase::IsCurrentUserOwner() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return !owner_account_id_.empty() && active_user_ &&
-         active_user_->GetAccountId() == owner_account_id_;
+  return owner_account_id_.has_value() && active_user_ &&
+         active_user_->GetAccountId() == *owner_account_id_;
 }
 
 bool UserManagerBase::IsCurrentUserNew() const {
@@ -933,8 +945,13 @@ void UserManagerBase::SetIsCurrentUserNew(bool is_new) {
   is_current_user_new_ = is_new;
 }
 
+void UserManagerBase::ResetOwnerId() {
+  owner_account_id_ = absl::nullopt;
+}
+
 void UserManagerBase::SetOwnerId(const AccountId& owner_account_id) {
   owner_account_id_ = owner_account_id;
+  pending_owner_callbacks_.Notify(owner_account_id);
   CallUpdateLoginState();
 }
 
