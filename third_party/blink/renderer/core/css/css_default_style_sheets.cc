@@ -159,7 +159,6 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   fullscreen_style_sheet_.Clear();
   popover_style_sheet_.Clear();
   selectmenu_style_sheet_.Clear();
-  webxr_overlay_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -368,18 +367,6 @@ void CSSDefaultStyleSheets::SetMediaControlsStyleSheetLoader(
   media_controls_style_sheet_loader_.swap(loader);
 }
 
-bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForXrOverlay() {
-  if (webxr_overlay_style_sheet_) {
-    return false;
-  }
-
-  webxr_overlay_style_sheet_ = ParseUASheet(
-      UncompressResourceAsASCIIString(IDR_UASTYLE_WEBXR_OVERLAY_CSS));
-  AddRulesToDefaultStyleSheets(webxr_overlay_style_sheet_,
-                               NamespaceType::kHTML);
-  return true;
-}
-
 void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
   if (fullscreen_style_sheet_) {
     return;
@@ -416,10 +403,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
   }
   if (media_controls_style_sheet_) {
     default_forced_color_style_->AddRulesFromSheet(MediaControlsStyleSheet(),
-                                                   ForcedColorsEval());
-  }
-  if (webxr_overlay_style_sheet_) {
-    default_forced_color_style_->AddRulesFromSheet(webxr_overlay_style_sheet_,
                                                    ForcedColorsEval());
   }
 
@@ -462,7 +445,6 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(popover_style_sheet_);
   visitor->Trace(selectmenu_style_sheet_);
-  visitor->Trace(webxr_overlay_style_sheet_);
   visitor->Trace(marker_style_sheet_);
   visitor->Trace(form_controls_not_vertical_style_sheet_);
 }

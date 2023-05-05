@@ -2781,12 +2781,6 @@ void Document::SetIsXrOverlay(bool val, Element* overlay_element) {
   if (!GetLayoutView())
     return;
 
-  if (val) {
-    // The UA style sheet for the :xr-overlay pseudoclass uses lazy loading.
-    // If we get here, we need to ensure that it's present.
-    GetStyleEngine().EnsureUAStyleForXrOverlay();
-  }
-
   if (overlay_element) {
     // Now that the custom style sheet is loaded, update the pseudostyle for
     // the overlay element.

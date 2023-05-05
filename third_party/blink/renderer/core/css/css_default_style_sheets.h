@@ -57,7 +57,6 @@ class CSSDefaultStyleSheets final
 
   bool EnsureDefaultStyleSheetsForElement(const Element&);
   bool EnsureDefaultStyleSheetsForPseudoElement(PseudoId);
-  bool EnsureDefaultStyleSheetForXrOverlay();
   void EnsureDefaultStyleSheetForFullscreen();
   bool EnsureDefaultStyleSheetForForcedColors();
 
@@ -152,7 +151,6 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> fullscreen_style_sheet_;
   Member<StyleSheetContents> popover_style_sheet_;
   Member<StyleSheetContents> selectmenu_style_sheet_;
-  Member<StyleSheetContents> webxr_overlay_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;
   Member<StyleSheetContents> form_controls_not_vertical_style_sheet_;

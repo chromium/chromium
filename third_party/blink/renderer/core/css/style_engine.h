@@ -442,7 +442,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void CollectFeaturesTo(RuleFeatureSet& features);
 
   void EnsureUAStyleForFullscreen();
-  void EnsureUAStyleForXrOverlay();
   void EnsureUAStyleForElement(const Element&);
   void EnsureUAStyleForPseudoElement(PseudoId);
   void EnsureUAStyleForForcedColors();

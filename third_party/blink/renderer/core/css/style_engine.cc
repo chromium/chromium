@@ -2134,14 +2134,6 @@ void StyleEngine::CollectFeaturesTo(RuleFeatureSet& features) {
   CollectScopedStyleFeaturesTo(features);
 }
 
-void StyleEngine::EnsureUAStyleForXrOverlay() {
-  DCHECK(global_rule_set_);
-  if (CSSDefaultStyleSheets::Instance().EnsureDefaultStyleSheetForXrOverlay()) {
-    global_rule_set_->MarkDirty();
-    UpdateActiveStyle();
-  }
-}
-
 void StyleEngine::EnsureUAStyleForFullscreen() {
   DCHECK(global_rule_set_);
   if (global_rule_set_->HasFullscreenUAStyle()) {

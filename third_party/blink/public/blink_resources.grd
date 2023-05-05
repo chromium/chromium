@@ -29,7 +29,6 @@
       <include name="IDR_UASTYLE_MATHML_CSS" file="../renderer/core/css/mathml.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_MATHML_FALLBACK_CSS" file="../renderer/core/css/mathml-fallback.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_FULLSCREEN_CSS" file="../renderer/core/css/fullscreen.css" type="BINDATA" compress="brotli"/>
-      <include name="IDR_UASTYLE_WEBXR_OVERLAY_CSS" file="../renderer/core/css/webxr_overlay.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_CSS" file="../renderer/core/css/transition.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_TRANSITION_ANIMATIONS_CSS" file="../renderer/core/css/transition_animations.css" type="BINDATA" compress="brotli"/>
       <include name="IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS" file="../renderer/core/css/form_controls_not_vertical.css" type="BINDATA" compress="brotli"/>

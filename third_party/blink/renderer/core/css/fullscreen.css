@@ -1,37 +1,37 @@
-:not(:root):fullscreen {
-    position: fixed !important;
-    inset: 0 !important;
-    margin: 0 !important;
-    box-sizing: border-box !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    width: 100% !important;
-    height: 100% !important;
-    transform: none !important;
+:not(:root):fullscreen, :xr-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
 
-    /* intentionally not !important */
-    object-fit: contain;
-    user-select: text;
+  /* intentionally not !important */
+  object-fit: contain;
+  user-select: text;
 }
 
 :fullscreen {
-    overlay: auto !important;
+  overlay: auto !important;
 }
 
 iframe:fullscreen {
-    border: none !important;
-    padding: 0 !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 /* TODO(foolip): In the spec, there's a ::backdrop block with the properties
    shared with dialog::backdrop (see html.css). */
 :not(:root):fullscreen::backdrop {
-    position: fixed;
-    inset: 0;
-    background: black;
-    overlay: auto !important;
+  position: fixed;
+  inset: 0;
+  background: black;
+  overlay: auto !important;
 }
 
 /* Anything below are extensions over what the Fullscreen API (29 May 2018) mandates. */
@@ -42,7 +42,7 @@ iframe:fullscreen {
    TODO(foolip): This is done differently in Gecko, find a fix not involving the
    ancestor selector in https://github.com/whatwg/fullscreen/issues/19. */
 :root:-webkit-full-screen-ancestor {
-    overflow: hidden !important;
+  overflow: hidden !important;
 }
 
 :fullscreen:-internal-video-persistent-ancestor :not(:-internal-video-persistent-ancestor) {
@@ -64,4 +64,12 @@ iframe:fullscreen {
 
   background-color: black !important;
   z-index: 2147483647 !important;
+}
+
+:xr-overlay {
+  /* force a transparent background */
+  background: rgba(0,0,0,0) !important;
+
+  /* act as containing block for descendants */
+  contain: paint !important;
 }
