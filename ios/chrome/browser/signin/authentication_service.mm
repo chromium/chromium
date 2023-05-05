@@ -22,6 +22,7 @@
 #import "components/sync/driver/sync_service.h"
 #import "components/sync/driver/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
+#import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/flags/system_flags.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -334,6 +335,10 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
 
   ResetReauthPromptForSignInAndSync();
 
+  // TODO(crbug.com/1442202): Move this reset to a place more consistent with
+  // bookmarks.
+  ResetLastUsedBookmarkFolder(pref_service_);
+
   // Load all credentials from SSO library. This must load the credentials
   // for the primary account too.
   identity_manager_->GetDeviceAccountsSynchronizer()
@@ -437,6 +442,10 @@ void AuthenticationService::SignOut(
       completion();
     return;
   }
+
+  // TODO(crbug.com/1442202): Move this reset to a place more consistent with
+  // bookmarks.
+  ResetLastUsedBookmarkFolder(pref_service_);
 
   const bool is_managed =
       HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
