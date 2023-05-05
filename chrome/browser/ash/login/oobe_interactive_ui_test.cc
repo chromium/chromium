@@ -653,7 +653,9 @@ void OobeInteractiveUITest::PerformSessionSignInSteps() {
     HandleAppDownloadingScreen();
   }
 
-  HandleAssistantOptInScreen();
+  if (!features::IsOobeSkipAssistantEnabled()) {
+    HandleAssistantOptInScreen();
+  }
 
   if (test_setup()->is_tablet() &&
       test_setup()->hide_shelf_controls_in_tablet_mode()) {

@@ -1580,7 +1580,7 @@ BASE_FEATURE(kOobeSimon, "OobeSimon", base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables Skipping the assistant setup screen in OOBE.
 BASE_FEATURE(kOobeSkipAssistant,
              "OobeSkipAssistant",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the Oobe quick start flow.
 BASE_FEATURE(kOobeQuickStart,
