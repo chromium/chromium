@@ -169,6 +169,7 @@ class WebContentsHandler
       content::RenderFrameHost* frame,
       const GURL& scope,
       content::AllowServiceWorkerResult allowed) override;
+  void WebContentsDestroyed() override;
 
   std::unique_ptr<Delegate> delegate_;
 
@@ -229,10 +230,7 @@ WebContentsHandler::WebContentsHandler(content::WebContents* web_contents,
       web_contents->GetPrimaryPage(), delegate_.get());
 }
 
-WebContentsHandler::~WebContentsHandler() {
-  for (SiteDataObserver& observer : observer_list_)
-    observer.WebContentsDestroyed();
-}
+WebContentsHandler::~WebContentsHandler() = default;
 
 void WebContentsHandler::TransferNavigationContentSettingsToCommittedDocument(
     const InflightNavigationContentSettings& navigation_settings,
@@ -422,6 +420,12 @@ void WebContentsHandler::AddPendingCommitUpdate(
   pending_commit_updates_[id].push_back(std::move(update));
 }
 
+void WebContentsHandler::WebContentsDestroyed() {
+  for (SiteDataObserver& observer : observer_list_) {
+    observer.WebContentsDestroyed();
+  }
+}
+
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsHandler);
 
 AccessDetails::AccessDetails() = default;
@@ -457,6 +461,10 @@ PageSpecificContentSettings::SiteDataObserver::~SiteDataObserver() {
 }
 
 void PageSpecificContentSettings::SiteDataObserver::WebContentsDestroyed() {
+  auto* handler = WebContentsHandler::FromWebContents(web_contents_);
+  if (handler) {
+    handler->RemoveSiteDataObserver(this);
+  }
   web_contents_ = nullptr;
 }
 
