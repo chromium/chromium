@@ -70,7 +70,7 @@ class CupsPrintJobManager : public KeyedService {
   virtual bool CreatePrintJob(
       const std::string& printer_id,
       const std::string& title,
-      int job_id,
+      uint32_t job_id,
       int total_page_number,
       ::printing::PrintJob::Source source,
       const std::string& source_id,
