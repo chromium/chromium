@@ -35,3 +35,8 @@ body {
   height: 100%;
   margin: 0;
 }
+
+body {
+  /* Override default font from text_defaults_md.css. */
+  font: var(--cros-body-2-font);
+}
