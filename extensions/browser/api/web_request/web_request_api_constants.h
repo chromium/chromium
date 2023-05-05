@@ -68,15 +68,15 @@ extern const char kOnResponseStartedEvent[];
 extern const char kOnSendHeadersEvent[];
 
 // Stages.
-extern const char kOnAuthRequired[];
-extern const char kOnBeforeRedirect[];
-extern const char kOnBeforeRequest[];
-extern const char kOnBeforeSendHeaders[];
-extern const char kOnCompleted[];
-extern const char kOnErrorOccurred[];
-extern const char kOnHeadersReceived[];
-extern const char kOnResponseStarted[];
-extern const char kOnSendHeaders[];
+inline constexpr char kOnAuthRequired[] = "onAuthRequired";
+inline constexpr char kOnBeforeRedirect[] = "onBeforeRedirect";
+inline constexpr char kOnBeforeRequest[] = "onBeforeRequest";
+inline constexpr char kOnBeforeSendHeaders[] = "onBeforeSendHeaders";
+inline constexpr char kOnCompleted[] = "onCompleted";
+inline constexpr char kOnErrorOccurred[] = "onErrorOccurred";
+inline constexpr char kOnHeadersReceived[] = "onHeadersReceived";
+inline constexpr char kOnResponseStarted[] = "onResponseStarted";
+inline constexpr char kOnSendHeaders[] = "onSendHeaders";
 
 // Error messages.
 extern const char kInvalidRedirectUrl[];
