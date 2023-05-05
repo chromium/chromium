@@ -61,6 +61,7 @@ SignalStorageConfigTest.*
 SqlFeatureProcessorTest.*
 StatsTest.*
 SyncDeviceInfoObserverTest.*
+TabRankDispatcherTest.*
 TabletProductivityUserModelTest.*
 TrainingDataCacheTest.*
 TrainingDataCollectorImplTest.*

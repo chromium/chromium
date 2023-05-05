@@ -51,6 +51,8 @@ const char* SegmentationKeyToUmaName(const std::string& segmentation_key) {
     return kWebAppInstallationPromoUmaName;
   } else if (segmentation_key == kDeviceTierKey) {
     return kDeviceTierUmaName;
+  } else if (segmentation_key == kTabResumptionClassifierKey) {
+    return kTabResumptionClassifierUmaName;
   } else if (base::StartsWith(segmentation_key, "test_key")) {
     return "TestKey";
   }
@@ -113,6 +115,8 @@ std::string SegmentIdToHistogramVariant(proto::SegmentId segment_id) {
       return "WebAppInstallationPromo";
     case proto::SegmentId::DEVICE_TIER_SEGMENT:
       return "DeviceTierSegment";
+    case proto::TAB_RESUMPTION_CLASSIFIER:
+      return "TabResumptionClassifier";
     default:
       // This case is reached when UNKNOWN segment is valid, in case of boolean
       // segment results.

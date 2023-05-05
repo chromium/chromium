@@ -84,4 +84,9 @@ bool ProcessedValue::operator==(const ProcessedValue& rhs) const {
   }
 }
 
+// static
+ProcessedValue ProcessedValue::FromFloat(float val) {
+  return ProcessedValue(val);
+}
+
 }  // namespace segmentation_platform::processing

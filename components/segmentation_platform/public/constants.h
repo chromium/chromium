@@ -92,6 +92,9 @@ const char kWebAppInstallationPromoUmaName[] = "WebAppInstallationPromo";
 const char kDeviceTierKey[] = "device_tier";
 const char kDeviceTierUmaName[] = "DeviceTier";
 
+const char kTabResumptionClassifierKey[] = "tab_resupmtion_classifier";
+const char kTabResumptionClassifierUmaName[] = "TabResumptionClassifier";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =

@@ -1,5 +1,7 @@
 include_rules = [
   "+components/commerce/core",
+  "+components/sessions/core",
+  "+components/sync_sessions",
   "+components/query_tiles",
   "+components/sync",
   "+ui/base",

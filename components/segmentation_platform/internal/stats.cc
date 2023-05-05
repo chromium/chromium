@@ -471,6 +471,8 @@ void RecordModelExecutionResult(SegmentId segment_id,
     case proto::Predictor::kBinnedClassifier:
       [[fallthrough]];
     case proto::Predictor::kRegressor:
+      [[fallthrough]];
+    case proto::Predictor::kGenericPredictor:
       is_probability_score = false;
       break;
     default:

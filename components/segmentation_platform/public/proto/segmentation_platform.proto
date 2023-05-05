@@ -72,4 +72,6 @@ enum SegmentId {
   RESUME_HEAVY_USER_SEGMENT = 1004;
   // Determine device tiers for different user devices.
   DEVICE_TIER_SEGMENT = 1005;
+  // Determine if a tab is likely to be resumed.
+  TAB_RESUMPTION_CLASSIFIER = 1006;
 };

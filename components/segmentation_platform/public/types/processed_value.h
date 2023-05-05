@@ -32,6 +32,8 @@ struct ProcessedValue {
 
   bool operator==(const ProcessedValue& rhs) const;
 
+  static ProcessedValue FromFloat(float val);
+
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.segmentation_platform
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ProcessedValueType
   enum Type {
