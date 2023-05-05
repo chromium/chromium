@@ -176,6 +176,10 @@ crbug.com/1280882 http/tests/inspector-protocol/network/cors-errors.js [ Slow ]
 crbug.com/1289238 http/tests/inspector-protocol/network/same-site-issue-warn-cookie-navigation-context-downgrade.js [ Slow ]
 crbug.com/1300352 http/tests/inspector-protocol/network/blocked-cookie-not-on-path.js [ Slow ]
 crbug.com/1318449 http/tests/inspector-protocol/window-open-effective-opener.js [ Slow ]
+crbug.com/1412923 [ Win ] http/tests/inspector-protocol/network/load-network-resource-errors.js [ Slow ]
+crbug.com/1412923 [ Win ] http/tests/inspector-protocol/network/load-network-resource-different-frame.js [ Slow ]
+crbug.com/1412923 [ Win ] http/tests/inspector-protocol/runtime/eval-await-navigation-paused-message-order.js [ Slow ]
+crbug.com/1417314 [ Win ] http/tests/inspector-protocol/network/is-same-site.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
