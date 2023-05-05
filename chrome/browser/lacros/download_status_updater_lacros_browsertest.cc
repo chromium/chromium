@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_status_updater.h"
 
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
@@ -14,6 +15,7 @@
 #include "chromeos/lacros/lacros_service.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/mock_download_item.h"
+#include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_download_manager.h"
@@ -26,12 +28,29 @@ namespace {
 // Aliases.
 using ::crosapi::mojom::DownloadState;
 using ::crosapi::mojom::DownloadStatus;
+using ::testing::Action;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Invoke;
+using ::testing::Mock;
+using ::testing::NiceMock;
 using ::testing::Pointer;
 using ::testing::Return;
 using ::testing::ReturnRefOfCopy;
+
+// Actions ---------------------------------------------------------------------
+
+ACTION_P3(InvokeEq, invokee, invokable, expected) {
+  return (invokee->*invokable)() == expected;
+}
+
+ACTION_P2(ReturnAllOf, a, b) {
+  Action<bool()> action_a = a;
+  Action<bool()> action_b = b;
+  return action_a.Perform(std::forward_as_tuple()) &&
+         action_b.Perform(std::forward_as_tuple());
+}
 
 // MockDownloadManager ---------------------------------------------------------
 
@@ -128,24 +147,24 @@ class DownloadStatusUpdaterBrowserTest : public InProcessBrowserTest {
 
   // Returns the mock download manager registered with the download status
   // updater in Lacros Chrome.
-  testing::NiceMock<MockDownloadManager>& download_manager() {
+  NiceMock<MockDownloadManager>& download_manager() {
     return download_manager_;
   }
 
   // Returns the mock download status updater in Ash Chrome that can be observed
   // for interactions with Lacros Chrome.
-  testing::NiceMock<MockDownloadStatusUpdater>& download_status_updater() {
+  NiceMock<MockDownloadStatusUpdater>& download_status_updater() {
     return download_status_updater_;
   }
 
  private:
   // The mock download manager registered with the download status updater in
   // Lacros Chrome.
-  testing::NiceMock<MockDownloadManager> download_manager_;
+  NiceMock<MockDownloadManager> download_manager_;
 
   // The mock download status updater in Ash Chrome that can be observed for
   // interactions with Lacros Chrome.
-  testing::NiceMock<MockDownloadStatusUpdater> download_status_updater_;
+  NiceMock<MockDownloadStatusUpdater> download_status_updater_;
   mojo::Receiver<crosapi::mojom::DownloadStatusUpdater>
       download_status_updater_receiver_{&download_status_updater_};
 };
@@ -161,12 +180,32 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
   }
 
   // Create a mock in-progress download `item`.
-  testing::NiceMock<download::MockDownloadItem> item;
+  NiceMock<download::MockDownloadItem> item;
   ON_CALL(item, GetGuid())
       .WillByDefault(
           ReturnRefOfCopy(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   ON_CALL(item, GetState())
       .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
+  ON_CALL(item, GetReceivedBytes()).WillByDefault(Return(10));
+  ON_CALL(item, GetTotalBytes()).WillByDefault(Return(100));
+  ON_CALL(item, GetTargetFilePath())
+      .WillByDefault(ReturnRefOfCopy(base::FilePath("target_file_path")));
+
+  // Fulfill `CanResume()` dynamically based on `item` state and paused status.
+  ON_CALL(item, CanResume())
+      .WillByDefault(
+          ReturnAllOf(Invoke(&item, &download::DownloadItem::IsPaused),
+                      InvokeEq(&item, &download::DownloadItem::GetState,
+                               download::DownloadItem::IN_PROGRESS)));
+
+  // Fulfill `IsDone()` dynamically based on `item` state.
+  ON_CALL(item, IsDone())
+      .WillByDefault(InvokeEq(&item, &download::DownloadItem::GetState,
+                              download::DownloadItem::COMPLETE));
+
+  // Associate the download `item` with the browser `profile()`.
+  content::DownloadItemUtils::AttachInfoForTesting(&item, browser()->profile(),
+                                                   /*web_contents=*/nullptr);
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` creation.
@@ -174,31 +213,71 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
       download_status_updater(),
       Update(Pointer(AllOf(
           Field(&DownloadStatus::guid, Eq(item.GetGuid())),
-          Field(&DownloadStatus::state, Eq(DownloadState::kInProgress))))));
+          Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
+          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::target_file_path,
+                Eq(item.GetTargetFilePath())),
+          Field(&DownloadStatus::cancellable, Eq(true)),
+          Field(&DownloadStatus::pausable, Eq(true)),
+          Field(&DownloadStatus::resumable, Eq(false))))));
 
   // Notify the download status updater in Lacros Chrome of `item` creation and
   // verify Ash Chrome expectations.
   download_manager().NotifyDownloadCreated(&item);
   FlushInterfaceForTesting();
-  testing::Mock::VerifyAndClearExpectations(&download_status_updater());
+  Mock::VerifyAndClearExpectations(&download_status_updater());
+
+  // Pause `item`.
+  ON_CALL(item, IsPaused()).WillByDefault(Return(true));
 
   // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
   // download status updater in Lacros Chrome is notified of `item` updates.
   EXPECT_CALL(
       download_status_updater(),
-      Update(Pointer(
-          AllOf(Field(&DownloadStatus::guid, Eq(item.GetGuid())),
-                Field(&DownloadStatus::state, Eq(DownloadState::kComplete))))));
-
-  // Update `item` state.
-  ON_CALL(item, GetState())
-      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+      Update(Pointer(AllOf(
+          Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::state, Eq(DownloadState::kInProgress)),
+          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::target_file_path,
+                Eq(item.GetTargetFilePath())),
+          Field(&DownloadStatus::cancellable, Eq(true)),
+          Field(&DownloadStatus::pausable, Eq(false)),
+          Field(&DownloadStatus::resumable, Eq(true))))));
 
   // Notify the download status updater in Lacros Chrome of `item` update and
   // verify Ash Chrome expectations.
   item.NotifyObserversDownloadUpdated();
   FlushInterfaceForTesting();
-  testing::Mock::VerifyAndClearExpectations(&download_status_updater());
+  Mock::VerifyAndClearExpectations(&download_status_updater());
+
+  // Complete `item`.
+  ON_CALL(item, GetState())
+      .WillByDefault(Return(download::DownloadItem::COMPLETE));
+  ON_CALL(item, GetReceivedBytes())
+      .WillByDefault(Invoke(&item, &download::DownloadItem::GetTotalBytes));
+
+  // Expect a `DownloadStatusUpdater::Update()` event in Ash Chrome when the
+  // download status updater in Lacros Chrome is notified of `item` updates.
+  EXPECT_CALL(
+      download_status_updater(),
+      Update(Pointer(AllOf(
+          Field(&DownloadStatus::guid, Eq(item.GetGuid())),
+          Field(&DownloadStatus::state, Eq(DownloadState::kComplete)),
+          Field(&DownloadStatus::received_bytes, Eq(item.GetReceivedBytes())),
+          Field(&DownloadStatus::total_bytes, Eq(item.GetTotalBytes())),
+          Field(&DownloadStatus::target_file_path,
+                Eq(item.GetTargetFilePath())),
+          Field(&DownloadStatus::cancellable, Eq(false)),
+          Field(&DownloadStatus::pausable, Eq(false)),
+          Field(&DownloadStatus::resumable, Eq(false))))));
+
+  // Notify the download status updater in Lacros Chrome of `item` update and
+  // verify Ash Chrome expectations.
+  item.NotifyObserversDownloadUpdated();
+  FlushInterfaceForTesting();
+  Mock::VerifyAndClearExpectations(&download_status_updater());
 }
 
 }  // namespace
