@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">ক্যামেরা প্রিভিউ লুকানো আছে</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">স্ক্রিন লক করুন</translation>
+<translation id="1962972976741217487">১টি ডিভাইস আপনার <ph name="DEVICE_NAME" />-এর হটস্পটে কানেক্ট করা আছে</translation>
 <translation id="1967970931040389207">হটস্পট চালু করুন</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">হাই, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@
 <translation id="2367972762794486313">অ্যাপ্লিকেশানগুলি দেখান</translation>
 <translation id="2369165858548251131">চীনা ভাষায় "হ্যালো"</translation>
 <translation id="2386292613071805067">পৃষ্ঠাতে থাকা সবকিছুই বেছে নিন</translation>
-<translation id="2390318262976603432">লোকেল সেটিংস</translation>
 <translation id="2397416548179033562">Chrome মেনু দেখান</translation>
 <translation id="240006516586367791">মিডিয়া কন্ট্রোল</translation>
 <translation id="2402411679569069051">ফিঙ্গারপ্রিন্ট বা ফোনের সাহায্যে আপনার Chromebook আনলক করুন</translation>
@@ -931,6 +931,7 @@
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5300589172476337783">দেখান</translation>
 <translation id="5302048478445481009">ভাষা</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" />টি ডিভাইস আপনার <ph name="DEVICE_NAME" />-এর হটস্পটে কানেক্ট করা আছে</translation>
 <translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5313326810920013265">ব্লুটুথ সেটিংস</translation>
 <translation id="5314219114274263156">স্ক্রিন রেকর্ডিং করা হয়েছে</translation>
@@ -1119,6 +1120,7 @@
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-এর জন্য, 'অ্যাকাউন্ট সরিয়ে দিন' ডায়ালগ খুলুন</translation>
 <translation id="6141988275892716286">ডাউনলোড নিশ্চিত করুন</translation>
 <translation id="6154006699632741460">পেরিফেরাল কাজ করে না</translation>
+<translation id="6156960295318603523">ভাষা সেটিংস</translation>
 <translation id="615957422585914272">অন-স্ক্রিন কীবোর্ড প্রদর্শন করুন</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166852626429024716">আপনার ডিভাইস, অ্যাপ, সেটিংস, ওয়েবে সার্চ করুন...</translation>
@@ -1337,6 +1339,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> -এ পুরনো রেজোলিউশানে ফেরানো হচ্ছে</translation>
 <translation id="7180611975245234373">রিফ্রেশ করুন</translation>
+<translation id="7187711731540696127">আপনার <ph name="DEVICE_NAME" />-এর হটস্পট চালু আছে, কিন্তু কোনও ডিভাইস কানেক্ট করা নেই</translation>
 <translation id="7188494361780961876">স্ক্রিনের উপরে বাঁদিকের কোণায় মেনু সরে গেছে।</translation>
 <translation id="7189412385142492784">পৃথিবী থেকে শুক্র গ্রহের দুরত্ব কত</translation>
 <translation id="7198435252016571249">ক্যামেরাটি নিচে ডানদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>

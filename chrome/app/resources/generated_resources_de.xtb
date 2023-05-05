@@ -940,7 +940,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
-<translation id="1802457294427928325">Verhalten von F-Tasten zu ChromeOS-Aktionen der obersten Reihe umwandeln</translation>
 <translation id="1802624026913571222">Beim Zuklappen in den Ruhemodus wechseln</translation>
 <translation id="1802687198411089702">Die Seite reagiert nicht. Du kannst warten, bis sie wieder reagiert, oder sie schließen.</translation>
 <translation id="1803531841600994172">Sprache, in die übersetzt wird</translation>
@@ -1463,7 +1462,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2235344399760031203">Drittanbieter-Cookies werden blockiert</translation>
 <translation id="2238379619048995541">Daten für aktiven Zustand</translation>
 <translation id="2241053333139545397">Eigene Daten auf verschiedenen Websites lesen und ändern</translation>
-<translation id="2241242047787527912">Wähle für alle unten aufgeführten Tasten die Aktion aus, die ausgeführt werden soll</translation>
 <translation id="2241634353105152135">Nur einmal</translation>
 <translation id="2242687258748107519">Dateiinformationen</translation>
 <translation id="2245603955208828424">Mit den Pfeiltasten den Cursor von einem Buchstaben zum nächsten bewegen</translation>
@@ -1501,14 +1499,12 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2271986192355138465">Informationen zum Installieren von Web-Apps</translation>
 <translation id="2272430695183451567">0 Schalter zugewiesen</translation>
 <translation id="2272570998639520080">Martiniglas</translation>
-<translation id="2272830751703114341">System-/Launcher-Taste aktivieren, um die Funktion der Tasten in der obersten Reihe zu ändern</translation>
 <translation id="2273119997271134996">Problem mit Dock und Videoport</translation>
 <translation id="2274840746523584236">Chromebook laden</translation>
 <translation id="2276503375879033601">Weitere Apps hinzufügen</translation>
 <translation id="2276910256003242519">Daten werden gelöscht…</translation>
 <translation id="2278562042389100163">Browserfenster öffnen</translation>
 <translation id="2278668501808246459">Container-Manager wird gestartet</translation>
-<translation id="2279051792571591988">Standardeinstellungen wiederherstellen</translation>
 <translation id="2280486287150724112">Rechter Rand</translation>
 <translation id="2281863813036651454">Mit der linken Maustaste klicken</translation>
 <translation id="2282146716419988068">GPU-Verarbeitung</translation>
@@ -2905,7 +2901,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3508920295779105875">Anderen Ordner wählen...</translation>
 <translation id="3509379002674019679">Hier kannst du Passwörter erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst.</translation>
 <translation id="3511200754045804813">Noch einmal suchen</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Keine neu zugeordneten Tasten}=1{1 neu zugeordnete Taste}other{{COUNT} neu zugeordnete Tasten}}</translation>
 <translation id="3511307672085573050">Adr&amp;esse des Links kopieren</translation>
 <translation id="351152300840026870">Schriftart mit fester Breite</translation>
 <translation id="3511528412952710609">Kurz</translation>
@@ -4487,7 +4482,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4906490889887219338">Netzwerkfreigaben einrichten oder verwalten. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Festlegen, wann diese Erweiterung deine Websitedaten lesen und ändern darf</translation>
 <translation id="4907161631261076876">Diese Datei ist ein ungewöhnlicher Download und könnte schädlich sein.</translation>
-<translation id="4908070840805457717">Tastendruck wiederholen</translation>
 <translation id="4908811072292128752">Wenn du zwei Websites gleichzeitig ansehen möchtest, öffne einen neuen Tab</translation>
 <translation id="4909038193460299775">Da dieses Konto von <ph name="DOMAIN" /> verwaltet wird, werden der Verlauf sowie deine Lesezeichen, Passwörter und sonstigen Einstellungen von diesem Gerät gelöscht. Die Daten bleiben jedoch in deinem Google-Konto gespeichert und du kannst sie über das <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" /> verwalten.</translation>
 <translation id="4912643508233590958">Inaktive Weckbefehle</translation>
@@ -5871,7 +5865,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6177412385419165772">Wird entfernt…</translation>
 <translation id="6178664161104547336">Zertifikat auswählen</translation>
 <translation id="6178682841350631965">Deine Anmeldedaten wurden aktualisiert</translation>
-<translation id="6179893151569852357">F-Tasten in ChromeOS-Tasten der obersten Reihe umwandeln</translation>
 <translation id="6180510783007738939">Linientool</translation>
 <translation id="6180550893222597997">Welchen Passkey möchtest du für <ph name="APP_NAME" /> verwenden?</translation>
 <translation id="6181431612547969857">Download blockiert</translation>
@@ -6071,7 +6064,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="636850387210749493">Enterprise-Registrierung</translation>
 <translation id="6370021412472292592">Manifest konnte nicht geladen werden.</translation>
 <translation id="637135143619858508">Hoch</translation>
-<translation id="6372856076511744743">Tasten neu zuordnen</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Erneut versuchen</translation>
 <translation id="6374635887697228982">Rabatte erhalten?</translation>
@@ -6096,6 +6088,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6396175271241405634">System-App</translation>
 <translation id="6398715114293939307">Google Play Store entfernen</translation>
 <translation id="6398765197997659313">Vollbildmodus beenden</translation>
+<translation id="6399675241776343019">Abgelehnt</translation>
 <translation id="6399774419735315745">Spionin</translation>
 <translation id="6400360390396538896">Immer auf <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Wenn du diesen Tab an ein anderes Gerät senden möchtest, melde dich dort in Chrome an</translation>
@@ -6514,7 +6507,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="677646486571529447">Notiz hinzufügen</translation>
 <translation id="6776589734354015877">Du erhältst zusätzliche Funktionen</translation>
 <translation id="6776729248872343918">Schnelles Pairing aktivieren</translation>
-<translation id="677778081766640955">Taste gedrückt halten, um zwischen F-Tasten und ChromeOS-Aktionen zu wechseln</translation>
 <translation id="6777817260680419853">Weiterleitung blockiert</translation>
 <translation id="6779092717724412415">Wenn du Text hervorheben möchtest, wähle ihn einfach aus und klicke mit der rechten Maustaste.</translation>
 <translation id="6779447100905857289">deine Einkaufswagen</translation>
@@ -8123,7 +8115,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8163708146810922598">ältestem</translation>
 <translation id="8165997195302308593">Crostini-Portweiterleitung</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{eine Telefonnummer}other{# Telefonnummern}}</translation>
-<translation id="8168071266284693455">Lesezeichen, Passwörter, Verlauf und mehr auf allen Geräten synchronisieren</translation>
 <translation id="8168435359814927499">Inhalte</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tab zur Leseliste hinzufügen}other{Tabs zur Leseliste hinzufügen}}</translation>
 <translation id="8171334254070436367">Alle Karten verbergen</translation>
@@ -8263,7 +8254,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8275080796245127762">Über mein Gerät anrufen</translation>
 <translation id="8275339871947079271">Wenn du mit allen Geräten, auf denen du angemeldet bist, sicher auf dein Passwort zugreifen möchtest, verschiebe es in dein Google-Konto.</translation>
 <translation id="8276560076771292512">Cache leeren und vollständig aktualisieren</translation>
-<translation id="8281721647184388851">Chrome-Browsersynchronisierung aktivieren?</translation>
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-Websites</translation>
 <translation id="8284326494547611709">Untertitel</translation>
@@ -8430,7 +8420,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8428271547607112339">Konto einer Bildungseinrichtung hinzufügen</translation>
 <translation id="8428628598981198790">Dein Sicherheitsschlüssel kann bei dieser Website nicht verwendet werden</translation>
 <translation id="84297032718407999">Du wirst in <ph name="LOGOUT_TIME_LEFT" /> abgemeldet</translation>
-<translation id="8430963319679282846">Wenn du eine Taste gedrückt hältst, wird das Zeichen wiederholt</translation>
 <translation id="8431190899827883166">Fingertipps anzeigen</translation>
 <translation id="8434480141477525001">NaCl-Debug-Port</translation>
 <translation id="8437209419043462667">USA</translation>

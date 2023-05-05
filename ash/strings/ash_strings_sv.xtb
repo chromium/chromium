@@ -301,7 +301,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2367972762794486313">Visa appar</translation>
 <translation id="2369165858548251131">”Hej” på kinesiska</translation>
 <translation id="2386292613071805067">Markera allt på sidan</translation>
-<translation id="2390318262976603432">Inställningar av språkkod</translation>
 <translation id="2397416548179033562">Visa Chrome-menyn</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2402411679569069051">Använd ditt fingeravtryck eller lås upp telefonen om du vill låsa upp Chromebook</translation>
@@ -1058,6 +1057,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5881540930187678962">Konfigurera Phone Hub senare</translation>
 <translation id="5881663018261910378">Av</translation>
 <translation id="5887954372087850114">Fönstret <ph name="WINDOW_TITLE" /> tilldelades <ph name="DESK_TITLE" /> och tilldelningen har tagits bort från alla andra skrivbord</translation>
+<translation id="588817334757907802">Öppna filen i webbläsaren Chrome</translation>
 <translation id="5895138241574237353">Starta om</translation>
 <translation id="589817443623831496">Punktgenomsökning</translation>
 <translation id="5901316534475909376">Skift+Escape</translation>
@@ -1119,6 +1119,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="6137566720514957455">Öppna dialogrutan för borttagning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Bekräfta nedladdning</translation>
 <translation id="6154006699632741460">Tillbehöret stöds inte</translation>
+<translation id="6156960295318603523">Språkinställningar</translation>
 <translation id="615957422585914272">Visa skärmtangentbordet</translation>
 <translation id="6165508094623778733">Läs mer</translation>
 <translation id="6166852626429024716">Sök på enheten, i appar, inställningar och på webben …</translation>

@@ -944,7 +944,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne seront pas disponibles</translation>
 <translation id="1797117170091578105">Jouez avec le clavier du Chromebook. Vous pouvez associer des touches à des actions spécifiques.</translation>
 <translation id="180203835522132923">Recherche+O, puis W</translation>
-<translation id="1802457294427928325">Remplacer le comportement des touches F par des actions supérieures ChromeOS</translation>
 <translation id="1802624026913571222">Mettre en veille lorsque l'appareil est refermé</translation>
 <translation id="1802687198411089702">La page ne répond plus. Vous pouvez attendre qu'elle soit de nouveau accessible ou la fermer.</translation>
 <translation id="1803531841600994172">Langue cible</translation>
@@ -1467,7 +1466,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2235344399760031203">Cookies tiers bloqués</translation>
 <translation id="2238379619048995541">Données sur l'état de fréquence</translation>
 <translation id="2241053333139545397">Accéder aux données de plusieurs sites et les modifier</translation>
-<translation id="2241242047787527912">Pour chaque clé répertoriée ci-dessous, choisissez l'action souhaitée</translation>
 <translation id="2241634353105152135">Une seule fois</translation>
 <translation id="2242687258748107519">Informations sur le fichier</translation>
 <translation id="2245603955208828424">Parcourez des éléments lettre après lettre avec les touches fléchées</translation>
@@ -1505,14 +1503,12 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2271986192355138465">Découvrir comment installer des applis Web</translation>
 <translation id="2272430695183451567">0 touche attribuée</translation>
 <translation id="2272570998639520080">Verre à martini</translation>
-<translation id="2272830751703114341">Activer la touche Système/Lanceur d'applications pour modifier le comportement des touches supérieures</translation>
 <translation id="2273119997271134996">Problème rencontré au niveau du port vidéo de la station d'accueil</translation>
 <translation id="2274840746523584236">Chargez votre Chromebook</translation>
 <translation id="2276503375879033601">Ajouter d'autres applications</translation>
 <translation id="2276910256003242519">Suppression des données…</translation>
 <translation id="2278562042389100163">Ouvrir une fenêtre du navigateur</translation>
 <translation id="2278668501808246459">Démarrage du gestionnaire de conteneurs</translation>
-<translation id="2279051792571591988">Rétablir les paramètres par défaut</translation>
 <translation id="2280486287150724112">Marge droite</translation>
 <translation id="2281863813036651454">Clic gauche de la souris</translation>
 <translation id="2282146716419988068">GPU</translation>
@@ -2909,7 +2905,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3508920295779105875">Choisir un autre dossier...</translation>
 <translation id="3509379002674019679">Créez, enregistrez et gérez vos mots de passe pour vous connecter facilement à des sites et à des applis.</translation>
 <translation id="3511200754045804813">Nouvelle recherche</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Aucune clé remappée}=1{1 clé remappée}one{{COUNT} clé remappée}other{{COUNT} clés remappées}}</translation>
 <translation id="3511307672085573050">Copier l'adr&amp;esse du lien</translation>
 <translation id="351152300840026870">Police à largeur fixe</translation>
 <translation id="3511528412952710609">Court</translation>
@@ -4491,7 +4486,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="4906490889887219338">Configurer ou gérer des partages de fichiers en réseau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Précisez quand cette extension peut lire et modifier les données de votre site</translation>
 <translation id="4907161631261076876">Ce fichier n'étant pas souvent téléchargé, il peut présenter un danger.</translation>
-<translation id="4908070840805457717">Répéter les touches</translation>
 <translation id="4908811072292128752">Ouvrez un nouvel onglet pour naviguer sur deux sites Web en même temps</translation>
 <translation id="4909038193460299775">Étant donné que ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et les autres paramètres sont effacés de cet appareil. Cependant, vos données restent stockées dans votre compte Google et peuvent être gérées dans le <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Sorties de veille</translation>
@@ -5879,7 +5873,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6177412385419165772">Suppression…</translation>
 <translation id="6178664161104547336">Sélectionner un certificat</translation>
 <translation id="6178682841350631965">Vos données de connexion ont été mises à jour</translation>
-<translation id="6179893151569852357">Convertir les touches F en touches supérieures de ChromeOS</translation>
 <translation id="6180510783007738939">Outil Ligne</translation>
 <translation id="6180550893222597997">Laquelle voulez-vous utiliser pour <ph name="APP_NAME" /> ?</translation>
 <translation id="6181431612547969857">Téléchargement bloqué</translation>
@@ -6079,7 +6072,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="636850387210749493">Enregistrement d'entreprise</translation>
 <translation id="6370021412472292592">Impossible de charger le fichier manifeste.</translation>
 <translation id="637135143619858508">Grand</translation>
-<translation id="6372856076511744743">Remapper les touches du clavier</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Réessayer</translation>
 <translation id="6374635887697228982">Obtenir des remises ?</translation>
@@ -6524,7 +6516,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="677646486571529447">Ajouter une note</translation>
 <translation id="6776589734354015877">Bénéficiez de fonctionnalités supplémentaires</translation>
 <translation id="6776729248872343918">Activer l'Association express</translation>
-<translation id="677778081766640955">Maintenir la touche enfoncée pour basculer entre les touches F et les actions ChromeOS</translation>
 <translation id="6777817260680419853">Redirection bloquée</translation>
 <translation id="6779092717724412415">Pour créer un effet de surbrillance comme celui-ci, sélectionnez du texte et effectuez un clic droit.</translation>
 <translation id="6779447100905857289">vos paniers</translation>
@@ -8133,7 +8124,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8163708146810922598">le plus ancien</translation>
 <translation id="8165997195302308593">Transfert de port Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un numéro de téléphone}one{# numéro de téléphone}other{# numéros de téléphone}}</translation>
-<translation id="8168071266284693455">Vos favoris, mots de passe, données d'historique et plus sont synchronisés sur tous vos appareils</translation>
 <translation id="8168435359814927499">Contenu</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Ajouter l'onglet à la liste de lecture}one{Ajouter l'onglet à la liste de lecture}other{Ajouter les onglets à la liste de lecture}}</translation>
 <translation id="8171334254070436367">Masquer toutes les fiches</translation>
@@ -8273,7 +8263,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8275080796245127762">Appeler depuis votre appareil</translation>
 <translation id="8275339871947079271">Transférez votre mot de passe vers votre compte Google pour y accéder en toute sécurité où que vous soyez connecté</translation>
 <translation id="8276560076771292512">Vider le cache et effectuer une actualisation forcée</translation>
-<translation id="8281721647184388851">Activer la synchronisation du navigateur Chrome ?</translation>
 <translation id="8281886186245836920">Passer</translation>
 <translation id="8284279544186306258">tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sous-titres</translation>
@@ -8440,7 +8429,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8428271547607112339">Ajouter un compte scolaire</translation>
 <translation id="8428628598981198790">Impossible d'utiliser votre clé de sécurité sur ce site</translation>
 <translation id="84297032718407999">Vous allez être déconnecté dans <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Si vous maintenez une touche enfoncée, le caractère correspondant se répète</translation>
 <translation id="8431190899827883166">Afficher les éléments sélectionnés</translation>
 <translation id="8434480141477525001">Port de débogage de Native Client</translation>
 <translation id="8437209419043462667">Américain</translation>

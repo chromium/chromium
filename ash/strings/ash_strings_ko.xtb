@@ -302,7 +302,6 @@
 <translation id="2367972762794486313">앱 표시</translation>
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
 <translation id="2386292613071805067">페이지의 모든 항목 선택</translation>
-<translation id="2390318262976603432">언어 설정</translation>
 <translation id="2397416548179033562">Chrome 메뉴 표시</translation>
 <translation id="240006516586367791">미디어 컨트롤</translation>
 <translation id="2402411679569069051">Chromebook을 잠금 해제하려면 지문을 사용하거나 휴대전화를 잠금 해제하세요.</translation>
@@ -1121,6 +1120,7 @@
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> 삭제 대화상자 열기</translation>
 <translation id="6141988275892716286">다운로드 확인</translation>
 <translation id="6154006699632741460">지원되지 않는 주변기기</translation>
+<translation id="6156960295318603523">언어 설정</translation>
 <translation id="615957422585914272">터치 키보드 표시</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6166852626429024716">기기, 앱, 설정, 웹에서 검색...</translation>

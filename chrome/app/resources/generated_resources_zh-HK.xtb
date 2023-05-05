@@ -953,7 +953,6 @@
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1797117170091578105">使用 Chromebook 鍵盤玩遊戲。您可為特定動作自訂按鍵。</translation>
 <translation id="180203835522132923">搜尋 + O，然後按 W</translation>
-<translation id="1802457294427928325">將功能鍵的行為變更為 ChromeOS 最上排按鍵的操作</translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
 <translation id="1802687198411089702">網頁沒有回應，您可以繼續等待或離開。</translation>
 <translation id="1803531841600994172">翻譯目標語言</translation>
@@ -1478,7 +1477,6 @@
 <translation id="2235344399760031203">已封鎖第三方 Cookie</translation>
 <translation id="2238379619048995541">頻率狀態數據</translation>
 <translation id="2241053333139545397">讀取及變更您在多個網站上的資料</translation>
-<translation id="2241242047787527912">選擇下列每個按鍵要執行的操作</translation>
 <translation id="2241634353105152135">只此一次</translation>
 <translation id="2242687258748107519">檔案資料</translation>
 <translation id="2245603955208828424">使用方向鍵即可在各項目中逐個字母移動</translation>
@@ -1519,14 +1517,12 @@
 <translation id="2271986192355138465">瞭解如何安裝網絡應用程式</translation>
 <translation id="2272430695183451567">目前指定 0 個按鈕</translation>
 <translation id="2272570998639520080">馬天尼酒杯</translation>
-<translation id="2272830751703114341">使用系統/啟動器鍵切換最上排按鍵的行為</translation>
 <translation id="2273119997271134996">插座的影片連接埠發生問題</translation>
 <translation id="2274840746523584236">請為 Chromebook 充電</translation>
 <translation id="2276503375879033601">新增更多應用程式</translation>
 <translation id="2276910256003242519">清除緊資料…</translation>
 <translation id="2278562042389100163">開啟瀏覽器視窗</translation>
 <translation id="2278668501808246459">正在啟動容器管理員</translation>
-<translation id="2279051792571591988">還原預設值</translation>
 <translation id="2280486287150724112">右邊界</translation>
 <translation id="2281863813036651454">點擊滑鼠左鍵</translation>
 <translation id="2282146716419988068">GPU 處理程序</translation>
@@ -2923,7 +2919,6 @@
 <translation id="3508920295779105875">選擇另一個資料夾…</translation>
 <translation id="3509379002674019679">建立、儲存及管理密碼，讓您輕鬆登入網站和應用程式。</translation>
 <translation id="3511200754045804813">重新掃描</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{沒有重新對應的鍵}=1{1 個重新對應的鍵}other{{COUNT} 個重新對應的鍵}}</translation>
 <translation id="3511307672085573050">複製連結網址(&amp;E)</translation>
 <translation id="351152300840026870">固定寬度字型</translation>
 <translation id="3511528412952710609">短</translation>
@@ -4506,7 +4501,6 @@
 <translation id="4906490889887219338">設定或管理網絡檔案共用功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">選擇這個擴充程式何時可讀取並變更網站資料</translation>
 <translation id="4907161631261076876">此檔案不常下載，代表此檔案可能不安全。</translation>
-<translation id="4908070840805457717">重複按鍵效果</translation>
 <translation id="4908811072292128752">開啟新分頁，即可同時瀏覽兩個網站</translation>
 <translation id="4909038193460299775">由於此帳戶由 <ph name="DOMAIN" /> 管理，因此系統將會從此裝置中清除您的書籤、記錄、密碼和其他設定。不過，Google 帳戶內仍會儲存您的資料，而您亦可透過「<ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />」管理這些資料。</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
@@ -5891,7 +5885,6 @@
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6178664161104547336">選取憑證</translation>
 <translation id="6178682841350631965">您的登入資料已更新</translation>
-<translation id="6179893151569852357">將功能鍵轉換為 ChromeOS 的最上排按鍵</translation>
 <translation id="6180510783007738939">線條工具</translation>
 <translation id="6180550893222597997">您要在 <ph name="APP_NAME" /> 上使用哪一個密鑰？</translation>
 <translation id="6181431612547969857">下載被封鎖</translation>
@@ -6091,7 +6084,6 @@
 <translation id="636850387210749493">企業註冊</translation>
 <translation id="6370021412472292592">無法載入資訊清單。</translation>
 <translation id="637135143619858508">寬行距</translation>
-<translation id="6372856076511744743">重新對應鍵盤按鍵</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試一次</translation>
 <translation id="6374635887697228982">要取得折扣嗎？</translation>
@@ -6535,7 +6527,6 @@
 <translation id="677646486571529447">新增附註</translation>
 <translation id="6776589734354015877">取得額外的實用功能</translation>
 <translation id="6776729248872343918">啟用「快速配對」</translation>
-<translation id="677778081766640955">按住按鍵可在功能鍵和 ChromeOS 操作之間切換</translation>
 <translation id="6777817260680419853">已禁止重新導向</translation>
 <translation id="6779092717724412415">如要建立其他突顯內容，請選取所需文字後按一下右鍵。</translation>
 <translation id="6779447100905857289">您的購物車</translation>
@@ -8143,7 +8134,6 @@
 <translation id="8163708146810922598">由舊到新</translation>
 <translation id="8165997195302308593">Crostini 連接埠轉送</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 個電話號碼}other{# 個電話號碼}}</translation>
-<translation id="8168071266284693455">您的書籤、密碼、記錄和其他設定會同步至所有裝置</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
 <translation id="8171334254070436367">隱藏所有資訊卡</translation>
@@ -8283,7 +8273,6 @@
 <translation id="8275080796245127762">透過您的裝置撥打電話</translation>
 <translation id="8275339871947079271">將密碼移至 Google 帳戶後，無論您從何處登入帳戶，都可安全存取密碼</translation>
 <translation id="8276560076771292512">清除快取並強制重新載入</translation>
-<translation id="8281721647184388851">要開啟 Chrome 瀏覽器同步功能嗎？</translation>
 <translation id="8281886186245836920">略過</translation>
 <translation id="8284279544186306258">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -8450,7 +8439,6 @@
 <translation id="8428271547607112339">新增學校帳戶</translation>
 <translation id="8428628598981198790">無法在此網站上使用您的安全密鑰</translation>
 <translation id="84297032718407999">您將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
-<translation id="8430963319679282846">如果您按住按鍵，系統便會重複輸入該按鍵的字元</translation>
 <translation id="8431190899827883166">顯示輕按選項</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8437209419043462667">美式鍵盤</translation>

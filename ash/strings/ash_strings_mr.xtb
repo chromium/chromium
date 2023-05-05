@@ -56,6 +56,7 @@
 <translation id="121097972571826261">एक शब्द पुढे जा</translation>
 <translation id="1217633719248931900">अ‍ॅपवर जा</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play स्टोअर अ‍ॅप</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> वर परत जा.</translation>
 <translation id="1225748608451425081">एका माहीत असलेल्या समस्येमुळे तुमचे Chromebook लॉक झाले आहे. तुम्हाला या वेळेनंतर साइन इन करता येईल: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">निवडणे थांबवा</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
@@ -221,6 +222,7 @@
 <translation id="1961239773406905488">कॅमेराचे पूर्वावलोकन लपवले आहे</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">लॉक स्क्रीन</translation>
+<translation id="1962972976741217487">तुमच्या <ph name="DEVICE_NAME" /> च्या हॉटस्पॉटला १ डिव्हाइस कनेक्ट केलेले आहे</translation>
 <translation id="1967970931040389207">हॉटस्पॉट सुरू करा</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">हाय, <ph name="USERNAME" /></translation>
@@ -301,7 +303,6 @@
 <translation id="2367972762794486313">अ‍ॅप्स दर्शवा</translation>
 <translation id="2369165858548251131">चिनी भाषेत "हॅलो"</translation>
 <translation id="2386292613071805067">पेजवरील प्रत्येक गोष्ट निवडा</translation>
-<translation id="2390318262976603432">लोकॅल सेटिंग्ज</translation>
 <translation id="2397416548179033562">Chrome मेनू दर्शवा</translation>
 <translation id="240006516586367791">मीडिया नियंत्रणे</translation>
 <translation id="2402411679569069051">तुमचे Chromebook अनलॉक करण्यासाठी, तुमचे फिंगरप्रिंट वापरा किंवा तुमचा फोन अनलॉक करा</translation>
@@ -931,6 +932,7 @@
 <translation id="5297704307811127955">बंद</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
 <translation id="5302048478445481009">भाषा</translation>
+<translation id="5303783651764314393">तुमच्या <ph name="DEVICE_NAME" /> च्या हॉटस्पॉटला <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केलेली आहेत</translation>
 <translation id="5308380583665731573">कनेक्‍ट करा</translation>
 <translation id="5313326810920013265">ब्लूटूथ सेटिंग्ज</translation>
 <translation id="5314219114274263156">स्क्रीन रेकॉर्डिंग घेतले</translation>
@@ -1119,6 +1121,7 @@
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> साठी काढून टाकणे डायलॉग उघडा</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="6154006699632741460">पेरिफेरलला सपोर्ट नाही</translation>
+<translation id="6156960295318603523">भाषा सेटिंग्ज</translation>
 <translation id="615957422585914272">ऑन-स्‍क्रीन कीबोर्ड दर्शवा</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
 <translation id="6166852626429024716">तुमच्या डिव्हाइस, अ‍ॅप्स, सेटिंग्ज, वेबवर शोधा...</translation>
@@ -1337,6 +1340,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> मध्ये जुन्या रिझोल्युशनवर परत करत आहे</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
+<translation id="7187711731540696127">तुमच्या <ph name="DEVICE_NAME" /> चा हॉटस्पॉट सुरू आहे, कोणतेही डिव्हाइस कनेक्ट केलेले नाही</translation>
 <translation id="7188494361780961876">मेनू स्क्रीनच्या वरच्या डाव्या कोपर्‍यात हलवला.</translation>
 <translation id="7189412385142492784">शुक्र किती दूर आहे</translation>
 <translation id="7198435252016571249">कॅमेरा सर्वात खालच्या उजव्या कोपऱ्यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
@@ -1586,6 +1590,7 @@
 <translation id="8349964124165471584">लिंक नवीन विंडोमध्ये उघडा</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="8364673525741149932">शेल्फ पार्टी टॉगल करा. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> वापरात आहे.</translation>
 <translation id="8369166482916924789">सेव्ह केलेला डेस्‍क, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">एक अक्षर पुढे जा</translation>
 <translation id="8371991222807690464">अतिथी मोडमध्ये पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>

@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">删除现有数据。</translation>
 <translation id="1149401351239820326">过期月份</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。</translation>
-<translation id="1154704303112745282">无法在离线状态下访问此网页：<ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1177863135347784049">自定义</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -694,7 +693,6 @@
 要更改此设置，请<ph name="BEGIN_LINK" />重置同步设置<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="481574578487123132">已关联的设备</translation>
-<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> 上的 Digital Asset Links 验证失败了</translation>
 <translation id="4826163340425232009">用于进行登录的底部工作表。</translation>
 <translation id="4831037795716408498">下载内容</translation>
 <translation id="4834007576107377210">查看您所用搜索引擎的说明，了解如何删除您的搜索记录（若适用）</translation>
@@ -955,7 +953,7 @@
 <translation id="6193448654517602979">选择标签页</translation>
 <translation id="6196315980958524839">系统会将密码保存到此设备上的 Google 密码管理工具中</translation>
 <translation id="6202812185118613467">重新登录即可开始同步</translation>
-<translation id="6205314730813004066">广告隐私设置</translation>
+<translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6210748933810148297">不是 <ph name="EMAIL" />？</translation>
 <translation id="6211386937064921208">正在预览此页</translation>
 <translation id="6221633008163990886">需解锁才能导出您的密码</translation>
@@ -991,7 +989,6 @@
 <translation id="6395288395575013217">链接</translation>
 <translation id="6397616442223433927">已恢复在线状态</translation>
 <translation id="6401458660421980302">若要将此标签页发送到另一设备，请在该设备上登录 Chrome</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" /> 上发生了 <ph name="ERROR_CODE" /> 错误</translation>
 <translation id="6404511346730675251">修改书签</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6407224748847589805">无法连接到您的计算机。请尝试另一种验证方式。</translation>

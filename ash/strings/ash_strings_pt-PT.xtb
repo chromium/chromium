@@ -56,6 +56,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
 <translation id="1217633719248931900">Ir para a app</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicação da Play Store</translation>
+<translation id="1219309685806246869">Regressar a <ph name="APP_TITLE" /></translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
 <translation id="1235458158152011030">Redes conhecidas</translation>
@@ -302,7 +303,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2367972762794486313">Mostrar aplicações</translation>
 <translation id="2369165858548251131">"Olá" em chinês</translation>
 <translation id="2386292613071805067">Selecionar tudo na página</translation>
-<translation id="2390318262976603432">Definições locais</translation>
 <translation id="2397416548179033562">Mostrar menu do Chrome</translation>
 <translation id="240006516586367791">Controlos de multimédia</translation>
 <translation id="2402411679569069051">Para desbloquear o Chromebook, utilize a sua impressão digital ou desbloqueie o telemóvel</translation>
@@ -1122,6 +1122,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="6137566720514957455">Abrir caixa de diálogo de remoção para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirmar transferência</translation>
 <translation id="6154006699632741460">O periférico não é suportado</translation>
+<translation id="6156960295318603523">Definições de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado no ecrã</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
 <translation id="6166852626429024716">Pesquise no dispositivo, nas apps, nas definições, na Web…</translation>
@@ -1590,6 +1591,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8349964124165471584">Abrir o link numa nova janela</translation>
 <translation id="8351131234907093545">Criar nota</translation>
 <translation id="8364673525741149932">Ative/desative o Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em utilização.</translation>
 <translation id="8369166482916924789">Espaço de trabalho guardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
 <translation id="8371991222807690464">O desempenho periférico pode estar limitado no Modo convidado.</translation>

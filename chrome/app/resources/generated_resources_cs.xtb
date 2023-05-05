@@ -945,7 +945,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
 <translation id="1797117170091578105">Hrajte na klávesnici Chromebooku. Můžete si nastavit klávesy pro konkrétní akce.</translation>
 <translation id="180203835522132923">Vyhledávací tlačítko + O, poté W</translation>
-<translation id="1802457294427928325">Změnit chování kláves F na akce horní řady kláves systému ChromeOS</translation>
 <translation id="1802624026913571222">Při zavření víka přejít do režimu spánku</translation>
 <translation id="1802687198411089702">Stránka nereaguje. Můžete počkat nebo ji zavřít.</translation>
 <translation id="1803531841600994172">Cílový jazyk překladu</translation>
@@ -1468,7 +1467,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2235344399760031203">Soubory cookie třetích stran jsou blokovány</translation>
 <translation id="2238379619048995541">Data o stavu frekvence</translation>
 <translation id="2241053333139545397">Čtení a úprava dat na různých webech</translation>
-<translation id="2241242047787527912">Pro každou níže uvedenou klávesu vyberte akci, kterou má provést</translation>
 <translation id="2241634353105152135">Pouze jednou</translation>
 <translation id="2242687258748107519">Informace o souboru</translation>
 <translation id="2245603955208828424">Přesouvat se mezi položkami písmeno po písmenu pomocí kláves se šipkami</translation>
@@ -1506,14 +1504,12 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2271986192355138465">Přečtěte si, jak nainstalovat webové aplikace</translation>
 <translation id="2272430695183451567">Přiřazeno 0 přepínačů</translation>
 <translation id="2272570998639520080">Sklenička martini</translation>
-<translation id="2272830751703114341">Umožnit přepínání chování kláves v horní řadě pomocí systémové klávesy / klávesy spouštěče</translation>
 <translation id="2273119997271134996">Problém s videokonektorem doku</translation>
 <translation id="2274840746523584236">Dobíjení Chromebooku</translation>
 <translation id="2276503375879033601">Přidat další aplikace</translation>
 <translation id="2276910256003242519">Mazání dat…</translation>
 <translation id="2278562042389100163">Otevřít okno prohlížeče</translation>
 <translation id="2278668501808246459">Spouštění správce kontejneru</translation>
-<translation id="2279051792571591988">Obnovit výchozí nastavení</translation>
 <translation id="2280486287150724112">Pravý okraj</translation>
 <translation id="2281863813036651454">Levé kliknutí myši</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
@@ -1995,6 +1991,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2682498795777673382">Novinka od rodiče</translation>
 <translation id="2683638487103917598">Složka je seřazena</translation>
 <translation id="2684004000387153598">Chcete-li pokračovat, klikněte na OK a poté kliknutím na Přidat uživatele vytvořte nový profil pro svou novou e-mailovou adresu.</translation>
+<translation id="2685193395980129388">Povoleno: <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Blokovat všechny soubory cookie (nedoporučujeme)</translation>
 <translation id="2687407218262674387">Smluvní podmínky Google</translation>
 <translation id="2687621393791886981">Zeptat se později</translation>
@@ -2910,7 +2907,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3508920295779105875">Zvolit jinou složku...</translation>
 <translation id="3509379002674019679">Vytváření, ukládání a správa hesel pro snadné přihlašování na weby a do aplikací.</translation>
 <translation id="3511200754045804813">Vyhledat znovu</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Nejsou přemapovány žádné klávesy}=1{Je přemapována 1 klávesa}few{Jsou přemapovány {COUNT} klávesy}many{Je přemapováno {COUNT} klávesy}other{Je přemapováno {COUNT} kláves}}</translation>
 <translation id="3511307672085573050">Kopírovat adr&amp;esu odkazu</translation>
 <translation id="351152300840026870">Písmo s pevnou šířkou</translation>
 <translation id="3511528412952710609">Krátká</translation>
@@ -4491,7 +4487,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4906490889887219338">Nastavit nebo spravovat sdílená úložiště na síti. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Zvolte, kdy toto rozšíření může číst a měnit data webů</translation>
 <translation id="4907161631261076876">Tento soubor se běžně nestahuje a může být nebezpečný.</translation>
-<translation id="4908070840805457717">Opakovat stisknutí klávesy</translation>
 <translation id="4908811072292128752">Otevřete novou kartu a prohlížejte dvě webové stránky naráz</translation>
 <translation id="4909038193460299775">Protože je tento účet spravován doménou <ph name="DOMAIN" />, budou z tohoto zařízení vymazány vaše záložky, historie, hesla a další nastavení. Data však zůstanou uložená ve vašem účtu Google a lze je spravovat v <ph name="BEGIN_LINK" />Hlavním panelu Google<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Probuzení z nečinnosti</translation>
@@ -5875,7 +5870,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6177412385419165772">Odstraňování…</translation>
 <translation id="6178664161104547336">Vyberte certifikát</translation>
 <translation id="6178682841350631965">Vaše přihlašovací údaje byly aktualizovány</translation>
-<translation id="6179893151569852357">Převést klávesy F na horní řadu kláves systému ChromeOS</translation>
 <translation id="6180510783007738939">Nástroj Čára</translation>
 <translation id="6180550893222597997">Který přístupový klíč chcete pro <ph name="APP_NAME" /> použít?</translation>
 <translation id="6181431612547969857">Stahování zablokováno</translation>
@@ -6075,7 +6069,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="636850387210749493">Podniková registrace</translation>
 <translation id="6370021412472292592">Načtení manifestu se nezdařilo.</translation>
 <translation id="637135143619858508">Velká</translation>
-<translation id="6372856076511744743">Přemapovat klávesy na klávesnici</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Zkusit znovu</translation>
 <translation id="6374635887697228982">Získat slevy?</translation>
@@ -6523,7 +6516,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="677646486571529447">Přidat poznámku</translation>
 <translation id="6776589734354015877">Získáte další funkce</translation>
 <translation id="6776729248872343918">Aktivovat Rychlé párování</translation>
-<translation id="677778081766640955">Podržením klávesy přepnete mezi klávesami F a akcemi systému ChromeOS</translation>
 <translation id="6777817260680419853">Bylo zablokováno přesměrování</translation>
 <translation id="6779092717724412415">Pokud chcete vytvořit podobné zvýraznění, vyberte text a klikněte pravým tlačítkem.</translation>
 <translation id="6779447100905857289">vaše nákupní košíky</translation>
@@ -8131,7 +8123,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8163708146810922598">nejstarší</translation>
 <translation id="8165997195302308593">Přesměrování portů Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefonní číslo}few{# telefonní čísla}many{# telefonního čísla}other{# telefonních čísel}}</translation>
-<translation id="8168071266284693455">Záložky, hesla, historie a další údaje jsou synchronizované do všech vašich zařízení</translation>
 <translation id="8168435359814927499">Obsah</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Přidat kartu do seznamu četby}few{Přidat karty do seznamu četby}many{Přidat karty do seznamu četby}other{Přidat karty do seznamu četby}}</translation>
 <translation id="8171334254070436367">Skrýt všechny karty</translation>
@@ -8271,7 +8262,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8275080796245127762">Zavolat ze zařízení</translation>
 <translation id="8275339871947079271">Přesuňte heslo do účtu Google, abyste ho mohli bezpečně použít, když budete přihlášeni</translation>
 <translation id="8276560076771292512">Vymazání mezipaměti a úplné opětovné načtení</translation>
-<translation id="8281721647184388851">Zapnout synchronizaci prohlížeče Chrome?</translation>
 <translation id="8281886186245836920">Přeskočit</translation>
 <translation id="8284279544186306258">všechny weby <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titulky</translation>
@@ -8438,7 +8428,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8428271547607112339">Přidat školní účet</translation>
 <translation id="8428628598981198790">Váš bezpečnostní klíč na tomto webu nelze použít</translation>
 <translation id="84297032718407999">Za <ph name="LOGOUT_TIME_LEFT" /> budete odhlášeni</translation>
-<translation id="8430963319679282846">Pokud klávesu podržíte, bude se její znak opakovat</translation>
 <translation id="8431190899827883166">Zobrazovat klepnutí</translation>
 <translation id="8434480141477525001">Port ladění klientu NaCl</translation>
 <translation id="8437209419043462667">Americká klávesnice</translation>

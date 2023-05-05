@@ -75,7 +75,7 @@
 <translation id="1059944192885972544">Znaleziono karty (<ph name="NUM" />) dla zapytania „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="1060292118287751956">Określa częstotliwość aktualizacji ekranu</translation>
 <translation id="1060570945511946595">Zarządzaj biletami</translation>
-<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> – witamy!</translation>
+<translation id="1061130374843955397"><ph name="DEVICE_TYPE" /> Cię wita!</translation>
 <translation id="1061373870045429865">Utwórz kod QR powiązany z tym linkiem</translation>
 <translation id="1061904396131502319">Wielkimi krokami nadchodzi przerwa</translation>
 <translation id="1062407476771304334">Zastąp</translation>
@@ -945,7 +945,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1797117170091578105">Graj przy użyciu klawiatury Chromebooka. Możesz dostosować klawisze do konkretnych działań.</translation>
 <translation id="180203835522132923">Wyszukaj + O, a następnie W</translation>
-<translation id="1802457294427928325">Zmień działanie klawiszy F na działanie klawiszy z górnego rzędu w ChromeOS</translation>
 <translation id="1802624026913571222">Uśpij po zamknięciu pokrywy</translation>
 <translation id="1802687198411089702">Strona nie odpowiada. Możesz zaczekać lub ją zamknąć.</translation>
 <translation id="1803531841600994172">Język docelowy tłumaczenia</translation>
@@ -1464,7 +1463,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2235344399760031203">Pliki cookie innych firm są blokowane</translation>
 <translation id="2238379619048995541">Dane o stanie częstotliwości</translation>
 <translation id="2241053333139545397">Odczytywanie i modyfikowanie Twoich danych na wielu stronach</translation>
-<translation id="2241242047787527912">Dla każdego klawisza wymienionego poniżej wybierz działanie, które ma on wykonywać</translation>
 <translation id="2241634353105152135">Tylko raz</translation>
 <translation id="2242687258748107519">Informacje o pliku</translation>
 <translation id="2245603955208828424">Używaj klawiszy strzałek, aby przechodzić między elementami litera po literze</translation>
@@ -1502,14 +1500,12 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2271986192355138465">Dowiedz się, jak instalować aplikacje internetowe</translation>
 <translation id="2272430695183451567">Nie przypisano żadnych przełączników</translation>
 <translation id="2272570998639520080">Kieliszek do martini</translation>
-<translation id="2272830751703114341">Używaj klawisza systemu / Menu z aplikacjami, aby zmieniać działanie klawiszy z górnego rzędu</translation>
 <translation id="2273119997271134996">Problem z portem wideo stacji dokującej</translation>
 <translation id="2274840746523584236">Naładuj Chromebooka</translation>
 <translation id="2276503375879033601">Dodaj więcej aplikacji</translation>
 <translation id="2276910256003242519">Czyszczę dane…</translation>
 <translation id="2278562042389100163">Otwórz okno przeglądarki</translation>
 <translation id="2278668501808246459">Uruchamiam menedżera kontenerów</translation>
-<translation id="2279051792571591988">Przywróć domyślne</translation>
 <translation id="2280486287150724112">Prawy margines</translation>
 <translation id="2281863813036651454">Kliknięcie lewym przyciskiem myszy</translation>
 <translation id="2282146716419988068">Proces GPU</translation>
@@ -1980,6 +1976,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2682498795777673382">Rodzic wprowadził zmianę</translation>
 <translation id="2683638487103917598">Posortowano zawartość folderu</translation>
 <translation id="2684004000387153598">Aby kontynuować, kliknij OK, a potem kliknij Dodaj osobę, by utworzyć nowy profil dla swojego adresu e-mail.</translation>
+<translation id="2685193395980129388">Przyznano – <ph name="PERMISSION_DETAILS" /></translation>
 <translation id="2687403674020088961">Blokuj wszystkie pliki cookie (niezalecane)</translation>
 <translation id="2687407218262674387">Warunki usług Google</translation>
 <translation id="2687621393791886981">Zapytaj później</translation>
@@ -2895,7 +2892,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3508920295779105875">Wybierz inny folder...</translation>
 <translation id="3509379002674019679">Twórz i zapisuj hasła oraz nimi zarządzaj, aby łatwo logować się na stronach i w aplikacjach.</translation>
 <translation id="3511200754045804813">Skanuj ponownie</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Nie zmapowano żadnych klawiszy}=1{1 zmapowany klawisz}few{{COUNT} zmapowane klawisze}many{{COUNT} zmapowanych klawiszy}other{{COUNT} zmapowanego klawisza}}</translation>
 <translation id="3511307672085573050">Kopiuj adr&amp;es linku</translation>
 <translation id="351152300840026870">Czcionka o stałej szerokości znaku</translation>
 <translation id="3511528412952710609">Krótkie</translation>
@@ -4477,7 +4473,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4906490889887219338">Skonfiguruj sieciowe udziały plików i zarządzaj nimi. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Wybierz, kiedy to rozszerzenie może odczytywać i zmieniać dane witryny</translation>
 <translation id="4907161631261076876">Ten plik nie jest często pobierany i może być niebezpieczny.</translation>
-<translation id="4908070840805457717">Powtarzaj naciśnięcia klawisza</translation>
 <translation id="4908811072292128752">Otwórz nową kartę, by przeglądać dwie strony naraz</translation>
 <translation id="4909038193460299775">Ponieważ to konto jest zarządzane przez <ph name="DOMAIN" />, Twoje zakładki, historia, hasła i inne ustawienia zostaną usunięte z tego urządzenia. Twoje dane pozostaną zapisane na koncie Google. Możesz nimi zarządzać w <ph name="BEGIN_LINK" />Panelu Google<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Wyjścia z nieaktywności</translation>
@@ -5863,7 +5858,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6177412385419165772">Usuwam…</translation>
 <translation id="6178664161104547336">Wybór certyfikatu</translation>
 <translation id="6178682841350631965">Twoje dane logowania zostały zaktualizowane</translation>
-<translation id="6179893151569852357">Konwertuj klawisze F na klawisze z górnego rzędu w ChromeOS</translation>
 <translation id="6180510783007738939">Narzędzie Linia</translation>
 <translation id="6180550893222597997">Którego klucza chcesz używać dla aplikacji <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Pobieranie zostało zablokowane</translation>
@@ -6063,7 +6057,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="636850387210749493">Rejestracja w firmie</translation>
 <translation id="6370021412472292592">Nie można wczytać pliku manifestu.</translation>
 <translation id="637135143619858508">Luźno</translation>
-<translation id="6372856076511744743">Mapuj klawisze klawiatury</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Spróbuj jeszcze raz</translation>
 <translation id="6374635887697228982">Skorzystać z rabatów?</translation>
@@ -6088,6 +6081,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6396175271241405634">Aplikacja systemowa</translation>
 <translation id="6398715114293939307">Usuń Sklep Google Play</translation>
 <translation id="6398765197997659313">Zamknij pełny ekran</translation>
+<translation id="6399675241776343019">Odrzucono</translation>
 <translation id="6399774419735315745">Szpieg</translation>
 <translation id="6400360390396538896">Zawsze na <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Aby wysłać tę kartę na inne urządzenie, zaloguj się na nim w Chrome</translation>
@@ -6510,7 +6504,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="677646486571529447">Dodaj notatkę</translation>
 <translation id="6776589734354015877">Korzystaj z dodatkowych funkcji</translation>
 <translation id="6776729248872343918">Włącz Szybkie parowanie</translation>
-<translation id="677778081766640955">Przytrzymaj klawisz, aby przełączyć między klawiszami F a działaniami ChromeOS</translation>
 <translation id="6777817260680419853">Przekierowanie zostało zablokowane</translation>
 <translation id="6779092717724412415">Aby utworzyć wyróżnienie takie jak to, zaznacz dowolny tekst i kliknij prawym przyciskiem myszy.</translation>
 <translation id="6779447100905857289">Twoje koszyki</translation>
@@ -8116,7 +8109,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8163708146810922598">od najstarszej</translation>
 <translation id="8165997195302308593">Przekierowanie portów w Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{numer telefonu}few{# numery telefonów}many{# numerów telefonów}other{# numeru telefonu}}</translation>
-<translation id="8168071266284693455">Twoje zakładki, hasła, historia i inne dane są synchronizowane na wszystkich Twoich urządzeniach</translation>
 <translation id="8168435359814927499">Treść</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj kartę do listy Do przeczytania}few{Dodaj karty do listy Do przeczytania}many{Dodaj karty do listy Do przeczytania}other{Dodaj karty do listy Do przeczytania}}</translation>
 <translation id="8171334254070436367">Ukryj wszystkie karty</translation>
@@ -8256,7 +8248,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8275080796245127762">Zadzwoń ze swojego urządzenia</translation>
 <translation id="8275339871947079271">Przenieś swoje hasło na konto Google, by mieć do niego bezpieczny dostęp, gdziekolwiek się zalogujesz</translation>
 <translation id="8276560076771292512">Opróżnij pamięć podręczną i wymuś ponowne załadowanie</translation>
-<translation id="8281721647184388851">Włączyć synchronizację przeglądarki Chrome?</translation>
 <translation id="8281886186245836920">Pomiń</translation>
 <translation id="8284279544186306258">wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Napisy</translation>
@@ -8423,7 +8414,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8428271547607112339">Dodaj konto szkolne</translation>
 <translation id="8428628598981198790">Twojego klucza bezpieczeństwa nie można używać z tą stroną</translation>
 <translation id="84297032718407999">Wylogujemy Cię za <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Podczas przytrzymywania klawisza jego znak będzie powtarzany</translation>
 <translation id="8431190899827883166">Pokaż kliknięcia</translation>
 <translation id="8434480141477525001">Port debugowania NaCl</translation>
 <translation id="8437209419043462667">amerykański</translation>

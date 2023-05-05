@@ -943,7 +943,6 @@
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
 <translation id="1797117170091578105">‏اپنا Chromebook کی بورڈ استعمال کر کے کھیلیں۔ آپ مخصوص کاروائیوں کے لیے کلیدوں کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="180203835522132923">‏Search + O، پھر W</translation>
-<translation id="1802457294427928325">‏F کلیدوں کے برتاؤ کو ChromeOS کے اوپر کی قطار کی کارروائیوں میں تبدیل کریں</translation>
 <translation id="1802624026913571222">کوَر بند ہونے پر سلیپ وضع میں بھیجیں</translation>
 <translation id="1802687198411089702">صفحہ کھل نہیں رہا ہے۔ آپ اس کے کھلنے انتظار کر سکتے ہیں یا باہر نکل سکتے ہیں۔</translation>
 <translation id="1803531841600994172">وہ زبان جس میں ترجمہ کرنا ہے</translation>
@@ -1467,7 +1466,6 @@
 <translation id="2235344399760031203">فریق ثالث کوکیز مسدود ہیں</translation>
 <translation id="2238379619048995541">فریکوینسی صورت حال کا ڈیٹا</translation>
 <translation id="2241053333139545397">متعدد ویب سائٹس پر اپنا ڈیٹا پڑھیں اور تبدیل کریں</translation>
-<translation id="2241242047787527912">ذیل میں درج ہر کلید کے لیے، وہ عمل منتخب کریں جو آپ چاہتے ہیں کہ وہ انجام دے</translation>
 <translation id="2241634353105152135">بس ایک بار</translation>
 <translation id="2242687258748107519">فائل کی معلومات</translation>
 <translation id="2245603955208828424">حرف بہ حرف ایک آئٹم سے دوسرے آئٹم پر جانے کے لئے تیر کے نشان والی کلیدیں استعمال کریں</translation>
@@ -1505,14 +1503,12 @@
 <translation id="2271986192355138465">ویب ایپس کو انسٹال کرنے کا طریقہ جانیں</translation>
 <translation id="2272430695183451567">0 سوئچز تفویض کیے گئے</translation>
 <translation id="2272570998639520080">مارٹنی گلاس</translation>
-<translation id="2272830751703114341">اوپر کی قطار والی کلیدوں کے برتاؤ کو تبدیل کرنے کے لیے سسٹم/لانچر کلید کو فعال کریں</translation>
 <translation id="2273119997271134996">ڈاک ویڈیو پورٹ کا مسئلہ</translation>
 <translation id="2274840746523584236">‏اپنے Chromebook کو چارج کریں</translation>
 <translation id="2276503375879033601">مزید ایپس شامل کریں</translation>
 <translation id="2276910256003242519">ڈیٹا صاف ہو رہا ہے...</translation>
 <translation id="2278562042389100163">براؤزر ونڈو کھولیں</translation>
 <translation id="2278668501808246459">کنٹینر مینیجر شروع ہو رہا ہے</translation>
-<translation id="2279051792571591988">ڈیفالٹس کو بحال کریں</translation>
 <translation id="2280486287150724112">دایاں مارجن</translation>
 <translation id="2281863813036651454">ماؤس کی بائیں کلک</translation>
 <translation id="2282146716419988068">‏GPU کارروائی</translation>
@@ -2910,7 +2906,6 @@
 <translation id="3508920295779105875">کوئی دوسرا فولڈر منتخب کریں…</translation>
 <translation id="3509379002674019679">اپنے پاس ورڈز تخلیق کریں، محفوظ کریں اور ان کا نظم کریں تاکہ آپ آسانی سے سائٹس اور ایپس میں سائن ان کر سکیں۔</translation>
 <translation id="3511200754045804813">دوبارہ اسکین کریں</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{کوئی کلید دوبارہ تیار نہیں کی گئی}=1{1 دوبارہ تیار کردہ کلید}other{{COUNT} دوبارہ تیار کردہ کلیدیں}}</translation>
 <translation id="3511307672085573050">لنک پ&amp;تہ کاپی کریں</translation>
 <translation id="351152300840026870">مقررہ چوڑائی کا فونٹ</translation>
 <translation id="3511528412952710609">مختصر</translation>
@@ -4492,7 +4487,6 @@
 <translation id="4906490889887219338">نیٹ ورک فائل کے اشتراکات کو سیٹ اپ کریں یا ان کا نظم کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">منتخب کریں کہ یہ ایکسٹینشن آپ کی سائٹ کا ڈیٹا کب پڑھ اور اسے تبدیل کر سکتی ہے</translation>
 <translation id="4907161631261076876">یہ فائل عام طور پر ڈاؤن لوڈ نہیں کی جاتی ہے اور یہ خطرناک ہو سکتی ہے۔</translation>
-<translation id="4908070840805457717">کلید دبانے کو دہرائیں</translation>
 <translation id="4908811072292128752">ایک بار میں دو سائٹس کو براؤز کرنے کے لئے ایک نیا ٹیب کھولیں</translation>
 <translation id="4909038193460299775">‏چونکہ یہ اکاؤنٹ <ph name="DOMAIN" /> کے زیر انتظام ہے،  لہذا آپ کے بُک مارکس، سرگزشت، پاس ورڈز اور دیگر ترتیبات کو اس آلہ سے صاف کر دیا جائے گا۔ البتہ آپ کا ڈیٹا آپ کے Google اکاؤنٹ میں اسٹور رہے گا اور اس کا <ph name="BEGIN_LINK" />Google ڈیش بورڈ<ph name="END_LINK" /> پر نظم کیا جا سکتا ہے۔</translation>
 <translation id="4912643508233590958">معطل ویک اپس</translation>
@@ -5878,7 +5872,6 @@
 <translation id="6177412385419165772">ہٹایا جا رہا ہے…</translation>
 <translation id="6178664161104547336">ایک سرٹیفکیٹ منتخب کریں</translation>
 <translation id="6178682841350631965">آپ کا سائن ان ڈیٹا اپ ڈیٹ نہیں ہوا</translation>
-<translation id="6179893151569852357">‏F کلیدوں کو ChromeOS کے اوپر کی قطار والی کلیدوں میں تبدیل کریں</translation>
 <translation id="6180510783007738939">لائن ٹول</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> کے لئے آپ کون سی پاس کی استعمال کرنا چاہتے ہیں؟</translation>
 <translation id="6181431612547969857">ڈاؤن لوڈ مسدود ہوگیا</translation>
@@ -6078,7 +6071,6 @@
 <translation id="636850387210749493">انٹرپرائز اندراج</translation>
 <translation id="6370021412472292592">‏manifest لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="637135143619858508">لائنوں کے درمیان جگہ</translation>
-<translation id="6372856076511744743">کی بورڈ کی کلیدوں کو دوبارہ تیار کریں</translation>
 <translation id="6374077068638737855">آئیس ویزل</translation>
 <translation id="6374469231428023295">دوبارہ کوشش کریں</translation>
 <translation id="6374635887697228982">رعایتیں حاصل کریں؟</translation>
@@ -6521,7 +6513,6 @@
 <translation id="677646486571529447">ایک نوٹ شامل کریں</translation>
 <translation id="6776589734354015877">اضافی خصوصیات حاصل کریں</translation>
 <translation id="6776729248872343918">فاسٹ پئیر کو فعال کریں</translation>
-<translation id="677778081766640955">‏F کلید اور ChromeOS کی کارروائیوں کے درمیان سوئچ کرنے کے لیے کلید کو ہولڈ کریں</translation>
 <translation id="6777817260680419853">ری ڈائریکٹ مسدود ہے</translation>
 <translation id="6779092717724412415">اس طرح کی ہائی لائٹ تخلیق کرنے کے لیے، کوئی بھی ٹیکسٹ منتخب کریں اور دائیں طرف کلک کریں۔</translation>
 <translation id="6779447100905857289">آپ کے کارٹس</translation>
@@ -8129,7 +8120,6 @@
 <translation id="8163708146810922598">سب سے پرانا</translation>
 <translation id="8165997195302308593">‏Crostini پورٹ فارورڈنگ</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{ایک فون نمبر}other{# فون نمبرز}}</translation>
-<translation id="8168071266284693455">آپ کے سبھی آلات پر آپ کے بُک مارکس، پاس ورڈز، سرگزشت اور مزید بہت کچھ کو سِنک کیا جاتا ہے</translation>
 <translation id="8168435359814927499">مواد</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{پڑھنے کی فہرست میں ٹیب شامل کریں}other{پڑھنے کی فہرست میں ٹیبز شامل کریں}}</translation>
 <translation id="8171334254070436367">سبھی کارڈز کو چھپائیں</translation>
@@ -8269,7 +8259,6 @@
 <translation id="8275080796245127762">اپنے آلہ سے کال کریں</translation>
 <translation id="8275339871947079271">‏اپنے پاس ورڈ کو اپنے Google اکاؤنٹ میں منتقل کریں تاکہ آپ جہاں بھی سائن ان ہوں وہاں اس تک محفوظ طریقے سے رسائی حاصل کر سکیں</translation>
 <translation id="8276560076771292512">خالی کیش اور ہارڈ ری لوڈ</translation>
-<translation id="8281721647184388851">‏Chrome براؤزر کی مطابقت پذیری کو آن کریں؟</translation>
 <translation id="8281886186245836920">نظر انداز کریں</translation>
 <translation id="8284279544186306258">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
 <translation id="8284326494547611709">کیپشنز</translation>
@@ -8436,7 +8425,6 @@
 <translation id="8428271547607112339">اسکول اکاؤنٹ شامل کریں</translation>
 <translation id="8428628598981198790">اس سائٹ کے ساتھ آپ کی سیکیورٹی کلید کا استعمال نہیں کیا جا سکتا ہے</translation>
 <translation id="84297032718407999">آپ <ph name="LOGOUT_TIME_LEFT" /> میں سائن آؤٹ ہو جائیں گے</translation>
-<translation id="8430963319679282846">اگر آپ کسی کلید کو دبائے رکھیں گے تو اس کلید کے حرف کو دہرایا جائے گا۔</translation>
 <translation id="8431190899827883166">تھپتھپاہٹیں دکھائیں</translation>
 <translation id="8434480141477525001">‏NaCl ڈیبگ پورٹ</translation>
 <translation id="8437209419043462667">US</translation>

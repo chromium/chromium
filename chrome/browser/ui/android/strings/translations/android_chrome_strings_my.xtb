@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">လက်ရှိဒေတာများကို ဖျက်ပါ</translation>
 <translation id="1149401351239820326">သက်တမ်းကုန်ဆုံးမည့်လ</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။</translation>
-<translation id="1154704303112745282">အော့ဖ်လိုင်းတွင် စာမျက်နှာကိုမရနိုင်ပါ - <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1177863135347784049">စိတ်ကြိုက်</translation>
 <translation id="1181037720776840403">ဖယ်ရှားရန်</translation>
@@ -694,7 +693,6 @@
 ဤဆက်တင်ကို ပြောင်းရန် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ခြင်းကို ပြင်ဆင်သတ်မှတ်ပါ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ကတ် အပေါ်က အမည်</translation>
 <translation id="481574578487123132">လင့်ခ်ချိတ်ထားသည့် စက်များ</translation>
-<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> တွင် Digital Asset links စစ်ဆေးခြင်း မအောင်မြင်ပါ</translation>
 <translation id="4826163340425232009">လက်မှတ်ထိုးဝင်သည့် အောက်ခြေအပိုဆောင်း စာမျက်နှာ။</translation>
 <translation id="4831037795716408498">Download content</translation>
 <translation id="4834007576107377210">သက်ဆိုင်မှုရှိပါက သင်၏ရှာဖွေမှတ်တမ်းကို ဖျက်ရန်အတွက် သင့်ရှာဖွေရေး အင်ဂျင်၏ ညွှန်ကြားချက်များကို ကြည့်ပါ</translation>
@@ -990,7 +988,6 @@
 <translation id="6395288395575013217">လင့်ခ်</translation>
 <translation id="6397616442223433927">အွန်လိုင်းပြန်ရပြီ</translation>
 <translation id="6401458660421980302">အခြားစက်သို့ ဤတဘ်ကို ပို့ရန် ထိုနေရာတွင် Chrome သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" /> ရှိ <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">စာညှပ် တည်းဖြတ်ရန်</translation>
 <translation id="6406506848690869874">ထပ်တူပြုမည်</translation>
 <translation id="6407224748847589805">သင့်ကွန်ပျူတာကို ချိတ်ဆက်၍မရပါ။ စိစစ်ရေးနည်းလမ်း နောက်တစ်ခု သုံးပါ။</translation>

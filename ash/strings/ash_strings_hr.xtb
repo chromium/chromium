@@ -302,7 +302,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="2367972762794486313">Prikaz aplikacija</translation>
 <translation id="2369165858548251131">"Zdravo" na kineskom</translation>
 <translation id="2386292613071805067">Odabir svega na stranici</translation>
-<translation id="2390318262976603432">Postavke oznake zemlje/jezika</translation>
 <translation id="2397416548179033562">Prikaži izbornik Chrome</translation>
 <translation id="240006516586367791">Medijske kontrole</translation>
 <translation id="2402411679569069051">Da biste otključali Chromebook, upotrijebite otisak prsta ili otključajte telefon</translation>
@@ -1059,6 +1058,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5881540930187678962">Kasnije postavite Phone hub</translation>
 <translation id="5881663018261910378">Isključeno</translation>
 <translation id="5887954372087850114">Prozor <ph name="WINDOW_TITLE" /> dodijeljen je radnoj površini <ph name="DESK_TITLE" /> i poništeno je njegovo dodjeljivanje svim ostalim radnim površinama</translation>
+<translation id="588817334757907802">Otvori datoteku u pregledniku Chrome</translation>
 <translation id="5895138241574237353">Ponovno pokreni</translation>
 <translation id="589817443623831496">Traženje po točkama</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1120,6 +1120,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6137566720514957455">Otvorite dijalog za uklanjanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potvrda preuzimanja</translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
+<translation id="6156960295318603523">Postavke jezika</translation>
 <translation id="615957422585914272">Prikaži zaslonsku tipkovnicu</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6166852626429024716">Pretražite uređaj, aplikacije, postavke, web...</translation>

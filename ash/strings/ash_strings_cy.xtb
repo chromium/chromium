@@ -221,6 +221,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1961239773406905488">Rhagolwg camera wedi'i guddio</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Clo Sgrîn</translation>
+<translation id="1962972976741217487">Mae 1 ddyfais wedi'i chysylltu â'ch poethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Troi'r poethfan ymlaen</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Shw'mae, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2367972762794486313">Dangos apiau</translation>
 <translation id="2369165858548251131">"Helo" yn Tsieinëeg</translation>
 <translation id="2386292613071805067">Dewis popeth ar y dudalen</translation>
-<translation id="2390318262976603432">Gosodiadau Lle</translation>
 <translation id="2397416548179033562">Dangos dewislen Chrome</translation>
 <translation id="240006516586367791">Rheolaethau cyfryngau</translation>
 <translation id="2402411679569069051">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd neu datglowch eich ffôn</translation>
@@ -823,6 +823,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4777825441726637019">Play Store</translation>
 <translation id="4778095205580009397">Nid yw Google Assistant ar gael mewn sesiwn ddemo.</translation>
 <translation id="4789348252524569426">Methu â gosod ffeiliau llais. Mae angen diweddaru eich dyfais. Ailgychwynnwch eich dyfais a rhowch gynnig arall arni.</translation>
+<translation id="478959186716341421">Castio</translation>
 <translation id="479989351350248267">chwilio</translation>
 <translation id="4804818685124855865">Datgysylltu</translation>
 <translation id="4814539958450445987">Sgrîn Mewngofnodi</translation>
@@ -930,6 +931,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5297704307811127955">Diffodd</translation>
 <translation id="5300589172476337783">Arddangos</translation>
 <translation id="5302048478445481009">Iaith</translation>
+<translation id="5303783651764314393">Mae <ph name="DEVICECOUNT" /> o ddyfeisiau wedi'u cysylltu â'ch poethfan <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Cysylltu</translation>
 <translation id="5313326810920013265">Gosodiadau Bluetooth</translation>
 <translation id="5314219114274263156">Wedi recordio'r sgrîn</translation>
@@ -1057,6 +1059,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5881540930187678962">Gosod Phone Hub yn nes ymlaen</translation>
 <translation id="5881663018261910378">Diffodd</translation>
 <translation id="5887954372087850114">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i haseinio i <ph name="DESK_TITLE" /> a'i ddadaseinio o bob tasg arall.</translation>
+<translation id="588817334757907802">Agor y ffeil yn y porwr Chrome</translation>
 <translation id="5895138241574237353">Ailgychwyn</translation>
 <translation id="589817443623831496">Sganio pwynt</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1336,6 +1339,7 @@ Gosodiad newydd</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
+<translation id="7187711731540696127">Mae eich poethfan <ph name="DEVICE_NAME" /> ymlaen, dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>
 <translation id="7198435252016571249">Mae'r camera wedi'i snapio i'r gornel dde isaf. Gwrthdaro ag arwyneb y system.</translation>

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="cy">
+<translation id="100506692671054486">dim gorchymyn blaenorol</translation>
 <translation id="1009046985747440431">Pwyswch y saeth i fyny neu i lawr i lywio; y fysell Enter i weithredu</translation>
 <translation id="1011903154582639569">Dewch o hyd i fysell, a chodwch eich bys i deipio</translation>
 <translation id="1012173283529841972">Eitem rhestr</translation>
@@ -359,7 +360,7 @@
 <translation id="3270069636408109001">Dim tabl nesaf</translation>
 <translation id="3273791280096244679">Cadw'r label</translation>
 <translation id="3283583562490372694">wedi'i ddad-dicio</translation>
-<translation id="3286372614333682499">portread</translation>
+<translation id="3286372614333682499">fertigol</translation>
 <translation id="3286390186030710347">Llithrydd</translation>
 <translation id="3300733168898541351">dadwneud</translation>
 <translation id="3307886118343381874">Mynd i ben y bwrdd</translation>

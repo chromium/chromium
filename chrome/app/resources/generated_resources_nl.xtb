@@ -943,7 +943,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1797117170091578105">Speel met het toetsenbord van je Chromebook. Je kunt toetsen aan specifieke acties toewijzen.</translation>
 <translation id="180203835522132923">Zoeken + O, dan W</translation>
-<translation id="1802457294427928325">Wijzig het gedrag van F-toetsen in acties op de bovenste rij van ChromeOS</translation>
 <translation id="1802624026913571222">Slaapstand als de klep wordt gesloten</translation>
 <translation id="1802687198411089702">De pagina reageert niet. Je kunt wachten tot deze reageert of de pagina afsluiten.</translation>
 <translation id="1803531841600994172">Taal om naartoe te vertalen</translation>
@@ -1466,7 +1465,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2235344399760031203">Cookies van derden worden geblokkeerd</translation>
 <translation id="2238379619048995541">Gegevens van frequentiestatus</translation>
 <translation id="2241053333139545397">Je gegevens lezen en wijzigen op een aantal websites</translation>
-<translation id="2241242047787527912">Kies voor elke onderstaande toets de actie die je ermee wilt uitvoeren</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2242687258748107519">Bestandsinformatie</translation>
 <translation id="2245603955208828424">Gebruik de pijltoetsen om per letter door items te navigeren.</translation>
@@ -1504,14 +1502,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2271986192355138465">Meer informatie over hoe je web-apps installeert</translation>
 <translation id="2272430695183451567">0 schakelaars toegewezen</translation>
 <translation id="2272570998639520080">Martiniglas</translation>
-<translation id="2272830751703114341">Systeem-/Launcher-toets aanzetten om het gedrag van de toetsen op de bovenste rij om te schakelen</translation>
 <translation id="2273119997271134996">Probleem met videopoort van dock</translation>
 <translation id="2274840746523584236">Laad je Chromebook op</translation>
 <translation id="2276503375879033601">Meer apps toevoegen</translation>
 <translation id="2276910256003242519">Gegevens wissen…</translation>
 <translation id="2278562042389100163">Browservenster openen</translation>
 <translation id="2278668501808246459">Containerbeheer starten</translation>
-<translation id="2279051792571591988">Standaardwaarden herstellen</translation>
 <translation id="2280486287150724112">Marge rechts</translation>
 <translation id="2281863813036651454">Klik met linkermuisknop</translation>
 <translation id="2282146716419988068">GPU-proces</translation>
@@ -2908,7 +2904,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3508920295779105875">Een andere map kiezen...</translation>
 <translation id="3509379002674019679">Maak, bewaar en beheer je wachtwoorden zodat je makkelijk kunt inloggen bij sites en apps.</translation>
 <translation id="3511200754045804813">Opnieuw scannen</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Geen sleutels opnieuw toegewezen}=1{1 opnieuw toegewezen sleutel}other{{COUNT} opnieuw toegewezen sleutels}}</translation>
 <translation id="3511307672085573050">Linkadr&amp;es kopiëren</translation>
 <translation id="351152300840026870">Lettertype met vaste breedte</translation>
 <translation id="3511528412952710609">Kort</translation>
@@ -4488,7 +4483,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4906490889887219338">Fileshares via netwerk instellen of beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Kiezen wanneer deze extensie je sitegegevens kan lezen en wijzigen</translation>
 <translation id="4907161631261076876">Dit bestand wordt niet vaak gedownload en kan gevaarlijk zijn.</translation>
-<translation id="4908070840805457717">Herhaalde toetsaanslag</translation>
 <translation id="4908811072292128752">Een nieuw tabblad openen om op twee sites tegelijk te browsen</translation>
 <translation id="4909038193460299775">Omdat dit account wordt beheerd door <ph name="DOMAIN" />, worden je bookmarks, geschiedenis, wachtwoorden en andere instellingen gewist van dit apparaat. Je gegevens blijven opgeslagen in je Google-account en kunnen worden beheerd via <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Activeringen vanuit inactief</translation>
@@ -5871,7 +5865,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6177412385419165772">Verwijderen...</translation>
 <translation id="6178664161104547336">Een certificaat selecteren</translation>
 <translation id="6178682841350631965">Je inloggegevens zijn geüpdatet</translation>
-<translation id="6179893151569852357">F-toetsen converteren naar toetsen op de bovenste rij van ChromeOS</translation>
 <translation id="6180510783007738939">Tool Lijn</translation>
 <translation id="6180550893222597997">Welke toegangssleutel wil je gebruiken voor <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Download geblokkeerd</translation>
@@ -6071,7 +6064,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="6370021412472292592">Kan manifest niet laden.</translation>
 <translation id="637135143619858508">Veel ruimte</translation>
-<translation id="6372856076511744743">Toetsenbordtoetsen opnieuw toewijzen</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Opnieuw proberen</translation>
 <translation id="6374635887697228982">Kortingen zoeken?</translation>
@@ -6515,7 +6507,6 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="677646486571529447">Notitie toevoegen</translation>
 <translation id="6776589734354015877">Krijg extra functies</translation>
 <translation id="6776729248872343918">Snel koppelen aanzetten</translation>
-<translation id="677778081766640955">Houd de toets ingedrukt om te schakelen tussen F-toetsen en ChromeOS-acties</translation>
 <translation id="6777817260680419853">Omleiding geblokkeerd</translation>
 <translation id="6779092717724412415">Selecteer tekst en klik met de rechtermuisknop om een markering zoals deze te maken.</translation>
 <translation id="6779447100905857289">je winkelwagens</translation>
@@ -8120,7 +8111,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8163708146810922598">oudste</translation>
 <translation id="8165997195302308593">Poortdoorschakeling voor Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{een telefoonnummer}other{# telefoonnummers}}</translation>
-<translation id="8168071266284693455">Je bookmarks, wachtwoorden, geschiedenis en meer zijn gesynchroniseerd op al je apparaten</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
 <translation id="8171334254070436367">Alle kaarten verbergen</translation>
@@ -8260,7 +8250,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8275080796245127762">Bellen vanaf je apparaat</translation>
 <translation id="8275339871947079271">Verplaats je wachtwoord naar je Google-account voor beveiligde toegang als je bent ingelogd</translation>
 <translation id="8276560076771292512">Cache wissen en geforceerd opnieuw laden</translation>
-<translation id="8281721647184388851">Chrome-browsersynchronisatie aanzetten?</translation>
 <translation id="8281886186245836920">Overslaan</translation>
 <translation id="8284279544186306258">alle sites op <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Ondertiteling</translation>
@@ -8427,7 +8416,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8428271547607112339">Schoolaccount toevoegen</translation>
 <translation id="8428628598981198790">Je beveiligingssleutel kan niet worden gebruikt voor deze site</translation>
 <translation id="84297032718407999">Je wordt uitgelogd over <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Als je een toets ingedrukt houdt, wordt het teken van de toets herhaald</translation>
 <translation id="8431190899827883166">Tikken bekijken</translation>
 <translation id="8434480141477525001">Foutopsporingspoort voor systeemeigen client</translation>
 <translation id="8437209419043462667">Amerikaans</translation>

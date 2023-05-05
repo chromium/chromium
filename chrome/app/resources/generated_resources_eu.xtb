@@ -943,7 +943,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1796588414813960292">Soinua behar duten eginbideek ez dute funtzionatuko</translation>
 <translation id="1797117170091578105">Jokatu Chromebook-aren teklatua erabilita. Teklak pertsonaliza ditzakezu ekintza jakin batzuk egin ditzaten.</translation>
 <translation id="180203835522132923">Bilatu + O; gero, W</translation>
-<translation id="1802457294427928325">Aldatu F teklen portaera ChromeOS-eko goiko errenkadako ekintzetara</translation>
 <translation id="1802624026913571222">Ezarri inaktibo estalkia ixtean</translation>
 <translation id="1802687198411089702">Orriak ez du erantzuten. Itxaron orriak erantzun arte edo irten orritik.</translation>
 <translation id="1803531841600994172">Itzulpenaren xede-hizkuntza</translation>
@@ -1466,7 +1465,6 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2235344399760031203">Hirugarrenen cookieak blokeatu dira</translation>
 <translation id="2238379619048995541">Maiztasunaren egoeraren datuak</translation>
 <translation id="2241053333139545397">Irakurri eta aldatu hainbat webguneetan dituzun datuak</translation>
-<translation id="2241242047787527912">Aukeratu zer ekintza gauzatu behar duen behean zerrendatutako tekla bakoitzak</translation>
 <translation id="2241634353105152135">Behin soilik</translation>
 <translation id="2242687258748107519">Fitxategiari buruzko informazioa</translation>
 <translation id="2245603955208828424">Erabili gezi-teklak elementu batetik bestera letraz letra joateko</translation>
@@ -1504,14 +1502,12 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2271986192355138465">Lortu sareko aplikazioak instalatzeko argibideak</translation>
 <translation id="2272430695183451567">Ez da esleitu erabilerraztasun-etengailurik</translation>
 <translation id="2272570998639520080">Martini kopa</translation>
-<translation id="2272830751703114341">Goiko errenkadako teklen portaera aldatzeko, gaitu Sistema/Abiarazlea tekla</translation>
 <translation id="2273119997271134996">Oinarriko bideo-atakaren arazoa</translation>
 <translation id="2274840746523584236">Kargatu Chromebook-a</translation>
 <translation id="2276503375879033601">Gehitu aplikazio gehiago</translation>
 <translation id="2276910256003242519">Datuak garbitzen…</translation>
 <translation id="2278562042389100163">Ireki leihoa arakatzailean</translation>
 <translation id="2278668501808246459">Edukiontzi-kudeatzailea abiarazten</translation>
-<translation id="2279051792571591988">Leheneratu balio lehenetsiak</translation>
 <translation id="2280486287150724112">Eskuineko marjina</translation>
 <translation id="2281863813036651454">Saguaren ezkerreko botoia</translation>
 <translation id="2282146716419988068">GPU prozesua</translation>
@@ -2810,7 +2806,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3429271624041785769">Sareko edukiaren hizkuntzak</translation>
 <translation id="3429275422858276529">Egin orri honen laster-marka, geroago bizkor aurkitzeko</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
-<translation id="3433507769937235446">Irtetean pantaila blokeatzeko eginbidea</translation>
+<translation id="3433507769937235446">Blokeatu irtetean</translation>
 <translation id="3433621910545056227">Sistemak ezin izan du ezarri gailuaren instalazio-atributuen blokeoa.</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3434272557872943250">Haurraren kontuko Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek haren Google-ko kontuan gordetzea. Lortu ezarpen horiei buruzko informazio gehiago eta ikasi haiek doitzen families.google.com helbidean.</translation>
@@ -2908,7 +2904,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3508920295779105875">Aukeratu beste karpeta bat…</translation>
 <translation id="3509379002674019679">Sortu, gorde eta kudeatu pasahitzak, webgune eta aplikazioetan erraz hasteko saioa.</translation>
 <translation id="3511200754045804813">Bilatu berriro</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Ez da aldatu inongo teklaren ekintza}=1{Tekla baten ekintza aldatu da}other{{COUNT} teklaren ekintzak aldatu dira}}</translation>
 <translation id="3511307672085573050">Kopiatu estekaren helbi&amp;dea</translation>
 <translation id="351152300840026870">Zabalera finkoko letra</translation>
 <translation id="3511528412952710609">Laburra</translation>
@@ -4490,7 +4485,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4906490889887219338">Konfiguratu edo kudeatu sareko fitxategiak partekatzeko biltegiak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Aukeratu noiz irakurri eta alda ditzakeen webguneko datuak luzapen honek</translation>
 <translation id="4907161631261076876">Fitxategia ez da deskargatu ohi eta baliteke arriskutsua izatea.</translation>
-<translation id="4908070840805457717">Errepikatu tekla-sakatzeak</translation>
 <translation id="4908811072292128752">Bi webgune aldi berean arakatzeko, ireki beste fitxa bat</translation>
 <translation id="4909038193460299775">Kontu hau <ph name="DOMAIN" /> domeinuak kudeatzen duenez, kendu egingo dira gailutik laster-markak, historia, pasahitzak eta bestelako ezarpenak. Hala ere, Google-ko kontuan jarraituko dute lehendik dituzun datuek, eta <ph name="BEGIN_LINK" />Google-ren Panela<ph name="END_LINK" /> erabil dezakezu haiek kudeatzeko.</translation>
 <translation id="4912643508233590958">Jarduerarik gabeko egoeratik ateratzea</translation>
@@ -5874,7 +5868,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="6177412385419165772">Kentzen…</translation>
 <translation id="6178664161104547336">Hautatu ziurtagiri bat</translation>
 <translation id="6178682841350631965">Eguneratu dira saioa hasteko datuak</translation>
-<translation id="6179893151569852357">Bihurtu F teklak ChromeOS-eko goiko errenkadako tekla</translation>
 <translation id="6180510783007738939">Lerroen tresna</translation>
 <translation id="6180550893222597997">Zein sarbide-gako erabili nahi duzu <ph name="APP_NAME" /> webgunerako?</translation>
 <translation id="6181431612547969857">Deskarga blokeatu da</translation>
@@ -6074,7 +6067,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="636850387210749493">Erregistratu erakundean</translation>
 <translation id="6370021412472292592">Ezin izan da manifestua kargatu.</translation>
 <translation id="637135143619858508">Handia</translation>
-<translation id="6372856076511744743">Aldatu teklatuko teklen ekintzak</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Saiatu berriro</translation>
 <translation id="6374635887697228982">Deskontuak lortu nahi dituzu?</translation>
@@ -6099,6 +6091,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6396175271241405634">Sistema-aplikazioa</translation>
 <translation id="6398715114293939307">Kendu Google Play Store</translation>
 <translation id="6398765197997659313">Irten pantaila osoko modutik</translation>
+<translation id="6399675241776343019">Ukatuta</translation>
 <translation id="6399774419735315745">Zelataria</translation>
 <translation id="6400360390396538896">Beti <ph name="ORIGIN" /> webgunean</translation>
 <translation id="6401458660421980302">Fitxa beste gailu batera bidaltzeko, hasi saioa Chrome-n bertan</translation>
@@ -6517,7 +6510,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="677646486571529447">Gehitu ohar bat</translation>
 <translation id="6776589734354015877">Lortu eginbide gehigarriak</translation>
 <translation id="6776729248872343918">Gaitu Parekatze bizkorra</translation>
-<translation id="677778081766640955">F teklen eta ChromeOS-eko ekintzen artean aldatzeko, eduki sakatuta tekla</translation>
 <translation id="6777817260680419853">Blokeatu egin da birbideratzeko ekintza</translation>
 <translation id="6779092717724412415">Testua horrela nabarmentzeko, hautatu edozein testu zati eta egin klik eskuineko botoiarekin.</translation>
 <translation id="6779447100905857289">zure saskiak</translation>
@@ -8124,7 +8116,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8163708146810922598">zaharrenak</translation>
 <translation id="8165997195302308593">Crostini-ren ataka-birbideratzea</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefono-zenbaki bat}other{# telefono-zenbaki}}</translation>
-<translation id="8168071266284693455">Laster-markak, pasahitzak, historia eta abar gailu guztietan sinkronizatu dira</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Gehitu fitxa irakurketa-zerrendan}other{Gehitu fitxak irakurketa-zerrendan}}</translation>
 <translation id="8171334254070436367">Ezkutatu txartel guztiak</translation>
@@ -8264,7 +8255,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8275080796245127762">Deitu zure gailutik</translation>
 <translation id="8275339871947079271">Eraman pasahitza Google-ko kontura, modu seguruan sartu ahal izateko saioa hasita daukazunean</translation>
 <translation id="8276560076771292512">Hustu cachea eta kargatu berriro cachea erabili gabe</translation>
-<translation id="8281721647184388851">Chrome arakatzailearen sinkronizazioa aktibatu nahi duzu?</translation>
 <translation id="8281886186245836920">Saltatu</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> webguneak</translation>
 <translation id="8284326494547611709">Azpitituluak</translation>
@@ -8431,7 +8421,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8428271547607112339">Gehitu ikastetxeko kontua</translation>
 <translation id="8428628598981198790">Daukazun segurtasun-giltza ezin da erabili webgune honetan</translation>
 <translation id="84297032718407999">Saioa amaituko egingo da <ph name="LOGOUT_TIME_LEFT" /> igarotakoan</translation>
-<translation id="8430963319679282846">Tekla bat sakatuta edukitzen baduzu, haren karakterea errepikatuko da</translation>
 <translation id="8431190899827883166">Erakutsi sakatutakoa</translation>
 <translation id="8434480141477525001">NaCl arazketa-ataka</translation>
 <translation id="8437209419043462667">US</translation>

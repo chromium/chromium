@@ -938,7 +938,6 @@
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
 <translation id="180203835522132923">搜索键 + O，然后按 W</translation>
-<translation id="1802457294427928325">将功能键的行为更改为 ChromeOS 顶行中按键的操作</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
 <translation id="1802687198411089702">该页面没有响应。您可以继续等待，也可以退出。</translation>
 <translation id="1803531841600994172">翻译目标语言</translation>
@@ -1459,7 +1458,6 @@
 <translation id="2235344399760031203">已阻止第三方 Cookie</translation>
 <translation id="2238379619048995541">频率状态数据</translation>
 <translation id="2241053333139545397">读取和更改您在一些网站上的数据</translation>
-<translation id="2241242047787527912">为下面列出的每个按键选择您想让其执行的操作</translation>
 <translation id="2241634353105152135">仅一次</translation>
 <translation id="2242687258748107519">文件信息</translation>
 <translation id="2245603955208828424">使用箭头键可在各项内容之间逐字母移动</translation>
@@ -1497,14 +1495,12 @@
 <translation id="2271986192355138465">了解如何安装 Web 应用</translation>
 <translation id="2272430695183451567">已分配 0 个开关键</translation>
 <translation id="2272570998639520080">马天尼酒杯</translation>
-<translation id="2272830751703114341">启用系统/启动器键可切换顶行中按键的行为</translation>
 <translation id="2273119997271134996">基座视频端口出问题了</translation>
 <translation id="2274840746523584236">您的 Chromebook 需要充电</translation>
 <translation id="2276503375879033601">添加更多应用</translation>
 <translation id="2276910256003242519">正在清除数据…</translation>
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2278668501808246459">正在启动容器管理器</translation>
-<translation id="2279051792571591988">恢复默认设置</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
 <translation id="2281863813036651454">用鼠标左键点击</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
@@ -2900,7 +2896,6 @@
 <translation id="3508920295779105875">选择其他文件夹...</translation>
 <translation id="3509379002674019679">您可创建、保存和管理您的密码，以便轻松登录网站和应用。</translation>
 <translation id="3511200754045804813">重新扫描</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{没有任何重新映射的按键}=1{1 个重新映射的按键}other{{COUNT} 个重新映射的按键}}</translation>
 <translation id="3511307672085573050">复制链接地址(&amp;E)</translation>
 <translation id="351152300840026870">宽度固定的字体</translation>
 <translation id="3511528412952710609">短</translation>
@@ -4479,7 +4474,6 @@
 <translation id="4906490889887219338">设置或管理网络文件共享。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">选择此扩展程序何时可以读取和更改您的网站数据</translation>
 <translation id="4907161631261076876">此文件属于不常下载的内容，可能存在危险。</translation>
-<translation id="4908070840805457717">重复按键</translation>
 <translation id="4908811072292128752">只需打开一个新标签页，即可同时浏览两个网站</translation>
 <translation id="4909038193460299775">由于此帐号是由 <ph name="DOMAIN" /> 管理，因此系统将会从该设备中清除您的书签、历史记录、密码及其他设置。但是，您的数据依然会存储在您的 Google 帐号中，而且您可以通过 <ph name="BEGIN_LINK" />Google 信息中心<ph name="END_LINK" />管理这些数据。</translation>
 <translation id="4912643508233590958">闲置状态唤醒</translation>
@@ -5863,7 +5857,6 @@
 <translation id="6177412385419165772">正在移除…</translation>
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6178682841350631965">您的登录数据已更新</translation>
-<translation id="6179893151569852357">将功能键转换为 ChromeOS 顶行中的按键</translation>
 <translation id="6180510783007738939">直线工具</translation>
 <translation id="6180550893222597997">您要将哪个通行密钥用于<ph name="APP_NAME" />？</translation>
 <translation id="6181431612547969857">下载已被阻止</translation>
@@ -5885,7 +5878,7 @@
 <translation id="6201608810045805374">移除此帐号？</translation>
 <translation id="6202304368170870640">您可以使用 PIN 码登录或解锁您的设备。</translation>
 <translation id="6203247599828309566">您在这个网站上保存了与密码相关的备注。如需查看该备注，请点击钥匙图标。</translation>
-<translation id="6205314730813004066">广告隐私设置</translation>
+<translation id="6205314730813004066">广告隐私权设置</translation>
 <translation id="6206199626856438589">您将从显示的网站（包括已打开的标签页中的网站）退出帐号</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
 <translation id="6206521455877863927">包括同一个网域中的各个网站，例如 google.com 和 mail.google.com。您正在查看的网站可将数据保存在您的设备上。</translation>
@@ -6063,7 +6056,6 @@
 <translation id="636850387210749493">企业注册</translation>
 <translation id="6370021412472292592">无法加载清单。</translation>
 <translation id="637135143619858508">宽松</translation>
-<translation id="6372856076511744743">重新映射键盘按键</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">重试</translation>
 <translation id="6374635887697228982">要获取折扣吗？</translation>
@@ -6088,6 +6080,7 @@
 <translation id="6396175271241405634">系统应用</translation>
 <translation id="6398715114293939307">移除 Google Play 商店</translation>
 <translation id="6398765197997659313">退出全屏模式</translation>
+<translation id="6399675241776343019">已被拒</translation>
 <translation id="6399774419735315745">间谍</translation>
 <translation id="6400360390396538896">在 <ph name="ORIGIN" /> 上始终允许</translation>
 <translation id="6401458660421980302">若要将此标签页发送到另一设备，请在该设备上登录 Chrome</translation>
@@ -6506,7 +6499,6 @@
 <translation id="677646486571529447">添加备注</translation>
 <translation id="6776589734354015877">获享更多功能</translation>
 <translation id="6776729248872343918">启用快速配对</translation>
-<translation id="677778081766640955">按住此键可在功能键和 ChromeOS 操作之间切换</translation>
 <translation id="6777817260680419853">已禁止重定向</translation>
 <translation id="6779092717724412415">如需创建与这相似的突出显示内容，请选择任意文本并右键点击它。</translation>
 <translation id="6779447100905857289">您的购物车</translation>
@@ -8115,7 +8107,6 @@
 <translation id="8163708146810922598">从旧到新</translation>
 <translation id="8165997195302308593">Crostini 端口转发</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
-<translation id="8168071266284693455">您的已存书签、密码、历史记录等信息会同步到您的所有设备上</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
 <translation id="8171334254070436367">隐藏所有卡片</translation>
@@ -8255,7 +8246,6 @@
 <translation id="8275080796245127762">通过您的设备拨打电话</translation>
 <translation id="8275339871947079271">将您的密码移至 Google 帐号后，无论您从哪部设备登录，都能安全地访问这个密码</translation>
 <translation id="8276560076771292512">清空缓存并硬性重新加载</translation>
-<translation id="8281721647184388851">开启 Chrome 浏览器同步？</translation>
 <translation id="8281886186245836920">跳过</translation>
 <translation id="8284279544186306258">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -8422,7 +8412,6 @@
 <translation id="8428271547607112339">添加学校帐号</translation>
 <translation id="8428628598981198790">您的安全密钥无法用于此网站</translation>
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
-<translation id="8430963319679282846">如果您按住某个键，系统会重复输入该键对应的字符</translation>
 <translation id="8431190899827883166">显示点按操作反馈</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>
 <translation id="8437209419043462667">美国英语</translation>
@@ -8506,7 +8495,7 @@
 <translation id="8512396579636492893">{COUNT,plural, =0{未发现任何安全系数低的密码}=1{发现了 {COUNT} 个安全系数低的密码}other{发现了 {COUNT} 个安全系数低的密码}}</translation>
 <translation id="8512476990829870887">结束进程</translation>
 <translation id="851263357009351303">始终允许 <ph name="HOST" /> 显示图片</translation>
-<translation id="8513108775083588393">自动旋转屏幕</translation>
+<translation id="8513108775083588393">自动屏幕旋转</translation>
 <translation id="8513357934662532537">如需将密码导入 <ph name="USER_EMAIL" /> 的 <ph name="BRAND" />，请选择一个 CSV 文件。</translation>
 <translation id="8514746246728959655">尝试改用一个不同的安全密钥</translation>
 <translation id="8514955299594277296">不允许网站将数据保存在设备上（不推荐）</translation>

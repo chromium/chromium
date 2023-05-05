@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">លុបទិន្នន័យដែលមានស្រាប់។</translation>
 <translation id="1149401351239820326">ខែផុតកំណត់</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថា​អ្នកយល់ព្រម​តាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Google Chrome និង ChromeOS<ph name="END_LINK2" />។</translation>
-<translation id="1154704303112745282">មិនអាចប្រើទំព័រពេលគ្មានអ៊ីនធឺណិតបានទេ៖ <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">ប្តូរឈ្មោះ</translation>
 <translation id="1177863135347784049">ផ្ទាល់ខ្លួន</translation>
 <translation id="1181037720776840403">ដកចេញ</translation>
@@ -696,7 +695,6 @@
 ដើម្បី​ផ្លាស់ប្ដូរ​ការកំណត់នេះ <ph name="BEGIN_LINK" />សូមកំណត់​សមកាលកម្មឡើងវិញ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ឈ្មោះនៅលើកាត</translation>
 <translation id="481574578487123132">ឧបករណ៍ដែលបានភ្ជាប់</translation>
-<translation id="4818017973810341238">ការផ្ទៀងផ្ទាត់ "Digital Asset Links" នៅលើ <ph name="VIOLATED_URL" /> មិនបានសម្រេចទេ</translation>
 <translation id="4826163340425232009">សន្លឹកខាងក្រោមសម្រាប់ចូលគណនី។</translation>
 <translation id="4831037795716408498">ទាញយកខ្លឹមសារ</translation>
 <translation id="4834007576107377210">មើល​ការណែនាំ​របស់​ម៉ាស៊ីន​ស្វែងរកអ្នក ដើម្បីដឹង​អំពីរបៀប​លុបប្រវត្តិ​ស្វែងរក​របស់អ្នក ប្រសិនបើអាច</translation>
@@ -994,7 +992,6 @@
 <translation id="6395288395575013217">តំណ</translation>
 <translation id="6397616442223433927">មានអ៊ីនធឺណិត​វិញ</translation>
 <translation id="6401458660421980302">ដើម្បីបញ្ជូន​ផ្ទាំងនេះ​ទៅ​ឧបករណ៍​ផ្សេង សូម​ចូល Chrome នៅ​លើ​នោះ</translation>
-<translation id="6402652558933147609"><ph name="ERROR_CODE" /> នៅលើ <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">កែប្រែចំណាំ</translation>
 <translation id="6406506848690869874">សមកាលកម្ម</translation>
 <translation id="6407224748847589805">មិនអាចភ្ជាប់ជាមួយកុំព្យូទ័ររបស់អ្នកបានទេ។ សូមសាកល្បងប្រើជម្រើសផ្ទៀងផ្ទាត់ផ្សេងទៀត។</translation>

@@ -221,6 +221,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1961239773406905488">La previsualització de la càmera està amagada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Pantalla de bloqueig</translation>
+<translation id="1962972976741217487">1 dispositiu connectat al teu punt d'accés Wi-Fi <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activa el punt d'accés Wi-Fi</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2367972762794486313">Mostra les aplicacions</translation>
 <translation id="2369165858548251131">"Hola" en xinès</translation>
 <translation id="2386292613071805067">Selecciona tots els elements de la pàgina</translation>
-<translation id="2390318262976603432">Configuració regional</translation>
 <translation id="2397416548179033562">Mostra el menú de Chrome</translation>
 <translation id="240006516586367791">Controls multimèdia</translation>
 <translation id="2402411679569069051">Per desbloquejar el Chromebook, fes servir l'empremta digital o desbloqueja el telèfon</translation>
@@ -931,6 +931,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> dispositius connectats al teu punt d'accés Wi‐Fi <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
@@ -1119,6 +1120,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirma la baixada</translation>
 <translation id="6154006699632741460">Perifèric no admès</translation>
+<translation id="6156960295318603523">Configuració d'idioma</translation>
 <translation id="615957422585914272">Mostra el teclat en pantalla</translation>
 <translation id="6165508094623778733">Més informació</translation>
 <translation id="6166852626429024716">Cerca al dispositiu, en aplicacions, a la configuració i al web...</translation>
@@ -1337,6 +1339,7 @@ Instal·lació nova</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualitza</translation>
+<translation id="7187711731540696127">El teu punt d'accés Wi-Fi <ph name="DEVICE_NAME" /> està activat; no hi ha cap dispositiu connectat</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>
 <translation id="7198435252016571249">La càmera s'ha ajustat a l'extrem inferior dret. S'ha produït un conflicte amb la superfície del sistema.</translation>

@@ -221,6 +221,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1961239773406905488">Pratinjau kamera disembunyikan</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Kunci Layar</translation>
+<translation id="1962972976741217487">1 perangkat terhubung ke hotspot <ph name="DEVICE_NAME" /> Anda</translation>
 <translation id="1967970931040389207">Aktifkan hotspot</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" /> yang terhormat,</translation>
@@ -301,7 +302,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2367972762794486313">Tampilkan aplikasi</translation>
 <translation id="2369165858548251131">"Halo" dalam bahasa China</translation>
 <translation id="2386292613071805067">Pilih semuanya di halaman</translation>
-<translation id="2390318262976603432">Setelan Lokal</translation>
 <translation id="2397416548179033562">Tampilkan Menu Chrome</translation>
 <translation id="240006516586367791">Kontrol media</translation>
 <translation id="2402411679569069051">Untuk membuka kunci Chromebook, gunakan sidik jari atau buka kunci ponsel</translation>
@@ -931,6 +931,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5297704307811127955">Nonaktif</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5302048478445481009">Bahasa</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> perangkat terhubung ke hotspot <ph name="DEVICE_NAME" /> Anda</translation>
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="5313326810920013265">Setelan bluetooth</translation>
 <translation id="5314219114274263156">Perekaman layar diambil</translation>
@@ -1119,6 +1120,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6137566720514957455">Buka dialog hapus untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Konfirmasi download</translation>
 <translation id="6154006699632741460">Periferal tidak didukung</translation>
+<translation id="6156960295318603523">Setelan Bahasa</translation>
 <translation id="615957422585914272">Tampilkan keyboard di layar</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
 <translation id="6166852626429024716">Telusuri perangkat, aplikasi, setelan, web ...</translation>
@@ -1337,6 +1339,7 @@ Baru diinstal</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Mengembalikan ke resolusi lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Perbarui</translation>
+<translation id="7187711731540696127">Hotspot <ph name="DEVICE_NAME" /> Anda aktif, tidak ada perangkat yang terhubung</translation>
 <translation id="7188494361780961876">Menu dipindahkan ke pojok kiri atas layar.</translation>
 <translation id="7189412385142492784">Seberapa jauh Venus</translation>
 <translation id="7198435252016571249">Kamera dipaskan ke pojok kanan bawah. Bertentangan dengan platform sistem.</translation>

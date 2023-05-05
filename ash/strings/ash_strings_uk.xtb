@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">Попередній перегляд зображення з камери приховано</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Блокування екрана</translation>
+<translation id="1962972976741217487">До вашої точки доступу <ph name="DEVICE_NAME" /> підключено 1 пристрій</translation>
 <translation id="1967970931040389207">Увімкнути точку доступу</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@
 <translation id="2367972762794486313">Показати програми</translation>
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2386292613071805067">Вибрати все на сторінці</translation>
-<translation id="2390318262976603432">Налаштування мовного коду</translation>
 <translation id="2397416548179033562">Показати меню Chrome</translation>
 <translation id="240006516586367791">Елементи керування медіа</translation>
 <translation id="2402411679569069051">Щоб розблокувати Chromebook, скористайтеся відбитком пальця або розблокуйте телефон</translation>
@@ -931,6 +931,7 @@
 <translation id="5297704307811127955">Вимкнено</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5302048478445481009">Мова</translation>
+<translation id="5303783651764314393">До вашої точки доступу <ph name="DEVICE_NAME" /> підключено кілька пристроїв (<ph name="DEVICECOUNT" />)</translation>
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5313326810920013265">Налаштування Bluetooth</translation>
 <translation id="5314219114274263156">Запис екрана зроблено</translation>
@@ -1119,6 +1120,7 @@
 <translation id="6137566720514957455">Відкрити вікно видалення облікового запису <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6154006699632741460">Периферійний пристрій не підтримується</translation>
+<translation id="6156960295318603523">Налаштування мови</translation>
 <translation id="615957422585914272">Показувати екранну клавіатуру</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6166852626429024716">Шукайте на пристрої, в додатках, налаштуваннях та Інтернеті…</translation>
@@ -1337,6 +1339,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Попередня роздільна здатність повернеться через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Оновити</translation>
+<translation id="7187711731540696127">Точку доступу <ph name="DEVICE_NAME" /> увімкнено. До неї не підключено жодного пристрою.</translation>
 <translation id="7188494361780961876">Меню переміщено у верхній лівий кут екрана.</translation>
 <translation id="7189412385142492784">Яка відстань від Землі до Венери</translation>
 <translation id="7198435252016571249">Зображення з камери закріплено в нижньому правому куті, що конфліктує із системною платформою.</translation>

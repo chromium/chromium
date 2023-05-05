@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">डीएनएस की समस्या को ठीक नहीं किया जा सकता</translation>
 <translation id="1018656279737460067">रद्द</translation>
 <translation id="1022433422498218992">सामान्य कंट्रोल</translation>
+<translation id="1022628058306505708">अर्थ फ़्लो</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />गीगाहर्ट्ज़)</translation>
 <translation id="1047773237499189053">नई सुविधा उपलब्ध है, ज़्यादा जानने के लिए अप ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="1059913517121127803">स्कैन करने की प्रोसेस शुरू नहीं हो सकी</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">और क्रियाएं</translation>
 <translation id="2926057806159140518">अपना उपयोगकर्ता नाम और पासवर्ड डालें या अपना क्यूआर कोड स्कैन करें</translation>
 <translation id="2940811910881150316">डिवाइस की जांच नहीं की जा सकती. जांच करने के लिए लिड को फिर से खोलें.</translation>
+<translation id="2981143481017883351">Chromebook के लिए खास ऐसेट अब उपलब्ध हैं</translation>
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">कनेक्ट है</translation>
 <translation id="3369013195428705271">क्या आप वाकई अपना पूरा प्रिंट इतिहास मिटाना चाहते हैं? प्रिंट का जो काम अभी चल रहा है उसकी जानकारी (प्रिंट जॉब) नहीं मिटाई जाएगी.</translation>
+<translation id="3386675685417744672">Chromebook के लिए खास</translation>
 <translation id="3404249063913988450">स्क्रीन सेवर चालू करें</translation>
 <translation id="3413935475507503304">अपडेट करने के लिए 'आगे बढ़ें' पर क्लिक करें.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">चेतावनी</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड हो रही है</translation>
 <translation id="4060260348856573701">नया एपीएन</translation>
+<translation id="4079743696465895866">Chromebook के लिए खास आर्टवर्क चुनें</translation>
 <translation id="4093865285251893588">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="409427325554347132">जांच की जानकारी सेव करें</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">इस्तेमाल के साथ, बैटरी की क्षमता में कमी आती जाती है</translation>
 <translation id="6191293864534840972">इन नाम सर्वर के फ़ॉर्मैट सही नहीं हैं</translation>
+<translation id="6205145102504628069">क्लाउड फ़्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">फ़ुलस्क्रीन मोड से बाहर निकलें</translation>
 <translation id="6223752125779001553">कोई भी स्कैनर उपलब्ध नहीं है</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">पसंद के मुताबिक सेटिंग</translation>
 <translation id="6500818810472529210">Google Search में नतीजा देखें</translation>
 <translation id="650266656685499220">एल्बम तैयार करने के लिए, Google Photos पर जाएं</translation>
+<translation id="6505750420152840539">सुबह से रात तक</translation>
 <translation id="6516990319416533844">बैटरी चार्ज होने की दर की जांच करने के लिए, बैटरी को पहले काफ़ी हद तक (पूरी नहीं) खर्च होने दें</translation>
 <translation id="6517239166834772319">एक्सप्लोर करें</translation>
 <translation id="6526200165918397681">वॉलपेपर मैच करें</translation>

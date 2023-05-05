@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">Διαγραφή υπαρχόντων δεδομένων.</translation>
 <translation id="1149401351239820326">Μήνας λήξης</translation>
 <translation id="1150263420752757504">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="1154704303112745282">Η σελίδα δεν είναι διαθέσιμη εκτός σύνδεσης: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1177863135347784049">Προσαρμοσμένη</translation>
 <translation id="1181037720776840403">Κατάργηση</translation>
@@ -694,7 +693,6 @@
 Για να αλλάξετε αυτήν τη ρύθμιση, <ph name="BEGIN_LINK" />επαναφέρετε τον συγχρονισμό<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Όνομα στην κάρτα</translation>
 <translation id="481574578487123132">Συνδεδεμένες συσκευές</translation>
-<translation id="4818017973810341238">Αποτυχία επαλήθευσης Συνδέσμων ψηφιακών στοιχείων στο <ph name="VIOLATED_URL" />.</translation>
 <translation id="4826163340425232009">Φύλλο κάτω μέρους για σύνδεση.</translation>
 <translation id="4831037795716408498">Λήψη περιεχομένου</translation>
 <translation id="4834007576107377210">Ανατρέξτε στις οδηγίες της μηχανής αναζήτησης για τη διαγραφή του ιστορικού αναζήτησης, εάν υπάρχουν.</translation>
@@ -991,7 +989,6 @@
 <translation id="6395288395575013217">ΣΥΝΔΕΣΜΟΣ</translation>
 <translation id="6397616442223433927">Επιστροφή στο διαδίκτυο</translation>
 <translation id="6401458660421980302">Για να στείλετε αυτήν την καρτέλα σε άλλη συσκευή, συνδεθείτε στο Chrome στη συγκεκριμένη συσκευή</translation>
-<translation id="6402652558933147609"><ph name="ERROR_CODE" /> <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Επεξεργασία σελιδοδείκτη</translation>
 <translation id="6406506848690869874">Συγχρονισμός</translation>
 <translation id="6407224748847589805">Δεν είναι δυνατή η σύνδεση στον υπολογιστή σας. Δοκιμάστε διαφορετική επιλογή επαλήθευσης.</translation>

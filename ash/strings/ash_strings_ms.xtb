@@ -302,7 +302,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2367972762794486313">Paparkan apl</translation>
 <translation id="2369165858548251131">"Helo" dalam bahasa Cina</translation>
 <translation id="2386292613071805067">Pilih segala-galanya pada halaman</translation>
-<translation id="2390318262976603432">Tetapan Tempat Peristiwa</translation>
 <translation id="2397416548179033562">Paparkan menu Chrome</translation>
 <translation id="240006516586367791">Kawalan media</translation>
 <translation id="2402411679569069051">Untuk membuka kunci Chromebook anda, gunakan cap jari atau buka kunci telefon anda</translation>
@@ -460,6 +459,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="316086887565479535">Apl tidak disokong dalam templat</translation>
 <translation id="3161500364292033097">Tutup meja dan tetingkap</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> sedang mengundurkan <ph name="DEVICE_TYPE" /> anda. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
+<translation id="3171170659304083361">Tetapan kaedah input</translation>
 <translation id="3181441307743005334">Proses mula semula mungkin mengambil sedikit masa</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Disambungkan ke peranti}other{Disambungkan ke # peranti}}</translation>
 <translation id="320207200541803018">Tetapkan pemasa</translation>
@@ -1061,6 +1061,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5881540930187678962">Sediakan Hab Telefon kemudian</translation>
 <translation id="5881663018261910378">Mati</translation>
 <translation id="5887954372087850114">Window <ph name="WINDOW_TITLE" /> ditetapkan kepada <ph name="DESK_TITLE" /> dan tidak ditetapkan daripada semua meja.</translation>
+<translation id="588817334757907802">Buka fail dalam penyemak imbas Chrome</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="589817443623831496">Pengimbasan titik</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1112,6 +1113,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6074087755403037157">Saluran beta</translation>
 <translation id="6093867385179428431">Dilumpuhkan oleh pentadbir</translation>
 <translation id="6095008505822982596">Kadar pertuturan</translation>
+<translation id="6095425951508823973">Tambahkan sambungan dengan <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Diedit dalam bulan lepas</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun</translation>
@@ -1122,6 +1124,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6137566720514957455">Buka dialog alih keluar untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Sahkan muat turun</translation>
 <translation id="6154006699632741460">Peranti persisian tidak disokong</translation>
+<translation id="6156960295318603523">Tetapan Bahasa</translation>
 <translation id="615957422585914272">Paparkan papan kekunci pada skrin</translation>
 <translation id="6165508094623778733">Ketahui lebih lanjut</translation>
 <translation id="6166852626429024716">Cari dalam peranti anda, apl, tetapan, web...</translation>

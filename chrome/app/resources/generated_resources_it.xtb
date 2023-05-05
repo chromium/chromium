@@ -943,7 +943,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1797117170091578105">Gioca usando la tastiera di Chromebook. Puoi personalizzare i tasti assegnando loro azioni specifiche.</translation>
 <translation id="180203835522132923">Tasto per la ricerca + O, poi W</translation>
-<translation id="1802457294427928325">Modifica il comportamento dei tasti F in azioni nella riga superiore di Chrome OS</translation>
 <translation id="1802624026913571222">Sospendi alla chiusura dello schermo</translation>
 <translation id="1802687198411089702">La pagina non risponde. Puoi aspettare oppure chiuderla.</translation>
 <translation id="1803531841600994172">Lingua in cui tradurre</translation>
@@ -1237,7 +1236,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2048554637254265991">Errore durante l'avvio del gestore di container. Riprova.</translation>
 <translation id="2048653237708779538">Azione non disponibile</translation>
 <translation id="204914487372604757">Crea scorciatoia</translation>
-<translation id="2050339315714019657">Verticale</translation>
+<translation id="2050339315714019657">Ritratto</translation>
 <translation id="2051555741181591333">Disabilita automaticamente l'hotspot</translation>
 <translation id="2052572566310583903">Installata su altri dispositivi</translation>
 <translation id="2053105195397337973">Stiamo esaminando dei metodi per limitare il monitoraggio e consentire ai siti di contrastare spam negli annunci e attività fraudolente.</translation>
@@ -1466,7 +1465,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2235344399760031203">I cookie di terze parti sono bloccati</translation>
 <translation id="2238379619048995541">Dati sullo stato di frequenza</translation>
 <translation id="2241053333139545397">Leggere e modificare i tuoi dati su una serie di siti web</translation>
-<translation id="2241242047787527912">Per ogni tasto elencato di seguito, scegli l'azione che vuoi che esegua</translation>
 <translation id="2241634353105152135">Solo una volta</translation>
 <translation id="2242687258748107519">Info sul file</translation>
 <translation id="2245603955208828424">Usa i tasti freccia per spostarti tra gli elementi lettera per lettera</translation>
@@ -1504,14 +1502,12 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2271986192355138465">Scopri come installare app web</translation>
 <translation id="2272430695183451567">0 sensori assegnati</translation>
 <translation id="2272570998639520080">Bicchiere da cocktail</translation>
-<translation id="2272830751703114341">Attiva il tasto Avvio app/Sistema per modificare il comportamento dei tasti della riga superiore</translation>
 <translation id="2273119997271134996">Problema con la porta video del dock</translation>
 <translation id="2274840746523584236">Ricarica il Chromebook</translation>
 <translation id="2276503375879033601">Aggiungi altre applicazioni</translation>
 <translation id="2276910256003242519">Cancellazione dei dati in corso…</translation>
 <translation id="2278562042389100163">Apri finestra browser</translation>
 <translation id="2278668501808246459">Avvio del gestore di container</translation>
-<translation id="2279051792571591988">Ripristina predefinite</translation>
 <translation id="2280486287150724112">Margine destro</translation>
 <translation id="2281863813036651454">Clic con il tasto sinistro del mouse</translation>
 <translation id="2282146716419988068">Processo GPU</translation>
@@ -2908,7 +2904,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3508920295779105875">Scegli un'altra cartella...</translation>
 <translation id="3509379002674019679">Crea, salva e gestisci le tue password in modo da poter accedere facilmente ai siti e alle app.</translation>
 <translation id="3511200754045804813">Ripeti scansione</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Nessun tasto rimappato}=1{1 tasto rimappato}other{{COUNT} tasti rimappati}}</translation>
 <translation id="3511307672085573050">Copia indir&amp;izzo link</translation>
 <translation id="351152300840026870">Carattere a larghezza fissa</translation>
 <translation id="3511528412952710609">Breve</translation>
@@ -4490,7 +4485,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4906490889887219338">Configura o gestisci condivisioni file di rete. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Scegli quando questa estensione può leggere e modificare i tuoi dati dei siti</translation>
 <translation id="4907161631261076876">Questo file non viene scaricato spesso e potrebbe essere pericoloso.</translation>
-<translation id="4908070840805457717">Ripeti la pressione del tasto</translation>
 <translation id="4908811072292128752">Apri una nuova scheda per visitare due siti contemporaneamente</translation>
 <translation id="4909038193460299775">Questo account è gestito da <ph name="DOMAIN" />, pertanto i preferiti, la cronologia, le password e altre impostazioni verranno cancellati da questo dispositivo. I tuoi dati rimarranno però memorizzati nel tuo Account Google e potrai gestirli su <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Riattivazioni</translation>
@@ -5874,7 +5868,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6177412385419165772">Rimozione in corso…</translation>
 <translation id="6178664161104547336">Seleziona un certificato</translation>
 <translation id="6178682841350631965">I dati di accesso sono stati aggiornati</translation>
-<translation id="6179893151569852357">Converti i tasti F in tasti di primo livello di Chrome OS</translation>
 <translation id="6180510783007738939">Strumento Linea</translation>
 <translation id="6180550893222597997">Quale passkey vuoi utilizzare per <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Download bloccato</translation>
@@ -6074,7 +6067,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="6370021412472292592">Impossibile caricare il file manifest.</translation>
 <translation id="637135143619858508">Larga</translation>
-<translation id="6372856076511744743">Rimappa i tasti della tastiera</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Riprova</translation>
 <translation id="6374635887697228982">Vuoi ricevere sconti?</translation>
@@ -6099,6 +6091,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6396175271241405634">App di sistema</translation>
 <translation id="6398715114293939307">Rimuovi il Google Play Store</translation>
 <translation id="6398765197997659313">Esci da schermo intero</translation>
+<translation id="6399675241776343019">Rifiutato</translation>
 <translation id="6399774419735315745">Spia</translation>
 <translation id="6400360390396538896">Sempre su <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Per inviare questa scheda a un altro dispositivo, accedi a Chrome su quel dispositivo</translation>
@@ -6517,7 +6510,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="677646486571529447">Aggiungi una nota</translation>
 <translation id="6776589734354015877">Usufruisci di funzionalità aggiuntive</translation>
 <translation id="6776729248872343918">Abilita l'Accoppiamento rapido</translation>
-<translation id="677778081766640955">Tieni premuto il tasto per spostarti tra i tasti F e le azioni Chrome OS</translation>
 <translation id="6777817260680419853">Reindirizzamento bloccato</translation>
 <translation id="6779092717724412415">Per creare un'evidenziazione come questa, seleziona del testo e fai clic con il tasto destro del mouse.</translation>
 <translation id="6779447100905857289">i tuoi carrelli</translation>
@@ -8126,7 +8118,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8163708146810922598">meno recenti</translation>
 <translation id="8165997195302308593">Port forwarding su Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{un numero di telefono}other{# numeri di telefono}}</translation>
-<translation id="8168071266284693455">I preferiti, le password, la cronologia e altri dati vengono sincronizzati su tutti i tuoi dispositivi</translation>
 <translation id="8168435359814927499">Contenuti</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Aggiungi scheda all'elenco di lettura}other{Aggiungi schede all'elenco di lettura}}</translation>
 <translation id="8171334254070436367">Nascondi tutte le schede</translation>
@@ -8266,7 +8257,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8275080796245127762">Chiama dal tuo dispositivo</translation>
 <translation id="8275339871947079271">Sposta la tua password nel tuo Account Google per accedervi in sicurezza quando esegui l'accesso</translation>
 <translation id="8276560076771292512">Svuota la cache e ricarica manualmente</translation>
-<translation id="8281721647184388851">Attivare la sincronizzazione del browser Chrome?</translation>
 <translation id="8281886186245836920">Salta</translation>
 <translation id="8284279544186306258">tutti i siti <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Sottotitoli</translation>
@@ -8433,7 +8423,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8428271547607112339">Aggiungi account della scuola</translation>
 <translation id="8428628598981198790">Impossibile utilizzare il tuo token di sicurezza con questo sito</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
-<translation id="8430963319679282846">Se tieni premuto un tasto, il relativo carattere viene ripetuto</translation>
 <translation id="8431190899827883166">Mostra tocchi</translation>
 <translation id="8434480141477525001">Porta di debug NaCl</translation>
 <translation id="8437209419043462667">USA</translation>

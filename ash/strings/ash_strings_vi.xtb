@@ -221,6 +221,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1961239773406905488">Đang ẩn chế độ xem trước máy ảnh</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Khóa màn hình</translation>
+<translation id="1962972976741217487">Có 1 thiết bị đã kết nối với điểm phát sóng <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="1967970931040389207">Bật điểm phát sóng</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Chào <ph name="USERNAME" />!</translation>
@@ -301,7 +302,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2367972762794486313">Hiển thị ứng dụng</translation>
 <translation id="2369165858548251131">"Xin chào" bằng tiếng Trung</translation>
 <translation id="2386292613071805067">Chọn mọi nội dung trên trang</translation>
-<translation id="2390318262976603432">Cài đặt ngôn ngữ</translation>
 <translation id="2397416548179033562">Hiển thị menu Chrome</translation>
 <translation id="240006516586367791">Điều khiển nội dung nghe nhìn</translation>
 <translation id="2402411679569069051">Hãy dùng vân tay hoặc mở khóa điện thoại của bạn để mở khóa Chromebook</translation>
@@ -931,6 +931,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5297704307811127955">Đang tắt</translation>
 <translation id="5300589172476337783">Hiển thị</translation>
 <translation id="5302048478445481009">Ngôn ngữ</translation>
+<translation id="5303783651764314393">Có <ph name="DEVICECOUNT" /> thiết bị đã kết nối với điểm phát sóng <ph name="DEVICE_NAME" /> của bạn</translation>
 <translation id="5308380583665731573">Kết nối</translation>
 <translation id="5313326810920013265">Cài đặt Bluetooth</translation>
 <translation id="5314219114274263156">Đã ghi màn hình</translation>
@@ -1058,6 +1059,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="5881540930187678962">Thiết lập Trung tâm điều khiển điện thoại sau</translation>
 <translation id="5881663018261910378">Đang tắt</translation>
 <translation id="5887954372087850114">Cửa sổ <ph name="WINDOW_TITLE" /> đã được chỉ định cho <ph name="DESK_TITLE" /> và được gỡ chỉ định khỏi tất cả không gian làm việc khác</translation>
+<translation id="588817334757907802">Mở tệp trong trình duyệt Chrome</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
 <translation id="589817443623831496">Quét điểm</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1119,6 +1121,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6137566720514957455">Mở hộp thoại xóa tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Xác nhận tải xuống</translation>
 <translation id="6154006699632741460">Không hỗ trợ thiết bị ngoại vi</translation>
+<translation id="6156960295318603523">Cài đặt ngôn ngữ</translation>
 <translation id="615957422585914272">Hiện bàn phím ảo</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6166852626429024716">Tìm kiếm trong thiết bị, ứng dụng, tùy chọn cài đặt, trên web...</translation>
@@ -1337,6 +1340,7 @@ Mới cài đặt</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Sẽ hoàn nguyên về độ phân giải cũ sau <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Làm mới</translation>
+<translation id="7187711731540696127">Điểm phát sóng <ph name="DEVICE_NAME" /> của bạn đang bật, chưa có thiết bị nào kết nối</translation>
 <translation id="7188494361780961876">Đã di chuyển trình đơn vào góc trên cùng bên trái màn hình.</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>
 <translation id="7198435252016571249">Máy ảnh đang bám theo góc dưới bên phải. Xung đột với khu vực hệ thống.</translation>

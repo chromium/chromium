@@ -950,7 +950,6 @@
 <translation id="1796588414813960292">Функциите, за които е нужен звук, няма да работят</translation>
 <translation id="1797117170091578105">Играйте с клавиатурата на своя Chromebook. Можете да персонализирате клавишите за конкретни действия.</translation>
 <translation id="180203835522132923">Клавиш „търсене“ + O, след това W</translation>
-<translation id="1802457294427928325">Промяна на поведението на функционалните клавишите така, че да изпълняват действията на тези от най-горния ред на ChromeOS</translation>
 <translation id="1802624026913571222">Преминаване в спящ режим при затваряне на капака</translation>
 <translation id="1802687198411089702">Страницата не реагира. Можете да изчакате или да я затворите.</translation>
 <translation id="1803531841600994172">Целеви език</translation>
@@ -1474,7 +1473,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2235344399760031203">„Бисквитките“ на трети страни са блокирани</translation>
 <translation id="2238379619048995541">Данни за състоянието на активност</translation>
 <translation id="2241053333139545397">Четене и промяна на данните ви в няколко уебсайта.</translation>
-<translation id="2241242047787527912">Изберете действието, което искате да извършва всеки от посочените по-долу клавиши</translation>
 <translation id="2241634353105152135">Само веднъж</translation>
 <translation id="2242687258748107519">Информация за файла</translation>
 <translation id="2245603955208828424">Използвайте клавишите със стрелки, за да се придвижвате в елементите буква по буква</translation>
@@ -1515,14 +1513,12 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2271986192355138465">Научете как да инсталирате уеб приложения</translation>
 <translation id="2272430695183451567">0 зададени превключвателя</translation>
 <translation id="2272570998639520080">Чаша за мартини</translation>
-<translation id="2272830751703114341">Клавишът за системата/стартовия панел променя поведението на клавишите от най-горния ред</translation>
 <translation id="2273119997271134996">Проблем с порта за видео на докинг станцията</translation>
 <translation id="2274840746523584236">Заредете своя Chromebook</translation>
 <translation id="2276503375879033601">Добавяне на още приложения</translation>
 <translation id="2276910256003242519">Данните се изчистват...</translation>
 <translation id="2278562042389100163">Отваряне на прозореца на браузъра</translation>
 <translation id="2278668501808246459">Мениджърът на контейнерите се стартира</translation>
-<translation id="2279051792571591988">Възстановяване на стандартните</translation>
 <translation id="2280486287150724112">Дясно поле</translation>
 <translation id="2281863813036651454">Кликване с левия бутон на мишката</translation>
 <translation id="2282146716419988068">Процес на графичния процесор</translation>
@@ -2919,7 +2915,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3508920295779105875">Изберете друга папка...</translation>
 <translation id="3509379002674019679">Създавайте, запазвайте и управлявайте паролите си, за да можете лесно да влизате в сайтове и приложения.</translation>
 <translation id="3511200754045804813">Повторно сканиране</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Няма променени клавиши}=1{1 променен клавиш}other{{COUNT} променени клавиша}}</translation>
 <translation id="3511307672085573050">Копиране на адреса на вр&amp;ъзката</translation>
 <translation id="351152300840026870">Шрифт с фиксирана ширина</translation>
 <translation id="3511528412952710609">Кратко</translation>
@@ -4503,7 +4498,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4906490889887219338">Настройване или управление на споделени хранилища в мрежата. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Изберете кога това разширение да може да чете и променя данните от сайтовете</translation>
 <translation id="4907161631261076876">Този файл обикновено не се изтегля и може да е опасен.</translation>
-<translation id="4908070840805457717">Повтаряне на натискането на клавишите</translation>
 <translation id="4908811072292128752">Отворете нов раздел, за да сърфирате в два сайта едновременно</translation>
 <translation id="4909038193460299775">Тъй като този профил се управлява от <ph name="DOMAIN" />, вашите отметки, история, пароли и други настройки ще бъдат изчистени от устройството. Данните ви обаче ще продължат да се съхраняват в профила ви в Google. Можете да ги управлявате от <ph name="BEGIN_LINK" />Google Табло за управление<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Събуждания при неактивност</translation>
@@ -5891,7 +5885,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6177412385419165772">Премахва се...</translation>
 <translation id="6178664161104547336">Избор на сертификат</translation>
 <translation id="6178682841350631965">Данните ви за вход бяха актуализирани</translation>
-<translation id="6179893151569852357">Преобразуване на функционалните клавиши в такива от най-горния ред на ChromeOS</translation>
 <translation id="6180510783007738939">Инструмент за линия</translation>
 <translation id="6180550893222597997">Кой код за достъп искате да използвате за <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Изтеглянето е блокирано</translation>
@@ -6091,7 +6084,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="636850387210749493">Корпоративно записване</translation>
 <translation id="6370021412472292592">Манифестът не можа да се зареди.</translation>
 <translation id="637135143619858508">Голям интервал</translation>
-<translation id="6372856076511744743">Промяна на клавишите на клавиатурата</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Нов опит</translation>
 <translation id="6374635887697228982">Искате ли да получавате отстъпки?</translation>
@@ -6535,7 +6527,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="677646486571529447">Добавяне на бележка</translation>
 <translation id="6776589734354015877">Получете допълнителни функции</translation>
 <translation id="6776729248872343918">Активиране на бързото сдвояване</translation>
-<translation id="677778081766640955">Натиснете клавиша и го задръжте, за да превключите между функционалните клавиши и действията на ChromeOS</translation>
 <translation id="6777817260680419853">Блокирано бе пренасочване</translation>
 <translation id="6779092717724412415">За да създадете такова открояване, изберете текст и кликнете с десния бутон.</translation>
 <translation id="6779447100905857289">вашите кошници</translation>
@@ -8144,7 +8135,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8163708146810922598">най-стари</translation>
 <translation id="8165997195302308593">Пренасочване на портове за Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{телефонен номер}other{# телефонни номера}}</translation>
-<translation id="8168071266284693455">Вашите отметки, пароли, история и др. са синхронизирани на всичките ви устройства</translation>
 <translation id="8168435359814927499">Съдържание</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Добавяне на раздела към списъка за четене}other{Добавяне на разделите към списъка за четене}}</translation>
 <translation id="8171334254070436367">Скриване на всички карти</translation>
@@ -8284,7 +8274,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8275080796245127762">Обаждане от устройството ви</translation>
 <translation id="8275339871947079271">Преместете паролата в профила си в Google, за да имате сигурен достъп до нея, когато сте влезли в него</translation>
 <translation id="8276560076771292512">Изпразване на кеша и твърдо презареждане</translation>
-<translation id="8281721647184388851">Да се включи ли синхронизирането в браузъра Chrome?</translation>
 <translation id="8281886186245836920">Пропускане</translation>
 <translation id="8284279544186306258">всички <ph name="WEBSITE_1" /> сайта</translation>
 <translation id="8284326494547611709">Надписи</translation>
@@ -8451,7 +8440,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8428271547607112339">Нов училищен профил</translation>
 <translation id="8428628598981198790">Ключът ви за сигурност не може да се използва с този сайт</translation>
 <translation id="84297032718407999">Ще излезете от профила си след <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Ако задържите даден клавиш, съответният знак ще се повтори</translation>
 <translation id="8431190899827883166">Показване на докосванията</translation>
 <translation id="8434480141477525001">Порт за отстраняване на грешки в клиента с директно изпълнение</translation>
 <translation id="8437209419043462667">Американска клавиатура</translation>

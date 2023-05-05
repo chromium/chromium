@@ -954,7 +954,6 @@
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
 <translation id="180203835522132923">검색 + O를 누른 후 W</translation>
-<translation id="1802457294427928325">F 키의 동작을 ChromeOS 맨 윗줄 작업으로 변경</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
 <translation id="1802687198411089702">페이지가 응답하지 않습니다. 페이지가 응답할 때까지 기다리거나 종료할 수 있습니다.</translation>
 <translation id="1803531841600994172">번역 타겟 언어</translation>
@@ -1479,7 +1478,6 @@
 <translation id="2235344399760031203">타사 쿠키가 차단됨</translation>
 <translation id="2238379619048995541">주파수 상태 데이터</translation>
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
-<translation id="2241242047787527912">아래 나열된 각 키로 수행할 작업을 선택합니다</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2242687258748107519">파일 정보</translation>
 <translation id="2245603955208828424">화살표 키를 사용하여 글자 단위로 항목을 이동하세요</translation>
@@ -1520,14 +1518,12 @@
 <translation id="2271986192355138465">웹 앱 설치 방법 알아보기</translation>
 <translation id="2272430695183451567">스위치 0개 할당됨</translation>
 <translation id="2272570998639520080">마티니 잔</translation>
-<translation id="2272830751703114341">시스템/런처 키를 사용 설정하여 맨 윗줄 키의 동작 전환</translation>
 <translation id="2273119997271134996">도크 비디오 포트 문제</translation>
 <translation id="2274840746523584236">Chromebook 충전하기</translation>
 <translation id="2276503375879033601">앱 추가</translation>
 <translation id="2276910256003242519">데이터 지우는 중...</translation>
 <translation id="2278562042389100163">브라우저 창 열기</translation>
 <translation id="2278668501808246459">컨테이너 관리자 시작 중</translation>
-<translation id="2279051792571591988">기본값 복원</translation>
 <translation id="2280486287150724112">오른쪽 여백</translation>
 <translation id="2281863813036651454">마우스 왼쪽 버튼 클릭</translation>
 <translation id="2282146716419988068">GPU 프로세스</translation>
@@ -2925,7 +2921,6 @@
 <translation id="3508920295779105875">다른 폴더 선택...</translation>
 <translation id="3509379002674019679">사이트와 앱에 쉽게 로그인할 수 있도록 비밀번호를 생성, 저장, 관리하세요.</translation>
 <translation id="3511200754045804813">다시 스캔</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{다시 매핑된 키 없음}=1{다시 매핑된 키 1개}other{다시 매핑된 키 {COUNT}개}}</translation>
 <translation id="3511307672085573050">링크 주소 복사(&amp;E)</translation>
 <translation id="351152300840026870">고정폭 글꼴</translation>
 <translation id="3511528412952710609">짧게</translation>
@@ -4506,7 +4501,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4906490889887219338">네트워크 파일 공유를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">확장 프로그램에서 사이트 데이터를 읽고 변경할 수 있는 경우 선택</translation>
 <translation id="4907161631261076876">이 파일은 위험할 수 있기 때문에 일반적으로 다운로드하지 않습니다.</translation>
-<translation id="4908070840805457717">키 누름 반복</translation>
 <translation id="4908811072292128752">새 탭을 열어 한 번에 두 개의 사이트를 탐색할 수 있습니다</translation>
 <translation id="4909038193460299775">이 계정은 <ph name="DOMAIN" />에 의해 관리되므로 북마크, 방문 기록, 비밀번호 및 기타 설정이 이 기기에서 삭제됩니다. 하지만 데이터는 Google 계정에 계속 저장되며 <ph name="BEGIN_LINK" />Google 대시보드<ph name="END_LINK" />에서 관리할 수 있습니다.</translation>
 <translation id="4912643508233590958">유휴 상태 해제</translation>
@@ -5893,7 +5887,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6177412385419165772">삭제 중…</translation>
 <translation id="6178664161104547336">인증서 선택</translation>
 <translation id="6178682841350631965">로그인 데이터가 업데이트되었습니다.</translation>
-<translation id="6179893151569852357">F 키를 ChromeOS 맨 윗줄 키로 변환</translation>
 <translation id="6180510783007738939">선 도구</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" />에 어떤 패스키를 사용하시겠습니까?</translation>
 <translation id="6181431612547969857">다운로드 차단됨</translation>
@@ -6093,7 +6086,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="636850387210749493">엔터프라이즈 등록</translation>
 <translation id="6370021412472292592">매니페스트를 로드할 수 없습니다.</translation>
 <translation id="637135143619858508">넓음</translation>
-<translation id="6372856076511744743">키보드 키 다시 매핑</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">다시 시도</translation>
 <translation id="6374635887697228982">할인을 받으시겠습니까?</translation>
@@ -6537,7 +6529,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="677646486571529447">메모 추가</translation>
 <translation id="6776589734354015877">더 많은 기능을 사용하세요</translation>
 <translation id="6776729248872343918">빠른 페어링 사용</translation>
-<translation id="677778081766640955">키를 길게 눌러 F 키와 ChromeOS 작업 간에 전환</translation>
 <translation id="6777817260680419853">리디렉션이 차단됨</translation>
 <translation id="6779092717724412415">이와 같이 강조표시하려면 텍스트를 선택하고 마우스 오른쪽 버튼으로 클릭하세요.</translation>
 <translation id="6779447100905857289">장바구니</translation>
@@ -8146,7 +8137,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8163708146810922598">가장 오래된 날짜</translation>
 <translation id="8165997195302308593">Crostini 포트 전달</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{전화번호 1개}other{전화번호 #개}}</translation>
-<translation id="8168071266284693455">북마크, 비밀번호, 방문 기록 등이 모든 기기에서 동기화됩니다.</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
 <translation id="8171334254070436367">모든 카드 숨기기</translation>
@@ -8286,7 +8276,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8275080796245127762">기기에서 전화 걸기</translation>
 <translation id="8275339871947079271">비밀번호를 Google 계정으로 옮겨 로그인 상태라면 어디서나 안전하게 액세스하세요.</translation>
 <translation id="8276560076771292512">캐시 비우기 및 강력 새로고침</translation>
-<translation id="8281721647184388851">Chrome 브라우저 동기화를 사용 설정하시겠습니까?</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
 <translation id="8284279544186306258">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="8284326494547611709">자막</translation>
@@ -8453,7 +8442,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8428271547607112339">학교 계정 추가</translation>
 <translation id="8428628598981198790">이 사이트에서 보안 키를 사용할 수 없습니다</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
-<translation id="8430963319679282846">키를 길게 누르면 키 문자가 반복됩니다.</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
 <translation id="8434480141477525001">NaCl 디버그 포트</translation>
 <translation id="8437209419043462667">영어(미국)</translation>

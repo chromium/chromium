@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1149401351239820326">Месец на валидност</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />.</translation>
-<translation id="1154704303112745282">Страницата не е достъпна офлайн: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">Преименуване</translation>
 <translation id="1177863135347784049">По избор</translation>
 <translation id="1181037720776840403">Премахване</translation>
@@ -694,7 +693,6 @@
 За да промените тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Име върху картата</translation>
 <translation id="481574578487123132">Свързани устройства</translation>
-<translation id="4818017973810341238">Потвърждаването на връзките към дигитални активи на адрес <ph name="VIOLATED_URL" /> не бе успешно</translation>
 <translation id="4826163340425232009">Долен лист за вход в профила.</translation>
 <translation id="4831037795716408498">Изтегляне на съдържание</translation>
 <translation id="4834007576107377210">Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо)</translation>
@@ -991,7 +989,6 @@
 <translation id="6395288395575013217">ВРЪЗКА</translation>
 <translation id="6397616442223433927">Отново онлайн</translation>
 <translation id="6401458660421980302">За да изпратите този раздел до друго устройство, влезте в профила си в Chrome там</translation>
-<translation id="6402652558933147609"><ph name="ERROR_CODE" /> на адрес <ph name="VIOLATED_URL" /></translation>
 <translation id="6404511346730675251">Редактиране на отметката</translation>
 <translation id="6406506848690869874">Синхронизиранe</translation>
 <translation id="6407224748847589805">Не може да се установи връзка с компютъра ви. Опитайте с друга опция за потвърждаване.</translation>

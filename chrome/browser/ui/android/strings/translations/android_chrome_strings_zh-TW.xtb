@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1149401351239820326">到期月份</translation>
 <translation id="1150263420752757504">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。</translation>
-<translation id="1154704303112745282">無法離線載入頁面：<ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1177863135347784049">自訂</translation>
 <translation id="1181037720776840403">移除</translation>
@@ -693,7 +692,6 @@
 如要變更這項設定，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">持卡人姓名</translation>
 <translation id="481574578487123132">連結的裝置</translation>
-<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> 上的 Digital Asset Links 驗證失敗</translation>
 <translation id="4826163340425232009">登入底部功能表。</translation>
 <translation id="4831037795716408498">Download content</translation>
 <translation id="4834007576107377210">同時建議你查看搜尋引擎的操作說明 (如果有的話)，瞭解如何刪除搜尋記錄</translation>
@@ -990,7 +988,6 @@
 <translation id="6395288395575013217">連結</translation>
 <translation id="6397616442223433927">已恢復連線</translation>
 <translation id="6401458660421980302">如要將這個分頁傳送到其他裝置，請在該裝置上登入 Chrome</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" /> 上發生 <ph name="ERROR_CODE" /> 錯誤</translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6407224748847589805">無法連線至你的電腦。請改用其他驗證選項。</translation>

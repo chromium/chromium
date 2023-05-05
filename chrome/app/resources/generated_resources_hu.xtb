@@ -954,7 +954,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1796588414813960292">A hangot igénylő funkciók nem működnek majd</translation>
 <translation id="1797117170091578105">Játszhat a Chromebook billentyűzetével. Az egyes billentyűket a kívánt műveletekhez rendelheti.</translation>
 <translation id="180203835522132923">Keresés + O, majd W</translation>
-<translation id="1802457294427928325">A funkcióbillentyűk viselkedésének módosítása a ChromeOS legfelső billentyűsorának műveleteire</translation>
 <translation id="1802624026913571222">Alvó mód bekapcsolása a képernyő lecsukásakor</translation>
 <translation id="1802687198411089702">Az oldal nem válaszol. Várakozhat tovább, vagy bezárhatja.</translation>
 <translation id="1803531841600994172">Fordítás célnyelve</translation>
@@ -1477,7 +1476,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2235344399760031203">A harmadik felektől származó cookie-k le vannak tiltva</translation>
 <translation id="2238379619048995541">Órajel állapotadatai</translation>
 <translation id="2241053333139545397">Adatainak olvasása és módosítása bizonyos webhelyeken</translation>
-<translation id="2241242047787527912">Az egyes alábbi billentyűkhöz válassza ki azokat a végrehajtandó műveleteket, amelyekkel össze szeretné őket kötni</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2242687258748107519">Fájlinformáció</translation>
 <translation id="2245603955208828424">A nyílbillentyűk segítségével betűről betűre mozoghat az elemek között.</translation>
@@ -1518,14 +1516,12 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2271986192355138465">További információ az internetes alkalmazások telepítéséről</translation>
 <translation id="2272430695183451567">Nincs hozzárendelve kapcsoló</translation>
 <translation id="2272570998639520080">Martinis pohár</translation>
-<translation id="2272830751703114341">Annak engedélyezése, hogy a rendszer-/indítóbillentyű átváltsa a legfelső billentyűsor viselkedését</translation>
 <translation id="2273119997271134996">Dokk videocsatlakozójával kapcsolatos probléma</translation>
 <translation id="2274840746523584236">Töltse fel a Chromebookot</translation>
 <translation id="2276503375879033601">További alkalmazások hozzáadása</translation>
 <translation id="2276910256003242519">Adatok törlése folyamatban</translation>
 <translation id="2278562042389100163">Böngészőablak megnyitása</translation>
 <translation id="2278668501808246459">A tárolókezelő indítása</translation>
-<translation id="2279051792571591988">Alapértelmezés visszaállítása</translation>
 <translation id="2280486287150724112">Jobb margó</translation>
 <translation id="2281863813036651454">Kattintás a bal egérgombbal</translation>
 <translation id="2282146716419988068">GPU-folyamat</translation>
@@ -2922,7 +2918,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3508920295779105875">Válasszon másik mappát...</translation>
 <translation id="3509379002674019679">Létrehozhat, menthet és kezelhet jelszavakat, hogy egyszerűen be tudjon jelentkezni a webhelyekre és az alkalmazásokba.</translation>
 <translation id="3511200754045804813">Újraszkennelés</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Nincs új billentyű újratársítva}=1{1 újratársított billentyű}other{{COUNT} újratársított billentyű}}</translation>
 <translation id="3511307672085573050">Link címén&amp;ek másolása</translation>
 <translation id="351152300840026870">Állandó szélességű betűtípus</translation>
 <translation id="3511528412952710609">Rövid</translation>
@@ -4504,7 +4499,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4906490889887219338">Hálózati fájlmegosztások beállítása, illetve kezelése. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="4907129260985716018">Válassza ki, hogy a bővítmény milyen esetben olvashassa és módosíthassa az Ön webhelyadatait</translation>
 <translation id="4907161631261076876">Ezt a fájlt nem töltik le gyakran, és veszélyes lehet.</translation>
-<translation id="4908070840805457717">Ismételt billentyűlenyomás</translation>
 <translation id="4908811072292128752">Új lap megnyitása két webhely egyidejű böngészéséhez</translation>
 <translation id="4909038193460299775">Mivel ezt a fiókot a(z) <ph name="DOMAIN" /> domain kezeli, könyvjelzői, előzményei, jelszavai és más beállításai törlődnek erről az eszközről. Meglévő adatait azonban továbbra is tárolni fogja Google-fiókja, és azokat a <ph name="BEGIN_LINK" />Google Irányítópulton<ph name="END_LINK" /> kezelheti.</translation>
 <translation id="4912643508233590958">Tétlen aktiválások</translation>
@@ -5893,7 +5887,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6177412385419165772">Eltávolítás…</translation>
 <translation id="6178664161104547336">Tanúsítvány kiválasztása</translation>
 <translation id="6178682841350631965">Bejelentkezési adatai frissültek</translation>
-<translation id="6179893151569852357">Funkcióbillentyűk konvertálása a ChromeOS legfelső sorban lévő billentyűire</translation>
 <translation id="6180510783007738939">Vonal eszköz</translation>
 <translation id="6180550893222597997">Melyik azonosítókulcsot szeretné használni a következőhöz: <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Letöltés letiltva</translation>
@@ -6093,7 +6086,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="636850387210749493">Vállalat rögzítése</translation>
 <translation id="6370021412472292592">Nem sikerült a jegyzék betöltése.</translation>
 <translation id="637135143619858508">Laza</translation>
-<translation id="6372856076511744743">Billentyűk újratársítása</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Próbálja újra</translation>
 <translation id="6374635887697228982">Szeretne igénybe venni kedvezményeket?</translation>
@@ -6118,6 +6110,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6396175271241405634">Rendszeralkalmazás</translation>
 <translation id="6398715114293939307">A Google Play Áruház eltávolítása</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
+<translation id="6399675241776343019">Elutasítva</translation>
 <translation id="6399774419735315745">Kém</translation>
 <translation id="6400360390396538896">Mindig itt: <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Ha szeretné elküldeni ezt a lapot másik eszközre, jelentkezzen be a Chrome-ba az adott eszközön</translation>
@@ -6536,7 +6529,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="677646486571529447">Megjegyzés hozzáadása</translation>
 <translation id="6776589734354015877">További funkciókra tehet szert.</translation>
 <translation id="6776729248872343918">Gyors párosítás engedélyezése</translation>
-<translation id="677778081766640955">A funkcióbillentyűk és a ChromeOS-műveletek közötti váltáshoz tartsa lenyomva a billentyűt</translation>
 <translation id="6777817260680419853">Átirányítás letiltva</translation>
 <translation id="6779092717724412415">Ehhez hasonló kiemelés létrehozásához válassza ki a kívánt szöveget, majd kattintson a jobb egérgombbal.</translation>
 <translation id="6779447100905857289">az Ön bevásárlókosarai</translation>
@@ -8144,7 +8136,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8163708146810922598">legrégebbi</translation>
 <translation id="8165997195302308593">Crostinis portátirányítás</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{egy telefonszámot}other{# telefonszámot}}</translation>
-<translation id="8168071266284693455">A könyvjelzői, jelszavai, előzményei és egyebek az összes eszközén szinkronizálódnak</translation>
 <translation id="8168435359814927499">Tartalom</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lap hozzáadása olvasási listához}other{Lapok hozzáadása olvasási listához}}</translation>
 <translation id="8171334254070436367">Minden kártya elrejtése</translation>
@@ -8284,7 +8275,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8275080796245127762">Hívás az eszközéről</translation>
 <translation id="8275339871947079271">Áthelyezheti jelszavát a Google-fiókjába, ahol biztonságosan hozzáférhet, amikor be van jelentkezve.</translation>
 <translation id="8276560076771292512">Gyorsítótár ürítése és teljes újratöltés</translation>
-<translation id="8281721647184388851">Bekapcsolja a Chrome böngésző szinkronizálását?</translation>
 <translation id="8281886186245836920">Kihagyás</translation>
 <translation id="8284279544186306258">minden <ph name="WEBSITE_1" /> webhelyen</translation>
 <translation id="8284326494547611709">Feliratok</translation>
@@ -8451,7 +8441,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8428271547607112339">Iskolai fiók felvétele</translation>
 <translation id="8428628598981198790">Biztonsági hardverkulcsa nem használható ezzel a webhellyel</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> múlva kijelentkezteti a rendszer</translation>
-<translation id="8430963319679282846">Ha lenyomva tartja valamelyik billentyűt, a billentyűhöz tartozó karakter többször is bevitelre kerül</translation>
 <translation id="8431190899827883166">Koppintások megjelenítése</translation>
 <translation id="8434480141477525001">NaCl hibakeresési port</translation>
 <translation id="8437209419043462667">USA</translation>

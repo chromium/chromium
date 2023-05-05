@@ -221,6 +221,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1961239773406905488">Kameraforhåndsvisningen skjules</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Skjermlås</translation>
+<translation id="1962972976741217487">1 enhet er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Slå på wifi-sone</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hei, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2367972762794486313">Vis apper</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2386292613071805067">Merk alt på siden</translation>
-<translation id="2390318262976603432">Lokalitetsinnstillinger</translation>
 <translation id="2397416548179033562">Vis Chrome-menyen</translation>
 <translation id="240006516586367791">Mediekontroller</translation>
 <translation id="2402411679569069051">For å låse opp Chromebooken, bruk fingeravtrykket eller lås opp telefonen</translation>
@@ -931,6 +931,7 @@ Koble enheten til strøm.</translation>
 <translation id="5297704307811127955">Av</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5302048478445481009">Språk</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> enheter er koblet til wifi-sonen på <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5313326810920013265">Bluetooth-innstillinger</translation>
 <translation id="5314219114274263156">Skjermopptaket er utført</translation>
@@ -1058,6 +1059,7 @@ Koble enheten til strøm.</translation>
 <translation id="5881540930187678962">Konfigurer Telefonstyring senere</translation>
 <translation id="5881663018261910378">Av</translation>
 <translation id="5887954372087850114">Vinduet <ph name="WINDOW_TITLE" /> er tilordnet <ph name="DESK_TITLE" />, og tilordningen er fjernet på alle andre skrivebord</translation>
+<translation id="588817334757907802">Åpne filen i Chrome-nettleseren</translation>
 <translation id="5895138241574237353">Start på nytt</translation>
 <translation id="589817443623831496">Punktskanning</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1119,6 +1121,7 @@ Koble enheten til strøm.</translation>
 <translation id="6137566720514957455">Åpne dialogboksen for fjerning av <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Bekreft nedlastingen</translation>
 <translation id="6154006699632741460">Den eksterne enheten støttes ikke</translation>
+<translation id="6156960295318603523">Språkinnstillinger</translation>
 <translation id="615957422585914272">Vis skjermtastaturet</translation>
 <translation id="6165508094623778733">Finn ut mer</translation>
 <translation id="6166852626429024716">Søk på enheten, i apper, i innstillinger og på nettet.</translation>
@@ -1337,6 +1340,7 @@ Nylig installert</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Går tilbake til den gamle oppløsningen om <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Last inn på nytt</translation>
+<translation id="7187711731540696127">Wifi-sonen på <ph name="DEVICE_NAME" /> er på – ingen enheter er tilkoblet</translation>
 <translation id="7188494361780961876">Menyen ble flyttet til øvre venstre hjørne av skjermen.</translation>
 <translation id="7189412385142492784">Hvor langt unna er Venus?</translation>
 <translation id="7198435252016571249">Kameraet er festet til nedre høyre hjørne. Konflikt med systemoverflaten.</translation>

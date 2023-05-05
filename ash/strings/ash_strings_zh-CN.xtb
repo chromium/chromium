@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">已隐藏相机预览画面</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="1962969542251276847">锁定屏幕</translation>
+<translation id="1962972976741217487">有 1 部设备已连接到您的 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="1967970931040389207">开启热点</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好！</translation>
@@ -301,7 +302,6 @@
 <translation id="2367972762794486313">显示应用</translation>
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
-<translation id="2390318262976603432">语言区域设置</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
 <translation id="240006516586367791">媒体控件</translation>
 <translation id="2402411679569069051">若要解锁 Chromebook，请使用指纹或解锁您的手机</translation>
@@ -931,6 +931,7 @@
 <translation id="5297704307811127955">已关闭</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5302048478445481009">语言</translation>
+<translation id="5303783651764314393">有 <ph name="DEVICECOUNT" /> 部设备已连接到您的 <ph name="DEVICE_NAME" /> 热点</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
@@ -1119,6 +1120,7 @@
 <translation id="6137566720514957455">打开与 <ph name="USER_EMAIL_ADDRESS" /> 对应的“移除帐号”对话框</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6154006699632741460">不支持外围设备</translation>
+<translation id="6156960295318603523">语言设置</translation>
 <translation id="615957422585914272">显示屏幕键盘</translation>
 <translation id="6165508094623778733">了解详情</translation>
 <translation id="6166852626429024716">搜索您的设备、应用、设置、网站…</translation>
@@ -1337,6 +1339,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />秒后恢复到原分辨率</translation>
 <translation id="7180611975245234373">刷新</translation>
+<translation id="7187711731540696127">您的 <ph name="DEVICE_NAME" /> 热点已开启，但尚未连接任何设备</translation>
 <translation id="7188494361780961876">菜单已移至屏幕的左上角。</translation>
 <translation id="7189412385142492784">金星有多远</translation>
 <translation id="7198435252016571249">相机已对准右下角。与系统界面冲突。</translation>
@@ -1617,7 +1620,7 @@
 <translation id="8507563469658346379">所有人，<ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">新建桌面</translation>
 <translation id="85123341071060231">Chromebook 的蓝牙功能已关闭。若要解锁 Chromebook，请输入密码。</translation>
-<translation id="8513108775083588393">自动旋转屏幕</translation>
+<translation id="8513108775083588393">自动屏幕旋转</translation>
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>

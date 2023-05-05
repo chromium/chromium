@@ -940,7 +940,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1796588414813960292">Veçoritë që kanë nevojë për tingujt nuk do të funksionojnë</translation>
 <translation id="1797117170091578105">Luaj duke përdorur tastierën e Chromebook. Mund t'i personalizosh tastet për veprime specifike.</translation>
 <translation id="180203835522132923">Tasti "Search" + O, më pas W</translation>
-<translation id="1802457294427928325">Ndrysho sjelljen e tasteve F në veprime të rreshtit të sipërm të ChromeOS</translation>
 <translation id="1802624026913571222">Në gjumë kur mbyllet kapaku</translation>
 <translation id="1802687198411089702">Faqja nuk po përgjigjet. Mund të presësh ose mund të dalësh.</translation>
 <translation id="1803531841600994172">Gjuha në të cilën do të përkthehet</translation>
@@ -1463,7 +1462,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2235344399760031203">Kukit e palëve të treta janë bllokuar</translation>
 <translation id="2238379619048995541">Të dhënat e gjendjes së frekuencës</translation>
 <translation id="2241053333139545397">Lexo dhe ndrysho të dhënat e tua në një numër sajtesh uebi</translation>
-<translation id="2241242047787527912">Për çdo tast të listuar më poshtë, zgjidh veprimin që dëshiron që të kryejë</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2242687258748107519">Informacioni i skedarit</translation>
 <translation id="2245603955208828424">Përdor tastet e shigjetave për të lëvizur nëpër artikuj sipas shkronjave</translation>
@@ -1502,14 +1500,12 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2271986192355138465">Mëso se si të instalosh aplikacionet e uebit</translation>
 <translation id="2272430695183451567">0 çelësa të caktuar</translation>
 <translation id="2272570998639520080">Gotë Martini</translation>
-<translation id="2272830751703114341">Aktivizo tastin e sistemit/"Nisësit" për të ndërruar sjelljen e tasteve të rreshtit të sipërm</translation>
 <translation id="2273119997271134996">Problem me portën e videos së stacionit</translation>
 <translation id="2274840746523584236">Kariko pajisjen Chromebook</translation>
 <translation id="2276503375879033601">Shto më shumë aplikacione</translation>
 <translation id="2276910256003242519">Po pastrohen të dhënat...</translation>
 <translation id="2278562042389100163">Hap dritaren e shfletuesit</translation>
 <translation id="2278668501808246459">Po fillon menaxheri i kontejnerit</translation>
-<translation id="2279051792571591988">Restauro parazgjedhjet</translation>
 <translation id="2280486287150724112">Kufiri i djathtë</translation>
 <translation id="2281863813036651454">Klikimi me butonin e majtë të mausit</translation>
 <translation id="2282146716419988068">Procesi GPU</translation>
@@ -2906,7 +2902,6 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3508920295779105875">Zgjidh një dosje tjetër...</translation>
 <translation id="3509379002674019679">Krijo, ruaj dhe menaxho fjalëkalimet e tua që të mund të identifikohesh me lehtësi në sajte dhe aplikacione.</translation>
 <translation id="3511200754045804813">Skano sërish</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Asnjë tast i rilidhur}=1{1 tast i rilidhur}other{{COUNT} taste të rilidhura}}</translation>
 <translation id="3511307672085573050">Kopjo adr&amp;esën e lidhjes</translation>
 <translation id="351152300840026870">Shkrim me gjerësi fikse</translation>
 <translation id="3511528412952710609">E shkurtër</translation>
@@ -4488,7 +4483,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4906490889887219338">Konfiguro ose menaxho ndarjet e skedarëve në rrjet. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Zgjidh se kur kjo shtesë mund të lexojë dhe ndryshojë të dhënat e sajtit</translation>
 <translation id="4907161631261076876">Ky skedar nuk shkarkohet zakonisht dhe mund të jetë i rrezikshëm.</translation>
-<translation id="4908070840805457717">Shtypja për përsëritjen e tasteve</translation>
 <translation id="4908811072292128752">Hap një skedë të re për të shfletuar dy sajte njëkohësisht</translation>
 <translation id="4909038193460299775">Duke qenë se kjo llogari menaxhohet nga <ph name="DOMAIN" />, faqeshënuesit, historiku, fjalëkalimet dhe cilësimet e tjera do të fshihen nga kjo pajisje. Sidoqoftë, të dhënat e tua do të qëndrojnë të ruajtura te llogaria jote e Google dhe mund të menaxhohen në <ph name="BEGIN_LINK" />Panelin analitik të Google<ph name="END_LINK" /></translation>
 <translation id="4912643508233590958">Zgjimet nga gjendja e qetë</translation>
@@ -5875,7 +5869,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6177412385419165772">Po hiqet...</translation>
 <translation id="6178664161104547336">Përzgjidh një certifikatë</translation>
 <translation id="6178682841350631965">Të dhënat e tua të identifikimit u përditësuan</translation>
-<translation id="6179893151569852357">Konverto tastet F në taste të rreshtit të sipërm të ChromeOS</translation>
 <translation id="6180510783007738939">Vegla e vijës</translation>
 <translation id="6180550893222597997">Cilin çelës kalimi dëshiron të përdorësh për <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Shkarkimi u bllokua</translation>
@@ -6075,7 +6068,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="636850387210749493">Regjistrimi i ndërmarrjes</translation>
 <translation id="6370021412472292592">Manifesti nuk mund të ngarkohej.</translation>
 <translation id="637135143619858508">E lirshme</translation>
-<translation id="6372856076511744743">Rilidh tastet e tastierës</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Provo përsëri</translation>
 <translation id="6374635887697228982">Të merren zbritjet?</translation>
@@ -6518,7 +6510,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="677646486571529447">Shto një shënim</translation>
 <translation id="6776589734354015877">Merr veçori të tjera</translation>
 <translation id="6776729248872343918">Aktivizo "Çiftimin e shpejtë"</translation>
-<translation id="677778081766640955">Mbaj shtypur tastin për të ndërruar mes tasteve F dhe veprimeve të ChromeOS</translation>
 <translation id="6777817260680419853">Ridrejtimi u bllokua</translation>
 <translation id="6779092717724412415">Për të krijuar një theksim të tillë, zgjidh çdo tekst dhe kliko me të djathtin.</translation>
 <translation id="6779447100905857289">karrocat e tua</translation>
@@ -8125,7 +8116,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8163708146810922598">më e vjetra</translation>
 <translation id="8165997195302308593">Transferimi i portës së Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{një numër telefoni}other{# numra telefoni}}</translation>
-<translation id="8168071266284693455">Faqeshënuesit, fjalëkalimet, historiku etj. sinkronizohen në të gjitha pajisjet e tua</translation>
 <translation id="8168435359814927499">Përmbajtja</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Shtoje skedën në listë leximi}other{Shtoji skedat në listë leximi}}</translation>
 <translation id="8171334254070436367">Fshih të gjitha kartat</translation>
@@ -8265,7 +8255,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8275080796245127762">Telefono nga pajisja jote</translation>
 <translation id="8275339871947079271">Zhvendose fjalëkalimin te "Llogaria jote e Google" për t'u qasur tek ai në mënyrë të sigurt kudo që je i identifikuar</translation>
 <translation id="8276560076771292512">Memorie specifike e boshatisur dhe ringarkim i detyruar</translation>
-<translation id="8281721647184388851">Të aktivizohet sinkronizimi i shfletuesit Chrome?</translation>
 <translation id="8281886186245836920">Kapërceje</translation>
 <translation id="8284279544186306258">të gjitha faqet <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Titrat</translation>
@@ -8432,7 +8421,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8428271547607112339">Shto llogarinë e shkollës</translation>
 <translation id="8428628598981198790">Çelësi yt i sigurisë nuk mund të përdoret me këtë sajt</translation>
 <translation id="84297032718407999">Do të dalësh për <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Nëse mban shtypur një tast, karakteri i tastit do të përsëritet</translation>
 <translation id="8431190899827883166">Shfaq trokitjet</translation>
 <translation id="8434480141477525001">Porta e korrigjimit NaCl</translation>
 <translation id="8437209419043462667">Amerikane</translation>

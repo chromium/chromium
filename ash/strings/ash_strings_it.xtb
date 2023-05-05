@@ -221,6 +221,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1961239773406905488">Anteprima della videocamera nascosta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Blocco schermo</translation>
+<translation id="1962972976741217487">1 dispositivo connesso al tuo hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Attiva l'hotspot</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Ciao <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="2367972762794486313">Mostra app</translation>
 <translation id="2369165858548251131">"Ciao" in cinese</translation>
 <translation id="2386292613071805067">Seleziona tutto sulla pagina</translation>
-<translation id="2390318262976603432">Impostazioni internazionali</translation>
 <translation id="2397416548179033562">Mostra il menu Chrome</translation>
 <translation id="240006516586367791">Controlli multimediali</translation>
 <translation id="2402411679569069051">Per sbloccare Chromebook, utilizza la tua impronta o sblocca il telefono</translation>
@@ -928,6 +928,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5302048478445481009">Lingua</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> dispositivi connessi all'hotspot <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5313326810920013265">Impostazioni Bluetooth</translation>
 <translation id="5314219114274263156">Registrazione dello schermo acquisita</translation>
@@ -1116,6 +1117,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Conferma download</translation>
 <translation id="6154006699632741460">Periferica non supportata</translation>
+<translation id="6156960295318603523">Impostazioni lingua</translation>
 <translation id="615957422585914272">Mostra tastiera sullo schermo</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
 <translation id="6166852626429024716">Cerca sul dispositivo, nelle app, nelle impostazioni e sul Web.</translation>
@@ -1334,6 +1336,7 @@ Nuova installazione</translation>
 <translation id="7165278925115064263">ALT + MAIUSC + K</translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Aggiorna</translation>
+<translation id="7187711731540696127">Il tuo hotspot <ph name="DEVICE_NAME" /> è attivo, nessun dispositivo collegato</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>

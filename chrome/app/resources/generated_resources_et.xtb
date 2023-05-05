@@ -946,7 +946,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1796588414813960292">Heli vajavad funktsioonid ei tööta</translation>
 <translation id="1797117170091578105">Mängige oma Chromebooki klaviatuuri kasutades. Saate klahvidele konkreetsed toimingud määrata.</translation>
 <translation id="180203835522132923">Otsinguklahv + O, seejärel W</translation>
-<translation id="1802457294427928325">Muutke F-klahvide toimingud ChromeOS-i ülemise rea toiminguteks</translation>
 <translation id="1802624026913571222">Lülita unerežiimi, kui kaas on suletud</translation>
 <translation id="1802687198411089702">Leht ei reageeri. Võite oodata või väljuda.</translation>
 <translation id="1803531841600994172">Keel, millesse tõlkida</translation>
@@ -1469,7 +1468,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2235344399760031203">Kolmanda osapoole küpsisefailid on blokeeritud</translation>
 <translation id="2238379619048995541">Sageduse oleku andmed</translation>
 <translation id="2241053333139545397">Andmete lugemine ja muutmine mitmel veebisaidil</translation>
-<translation id="2241242047787527912">Valige iga allpool loetletud klahvi jaoks soovitud toiming, mille see peab tegema</translation>
 <translation id="2241634353105152135">Ainult ühe korra</translation>
 <translation id="2242687258748107519">Faili teave</translation>
 <translation id="2245603955208828424">Kasutage nooleklahve, et üksuste vahel tähthaaval liikuda</translation>
@@ -1510,14 +1508,12 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2271986192355138465">Vaadake, kuidas veebirakendusi installida</translation>
 <translation id="2272430695183451567">0 lülitit on määratud</translation>
 <translation id="2272570998639520080">Martiiniklaas</translation>
-<translation id="2272830751703114341">Luba süsteemi-/käivitajaklahvil ülemise rea klahvide toiminguid vahetada</translation>
 <translation id="2273119997271134996">Doki videopordi probleem</translation>
 <translation id="2274840746523584236">Laadige oma Chromebooki</translation>
 <translation id="2276503375879033601">Lisa rohkem rakendusi</translation>
 <translation id="2276910256003242519">Andmete kustutamine …</translation>
 <translation id="2278562042389100163">Ava brauseri aken</translation>
 <translation id="2278668501808246459">Konteineri halduri käivitamine</translation>
-<translation id="2279051792571591988">Taasta vaikeväärtused</translation>
 <translation id="2280486287150724112">Parem veeris</translation>
 <translation id="2281863813036651454">Hiire vasakklikk</translation>
 <translation id="2282146716419988068">GPU-protsess</translation>
@@ -2914,7 +2910,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3508920295779105875">Valige muu kaust...</translation>
 <translation id="3509379002674019679">Looge, salvestage ja hallake oma paroole, et saaksite hõlpsalt saitidele ja rakendustesse sisse logida.</translation>
 <translation id="3511200754045804813">Skanni uuesti</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Ühtegi klahvi pole uuesti vastendatud}=1{1 uuesti vastendatud klahv}other{{COUNT} uuesti vastendatud klahvi}}</translation>
 <translation id="3511307672085573050">K&amp;opeeri lingi aadress</translation>
 <translation id="351152300840026870">Fikseeritud laiusega font</translation>
 <translation id="3511528412952710609">Lühike</translation>
@@ -4496,7 +4491,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4906490889887219338">Seadistage või hallake failide võrguhoidlaid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Valige, millal see laiendus saab teie saidi andmeid lugeda ja muuta</translation>
 <translation id="4907161631261076876">Seda faili ei laadita tavaliselt alla ja see võib olla ohtlik.</translation>
-<translation id="4908070840805457717">Klahvikordus</translation>
 <translation id="4908811072292128752">Avage uus vaheleht, et kahte saiti korraga sirvida</translation>
 <translation id="4909038193460299775">Kuna seda kontot haldab domeen <ph name="DOMAIN" />, kustutatakse sellest seadmest teie järjehoidjad, ajalugu, paroolid ja muud seaded. Teie andmed jäävad teie Google'i kontole siiski alles ja neid saab hallata <ph name="BEGIN_LINK" />Google'i juhtpaneelil<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Jõuderežiimist äratamine</translation>
@@ -5883,7 +5877,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6177412385419165772">Eemaldamine ...</translation>
 <translation id="6178664161104547336">Sertifikaadi valimine</translation>
 <translation id="6178682841350631965">Teie sisselogimisandmeid värskendati</translation>
-<translation id="6179893151569852357">Teisenda F-klahvid ChromeOS-i ülemise rea klahvideks</translation>
 <translation id="6180510783007738939">Joonetööriist</translation>
 <translation id="6180550893222597997">Millist pääsuvõtit soovite rakenduse <ph name="APP_NAME" /> puhul kasutada?</translation>
 <translation id="6181431612547969857">Allalaadimine on blokeeritud</translation>
@@ -6083,7 +6076,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="636850387210749493">Ettevõtte registreerimine</translation>
 <translation id="6370021412472292592">Manifesti laadimine ebaõnnestus.</translation>
 <translation id="637135143619858508">Hõredalt</translation>
-<translation id="6372856076511744743">Klaviatuuri klahvide uuesti vastendamine</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Proovi uuesti</translation>
 <translation id="6374635887697228982">Kas saada allahindlusi?</translation>
@@ -6108,6 +6100,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6396175271241405634">Süsteemirakendus</translation>
 <translation id="6398715114293939307">Google Play poe eemaldamine</translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
+<translation id="6399675241776343019">Tagasi lükatud</translation>
 <translation id="6399774419735315745">Spioon</translation>
 <translation id="6400360390396538896">Alati saidil <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Selle vahelehe saatmiseks teise seadmesse logige selles Chrome'i sisse</translation>
@@ -6526,7 +6519,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="677646486571529447">Märkuse lisamine</translation>
 <translation id="6776589734354015877">Hankige lisafunktsioonid</translation>
 <translation id="6776729248872343918">Luba kiirsidumine</translation>
-<translation id="677778081766640955">F-klahvide ja ChromeOS-i toimingute vahel vahetamiseks hoidke klahvi all</translation>
 <translation id="6777817260680419853">Ümbersuunamine blokeeriti</translation>
 <translation id="6779092717724412415">Sellega sarnase esiletõstu loomiseks valige mis tahes tekst ja tehke paremklikk.</translation>
 <translation id="6779447100905857289">teie ostukorvid</translation>
@@ -8135,7 +8127,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8163708146810922598">vanimad</translation>
 <translation id="8165997195302308593">Crostini pordisiire</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{telefoninumber}other{# telefoninumbrit}}</translation>
-<translation id="8168071266284693455">Teie järjehoidjad, paroolid, ajalugu ja muu sünkroonitakse kõigis teie seadmetes</translation>
 <translation id="8168435359814927499">Sisu</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Vahelehe lisamine lugemisloendisse}other{Vahelehtede lisamine lugemisloendisse}}</translation>
 <translation id="8171334254070436367">Peida kõik kaardid</translation>
@@ -8275,7 +8266,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8275080796245127762">Kõne teie seadmest</translation>
 <translation id="8275339871947079271">Teisaldage oma parool oma Google'i kontole, et sellele turvaliselt juurde pääseda kõikjal, kus olete sisse logitud</translation>
 <translation id="8276560076771292512">Tühjenda vahemälu ja tee põhjalik uuestilaadimine</translation>
-<translation id="8281721647184388851">Kas lülitada Chrome'i brauseri sünkroonimine sisse?</translation>
 <translation id="8281886186245836920">Jäta vahele</translation>
 <translation id="8284279544186306258">kõik domeeni <ph name="WEBSITE_1" /> saidid</translation>
 <translation id="8284326494547611709">Subtiitrid</translation>
@@ -8442,7 +8432,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8428271547607112339">Lisa koolikonto</translation>
 <translation id="8428628598981198790">Teie turvavõtit ei saa sellel saidil kasutada</translation>
 <translation id="84297032718407999">Teid logitakse välja <ph name="LOGOUT_TIME_LEFT" /> pärast</translation>
-<translation id="8430963319679282846">Kui hoiate klahvi all, sisestatakse selle tähemärk mitu korda</translation>
 <translation id="8431190899827883166">Puudutuste kuvamine</translation>
 <translation id="8434480141477525001">NaCl silumisport</translation>
 <translation id="8437209419043462667">USA</translation>

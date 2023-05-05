@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">ఇప్పటికే ఉన్న డేటాను తొలగించండి.</translation>
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeలో తెరవబడుతుంది. కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_LINK1" />Google సర్వీస్ నియమాలు<ph name="END_LINK1" />, అలాగే <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS అదనపు సర్వీస్ నియమాలకు<ph name="END_LINK2" /> అంగీకరిస్తున్నారు.</translation>
-<translation id="1154704303112745282">ఈ పేజీ ఆఫ్‌లైన్‌లో అందుబాటులో లేదు: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">పేరుమార్చు</translation>
 <translation id="1177863135347784049">అనుకూల</translation>
 <translation id="1181037720776840403">తీసివేయండి</translation>
@@ -694,7 +693,6 @@
 ఈ సెట్టింగ్‌ని మార్చడం కోసం, <ph name="BEGIN_LINK" />సింక్‌ను రీసెట్ చేయండి<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">కార్డ్‌పై పేరు</translation>
 <translation id="481574578487123132">లింక్ చేయబడిన పరికరాలు</translation>
-<translation id="4818017973810341238">డిజిటల్ అస్సెట్ లింక్‌ల వెరిఫికేషన్ <ph name="VIOLATED_URL" /> వద్ద విఫలమైంది</translation>
 <translation id="4826163340425232009">సైన్ ఇన్ చేయదగిన దిగువున ఉన్న షీట్.</translation>
 <translation id="4831037795716408498">కంటెంట్‌ను డౌన్‌లోడ్ చేయండి</translation>
 <translation id="4834007576107377210">వర్తిస్తే, మీ సెర్చ్ హిస్టరీని తొలగించడానికి మీ సెర్చ్ ఇంజిన్ సూచనలను చూడండి</translation>
@@ -991,7 +989,6 @@
 <translation id="6395288395575013217">లింక్</translation>
 <translation id="6397616442223433927">తిరిగి ఆన్‌లైన్‌లోకి వచ్చింది</translation>
 <translation id="6401458660421980302">ఈ ట్యాబ్‌ను మరొక పరికరానికి పంపడానికి, అక్కడ Chromeకు సైన్ ఇన్ చేయండి</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" />లో <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">బుక్‌మార్క్‌ను ఎడిట్ చేయండి</translation>
 <translation id="6406506848690869874">సింక్</translation>
 <translation id="6407224748847589805">మీ కంప్యూటర్‌కు కనెక్ట్ చేయడం సాధ్యపడదు. మరొక వెరిఫికేషన్ ఆప్షన్‌ను ట్రై చేయండి.</translation>

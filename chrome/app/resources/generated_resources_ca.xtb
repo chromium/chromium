@@ -943,7 +943,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1797117170091578105">Juga utilitzant el teclat del Chromebook. Pots personalitzar les tecles perquè facin accions específiques.</translation>
 <translation id="180203835522132923">Cerca+O i, després, W</translation>
-<translation id="1802457294427928325">Canvia el comportament de les tecles de funció a accions de la fila superior de ChromeOS</translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
 <translation id="1802687198411089702">La pàgina no respon. Pots esperar que respongui o pots sortir-ne.</translation>
 <translation id="1803531841600994172">Idioma d'arribada de la traducció</translation>
@@ -1466,7 +1465,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2235344399760031203">Les galetes de tercers estan bloquejades</translation>
 <translation id="2238379619048995541">Dades de l'estat de freqüència</translation>
 <translation id="2241053333139545397">Llegir i modificar les dades d'una sèrie de llocs web</translation>
-<translation id="2241242047787527912">Per a cada tecla que s'enumera a continuació, tria l'acció que vols que dugui a terme</translation>
 <translation id="2241634353105152135">Només una vegada</translation>
 <translation id="2242687258748107519">Informació del fitxer</translation>
 <translation id="2245603955208828424">Fes servir les tecles de fletxa a fi de moure't pels elements de lletra en lletra</translation>
@@ -1504,14 +1502,12 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2271986192355138465">Informació sobre com es poden instal·lar aplicacions web</translation>
 <translation id="2272430695183451567">0 interruptors assignats</translation>
 <translation id="2272570998639520080">Copa de Martini</translation>
-<translation id="2272830751703114341">Activa la tecla del sistema o del menú d'aplicacions per canviar el comportament de les tecles de la fila superior</translation>
 <translation id="2273119997271134996">Error del port de vídeo de la base</translation>
 <translation id="2274840746523584236">Carrega el Chromebook</translation>
 <translation id="2276503375879033601">Afegeix més aplicacions</translation>
 <translation id="2276910256003242519">S'estan esborrant les dades...</translation>
 <translation id="2278562042389100163">Obre una finestra del navegador</translation>
 <translation id="2278668501808246459">S'està iniciant el gestor de contenidors</translation>
-<translation id="2279051792571591988">Restaura els valors predeterminats</translation>
 <translation id="2280486287150724112">Marge dret</translation>
 <translation id="2281863813036651454">Clic del botó esquerre del ratolí</translation>
 <translation id="2282146716419988068">Procés de GPU</translation>
@@ -2908,7 +2904,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3508920295779105875">Trieu una altra carpeta...</translation>
 <translation id="3509379002674019679">Crea, desa i gestiona les teves contrasenyes de manera que puguis iniciar la sessió fàcilment en llocs web i aplicacions.</translation>
 <translation id="3511200754045804813">Torna a cercar</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{No s'ha remapat cap tecla}=1{1 tecla remapada}other{{COUNT} tecles remapades}}</translation>
 <translation id="3511307672085573050">Copia l'adr&amp;eça de l'enllaç</translation>
 <translation id="351152300840026870">Tipus de lletra amb amplada fixa</translation>
 <translation id="3511528412952710609">Curt</translation>
@@ -4489,7 +4484,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4906490889887219338">Configura o gestiona els fitxers compartits de la xarxa. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Tria quan aquesta extensió pot llegir i canviar les teves dades de llocs web</translation>
 <translation id="4907161631261076876">Aquest fitxer no se sol baixar i podria ser perillós.</translation>
-<translation id="4908070840805457717">Repetició de la tecla premuda</translation>
 <translation id="4908811072292128752">Obre una pestanya nova per navegar per dos llocs web a la vegada</translation>
 <translation id="4909038193460299775">Com que <ph name="DOMAIN" /> gestiona aquest compte, s'esborraran d'aquest dispositiu les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració. No obstant això, les dades continuaran emmagatzemades al teu compte de Google i es podran gestionar al <ph name="BEGIN_LINK" />Tauler de control de Google<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Activacions en estat de repòs</translation>
@@ -5875,7 +5869,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6177412385419165772">S'està suprimint...</translation>
 <translation id="6178664161104547336">Seleccioneu un certificat</translation>
 <translation id="6178682841350631965">Les teves dades d'inici de sessió s'han actualitzat</translation>
-<translation id="6179893151569852357">Converteix les tecles de funció en tecles de la fila superior de ChromeOS</translation>
 <translation id="6180510783007738939">Eina de línia</translation>
 <translation id="6180550893222597997">Quina clau d'accés vols utilitzar per a <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">S'ha bloquejat la baixada</translation>
@@ -6075,7 +6068,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="636850387210749493">Inscripció empresarial</translation>
 <translation id="6370021412472292592">No s'ha pogut carregar el manifest.</translation>
 <translation id="637135143619858508">Separat</translation>
-<translation id="6372856076511744743">Remapa les tecles del teclat</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Torna-ho a provar</translation>
 <translation id="6374635887697228982">Vols obtenir descomptes?</translation>
@@ -6100,6 +6092,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6396175271241405634">Aplicació del sistema</translation>
 <translation id="6398715114293939307">Suprimeix Google Play Store</translation>
 <translation id="6398765197997659313">Surt del mode de pantalla completa</translation>
+<translation id="6399675241776343019">Denegat</translation>
 <translation id="6399774419735315745">Espia</translation>
 <translation id="6400360390396538896">Sempre a <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Per enviar aquesta pestanya a un altre dispositiu, inicia la sessió a Chrome al dispositiu en qüestió</translation>
@@ -6518,7 +6511,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="677646486571529447">Afegeix una nota</translation>
 <translation id="6776589734354015877">Obtén funcions addicionals</translation>
 <translation id="6776729248872343918">Activa Vinculació ràpida</translation>
-<translation id="677778081766640955">Mantén premuda la tecla per canviar entre les tecles de funció i les accions de ChromeOS</translation>
 <translation id="6777817260680419853">S'ha bloquejat la redirecció</translation>
 <translation id="6779092717724412415">Per crear un destacat com aquest, selecciona qualsevol text i fes clic amb el botó dret.</translation>
 <translation id="6779447100905857289">els teus carretons</translation>
@@ -8127,7 +8119,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8163708146810922598">la més antiga</translation>
 <translation id="8165997195302308593">Redirecció de ports de Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 número de telèfon}other{# números de telèfon}}</translation>
-<translation id="8168071266284693455">Les adreces d'interès, les contrasenyes, l'historial i altres elements se sincronitzen en tots els dispositius</translation>
 <translation id="8168435359814927499">Contingut</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Afegeix la pestanya a la llista de lectura}other{Afegeix les pestanyes a la llista de lectura}}</translation>
 <translation id="8171334254070436367">Amaga totes les targetes</translation>
@@ -8267,7 +8258,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8275080796245127762">Truca des del teu dispositiu</translation>
 <translation id="8275339871947079271">Mou la contrasenya al Compte de Google per accedir-hi de manera segura des d'allà on iniciïs la sessió</translation>
 <translation id="8276560076771292512">Buida la memòria cau i torna a carregar de manera forçada</translation>
-<translation id="8281721647184388851">Vols activar la sincronització del navegador Chrome?</translation>
 <translation id="8281886186245836920">Omet</translation>
 <translation id="8284279544186306258">tots els llocs web de <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">Subtítols</translation>
@@ -8435,7 +8425,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8428271547607112339">Afegeix un compte de centre educatiu</translation>
 <translation id="8428628598981198790">La clau de seguretat no es pot fer servir en aquest lloc web</translation>
 <translation id="84297032718407999">Es tancarà la sessió d'aquí a <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Si mantens premuda una tecla, el caràcter de la tecla es repetirà</translation>
 <translation id="8431190899827883166">Mostra els tocs</translation>
 <translation id="8434480141477525001">Port de depuració NaCI</translation>
 <translation id="8437209419043462667">Nord-americà</translation>

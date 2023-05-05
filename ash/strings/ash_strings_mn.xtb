@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">Камерын урьдчилан үзэлтийг нуусан байна</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Түгжигдсэн дэлгэц</translation>
+<translation id="1962972976741217487">Таны <ph name="DEVICE_NAME" />-н сүлжээний цэгт 1 төхөөрөмж холбогдсон</translation>
 <translation id="1967970931040389207">Сүлжээний цэгийг асаах</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Сайн уу, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@
 <translation id="2367972762794486313">Аппликейшнүүдийг харуулах</translation>
 <translation id="2369165858548251131">"Сайн байна уу?"-г хятад хэлээр</translation>
 <translation id="2386292613071805067">Хуудсан дээрх бүх зүйлийг сонгох</translation>
-<translation id="2390318262976603432">Хэл болон улсын кодын тохиргоо</translation>
 <translation id="2397416548179033562">Chrome-н цэсийг харуулах</translation>
 <translation id="240006516586367791">Медиа хяналт</translation>
 <translation id="2402411679569069051">Chromebook-нхээ түгжээг тайлахын тулд хурууны хээгээ ашиглах эсвэл утасныхаа түгжээг тайлна уу</translation>
@@ -932,6 +932,7 @@
 <translation id="5297704307811127955">Унтраалттай</translation>
 <translation id="5300589172476337783">Харуулах</translation>
 <translation id="5302048478445481009">Хэл</translation>
+<translation id="5303783651764314393">Таны <ph name="DEVICE_NAME" />-н сүлжээний цэгт <ph name="DEVICECOUNT" /> төхөөрөмж холбогдсон</translation>
 <translation id="5308380583665731573">Холбо</translation>
 <translation id="5313326810920013265">Bluetooth тохиргоо</translation>
 <translation id="5314219114274263156">Дэлгэцийн үйлдлийг бичсэн</translation>
@@ -1120,6 +1121,7 @@
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
 <translation id="6141988275892716286">Таталтыг баталгаажуулах</translation>
 <translation id="6154006699632741460">Нэмэлтийг дэмждэггүй</translation>
+<translation id="6156960295318603523">Хэлний тохиргоо</translation>
 <translation id="615957422585914272">Дэлгэц дээрх гарыг харуулах</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6166852626429024716">Төхөөрөмж, апп, тохиргоо, вебээс хайх...</translation>
@@ -1338,6 +1340,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-д хуучин хэмэжээнд нь буцааж оруулах</translation>
 <translation id="7180611975245234373">Дахин сэргээх</translation>
+<translation id="7187711731540696127">Таны <ph name="DEVICE_NAME" />-н сүлжээний цэг асаалттай бөгөөд холбогдсон ямар ч төхөөрөмж байхгүй</translation>
 <translation id="7188494361780961876">Цэсийг дэлгэцийн зүүн дээд булан руу зөөсөн.</translation>
 <translation id="7189412385142492784">Сугар гараг хэр хол вэ?</translation>
 <translation id="7198435252016571249">Камерыг баруун доод булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>

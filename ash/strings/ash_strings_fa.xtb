@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">پیش‌نمای دوربین پنهان است</translation>
 <translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="1962969542251276847">صفحه قفل</translation>
+<translation id="1962972976741217487">یک دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> شما متصل است</translation>
 <translation id="1967970931040389207">روشن کردن نقطه اتصال</translation>
 <translation id="1969011864782743497">‏<ph name="DEVICE_NAME" /> (‏USB)</translation>
 <translation id="1972950159383891558">سلام، <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@
 <translation id="2367972762794486313">نمایش برنامه‌ها</translation>
 <translation id="2369165858548251131">‏‎«Hello»‎ in Chinese (سلام به زبان چینی)</translation>
 <translation id="2386292613071805067">انتخاب همه‌چیز در صفحه</translation>
-<translation id="2390318262976603432">تنظیمات منطقه زبانی</translation>
 <translation id="2397416548179033562">‏نمایش منوی Chrome</translation>
 <translation id="240006516586367791">کنترل‌های رسانه</translation>
 <translation id="2402411679569069051">‏برای باز کردن قفل Chromebook، از اثر انگشت استفاده کنید یا قفل تلفنتان را باز کنید</translation>
@@ -930,6 +930,7 @@
 <translation id="5297704307811127955">خاموش</translation>
 <translation id="5300589172476337783">نمایش</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> دستگاه به نقطه اتصال <ph name="DEVICE_NAME" /> شما متصل است</translation>
 <translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5313326810920013265">تنظیمات بلوتوث</translation>
 <translation id="5314219114274263156">ضبط صفحه‌نمایش انجام شد</translation>
@@ -1118,6 +1119,7 @@
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">تأیید بارگیری</translation>
 <translation id="6154006699632741460">از دستگاه‌های جانبی پشتیبانی نمی‌شود</translation>
+<translation id="6156960295318603523">تنظیمات زبان</translation>
 <translation id="615957422585914272">نمایش صفحه‌کلید مجازی</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6166852626429024716">جستجوی دستگاه، برنامه‌ها، تنظیمات، وب، و غیره</translation>
@@ -1336,6 +1338,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">برگرداندن به وضوح قدیمی در <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">بازآوری</translation>
+<translation id="7187711731540696127">نقطه اتصال <ph name="DEVICE_NAME" /> شما روشن است، هیچ دستگاهی متصل نیست</translation>
 <translation id="7188494361780961876">منو به گوشه راست بالای صفحه منتقل شد.</translation>
 <translation id="7189412385142492784">‏How far is Venus (فاصله سیاره ناهید از ما چقدر است)</translation>
 <translation id="7198435252016571249">دوربین به گوشه پایین سمت راست چسبید. تداخلی با سطح سیستم روی داد.</translation>

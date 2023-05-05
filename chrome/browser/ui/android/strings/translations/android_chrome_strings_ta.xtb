@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">ஏற்கனவே உள்ள தரவை நீக்கு.</translation>
 <translation id="1149401351239820326">காலாவதியாகும் மாதம்</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள்.</translation>
-<translation id="1154704303112745282">பக்கம் ஆஃப்லைனில் கிடைக்கவில்லை: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">மறுபெயரிடு</translation>
 <translation id="1177863135347784049">பிரத்தியேகம்</translation>
 <translation id="1181037720776840403">அகற்று</translation>
@@ -694,7 +693,6 @@
 இந்த அமைப்பை மாற்ற, <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைக்கவும்<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">அட்டையிலுள்ள பெயர் </translation>
 <translation id="481574578487123132">இணைக்கப்பட்டுள்ள சாதனங்கள்</translation>
-<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> என்ற URLலில் டிஜிட்டல் அசெட் இணைப்புகளைச் சரிபார்க்க முடியவில்லை</translation>
 <translation id="4826163340425232009">உள்நுழைவதற்கான கீழ்ப்புறச் சீட்டு.</translation>
 <translation id="4831037795716408498">உள்ளடக்கத்தைப் பதிவிறக்குதல்</translation>
 <translation id="4834007576107377210">தேடல் விவரங்களை நீக்க உங்கள் தேடல் இன்ஜினின் வழிமுறைகளைப் பாருங்கள் (நீக்க அனுமதித்தால்)</translation>
@@ -991,7 +989,6 @@
 <translation id="6395288395575013217">இணைப்பு</translation>
 <translation id="6397616442223433927">இணைப்பு வந்துவிட்டது</translation>
 <translation id="6401458660421980302">இந்தப் பக்கத்தை மற்றொரு சாதனத்திற்கு அனுப்ப, அந்தச் சாதனத்திலிருக்கும் Chromeமில் உள்நுழைய வேண்டும்</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" /> இல் <ph name="ERROR_CODE" /> பிழை</translation>
 <translation id="6404511346730675251">புக்மார்க்களைத் திருத்து</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6407224748847589805">கம்ப்யூட்டருடன் இணைக்க முடியவில்லை. வேறொரு சரிபார்ப்பு விருப்பத்தைப் பயன்படுத்தவும்.</translation>

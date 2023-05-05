@@ -946,7 +946,6 @@
 <translation id="1796588414813960292">لن تعمل الميزات التي تحتاج إلى استخدام الصوت.</translation>
 <translation id="1797117170091578105">‏يمكنك اللعب باستخدام لوحة مفاتيح Chromebook. ويمكنك تخصيص مفاتيح لتنفيذ إجراءات محدَّدة.</translation>
 <translation id="180203835522132923">‏مفتاح البحث + O، ثم W</translation>
-<translation id="1802457294427928325">‏تغيير سلوك مفاتيح F لتنفِّذ إجراءات مفاتيح الصف العلوي في ChromeOS</translation>
 <translation id="1802624026913571222">السكون عند غلق الغلاف</translation>
 <translation id="1802687198411089702">الصفحة لا تستجيب. يمكنك الانتظار أو الخروج منها.</translation>
 <translation id="1803531841600994172">اللغة التي تريد الترجمة إليها</translation>
@@ -1470,7 +1469,6 @@
 <translation id="2235344399760031203">تم حظر ملفات تعريف الارتباط التابعة لجهات خارجية.</translation>
 <translation id="2238379619048995541">بيانات حالة التردد</translation>
 <translation id="2241053333139545397">قراءة بياناتك وتغييرها على عدد من المواقع</translation>
-<translation id="2241242047787527912">اختَر الإجراء الذي تريد أن ينفذِّه كلّ من المفاتيح المُدرَجة أدناه.</translation>
 <translation id="2241634353105152135">مرة واحدة فقط</translation>
 <translation id="2242687258748107519">معلومات الملف</translation>
 <translation id="2245603955208828424">استخدِم مفاتيح الأسهم للتنقُّل بين الأحرف واحدًا تلو الآخر.</translation>
@@ -1508,14 +1506,12 @@
 <translation id="2271986192355138465">تعرَّف على كيفية تثبيت تطبيقات الويب</translation>
 <translation id="2272430695183451567">لم يتم تخصيص أيّ مفاتيح تبديل</translation>
 <translation id="2272570998639520080">كوب عصير</translation>
-<translation id="2272830751703114341">تفعيل مفتاح النظام/مفتاح مشغّل التطبيقات لتبديل سلوك مفاتيح الصف العلوي</translation>
 <translation id="2273119997271134996">مشكلة متعلقة بمنفذ الفيديو في محطة الإرساء</translation>
 <translation id="2274840746523584236">‏شحن جهاز Chromebook</translation>
 <translation id="2276503375879033601">إضافة المزيد من التطبيقات</translation>
 <translation id="2276910256003242519">جارٍ محو البيانات...</translation>
 <translation id="2278562042389100163">فتح نافذة المتصفح</translation>
 <translation id="2278668501808246459">جار تشغيل مدير الحاويات.</translation>
-<translation id="2279051792571591988">استعادة الإعدادات التلقائية</translation>
 <translation id="2280486287150724112">الهامش الأيمن</translation>
 <translation id="2281863813036651454">النقر بزر الماوس الأيسر</translation>
 <translation id="2282146716419988068">‏معالجة وحدة معالجة الرسومات (GPU)</translation>
@@ -2913,7 +2909,6 @@
 <translation id="3508920295779105875">اختيار مجلد آخر ...</translation>
 <translation id="3509379002674019679">يمكنك إنشاء كلمات المرور وحفظها وإدارتها كي يتسنى لك تسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات.</translation>
 <translation id="3511200754045804813">إعادة الفحص</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{لم تتم إعادة تخصيص أي مفاتيح.}=1{تمت إعادة تخصيص مفتاح واحد.}two{تمت إعادة تخصيص مفتاحَين ({COUNT}).}few{تمت إعادة تخصيص {COUNT} مفاتيح.}many{تمت إعادة تخصيص {COUNT} مفتاحًا.}other{تمت إعادة تخصيص {COUNT} مفتاح.}}</translation>
 <translation id="3511307672085573050">نسخ &amp;عنوان الرابط</translation>
 <translation id="351152300840026870">خط ثابت العرض</translation>
 <translation id="3511528412952710609">قصير</translation>
@@ -4493,7 +4488,6 @@
 <translation id="4906490889887219338">إعداد خوادم مشاركة الملفات على الشبكة أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">اختيار الوقت الذي يمكن للإضافة فيه قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
 <translation id="4907161631261076876">لا يتم تنزيل هذا الملف بشكل شائع وقد يكون ضارًا.</translation>
-<translation id="4908070840805457717">تكرار ضغطة المفتاح</translation>
 <translation id="4908811072292128752">فتح علامة تبويب جديدة لتصفح موقعي ويب في وقت واحد</translation>
 <translation id="4909038193460299775">‏نظرًا لأنه تتم إدارة هذا الحساب من قبل <ph name="DOMAIN" />، سيتم محو الإشارات والسجل وكلمات المرور والإعدادات الأخرى من هذا الجهاز. ومع ذلك ستبقى بياناتك مخزنة في حسابك في Google ويمكن إدارتها على <ph name="BEGIN_LINK" />لوحة تحكم Google<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">عمليات التنشيط من الوضع بعيد</translation>
@@ -5880,7 +5874,6 @@
 <translation id="6177412385419165772">جارٍ الإزالة…</translation>
 <translation id="6178664161104547336">تحديد شهادة</translation>
 <translation id="6178682841350631965">تم تعديل بيانات تسجيل الدخول.</translation>
-<translation id="6179893151569852357">‏تحويل مفاتيح F إلى مفاتيح الصف العلوي في ChromeOS</translation>
 <translation id="6180510783007738939">أداة رسم الخطوط</translation>
 <translation id="6180550893222597997">ما هو مفتاح المرور الذي تريد استخدامه لتسجيل الدخول إلى "<ph name="APP_NAME" />"؟</translation>
 <translation id="6181431612547969857">تم حظر التنزيل</translation>
@@ -6080,7 +6073,6 @@
 <translation id="636850387210749493">التسجيل في المؤسسة</translation>
 <translation id="6370021412472292592">تعذر تحميل البيان.</translation>
 <translation id="637135143619858508">أسطر متباعدة</translation>
-<translation id="6372856076511744743">إعادة تخصيص مفاتيح لوحة المفاتيح</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">إعادة المحاولة</translation>
 <translation id="6374635887697228982">هل تريد الحصول على الخصومات؟</translation>
@@ -6532,7 +6524,6 @@
 <translation id="677646486571529447">إضافة ملاحظة</translation>
 <translation id="6776589734354015877">احصل الآن على ميزات إضافية.</translation>
 <translation id="6776729248872343918">تفعيل ميزة "الإقران السريع"</translation>
-<translation id="677778081766640955">‏اضغط مع الاستمرار على المفتاح للتبديل بين مفاتيح F وإجراءات ChromeOS.</translation>
 <translation id="6777817260680419853">تم حظر إعادة التوجيه</translation>
 <translation id="6779092717724412415">لإنشاء تمييز كهذا، حدِّد أي نص وانقر عليه بزر الماوس الأيمن.</translation>
 <translation id="6779447100905857289">سلات التسوّق الخاصة بك</translation>
@@ -8141,7 +8132,6 @@
 <translation id="8163708146810922598">الإشارات المرجعية الأقدم</translation>
 <translation id="8165997195302308593">‏إعادة توجيه منفذ Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{رقم هاتف واحد}zero{# رقم هاتف}two{رقما هاتف}few{# أرقام هاتف}many{# رقم هاتف}other{# رقم هاتف}}</translation>
-<translation id="8168071266284693455">تمت مزامنة الإشارات المرجعية وكلمات المرور والسجلّ وغير ذلك على جميع أجهزتك.</translation>
 <translation id="8168435359814927499">المحتوى</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{إضافة علامة التبويب إلى قائمة القراءة}zero{إضافة علامات التبويب إلى قائمة القراءة}two{إضافة علامتَي التبويب إلى قائمة القراءة}few{إضافة علامات التبويب إلى قائمة القراءة}many{إضافة علامات التبويب إلى قائمة القراءة}other{إضافة علامات التبويب إلى قائمة القراءة}}</translation>
 <translation id="8171334254070436367">إخفاء جميع البطاقات</translation>
@@ -8282,7 +8272,6 @@
 <translation id="8275080796245127762">‏الاتصال من Your Device (جهازك)</translation>
 <translation id="8275339871947079271">‏يمكنك نقل كلمة مرورك إلى حسابك على Google للوصول إليها بشكل آمن أينما سجّلت دخولك.</translation>
 <translation id="8276560076771292512">إفراغ ذاكرة التخزين المؤقت وإعادة التحميل بشكل كامل</translation>
-<translation id="8281721647184388851">‏هل تريد تفعيل المزامنة في متصفِّح Chrome؟</translation>
 <translation id="8281886186245836920">التخطّي</translation>
 <translation id="8284279544186306258">جميع مواقع <ph name="WEBSITE_1" /></translation>
 <translation id="8284326494547611709">الترجمة والشرح</translation>
@@ -8449,7 +8438,6 @@
 <translation id="8428271547607112339">إضافة حساب المؤسسة التعليمية</translation>
 <translation id="8428628598981198790">لا يمكن استخدام مفتاح الأمان مع هذا الموقع الإلكتروني</translation>
 <translation id="84297032718407999">سيتم تسجيل خروجك خلال <ph name="LOGOUT_TIME_LEFT" />.</translation>
-<translation id="8430963319679282846">عند الضغط مع الاستمرار على مفتاح معيّن، سيتم تكرار الحرف الذي يكتبه هذا المفتاح.</translation>
 <translation id="8431190899827883166">عرض النقرات</translation>
 <translation id="8434480141477525001">‏منفذ تصحيح أخطاء NaCl</translation>
 <translation id="8437209419043462667">الأمريكية</translation>

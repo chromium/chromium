@@ -221,6 +221,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1961239773406905488">Predogled kamere je skrit</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zakleni zaslon</translation>
+<translation id="1962972976741217487">Z dostopno točko naprave <ph name="DEVICE_NAME" /> je povezana 1 naprava</translation>
 <translation id="1967970931040389207">Vklopi dostopno točko</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Pozdravljeni, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2367972762794486313">Pokaži aplikacije</translation>
 <translation id="2369165858548251131">»Živijo« po kitajsko</translation>
 <translation id="2386292613071805067">Izbira vsega na strani</translation>
-<translation id="2390318262976603432">Nastavitve jezika</translation>
 <translation id="2397416548179033562">Prikaz Chromovega menija</translation>
 <translation id="240006516586367791">Kontrolniki predstavnosti</translation>
 <translation id="2402411679569069051">Če želite odkleniti Chromebook, uporabite prstni odtis ali odklenite telefon.</translation>
@@ -931,6 +931,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5297704307811127955">Izklopljeno</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5302048478445481009">Jezik</translation>
+<translation id="5303783651764314393">Z dostopno točko naprave <ph name="DEVICE_NAME" /> je povezanih toliko naprav: <ph name="DEVICECOUNT" /></translation>
 <translation id="5308380583665731573">Povezovanje</translation>
 <translation id="5313326810920013265">Nastavitve za Bluetooth</translation>
 <translation id="5314219114274263156">Videoposnetek zaslona je bil ustvarjen</translation>
@@ -1119,6 +1120,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6137566720514957455">Odpri pogovorno okno za odstranjevanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potrdi prenos</translation>
 <translation id="6154006699632741460">Dodatna oprema ni podprta</translation>
+<translation id="6156960295318603523">Jezikovne nastavitve</translation>
 <translation id="615957422585914272">Pokaži zaslonsko tipkovnico</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6166852626429024716">Iščite v napravi, aplikacijah, nastavitvah, spletu …</translation>
@@ -1337,6 +1339,7 @@ Nova namestitev</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Ponastavitev na prejšnjo ločljivost čez <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osveži</translation>
+<translation id="7187711731540696127">Dostopna točka naprave <ph name="DEVICE_NAME" /> je vklopljena, ni povezanih naprav</translation>
 <translation id="7188494361780961876">Meni je bil premaknjen v zgornji levi kot zaslona.</translation>
 <translation id="7189412385142492784">Kako daleč je Venera</translation>
 <translation id="7198435252016571249">Fotoaparat je pripet v spodnji desni kot. To je v navzkrižju s sistemskim okoljem.</translation>

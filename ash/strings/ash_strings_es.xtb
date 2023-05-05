@@ -221,6 +221,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1961239773406905488">Vista previa de cámara ocultada</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
+<translation id="1962972976741217487">1 dispositivo conectado a tu punto de acceso <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activar punto de acceso</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
@@ -301,7 +302,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2367972762794486313">Mostrar aplicaciones</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2386292613071805067">Seleccionar todo el contenido de la página</translation>
-<translation id="2390318262976603432">Configuración regional</translation>
 <translation id="2397416548179033562">Mostrar menú de Chrome</translation>
 <translation id="240006516586367791">Controles multimedia</translation>
 <translation id="2402411679569069051">Para desbloquear tu Chromebook, usa tu huella digital o desbloquea tu teléfono</translation>
@@ -382,6 +382,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2791421900609674576">Aparecerán recomendaciones para que puedas seguir donde lo dejaste. Puedes mantener pulsadas las recomendaciones para quitarlas.</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
 <translation id="2797741504905337289">Grupo de estanterías</translation>
+<translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, seleccionado</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Tu sesión se cerrará ahora.</translation>
@@ -931,6 +932,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5297704307811127955">Desactivada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> dispositivos conectados a tu punto de acceso <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Grabación de pantalla realizada</translation>
@@ -1119,6 +1121,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6137566720514957455">Abre el cuadro de diálogo para quitar la cuenta de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Confirmar descarga</translation>
 <translation id="6154006699632741460">Periférico no admitido</translation>
+<translation id="6156960295318603523">Configuración de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6166852626429024716">Busca en el dispositivo, en las aplicaciones, en los ajustes, en la Web…</translation>
@@ -1337,6 +1340,7 @@ Nueva instalación</translation>
 <translation id="7165278925115064263">Alt + Mayús + K</translation>
 <translation id="7168224885072002358">Restableciendo la resolución anterior en <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="7187711731540696127">Tu punto de acceso <ph name="DEVICE_NAME" /> está activado, pero no hay dispositivos conectados</translation>
 <translation id="7188494361780961876">Se ha movido el menú a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">¿A qué distancia está Venus?</translation>
 <translation id="7198435252016571249">Cámara ajustada a la esquina inferior derecha. Conflicto con la superficie del sistema.</translation>
@@ -1394,6 +1398,7 @@ Nueva instalación</translation>
 <translation id="7497767806359279797">Seleccionar idioma y teclado</translation>
 <translation id="7508690557411636492">Abierto hace menos de un mes</translation>
 <translation id="7509246181739783082">Verifica tu identidad</translation>
+<translation id="7512726380443357693"><ph name="BUTTON_LABEL" />, no seleccionado</translation>
 <translation id="7513622367902644023">Modo de captura de pantalla seleccionado</translation>
 <translation id="7513922695575567867">Calendario, semana del <ph name="DATE" />, actualmente está seleccionado el <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Descargar</translation>

@@ -221,6 +221,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1961239773406905488">Podgląd z aparatu jest ukryty</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Zablokuj ekran</translation>
+<translation id="1962972976741217487">1 urządzenie połączone z hotspotem <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Włączanie hotspota</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Cześć <ph name="USERNAME" />,</translation>
@@ -301,7 +302,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2367972762794486313">Pokaż aplikacje</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
 <translation id="2386292613071805067">Zaznacz wszystko na stronie</translation>
-<translation id="2390318262976603432">Ustawienia języka</translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
 <translation id="240006516586367791">Sterowanie multimediami</translation>
 <translation id="2402411679569069051">Aby odblokować Chromebooka, użyj odcisku palca lub odblokuj swój telefon</translation>
@@ -459,6 +459,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="316086887565479535">Nieobsługiwane aplikacje w szablonie</translation>
 <translation id="3161500364292033097">Zamknij biurko i okna</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> przywraca na urządzeniu <ph name="DEVICE_TYPE" /> wcześniejszą wersję systemu operacyjnego. Urządzenie zostanie zresetowane, a wszystkie dane – usunięte.</translation>
+<translation id="3171170659304083361">Ustawienia metod wprowadzania</translation>
 <translation id="3181441307743005334">Ponowne uruchomienie może trochę potrwać</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Połączono z urządzeniem}few{Połączono z # urządzeniami}many{Połączono z # urządzeniami}other{Połączono z # urządzenia}}</translation>
 <translation id="320207200541803018">Ustaw licznik</translation>
@@ -931,6 +932,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5297704307811127955">Wyłączono</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5302048478445481009">Język</translation>
+<translation id="5303783651764314393">Urządzenia połączone z hotspotem <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="5308380583665731573">Połącz</translation>
 <translation id="5313326810920013265">Ustawienia Bluetooth</translation>
 <translation id="5314219114274263156">Nagrano ekran</translation>
@@ -1109,6 +1111,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6074087755403037157">Wersja beta</translation>
 <translation id="6093867385179428431">Wyłączone przez administratora</translation>
 <translation id="6095008505822982596">Prędkość mowy</translation>
+<translation id="6095425951508823973">Dodaj połączenie, korzystając z programu <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Edytowane w zeszłym miesiącu</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Pliki z mową w języku: <ph name="LANGUAGE" /> zostały pobrane</translation>
@@ -1119,6 +1122,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6137566720514957455">Otwórz okno usuwania konta <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potwierdź pobranie</translation>
 <translation id="6154006699632741460">Nieobsługiwane urządzenie peryferyjne</translation>
+<translation id="6156960295318603523">Ustawienia języka</translation>
 <translation id="615957422585914272">Pokaż klawiaturę ekranową</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
 <translation id="6166852626429024716">Przeszukaj urządzenie, aplikacje, ustawienia, internet…</translation>
@@ -1336,6 +1340,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Odśwież</translation>
+<translation id="7187711731540696127">Hotspot <ph name="DEVICE_NAME" /> jest włączony. Brak połączonych urządzeń.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>
 <translation id="7198435252016571249">Podgląd z kamery został przyciągnięty do prawego dolnego rogu. Konflikt z obszarem systemowym.</translation>

@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">विद्यमान डेटा मेट्नुहोस्।</translation>
 <translation id="1149401351239820326">म्याद सकिने महिना</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ।</translation>
-<translation id="1154704303112745282">यो पृष्ठ अफलाइन मोडमा उपलब्ध छैन: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">पुन: नामाकरण गर्नुहोस्</translation>
 <translation id="1177863135347784049">अनुकूल</translation>
 <translation id="1181037720776840403">हटाउनुहोस्</translation>
@@ -693,7 +692,6 @@
 यो सेटिङ परिवर्तन गर्न <ph name="BEGIN_LINK" />सिंक रिसेट गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">कार्डमा रहेको नाम</translation>
 <translation id="481574578487123132">लिंक गरिएका डिभाइसहरू</translation>
-<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> मा Digital Asset Links पुष्टि गर्न सकिएन</translation>
 <translation id="4826163340425232009">साइन इन गर्ने पुछारको पाना।</translation>
 <translation id="4831037795716408498">सामग्री डाउनलोड गर्ने तरिका</translation>
 <translation id="4834007576107377210">लागू हुन्छ भने आफ्नो खोजको इतिहास मेटाउन सर्च इन्जिनमा दिइएका निर्देशनहरू हेर्नुहोस्</translation>
@@ -990,7 +988,6 @@
 <translation id="6395288395575013217">लिंक</translation>
 <translation id="6397616442223433927">यन्त्र फेरि अनलाइन भयो</translation>
 <translation id="6401458660421980302">तपाईं यो ट्याब अर्को डिभाइसमा पठाउन चाहनुहुन्छ भने उक्त डिभाइसमा Chrome मा साइन इन गर्नुहोस्</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" /> मा <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">बुकमार्क सम्पादन गर्नुहोस्</translation>
 <translation id="6406506848690869874">समक्रमण</translation>
 <translation id="6407224748847589805">तपाईंको कम्प्युटरमा कनेक्ट गर्न सकिएन। पुष्टि गर्ने अर्को विकल्प प्रयोग गरी हेर्नुहोस्।</translation>

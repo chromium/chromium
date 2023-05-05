@@ -942,7 +942,6 @@
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
 <translation id="180203835522132923">検索+O の後、W</translation>
-<translation id="1802457294427928325">ファンクション キーの動作を Chrome OS の最上段のキーの操作に変更します</translation>
 <translation id="1802624026913571222">ディスプレイを閉じたときにスリープ状態にする</translation>
 <translation id="1802687198411089702">ページが応答していません。しばらくお待ちいただくか、終了してください。</translation>
 <translation id="1803531841600994172">翻訳先の言語</translation>
@@ -1463,7 +1462,6 @@
 <translation id="2235344399760031203">サードパーティの Cookie がブロックされています</translation>
 <translation id="2238379619048995541">周波数状態データ</translation>
 <translation id="2241053333139545397">多数のウェブサイト上にある自分のデータの読み取りと変更</translation>
-<translation id="2241242047787527912">以下のキーごとに、実行する操作を選択します</translation>
 <translation id="2241634353105152135">一回限り</translation>
 <translation id="2242687258748107519">ファイル情報</translation>
 <translation id="2245603955208828424">項目を 1 文字ずつ移動するには矢印キーを使用します</translation>
@@ -1500,14 +1498,12 @@
 <translation id="2271986192355138465">ウェブアプリをインストールする方法</translation>
 <translation id="2272430695183451567">割り当てられているスイッチはありません</translation>
 <translation id="2272570998639520080">マティーニ グラス</translation>
-<translation id="2272830751703114341">システムキーまたはランチャーキーで最上段のキーの動作を切り替える</translation>
 <translation id="2273119997271134996">ドックのビデオポートに関する問題</translation>
 <translation id="2274840746523584236">Chromebook を充電してください</translation>
 <translation id="2276503375879033601">アプリを追加</translation>
 <translation id="2276910256003242519">データを消去しています...</translation>
 <translation id="2278562042389100163">ブラウザ ウィンドウを開く</translation>
 <translation id="2278668501808246459">コンテナ マネージャーを起動しています</translation>
-<translation id="2279051792571591988">初期設定に戻す</translation>
 <translation id="2280486287150724112">右余白</translation>
 <translation id="2281863813036651454">左マウスクリック</translation>
 <translation id="2282146716419988068">GPU プロセス</translation>
@@ -2902,7 +2898,6 @@
 <translation id="3508920295779105875">別のフォルダを選択...</translation>
 <translation id="3509379002674019679">パスワードを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。</translation>
 <translation id="3511200754045804813">再スキャン</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{再マッピングされたキーなし}=1{1 個の再マッピングされたキー}other{{COUNT} 個の再マッピングされたキー}}</translation>
 <translation id="3511307672085573050">リンクのアドレスをコピー(&amp;E)</translation>
 <translation id="351152300840026870">固定幅フォント</translation>
 <translation id="3511528412952710609">短い</translation>
@@ -4482,7 +4477,6 @@
 <translation id="4906490889887219338">ネットワーク ファイル共有を設定または管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">この拡張機能がサイトデータの読み取りと変更を行えるタイミングを選択してください</translation>
 <translation id="4907161631261076876">このファイルは一般的にダウンロードされているファイルではなく、危害を及ぼす可能性があります。</translation>
-<translation id="4908070840805457717">キー入力の繰り返し</translation>
 <translation id="4908811072292128752">新しいタブを開いて 2 つのサイトを同時に閲覧できます</translation>
 <translation id="4909038193460299775">このアカウントは <ph name="DOMAIN" /> で管理されているため、ブックマーク、履歴、パスワードなどの設定はこのデバイスから消去されます。ただし、データは Google アカウントに保存され、<ph name="BEGIN_LINK" />Google ダッシュボード<ph name="END_LINK" />で管理できます。</translation>
 <translation id="4912643508233590958">アイドル状態からの復帰</translation>
@@ -5867,7 +5861,6 @@
 <translation id="6177412385419165772">削除しています...</translation>
 <translation id="6178664161104547336">証明書の選択</translation>
 <translation id="6178682841350631965">ログインデータを更新しました</translation>
-<translation id="6179893151569852357">ファンクション キーを ChromeOS の最上段のキーに変換する</translation>
 <translation id="6180510783007738939">直線ツール</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" /> に使用するパスキーを指定してください</translation>
 <translation id="6181431612547969857">ダウンロードがブロックされました</translation>
@@ -6067,7 +6060,6 @@
 <translation id="636850387210749493">企業の登録</translation>
 <translation id="6370021412472292592">マニフェストを読み込めませんでした。</translation>
 <translation id="637135143619858508">広くする</translation>
-<translation id="6372856076511744743">キーボード キーの再マッピング</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">再試行</translation>
 <translation id="6374635887697228982">割引情報を取得しますか？</translation>
@@ -6510,7 +6502,6 @@
 <translation id="677646486571529447">メモを追加</translation>
 <translation id="6776589734354015877">追加の機能を使用できます</translation>
 <translation id="6776729248872343918">ファスト ペアリングを有効にする</translation>
-<translation id="677778081766640955">ファンクション キーと ChromeOS の操作を切り替えるには、キーを長押しします</translation>
 <translation id="6777817260680419853">リダイレクトがブロックされました</translation>
 <translation id="6779092717724412415">このように選択箇所を指定するには、テキストを選択して右クリックします。</translation>
 <translation id="6779447100905857289">カート</translation>
@@ -8116,7 +8107,6 @@
 <translation id="8163708146810922598">古い順</translation>
 <translation id="8165997195302308593">Crostini のポート転送</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{電話番号}other{# 件の電話番号}}</translation>
-<translation id="8168071266284693455">すべてのデバイスでブックマーク、パスワード、履歴、その他の設定が同期されます</translation>
 <translation id="8168435359814927499">コンテンツ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{タブをリーディング リストに追加}other{タブをリーディング リストに追加}}</translation>
 <translation id="8171334254070436367">カードをすべて非表示にする</translation>
@@ -8256,7 +8246,6 @@
 <translation id="8275080796245127762">デバイスから発信</translation>
 <translation id="8275339871947079271">パスワードを Google アカウントに移動すると、ログイン中いつでも安全にアクセスできるようになります</translation>
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
-<translation id="8281721647184388851">Chrome ブラウザの同期をオンにしますか？</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
 <translation id="8284326494547611709">字幕</translation>
@@ -8423,7 +8412,6 @@
 <translation id="8428271547607112339">学校用アカウントを追加</translation>
 <translation id="8428628598981198790">お使いのセキュリティ キーはこのサイトでは使用できません</translation>
 <translation id="84297032718407999">あと <ph name="LOGOUT_TIME_LEFT" />でログアウトします</translation>
-<translation id="8430963319679282846">キーを押し続けると、そのキーの文字が繰り返されます</translation>
 <translation id="8431190899827883166">タップを表示</translation>
 <translation id="8434480141477525001">NaCl デバッグ ポート</translation>
 <translation id="8437209419043462667">US</translation>

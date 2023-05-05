@@ -302,7 +302,6 @@
 <translation id="2367972762794486313">Қолданбаларды көрсету</translation>
 <translation id="2369165858548251131">Қытай тілінде "Сәлем" қалай болады?</translation>
 <translation id="2386292613071805067">Беттегі барлығын таңдау</translation>
-<translation id="2390318262976603432">Тіл параметрлері</translation>
 <translation id="2397416548179033562">Chrome мәзірін көрсету</translation>
 <translation id="240006516586367791">Мультимедианы басқару элементтері</translation>
 <translation id="2402411679569069051">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз немесе телефон құлпын ашыңыз.</translation>
@@ -1060,6 +1059,7 @@
 <translation id="5881540930187678962">Phone Hub кейін орнату</translation>
 <translation id="5881663018261910378">Өшіру</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> терезесі <ph name="DESK_TITLE" /> жұмыс үстеліне тағайындалып, басқаларының бәрінен алынды.</translation>
+<translation id="588817334757907802">Файлды Chrome браузерінде ашу</translation>
 <translation id="5895138241574237353">Қайта іске қосу</translation>
 <translation id="589817443623831496">Нүктемен сканерлеу</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1121,6 +1121,7 @@
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> аккаунтын өшіру диалогтік терезесін ашу</translation>
 <translation id="6141988275892716286">Жүктеп алуды растау</translation>
 <translation id="6154006699632741460">Перифериялық құрылғыға қолдау жоқ</translation>
+<translation id="6156960295318603523">Тіл параметрлері</translation>
 <translation id="615957422585914272">Экрандағы пернетақтаны көрсету</translation>
 <translation id="6165508094623778733">Толығырақ</translation>
 <translation id="6166852626429024716">Құрылғыдан, қолданбалардан, параметрлерден және интернеттен іздеу...</translation>

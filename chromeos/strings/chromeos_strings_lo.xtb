@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">ບໍ່ສາມາດລະບຸ DNS ໄດ້</translation>
 <translation id="1018656279737460067">ຍົກ​ເລີກ​ແລ້ວ</translation>
 <translation id="1022433422498218992">ການຄວບຄຸມທົ່ວໄປ</translation>
+<translation id="1022628058306505708">ກະແສໂລກ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ຫົວຂໍ້, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ມີຄຸນສົມບັດໃໝ່, ກະລຸນາໃຊ້ລູກສອນຂຶ້ນເພື່ອສຶກສາເພີ່ມເຕີມ.</translation>
 <translation id="1059913517121127803">ບໍ່ສາມາດເລີ່ມສະແກນໄດ້</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">ການດຳເນີນການເພີ່ມເຕີມ</translation>
 <translation id="2926057806159140518">ລະບຸຊື່ຜູ້ໃຊ້ ແລະ ລະຫັດຜ່ານຂອງທ່ານ ຫຼື ສະແກນລະຫັດ QR ທ່ານ</translation>
 <translation id="2940811910881150316">ບໍ່ສາມາດທົດສອບອຸປະກອນໄດ້. ເປີດຝາໜ້າຈໍອີກຄັ້ງເພື່ອທົດສອບ.</translation>
+<translation id="2981143481017883351">ເນື້ອຫາພິເສດສະເພາະຂອງ Chromebook ມີໃຫ້ແລ້ວ</translation>
 <translation id="3008341117444806826">ໂຫຼດຂໍ້ມູນໃໝ່</translation>
 <translation id="3009958530611748826">ເລືອກໂຟນເດີທີ່ຈະບັນທຶກໄວ້ໃນ</translation>
 <translation id="3017079585324758401">ພາບພື້ນຫຼັງ</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ເຊື່ອມ​ຕໍ່​ແລ້ວ</translation>
 <translation id="3369013195428705271">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການລຶບປະຫວັດການພິມທັງໝົດ? ວຽກການພິມທີ່ພວມດຳເນີນຢູ່ຂອງທ່ານຈະບໍ່ຖືກລຶບລ້າງ.</translation>
+<translation id="3386675685417744672">ພິເສດສະເພາະ Chromebook</translation>
 <translation id="3404249063913988450">ເປີດການນຳໃຊ້ສະກຣີນເຊັບເວີແລ້ວ</translation>
 <translation id="3413935475507503304">ເພື່ອດຳເນີນການຕໍ່ກັບອັບເດດ, ໃຫ້ຄລິກຕໍ່ໄປ</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ຄໍາເຕືອນ</translation>
 <translation id="4054683689023980771">ກຳລັງດາວໂຫຼດຮູບ</translation>
 <translation id="4060260348856573701">ເພີ່ມ APN ໃໝ່</translation>
+<translation id="4079743696465895866">ເລືອກໜ້າປົກພິເສດສະເພາະ Chromebook</translation>
 <translation id="4093865285251893588">ຮູບໂປຣໄຟລ໌</translation>
 <translation id="409427325554347132">ບັນທຶກລາຍລະອຽດຜົນທົດສອບ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ຄວາມຈຸຂອງແບັດເຕີຣີຫຼຸດລົງເມື່ອໃຊ້ໄປເລື້ອຍໆ</translation>
 <translation id="6191293864534840972">ເຊີບເວີຊື່ຜິດຮູບແບບ</translation>
+<translation id="6205145102504628069">ກະແສຄລາວ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ອອກຈາກໂໝດເຕັມໜ້າຈໍ</translation>
 <translation id="6223752125779001553">ບໍ່ມີເຄື່ອງສະແກນ</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">ການປັບແຕ່ງ</translation>
 <translation id="6500818810472529210">ເບິ່ງຜົນການຊອກຫາໃນ Google ຊອກຫາ</translation>
 <translation id="650266656685499220">ເພື່ອສ້າງອະລະບໍ້າ, ກະລຸນາໄປທີ່ Google ຮູບພາບ</translation>
+<translation id="6505750420152840539">ຮຸ່ງອະລຸນຈົນເຖິງກາງຄືນ</translation>
 <translation id="6516990319416533844">ເພື່ອທົດສອບອັດຕາການສາກແບັດເຕີຣີ, ໃຫ້ປ່ອຍໃຫ້ມີການໃຊ້ແບັດເຕີຣີເປັນໄລຍະເວລາສັ້ນໆ</translation>
 <translation id="6517239166834772319">ສຳຫຼວດ</translation>
 <translation id="6526200165918397681">ຈັບຄູ່ຮູບພື້ນຫຼັງ</translation>

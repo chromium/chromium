@@ -30,7 +30,6 @@
 <translation id="1145536944570833626">ಪ್ರಸ್ತುತ ಡೇಟಾ ಅಳಿಸಿ.</translation>
 <translation id="1149401351239820326">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="1150263420752757504"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.</translation>
-<translation id="1154704303112745282">ಪುಟ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ: <ph name="VIOLATED_URL" /></translation>
 <translation id="1173894706177603556">ಮರುಹೆಸರಿಸು</translation>
 <translation id="1177863135347784049">ಕಸ್ಟಮ್</translation>
 <translation id="1181037720776840403">ತೆಗೆದುಹಾಕು</translation>
@@ -294,7 +293,7 @@
 <translation id="2647434099613338025">ಭಾಷೆಯನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2649068648233607930">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="2650348088770008516">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿ ವಿವರಣೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
-<translation id="2650751991977523696">ಫೈಲ್‌ ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವುದೇ?</translation>
+<translation id="2650751991977523696">ಫೈಲ್‌ ಮತ್ತೆ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ಆಡಿಯೋ ಫೈಲ್}one{# ಆಡಿಯೋ ಫೈಲ್‌ಗಳು}other{# ಆಡಿಯೋ ಫೈಲ್‌ಗಳು}}</translation>
 <translation id="265156376773362237">ಪ್ರಮಾಣಿತ ಮುಂಚಿತ ಲೋಡ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="2656405586795711023">ವೆಬ್‌ ಆ್ಯಪ್‌ಗಳು</translation>
@@ -588,7 +587,7 @@
 <translation id="4225895483398857530">Toolbar ಶಾರ್ಟ್‌ಕಟ್</translation>
 <translation id="4242533952199664413">ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆ</translation>
 <translation id="4248098802131000011">ಡೇಟಾ ಉಲ್ಲಂಘನೆಗಳು ಮತ್ತು ಇತರ ಸುರಕ್ಷತೆ ಸಮಸ್ಯೆಗಳಿಂದಾಗಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಇರಿಸಿಕೊಳ್ಳಿ</translation>
-<translation id="424864128008805179">Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡುವುದೇ?</translation>
+<translation id="424864128008805179">Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="4249955472157341256">ಇತ್ತೀಚಿನ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="4250229828105606438">ಸ್ಕ್ರೀನ್‌ಶಾಟ್</translation>
 <translation id="4256782883801055595">ಓಪನ್ ಸೋರ್ಸ್ ಪರವಾನಗಿಗಳು</translation>
@@ -693,7 +692,6 @@
 ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಬದಲಾಯಿಸಲು, <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಅನ್ನು ಮರುಹೊಂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">ಕಾರ್ಡ್‌ನಲ್ಲಿರುವ ಹೆಸರು</translation>
 <translation id="481574578487123132">ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನಗಳು</translation>
-<translation id="4818017973810341238"><ph name="VIOLATED_URL" /> ನಲ್ಲಿ ಡಿಜಿಟಲ್ ಸ್ವತ್ತಿನ ಲಿಂಕ್‌ಗಳ ಪರಿಶೀಲನೆ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="4826163340425232009">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್.</translation>
 <translation id="4831037795716408498">ವಿಷಯವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="4834007576107377210">ಅನ್ವಯಿಸಿದರೆ, ನಿಮ್ಮ ಹುಡುಕಾಟ ಇತಿಹಾಸವನ್ನು ಅಳಿಸಲು ನಿಮ್ಮ ಹುಡುಕಾಟ ಎಂಜಿನ್‌ನ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
@@ -990,7 +988,6 @@
 <translation id="6395288395575013217">ಲಿಂಕ್</translation>
 <translation id="6397616442223433927">ಆನ್‌ಲೈನ್‌ಗೆ ಮರಳಿದ್ದೀರಿ</translation>
 <translation id="6401458660421980302">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬೇರೊಂದು ಸಾಧನಕ್ಕೆ ಕಳುಹಿಸಲು, ಅಲ್ಲಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
-<translation id="6402652558933147609"><ph name="VIOLATED_URL" /> ನಲ್ಲಿ <ph name="ERROR_CODE" /></translation>
 <translation id="6404511346730675251">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="6406506848690869874">ಸಿಂಕ್</translation>
 <translation id="6407224748847589805">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ. ಬೇರೊಂದು ಪರಿಶೀಲನೆ ಆಯ್ಕೆಯನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -1471,7 +1468,7 @@
 <translation id="8746155870861185046">ಹೈಲೈಟ್ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="874726034427945498">ನಿಮ್ಮ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ನೋಡಲು, ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="8748850008226585750">ವಿಷಯಗಳನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ</translation>
-<translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡುವುದೇ?</translation>
+<translation id="8756969031206844760">ಪಾಸ್‌ವರ್ಡ್ ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="8765470054473112089">ನೀವು ವಿಳಾಸ ಪಟ್ಟಿ ಅಥವಾ ಹುಡುಕಾಟ ಪೆಟ್ಟಿಗೆಯಲ್ಲಿ ಟೈಪ್ ಮಾಡಿದಾಗ, ಉತ್ತಮ ಸಲಹೆಗಳನ್ನು ಪಡೆಯಲು Chrome ನೀವು ಟೈಪ್ ಮಾಡಿದ್ದನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಎಂಜಿನ್‌ಗೆ ಕಳುಹಿಸುತ್ತದೆ. ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಇದು ಆಫ್ ಆಗಿರುತ್ತದೆ.</translation>
 <translation id="8766529642647037772">ಈ ರೀತಿಯ ಹೈಲೈಟ್ ಮಾಡಿದ ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಬೇಕೆ?</translation>
 <translation id="8773160212632396039">ವಿನಂತಿಯನ್ನು ಪ್ರಕ್ರಿಯೆಗೊಳಿಸಲಾಗುತ್ತಿದೆ</translation>
@@ -1513,7 +1510,7 @@
 <translation id="8965591936373831584">ಬಾಕಿ ಉಳಿದಿರುವುದು</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_ONE" /> ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}one{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}other{<ph name="INCOGNITO_TAB_COUNT" /> ಅಜ್ಞಾತ ಮತ್ತು ಇನ್ನೂ <ph name="TAB_COUNT_MANY" /> ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಲಾಗುತ್ತದೆ}}</translation>
 <translation id="8970887620466824814">ಏನೋ ತಪ್ಪಾಗಿದೆ.</translation>
-<translation id="8972098258593396643">ಡೀಫಾಲ್ಟ್ ಫೋಲ್ಡರ್‌ಗೆ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವುದೇ?</translation>
+<translation id="8972098258593396643">ಡೀಫಾಲ್ಟ್ ಫೋಲ್ಡರ್‌ಗೆ ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಬೇಕೆ?</translation>
 <translation id="8987641763863173640">ವೀಡಿಯೊ ಪೂರ್ವವೀಕ್ಷಣೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="8987736167266086032">ನೀವು ಎಲ್ಲಿಗೆ ಬಿಟ್ಟಿರುವಿರೋ ಅಲ್ಲಿಂದ ಮುಂದುವರಿಸಿ</translation>
 <translation id="8989968390305463310">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಇತಿಹಾಸ ನಿಮಗೆ ಕಾಣಿಸುವ ಜಾಹೀರಾತುಗಳು ಮತ್ತು ಆಸಕ್ತಿಗಳ ಮೇಲೆ, ಕೆಳಗೆ ಅಂದಾಜು ಮಾಡಿರುವಂತೆ ಪ್ರಭಾವ ಬೀರುತ್ತದೆ. ನಿಮ್ಮ ಗೌಪ್ಯತೆಯನ್ನು ರಕ್ಷಿಸಲು, Chrome ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಪ್ರತಿ ತಿಂಗಳು ರೋಲಿಂಗ್ ಆಧಾರದಲ್ಲಿ ಸ್ವಯಂ-ಅಳಿಸುತ್ತದೆ. ನೀವು ಆಸಕ್ತಿಗಳನ್ನು ತೆಗೆದುಹಾಕದಿದ್ದಾಗ ಅವು ರಿಫ್ರೆಶ್ ಆಗಬಹುದು.</translation>

@@ -942,7 +942,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
 <translation id="1797117170091578105">Igrajte pomoću Chromebook tastature. Možete da prilagodite tastere određenim radnjama.</translation>
 <translation id="180203835522132923">Taster za pretragu + O, a zatim W</translation>
-<translation id="1802457294427928325">Promeni ponašanje F tastera u ChromeOS radnje u gornjem redu</translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
 <translation id="1802687198411089702">Stranica se ne odaziva. Možete da sačekate da počne da se odaziva ili da je zatvorite.</translation>
 <translation id="1803531841600994172">Jezik na koji želite da prevodite</translation>
@@ -1465,7 +1464,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2235344399760031203">Kolačići treće strane su blokirani</translation>
 <translation id="2238379619048995541">Podaci o stanju frekvencije</translation>
 <translation id="2241053333139545397">Čitanje i menjanje podataka na više veb-sajtova</translation>
-<translation id="2241242047787527912">Za svaki taster naveden u nastavku odaberite radnju koju želite da obavlja</translation>
 <translation id="2241634353105152135">Samo jednom</translation>
 <translation id="2242687258748107519">Informacije o datoteci</translation>
 <translation id="2245603955208828424">Koristite tastere sa strelicama da biste se kretali kroz stavke slovo po slovo</translation>
@@ -1503,14 +1501,12 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2271986192355138465">Saznajte kako da instalirate veb-aplikacije</translation>
 <translation id="2272430695183451567">0 prekidača je dodeljeno</translation>
 <translation id="2272570998639520080">Čaša za martini</translation>
-<translation id="2272830751703114341">Omogućite taster sistema/pokretača radi promene ponašanja tastera u gornjem redu</translation>
 <translation id="2273119997271134996">Problem sa video portom bazne stanice</translation>
 <translation id="2274840746523584236">Napunite Chromebook</translation>
 <translation id="2276503375879033601">Dodaj još aplikacija</translation>
 <translation id="2276910256003242519">Podaci se brišu...</translation>
 <translation id="2278562042389100163">Otvaranje prozora pregledača</translation>
 <translation id="2278668501808246459">Pokreće se menadžer kontejnera</translation>
-<translation id="2279051792571591988">Vrati na podrazumevano</translation>
 <translation id="2280486287150724112">Desna margina</translation>
 <translation id="2281863813036651454">Klik na levi taster miša</translation>
 <translation id="2282146716419988068">GPU proces</translation>
@@ -2907,7 +2903,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3508920295779105875">Odaberi drugi folder...</translation>
 <translation id="3509379002674019679">Pravite i čuvajte lozinke i upravljajte njima da biste se lako prijavljivali na sajtove i u aplikacije.</translation>
 <translation id="3511200754045804813">Ponovo skeniraj</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Nijedan ključ nije ponovo mapiran}=1{1 ponovo mapirani ključ}one{{COUNT} ponovo mapirani ključ}few{{COUNT} ponovo mapirana ključa}other{{COUNT} ponovo mapiranih ključeva}}</translation>
 <translation id="3511307672085573050">Kopiraj adr&amp;esu linka</translation>
 <translation id="351152300840026870">Font fiksne širine</translation>
 <translation id="3511528412952710609">Kratko</translation>
@@ -4487,7 +4482,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4906490889887219338">Podesite deljenja datoteka na mreži ili upravljajte njima. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Odaberite kada ovaj dodatak može da čita i menja podatke o sajtovima</translation>
 <translation id="4907161631261076876">Ova datoteka se ne preuzima često i može da bude opasna.</translation>
-<translation id="4908070840805457717">Ponavljaj pritisak na taster</translation>
 <translation id="4908811072292128752">Otvorite novu karticu da biste pregledali dva sajta istovremeno</translation>
 <translation id="4909038193460299775">Pošto ovim nalogom upravlja <ph name="DOMAIN" />, vaši obeleživači, istorija, lozinke i druga podešavanja će biti izbrisani sa ovog uređaja. Međutim, vaši podaci će se i dalje čuvati na Google nalogu i njima možete da upravljate na <ph name="BEGIN_LINK" />Google kontrolnoj tabli<ph name="END_LINK" />.</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>
@@ -5873,7 +5867,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6177412385419165772">Uklanja se…</translation>
 <translation id="6178664161104547336">Izbor sertifikata</translation>
 <translation id="6178682841350631965">Podaci za prijavljivanje su ažurirani</translation>
-<translation id="6179893151569852357">Konvertuj F tastere u ChromeOS tastere iz gornjeg reda</translation>
 <translation id="6180510783007738939">Alatka za linije</translation>
 <translation id="6180550893222597997">Koji pristupni kôd želite da koristite za aplikaciju <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Preuzimanje je blokirano</translation>
@@ -6073,7 +6066,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="636850387210749493">Prijavljivanje za izdanje za preduzeća</translation>
 <translation id="6370021412472292592">Učitavanje manifesta nije moguće.</translation>
 <translation id="637135143619858508">Razmaknuto</translation>
-<translation id="6372856076511744743">Ponovo mapiraj tastere na tastaturi</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Probaj ponovo</translation>
 <translation id="6374635887697228982">Želite da ostvarite popuste?</translation>
@@ -6098,6 +6090,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6396175271241405634">Sistemska aplikacija</translation>
 <translation id="6398715114293939307">Uklonite Google Play prodavnicu</translation>
 <translation id="6398765197997659313">Izađi iz režima celog ekrana</translation>
+<translation id="6399675241776343019">Odbijeno</translation>
 <translation id="6399774419735315745">Špijunka</translation>
 <translation id="6400360390396538896">Uvek na <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">Da biste poslali ovu karticu na drugi uređaj, prijavite se u Chrome na tom uređaju</translation>
@@ -6520,7 +6513,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="677646486571529447">Dodaj belešku</translation>
 <translation id="6776589734354015877">Nabavite dodatne funkcije</translation>
 <translation id="6776729248872343918">Omogući Brzo uparivanje</translation>
-<translation id="677778081766640955">Držite taster da biste prebacivali sa F tastera na ChromeOS radnje i obrnuto</translation>
 <translation id="6777817260680419853">Preusmeravanje je blokirano</translation>
 <translation id="6779092717724412415">Da biste napravili isticanje poput ovog, izaberite bilo koji tekst i kliknite desnim tasterom.</translation>
 <translation id="6779447100905857289">korpe</translation>
@@ -8129,7 +8121,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8163708146810922598">najstarije</translation>
 <translation id="8165997195302308593">Prosleđivanje porta za Crostini</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{broj telefona}one{# broj telefona}few{# broja telefona}other{# brojeva telefona}}</translation>
-<translation id="8168071266284693455">Obeleživači, lozinke, istorija i drugo se sinhronizuju na svim uređajima</translation>
 <translation id="8168435359814927499">Sadržaj</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Dodaj karticu na listu za čitanje}one{Dodaj kartice na listu za čitanje}few{Dodaj kartice na listu za čitanje}other{Dodaj kartice na listu za čitanje}}</translation>
 <translation id="8171334254070436367">Sakrij sve kartice</translation>
@@ -8269,7 +8260,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8275080796245127762">Pozovite sa svog uređaja</translation>
 <translation id="8275339871947079271">Premestite lozinku na Google nalog da biste joj bezbedno pristupali svaki put kada ste prijavljeni</translation>
 <translation id="8276560076771292512">Isprazni keš i ponovo učitaj sa servera</translation>
-<translation id="8281721647184388851">Želite da uključite sinhronizaciju sa Chrome pregledačem?</translation>
 <translation id="8281886186245836920">Preskoči</translation>
 <translation id="8284279544186306258">svi <ph name="WEBSITE_1" /> sajtovi</translation>
 <translation id="8284326494547611709">Titl</translation>
@@ -8436,7 +8426,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8428271547607112339">Dodajte školski nalog</translation>
 <translation id="8428628598981198790">Ne možete da koristite bezbednosni ključ na ovom sajtu</translation>
 <translation id="84297032718407999">Odjavićete se za <ph name="LOGOUT_TIME_LEFT" /></translation>
-<translation id="8430963319679282846">Ako pritisnete i zadržite taster, znak tastera će se ponoviti</translation>
 <translation id="8431190899827883166">Prikaz dodira</translation>
 <translation id="8434480141477525001">NaCl port za otklanjanje grešaka</translation>
 <translation id="8437209419043462667">američka</translation>

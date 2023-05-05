@@ -10,6 +10,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1104942323762546749">Chromium quiere exportar tus contraseñas. Escribe tu contraseña de Windows para permitirlo.</translation>
 <translation id="113122355610423240">Chromium es tu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar si tus contraseñas han sufrido quiebras de seguridad de datos u otros problemas de seguridad, <ph name="BEGIN_LINK" />inicia sesión en Chromium<ph name="END_LINK" />.</translation>
+<translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Algunas extensiones de Chromium estaban accediendo a dispositivos HID}=1{Algunas extensiones de Chromium están accediendo a 1 dispositivo HID}other{Algunas extensiones de Chromium están accediendo a # dispositivos HID}}</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
 <translation id="1202417120496358351">{COUNT,plural, =1{Tu administrador cerrará Chromium automáticamente cuando lleve 1 minuto sin usarse. Los datos de navegación se eliminarán. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.}other{Tu administrador cerrará Chromium automáticamente cuando lleve # minutos sin usarse. Los datos de navegación se eliminarán. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.}}</translation>
 <translation id="1203500561924088507">Gracias por realizar la instalación. Debes reiniciar tu navegador para poder usar <ph name="BUNDLE_NAME" />.</translation>
@@ -358,6 +359,7 @@ Chromium no puede recuperar tu configuración.</translation>
 <translation id="8608079656141766906"><ph name="BEGIN_BOLD" />Cómo usamos estos datos:<ph name="END_BOLD" /> los sitios pueden almacenar información con Chromium sobre tus intereses. Por ejemplo, si visitas un sitio para comprar zapatillas para una maratón, es posible que el sitio considere que te interesa correr maratones. Si más tarde visitas un sitio diferente para registrarte en una carrera, ese sitio puede mostrarte un anuncio de zapatillas de correr basándose en tus intereses.</translation>
 <translation id="8619360774459241877">Iniciando Chromium...</translation>
 <translation id="8621669128220841554">La instalación ha fallado debido a un error no especificado. Vuelve a descargar Chromium.</translation>
+<translation id="867492205098279939">{NUM_DEVICES,plural, =0{Una extensión de Chromium estaba accediendo a dispositivos HID}=1{Una extensión de Chromium está accediendo a 1 dispositivo HID}other{Una extensión de Chromium está accediendo a # dispositivos HID}}</translation>
 <translation id="8697124171261953979">También controla qué página se muestra al iniciar Chromium o al hacer búsquedas desde el omnibox.</translation>
 <translation id="8704119203788522458">Aquí tienes tu navegador Chromium</translation>
 <translation id="8796602469536043152">Chromium necesita permiso para acceder a la cámara y al micrófono en este sitio web</translation>

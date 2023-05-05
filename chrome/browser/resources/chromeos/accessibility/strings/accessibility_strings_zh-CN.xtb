@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
+<translation id="100506692671054486">没有上一个命令</translation>
 <translation id="1009046985747440431">按向上或向下箭头键即可浏览；按 Enter 键即可激活</translation>
 <translation id="1011903154582639569">找到需要的键后，移开手指即可输入</translation>
 <translation id="1012173283529841972">列表项</translation>

@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">கேமரா மாதிரிக்காட்சி மறைக்கப்பட்டுள்ளது</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">லாக் ஸ்கிரீன்</translation>
+<translation id="1962972976741217487">உங்கள் <ph name="DEVICE_NAME" /> சாதனத்தின் ஹாட்ஸ்பாட்டில் 1 சாதனம் இணைந்துள்ளது</translation>
 <translation id="1967970931040389207">ஹாட்ஸ்பாட்டை இயக்குதல்</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">ஹாய் <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@
 <translation id="2367972762794486313">பயன்பாடுகளைக் காட்டு</translation>
 <translation id="2369165858548251131">சீன மொழியில் "ஹலோ"</translation>
 <translation id="2386292613071805067">பக்கத்தில் உள்ள அனைத்தையும் தேர்ந்தெடுக்கும்</translation>
-<translation id="2390318262976603432">மொழி அமைப்புகள்</translation>
 <translation id="2397416548179033562">Chrome மெனுவைக் காட்டு</translation>
 <translation id="240006516586367791">மீடியா கட்டுப்பாடுகள்</translation>
 <translation id="2402411679569069051">Chromebookகை அன்லாக் செய்ய, உங்கள் கைரேகையைப் பயன்படுத்தவும் அல்லது மொபைலை அன்லாக் செய்யவும்</translation>
@@ -931,6 +931,7 @@
 <translation id="5297704307811127955">முடக்கப்பட்டுள்ளது</translation>
 <translation id="5300589172476337783">காண்பி</translation>
 <translation id="5302048478445481009">மொழி</translation>
+<translation id="5303783651764314393">உங்கள் <ph name="DEVICE_NAME" /> சாதனத்தின் ஹாட்ஸ்பாட்டில் <ph name="DEVICECOUNT" /> சாதனங்கள் இணைந்துள்ளன</translation>
 <translation id="5308380583665731573">இணை</translation>
 <translation id="5313326810920013265">புளூடூத் அமைப்புகள்</translation>
 <translation id="5314219114274263156">ஸ்கிரீன் ரெக்கார்டு செய்யப்பட்டது</translation>
@@ -1119,6 +1120,7 @@
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> என்ற கணக்கை அகற்றுவதற்கான உரையாடலைத் திறக்கும்</translation>
 <translation id="6141988275892716286">பதிவிறக்கத்தை உறுதிப்படுத்து</translation>
 <translation id="6154006699632741460">சாதனம் ஆதரிக்கப்படவில்லை</translation>
+<translation id="6156960295318603523">மொழி அமைப்புகள்</translation>
 <translation id="615957422585914272">ஸ்கிரீன் கீபோர்டைக் காட்டு</translation>
 <translation id="6165508094623778733">மேலும் அறிக</translation>
 <translation id="6166852626429024716">உங்கள் சாதனம், ஆப்ஸ், அமைப்புகள், இணையம் ஆகியவற்றில் தேடுக...</translation>
@@ -1337,6 +1339,7 @@
 <translation id="7165278925115064263">ஆல்ட்+ஷிஃப்ட்+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> வினாடிகளில் பழைய தெளிவுதிறனுக்கு மாற்றியமைக்கப்படும்</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
+<translation id="7187711731540696127">உங்கள் <ph name="DEVICE_NAME" /> சாதனத்தின் ஹாட்ஸ்பாட் இயக்கத்தில் உள்ளது, சாதனம் எதுவும் இணைக்கப்படவில்லை</translation>
 <translation id="7188494361780961876">திரையின் மேல் இடது மூலைக்கு மெனு நகர்த்தப்பட்டது.</translation>
 <translation id="7189412385142492784">வெள்ளி கிரகம் எவ்வளவு தொலைவில் உள்ளது?</translation>
 <translation id="7198435252016571249">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது. ஏனெனில் சிஸ்டத்தின் காட்சியை இது மறைக்கும்.</translation>

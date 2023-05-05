@@ -118,6 +118,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2929907241665500097">Chrome no se ha actualizado, algo no va bien. <ph name="BEGIN_LINK" />Soluciona los problemas y errores de actualización de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" />, inicio de sesión en la red, Chrome</translation>
 <translation id="3019382870990049182">Reiniciar para actualizar &amp;ChromeOS Flex</translation>
+<translation id="3033660625209020231">{NUM_DEVICES,plural, =0{Algunas extensiones de Google Chrome estaban accediendo a dispositivos HID}=1{Algunas extensiones de Google Chrome están accediendo a 1 dispositivo HID}other{Algunas extensiones de Google Chrome están accediendo a # dispositivos HID}}</translation>
 <translation id="303514781271618814">Chrome está explorando nuevas funciones que permitan que los sitios ofrezcan la misma experiencia de navegación con un uso menor de tus datos</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano.</translation>
 <translation id="3038232873781883849">Esperando para instalar...</translation>
@@ -223,6 +224,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4970947549776831107">Chrome ha bloqueado este archivo porque este tipo de archivo es peligroso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Una extensión de Google Chrome estaba accediendo a dispositivos HID}=1{Una extensión de Google Chrome está accediendo a 1 dispositivo HID}other{Una extensión de Google Chrome está accediendo a # dispositivos HID}}</translation>
 <translation id="5064155331105009416">{COUNT,plural, =1{Tu administrador cerrará Chrome automáticamente cuando lleve 1 minuto sin usarse. Los datos de navegación se eliminarán. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.}other{Tu administrador cerrará Chrome automáticamente cuando lleve # minutos sin usarse. Los datos de navegación se eliminarán. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.}}</translation>
 <translation id="5098668839038261629">Si activas esta opción, también se cerrará tu sesión en Chrome</translation>
 <translation id="5132929315877954718">Descubre formidables aplicaciones, juegos, extensiones y temas para Google Chrome.</translation>

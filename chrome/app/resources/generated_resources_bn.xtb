@@ -955,7 +955,6 @@
 <translation id="1796588414813960292">যেসব ফিচার ব্যবহার করার জন্য সাউন্ড প্রয়োজন সেগুলি কাজ করবে না</translation>
 <translation id="1797117170091578105">আপনার Chromebook কীবোর্ডের সাহায্যে খেলুন। নির্দিষ্ট অ্যাকশনের জন্য আপনি 'কী' কাস্টমাইজ করতে পারবেন।</translation>
 <translation id="180203835522132923">'Search' ও 'O' বোতাম একসাথে প্রেস করুন, তারপরে 'W' বোতাম প্রেস করুন</translation>
-<translation id="1802457294427928325">ChromeOS-এর উপরের সারির অ্যাকশনে F 'কী'-এর আচরণ পরিবর্তন করুন</translation>
 <translation id="1802624026913571222">ডিভাইসের কভার বন্ধ করলে স্লিপ মোডে চলে যাবে</translation>
 <translation id="1802687198411089702">পৃষ্ঠাটি সাড়া দিচ্ছে না। আপনি অপেক্ষা করতে পারেন অথবা পৃষ্ঠা ছেড়ে যেতে পারেন।</translation>
 <translation id="1803531841600994172">যে ভাষায় অনুবাদ করতে হবে</translation>
@@ -1479,7 +1478,6 @@
 <translation id="2235344399760031203">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
 <translation id="2238379619048995541">ফ্রিকোয়েন্সি স্থিতি ডেটা</translation>
 <translation id="2241053333139545397">কয়েকটি ওয়েবসাইটে আপনার ডেটা পড়ুন এবং পরিবর্তন করুন</translation>
-<translation id="2241242047787527912">নিচের তালিকায় থাকা প্রত্যেকটি 'কী'-এর জন্য, আপনি পারফর্ম করতে চান এমন অ্যাকশন বেছে নিন</translation>
 <translation id="2241634353105152135">শুধুমাত্র একবার</translation>
 <translation id="2242687258748107519">ফাইল তথ্য</translation>
 <translation id="2245603955208828424">কোনও আইটেমের মধ্যে একটি অক্ষর থেকে আরেকটি অক্ষরে যেতে তীরচিহ্ন কী ব্যবহার করুন</translation>
@@ -1520,14 +1518,12 @@
 <translation id="2271986192355138465">কীভাবে ওয়েব অ্যাপ ইনস্টল করতে হয় তা জানুন</translation>
 <translation id="2272430695183451567">কোনও সুইচ অ্যাসাইন করা হয়নি</translation>
 <translation id="2272570998639520080">মার্টিনি গ্লাস</translation>
-<translation id="2272830751703114341">উপরের সারির 'কী'-এর আচরণ পাল্টাতে সিস্টেম/লঞ্চার 'কী' চালু করুন</translation>
 <translation id="2273119997271134996">ডকিং স্টেশনে ভিডিও-পোর্ট সংক্রান্ত সমস্যা</translation>
 <translation id="2274840746523584236">আপনার Chromebook চার্জ করুন</translation>
 <translation id="2276503375879033601">আরও অ্যাপ্লিকেশন জুডুন</translation>
 <translation id="2276910256003242519">ডেটা মোছা হচ্ছে...</translation>
 <translation id="2278562042389100163">ব্রাউজার উইন্ডো খুলুন</translation>
 <translation id="2278668501808246459">কন্টেনার ম্যানেজার শুরু করা হচ্ছে</translation>
-<translation id="2279051792571591988">ডিফল্ট ফিরিয়ে আনুন</translation>
 <translation id="2280486287150724112">ডান মার্জিন</translation>
 <translation id="2281863813036651454">বাঁদিকের মাউস ক্লিক করার বোতাম</translation>
 <translation id="2282146716419988068">GPU প্রক্রিয়া</translation>
@@ -2924,7 +2920,6 @@
 <translation id="3508920295779105875">অন্য ফোল্ডার বেছে নিন...</translation>
 <translation id="3509379002674019679">পাসওয়ার্ড তৈরি, সেভ ও ম্যানেজ করুন যাতে আপনি সহজেই সাইট ও অ্যাপে সাইন-ইন করতে পারেন।</translation>
 <translation id="3511200754045804813">আবার স্ক্যান করুন</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{কোনও 'কী' রিম্যাপ করা হয়নি}=1{১টি 'কী‘ রিম্যাপ করা হয়েছে}one{{COUNT}টি 'কী‘ রিম্যাপ করা হয়েছে}other{{COUNT}টি 'কী‘ রিম্যাপ করা হয়েছে}}</translation>
 <translation id="3511307672085573050">লিঙ্ক ঠিকানা কপি করুন</translation>
 <translation id="351152300840026870">নির্দিষ্ট-চওড়া হরফ</translation>
 <translation id="3511528412952710609">স্বল্পস্থায়ী</translation>
@@ -4508,7 +4503,6 @@
 <translation id="4906490889887219338">নেটওয়ার্ক ফাইল শেয়ার (SMB) সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">এই এক্সটেনশন কখন সাইট ডেটা পড়তে ও পরিবর্তন করতে পারবে সেটি বেছে নিন</translation>
 <translation id="4907161631261076876">এই ফাইলটি সাধারণভাবে ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে।</translation>
-<translation id="4908070840805457717">কী প্রেস করে রাখুন</translation>
 <translation id="4908811072292128752">একসাথে দুটি সাইট ব্রাউজ করতে নতুন ট্যাব খুলুন</translation>
 <translation id="4909038193460299775">এই অ্যাকাউন্টটি <ph name="DOMAIN" /> দ্বারা পরিচালিত হওয়ার কারণে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস এই ডিভাইস থেকে সাফ করা হবে। অবশ্য, আপনার ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে এবং <ph name="BEGIN_LINK" />Google ড্যাশবোর্ড<ph name="END_LINK" /> থেকে তা পরিচালনা করা যাবে।</translation>
 <translation id="4912643508233590958">নিষ্ক্রিয়তা সময়ের সমাপ্তি</translation>
@@ -5897,7 +5891,6 @@
 <translation id="6177412385419165772">সরানো হচ্ছে...</translation>
 <translation id="6178664161104547336">একটি সার্টিফিকেট বেছে নিন</translation>
 <translation id="6178682841350631965">আপনার সাইন-ইন ডেটা আপডেট করা হয়েছে</translation>
-<translation id="6179893151569852357">F 'কী'-কে ChromeOS-এর উপরের সারির 'কী'-তে কনভার্ট করুন</translation>
 <translation id="6180510783007738939">লাইন টুল</translation>
 <translation id="6180550893222597997"><ph name="APP_NAME" />-এর জন্য কোন 'পাসকী' ব্যবহার করতে চান?</translation>
 <translation id="6181431612547969857">ডাউনলোড ব্লক করা হয়েছে</translation>
@@ -6097,7 +6090,6 @@
 <translation id="636850387210749493">এন্টারপ্রাইজ নথিভুক্তিকরণ</translation>
 <translation id="6370021412472292592">ম্যানিফেস্ট লোড করা যাবে না।</translation>
 <translation id="637135143619858508">দূরে</translation>
-<translation id="6372856076511744743">কীবোর্ডের 'কী' রিম্যাপ করুন</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">আবার চেষ্টা করুন</translation>
 <translation id="6374635887697228982">ছাড় পেয়েছেন?</translation>
@@ -6122,6 +6114,7 @@
 <translation id="6396175271241405634">সিস্টেম অ্যাপ</translation>
 <translation id="6398715114293939307">Google Play Store সরান</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
+<translation id="6399675241776343019">বাতিল করা হয়েছে</translation>
 <translation id="6399774419735315745">গুপ্তচর</translation>
 <translation id="6400360390396538896"><ph name="ORIGIN" /> সবসময় চালু রাখা</translation>
 <translation id="6401458660421980302">এই ট্যাবটিকে অন্য ডিভাইসে পাঠাতে, সেখানে Chrome-এ সাইন-ইন করুন</translation>
@@ -6542,7 +6535,6 @@
 <translation id="677646486571529447">নোট যোগ করুন</translation>
 <translation id="6776589734354015877">অতিরিক্ত ফিচার পান</translation>
 <translation id="6776729248872343918">'দ্রুত পেয়ার' ফিচার চালু করুন</translation>
-<translation id="677778081766640955">F 'কী' এবং ChromeOS অ্যাকশনের মধ্যে পাল্টাতে 'কী' ধরে রাখুন</translation>
 <translation id="6777817260680419853">রিডাইরেক্ট ব্লক করা হয়েছে</translation>
 <translation id="6779092717724412415">এইরকম একটি হাইলাইট তৈরি করতে, যেকোনও টেক্সট বেছে নিন এবং ডানদিকের বোতামে ক্লিক করুন।</translation>
 <translation id="6779447100905857289">আপনার কার্ট</translation>
@@ -8150,7 +8142,6 @@
 <translation id="8163708146810922598">সবচেয়ে পুরনো</translation>
 <translation id="8165997195302308593">Crostini-এর পোর্ট ফরওয়ার্ড করা</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{একটি ফোন নম্বর}one{#টি ফোন নম্বর}other{#টি ফোন নম্বর}}</translation>
-<translation id="8168071266284693455">আপনার সব ডিভাইসে বুকমার্ক, পাসওয়ার্ড, ইতিহাস এবং আরও অনেক কিছু সিঙ্ক করা আছে</translation>
 <translation id="8168435359814927499">কন্টেন্ট</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{রিডিং তালিকাতে ট্যাব যোগ করুন}one{রিডিং তালিকাতে ট্যাব যোগ করুন}other{রিডিং তালিকাতে ট্যাব যোগ করুন}}</translation>
 <translation id="8171334254070436367">সব কার্ড লুকান</translation>
@@ -8290,7 +8281,6 @@
 <translation id="8275080796245127762">আপনার ডিভাইস থেকে কল করুন</translation>
 <translation id="8275339871947079271">আপনি যেখানেই সাইন-ইন করুন না কেন সেখানেই আপনার পাসওয়ার্ড নিরাপদে অ্যাক্সেস করতে, সেগুলি Google অ্যাকাউন্টে সেভ করে রাখুন</translation>
 <translation id="8276560076771292512">ক্যাশে খালি করুন ও কঠিন রলোড</translation>
-<translation id="8281721647184388851">Chrome ব্রাউজারে সিঙ্ক চালু করবেন?</translation>
 <translation id="8281886186245836920">ছেড়ে যান</translation>
 <translation id="8284279544186306258">সব <ph name="WEBSITE_1" /> সাইট</translation>
 <translation id="8284326494547611709">পরিচয়লিপিগুলি</translation>
@@ -8457,7 +8447,6 @@
 <translation id="8428271547607112339">স্কুলের অ্যাকাউন্ট যোগ করুন</translation>
 <translation id="8428628598981198790">এই সাইটে আপনার নিরাপত্তা কী ব্যবহার করা যাবে না</translation>
 <translation id="84297032718407999">আপনি <ph name="LOGOUT_TIME_LEFT" />-এ সাইন-আউট হয়ে যাবেন</translation>
-<translation id="8430963319679282846">কোনও কী প্রেস করে ধরে রাখলে, কীয়ের অক্ষর রিপিট হবে</translation>
 <translation id="8431190899827883166">ট্যাপগুলি দেখুন</translation>
 <translation id="8434480141477525001">NaCl ডিবাগ পোর্ট</translation>
 <translation id="8437209419043462667">মার্কিন যুক্তরাষ্ট্রীয়</translation>

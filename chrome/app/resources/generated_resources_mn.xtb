@@ -950,7 +950,6 @@
 <translation id="1796588414813960292">Дуу чимээ шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="1797117170091578105">Chromebook-н гараа ашиглан тоглоно уу. Та тодорхой үйлдлүүдийн товчийг өөрчлөх боломжтой.</translation>
 <translation id="180203835522132923">Search + O, дараа нь W</translation>
-<translation id="1802457294427928325">F товчнуудын зан үйлийг ChromeOS-н дээд мөрийн үйлдлүүд рүү өөрчлөх</translation>
 <translation id="1802624026913571222">Хавтас хаалттай үед идэвхгүй болгох</translation>
 <translation id="1802687198411089702">Хуудас хариу өгөхгүй байна. Та хариу өгтөл нь хүлээх эсвэл гарах боломжтой.</translation>
 <translation id="1803531841600994172">Орчуулах хэл</translation>
@@ -1474,7 +1473,6 @@
 <translation id="2235344399760031203">Гуравдагч талын күүкиг блоклосон</translation>
 <translation id="2238379619048995541">Хадгалагдсан мэдээллийн давтамж</translation>
 <translation id="2241053333139545397">Хэд хэдэн веб хуудсанд байгаа мэдээллээ унших, өөрчлөх</translation>
-<translation id="2241242047787527912">Доор жагсаасан товч тус бүрд гүйцэтгүүлэхийг хүсэж буй үйлдлээ сонгоно уу</translation>
 <translation id="2241634353105152135">Ганц удаа</translation>
 <translation id="2242687258748107519">Файлын мэдээлэл</translation>
 <translation id="2245603955208828424">Зүйлс хооронд үсэг үсгээр шилжихийн тулд суман товчийг ашиглана уу</translation>
@@ -1515,14 +1513,12 @@
 <translation id="2271986192355138465">Веб аппуудыг хэрхэн суулгах талаар мэдэж авна уу</translation>
 <translation id="2272430695183451567">0 сэлгүүр оноосон</translation>
 <translation id="2272570998639520080">Мартини шил</translation>
-<translation id="2272830751703114341">Дээр мөрийн товчнуудын зан үйлийг сэлгэхийн тулд Систем/Эхлүүлэгч товчийг идэвхжүүлнэ үү</translation>
 <translation id="2273119997271134996">Холбогчийн видео портын асуудал</translation>
 <translation id="2274840746523584236">Chromebook-ээ цэнэглэнэ үү</translation>
 <translation id="2276503375879033601">Илүү их апп нэмэх</translation>
 <translation id="2276910256003242519">Өгөгдлийг арилгаж байна...</translation>
 <translation id="2278562042389100163">Интернет хөтчийн цонхыг нээ</translation>
 <translation id="2278668501808246459">Контейнерын менежерийг эхлүүлж байна</translation>
-<translation id="2279051792571591988">Өгөгдмөлийг сэргээх</translation>
 <translation id="2280486287150724112">Right margin</translation>
 <translation id="2281863813036651454">Хулганын зүүн талыг товших</translation>
 <translation id="2282146716419988068">GPU үйл явц</translation>
@@ -2919,7 +2915,6 @@
 <translation id="3508920295779105875">Өөр хавтас сонгох ...</translation>
 <translation id="3509379002674019679">Нууц үгээ үүсгэж, хадгалж мөн удирдсанаар та сайтууд болон аппуудад хялбархан нэвтрэх боломжтой.</translation>
 <translation id="3511200754045804813">Дахин скан хийх</translation>
-<translation id="3511269949096797228">{COUNT,plural, =0{Ямар ч товч дахин харгалзуулаагүй}=1{Дахин харгалзуулсан 1 товч}other{Дахин харгалзуулсан {COUNT} товч}}</translation>
 <translation id="3511307672085573050">Холбоосын хаягийг хуулах</translation>
 <translation id="351152300840026870">Тогтмол өргөнтэй фонт</translation>
 <translation id="3511528412952710609">Богино</translation>
@@ -4501,7 +4496,6 @@
 <translation id="4906490889887219338">Сүлжээний файл хуваалцахыг тохируулах эсвэл удирдах. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Энэ өргөтгөл таны сайтын өгөгдлийг хэзээ уншиж, өөрчилж болохыг сонгоно уу</translation>
 <translation id="4907161631261076876">Энэ файлыг ихэвчлэн татдаггүй бөгөөд аюултай байж болзошгүй.</translation>
-<translation id="4908070840805457717">Товчийн даралтыг давтах</translation>
 <translation id="4908811072292128752">Хоёр сайтыг зэрэг хөтлөхийн тулд шинэ таб нээх</translation>
 <translation id="4909038193460299775">Энэ бүртгэлийг <ph name="DOMAIN" /> удирдсан тул таны хавчуурга, түүх, нууц үг болон бусад тохиргоог энэ төхөөрөмжөөс устгах болно. Таны одоогийн өгөгдлийг Google бүртгэлд хадгалсан хэвээр байх бөгөөд <ph name="BEGIN_LINK" />Google Хяналтын самбарт<ph name="END_LINK" /> удирдах боломжтой.</translation>
 <translation id="4912643508233590958">Идэвхгүй байдлыг сэргээх</translation>
@@ -5888,7 +5882,6 @@
 <translation id="6177412385419165772">Хасаж байна...</translation>
 <translation id="6178664161104547336">Гэрчилгээг сонгоно уу</translation>
 <translation id="6178682841350631965">Таны нэвтрэх өгөгдлийг шинэчилсэн</translation>
-<translation id="6179893151569852357">F товчнуудыг ChromeOS-н дээд мөрийн товчнууд руу хөрвүүлэх</translation>
 <translation id="6180510783007738939">Шугамын хэрэгсэл</translation>
 <translation id="6180550893222597997">Та <ph name="APP_NAME" />-д ямар passkey ашиглахыг хүсэж байна вэ?</translation>
 <translation id="6181431612547969857">Татаж авах ажиллагаа хаагдлаа</translation>
@@ -6088,7 +6081,6 @@
 <translation id="636850387210749493">Байгууллагын бүртгэл</translation>
 <translation id="6370021412472292592">Мэдүүлгийг ачаалж чадсангүй.</translation>
 <translation id="637135143619858508">Хол зайтай</translation>
-<translation id="6372856076511744743">Гарын товчнуудыг дахин харгалзуулах</translation>
 <translation id="6374077068638737855">Iceweasel</translation>
 <translation id="6374469231428023295">Дахин оролдоно уу</translation>
 <translation id="6374635887697228982">Хөнгөлөлт авах уу?</translation>
@@ -6113,6 +6105,7 @@
 <translation id="6396175271241405634">Системийн апп</translation>
 <translation id="6398715114293939307">Google Play дэлгүүрийг устгах</translation>
 <translation id="6398765197997659313">Дэлгэц дүүрэн харах горимоос гарах</translation>
+<translation id="6399675241776343019">Татгалзсан</translation>
 <translation id="6399774419735315745">Тагнуулч</translation>
 <translation id="6400360390396538896">Үргэлж <ph name="ORIGIN" /> дээр</translation>
 <translation id="6401458660421980302">Энэ табыг өөр төхөөрөмж рүү илгээхийн тулд тэндээс Chrome-д нэвтэрнэ үү</translation>
@@ -6531,7 +6524,6 @@
 <translation id="677646486571529447">Тэмдэглэл нэмэх</translation>
 <translation id="6776589734354015877">Нэмэлт онцлогуудыг аваарай</translation>
 <translation id="6776729248872343918">Хурдан холбохыг идэвхжүүлэх</translation>
-<translation id="677778081766640955">F товчнууд болон ChromeOS үйлдлүүд хооронд сэлгэхийн тулд товчийг дарна уу</translation>
 <translation id="6777817260680419853">Дахин чиглүүлэлтийг блоклосон</translation>
 <translation id="6779092717724412415">Үүнтэй адил тодруулга үүсгэхийн тулд дурын текст сонгож, баруун талыг товшино уу.</translation>
 <translation id="6779447100905857289">таны сагс</translation>
@@ -8137,7 +8129,6 @@
 <translation id="8163708146810922598">хамгийн хуучин</translation>
 <translation id="8165997195302308593">Crostini-н порт дамжуулах</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{1 утасны дугаар}other{# утасны дугаар}}</translation>
-<translation id="8168071266284693455">Таны хавчуурга, нууц үг, түүх болон бусад зүйлийг бүх төхөөрөмж дээр тань синк хийдэг</translation>
 <translation id="8168435359814927499">Агуулга</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Унших жагсаалтад Таб нэмэх}other{Унших жагсаалтад Табууд нэмэх}}</translation>
 <translation id="8171334254070436367">Бүх картыг нуух</translation>
@@ -8277,7 +8268,6 @@
 <translation id="8275080796245127762">Төхөөрөмжөөсөө дуудлага хийх</translation>
 <translation id="8275339871947079271">Хаанаас ч нэвтэрсэн нууц үгэндээ аюулгүй хандахын тулд үүнийг Google Бүртгэл рүүгээ зөөнө үү</translation>
 <translation id="8276560076771292512">Хоосон кэш ба эрчтэйгээр дахин ачаалах</translation>
-<translation id="8281721647184388851">Chrome хөтчийн синк хийхийг асаах уу?</translation>
 <translation id="8281886186245836920">Алгасах</translation>
 <translation id="8284279544186306258">бүх <ph name="WEBSITE_1" /> сайтууд</translation>
 <translation id="8284326494547611709">Тайлбар</translation>
@@ -8444,7 +8434,6 @@
 <translation id="8428271547607112339">Сургуулийн бүртгэл нэмэх</translation>
 <translation id="8428628598981198790">Таны аюулгүй байдлын түлхүүрийг энэ сайтад ашиглах боломжгүй</translation>
 <translation id="84297032718407999">Та <ph name="LOGOUT_TIME_LEFT" />-н дараа гарах болно</translation>
-<translation id="8430963319679282846">Хэрэв та товчийг удаан дарвал товчийн тэмдэгт давтагдана</translation>
 <translation id="8431190899827883166">Товшилтыг харуулах</translation>
 <translation id="8434480141477525001">NaCl гүйцэтгэл сайжруулах порт</translation>
 <translation id="8437209419043462667">АНУ</translation>

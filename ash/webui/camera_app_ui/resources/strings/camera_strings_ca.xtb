@@ -53,7 +53,7 @@
 <translation id="3411958449466169012">Desactiva el temporitzador</translation>
 <translation id="3448774564454087943">El vídeo no s'ha desat perquè és massa curt</translation>
 <translation id="346539236881580388">Repeteix</translation>
-<translation id="3517926952904427380">No es pot fer una foto vertical</translation>
+<translation id="3517926952904427380">No es pot fer una foto de retrat</translation>
 <translation id="3566302376254083266">S'està movent cap a la part superior esquerra</translation>
 <translation id="3573890771273113519">Canvia al mode d'escaneig</translation>
 <translation id="3583444040776960729">Extrem inferior esquerre del document</translation>
@@ -120,7 +120,7 @@ Si els teus suggeriments fan referència a la qualitat d'imatge o de vídeo, adj
 <translation id="6888362557094394345">S'està movent cap a la part inferior</translation>
 <translation id="695140971690006676">Reinicia-ho tot</translation>
 <translation id="6965382102122355670">D'acord</translation>
-<translation id="6965830616442491568">Vertical</translation>
+<translation id="6965830616442491568">Retrat</translation>
 <translation id="698156982839284926">3 segons</translation>
 <translation id="7134221860976209830">Temporitzador de 10 segons</translation>
 <translation id="7191890674911603392">Tipus de gravació</translation>

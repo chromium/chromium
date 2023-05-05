@@ -221,6 +221,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1961239773406905488">Forskoðun myndavélar falin</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Lásskjár</translation>
+<translation id="1962972976741217487">1 tæki tengt við heitan reit í <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Kveikja á heitum reit</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hæ, <ph name="USERNAME" /></translation>
@@ -301,7 +302,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2367972762794486313">Sýna forrit</translation>
 <translation id="2369165858548251131">„Halló“ á kínversku</translation>
 <translation id="2386292613071805067">Velja allt á síðu</translation>
-<translation id="2390318262976603432">Stillingar tungumálskóða</translation>
 <translation id="2397416548179033562">Sýna valmynd Chrome</translation>
 <translation id="240006516586367791">Efnisstýringar</translation>
 <translation id="2402411679569069051">Notaðu fingrafar eða taktu símann þinn úr lás til að taka Chromebook úr lás</translation>
@@ -931,6 +931,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="5297704307811127955">Slökkt</translation>
 <translation id="5300589172476337783">Sýna</translation>
 <translation id="5302048478445481009">Tungumál</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> tæki tengd við heitan reit í <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Tengjast</translation>
 <translation id="5313326810920013265">Bluetooth-stillingar</translation>
 <translation id="5314219114274263156">Skjáupptaka tekin upp</translation>
@@ -1119,6 +1120,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6137566720514957455">Opna fjarlægingarglugga fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Staðfesta niðurhal</translation>
 <translation id="6154006699632741460">Jaðartæki er ekki stutt</translation>
+<translation id="6156960295318603523">Tungumálastillingar</translation>
 <translation id="615957422585914272">Sýna skjályklaborðið</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
 <translation id="6166852626429024716">Leitaðu í tækinu þínu, forritum, stillingum, á vefnum...</translation>
@@ -1337,6 +1339,7 @@ Ný uppsetning</translation>
 <translation id="7165278925115064263">Alt+shift+K</translation>
 <translation id="7168224885072002358">Skiptir aftur yfir í fyrri upplausn eftir <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Endurnýja</translation>
+<translation id="7187711731540696127">Kveikt er á heitum reit í <ph name="DEVICE_NAME" />, engin tæki tengd</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>
 <translation id="7189412385142492784">Hvað er Venus langt í burtu?</translation>
 <translation id="7198435252016571249">Myndavél fest við neðra horn hægra megin. Skörun við vettvang kerfis.</translation>

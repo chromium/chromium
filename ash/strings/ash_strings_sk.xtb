@@ -301,7 +301,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2367972762794486313">Zobraziť aplikácie</translation>
 <translation id="2369165858548251131">„Dobrý deň“ po čínsky</translation>
 <translation id="2386292613071805067">Výber celého obsahu stránky</translation>
-<translation id="2390318262976603432">Miestne nastavenia</translation>
 <translation id="2397416548179033562">Zobraziť Ponuku Chrome</translation>
 <translation id="240006516586367791">Ovládanie médií</translation>
 <translation id="2402411679569069051">Ak chcete Chromebook odomknúť, použite odtlačok prsta alebo odomknite telefón</translation>
@@ -1119,6 +1118,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="6137566720514957455">Otvoriť dialógové okno na odstránenie účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6141988275892716286">Potvrdenie sťahovania</translation>
 <translation id="6154006699632741460">Periféria nie je podporovaná</translation>
+<translation id="6156960295318603523">Nastavenia jazyka</translation>
 <translation id="615957422585914272">Zobraziť klávesnicu na obrazovke</translation>
 <translation id="6165508094623778733">Ďalšie informácie</translation>
 <translation id="6166852626429024716">Vyhľadávajte v zariadení, aplikáciách, nastaveniach a na internete…</translation>
@@ -1296,7 +1296,7 @@ Nová inštalácia</translation>
 <translation id="6979158407327259162">Disk Google</translation>
 <translation id="6981291220124935078">Zapnúť prístup</translation>
 <translation id="6981982820502123353">Dostupnosť</translation>
-<translation id="698231206551913481">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odstránení natrvalo vymazané.</translation>
+<translation id="698231206551913481">Všetky súbory a miestne údaje priradené k tomuto používateľovi budú po jeho odobratí natrvalo vymazané.</translation>
 <translation id="7005239792648594238">Začnite otvorením aplikácie</translation>
 <translation id="7007983414944123363">Váš kód PIN alebo heslo sa nepodarilo overiť. Skúste to znova.</translation>
 <translation id="7014684956566476813">Pripojené k zariadeniu <ph name="DEVICE_NAME" /></translation>
