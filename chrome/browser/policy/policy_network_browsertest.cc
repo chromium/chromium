@@ -98,7 +98,7 @@ class PostQuantumPolicyTest : public SSLPolicyTest {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(PostQuantumPolicyTest, ChromeVariations) {
   net::SSLServerConfig ssl_config;
-  ssl_config.curves_for_testing = {NID_X25519Kyber768};
+  ssl_config.curves_for_testing = {NID_X25519Kyber768Draft00};
   ASSERT_TRUE(StartTestServer(ssl_config));
 
   // Should be able to load a page from the test server because Kyber is
