@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -2368,8 +2369,10 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFieldType(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::
-    LogAutofillFieldInfoAtFormRemove(const FormStructure& form,
-                                     const AutofillField& field) {
+    LogAutofillFieldInfoAtFormRemove(
+        const FormStructure& form,
+        const AutofillField& field,
+        AutofillMetrics::AutocompleteState autocomplete_state) {
   if (!CanLog()) {
     return;
   }
@@ -2579,7 +2582,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetWasFocused(OptionalBooleanToBool(was_focused))
       .SetIsFocusable(field.IsFocusable())
       .SetUserTypedIntoField(OptionalBooleanToBool(user_typed_into_field))
-      .SetFormControlType(static_cast<int>(field.FormControlType()));
+      .SetFormControlType(base::to_underlying(field.FormControlType()))
+      .SetAutocompleteState(base::to_underlying(autocomplete_state));
 
   if (was_focused == OptionalBoolean::kTrue) {
     builder
@@ -2621,8 +2625,8 @@ void AutofillMetrics::FormInteractionsUkmLogger::
   }
 
   if (had_html_type) {
-    builder.SetHtmlFieldType(static_cast<int>(html_type))
-        .SetHtmlFieldMode(static_cast<int>(html_mode));
+    builder.SetHtmlFieldType(base::to_underlying(html_type))
+        .SetHtmlFieldMode(base::to_underlying(html_mode));
   }
 
   if (had_server_type) {

@@ -3189,6 +3189,12 @@ be describing additional metrics about the same event.
     All information about a specific field, recorded at form submission or form
     destruction time (whatever comes first).
   </summary>
+  <metric name="AutocompleteState" enum="AutofillAutocompleteState">
+    <summary>
+      The field's autocomplete attribute value, the values are from
+      |AutofillMetrics::AutocompleteState|.
+    </summary>
+  </metric>
   <metric name="AutofillSkippedStatus">
     <summary>
       Whether filling the field was skipped during autofill, and if it was

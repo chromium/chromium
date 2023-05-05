@@ -8357,6 +8357,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
           {UFIT::kHadTypedOrFilledValueAtSubmissionName, i != 2},
           {UFIT::kFormControlTypeName,
            static_cast<int>(FormControlType::kText)},
+          {UFIT::kAutocompleteStateName,
+           static_cast<int>(AutofillMetrics::AutocompleteState::kNone)},
       };
       if (i == 0) {
         expected[UFIT::kSuggestionWasAvailableName] = true;
@@ -8434,9 +8436,10 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
        // Heuristic value will NOT match with Autocomplete attribute.
        CreateField("First Name", "firstname", "", "text", "additional-name"),
        // No autocomplete attribute.
-       CreateField("Address", "address", "", "text", ""),
+       CreateField("Address", "address", "", "text", "off"),
        // Heuristic value will be unknown.
-       CreateField("Garbage label", "garbage", "", "text", "postal-code")});
+       CreateField("Garbage label", "garbage", "", "text", "postal-code"),
+       CreateField("Email", "email", "", "text", "garbage")});
 
   auto form_structure = std::make_unique<FormStructure>(form);
   FormStructure* form_structure_ptr = form_structure.get();
@@ -8458,7 +8461,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
       // No autocomplete, server predicts a type from majority voting.
       NAME_MIDDLE,
       // Server response will have no data.
-      NO_SERVER_DATA};
+      NO_SERVER_DATA, EMAIL_ADDRESS};
   // Set suggestions from server for the form.
   for (size_t i = 0; i < server_types.size(); ++i) {
     AddFieldPredictionToForm(form.fields[i], server_types[i], form_suggestion);
@@ -8480,17 +8483,24 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 
   auto entries =
       test_ukm_recorder_->GetEntriesByName(UkmFieldInfoType::kEntryName);
-  ASSERT_EQ(4u, entries.size());
+  ASSERT_EQ(5u, entries.size());
   // The heuristic type of each field. The local heuristic prediction does not
   // predict the type for the fourth field.
   std::vector<ServerFieldType> heuristic_types{
-      NAME_LAST, NAME_FIRST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE};
+      NAME_LAST, NAME_FIRST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE, EMAIL_ADDRESS};
   // Field types as per the autocomplete attribute in the input.
   std::vector<HtmlFieldType> html_field_types{
       HtmlFieldType::kFamilyName, HtmlFieldType::kAdditionalName,
-      HtmlFieldType::kUnrecognized, HtmlFieldType::kPostalCode};
-  std::vector<ServerFieldType> overall_types{NAME_LAST, NAME_MIDDLE,
-                                             NAME_MIDDLE, ADDRESS_HOME_ZIP};
+      HtmlFieldType::kUnrecognized, HtmlFieldType::kPostalCode,
+      HtmlFieldType::kUnrecognized};
+  std::vector<ServerFieldType> overall_types{
+      NAME_LAST, NAME_MIDDLE, NAME_MIDDLE, ADDRESS_HOME_ZIP, UNKNOWN_TYPE};
+  std::vector<AutofillMetrics::AutocompleteState> autocomplete_states{
+      AutofillMetrics::AutocompleteState::kValid,
+      AutofillMetrics::AutocompleteState::kValid,
+      AutofillMetrics::AutocompleteState::kOff,
+      AutofillMetrics::AutocompleteState::kValid,
+      AutofillMetrics::AutocompleteState::kGarbage};
 
   // Verify FieldInfo UKM event for every field.
   for (size_t i = 0; i < entries.size(); ++i) {
@@ -8522,6 +8532,8 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kWasFocusedName, false},
         {UFIT::kUserTypedIntoFieldName, false},
         {UFIT::kFormControlTypeName, static_cast<int>(FormControlType::kText)},
+        {UFIT::kAutocompleteStateName,
+         static_cast<int>(autocomplete_states[i])},
     };
     if (heuristic_types[i] != UNKNOWN_TYPE) {
       expected.merge(std::map<std::string, int64_t>({
@@ -8538,7 +8550,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
 #endif
       }));
     }
-    if (html_field_types[i] != HtmlFieldType::kUnrecognized) {
+    if (autocomplete_states[i] != AutofillMetrics::AutocompleteState::kOff) {
       expected.merge(std::map<std::string, int64_t>({
           {UFIT::kHtmlFieldTypeName, static_cast<int>(html_field_types[i])},
           {UFIT::kHtmlFieldModeName, static_cast<int>(HtmlFieldMode::kNone)},
@@ -8582,19 +8594,19 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.FillEvent", 0, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.TypingEvent", 0, 1);
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.AutocompleteAttributeEvent", 3, 1);
+      "Autofill.LogEvent.AutocompleteAttributeEvent", 4, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.ServerPredictionEvent",
-                                     4, 1);
+                                     5, 1);
   histogram_tester.ExpectBucketCount("Autofill.LogEvent.RationalizationEvent",
-                                     8, 1);
+                                     10, 1);
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent", 12, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 27, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 16, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 35, 1);
 #else
   histogram_tester.ExpectBucketCount(
-      "Autofill.LogEvent.HeuristicPredictionEvent", 3, 1);
-  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 18, 1);
+      "Autofill.LogEvent.HeuristicPredictionEvent", 4, 1);
+  histogram_tester.ExpectBucketCount("Autofill.LogEvent.All", 23, 1);
 #endif
 }
 
@@ -8657,6 +8669,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kUserTypedIntoFieldName, true},
         {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
         {UFIT::kFormControlTypeName, static_cast<int>(FormControlType::kText)},
+        {UFIT::kAutocompleteStateName,
+         static_cast<int>(AutofillMetrics::AutocompleteState::kNone)},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());
@@ -8922,6 +8936,8 @@ TEST_F(AutofillMetricsFromLogEventsTest,
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
         {UFIT::kFormControlTypeName, static_cast<int>(form_control_types[i])},
+        {UFIT::kAutocompleteStateName,
+         static_cast<int>(AutofillMetrics::AutocompleteState::kNone)},
     };
 
     EXPECT_EQ(expected.size(), entry->metrics.size());

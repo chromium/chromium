@@ -3482,7 +3482,8 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
   for (const auto& autofill_field : form_structure) {
     if (should_upload_ukm) {
       form_interactions_ukm_logger()->LogAutofillFieldInfoAtFormRemove(
-          form_structure, *autofill_field);
+          form_structure, *autofill_field,
+          AutocompleteStateForSubmittedField(*autofill_field));
     }
 
     // Clear log events.

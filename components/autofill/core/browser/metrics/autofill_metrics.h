@@ -624,6 +624,14 @@ class AutofillMetrics {
     kMaxValue = kLeftEmpty
   };
 
+  enum class AutocompleteState {
+    kNone = 0,
+    kValid = 1,
+    kGarbage = 2,
+    kOff = 3,
+    kMaxValue = kOff
+  };
+
   using FormEventSet =
       DenseSet<autofill_metrics::FormEvent, autofill_metrics::NUM_FORM_EVENTS>;
 
@@ -721,8 +729,10 @@ class AutofillMetrics {
                       QualityMetricType metric_type,
                       ServerFieldType predicted_type,
                       ServerFieldType actual_type);
-    void LogAutofillFieldInfoAtFormRemove(const FormStructure& form,
-                                          const AutofillField& field);
+    void LogAutofillFieldInfoAtFormRemove(
+        const FormStructure& form,
+        const AutofillField& field,
+        AutofillMetrics::AutocompleteState autocomplete_state);
     void LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
@@ -803,14 +813,6 @@ class AutofillMetrics {
     kHeuristics = 2,
     kBoth = 3,
     kMaxValue = kBoth
-  };
-
-  enum class AutocompleteState {
-    kNone = 0,
-    kValid = 1,
-    kGarbage = 2,
-    kOff = 3,
-    kMaxValue = kOff
   };
 
   AutofillMetrics() = delete;
