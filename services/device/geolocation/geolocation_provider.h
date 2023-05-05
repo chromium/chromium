@@ -42,6 +42,10 @@ class GeolocationProvider {
 
   virtual bool HighAccuracyLocationInUse() = 0;
 
+  // Sets the singleton GeolocationProvider that will be returned by
+  // GetInstance().
+  static void SetInstanceForTesting(GeolocationProvider* instance_for_testing);
+
   // Overrides the current location for testing.
   //
   // Overrides the location for automation/testing. Suppresses any further
@@ -56,7 +60,9 @@ class GeolocationProvider {
       mojom::GeopositionResultPtr result) = 0;
 
  protected:
-  virtual ~GeolocationProvider() {}
+  virtual ~GeolocationProvider() = default;
+
+  static GeolocationProvider* instance_for_testing_;
 };
 
 }  // namespace device

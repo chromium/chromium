@@ -29,7 +29,7 @@ GeolocationImpl::~GeolocationImpl() {
       current_result_ =
           mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
               mojom::GeopositionErrorCode::kPositionUnavailable,
-              /*error_message*/ "", /*error_technical=*/""));
+              /*error_message=*/"", /*error_technical=*/""));
     }
     ReportCurrentPosition();
   }
@@ -82,8 +82,15 @@ void GeolocationImpl::QueryNextPosition(QueryNextPositionCallback callback) {
 }
 
 void GeolocationImpl::SetOverride(const mojom::GeopositionResult& result) {
-  if (!position_callback_.is_null())
+  if (!position_callback_.is_null()) {
+    if (!current_result_) {
+      current_result_ =
+          mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
+              mojom::GeopositionErrorCode::kPositionUnavailable,
+              /*error_message=*/"", /*error_technical=*/""));
+    }
     ReportCurrentPosition();
+  }
 
   position_override_ = result.Clone();
   if (result.is_error() ||
@@ -118,7 +125,7 @@ void GeolocationImpl::OnLocationUpdate(const mojom::GeopositionResult& result) {
 }
 
 void GeolocationImpl::ReportCurrentPosition() {
-  DCHECK(current_result_);
+  CHECK(current_result_);
   std::move(position_callback_).Run(std::move(current_result_));
 }
 
