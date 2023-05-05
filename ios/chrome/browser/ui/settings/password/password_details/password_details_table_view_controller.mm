@@ -257,10 +257,9 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
   }
 
   if (self.tableView.editing) {
-    // If site, password or username value was changed show confirmation dialog
-    // before saving password. Editing mode will be exited only if user confirm
-    // saving.
-    if ([self fieldsDidChange]) {
+    // If password value was changed show confirmation dialog before saving.
+    // Editing mode will be exited only if user confirms saving.
+    if ([self passwordsDidChange]) {
       DCHECK(self.handler);
       // TODO(crbug.com/1401035): Show Password Edit Dialog when Password
       // Grouping is enabled.
@@ -1105,20 +1104,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context) {
   return NO;
 }
 
-- (BOOL)fieldsDidChange {
+- (BOOL)passwordsDidChange {
   DCHECK(self.passwords.count == self.passwordDetailsInfoItems.count);
 
   for (NSUInteger i = 0; i < self.passwordDetailsInfoItems.count; i++) {
     if (![self.passwords[i].password
             isEqualToString:self.passwordDetailsInfoItems[i]
-                                .passwordTextItem.textFieldValue] ||
-        ![self.passwords[i].username
-            isEqualToString:self.passwordDetailsInfoItems[i]
-                                .usernameTextItem.textFieldValue] ||
-        (IsPasswordNotesWithBackupEnabled() &&
-         ![self.passwords[i].note
-             isEqualToString:self.passwordDetailsInfoItems[i]
-                                 .passwordNoteItem.text])) {
+                                .passwordTextItem.textFieldValue]) {
       return YES;
     }
   }

@@ -437,7 +437,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestAddingPasswordWithNote) {
 
   SetEditCellMultiLineText(@"note", 1, 2);
   [passwordDetails editButtonPressed];
-  [passwordDetails passwordEditingConfirmed];
 
   EXPECT_FALSE(passwordDetails.tableView.editing);
   EXPECT_NSEQ(@"note", delegate().password.note);
@@ -463,7 +462,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestEditingPasswordWithNote) {
 
   SetEditCellMultiLineText(@"new_note", 1, 2);
   [passwordDetails editButtonPressed];
-  [passwordDetails passwordEditingConfirmed];
 
   EXPECT_FALSE(passwordDetails.tableView.editing);
   EXPECT_NSEQ(@"new_note", delegate().password.note);
@@ -490,7 +488,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestRemovingPasswordWithNote) {
 
   SetEditCellMultiLineText(@"", 1, 2);
   [passwordDetails editButtonPressed];
-  [passwordDetails passwordEditingConfirmed];
 
   EXPECT_FALSE(passwordDetails.tableView.editing);
   EXPECT_NSEQ(@"", delegate().password.note);
