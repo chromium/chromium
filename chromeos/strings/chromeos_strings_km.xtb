@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">មិនអាចដោះស្រាយ DNS បានទេ</translation>
 <translation id="1018656279737460067">បានបោះបង់</translation>
 <translation id="1022433422498218992">ការ​គ្រប់គ្រង​ទូទៅ</translation>
+<translation id="1022628058306505708">ចលនាផែនដី</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (កម្រងសារ <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">មានមុខងារថ្មី សូមប្រើគ្រាប់ចុចព្រួញឡើងលើ ដើម្បីស្វែងយល់បន្ថែម។</translation>
 <translation id="1059913517121127803">មិនអាច​ចាប់ផ្ដើម​ស្កេនបានទេ</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">សកម្មភាព​ច្រើនទៀត</translation>
 <translation id="2926057806159140518">បញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ និងពាក្យ​សម្ងាត់របស់អ្នក ឬស្កេនកូដ QR របស់អ្នក</translation>
 <translation id="2940811910881150316">មិន​អាច​ធ្វើ​តេស្ត​ឧបករណ៍​បាន​ទេ។ បើក​គម្រប​ឡើងវិញ ដើម្បី​ធ្វើ​តេស្ត។</translation>
+<translation id="2981143481017883351">ឥឡូវនេះមាន​ទ្រព្យ Chromebook ផ្ដាច់មុខហើយ</translation>
 <translation id="3008341117444806826">ផ្ទុក​ឡើង​វិញ</translation>
 <translation id="3009958530611748826">ជ្រើសរើសថត ដើម្បីរក្សាទុកឯកសារស្កេន</translation>
 <translation id="3017079585324758401">ផ្ទៃខាងក្រោយ</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">បានភ្ជាប់</translation>
 <translation id="3369013195428705271">តើអ្នក​ពិតជាចង់​សម្អាត​ប្រវត្តិបោះពុម្ព​ទាំងអស់​មែនឬ? ការងារ​បោះពុម្ព​របស់អ្នកដែល​កំពុងដំណើរការ​នឹងមិនត្រូវបាន​សម្អាតទេ។</translation>
+<translation id="3386675685417744672">Chromebook ផ្តាច់មុខ</translation>
 <translation id="3404249063913988450">បើកធាតុរក្សាអេក្រង់</translation>
 <translation id="3413935475507503304">ដើម្បីបន្តការដំឡើងកំណែ សូមចុច "បន្ទាប់"។</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">WARNING</translation>
 <translation id="4054683689023980771">កំពុង​ទាញយក​រូបភាព</translation>
 <translation id="4060260348856573701">APN ថ្មី</translation>
+<translation id="4079743696465895866">ជ្រើសរើស​ស្នាដៃសិល្បៈ​ផ្ដាច់មុខ​របស់ Chromebook</translation>
 <translation id="4093865285251893588">រូបភាព​កម្រង​ព័ត៌មាន</translation>
 <translation id="409427325554347132">រក្សាទុក​ព័ត៌មានលម្អិត​អំពី​ការធ្វើតេស្ត</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">កម្រិតថ្ម​ធ្លាក់ចុះ​តាមរយៈ​ការប្រើប្រាស់</translation>
 <translation id="6191293864534840972">DNS មានទម្រង់មិនត្រឹមត្រូវ</translation>
+<translation id="6205145102504628069">លំហូរ​ពពក</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ចេញពី​អេក្រង់​ពេញ</translation>
 <translation id="6223752125779001553">មិនមាន​ម៉ាស៊ីនស្កេន​ទេ</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">ការ​ប្ដូរ​តាម​បំណង</translation>
 <translation id="6500818810472529210">មើលលទ្ធផលនៅក្នុង​កម្មវិធីស្វែងរកនៅលើ Google</translation>
 <translation id="650266656685499220">ដើម្បីបង្កើត​អាល់ប៊ុម សូមចូលទៅកាន់ Google រូបថត</translation>
+<translation id="6505750420152840539">ពីព្រលឹម​ដល់​ព្រលប់</translation>
 <translation id="6516990319416533844">ដើម្បី​ធ្វើតេស្ត​អត្រាសាកថ្ម សូមទុកឱ្យថ្ម​របស់អ្នក​នៅសល់តិចសិន</translation>
 <translation id="6517239166834772319">រុករក</translation>
 <translation id="6526200165918397681">ផ្គូផ្គងផ្ទាំង​រូបភាព</translation>

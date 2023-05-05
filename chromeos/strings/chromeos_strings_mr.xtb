@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS चे निराकरण करू शकत नाही</translation>
 <translation id="1018656279737460067">रद्द झाले</translation>
 <translation id="1022433422498218992">साधारण नियंत्रणे</translation>
+<translation id="1022628058306505708">मृदा वाह</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नवीन वैशिष्ट्य उपलब्ध आहे, अधिक जाणून घेण्यासाठी अप अ‍ॅरो की वापरा.</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">आणखी क्रिया</translation>
 <translation id="2926057806159140518">तुमचे वापरकर्ता नाव आणि पासवर्ड एंटर करा किंवा तुमचा QR कोड स्कॅन करा</translation>
 <translation id="2940811910881150316">डिव्हाइसची चाचणी करू शकत नाही. चाचणी करण्यासाठी लिड पुन्हा उघडा.</translation>
+<translation id="2981143481017883351">Chromebook साठी खास ॲसेट आता उपलब्ध आहेत</translation>
 <translation id="3008341117444806826">रिफ्रेश करा</translation>
 <translation id="3009958530611748826">ज्यामध्ये सेव्ह करायचे आहे ते फोल्डर निवडा</translation>
 <translation id="3017079585324758401">बॅकग्राउंड</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">विंडो</translation>
 <translation id="3368922792935385530">कनेक्ट केले</translation>
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
+<translation id="3386675685417744672">Chromebook साठी खास</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">चेतावणी:</translation>
 <translation id="4054683689023980771">इमेज डाउनलोड करत आहे</translation>
 <translation id="4060260348856573701">नवीन APN</translation>
+<translation id="4079743696465895866">Chromebook साठी खास आर्टवर्क निवडा</translation>
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="409427325554347132">चाचणीचे तपशील सेव्ह करा</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">वापरानुसार बॅटरीची क्षमता कमी होत जाते</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
+<translation id="6205145102504628069">ढगांचा प्रवाह</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">फुलस्क्रीनमधून बाहेर पडा</translation>
 <translation id="6223752125779001553">कोणतेही स्कॅनर उपलब्ध नाहीत</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">कस्टमायझेशन</translation>
 <translation id="6500818810472529210">Google Search मधील परिणाम पहा</translation>
 <translation id="650266656685499220">अल्बम तयार करण्यासाठी Google Photos वर जा</translation>
+<translation id="6505750420152840539">डॉन टू डार्क</translation>
 <translation id="6516990319416533844">बॅटरी चार्जिंग रेटची चाचणी घेण्यासाठी, थोडा वेळ तुमची बॅटरी ड्रेन होऊ द्या</translation>
 <translation id="6517239166834772319">एक्सप्लोर करा</translation>
 <translation id="6526200165918397681">वॉलपेपर जुळवा</translation>

@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS പരിഹരിക്കാനാകുന്നില്ല</translation>
 <translation id="1018656279737460067">റദ്ദാക്കി</translation>
 <translation id="1022433422498218992">പൊതുവായ നിയന്ത്രണങ്ങൾ</translation>
+<translation id="1022628058306505708">എർത്ത് ഫ്ലോ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="1059913517121127803">സ്‌കാൻ ചെയ്യൽ ആരംഭിക്കാനായില്ല</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">കൂടുതൽ‍ പ്രവര്‍ത്തനങ്ങള്‍</translation>
 <translation id="2926057806159140518">നിങ്ങളുടെ ഉപയോക്തൃനാമവും പാസ്‌വേഡും നൽകുക അല്ലെങ്കിൽ നിങ്ങളുടെ QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="2940811910881150316">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലിഡ് വീണ്ടും തുറക്കുക.</translation>
+<translation id="2981143481017883351">എക്‌സ്ക്ലൂസീവ് Chromebook അസറ്റുകൾ ഇപ്പോൾ ലഭ്യമാണ്</translation>
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3017079585324758401">പശ്ചാത്തലം</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
+<translation id="3386675685417744672">Chromebook എക്‌സ്ക്ലൂസീവ്</translation>
 <translation id="3404249063913988450">സ്ക്രീൻ സേവർ പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="3413935475507503304">അപ്‌ഡേറ്റുമായി മുന്നോട്ട് പോകാൻ, 'അടുത്തത്' ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="3434107140712555581">ബാറ്ററി: <ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">മുന്നറിയിപ്പ്</translation>
 <translation id="4054683689023980771">ചിത്രം ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4060260348856573701">പുതിയ APN</translation>
+<translation id="4079743696465895866">Chromebook-ന് വേണ്ടിയുള്ള എക്‌സ്ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4093865285251893588">പ്രൊഫൈൽ ചിത്രം</translation>
 <translation id="409427325554347132">ടെസ്‌റ്റ് വിശദാംശങ്ങൾ സംരക്ഷിക്കുക</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററി ശേഷി കുറയുന്നു</translation>
 <translation id="6191293864534840972">തകരാറുള്ള നെയിം സെർവറുകൾ</translation>
+<translation id="6205145102504628069">ക്ലൗഡ് ഫ്ലോ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">പൂർണ്ണ സ്ക്രീനിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">ഇഷ്ടാനുസൃതമാക്കൽ</translation>
 <translation id="6500818810472529210">Google Search-ൽ ഫലം കാണുക</translation>
 <translation id="650266656685499220">ആൽബങ്ങൾ സൃഷ്ടിക്കാൻ Google Photos-ലേക്ക് പോകുക</translation>
+<translation id="6505750420152840539">ഉദയം മുതൽ അസ്തമയം വരെ</translation>
 <translation id="6516990319416533844">ബാറ്ററിയുടെ ചാർജ് ചെയ്യൽ റേറ്റ് പരിശോധിക്കാൻ, അൽപ്പനേരം ബാറ്ററി ചാർജ് കുറയുന്നത് വരെ കാത്തിരിക്കുക</translation>
 <translation id="6517239166834772319">അടുത്തറിയുക</translation>
 <translation id="6526200165918397681">വാൾപേപ്പർ പൊരുത്തപ്പെടുത്തുക</translation>
