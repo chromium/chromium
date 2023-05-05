@@ -117,7 +117,7 @@ class ClipboardMap {
   std::vector<ClipboardFormatType> GetFormats();
   void OnPrimaryClipboardChanged();
   void OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms);
-  void Set(const ClipboardFormatType& format, const std::string& data);
+  void Set(const ClipboardFormatType& format, base::StringPiece data);
   void CommitToAndroidClipboard();
   void Clear();
 
@@ -311,7 +311,7 @@ void ClipboardMap::OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms) {
 }
 
 void ClipboardMap::Set(const ClipboardFormatType& format,
-                       const std::string& data) {
+                       base::StringPiece data) {
   base::AutoLock lock(lock_);
   map_[format] = data;
   map_state_ = MapState::kPreparingCommit;
@@ -679,25 +679,26 @@ void ClipboardAndroid::WritePortableAndPlatformRepresentations(
   g_map.Get().CommitToAndroidClipboard();
 }
 
-void ClipboardAndroid::WriteText(const std::string& text) {
+void ClipboardAndroid::WriteText(base::StringPiece text) {
   g_map.Get().Set(ClipboardFormatType::PlainTextType(), text);
 }
 
-void ClipboardAndroid::WriteHTML(const std::string& markup,
-                                 const std::string* source_url) {
+void ClipboardAndroid::WriteHTML(base::StringPiece markup,
+                                 absl::optional<base::StringPiece> source_url) {
   g_map.Get().Set(ClipboardFormatType::HtmlType(), markup);
 }
 
-void ClipboardAndroid::WriteUnsanitizedHTML(const std::string& markup,
-                                            const std::string* source_url) {
+void ClipboardAndroid::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   WriteHTML(markup, source_url);
 }
 
-void ClipboardAndroid::WriteSvg(const std::string& markup) {
+void ClipboardAndroid::WriteSvg(base::StringPiece markup) {
   g_map.Get().Set(ClipboardFormatType::SvgType(), markup);
 }
 
-void ClipboardAndroid::WriteRTF(const std::string& rtf) {
+void ClipboardAndroid::WriteRTF(base::StringPiece rtf) {
   NOTIMPLEMENTED();
 }
 
@@ -707,8 +708,8 @@ void ClipboardAndroid::WriteFilenames(std::vector<ui::FileInfo> filenames) {
 
 // According to other platforms implementations, this really writes the
 // URL spec.
-void ClipboardAndroid::WriteBookmark(const std::string& title,
-                                     const std::string& url) {
+void ClipboardAndroid::WriteBookmark(base::StringPiece title,
+                                     base::StringPiece url) {
   g_map.Get().Set(ClipboardFormatType::UrlType(), url);
 }
 

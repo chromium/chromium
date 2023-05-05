@@ -311,7 +311,7 @@ void TestClipboard::WritePortableAndPlatformRepresentations(
   default_store_buffer_ = ClipboardBuffer::kCopyPaste;
 }
 
-void TestClipboard::WriteText(const std::string& text) {
+void TestClipboard::WriteText(base::StringPiece text) {
   GetDefaultStore().data[ClipboardFormatType::PlainTextType()] = text;
 #if BUILDFLAG(IS_WIN)
   // Create a dummy entry.
@@ -323,22 +323,23 @@ void TestClipboard::WriteText(const std::string& text) {
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-void TestClipboard::WriteHTML(const std::string& markup,
-                              const std::string* source_url) {
+void TestClipboard::WriteHTML(base::StringPiece markup,
+                              absl::optional<base::StringPiece> source_url) {
   GetDefaultStore().data[ClipboardFormatType::HtmlType()] = markup;
-  GetDefaultStore().html_src_url = source_url ? *source_url : std::string();
+  GetDefaultStore().html_src_url = source_url.value_or("");
 }
 
-void TestClipboard::WriteUnsanitizedHTML(const std::string& markup,
-                                         const std::string* source_url) {
+void TestClipboard::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   WriteHTML(markup, source_url);
 }
 
-void TestClipboard::WriteSvg(const std::string& markup) {
+void TestClipboard::WriteSvg(base::StringPiece markup) {
   GetDefaultStore().data[ClipboardFormatType::SvgType()] = markup;
 }
 
-void TestClipboard::WriteRTF(const std::string& rtf) {
+void TestClipboard::WriteRTF(base::StringPiece rtf) {
   GetDefaultStore().data[ClipboardFormatType::RtfType()] = rtf;
 }
 
@@ -346,8 +347,8 @@ void TestClipboard::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   GetDefaultStore().filenames = std::move(filenames);
 }
 
-void TestClipboard::WriteBookmark(const std::string& title,
-                                  const std::string& url) {
+void TestClipboard::WriteBookmark(base::StringPiece title,
+                                  base::StringPiece url) {
   GetDefaultStore().data[ClipboardFormatType::UrlType()] = url;
 #if !BUILDFLAG(IS_WIN)
   GetDefaultStore().url_title = title;

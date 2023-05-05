@@ -444,22 +444,23 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   void DispatchPlatformRepresentations(
       std::vector<Clipboard::PlatformRepresentation> platform_representations);
 
-  virtual void WriteText(const std::string& text) = 0;
+  virtual void WriteText(base::StringPiece text) = 0;
 
-  virtual void WriteHTML(const std::string& markup,
-                         const std::string* source_url) = 0;
+  virtual void WriteHTML(base::StringPiece markup,
+                         absl::optional<base::StringPiece> source_url) = 0;
 
-  virtual void WriteUnsanitizedHTML(const std::string& markup,
-                                    const std::string* source_url) = 0;
+  virtual void WriteUnsanitizedHTML(
+      base::StringPiece markup,
+      absl::optional<base::StringPiece> source_url) = 0;
 
-  virtual void WriteSvg(const std::string& markup) = 0;
+  virtual void WriteSvg(base::StringPiece markup) = 0;
 
-  virtual void WriteRTF(const std::string& rtf) = 0;
+  virtual void WriteRTF(base::StringPiece rtf) = 0;
 
   virtual void WriteFilenames(std::vector<ui::FileInfo> filenames) = 0;
 
-  virtual void WriteBookmark(const std::string& title,
-                             const std::string& url) = 0;
+  virtual void WriteBookmark(base::StringPiece title,
+                             base::StringPiece url) = 0;
 
   virtual void WriteWebSmartPaste() = 0;
 

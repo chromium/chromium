@@ -361,24 +361,24 @@ class ClipboardDataBuilder {
     clipboard->WriteData(TakeCurrentData());
   }
 
-  static void WriteText(const std::string& text) {
+  static void WriteText(base::StringPiece text) {
     ClipboardData* data = GetCurrentData();
     data->set_text(text);
   }
 
-  static void WriteHTML(const std::string& markup,
-                        const std::string* source_url) {
+  static void WriteHTML(base::StringPiece markup,
+                        absl::optional<base::StringPiece> source_url) {
     ClipboardData* data = GetCurrentData();
     data->set_markup_data(markup);
     data->set_url(source_url ? *source_url : std::string());
   }
 
-  static void WriteSvg(const std::string& markup) {
+  static void WriteSvg(base::StringPiece markup) {
     ClipboardData* data = GetCurrentData();
     data->set_svg_data(markup);
   }
 
-  static void WriteRTF(const std::string& rtf) {
+  static void WriteRTF(base::StringPiece rtf) {
     ClipboardData* data = GetCurrentData();
     data->SetRTFData(rtf);
   }
@@ -388,7 +388,7 @@ class ClipboardDataBuilder {
     data->set_filenames(std::move(filenames));
   }
 
-  static void WriteBookmark(const std::string& title, const std::string& url) {
+  static void WriteBookmark(base::StringPiece title, base::StringPiece url) {
     ClipboardData* data = GetCurrentData();
     data->set_bookmark_title(title);
     data->set_bookmark_url(url);
@@ -830,25 +830,27 @@ void ClipboardNonBacked::WritePortableAndPlatformRepresentations(
                                           std::move(data_src));
 }
 
-void ClipboardNonBacked::WriteText(const std::string& text) {
+void ClipboardNonBacked::WriteText(base::StringPiece text) {
   ClipboardDataBuilder::WriteText(text);
 }
 
-void ClipboardNonBacked::WriteHTML(const std::string& markup,
-                                   const std::string* source_url) {
+void ClipboardNonBacked::WriteHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   ClipboardDataBuilder::WriteHTML(markup, source_url);
 }
 
-void ClipboardNonBacked::WriteUnsanitizedHTML(const std::string& markup,
-                                              const std::string* source_url) {
+void ClipboardNonBacked::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   ClipboardDataBuilder::WriteHTML(markup, source_url);
 }
 
-void ClipboardNonBacked::WriteSvg(const std::string& markup) {
+void ClipboardNonBacked::WriteSvg(base::StringPiece markup) {
   ClipboardDataBuilder::WriteSvg(markup);
 }
 
-void ClipboardNonBacked::WriteRTF(const std::string& rtf) {
+void ClipboardNonBacked::WriteRTF(base::StringPiece rtf) {
   ClipboardDataBuilder::WriteRTF(rtf);
 }
 
@@ -856,8 +858,8 @@ void ClipboardNonBacked::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   ClipboardDataBuilder::WriteFilenames(std::move(filenames));
 }
 
-void ClipboardNonBacked::WriteBookmark(const std::string& title,
-                                       const std::string& url) {
+void ClipboardNonBacked::WriteBookmark(base::StringPiece title,
+                                       base::StringPiece url) {
   ClipboardDataBuilder::WriteBookmark(title, url);
 }
 

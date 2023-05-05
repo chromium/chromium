@@ -733,7 +733,8 @@ bool GetHtml(IDataObject* data_object,
       base::win::ScopedHGlobal<char*> data(store.hGlobal);
 
       std::string html_utf8;
-      CFHtmlToHtml(std::string(data.get(), data.Size()), &html_utf8, base_url);
+      CFHtmlToHtml(base::StringPiece(data.get(), data.Size()), &html_utf8,
+                   base_url);
       html->assign(base::UTF8ToUTF16(html_utf8));
     }
     ReleaseStgMedium(&store);
@@ -842,8 +843,8 @@ bool GetWebCustomData(
 // Helper method for converting from text/html to MS CF_HTML.
 // Documentation for the CF_HTML format is available at
 // http://msdn.microsoft.com/en-us/library/aa767917(VS.85).aspx
-std::string HtmlToCFHtml(const std::string& html,
-                         const std::string& base_url,
+std::string HtmlToCFHtml(base::StringPiece html,
+                         base::StringPiece base_url,
                          ClipboardContentType content_type) {
   if (html.empty()) {
     return std::string();
@@ -973,7 +974,7 @@ std::string HtmlToCFHtml(const std::string& html,
 }
 
 // Helper method for converting from MS CF_HTML to text/html.
-void CFHtmlToHtml(const std::string& cf_html,
+void CFHtmlToHtml(base::StringPiece cf_html,
                   std::string* html,
                   std::string* base_url) {
   size_t fragment_start = std::string::npos;
@@ -990,7 +991,7 @@ void CFHtmlToHtml(const std::string& cf_html,
   }
 }
 
-void CFHtmlExtractMetadata(const std::string& cf_html,
+void CFHtmlExtractMetadata(base::StringPiece cf_html,
                            std::string* base_url,
                            size_t* html_start,
                            size_t* fragment_start,
@@ -1024,14 +1025,14 @@ void CFHtmlExtractMetadata(const std::string& cf_html,
     size_t start_fragment_start = cf_html.find(kStartFragmentStr);
     if (start_fragment_start != std::string::npos) {
       *fragment_start = static_cast<size_t>(atoi(
-          cf_html.c_str() + start_fragment_start + strlen(kStartFragmentStr)));
+          cf_html.data() + start_fragment_start + strlen(kStartFragmentStr)));
     }
 
     static constexpr char kEndFragmentStr[] = "EndFragment:";
     size_t end_fragment_start = cf_html.find(kEndFragmentStr);
     if (end_fragment_start != std::string::npos) {
       *fragment_end = static_cast<size_t>(
-          atoi(cf_html.c_str() + end_fragment_start + strlen(kEndFragmentStr)));
+          atoi(cf_html.data() + end_fragment_start + strlen(kEndFragmentStr)));
     }
   } else {
     *fragment_start = cf_html.find('>', tag_start) + 1;

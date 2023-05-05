@@ -677,30 +677,31 @@ void ClipboardOzone::WritePortableAndPlatformRepresentations(
   WritePortableTextRepresentation(buffer, objects);
 }
 
-void ClipboardOzone::WriteText(const std::string& text) {
+void ClipboardOzone::WriteText(base::StringPiece text) {
   std::vector<uint8_t> data(text.begin(), text.end());
   async_clipboard_ozone_->InsertData(
       std::move(data), {kMimeTypeText, kMimeTypeLinuxText, kMimeTypeLinuxString,
                         kMimeTypeTextUtf8, kMimeTypeLinuxUtf8String});
 }
 
-void ClipboardOzone::WriteHTML(const std::string& markup,
-                               const std::string* source_url) {
+void ClipboardOzone::WriteHTML(base::StringPiece markup,
+                               absl::optional<base::StringPiece> source_url) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeHTML});
 }
 
-void ClipboardOzone::WriteUnsanitizedHTML(const std::string& markup,
-                                          const std::string* source_url) {
+void ClipboardOzone::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   WriteHTML(markup, source_url);
 }
 
-void ClipboardOzone::WriteSvg(const std::string& markup) {
+void ClipboardOzone::WriteSvg(base::StringPiece markup) {
   std::vector<uint8_t> data(markup.begin(), markup.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeSvg});
 }
 
-void ClipboardOzone::WriteRTF(const std::string& rtf) {
+void ClipboardOzone::WriteRTF(base::StringPiece rtf) {
   std::vector<uint8_t> data(rtf.begin(), rtf.end());
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeRTF});
 }
@@ -711,8 +712,8 @@ void ClipboardOzone::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   async_clipboard_ozone_->InsertData(std::move(data), {kMimeTypeURIList});
 }
 
-void ClipboardOzone::WriteBookmark(const std::string& title,
-                                   const std::string& url) {
+void ClipboardOzone::WriteBookmark(base::StringPiece title,
+                                   base::StringPiece url) {
   // Writes a Mozilla url (UTF16: URL, newline, title)
   std::u16string bookmark =
       base::StrCat({base::UTF8ToUTF16(url) + u"\n" + base::UTF8ToUTF16(title)});

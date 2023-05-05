@@ -362,7 +362,7 @@ void ClipboardIOS::WritePortableAndPlatformRepresentations(
   }
 }
 
-void ClipboardIOS::WriteText(const std::string& text) {
+void ClipboardIOS::WriteText(base::StringPiece text) {
   NSDictionary<NSString*, id>* text_item = @{
     ClipboardFormatType::PlainTextType().ToNSString() :
         base::SysUTF8ToNSString(text)
@@ -370,8 +370,8 @@ void ClipboardIOS::WriteText(const std::string& text) {
   [GetPasteboard() addItems:@[ text_item ]];
 }
 
-void ClipboardIOS::WriteHTML(const std::string& markup,
-                             const std::string* source_url) {
+void ClipboardIOS::WriteHTML(base::StringPiece markup,
+                             absl::optional<base::StringPiece> source_url) {
   // We need to mark it as utf-8. (see crbug.com/11957)
   std::string html_fragment_str("<meta charset='utf-8'>");
   html_fragment_str += markup;
@@ -382,12 +382,13 @@ void ClipboardIOS::WriteHTML(const std::string& markup,
   [GetPasteboard() addItems:@[ html_item ]];
 }
 
-void ClipboardIOS::WriteUnsanitizedHTML(const std::string& markup,
-                                        const std::string* source_url) {
+void ClipboardIOS::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   WriteHTML(markup, source_url);
 }
 
-void ClipboardIOS::WriteSvg(const std::string& markup) {
+void ClipboardIOS::WriteSvg(base::StringPiece markup) {
   NSDictionary<NSString*, id>* svg_item = @{
     ClipboardFormatType::SvgType().ToNSString() :
         base::SysUTF8ToNSString(markup)
@@ -395,7 +396,7 @@ void ClipboardIOS::WriteSvg(const std::string& markup) {
   [GetPasteboard() addItems:@[ svg_item ]];
 }
 
-void ClipboardIOS::WriteRTF(const std::string& rtf) {
+void ClipboardIOS::WriteRTF(base::StringPiece rtf) {
   WriteData(ClipboardFormatType::RtfType(),
             base::as_bytes(base::make_span(rtf)));
 }
@@ -417,8 +418,8 @@ void ClipboardIOS::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   [GetPasteboard() addItems:items];
 }
 
-void ClipboardIOS::WriteBookmark(const std::string& title,
-                                 const std::string& url) {
+void ClipboardIOS::WriteBookmark(base::StringPiece title,
+                                 base::StringPiece url) {
   NSDictionary<NSString*, id>* bookmarkItem = @{
     ClipboardFormatType::UrlType().ToNSString() : base::SysUTF8ToNSString(url),
     kUTTypeURLName : base::SysUTF8ToNSString(title),

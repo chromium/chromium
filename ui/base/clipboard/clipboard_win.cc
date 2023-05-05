@@ -656,40 +656,40 @@ void ClipboardWin::WritePortableAndPlatformRepresentations(
     DispatchPortableRepresentation(object.second);
 }
 
-void ClipboardWin::WriteText(const std::string& text) {
+void ClipboardWin::WriteText(base::StringPiece text) {
   HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(text));
 
   WriteToClipboard(ClipboardFormatType::PlainTextType(), glob);
 }
 
-void ClipboardWin::WriteHTML(const std::string& markup,
-                             const std::string* source_url) {
+void ClipboardWin::WriteHTML(base::StringPiece markup,
+                             absl::optional<base::StringPiece> source_url) {
   std::string html_fragment = clipboard_util::HtmlToCFHtml(
-      markup, source_url ? *source_url : "", ClipboardContentType::kSanitized);
+      markup, source_url.value_or(""), ClipboardContentType::kSanitized);
   HGLOBAL glob = CreateGlobalData(html_fragment);
 
   WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
-void ClipboardWin::WriteUnsanitizedHTML(const std::string& markup,
-                                        const std::string* source_url) {
+void ClipboardWin::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   // Add Windows specific headers to the HTML payload before writing to the
   // clipboard.
-  std::string html_fragment =
-      clipboard_util::HtmlToCFHtml(markup, source_url ? *source_url : "",
-                                   ClipboardContentType::kUnsanitized);
+  std::string html_fragment = clipboard_util::HtmlToCFHtml(
+      markup, source_url.value_or(""), ClipboardContentType::kUnsanitized);
   HGLOBAL glob = CreateGlobalData(html_fragment);
 
   WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
-void ClipboardWin::WriteSvg(const std::string& markup) {
+void ClipboardWin::WriteSvg(base::StringPiece markup) {
   HGLOBAL glob = CreateGlobalData(base::UTF8ToUTF16(markup));
 
   WriteToClipboard(ClipboardFormatType::SvgType(), glob);
 }
 
-void ClipboardWin::WriteRTF(const std::string& rtf) {
+void ClipboardWin::WriteRTF(base::StringPiece rtf) {
   WriteData(ClipboardFormatType::RtfType(),
             base::as_bytes(base::make_span(rtf)));
 }
@@ -701,8 +701,8 @@ void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);
 }
 
-void ClipboardWin::WriteBookmark(const std::string& title,
-                                 const std::string& url) {
+void ClipboardWin::WriteBookmark(base::StringPiece title,
+                                 base::StringPiece url) {
   // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
   // title separated by a newline.
   // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.

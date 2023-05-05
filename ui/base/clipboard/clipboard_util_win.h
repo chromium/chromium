@@ -106,15 +106,15 @@ bool GetWebCustomData(
 // Helper method for converting between MS CF_HTML format and plain
 // text/html.
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-std::string HtmlToCFHtml(const std::string& html,
-                         const std::string& base_url,
+std::string HtmlToCFHtml(base::StringPiece html,
+                         base::StringPiece base_url,
                          ClipboardContentType content_type);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-void CFHtmlToHtml(const std::string& cf_html,
+void CFHtmlToHtml(base::StringPiece cf_html,
                   std::string* html,
                   std::string* base_url);
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD)
-void CFHtmlExtractMetadata(const std::string& cf_html,
+void CFHtmlExtractMetadata(base::StringPiece cf_html,
                            std::string* base_url,
                            size_t* html_start,
                            size_t* fragment_start,

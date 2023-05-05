@@ -400,13 +400,13 @@ void ClipboardMac::WritePortableAndPlatformRepresentations(
     DispatchPortableRepresentation(object.second);
 }
 
-void ClipboardMac::WriteText(const std::string& text) {
+void ClipboardMac::WriteText(base::StringPiece text) {
   [GetPasteboard() setString:base::SysUTF8ToNSString(text)
                      forType:NSPasteboardTypeString];
 }
 
-void ClipboardMac::WriteHTML(const std::string& markup,
-                             const std::string* source_url) {
+void ClipboardMac::WriteHTML(base::StringPiece markup,
+                             absl::optional<base::StringPiece> source_url) {
   // We need to mark it as utf-8. (see crbug.com/11957)
   std::string html_fragment_str("<meta charset='utf-8'>");
   html_fragment_str.append(markup);
@@ -416,17 +416,18 @@ void ClipboardMac::WriteHTML(const std::string& markup,
   [GetPasteboard() setString:html_fragment forType:NSPasteboardTypeHTML];
 }
 
-void ClipboardMac::WriteUnsanitizedHTML(const std::string& markup,
-                                        const std::string* source_url) {
+void ClipboardMac::WriteUnsanitizedHTML(
+    base::StringPiece markup,
+    absl::optional<base::StringPiece> source_url) {
   WriteHTML(markup, source_url);
 }
 
-void ClipboardMac::WriteSvg(const std::string& markup) {
+void ClipboardMac::WriteSvg(base::StringPiece markup) {
   [GetPasteboard() setString:base::SysUTF8ToNSString(markup)
                      forType:ClipboardFormatType::SvgType().ToNSString()];
 }
 
-void ClipboardMac::WriteRTF(const std::string& rtf) {
+void ClipboardMac::WriteRTF(base::StringPiece rtf) {
   WriteData(ClipboardFormatType::RtfType(),
             base::as_bytes(base::make_span(rtf)));
 }
@@ -435,8 +436,8 @@ void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   clipboard_util::WriteFilesToPasteboard(GetPasteboard(), filenames);
 }
 
-void ClipboardMac::WriteBookmark(const std::string& title,
-                                 const std::string& url) {
+void ClipboardMac::WriteBookmark(base::StringPiece title,
+                                 base::StringPiece url) {
   NSArray<NSPasteboardItem*>* items = clipboard_util::PasteboardItemsFromUrls(
       @[ base::SysUTF8ToNSString(url) ], @[ base::SysUTF8ToNSString(title) ]);
   clipboard_util::AddDataToPasteboard(GetPasteboard(), items.firstObject);

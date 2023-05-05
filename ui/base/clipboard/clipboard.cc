@@ -241,10 +241,9 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
               }
 
               if (params.content_type == ClipboardContentType::kUnsanitized) {
-                WriteUnsanitizedHTML(data.markup,
-                                     base::OptionalToPtr(data.source_url));
+                WriteUnsanitizedHTML(data.markup, data.source_url);
               } else {
-                WriteHTML(data.markup, base::OptionalToPtr(data.source_url));
+                WriteHTML(data.markup, data.source_url);
               }
             },
             [&](const RtfData& data) {
