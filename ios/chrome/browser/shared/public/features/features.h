@@ -185,6 +185,11 @@ bool IsIndicateSyncErrorInOverflowMenuEnabled();
 // Feature flag to move the steady-state (unfocused) omnibox to the bottom.
 BASE_DECLARE_FEATURE(kBottomOmniboxSteadyState);
 
+// Returns true if `kBottomOmniboxSteadyState` feature flag is enabled.
+// This checks that the flag is enabled, not that the omnibox is currently at
+// the bottom.
+bool IsBottomOmniboxSteadyStateEnabled();
+
 // Feature flag to put all clipboard access onto a background thread. Any
 // synchronous clipboard access will always return nil/false.
 BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);

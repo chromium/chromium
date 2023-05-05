@@ -472,7 +472,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
   [model addItem:[self voiceSearchDetailItem]
       toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
-  if (base::FeatureList::IsEnabled(kBottomOmniboxSteadyState)) {
+  if (IsBottomOmniboxSteadyStateEnabled()) {
     [model addItem:[self bottomOmniboxItem]
         toSectionWithIdentifier:SettingsSectionIdentifierAdvanced];
   };
@@ -913,7 +913,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (TableViewItem*)bottomOmniboxItem {
-  DCHECK(base::FeatureList::IsEnabled(kBottomOmniboxSteadyState));
+  DCHECK(IsBottomOmniboxSteadyStateEnabled());
   if (!_bottomOmniboxItem) {
     _bottomOmniboxItem =
         [self switchItemWithType:SettingsItemTypeBottomOmnibox
@@ -1538,7 +1538,7 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 }
 
 - (void)bottomOmniboxSwitchToggled:(UISwitch*)sender {
-  DCHECK(base::FeatureList::IsEnabled(kBottomOmniboxSteadyState));
+  DCHECK(IsBottomOmniboxSteadyStateEnabled());
   NSIndexPath* switchPath = [self.tableViewModel
       indexPathForItemType:SettingsItemTypeBottomOmnibox
          sectionIdentifier:SettingsSectionIdentifierAdvanced];

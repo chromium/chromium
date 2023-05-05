@@ -242,6 +242,10 @@ BASE_FEATURE(kBottomOmniboxSteadyState,
              "BottomOmniboxSteadyState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsBottomOmniboxSteadyStateEnabled() {
+  return base::FeatureList::IsEnabled(kBottomOmniboxSteadyState);
+}
+
 BASE_FEATURE(kOnlyAccessClipboardAsync,
              "OnlyAccessClipboardAsync",
              base::FEATURE_DISABLED_BY_DEFAULT);
