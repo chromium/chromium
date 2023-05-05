@@ -147,6 +147,7 @@ class PDFExtensionAccessibilityTest : public PDFExtensionTestBase {
         content::FindAccessibilityNode(web_contents, find_criteria);
     ui::AXTreeID pdf_tree_id = pdf_root->GetTreeData().tree_id;
     EXPECT_NE(pdf_tree_id, ui::AXTreeIDUnknown());
+    EXPECT_EQ(pdf_root->GetTreeData().focus_id, pdf_root->GetId());
 
     return content::GetAccessibilityTreeSnapshotFromId(pdf_tree_id);
   }

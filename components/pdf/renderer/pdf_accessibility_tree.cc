@@ -1696,6 +1696,7 @@ void PdfAccessibilityTree::UnserializeNodes() {
   update.has_tree_data = true;
   update.tree_data.tree_id = render_accessibility->GetTreeIDForPluginHost();
   tree_data_.tree_id = render_accessibility->GetTreeIDForPluginHost();
+  tree_data_.focus_id = doc_node_->id;
   update.root_id = doc_node_->id;
   update.nodes.push_back(*doc_node_);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
@@ -1876,6 +1877,7 @@ PdfAccessibilityTree::AnnotationInfo::~AnnotationInfo() = default;
 
 bool PdfAccessibilityTree::GetTreeData(ui::AXTreeData* tree_data) const {
   tree_data->tree_id = tree_data_.tree_id;
+  tree_data->focus_id = tree_data_.focus_id;
   tree_data->sel_is_backward = tree_data_.sel_is_backward;
   tree_data->sel_anchor_object_id = tree_data_.sel_anchor_object_id;
   tree_data->sel_anchor_offset = tree_data_.sel_anchor_offset;
