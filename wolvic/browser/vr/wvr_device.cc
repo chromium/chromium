@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
+#include "ui/android/view_android.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
@@ -29,19 +30,6 @@ const std::vector<device::mojom::XRSessionFeature>& GetSupportedFeatures() {
            device::mojom::XRSessionFeature::ANCHORS}};
 
   return *kSupportedFeatures;
-}
-
-content::WebContents* GetWebContents(int render_process_id,
-                                     int render_frame_id) {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  DCHECK(render_frame_host);
-
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  DCHECK(web_contents);
-
-  return web_contents;
 }
 
 }  // namespace
@@ -115,13 +103,10 @@ bool WvrDevice::IsOnMainThread() {
 
 void WvrDevice::OnWvrThreadReady(
     device::mojom::XRRuntimeSessionOptionsPtr options) {
-  content::WebContents* web_contents =
-      GetWebContents(options->render_process_id, options->render_frame_id);
   display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-
   PostTaskToWvrThread(base::BindOnce(
       &WvrManager::InitializeGl, wvr_thread_->GetWvrManager()->GetWeakPtr(),
-      web_contents->GetTopLevelNativeWindow(), display.GetSizeInPixel(),
+      display.GetSizeInPixel(),
       CreateMainThreadCallback(
           base::BindOnce(&WvrDevice::OnWvrGlInitializationComplete,
                          GetWeakPtr(), std::move(options)))));

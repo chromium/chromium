@@ -20,6 +20,7 @@ public class VRManager {
     }
 
     @AnyThread
+    @SuppressWarnings("NoSynchronizedMethodCheck")
     public static synchronized void setExternalContext(final long externalContext) {
         mExternalContext = externalContext;
     }

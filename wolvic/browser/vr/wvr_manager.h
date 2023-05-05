@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_helper.h"
 #include "wolvic/browser/vr/moz_external_vr.h"
 
@@ -44,8 +43,7 @@ class WvrManager : public device::mojom::XRPresentationProvider,
 
   ~WvrManager() override;
 
-  void InitializeGl(ui::WindowAndroid* root_window,
-                    const gfx::Size& frame_size,
+  void InitializeGl(const gfx::Size& frame_size,
                     base::OnceClosure callback);
 
   // XRFrameDataProvider
