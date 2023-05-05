@@ -52,8 +52,7 @@ class FedCmModalDialogViewTest : public ChromeViewsTestBase {
 
 TEST_F(FedCmModalDialogViewTest, Init) {
   FedCmModalDialogView modal_dialog_view =
-      FedCmModalDialogView(web_contents(), GURL(u"https://example.com"),
-                           /*observer=*/nullptr);
+      FedCmModalDialogView(web_contents(), GURL(u"https://example.com"));
   views::View* view = modal_dialog_view.GetContentsView();
 
   const std::vector<views::View*> container = view->children();

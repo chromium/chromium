@@ -110,7 +110,8 @@ class AccountSelectionBubbleView : public views::BubbleDialogDelegateView,
   std::string GetDialogTitle() const override;
   absl::optional<std::string> GetDialogSubtitle() const override;
 
-  void SetIdentityRegistry(content::WebContents* web_contents) override;
+  bool HasIdentityRegistryCallback() override;
+  IdentityRegistryCallback GetIdentityRegistryCallback() override;
 
  private:
   gfx::Rect GetBubbleBounds() override;

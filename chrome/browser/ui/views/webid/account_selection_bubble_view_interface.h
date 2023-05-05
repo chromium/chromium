@@ -52,7 +52,8 @@ class AccountSelectionBubbleViewInterface {
   virtual std::string GetDialogTitle() const = 0;
   virtual absl::optional<std::string> GetDialogSubtitle() const = 0;
 
-  virtual void SetIdentityRegistry(content::WebContents* web_contents) = 0;
+  virtual bool HasIdentityRegistryCallback() = 0;
+  virtual IdentityRegistryCallback GetIdentityRegistryCallback() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_ACCOUNT_SELECTION_BUBBLE_VIEW_INTERFACE_H_
