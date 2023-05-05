@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -58,6 +59,9 @@ class DeviceTrustConnectorService : public KeyedService {
   // Adds `observer` to the list of owned policy observers.
   void AddObserver(std::unique_ptr<PolicyObserver> observer);
 
+  // Returns the policy levels the service is enabled for.
+  const std::set<DTCPolicyLevel> GetEnabledInlinePolicyLevels() const;
+
  private:
   // Contains details relating to a policy.
   struct DTCPolicyDetails {
@@ -90,6 +94,9 @@ class DeviceTrustConnectorService : public KeyedService {
   // Functions used to propagate an update to all observers.
   void OnInlinePolicyEnabled(DTCPolicyLevel level);
   void OnInlinePolicyDisabled(DTCPolicyLevel level);
+
+  // Gets a list of URLs from the specified `pref`.
+  const base::Value::List* GetPolicyUrlPatterns(const std::string& pref) const;
 
   PrefChangeRegistrar pref_observer_;
 

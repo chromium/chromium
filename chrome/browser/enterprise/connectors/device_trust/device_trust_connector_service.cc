@@ -14,24 +14,6 @@
 
 namespace enterprise_connectors {
 
-namespace {
-
-const base::Value::List* GetPolicyUrlPatterns(PrefService* prefs,
-                                              const std::string& pref) {
-  if (!prefs->IsManagedPreference(pref)) {
-    return nullptr;
-  }
-  return &prefs->GetList(pref);
-}
-
-bool ConnectorPolicyHasValues(PrefService* profile_prefs,
-                              const std::string& pref) {
-  const auto* list = GetPolicyUrlPatterns(profile_prefs, pref);
-  return list && !list->empty();
-}
-
-}  // namespace
-
 DeviceTrustConnectorService::DeviceTrustConnectorService(
     PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
@@ -76,22 +58,7 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
 DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
 
 bool DeviceTrustConnectorService::IsConnectorEnabled() const {
-  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_) {
-    return false;
-  }
-
-  if (IsUserInlineFlowFeatureEnabled()) {
-    for (auto const& policy_details : policy_details_map_) {
-      if (ConnectorPolicyHasValues(profile_prefs_,
-                                   policy_details.second.pref)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  return ConnectorPolicyHasValues(profile_prefs_,
-                                  kContextAwareAccessSignalsAllowlistPref);
+  return !GetEnabledInlinePolicyLevels().empty();
 }
 
 const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
@@ -132,6 +99,32 @@ void DeviceTrustConnectorService::AddObserver(
   }
 }
 
+const std::set<DTCPolicyLevel>
+DeviceTrustConnectorService::GetEnabledInlinePolicyLevels() const {
+  std::set<DTCPolicyLevel> levels;
+
+  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_) {
+    return levels;
+  }
+
+  if (IsUserInlineFlowFeatureEnabled()) {
+    for (auto const& policy_details : policy_details_map_) {
+      if (policy_details.second.enabled) {
+        levels.insert(policy_details.first);
+      }
+    }
+  } else {
+    const base::Value::List* url_patterns =
+        GetPolicyUrlPatterns(kContextAwareAccessSignalsAllowlistPref);
+    if (url_patterns && !url_patterns->empty()) {
+      levels.insert(DTCPolicyLevel::kUser);
+      levels.insert(DTCPolicyLevel::kBrowser);
+    }
+  }
+
+  return levels;
+}
+
 DeviceTrustConnectorService::DTCPolicyDetails::DTCPolicyDetails(
     const std::string& pref)
     : enabled(false),
@@ -152,8 +145,7 @@ void DeviceTrustConnectorService::OnPolicyUpdated(const DTCPolicyLevel& level,
                                                   const std::string& pref) {
   CHECK(IsUserInlineFlowFeatureEnabled());
 
-  const base::Value::List* url_patterns =
-      GetPolicyUrlPatterns(profile_prefs_, pref);
+  const base::Value::List* url_patterns = GetPolicyUrlPatterns(pref);
   auto& policy_details = policy_details_map_.at(level);
   // Reset the matcher and update the policy details.
   policy_details.matcher = std::make_unique<url_matcher::URLMatcher>();
@@ -172,8 +164,8 @@ void DeviceTrustConnectorService::OnPolicyUpdated(const DTCPolicyLevel& level,
 void DeviceTrustConnectorService::OnOriginalPolicyUpdated() {
   DCHECK(IsDeviceTrustConnectorFeatureEnabled());
 
-  const base::Value::List* url_patterns = GetPolicyUrlPatterns(
-      profile_prefs_, kContextAwareAccessSignalsAllowlistPref);
+  const base::Value::List* url_patterns =
+      GetPolicyUrlPatterns(kContextAwareAccessSignalsAllowlistPref);
 
   if (!matcher_ || !matcher_->IsEmpty()) {
     // Reset the matcher.
@@ -201,6 +193,14 @@ void DeviceTrustConnectorService::OnInlinePolicyDisabled(DTCPolicyLevel level) {
   for (const auto& observer : observers_) {
     observer->OnInlinePolicyDisabled(level);
   }
+}
+
+const base::Value::List* DeviceTrustConnectorService::GetPolicyUrlPatterns(
+    const std::string& pref) const {
+  if (!profile_prefs_->IsManagedPreference(pref)) {
+    return nullptr;
+  }
+  return &profile_prefs_->GetList(pref);
 }
 
 }  // namespace enterprise_connectors

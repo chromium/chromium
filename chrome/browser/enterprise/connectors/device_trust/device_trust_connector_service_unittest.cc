@@ -127,6 +127,7 @@ class DeviceTrustConnectorServiceTest : public testing::Test {
     EXPECT_EQ(level, service->Watches(url1));
     EXPECT_EQ(level, service->Watches(url2));
     EXPECT_EQ(level, service->Watches(url3));
+    EXPECT_EQ(level, service->GetEnabledInlinePolicyLevels());
   }
 
   void TestPolicyObserverFlow(
@@ -222,6 +223,7 @@ TEST_F(DeviceTrustConnectorServiceTest,
   EXPECT_EQ(levels_, service->Watches(url1));
   EXPECT_EQ(levels_, service->Watches(url2));
   EXPECT_EQ(levels_, service->Watches(url3));
+  EXPECT_EQ(levels_, service->GetEnabledInlinePolicyLevels());
 }
 
 // Tests that the DTC policy levels set is enabled at the correct levels when
@@ -260,6 +262,7 @@ TEST_F(DeviceTrustConnectorServiceTest,
   EXPECT_EQ(user_policy_level, service->Watches(url2));
   EXPECT_EQ(browser_policy_level, service->Watches(url3));
   EXPECT_EQ(browser_policy_level, service->Watches(url4));
+  EXPECT_EQ(levels_, service->GetEnabledInlinePolicyLevels());
 }
 
 // Tests that the policy observer behaves as intended for the
