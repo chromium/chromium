@@ -1231,11 +1231,14 @@ void ExtensionService::CheckManagementPolicy() {
       disable_reasons &= (~disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY);
     }
 
-    // Find all extensions disabled due to published-in-webstore requirement and
-    // management policy but now satisfying it.
+    // Check published-in-store status against policy requirement and update
+    // the disable reasons accordingly.
     if (management->IsAllowedByUnpublishedAvailabilityPolicy(extension.get())) {
       disable_reasons &=
           ~disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
+    } else {
+      disable_reasons |=
+          disable_reason::DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY;
     }
 
     if (!system_->management_policy()->MustRemainDisabled(extension.get(),
