@@ -379,8 +379,7 @@ TEST_F(WebCryptoRsaSsaTest, ImportMultipleRsaKeysJwk) {
 // for how that could happen.
 TEST_F(WebCryptoRsaSsaTest, ImportCorruptKeyReusedModulus) {
   blink::WebCryptoKey key = ImportJwkRS256OrDie(kRsa512Jwk_0);
-  EXPECT_EQ(Status::OperationError(),
-            ImportJwkRS256MustFail(kRsa512Jwk_0_Damaged));
+  EXPECT_EQ(Status::DataError(), ImportJwkRS256MustFail(kRsa512Jwk_0_Damaged));
 }
 
 TEST_F(WebCryptoRsaSsaTest, GenerateKeyPairRsa) {
@@ -1005,14 +1004,14 @@ TEST_F(WebCryptoRsaSsaTest, ImportValidJwkPrivateKey) {
 TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_SwapPQ) {
   auto key = BuildTestJwkPrivateKey();
   SwapDictMembers(key, "p", "q");
-  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)), "OperationError");
+  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)), "DataError");
 }
 
 TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_SwapPQDPDQ) {
   auto key = BuildTestJwkPrivateKey();
   SwapDictMembers(key, "p", "q");
   SwapDictMembers(key, "dp", "dq");
-  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)), "OperationError");
+  EXPECT_EQ(StatusToString(ImportJwkRS256MustFail(key)), "DataError");
 }
 
 TEST_F(WebCryptoRsaSsaTest, ImportInvalidJwkPrivateKey_MissingMostOptionals) {
