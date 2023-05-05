@@ -1156,13 +1156,11 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 }
 
 .menu {
-  backdrop-filter: blur(10px);
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--cros-sys-base_elevated);
   display: flex;
   flex-direction: column;
   height: 100vh;
   min-width: 360px;
-  opacity: 0.9;
   overflow-y: scroll;
   position: absolute;
   top: 0;
@@ -1176,7 +1174,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 .menu-header,
 .menu-item {
   align-items: center;
-  color: var(--grey-100);
+  color: white;
   display: flex;
   flex-shrink: 0;
   font-size: 13px;
@@ -1186,7 +1184,7 @@ body:not(.recording-ui-paused) #record-time [i18n-text=record_video_paused_msg] 
 
 button.menu-item:hover,
 label.menu-item:hover {
-  background-color: var(--cros-sys-hover_on_subtle);
+  background: var(--cros-sys-hover_on_subtle);
 }
 
 .settings .menu-item {
@@ -1207,7 +1205,7 @@ label.menu-item:hover {
 }
 
 .menu-item .description {
-  color: rgb(189, 193, 198);
+  color: var(--cros-sys-secondary);
   margin-top: 5px;
 }
 
@@ -1353,7 +1351,7 @@ html[dir=rtl] .menu-header .icon {
 }
 
 #option-title {
-  color: var(--grey-500);
+  color: var(--cros-sys-secondary);
   font-family: var(--default-font-family);
   font-size: 13px;
   font-weight: 400;
@@ -1386,7 +1384,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 .label-item {
-  color: var(--grey-500);
+  color: var(--cros-sys-secondary);
   font: 500 13px/20px var(--default-font-family);
   margin: 9px 0 3px 0;
   padding-inline-start: 26px;
@@ -1398,7 +1396,7 @@ body:not(.video) #settings-video-resolution {
 
 .text-item {
   align-items: center;
-  color: var(--grey-500);
+  color: var(--cros-sys-secondary);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -1518,4 +1516,8 @@ body:not(.video) #settings-video-resolution {
   background: url(/images/external_link_icon.svg);
   height: 20px;
   width: 20px;
+}
+
+#view-settings {
+  background: var(--cros-sys-scrim);
 }

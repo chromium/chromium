@@ -19,7 +19,7 @@
   --cros-sys-inverse_surface: var(--grey-200);
   --cros-sys-primary: var(--blue-300);
   --cros-sys-scrim2: rgba(0, 0, 0, 0.6);
-  --cros-sys-secondary: var(--blue-500);
+  --cros-sys-secondary: var(--grey-400);
   --cros-sys-secondary_container: var(--grey-600);
   --cros-sys-separator: rgba(255, 255, 255, 0.14);
   --cros-sys-on_error_container: var(--red-300);
@@ -98,4 +98,18 @@ body:not(.mic) #toggle-mic {
 
 button.shutter {
   outline-offset: 9px;
+}
+
+.menu {
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.75);
+  opacity: 0.9;
+}
+
+#view-settings {
+  background: initial;
+}
+
+:is(#start-takephoto, #video-snapshot):enabled:active svg-wrapper {
+  color: var(--blue-500);
 }
