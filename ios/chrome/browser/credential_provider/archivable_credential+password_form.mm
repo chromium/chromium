@@ -50,8 +50,7 @@ password_manager::PasswordForm PasswordFormFromCredential(
 
 - (instancetype)initWithPasswordForm:
                     (const password_manager::PasswordForm&)passwordForm
-                             favicon:(NSString*)favicon
-                validationIdentifier:(NSString*)validationIdentifier {
+                             favicon:(NSString*)favicon {
   if (passwordForm.blocked_by_user) {
     return nil;
   }
@@ -104,7 +103,6 @@ password_manager::PasswordForm PasswordFormFromCredential(
              serviceIdentifier:serviceIdentifier
                    serviceName:serviceName
                           user:SysUTF16ToNSString(passwordForm.username_value)
-          validationIdentifier:validationIdentifier
                           note:note];
 }
 

@@ -257,15 +257,14 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader, bool sync_enabled) {
       // Add favicon name to the credential and update the store.
       filename = GetFaviconFileKey(url);
       ArchivableCredential* newCredential = [[ArchivableCredential alloc]
-               initWithFavicon:filename
-            keychainIdentifier:credential.keychainIdentifier
-                          rank:credential.rank
-              recordIdentifier:credential.recordIdentifier
-             serviceIdentifier:credential.serviceIdentifier
-                   serviceName:credential.serviceName
-                          user:credential.user
-          validationIdentifier:credential.validationIdentifier
-                          note:credential.note];
+             initWithFavicon:filename
+          keychainIdentifier:credential.keychainIdentifier
+                        rank:credential.rank
+            recordIdentifier:credential.recordIdentifier
+           serviceIdentifier:credential.serviceIdentifier
+                 serviceName:credential.serviceName
+                        user:credential.user
+                        note:credential.note];
       if ([archivable_store
               credentialWithRecordIdentifier:newCredential.recordIdentifier]) {
         [archivable_store updateCredential:newCredential];

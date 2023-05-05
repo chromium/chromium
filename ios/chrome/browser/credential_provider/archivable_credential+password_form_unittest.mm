@@ -25,7 +25,6 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
   NSString* username = @"username_value";
   NSString* favicon = @"favicon_value";
   NSString* keychainIdentifier = @"keychain_identifier_value";
-  NSString* validationIdentifier = @"validation_identifier_value";
   NSString* url = @"http://www.alpha.example.com/path/and?args=8";
 
   PasswordForm passwordForm;
@@ -37,14 +36,12 @@ TEST_F(ArchivableCredentialPasswordFormTest, Creation) {
   passwordForm.url = GURL(base::SysNSStringToUTF16(url));
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithPasswordForm:passwordForm
-                                                 favicon:favicon
-                                    validationIdentifier:validationIdentifier];
+                                                 favicon:favicon];
 
   EXPECT_TRUE(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
   EXPECT_NSEQ(username, credential.user);
   EXPECT_NSEQ(favicon, credential.favicon);
-  EXPECT_NSEQ(validationIdentifier, credential.validationIdentifier);
   EXPECT_NSEQ(keychainIdentifier, credential.keychainIdentifier);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);
   EXPECT_NSEQ(@"http://www.alpha.example.com/path/and?args=8|"
@@ -60,9 +57,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
   form.password_value = u"example";
 
   ArchivableCredential* credentialOnlyRealm =
-      [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                 favicon:nil
-                                    validationIdentifier:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
 
   EXPECT_TRUE(credentialOnlyRealm);
   EXPECT_NSEQ(@"android://hash@com.example.my.app",
@@ -73,9 +68,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
   form.app_display_name = "my.app";
 
   ArchivableCredential* credentialRealmAndAppName =
-      [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                 favicon:nil
-                                    validationIdentifier:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
 
   EXPECT_NSEQ(@"my.app", credentialRealmAndAppName.serviceName);
   EXPECT_NSEQ(@"android://hash@com.example.my.app",
@@ -84,9 +77,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, AndroidCredentialCreation) {
   form.affiliated_web_realm = "https://m.app.example.com";
 
   ArchivableCredential* credentialAffiliatedRealm =
-      [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                 favicon:nil
-                                    validationIdentifier:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
 
   EXPECT_NSEQ(@"app.example.com", credentialAffiliatedRealm.serviceName);
   EXPECT_NSEQ(@"https://m.app.example.com",
@@ -102,9 +93,7 @@ TEST_F(ArchivableCredentialPasswordFormTest, BlockedCreation) {
   form.blocked_by_user = true;
 
   ArchivableCredential* credential =
-      [[ArchivableCredential alloc] initWithPasswordForm:form
-                                                 favicon:nil
-                                    validationIdentifier:nil];
+      [[ArchivableCredential alloc] initWithPasswordForm:form favicon:nil];
 
   EXPECT_FALSE(credential);
 }
@@ -124,7 +113,6 @@ TEST_F(ArchivableCredentialPasswordFormTest, PasswordFormFromCredential) {
                                   serviceIdentifier:url
                                         serviceName:nil
                                                user:username
-                               validationIdentifier:nil
                                                note:nil];
   EXPECT_TRUE(credential);
 
@@ -143,7 +131,6 @@ TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
   NSString* username = @"username_value";
   NSString* favicon = @"favicon_value";
   NSString* keychainIdentifier = @"keychain_identifier_value";
-  NSString* validationIdentifier = @"validation_identifier_value";
   NSString* url = @"http://m.alpha.example.com/path/and?args=8";
 
   PasswordForm passwordForm;
@@ -155,14 +142,12 @@ TEST_F(ArchivableCredentialPasswordFormTest, CreationWithMobileURL) {
   passwordForm.url = GURL(base::SysNSStringToUTF16(url));
   ArchivableCredential* credential =
       [[ArchivableCredential alloc] initWithPasswordForm:passwordForm
-                                                 favicon:favicon
-                                    validationIdentifier:validationIdentifier];
+                                                 favicon:favicon];
 
   EXPECT_TRUE(credential);
   EXPECT_EQ(passwordForm.times_used_in_html_form, credential.rank);
   EXPECT_NSEQ(username, credential.user);
   EXPECT_NSEQ(favicon, credential.favicon);
-  EXPECT_NSEQ(validationIdentifier, credential.validationIdentifier);
   EXPECT_NSEQ(keychainIdentifier, credential.keychainIdentifier);
   EXPECT_NSEQ(@"alpha.example.com", credential.serviceName);
   EXPECT_NSEQ(@"http://m.alpha.example.com/path/and?args=8|"

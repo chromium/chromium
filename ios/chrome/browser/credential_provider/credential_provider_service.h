@@ -91,7 +91,7 @@ class CredentialProviderService
       MemoryCredentialStore* store,
       std::vector<std::unique_ptr<password_manager::PasswordForm>> forms);
 
-  // Syncs account_id_.
+  // Syncs account id for validation.
   void UpdateAccountId();
 
   // Syncs the current logged in user's email to the extension if they are
@@ -171,9 +171,6 @@ class CredentialProviderService
   // The interface for saving and updating credentials. Stores deduplicated
   // results from `profile_password_store_` and `account_password_store_`.
   const id<MutableCredentialStore> dual_credential_store_;
-
-  // The current validation ID or nil.
-  NSString* account_id_ = nil;
 
   // The preference associated with
   // password_manager::prefs::kCredentialsEnableService.

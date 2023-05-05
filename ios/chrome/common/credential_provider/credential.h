@@ -33,9 +33,6 @@
 // Username of the service.
 @property(nonatomic, readonly) NSString* user;
 
-// ID to validate the credential before providing it to the system.
-@property(nonatomic, readonly) NSString* validationIdentifier;
-
 // Attached note to the credential.
 @property(nonatomic, readonly) NSString* note;
 

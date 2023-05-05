@@ -18,7 +18,6 @@ NSString* const kACRecordIdentifierKey = @"recordIdentifier";
 NSString* const kACServiceIdentifierKey = @"serviceIdentifier";
 NSString* const kACServiceNameKey = @"serviceName";
 NSString* const kACUserKey = @"user";
-NSString* const kACValidationIdentifierKey = @"validationIdentifier";
 NSString* const kNoteKey = @"note";
 
 }  // namespace
@@ -32,7 +31,6 @@ NSString* const kNoteKey = @"note";
 @synthesize serviceIdentifier = _serviceIdentifier;
 @synthesize serviceName = _serviceName;
 @synthesize user = _user;
-@synthesize validationIdentifier = _validationIdentifier;
 @synthesize note = _note;
 
 - (instancetype)initWithFavicon:(NSString*)favicon
@@ -42,7 +40,6 @@ NSString* const kNoteKey = @"note";
               serviceIdentifier:(NSString*)serviceIdentifier
                     serviceName:(NSString*)serviceName
                            user:(NSString*)user
-           validationIdentifier:(NSString*)validationIdentifier
                            note:(NSString*)note {
   self = [super init];
   if (self) {
@@ -53,7 +50,6 @@ NSString* const kNoteKey = @"note";
     _serviceIdentifier = serviceIdentifier;
     _serviceName = serviceName;
     _user = user;
-    _validationIdentifier = validationIdentifier;
     _note = note;
   }
   return self;
@@ -77,8 +73,6 @@ NSString* const kNoteKey = @"note";
                isEqualToString:otherCredential.serviceIdentifier] &&
            [self.serviceName isEqualToString:otherCredential.serviceName] &&
            [self.user isEqualToString:otherCredential.user] &&
-           [self.validationIdentifier
-               isEqualToString:otherCredential.validationIdentifier] &&
            [self.note isEqualToString:otherCredential.note];
   }
 }
@@ -102,22 +96,19 @@ NSString* const kNoteKey = @"note";
   [coder encodeObject:self.serviceIdentifier forKey:kACServiceIdentifierKey];
   [coder encodeObject:self.serviceName forKey:kACServiceNameKey];
   [coder encodeObject:self.user forKey:kACUserKey];
-  [coder encodeObject:self.validationIdentifier
-               forKey:kACValidationIdentifierKey];
   [coder encodeObject:self.note forKey:kNoteKey];
 }
 
 - (instancetype)initWithCoder:(NSCoder*)coder {
-  return [self
-           initWithFavicon:[coder decodeObjectForKey:kACFaviconKey]
-        keychainIdentifier:[coder decodeObjectForKey:kACKeychainIdentifierKey]
-                      rank:[coder decodeInt64ForKey:kACRankKey]
-          recordIdentifier:[coder decodeObjectForKey:kACRecordIdentifierKey]
-         serviceIdentifier:[coder decodeObjectForKey:kACServiceIdentifierKey]
-               serviceName:[coder decodeObjectForKey:kACServiceNameKey]
-                      user:[coder decodeObjectForKey:kACUserKey]
-      validationIdentifier:[coder decodeObjectForKey:kACValidationIdentifierKey]
-                      note:[coder decodeObjectForKey:kNoteKey]];
+  return
+      [self initWithFavicon:[coder decodeObjectForKey:kACFaviconKey]
+          keychainIdentifier:[coder decodeObjectForKey:kACKeychainIdentifierKey]
+                        rank:[coder decodeInt64ForKey:kACRankKey]
+            recordIdentifier:[coder decodeObjectForKey:kACRecordIdentifierKey]
+           serviceIdentifier:[coder decodeObjectForKey:kACServiceIdentifierKey]
+                 serviceName:[coder decodeObjectForKey:kACServiceNameKey]
+                        user:[coder decodeObjectForKey:kACUserKey]
+                        note:[coder decodeObjectForKey:kNoteKey]];
 }
 
 @end

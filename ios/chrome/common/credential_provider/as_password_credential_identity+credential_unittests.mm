@@ -27,7 +27,6 @@ TEST_F(ASPasswordCredentialIdentity_CredentialTest, create) {
                                   serviceIdentifier:@"serviceIdentifier"
                                         serviceName:@"serviceName"
                                                user:@"user"
-                               validationIdentifier:@"validationIdentifier"
                                                note:@"note"];
   ASPasswordCredentialIdentity* credentialIdentity =
       [[ASPasswordCredentialIdentity alloc] initWithCredential:credential];
