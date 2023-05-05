@@ -170,40 +170,6 @@ class PowerButtonMenuDelegate : public ui::SimpleMenuModel {
 
   gfx::FontList font_list_;
 };
-
-// The power button container which contains 2 icons: a power icon and an arrow
-// down icon.
-class PowerButtonContainer : public views::Button {
- public:
-  explicit PowerButtonContainer(PressedCallback callback) : Button(callback) {
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
-    layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-
-    auto* power_icon = AddChildView(std::make_unique<views::ImageView>());
-    power_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kUnifiedMenuPowerIcon, cros_tokens::kCrosSysOnSurface));
-    power_icon->SetImageSize(kIconSize);
-    auto* arrow_icon = AddChildView(std::make_unique<views::ImageView>());
-    arrow_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kChevronDownSmallIcon, cros_tokens::kCrosSysOnSurface));
-    arrow_icon->SetImageSize(kIconSize);
-
-    SetBorder(views::CreateEmptyBorder(gfx::Insets(6)));
-
-    // Paints this view to a layer so it will be on top of the
-    // `background_view_`
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-
-    SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
-    SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
-  }
-  PowerButtonContainer(const PowerButtonContainer&) = delete;
-  PowerButtonContainer& operator=(const PowerButtonContainer&) = delete;
-  ~PowerButtonContainer() override = default;
-};
-
 }  // namespace
 
 class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
@@ -369,6 +335,42 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   raw_ptr<PowerButton, ExperimentalAsh> power_button_ = nullptr;
 };
 
+PowerButtonContainer::PowerButtonContainer(PressedCallback callback)
+    : Button(callback) {
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
+  layout->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+
+  power_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  power_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kUnifiedMenuPowerIcon, cros_tokens::kCrosSysOnSurface));
+  power_icon_->SetImageSize(kIconSize);
+  arrow_icon_ = AddChildView(std::make_unique<views::ImageView>());
+  arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kChevronDownSmallIcon, cros_tokens::kCrosSysOnSurface));
+  arrow_icon_->SetImageSize(kIconSize);
+
+  SetBorder(views::CreateEmptyBorder(gfx::Insets(6)));
+
+  // Paints this view to a layer so it will be on top of the
+  // `background_view_`
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_POWER_MENU));
+}
+
+PowerButtonContainer::~PowerButtonContainer() = default;
+
+void PowerButtonContainer::UpdateIconColor(bool is_active) {
+  auto icon_color_id = is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                                 : cros_tokens::kCrosSysOnSurface;
+  power_icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(kUnifiedMenuPowerIcon, icon_color_id));
+  arrow_icon_->SetImage(
+      ui::ImageModel::FromVectorIcon(kChevronDownSmallIcon, icon_color_id));
+}
+
 PowerButton::PowerButton(UnifiedSystemTrayController* tray_controller)
     : background_view_(AddChildView(std::make_unique<View>())),
       button_content_(AddChildView(std::make_unique<PowerButtonContainer>(
@@ -432,6 +434,7 @@ void PowerButton::UpdateView() {
     focus_ring->InvalidateLayout();
     focus_ring->SchedulePaint();
   }
+  button_content_->UpdateIconColor(/*is_active*/ IsMenuShowing());
 }
 
 void PowerButton::UpdateRoundedCorners() {

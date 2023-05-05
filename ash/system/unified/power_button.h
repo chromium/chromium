@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
 namespace ui {
@@ -16,12 +17,30 @@ class Event;
 }  // namespace ui
 
 namespace views {
+class ImageView;
 class MenuItemView;
 }  // namespace views
 
 namespace ash {
 
 class UnifiedSystemTrayController;
+
+// The power button container which contains 2 icons: a power icon and an
+// arrow down icon.
+class PowerButtonContainer : public views::Button {
+ public:
+  explicit PowerButtonContainer(PressedCallback callback);
+  PowerButtonContainer(const PowerButtonContainer&) = delete;
+  PowerButtonContainer& operator=(const PowerButtonContainer&) = delete;
+  ~PowerButtonContainer() override;
+
+  void UpdateIconColor(bool is_active);
+
+ private:
+  // Owned by views hierarchy.
+  raw_ptr<views::ImageView, ExperimentalAsh> power_icon_ = nullptr;
+  raw_ptr<views::ImageView, ExperimentalAsh> arrow_icon_ = nullptr;
+};
 
 // The power button that lives in the `QuickSettingsView` footer. The
 // `background_view_` will change its corner radii and a power button
@@ -39,7 +58,7 @@ class ASH_EXPORT PowerButton : public views::View {
   // Getter of the `MenuItemView` for testing.
   views::MenuItemView* GetMenuViewForTesting();
 
-  views::View* button_content_for_testing() { return button_content_; }
+  PowerButtonContainer* button_content_for_testing() { return button_content_; }
 
  private:
   friend class PowerButtonPixelTest;
@@ -67,7 +86,7 @@ class ASH_EXPORT PowerButton : public views::View {
 
   // Owned by views hierarchy.
   raw_ptr<views::View, ExperimentalAsh> background_view_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> button_content_ = nullptr;
+  raw_ptr<PowerButtonContainer, ExperimentalAsh> button_content_ = nullptr;
 
   // The context menu, which will be set as the controller to show the power
   // button menu view.
