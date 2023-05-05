@@ -561,7 +561,7 @@ crbug.com/angleproject/5221 [ mac passthrough angle-opengl intel ] deqp/function
 
 ## Mac / M1 / OpenGL ##
 
-crbug.com/angleproject/5223 [ angle-opengl apple-apple-m1 mac-arm64 monterey no-asan oop-c passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
+crbug.com/angleproject/5223 [ angle-opengl apple-apple-m1 mac mac-arm64 no-asan oop-c passthrough ] conformance2/textures/misc/tex-mipmap-levels.html [ Failure ]
 crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_00.html [ Failure ]
 crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_02.html [ Failure ]
 crbug.com/1130112 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/texturefiltering/cube_combinations_04.html [ Failure ]
