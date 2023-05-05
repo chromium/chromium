@@ -16,6 +16,7 @@
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -52,8 +53,15 @@ HeaderModificationDelegateImpl::~HeaderModificationDelegateImpl() = default;
 
 bool HeaderModificationDelegateImpl::ShouldInterceptNavigation(
     content::WebContents* contents) {
-  if (profile_->IsOffTheRecord())
+  if (profile_->IsOffTheRecord()) {
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    if (!switches::IsBoundSessionCredentialsEnabled()) {
+      return false;
+    }
+#else
     return false;
+#endif
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (ShouldIgnoreGuestWebViewRequest(contents))
@@ -67,6 +75,17 @@ void HeaderModificationDelegateImpl::ProcessRequest(
     ChromeRequestAdapter* request_adapter,
     const GURL& redirect_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (profile_->IsOffTheRecord()) {
+    // We expect seeing traffic from OTR profiles only if the feature is
+    // enabled.
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    CHECK(switches::IsBoundSessionCredentialsEnabled());
+#else
+    CHECK(false);
+#endif
+    return;
+  }
+
   const PrefService* prefs = profile_->GetPrefs();
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   syncer::SyncService* sync_service =
@@ -122,6 +141,17 @@ void HeaderModificationDelegateImpl::ProcessResponse(
     ResponseAdapter* response_adapter,
     const GURL& redirect_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (profile_->IsOffTheRecord()) {
+    // We expect seeing traffic from OTR profiles only if the feature is
+    // enabled.
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+    CHECK(switches::IsBoundSessionCredentialsEnabled());
+#else
+    CHECK(false);
+#endif
+    return;
+  }
+
   ProcessAccountConsistencyResponseHeaders(response_adapter, redirect_url,
                                            profile_->IsOffTheRecord());
 }
