@@ -72,6 +72,11 @@ declare_args() {
   # it is the regular toolchain, but when that toolchain has sanitizers, then
   # this variable is changed to avoid them.
   host_toolchain_no_sanitizers = host_toolchain
+
+  # Force-enable `--color=always` for rustc, even when it would be disabled for
+  # a platform. Mostly applicable to Windows, where new versions can handle ANSI
+  # escape sequences but it's not reliable in general.
+  force_rustc_color_output = false
 }
 
 # Use a separate declare_args so these variables' defaults can depend on the
