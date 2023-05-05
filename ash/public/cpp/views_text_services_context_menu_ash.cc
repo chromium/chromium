@@ -77,7 +77,7 @@ bool ViewsTextServicesContextMenuAsh::IsCommandIdChecked(int command_id) const {
 
 bool ViewsTextServicesContextMenuAsh::IsCommandIdEnabled(int command_id) const {
   if (command_id == IDS_APP_SHOW_CLIPBOARD_HISTORY) {
-    return ClipboardHistoryController::Get()->CanShowMenu();
+    return ClipboardHistoryController::Get()->HasAvailableHistoryItems();
   }
 
   return ViewsTextServicesContextMenuBase::IsCommandIdEnabled(command_id);

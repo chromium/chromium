@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/session/session_controller_impl.h"
@@ -20,6 +21,7 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -55,6 +57,22 @@ void FlushMessageLoop() {
       FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
+
+// A mocked clipboard history controller observer.
+class MockObserver : public ClipboardHistoryController::Observer {
+ public:
+  MockObserver() {
+    scoped_observation_.Observe(ClipboardHistoryController::Get());
+  }
+
+  // ClipboardHistoryController::Observer:
+  MOCK_METHOD(void, OnClipboardHistoryItemsUpdated, (), (override));
+
+ private:
+  base::ScopedObservation<ClipboardHistoryController,
+                          ClipboardHistoryController::Observer>
+      scoped_observation_{this};
+};
 
 class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
  public:
@@ -278,6 +296,91 @@ TEST_F(ClipboardHistoryControllerTest, LockedScreenImage) {
   ExpectHistoryItemImageMatchesBitmap(result[0], test_bitmap);
 
   TestEnteringLockScreen();
+}
+
+using ClipboardHistoryControllerObserverTest = ClipboardHistoryControllerTest;
+
+// Verifies that clipboard history controller notifies observers of clipboard
+// history item updates as expected when adding or removing items.
+TEST_F(ClipboardHistoryControllerObserverTest, AddAndRemoveItem) {
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated).Times(3);
+  WriteTextToClipboardAndConfirm(u"A");
+  WriteTextToClipboardAndConfirm(u"B");
+  ClipboardHistoryController::Get()->DeleteClipboardItemById(
+      GetHistoryValues()[0].id().ToString());
+  GetClipboardHistoryController()->FireItemUpdateNotificationTimerForTest();
+}
+
+// Verifies that clipboard history controller notifies observers once when
+// clipboard history item addition causes overflow.
+TEST_F(ClipboardHistoryControllerObserverTest, Overflow) {
+  // Add five items to reach the clipboard history size limit.
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated).Times(5);
+  WriteTextToClipboardAndConfirm(u"A");
+  WriteTextToClipboardAndConfirm(u"B");
+  WriteTextToClipboardAndConfirm(u"C");
+  WriteTextToClipboardAndConfirm(u"D");
+  WriteTextToClipboardAndConfirm(u"E");
+  EXPECT_EQ(GetHistoryValues().size(),
+            static_cast<size_t>(clipboard_history_util::kMaxClipboardItems));
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Notify `mock_observer` once when item addition causes overflow.
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated);
+  WriteTextToClipboardAndConfirm(u"F");
+  EXPECT_EQ(GetHistoryValues().size(),
+            static_cast<size_t>(clipboard_history_util::kMaxClipboardItems));
+}
+
+TEST_F(ClipboardHistoryControllerObserverTest,
+       ChangeSessionStateWithEmptyHistory) {
+  // Clipboard history is empty. Therefore, the clipboard history controller
+  // should not notify observers when the session state changes.
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated).Times(0);
+  TestSessionControllerClient* test_session_client =
+      GetSessionControllerClient();
+  test_session_client->SetSessionState(session_manager::SessionState::LOCKED);
+  test_session_client->FlushForTest();
+  test_session_client->SetSessionState(session_manager::SessionState::ACTIVE);
+  test_session_client->FlushForTest();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Notify `mock_observer` when a new clipboard history item arrives.
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated);
+  WriteTextToClipboardAndConfirm(u"A");
+}
+
+TEST_F(ClipboardHistoryControllerObserverTest,
+       ChangeSessionStateWithNonEmptyHistory) {
+  // Notify `mock_observer` once when adding a clipboard history item.
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated);
+  WriteTextToClipboardAndConfirm(u"A");
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Notify `mock_observer` once when clipboard history becomes disabled.
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated);
+  TestSessionControllerClient* test_session_client =
+      GetSessionControllerClient();
+  test_session_client->SetSessionState(session_manager::SessionState::LOCKED);
+  test_session_client->FlushForTest();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Do not notify `mock_observer` when switching to another session state where
+  // clipboard history is still disabled.
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated).Times(0);
+  test_session_client->SetSessionState(
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);
+  test_session_client->FlushForTest();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Notify `mock_observer` once when clipboard history becomes enabled.
+  EXPECT_CALL(mock_observer, OnClipboardHistoryItemsUpdated);
+  test_session_client->SetSessionState(session_manager::SessionState::ACTIVE);
+  test_session_client->FlushForTest();
 }
 
 class ClipboardHistoryControllerWithTextfieldTest

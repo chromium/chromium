@@ -257,7 +257,8 @@ class ClipboardHistoryControllerImpl::AcceleratorTarget
   }
 
   bool CanHandleAccelerators() const override {
-    return controller_->IsMenuShowing() || controller_->CanShowMenu();
+    return controller_->IsMenuShowing() ||
+           controller_->HasAvailableHistoryItems();
   }
 
   void HandleDeleteSelected(int event_flags) {
@@ -322,9 +323,11 @@ ClipboardHistoryControllerImpl::ClipboardHistoryControllerImpl()
       menu_delegate_(std::make_unique<MenuDelegate>(this)) {
   clipboard_history_->AddObserver(this);
   resource_manager_->AddObserver(this);
+  SessionController::Get()->AddObserver(this);
 }
 
 ClipboardHistoryControllerImpl::~ClipboardHistoryControllerImpl() {
+  SessionController::Get()->RemoveObserver(this);
   resource_manager_->RemoveObserver(this);
   clipboard_history_->RemoveObserver(this);
 }
@@ -402,8 +405,9 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
     ui::MenuSourceType source_type,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source,
     OnMenuClosingCallback callback) {
-  if (IsMenuShowing() || !CanShowMenu())
+  if (IsMenuShowing() || !HasAvailableHistoryItems()) {
     return false;
+  }
 
   // Close the running context menu, if any, before showing the clipboard
   // history menu.
@@ -460,6 +464,14 @@ bool ClipboardHistoryControllerImpl::ShowMenu(
     observer.OnClipboardHistoryMenuShown(show_source);
   }
   return true;
+}
+
+bool ClipboardHistoryControllerImpl::IsEmpty() const {
+  return clipboard_history_->IsEmpty();
+}
+
+void ClipboardHistoryControllerImpl::FireItemUpdateNotificationTimerForTest() {
+  item_update_notification_timer_.FireNow();
 }
 
 void ClipboardHistoryControllerImpl::GetHistoryValues(
@@ -527,12 +539,8 @@ void ClipboardHistoryControllerImpl::OnScreenshotNotificationCreated() {
   nudge_controller_->MarkScreenshotNotificationShown();
 }
 
-bool ClipboardHistoryControllerImpl::CanShowMenu() const {
-  return !IsEmpty() && clipboard_history_util::IsEnabledInCurrentMode();
-}
-
-bool ClipboardHistoryControllerImpl::IsEmpty() const {
-  return clipboard_history_->IsEmpty();
+bool ClipboardHistoryControllerImpl::HasAvailableHistoryItems() const {
+  return clipboard_history_util::IsEnabledInCurrentMode() && !IsEmpty();
 }
 
 std::unique_ptr<ScopedClipboardHistoryPause>
@@ -602,8 +610,10 @@ void ClipboardHistoryControllerImpl::GetHistoryValuesWithEncodedPNGs(
 std::vector<std::string> ClipboardHistoryControllerImpl::GetHistoryItemIds()
     const {
   std::vector<std::string> item_ids;
-  for (const auto& item : history()->GetItems()) {
-    item_ids.push_back(item.id().ToString());
+  if (HasAvailableHistoryItems()) {
+    for (const auto& item : history()->GetItems()) {
+      item_ids.push_back(item.id().ToString());
+    }
   }
   return item_ids;
 }
@@ -650,16 +660,12 @@ bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
 void ClipboardHistoryControllerImpl::OnClipboardHistoryItemAdded(
     const ClipboardHistoryItem& item,
     bool is_duplicate) {
-  for (auto& observer : observers_) {
-    observer.OnClipboardHistoryItemsUpdated();
-  }
+  PostItemUpdateNotificationTask();
 }
 
 void ClipboardHistoryControllerImpl::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
-  for (auto& observer : observers_) {
-    observer.OnClipboardHistoryItemsUpdated();
-  }
+  PostItemUpdateNotificationTask();
 }
 
 void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
@@ -754,9 +760,7 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
 
 void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
     const std::vector<base::UnguessableToken>& menu_item_ids) {
-  for (auto& observer : observers_) {
-    observer.OnClipboardHistoryItemsUpdated();
-  }
+  PostItemUpdateNotificationTask();
 }
 
 void ClipboardHistoryControllerImpl::OnWidgetClosing(views::Widget* widget) {
@@ -766,6 +770,46 @@ void ClipboardHistoryControllerImpl::OnWidgetClosing(views::Widget* widget) {
   clipboard_manager_ = nullptr;
   base::UmaHistogramTimes("Ash.ClipboardHistory.ContextMenu.UserJourneyTime",
                           base::TimeTicks::Now() - last_menu_show_time_);
+}
+
+void ClipboardHistoryControllerImpl::OnSessionStateChanged(
+    session_manager::SessionState state) {
+  PostItemUpdateNotificationTask();
+}
+
+void ClipboardHistoryControllerImpl::OnLoginStatusChanged(
+    LoginStatus login_status) {
+  PostItemUpdateNotificationTask();
+}
+
+void ClipboardHistoryControllerImpl::PostItemUpdateNotificationTask() {
+  // Uses the async task to debounce multiple clipboard history changes in
+  // short duration. Restart the timer if it is running.
+  // This is done to avoid notifying observers multiple times if there are
+  // multiple clipboard history changes in a short period. For example, if the
+  // clipboard history reaches the cache limit and a new clipboard history item
+  // arrives at the same time, there would be two clipboard history changes: the
+  // addition of the new item and the removal of an obsolete item. In this case,
+  // this class should only notify observers only once.
+  item_update_notification_timer_.Start(
+      FROM_HERE, base::TimeDelta(),
+      base::BindOnce(
+          &ClipboardHistoryControllerImpl::MaybeNotifyObserversOfItemUpdate,
+          weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ClipboardHistoryControllerImpl::MaybeNotifyObserversOfItemUpdate() {
+  const bool has_available_items = HasAvailableHistoryItems();
+  if (!has_available_items && !has_available_items_in_last_update_) {
+    // There are no available items, and there were none in the last
+    // notification either. Nothing has changed, so return early.
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnClipboardHistoryItemsUpdated();
+  }
+  has_available_items_in_last_update_ = has_available_items;
 }
 
 void ClipboardHistoryControllerImpl::ExecuteCommand(int command_id,
