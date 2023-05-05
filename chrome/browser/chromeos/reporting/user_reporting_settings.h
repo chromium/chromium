@@ -42,6 +42,10 @@ class UserReportingSettings : public ReportingSettings {
   bool GetList(const std::string& path,
                const base::Value::List** out_value) const override;
 
+  // Only bool and List are allowed, otherwise will return false.
+  bool GetReportingEnabled(const std::string& path,
+                           bool* out_value) const override;
+
  private:
   // Internal callback triggered when the setting value is updated.
   void OnPrefChanged(const std::string& path);

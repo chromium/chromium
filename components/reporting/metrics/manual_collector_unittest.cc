@@ -57,7 +57,7 @@ class ManualCollectorTest : public testing::Test {
 
 TEST_F(ManualCollectorTest, InitiallyEnabled) {
   // Initially enable settings
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   MetricData metric_data = GetMetricData();
   sampler_->SetMetricData(std::move(metric_data));
 
@@ -82,7 +82,7 @@ TEST_F(ManualCollectorTest, InitiallyEnabled) {
 
 TEST_F(ManualCollectorTest, InitiallyDisabled) {
   // Initially disable settings
-  settings_->SetBoolean(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
 
   MetricData metric_data = GetMetricData();
 
@@ -102,7 +102,7 @@ TEST_F(ManualCollectorTest, InitiallyDisabled) {
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 
   // Enable settings
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   collector.Collect(is_event_driven);
 
@@ -116,7 +116,7 @@ TEST_F(ManualCollectorTest, InitiallyDisabled) {
 }
 
 TEST_F(ManualCollectorTest, NoMetricData) {
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   sampler_->SetMetricData(absl::nullopt);
 

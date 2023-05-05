@@ -129,6 +129,11 @@ bool DeviceReportingSettingsLacros::GetBoolean(const std::string& policy_name,
   return false;
 }
 
+bool DeviceReportingSettingsLacros::GetReportingEnabled(const std::string& path,
+                                                        bool* out_value) const {
+  return GetBoolean(path, out_value);
+}
+
 bool DeviceReportingSettingsLacros::GetInteger(const std::string& policy_name,
                                                int* out_value) const {
   crosapi::mojom::DeviceSettings* const device_settings =

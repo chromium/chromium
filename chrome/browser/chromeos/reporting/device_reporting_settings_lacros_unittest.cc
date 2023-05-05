@@ -79,6 +79,10 @@ TEST_F(DeviceReportingSettingsLacrosTest, GetInvalidDeviceSetting) {
   int int_value;
   EXPECT_FALSE(device_reporting_settings_->GetInteger(
       ::policy::key::kReportDeviceNetworkStatus, &int_value));
+
+  // Cannot get reporting enabled from an integer setting.
+  EXPECT_FALSE(device_reporting_settings_->GetReportingEnabled(
+      ::policy::key::kReportUploadFrequency, &bool_value));
 }
 
 TEST_F(DeviceReportingSettingsLacrosTest, GetBoolean) {
@@ -90,6 +94,19 @@ TEST_F(DeviceReportingSettingsLacrosTest, GetBoolean) {
 
   bool value = false;
   ASSERT_TRUE(device_reporting_settings_->GetBoolean(
+      ::policy::key::kReportDeviceNetworkStatus, &value));
+  EXPECT_TRUE(value);
+}
+
+TEST_F(DeviceReportingSettingsLacrosTest, GetReportingEnabled) {
+  crosapi::mojom::DeviceSettingsPtr device_settings_ptr =
+      crosapi::mojom::DeviceSettings::New();
+  device_settings_ptr->report_device_network_status =
+      crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
+  delegate_->UpdateDeviceSettings(device_settings_ptr.get());
+
+  bool value = false;
+  ASSERT_TRUE(device_reporting_settings_->GetReportingEnabled(
       ::policy::key::kReportDeviceNetworkStatus, &value));
   EXPECT_TRUE(value);
 }

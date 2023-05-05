@@ -83,6 +83,33 @@ TEST(CrosReportingSettingsTest, GetList) {
   EXPECT_THAT(list_value->front().GetString(), Eq(kListSettingValue));
 }
 
+TEST(CrosReportingSettingsTest, GetReportingEnabled) {
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings;
+  CrosReportingSettings cros_reporting_settings;
+  bool enabled_value;
+
+  scoped_testing_cros_settings.device_settings()->SetBoolean(
+      ash::kReportDeviceNetworkStatus, true);
+  bool is_valid = cros_reporting_settings.GetReportingEnabled(
+      ash::kReportDeviceNetworkStatus, &enabled_value);
+
+  ASSERT_TRUE(is_valid);
+  EXPECT_TRUE(enabled_value);
+}
+
+TEST(CrosReportingSettingsTest, GetReportingEnabled_InvalidType) {
+  ash::ScopedTestingCrosSettings scoped_testing_cros_settings;
+  CrosReportingSettings cros_reporting_settings;
+  bool enabled_value;
+
+  scoped_testing_cros_settings.device_settings()->SetInteger(
+      ash::kReportUploadFrequency, 100);
+  bool is_valid = cros_reporting_settings.GetReportingEnabled(
+      ash::kReportUploadFrequency, &enabled_value);
+
+  ASSERT_FALSE(is_valid);
+}
+
 TEST(CrosReportingSettingsTest, AddSettingsObserver) {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings;
   CrosReportingSettings cros_reporting_settings;

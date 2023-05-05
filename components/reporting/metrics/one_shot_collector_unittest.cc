@@ -46,7 +46,7 @@ class OneShotCollectorTest : public ::testing::Test {
 };
 
 TEST_F(OneShotCollectorTest, InitiallyEnabled) {
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   MetricData metric_data;
   metric_data.mutable_telemetry_data();
@@ -61,8 +61,8 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled) {
   // Setting is initially enabled, data is being collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
-  settings_->SetBoolean(kEnableSettingPath, false);
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   // No more data should be collected even if the setting was disabled then
   // re-enabled.
@@ -77,13 +77,13 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled) {
   EXPECT_FALSE(metric_data_reported.telemetry_data().has_is_event_driven());
   EXPECT_TRUE(metric_report_queue_->IsEmpty());
 
-  settings_->SetBoolean(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
   collector.Collect(/*is_event_driven=*/true);
 
   // No new data collection, setting is disabled.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   collector.Collect(/*is_event_driven=*/true);
 
   // Number of collection calls increased by one, setting is enabled and manual
@@ -100,7 +100,7 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled) {
 
 TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
   constexpr base::TimeDelta init_delay = base::Minutes(2);
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   MetricData metric_data;
   metric_data.mutable_telemetry_data();
@@ -136,8 +136,8 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
   // Setting is initially enabled and `init_delay` elapsed, data is collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(2));
 
-  settings_->SetBoolean(kEnableSettingPath, false);
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   // No more data should be collected even if the setting was disabled then
   // re-enabled.
@@ -152,7 +152,7 @@ TEST_F(OneShotCollectorTest, InitiallyEnabled_Delayed) {
 }
 
 TEST_F(OneShotCollectorTest, NoMetricData) {
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   sampler_->SetMetricData(absl::nullopt);
 
@@ -169,7 +169,7 @@ TEST_F(OneShotCollectorTest, NoMetricData) {
 }
 
 TEST_F(OneShotCollectorTest, InitiallyDisabled) {
-  settings_->SetBoolean(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
 
   MetricData metric_data;
   metric_data.mutable_info_data();
@@ -182,13 +182,13 @@ TEST_F(OneShotCollectorTest, InitiallyDisabled) {
   // Setting is initially disabled, no data is collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
 
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   // Setting is enabled, data is being collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
-  settings_->SetBoolean(kEnableSettingPath, false);
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   // No more data should be collected even if the setting was disabled then
   // re-enabled.
@@ -204,7 +204,7 @@ TEST_F(OneShotCollectorTest, InitiallyDisabled) {
 
 TEST_F(OneShotCollectorTest, InitiallyDisabled_Delayed) {
   constexpr base::TimeDelta init_delay = base::Minutes(1);
-  settings_->SetBoolean(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
 
   MetricData metric_data;
   metric_data.mutable_info_data();
@@ -220,13 +220,13 @@ TEST_F(OneShotCollectorTest, InitiallyDisabled_Delayed) {
   // Setting is initially disabled, no data is collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(0));
 
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   // Setting is enabled, data is being collected.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 
-  settings_->SetBoolean(kEnableSettingPath, false);
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
 
   // No more data should be collected even if the setting was disabled then
   // re-enabled.

@@ -35,6 +35,11 @@ class ReportingSettings {
   virtual bool GetInteger(const std::string& path, int* out_value) const = 0;
   virtual bool GetList(const std::string& path,
                        const base::Value::List** out_value) const = 0;
+
+  // Return whether reporting is enabled or not, allowed settings types will be
+  // defined by the implementation.
+  virtual bool GetReportingEnabled(const std::string& path,
+                                   bool* out_value) const = 0;
 };
 
 }  // namespace reporting

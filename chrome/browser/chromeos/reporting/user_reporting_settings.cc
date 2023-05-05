@@ -90,6 +90,22 @@ bool UserReportingSettings::GetList(const std::string& path,
   return true;
 }
 
+bool UserReportingSettings::GetReportingEnabled(const std::string& path,
+                                                bool* out_value) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(profile_);
+
+  const base::Value::List* list_value;
+  if (GetBoolean(path, out_value)) {
+    return true;
+  } else if (GetList(path, &list_value)) {
+    *out_value = !list_value->empty();
+    return true;
+  }
+
+  return false;
+}
+
 void UserReportingSettings::OnPrefChanged(const std::string& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(settings_observers_.contains(path));

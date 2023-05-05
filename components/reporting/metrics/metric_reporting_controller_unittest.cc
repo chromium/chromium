@@ -57,7 +57,7 @@ TEST_F(MetricReportingControllerTest, InvalidPath_DefaultEnabled) {
 }
 
 TEST_F(MetricReportingControllerTest, TrustedCheck) {
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
   settings_->SetIsTrusted(false);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
@@ -74,7 +74,7 @@ TEST_F(MetricReportingControllerTest, TrustedCheck) {
 }
 
 TEST_F(MetricReportingControllerTest, InitiallyEnabled) {
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
                                        /*setting_enabled_default_value=*/false);
@@ -85,14 +85,14 @@ TEST_F(MetricReportingControllerTest, InitiallyEnabled) {
   EXPECT_EQ(disable_count_, 0);
 
   // Change to disable.
-  settings_->SetBoolean(kSettingPath, false);
+  settings_->SetReportingEnabled(kSettingPath, false);
 
   // Only disable_cb_ is called.
   EXPECT_EQ(enable_count_, 1);
   EXPECT_EQ(disable_count_, 1);
 
   // Change to enable.
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
 
   // Only enable_cb_ is called.
   EXPECT_EQ(enable_count_, 2);
@@ -100,7 +100,7 @@ TEST_F(MetricReportingControllerTest, InitiallyEnabled) {
 }
 
 TEST_F(MetricReportingControllerTest, InitiallyDisabled) {
-  settings_->SetBoolean(kSettingPath, false);
+  settings_->SetReportingEnabled(kSettingPath, false);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
                                        /*setting_enabled_default_value=*/false);
@@ -111,14 +111,14 @@ TEST_F(MetricReportingControllerTest, InitiallyDisabled) {
   EXPECT_EQ(disable_count_, 0);
 
   // Change to enable.
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
 
   // Only enable_cb_ is called.
   EXPECT_EQ(enable_count_, 1);
   EXPECT_EQ(disable_count_, 0);
 
   // Change to disable.
-  settings_->SetBoolean(kSettingPath, false);
+  settings_->SetReportingEnabled(kSettingPath, false);
 
   // Only disable_cb_ is called.
   EXPECT_EQ(enable_count_, 1);
@@ -126,13 +126,13 @@ TEST_F(MetricReportingControllerTest, InitiallyDisabled) {
 }
 
 TEST_F(MetricReportingControllerTest, SetCallbackAfterEnable) {
-  settings_->SetBoolean(kSettingPath, false);
+  settings_->SetReportingEnabled(kSettingPath, false);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
                                        /*setting_enabled_default_value=*/false);
 
   // Change to enable.
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
 
   controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
@@ -141,7 +141,7 @@ TEST_F(MetricReportingControllerTest, SetCallbackAfterEnable) {
   EXPECT_EQ(disable_count_, 0);
 
   // Change to disable.
-  settings_->SetBoolean(kSettingPath, false);
+  settings_->SetReportingEnabled(kSettingPath, false);
 
   // Only disable_cb_ is called.
   EXPECT_EQ(enable_count_, 1);
@@ -149,13 +149,13 @@ TEST_F(MetricReportingControllerTest, SetCallbackAfterEnable) {
 }
 
 TEST_F(MetricReportingControllerTest, SetCallbackAfterDisable) {
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
 
   MetricReportingController controller(settings_.get(), kSettingPath,
                                        /*setting_enabled_default_value=*/false);
 
   // Change to disable.
-  settings_->SetBoolean(kSettingPath, false);
+  settings_->SetReportingEnabled(kSettingPath, false);
 
   controller.SetSettingUpdateCb(std::move(enable_cb_), std::move(disable_cb_));
 
@@ -164,7 +164,7 @@ TEST_F(MetricReportingControllerTest, SetCallbackAfterDisable) {
   EXPECT_EQ(disable_count_, 0);
 
   // Change to enable.
-  settings_->SetBoolean(kSettingPath, true);
+  settings_->SetReportingEnabled(kSettingPath, true);
 
   // Only enable_cb_ is called.
   EXPECT_EQ(enable_count_, 1);

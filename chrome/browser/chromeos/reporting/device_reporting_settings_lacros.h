@@ -76,6 +76,9 @@ class DeviceReportingSettingsLacros : public ReportingSettings,
                   int* out_value) const override;
   bool GetList(const std::string& policy_name,
                const base::Value::List** out_value) const override;
+  // Only bool settings are allowed.
+  bool GetReportingEnabled(const std::string& path,
+                           bool* out_value) const override;
 
  private:
   explicit DeviceReportingSettingsLacros(std::unique_ptr<Delegate> delegate);

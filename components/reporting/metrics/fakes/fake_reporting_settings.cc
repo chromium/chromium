@@ -59,6 +59,15 @@ bool FakeReportingSettings::GetList(const std::string& path,
   return true;
 }
 
+bool FakeReportingSettings::GetReportingEnabled(const std::string& path,
+                                                bool* out_value) const {
+  if (!base::Contains(reporting_enabled_map_, path)) {
+    return false;
+  }
+  *out_value = reporting_enabled_map_.at(path);
+  return true;
+}
+
 void FakeReportingSettings::SetBoolean(const std::string& path,
                                        bool bool_value) {
   bool_map_[path] = bool_value;
@@ -78,6 +87,14 @@ void FakeReportingSettings::SetList(const std::string& path,
                                     const base::Value::List& list_value) {
   const auto& [_, placed] = list_map_.emplace(path, list_value.Clone());
   DCHECK(placed);
+  if (base::Contains(settings_callbacks_map_, path)) {
+    settings_callbacks_map_.at(path)->Notify();
+  }
+}
+
+void FakeReportingSettings::SetReportingEnabled(const std::string& path,
+                                                bool enabled_value) {
+  reporting_enabled_map_[path] = enabled_value;
   if (base::Contains(settings_callbacks_map_, path)) {
     settings_callbacks_map_.at(path)->Notify();
   }

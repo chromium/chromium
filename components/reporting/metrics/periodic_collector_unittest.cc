@@ -47,7 +47,7 @@ class PeriodicCollectorTest : public ::testing::Test {
 };
 
 TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data_list[5];
@@ -84,12 +84,12 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
   }
 
   sampler_->SetMetricData(metric_data_list[3]);
-  settings_->SetBoolean(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
   // Setting disabled, no data should be collected.
   task_environment_.FastForwardBy(interval);
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
 
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   // Initial collection at policy enablement.
   ++expected_collect_calls;
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(expected_collect_calls));
@@ -120,7 +120,7 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled) {
 TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
   constexpr base::TimeDelta init_delay = base::Minutes(1);
 
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data;
@@ -169,7 +169,7 @@ TEST_F(PeriodicCollectorTest, InitiallyEnabled_Delayed) {
 }
 
 TEST_F(PeriodicCollectorTest, NoMetricData) {
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   sampler_->SetMetricData(absl::nullopt);
@@ -187,7 +187,7 @@ TEST_F(PeriodicCollectorTest, NoMetricData) {
 }
 
 TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
-  settings_->SetBoolean(kEnableSettingPath, false);
+  settings_->SetReportingEnabled(kEnableSettingPath, false);
   settings_->SetInteger(kRateSettingPath, interval.InMilliseconds());
 
   MetricData metric_data;
@@ -209,7 +209,7 @@ TEST_F(PeriodicCollectorTest, InitiallyDisabled) {
   // Manual collection is triggered but reporting is disabled.
   EXPECT_EQ(sampler_->GetNumCollectCalls(), 0);
 
-  settings_->SetBoolean(kEnableSettingPath, true);
+  settings_->SetReportingEnabled(kEnableSettingPath, true);
   // One initial collection at policy enablement.
   EXPECT_THAT(sampler_->GetNumCollectCalls(), Eq(1));
 

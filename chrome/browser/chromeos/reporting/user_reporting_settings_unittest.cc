@@ -50,6 +50,8 @@ TEST_F(UserReportingSettingsTest, InvalidIntegerPrefPath) {
   bool out_bool_value;
   ASSERT_FALSE(
       user_reporting_settings_->GetBoolean(kSettingPath, &out_bool_value));
+  ASSERT_FALSE(user_reporting_settings_->GetReportingEnabled(kSettingPath,
+                                                             &out_bool_value));
   const base::Value::List* out_list_value = nullptr;
   ASSERT_FALSE(
       user_reporting_settings_->GetList(kSettingPath, &out_list_value));
@@ -110,6 +112,20 @@ TEST_F(UserReportingSettingsTest, GetBoolean) {
   EXPECT_TRUE(out_value);
 }
 
+TEST_F(UserReportingSettingsTest, GetReportingEnabled_Boolean) {
+  profile_->GetTestingPrefService()->registry()->RegisterBooleanPref(
+      kSettingPath, /*default_value=*/false);
+  bool out_value = true;
+  ASSERT_TRUE(
+      user_reporting_settings_->GetReportingEnabled(kSettingPath, &out_value));
+  EXPECT_FALSE(out_value);
+
+  // Update setting value and ensure the next fetch returns the updated value.
+  profile_->GetPrefs()->SetBoolean(kSettingPath, true);
+  ASSERT_TRUE(user_reporting_settings_->GetBoolean(kSettingPath, &out_value));
+  EXPECT_TRUE(out_value);
+}
+
 TEST_F(UserReportingSettingsTest, GetInteger) {
   profile_->GetTestingPrefService()->registry()->RegisterIntegerPref(
       kSettingPath, /*default_value=*/0);
@@ -141,6 +157,24 @@ TEST_F(UserReportingSettingsTest, GetList) {
   ASSERT_THAT(out_value, NotNull());
   ASSERT_THAT(out_value->size(), Eq(1uL));
   EXPECT_THAT(out_value->front().GetString(), Eq(kListSettingItem));
+}
+
+TEST_F(UserReportingSettingsTest, GetReportingEnabled_List) {
+  profile_->GetTestingPrefService()->registry()->RegisterListPref(
+      kSettingPath, /*default_value=*/base::Value::List());
+  bool out_value = true;
+  ASSERT_TRUE(
+      user_reporting_settings_->GetReportingEnabled(kSettingPath, &out_value));
+  EXPECT_FALSE(out_value);
+
+  // Update setting value and ensure the next fetch returns the updated value.
+  static constexpr char kListSettingItem[] = "item";
+  base::Value::List new_value;
+  new_value.Append(kListSettingItem);
+  profile_->GetPrefs()->SetList(kSettingPath, std::move(new_value));
+  ASSERT_TRUE(
+      user_reporting_settings_->GetReportingEnabled(kSettingPath, &out_value));
+  EXPECT_TRUE(out_value);
 }
 
 TEST_F(UserReportingSettingsTest, ObserveBooleanSetting) {
