@@ -49,10 +49,10 @@ suite('<settings-per-device-pointing-stick>', function() {
           const name =
               subsections[i]!.shadowRoot!.querySelector('h2')!.textContent;
           if (fakePointingSticks[i]!.isExternal) {
-            assertEquals(fakePointingSticks[i]!.name, name);
+            assertEquals(fakePointingSticks[i]!.name, name!.trim());
           } else {
             assertTrue(subsections[i]!.i18nExists('builtInPointingStickName'));
-            assertEquals('Built-in TrackPoint', name);
+            assertEquals('Built-in TrackPoint', name!.trim());
           }
         }
       });

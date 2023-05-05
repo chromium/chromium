@@ -20,7 +20,7 @@
   padding-inline-start: 0;
 }
 
-.device-name {
+.subsection-header {
   height: 24px;
   padding-inline-start: var(--cr-section-padding);
   padding-top: 12px;
