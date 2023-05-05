@@ -6788,13 +6788,6 @@ crbug.com/1426534 wpt_internal/content-security-policy/reporting-api/reporting-a
 [ Debug Mac12 ] virtual/threaded-preload-scanner/external/wpt/html/semantics/scripting-1/the-script-element/moving-between-documents/ordering/delay-load-event-2.html [ Failure ]
 [ Debug Mac12 ] virtual/unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure ]
 
-# Temporarily disabled to land addition of Bounce Tracking Mitigations DevTools Panel
-crbug.com/1432303 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Failure Pass ]
-crbug.com/1432303 http/tests/devtools/application-panel/resources-panel-on-navigation.js [ Failure Pass ]
-crbug.com/1432303 http/tests/devtools/application-panel/resources-panel-resource-preview.js [ Failure Pass ]
-crbug.com/1432303 http/tests/devtools/application-panel/resources-panel-selection-on-reload.js [ Failure Pass ]
-crbug.com/1432303 http/tests/devtools/application-panel/resources-panel-websql.js [ Failure Pass ]
-
 # Sheriff 2023-05-01
 crbug.com/1432145 [ Mac10.14 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Failure Pass ]
 crbug.com/1441416 [ Linux ] external/wpt/js-self-profiling/max-buffer-size.window.html [ Crash Pass ]
