@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/tabs/inactive_tabs/utils.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/browser_util.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"

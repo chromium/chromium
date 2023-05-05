@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 
 class Browser;
 @class BrowserViewController;

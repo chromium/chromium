@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/main/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 // Test double for BrowserProviderInterface implementors. All properties are
 // writeable. It behaves as follows:

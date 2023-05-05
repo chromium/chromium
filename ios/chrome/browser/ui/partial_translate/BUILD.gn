@@ -78,7 +78,7 @@ source_set("eg_app_support+eg2") {
     ":partial_translate",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/web_state_list",

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/screen_time/screen_time_coordinator.h"
 
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/screen_time/screen_time_history_deleter_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_mediator.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_view_controller.h"

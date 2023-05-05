@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"

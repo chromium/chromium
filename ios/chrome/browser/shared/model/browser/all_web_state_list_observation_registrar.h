@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_ALL_WEB_STATE_LIST_OBSERVATION_REGISTRAR_H_
-#define IOS_CHROME_BROWSER_MAIN_ALL_WEB_STATE_LIST_OBSERVATION_REGISTRAR_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_ALL_WEB_STATE_LIST_OBSERVATION_REGISTRAR_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_ALL_WEB_STATE_LIST_OBSERVATION_REGISTRAR_H_
 
 #include <memory>
 
 #include "base/scoped_multi_source_observation.h"
-#include "ios/chrome/browser/main/browser_list_observer.h"
+#include "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 
@@ -70,4 +70,4 @@ class AllWebStateListObservationRegistrar : public BrowserListObserver {
   Mode mode_;
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_ALL_WEB_STATE_LIST_OBSERVATION_REGISTRAR_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_ALL_WEB_STATE_LIST_OBSERVATION_REGISTRAR_H_

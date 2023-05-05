@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/screenshot/screenshot_delegate.h"
 
-#import "ios/chrome/browser/main/browser_provider_interface.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"

@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "third_party/abseil-cpp/absl/types/optional.h"
 
 class SceneUrlLoadingService;

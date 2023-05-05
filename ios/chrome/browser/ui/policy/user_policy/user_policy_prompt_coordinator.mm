@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/policy/user_policy/user_policy_prompt_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"

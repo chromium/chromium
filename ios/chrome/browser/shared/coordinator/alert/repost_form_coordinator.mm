@@ -10,7 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/dialogs/completion_block_util.h"
 #import "ios/web/public/web_state.h"

@@ -12,6 +12,6 @@ source_set("chrome_coordinator") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
   ]
 }

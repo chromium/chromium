@@ -10,7 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"

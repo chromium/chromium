@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace web {

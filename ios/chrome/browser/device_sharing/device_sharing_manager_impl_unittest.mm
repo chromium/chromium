@@ -11,7 +11,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_factory.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_manager_impl.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/mac/url_conversions.h"

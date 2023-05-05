@@ -13,7 +13,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
 #import "ios/chrome/browser/main/browser_web_state_list_delegate.h"
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_legacy.h"
 #import "ios/chrome/browser/url/chrome_url_constants.h"
 #import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"

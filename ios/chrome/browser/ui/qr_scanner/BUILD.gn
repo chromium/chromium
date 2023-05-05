@@ -41,10 +41,10 @@ source_set("coordinator") {
   deps = [
     ":qr_scanner",
     "//base",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_browser_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ui/scanner",
   ]

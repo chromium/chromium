@@ -24,13 +24,13 @@ source_set("price_notifications") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/commerce:shopping_service",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/prefs:pref_names",
     "//ios/chrome/browser/push_notification:push_notification_client",
     "//ios/chrome/browser/push_notification:push_notification_service",
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
@@ -50,8 +50,8 @@ source_set("price_notifications_iph") {
 
   deps = [
     "//ios/chrome/browser/commerce/price_notifications",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
   ]
 }
@@ -113,9 +113,9 @@ source_set("unit_tests") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/commerce:shopping_service",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/push_notification:push_notification_service",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",

@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/ui/open_in/open_in_mediator.h"
 
-#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/open_in/open_in_controller.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"

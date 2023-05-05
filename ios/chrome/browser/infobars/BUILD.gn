@@ -35,9 +35,9 @@ source_set("badge") {
   deps = [
     ":infobars",
     ":public",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/web_state_list",
     "//ios/web",
   ]
@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/infobars/overlays:test_support",
     "//ios/chrome/browser/infobars/test",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/ui/badges:public",
     "//ios/chrome/browser/ui/badges:util",

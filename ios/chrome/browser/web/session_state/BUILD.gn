@@ -21,7 +21,7 @@ source_set("session_state") {
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
     "//components/strings",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web:feature_flags",

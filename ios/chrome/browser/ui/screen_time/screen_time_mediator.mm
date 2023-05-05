@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/screen_time/screen_time_mediator.h"
 
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/screen_time/screen_time_consumer.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"

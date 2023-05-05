@@ -9,8 +9,8 @@
 
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
-#include "ios/chrome/browser/main/browser_observer.h"
-#include "ios/chrome/browser/main/browser_user_data.h"
+#include "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#include "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"

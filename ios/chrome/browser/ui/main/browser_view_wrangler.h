@@ -8,7 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include "ios/chrome/app/application_mode.h"
-#import "ios/chrome/browser/main/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 @protocol ApplicationCommands;
 @protocol BrowsingDataCommands;

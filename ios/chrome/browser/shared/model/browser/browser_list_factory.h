@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_FACTORY_H_
-#define IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_FACTORY_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/no_destructor.h"
@@ -38,4 +38,4 @@ class BrowserListFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_FACTORY_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_FACTORY_H_

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_WEB_WEB_NAVIGATION_BROWSER_AGENT_H_
 
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/web/common/user_agent.h"
 
 class Browser;

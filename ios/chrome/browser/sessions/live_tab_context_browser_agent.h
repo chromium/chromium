@@ -11,8 +11,8 @@
 
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sessions/core/live_tab_context.h"
-#import "ios/chrome/browser/main/browser_observer.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 
 class WebStateList;
 

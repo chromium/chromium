@@ -23,7 +23,7 @@ source_set("tangible_sync") {
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/consent_auditor",
     "//ios/chrome/browser/first_run",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements:activity_overlay",

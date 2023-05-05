@@ -6,8 +6,8 @@
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_BROWSER_OBSERVER_H_
 
 #include "base/scoped_observation.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_state_list_observer.h"
 
 // A BrowserObserver that observes the BrowserDestroyed callback.

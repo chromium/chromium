@@ -80,7 +80,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//ios/chrome/browser/bookmarks:test_support",
-    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",

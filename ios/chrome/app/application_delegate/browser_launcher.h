@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_APP_APPLICATION_DELEGATE_BROWSER_LAUNCHER_H_
 #define IOS_CHROME_APP_APPLICATION_DELEGATE_BROWSER_LAUNCHER_H_
 
-#import "ios/chrome/browser/main/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 
 // This protocol defines the startup method for the application.
 @protocol BrowserLauncher<NSObject>

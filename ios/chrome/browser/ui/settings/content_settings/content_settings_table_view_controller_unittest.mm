@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 
-#import "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/grit/ios_strings.h"

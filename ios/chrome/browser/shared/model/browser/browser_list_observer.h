@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_OBSERVER_H_
-#define IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_OBSERVER_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_OBSERVER_H_
 
 #include "base/observer_list_types.h"
 
@@ -41,4 +41,4 @@ class BrowserListObserver : public base::CheckedObserver {
   virtual void OnBrowserListShutdown(BrowserList* browser_list) {}
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_LIST_OBSERVER_H_

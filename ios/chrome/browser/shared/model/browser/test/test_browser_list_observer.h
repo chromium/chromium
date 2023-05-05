@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_TEST_BROWSER_LIST_OBSERVER_H_
-#define IOS_CHROME_BROWSER_MAIN_TEST_BROWSER_LIST_OBSERVER_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_TEST_TEST_BROWSER_LIST_OBSERVER_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_TEST_TEST_BROWSER_LIST_OBSERVER_H_
 
 #include <set>
 
-#import "ios/chrome/browser/main/browser_list_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_observer.h"
 
 class Browser;
 class BrowserList;
@@ -67,4 +67,4 @@ class TestBrowserListObserver : public BrowserListObserver {
   std::set<Browser*> last_incognito_browsers_;
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_TEST_BROWSER_LIST_OBSERVER_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_TEST_TEST_BROWSER_LIST_OBSERVER_H_

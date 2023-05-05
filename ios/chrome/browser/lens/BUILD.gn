@@ -9,8 +9,8 @@ source_set("lens") {
   ]
   deps = [
     "//components/search_engines",
-    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/search_engines:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",

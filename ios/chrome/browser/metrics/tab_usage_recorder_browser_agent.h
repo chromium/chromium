@@ -11,10 +11,10 @@
 
 #import "base/containers/circular_deque.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/main/browser_observer.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_metrics.h"
 #import "ios/chrome/browser/sessions/session_restoration_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/public/web_state_observer.h"

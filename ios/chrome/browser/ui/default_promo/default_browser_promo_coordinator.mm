@@ -12,7 +12,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/default_browser/utils.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_string_util.h"

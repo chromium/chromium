@@ -11,7 +11,7 @@
 #import "base/time/time.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/first_run/first_run_metrics.h"
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"

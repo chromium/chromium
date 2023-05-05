@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/find_bar/find_bar_mediator.h"
 
-#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_consumer.h"

@@ -4,12 +4,12 @@
 
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"

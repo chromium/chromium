@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/shared/model/browser/browser.h"
 
 class ChromeBrowserState;
 @class SceneState;

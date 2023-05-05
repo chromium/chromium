@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_OBSERVER_BRIDGE_H_
-#define IOS_CHROME_BROWSER_MAIN_BROWSER_OBSERVER_BRIDGE_H_
+#ifndef IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_OBSERVER_BRIDGE_H_
+#define IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_OBSERVER_BRIDGE_H_
 
 #include <CoreFoundation/CoreFoundation.h>
 
 #include "base/scoped_observation.h"
-#import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 
 // Protocol that corresponds to the BrowserObserver API. Allows registering
 // Objective-C objects to listen to Browser events.
@@ -38,4 +38,4 @@ class BrowserObserverBridge final : public BrowserObserver {
   base::ScopedObservation<Browser, BrowserObserver> browser_observation_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_MAIN_BROWSER_OBSERVER_BRIDGE_H_
+#endif  // IOS_CHROME_BROWSER_SHARED_MODEL_BROWSER_BROWSER_OBSERVER_BRIDGE_H_

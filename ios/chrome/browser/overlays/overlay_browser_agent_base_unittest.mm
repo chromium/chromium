@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_browser_agent_base.h"
 
-#import "ios/chrome/browser/main/browser_user_data.h"
-#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
@@ -14,6 +12,8 @@
 #import "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"

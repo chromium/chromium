@@ -7,7 +7,7 @@
 
 #import "base/scoped_multi_source_observation.h"
 #import "base/scoped_observation.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 
 class Browser;

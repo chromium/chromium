@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_TABS_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_TABS_CLOSING_WEB_STATE_OBSERVER_BROWSER_AGENT_H_
 
-#import "ios/chrome/browser/main/browser_observer.h"
-#import "ios/chrome/browser/main/browser_user_data.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 
 namespace sessions {

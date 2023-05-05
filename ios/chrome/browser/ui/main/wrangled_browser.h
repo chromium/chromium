@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/main/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 
 @class BrowserCoordinator;
 @class BrowserViewController;
