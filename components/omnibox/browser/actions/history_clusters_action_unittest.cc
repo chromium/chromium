@@ -84,7 +84,7 @@ class HistoryClustersActionTest : public testing::Test {
         /*url_loader_factory=*/nullptr,
         /*engagement_score_provider=*/nullptr,
         /*template_url_service=*/nullptr,
-        /*optimization_guide_decider=*/nullptr, &prefs_enabled_);
+        /*optimization_guide_decider=*/nullptr, /*pref_service=*/nullptr);
 
     history_clusters_service_test_api_ =
         std::make_unique<HistoryClustersServiceTestApi>(
@@ -94,11 +94,12 @@ class HistoryClustersActionTest : public testing::Test {
   }
 
   void TestAttachHistoryClustersActions(std::vector<MatchData> matches_data,
-                                        HistoryClustersService* service) {
+                                        HistoryClustersService* service,
+                                        TestingPrefServiceSimple* prefs) {
     AutocompleteResult result;
     result.AppendMatches(CreateACMatches(matches_data));
 
-    AttachHistoryClustersActions(service, result);
+    AttachHistoryClustersActions(service, prefs, result);
 
     for (size_t i = 0; i < matches_data.size(); ++i) {
       bool has_history_clusters_action =
@@ -116,12 +117,8 @@ class HistoryClustersActionTest : public testing::Test {
   }
 
   void TestAttachHistoryClustersActions(std::vector<MatchData> matches_data) {
-    TestAttachHistoryClustersActions(matches_data,
-                                     history_clusters_service_.get());
-  }
-
-  void SetHistoryClustersVisiblePref(bool value) {
-    prefs_enabled_.SetBoolean(history_clusters::prefs::kVisible, value);
+    TestAttachHistoryClustersActions(
+        matches_data, history_clusters_service_.get(), &prefs_enabled_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -141,7 +138,7 @@ class HistoryClustersActionTest : public testing::Test {
 TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   {
     SCOPED_TRACE("Shouldn't add action if history cluster service is nullptr.");
-    TestAttachHistoryClustersActions({{}}, nullptr);
+    TestAttachHistoryClustersActions({{}}, nullptr, &prefs_enabled_);
   }
 
   {
@@ -163,10 +160,11 @@ TEST_F(HistoryClustersActionTest, AttachHistoryClustersActions) {
   {
     SCOPED_TRACE("Shouldn't add action if `kVisible` pref is false.");
     SetUpWithConfig(search_actions_config_);
-    SetHistoryClustersVisiblePref(false);
-    TestAttachHistoryClustersActions({{}}, history_clusters_service_.get());
-    // Reset this back to true for future tests.
-    SetHistoryClustersVisiblePref(true);
+    TestingPrefServiceSimple prefs_disabled;
+    prefs_disabled.registry()->RegisterBooleanPref(
+        history_clusters::prefs::kVisible, false);
+    TestAttachHistoryClustersActions({{}}, history_clusters_service_.get(),
+                                     &prefs_disabled);
   }
 
   {

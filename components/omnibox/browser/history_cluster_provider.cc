@@ -65,8 +65,8 @@ void HistoryClusterProvider::Start(const AutocompleteInput& input,
   if (input.omit_asynchronous_matches())
     return;
 
-  if (!client_->GetHistoryClustersService() ||
-      !client_->GetHistoryClustersService()->IsJourneysEnabled()) {
+  if (!IsJourneysEnabledInOmnibox(client_->GetHistoryClustersService(),
+                                  client_->GetPrefs())) {
     return;
   }
 

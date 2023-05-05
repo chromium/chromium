@@ -86,9 +86,7 @@ class HistoryClustersService : public base::SupportsUserData,
   // Returns true if the Journeys feature is enabled for the current application
   // locale. This is a cached wrapper of `IsJourneysEnabled()` within features.h
   // that's already evaluated against the g_browser_process application locale.
-  // This now also includes checking the pref for whether Journeys is visible to
-  // the user. Virtual for testing.
-  virtual bool IsJourneysEnabled() const;
+  bool IsJourneysEnabled() const;
 
   // Returns true if the Journeys use of Images is enabled.
   static bool IsJourneysImagesEnabled();
@@ -135,8 +133,7 @@ class HistoryClustersService : public base::SupportsUserData,
   //   if the caller wants the newest visits.
   // - `recluster`, if true, forces reclustering as if
   //   `persist_clusters_in_history_db` were false.
-  // The caller is responsible for checking `IsJourneysEnabled()` before calling
-  // this method. Virtual for testing.
+  // Virtual for testing.
   virtual std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
       QueryClustersFilterParams filter_params,

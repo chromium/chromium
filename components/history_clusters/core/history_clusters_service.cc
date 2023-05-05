@@ -167,7 +167,7 @@ base::WeakPtr<HistoryClustersService> HistoryClustersService::GetWeakPtr() {
 void HistoryClustersService::Shutdown() {}
 
 bool HistoryClustersService::IsJourneysEnabled() const {
-  return is_journeys_enabled_ && pref_service_->GetBoolean(prefs::kVisible);
+  return is_journeys_enabled_;
 }
 
 // static
@@ -244,7 +244,10 @@ HistoryClustersService::QueryClusters(
     QueryClustersContinuationParams continuation_params,
     bool recluster,
     QueryClustersCallback callback) {
-  CHECK(IsJourneysEnabled());
+  if (!IsJourneysEnabled()) {
+    std::move(callback).Run({}, QueryClustersContinuationParams::DoneParams());
+    return nullptr;
+  }
 
   if (ShouldNotifyDebugMessage()) {
     NotifyDebugMessage("HistoryClustersService::QueryClusters()");

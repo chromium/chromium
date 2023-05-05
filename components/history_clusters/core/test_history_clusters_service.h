@@ -20,7 +20,6 @@ class TestHistoryClustersService : public HistoryClustersService {
   ~TestHistoryClustersService() override;
 
   // HistoryClustersService:
-  bool IsJourneysEnabled() const override;
   std::unique_ptr<HistoryClustersServiceTask> QueryClusters(
       ClusteringRequestSource clustering_request_source,
       QueryClustersFilterParams filter_params,
@@ -28,9 +27,6 @@ class TestHistoryClustersService : public HistoryClustersService {
       QueryClustersContinuationParams continuation_params,
       bool recluster,
       QueryClustersCallback callback) override;
-
-  // Sets whether Journeys is enabled.
-  void SetIsJourneysEnabled(bool is_journeys_enabled);
 
   // Sets `clusters` to be the clusters that always get returned when
   // `QueryClusters()` is called. If `exhausted_all_visits` is true, the next
@@ -40,7 +36,6 @@ class TestHistoryClustersService : public HistoryClustersService {
                            bool exhausted_all_visits = true);
 
  private:
-  bool is_journeys_enabled_ = true;
   std::vector<history::Cluster> clusters_;
   bool next_query_is_done_ = false;
 };
