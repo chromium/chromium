@@ -1277,8 +1277,8 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
                      FederatedAuthRequestResult::kError,
                      TokenStatus::kNotSignedInWithIdp,
                      /*should_delay_callback=*/true),
-      base::BindOnce(&FederatedAuthRequestImpl::CreateIdentityRegistry,
-                     weak_ptr_factory_.GetWeakPtr(), idp_origin));
+      base::BindRepeating(&FederatedAuthRequestImpl::CreateIdentityRegistry,
+                          weak_ptr_factory_.GetWeakPtr(), idp_origin));
 }
 
 void FederatedAuthRequestImpl::CreateIdentityRegistry(

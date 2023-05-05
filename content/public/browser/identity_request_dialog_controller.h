@@ -90,7 +90,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   using DismissCallback =
       base::OnceCallback<void(DismissReason dismiss_reason)>;
   using IdentityRegistryCallback =
-      base::OnceCallback<void(WebContents* web_contents)>;
+      base::RepeatingCallback<void(WebContents* web_contents)>;
 
   IdentityRequestDialogController() = default;
 

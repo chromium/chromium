@@ -88,10 +88,7 @@ class TestBubbleView : public AccountSelectionBubbleViewInterface {
     return absl::nullopt;
   }
 
-  bool HasIdentityRegistryCallback() override { return false; }
-  IdentityRegistryCallback GetIdentityRegistryCallback() override {
-    return base::DoNothing();
-  }
+  void SetIdentityRegistry(content::WebContents* web_contents) override {}
 
   bool show_back_button_{false};
   absl::optional<SheetType> sheet_type_;

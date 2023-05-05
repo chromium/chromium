@@ -634,13 +634,11 @@ absl::optional<std::string> AccountSelectionBubbleView::GetDialogSubtitle()
   return base::UTF16ToUTF8(subtitle_label_->GetText());
 }
 
-bool AccountSelectionBubbleView::HasIdentityRegistryCallback() {
-  return !identity_registry_callback_.is_null();
-}
-
-IdentityRegistryCallback
-AccountSelectionBubbleView::GetIdentityRegistryCallback() {
-  return std::move(identity_registry_callback_);
+void AccountSelectionBubbleView::SetIdentityRegistry(
+    content::WebContents* web_contents) {
+  if (identity_registry_callback_) {
+    identity_registry_callback_.Run(web_contents);
+  }
 }
 
 gfx::Rect AccountSelectionBubbleView::GetBubbleBounds() {
