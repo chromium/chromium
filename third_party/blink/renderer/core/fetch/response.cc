@@ -100,6 +100,15 @@ FetchResponseData* CreateFetchResponseDataFromFetchAPIResponse(
   return response;
 }
 
+// Checks whether |status| is a null body status.
+// Spec: https://fetch.spec.whatwg.org/#null-body-status
+bool IsNullBodyStatus(uint16_t status) {
+  if (status == 101 || status == 204 || status == 205 || status == 304)
+    return true;
+
+  return false;
+}
+
 // Check whether |statusText| is a ByteString and
 // matches the Reason-Phrase token production.
 // RFC 2616: https://tools.ietf.org/html/rfc2616
@@ -117,15 +126,6 @@ bool IsValidReasonPhrase(const String& status_text) {
 }
 
 }  // namespace
-
-// static
-bool Response::IsNullBodyStatus(uint16_t status) {
-  if (status == 101 || status == 204 || status == 205 || status == 304) {
-    return true;
-  }
-
-  return false;
-}
 
 Response* Response::Create(ScriptState* script_state,
                            ExceptionState& exception_state) {
