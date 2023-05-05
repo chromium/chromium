@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -34,7 +33,6 @@ import org.chromium.components.optimization_guide.OptimizationGuideDecision;
 import org.chromium.components.optimization_guide.proto.HintsProto;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -75,152 +73,6 @@ public class ShoppingPersistedTabDataLegacyTest {
         });
     }
 
-    @SmallTest
-    @Test
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_time_to_live_ms/-1000/"
-            + "price_tracking_with_optimization_guide/true"})
-    public void
-    testShoppingPriceChange() {
-        shoppingPriceChange(ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                ShoppingPersistedTabDataTestUtils.TAB_ID,
-                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO));
-    }
-
-    @SmallTest
-    @Test
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_time_to_live_ms/-1000/"
-            + "price_tracking_with_optimization_guide/true"})
-    public void
-    testShoppingPriceChangeExtraFetchAfterChange() {
-        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                ShoppingPersistedTabDataTestUtils.TAB_ID,
-                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        long mLastPriceChangeTimeMs = shoppingPriceChange(tab);
-        final Semaphore semaphore = new Semaphore(0);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
-                        mOptimizationGuideBridgeJniMock, 3);
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UPDATED_PRICE_MICROS,
-                        shoppingPersistedTabData.getPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
-                        shoppingPersistedTabData.getPreviousPriceMicros());
-                Assert.assertEquals(mLastPriceChangeTimeMs,
-                        shoppingPersistedTabData.getLastPriceChangeTimeMs());
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UNITED_STATES_CURRENCY_CODE,
-                        shoppingPersistedTabData.getCurrencyCode());
-                semaphore.release();
-            });
-        });
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(semaphore);
-    }
-
-    private long shoppingPriceChange(Tab tab) {
-        final Semaphore initialSemaphore = new Semaphore(0);
-        final Semaphore updateSemaphore = new Semaphore(0);
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_INITIAL);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
-                        mOptimizationGuideBridgeJniMock, 1);
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
-                        shoppingPersistedTabData.getPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UNITED_STATES_CURRENCY_CODE,
-                        shoppingPersistedTabData.getCurrencyCode());
-                Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
-                        shoppingPersistedTabData.getPreviousPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabData.NO_TRANSITIONS_OCCURRED,
-                        shoppingPersistedTabData.getLastPriceChangeTimeMs());
-                initialSemaphore.release();
-            });
-        });
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(initialSemaphore);
-        long firstUpdateTime = ShoppingPersistedTabDataTestUtils.getTimeLastUpdatedOnUiThread(tab);
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_PRICE_UPDATED);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.from(tab, (updatedShoppingPersistedTabData) -> {
-                ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
-                        mOptimizationGuideBridgeJniMock, 2);
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UPDATED_PRICE_MICROS,
-                        updatedShoppingPersistedTabData.getPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
-                        updatedShoppingPersistedTabData.getPreviousPriceMicros());
-                Assert.assertTrue(firstUpdateTime
-                        < updatedShoppingPersistedTabData.getLastPriceChangeTimeMs());
-                updateSemaphore.release();
-            });
-        });
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(updateSemaphore);
-        return ShoppingPersistedTabDataTestUtils.getTimeLastUpdatedOnUiThread(tab);
-    }
-
-    @SmallTest
-    @Test
-    @CommandLineFlags.
-    Add({"force-fieldtrial-params=Study.Group:price_tracking_with_optimization_guide/true"})
-    public void testNoRefetch() {
-        final Semaphore initialSemaphore = new Semaphore(0);
-        final Semaphore updateSemaphore = new Semaphore(0);
-        Tab tab = ShoppingPersistedTabDataTestUtils.createTabOnUiThread(
-                ShoppingPersistedTabDataTestUtils.TAB_ID,
-                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
-        // Mock annotations response.
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_INITIAL);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
-                        shoppingPersistedTabData.getPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
-                        shoppingPersistedTabData.getPreviousPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.UNITED_STATES_CURRENCY_CODE,
-                        shoppingPersistedTabData.getCurrencyCode());
-                // By setting time to live to be a negative number, an update
-                // will be forced in the subsequent call
-                initialSemaphore.release();
-            });
-        });
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(initialSemaphore);
-        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
-                mOptimizationGuideBridgeJniMock, 1);
-        ShoppingPersistedTabDataTestUtils.mockOptimizationGuideResponse(
-                mOptimizationGuideBridgeJniMock,
-                HintsProto.OptimizationType.PRICE_TRACKING.getNumber(),
-                ShoppingPersistedTabDataTestUtils.MockPriceTrackingResponse
-                        .BUYABLE_PRODUCT_PRICE_UPDATED);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ShoppingPersistedTabData.from(tab, (shoppingPersistedTabData) -> {
-                Assert.assertEquals(ShoppingPersistedTabDataTestUtils.PRICE_MICROS,
-                        shoppingPersistedTabData.getPriceMicros());
-                Assert.assertEquals(ShoppingPersistedTabData.NO_PRICE_KNOWN,
-                        shoppingPersistedTabData.getPreviousPriceMicros());
-
-                // By setting time to live to be a negative number, an update
-                // will be forced in the subsequent call
-                updateSemaphore.release();
-            });
-        });
-        ShoppingPersistedTabDataTestUtils.acquireSemaphore(updateSemaphore);
-        // PageAnnotationsService should not have been called a second time - because we haven't
-        // passed the time to live
-        ShoppingPersistedTabDataTestUtils.verifyPriceTrackingOptimizationTypeCalled(
-                mOptimizationGuideBridgeJniMock, 1);
-    }
-
     @UiThreadTest
     @SmallTest
     @Test
@@ -233,21 +85,20 @@ public class ShoppingPersistedTabDataLegacyTest {
 
         // Same price is not a price drop
         shoppingPersistedTabData.setPriceMicros(
-                ShoppingPersistedTabDataTestUtils.HIGH_PRICE_MICROS, null);
+                ShoppingPersistedTabDataTestUtils.HIGH_PRICE_MICROS);
         shoppingPersistedTabData.setPreviousPriceMicros(
                 ShoppingPersistedTabDataTestUtils.HIGH_PRICE_MICROS);
         Assert.assertNull(shoppingPersistedTabData.getPriceDropLegacy());
 
         // Lower -> Higher price is not a price drop
         shoppingPersistedTabData.setPriceMicros(
-                ShoppingPersistedTabDataTestUtils.HIGH_PRICE_MICROS, null);
+                ShoppingPersistedTabDataTestUtils.HIGH_PRICE_MICROS);
         shoppingPersistedTabData.setPreviousPriceMicros(
                 ShoppingPersistedTabDataTestUtils.LOW_PRICE_MICROS);
         Assert.assertNull(shoppingPersistedTabData.getPriceDropLegacy());
 
         // Actual price drop (Higher -> Lower)
-        shoppingPersistedTabData.setPriceMicros(
-                ShoppingPersistedTabDataTestUtils.LOW_PRICE_MICROS, null);
+        shoppingPersistedTabData.setPriceMicros(ShoppingPersistedTabDataTestUtils.LOW_PRICE_MICROS);
         shoppingPersistedTabData.setPreviousPriceMicros(
                 ShoppingPersistedTabDataTestUtils.HIGH_PRICE_MICROS);
         ShoppingPersistedTabData.PriceDrop priceDrop =
