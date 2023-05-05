@@ -85,7 +85,7 @@ bool IsDifficultToRead(const std::u16string& password) {
          }) != password.end();
 }
 
-// Generates a password according to |spec| and tries to maximze the entropy
+// Generates a password according to |spec| and tries to maximize the entropy
 // while not caring for pronounceable passwords.
 //
 // |spec| must contain values for at least all fields that are defined

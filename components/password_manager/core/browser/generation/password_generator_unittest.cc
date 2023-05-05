@@ -162,7 +162,7 @@ TEST_F(PasswordGeneratorTest, MinCharFrequenciesRespected) {
 
 TEST_F(PasswordGeneratorTest, MinCharFrequenciesInsane) {
   // Nothing breaks if the min frequencies are way beyond what's possible
-  // with the password length. In this case the generated passwor may contain
+  // with the password length. In this case the generated password may contain
   // just characters of one class but its target length does not increase.
   for (std::string char_class : kAllClassesButSymbols) {
     SCOPED_TRACE(char_class);
