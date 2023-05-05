@@ -475,8 +475,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
 
   // Gets the layout of the overview items. Layout is done in 2 stages
   // maintaining fixed MRU ordering.
-  // 1. Optimal height is determined. In this blacklist dummy
-  // slave |height| is bisected to find
+  // 1. Optimal height is determined. In this stage `height` is bisected to find
   //    maximum height which still allows all the windows to fit.
   // 2. Row widths are balanced. In this stage the available width is reduced
   //    until some windows are no longer fitting or until the difference between
