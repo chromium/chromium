@@ -42,19 +42,9 @@
       ],
       "all_frames": true,
       "js": [
-{% if is_js_compressed == '1' %}
-        "chromevox/chromeVoxChromePageScript.js"
-{% else %}
-        "chromevox/closure/closure_preinit.js",
-        "chromevox/closure/base.js",
-        "chromevox/deps.js",
-        "chromevox/injected/loader.js"
-{% endif %}
+        "chromevox/injected/cvox_gdocs_script.js"
       ]
     }
-  ],
-  "web_accessible_resources": [
-    "chromevox/injected/api.js"
   ],
   "automation": {
     "desktop": true
