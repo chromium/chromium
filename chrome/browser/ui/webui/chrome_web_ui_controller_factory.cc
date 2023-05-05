@@ -214,8 +214,6 @@
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "ash/webui/projector_app/trusted_projector_ui.h"
-#include "ash/webui/scanning/scanning_ui.h"
-#include "ash/webui/scanning/url_constants.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shimless_rma/url_constants.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
@@ -236,9 +234,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
-#include "chrome/browser/ash/scanning/scan_service.h"
-#include "chrome/browser/ash/scanning/scan_service_factory.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
@@ -606,23 +601,6 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       base::BindRepeating(&BindEcheConnectionStatusHandler, manager));
 }
 
-void BindScanService(
-    Profile* profile,
-    mojo::PendingReceiver<ash::scanning::mojom::ScanService> pending_receiver) {
-  ash::ScanService* service =
-      ash::ScanServiceFactory::GetForBrowserContext(profile);
-  if (service)
-    service->BindInterface(std::move(pending_receiver));
-}
-
-template <>
-WebUIController* NewWebUI<ash::ScanningUI>(WebUI* web_ui, const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  return new ash::ScanningUI(
-      web_ui, base::BindRepeating(&BindScanService, profile),
-      std::make_unique<ash::ChromeScanningAppDelegate>(web_ui));
-}
-
 template <>
 WebUIController* NewWebUI<ash::ShimlessRMADialogUI>(WebUI* web_ui,
                                                     const GURL& url) {
@@ -949,8 +927,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == ash::kChromeUIPrintManagementHost)
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
-  if (url.host_piece() == ash::kChromeUIScanningAppHost)
-    return &NewWebUI<ash::ScanningUI>;
   if (ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed() &&
       url.host_piece() == ash::kChromeUIShimlessRMAHost) {
     return &NewWebUI<ash::ShimlessRMADialogUI>;

@@ -159,6 +159,11 @@ class FakeScanningAppDelegate : public ScanningAppDelegate {
 
   std::string GetScanSettingsFromPrefs() override { return scan_settings_; }
 
+  BindScanServiceCallback GetBindScanServiceCallback(
+      content::WebUI* web_ui) override {
+    return base::DoNothing();
+  }
+
   // Returns the file paths saved in OpenFilesInMediaApp().
   const std::vector<base::FilePath>& file_paths() const { return file_paths_; }
 
