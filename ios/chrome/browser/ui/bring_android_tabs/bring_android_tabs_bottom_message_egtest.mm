@@ -102,4 +102,51 @@
   VerifyThatPromptDoesNotShowOnRestart(/*bottom_message=*/YES);
 }
 
+// Tests that the bottom message only shows on regular tab grid.
+- (void)testThatPromptOnlyShowInRegularTabGrid {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+  [ChromeEarlGreyUI openTabGrid];
+  VerifyBottomMessagePromptVisibility(YES);
+  // Go to incognito tab grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+  VerifyBottomMessagePromptVisibility(NO);
+  // Go to recent tabs.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridOtherDevicesPanelButton()]
+      performAction:grey_tap()];
+  VerifyBottomMessagePromptVisibility(NO);
+  // Come back.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+  VerifyBottomMessagePromptVisibility(YES);
+}
+
+// Tests that the bottom message stays on the regular tab grid no matter now
+// many new tabs are opened or closed.
+- (void)testThatPromptStaysWhenUserClosesTabs {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+  [ChromeEarlGreyUI openTabGrid];
+  VerifyBottomMessagePromptVisibility(YES);
+  // Start opening tabs.
+  int numOfTabsThatWouldBeOpened = 10;
+  // One NTP is already opened on startup.
+  for (int i = 0; i < numOfTabsThatWouldBeOpened - 1; i++) {
+    [ChromeEarlGrey openNewTab];
+  }
+  [ChromeEarlGreyUI openTabGrid];
+  VerifyBottomMessagePromptVisibility(YES);
+  // Close the last tab and check if the prompt is still visible.
+  for (int i = numOfTabsThatWouldBeOpened - 1; i > 0; i--) {
+    [ChromeEarlGrey closeTabAtIndex:i];
+    VerifyBottomMessagePromptVisibility(YES);
+  }
+}
+
 @end

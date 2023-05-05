@@ -312,7 +312,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  // Modify Incognito and Regular Tabs Insets
+  // Modify Incognito and Regular Tabs Insets.
   [self setInsetForGridViews];
   // Reset bottom message width after bottom toolbar is updated after an
   // orientation change. As this depends on
@@ -704,12 +704,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     [self slideOutRegularTabsBottomMessage];
     return;
   }
-  [self.regularTabsViewController
-      addChildViewController:self.regularTabsBottomMessage];
-  [self.regularTabsViewController.view
-      addSubview:self.regularTabsBottomMessage.view];
-  [self.regularTabsBottomMessage
-      didMoveToParentViewController:self.regularTabsViewController];
+  [self addChildViewController:self.regularTabsBottomMessage];
+  [self.view addSubview:self.regularTabsBottomMessage.view];
+  [self.regularTabsBottomMessage didMoveToParentViewController:self];
   [self initializeRegularTabsBottomMessageView];
 }
 
@@ -1219,7 +1216,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setInsetForGridViews {
   // Sync the scroll view offset to the current page value if the scroll view
   // isn't scrolling. Don't animate this.
-  if (!self.scrollView.dragging && !self.scrollView.decelerating) {
+  if (!self.scrollViewAnimatingContentOffset && !self.scrollView.dragging &&
+      !self.scrollView.decelerating) {
     [self scrollToPage:self.currentPage animated:NO];
   }
 
@@ -3239,7 +3237,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   bottomMessageView.translatesAutoresizingMaskIntoConstraints = NO;
   // The bottom message should cover all grid cells but not cover the blocking
   // view.
-  bottomMessageView.layer.zPosition = FLT_MAX - 1;
   bottomMessageView.hidden = self.tabGridMode != TabGridModeNormal;
   [self slideInRegularTabsBottomMessage];
 }
@@ -3248,15 +3245,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 // should be called only when the bottom message is just set.
 - (void)slideInRegularTabsBottomMessage {
   UIView* bottomMessageView = self.regularTabsBottomMessage.view;
-  self.regularTabsViewController.gridView.contentInset =
-      [self calculateInsetForRegularGridView];
+  UIScrollView* regularTabsGridView = self.regularTabsViewController.gridView;
+  CGFloat scrollableHeight = regularTabsGridView.contentSize.height +
+                             regularTabsGridView.adjustedContentInset.bottom -
+                             regularTabsGridView.bounds.size.height;
+  // Slide if there are more active tabs that the screen could hold, and that
+  // the user has scrolled to the bottom.
+  BOOL shouldScrollAgainAfterSliding =
+      regularTabsGridView.contentSize.height >= self.view.bounds.size.height &&
+      regularTabsGridView.contentOffset.y >= scrollableHeight;
   // Initial position of `bottomMessageView should be below the view, so that
   // the animation slides it up from the bottom, instead of sliding it down from
   // the top.
   NSLayoutConstraint* initialConstraint = [bottomMessageView.topAnchor
       constraintEqualToAnchor:self.view.bottomAnchor];
   initialConstraint.active = YES;
-  [self.regularTabsViewController.view layoutIfNeeded];
+  [self.view layoutIfNeeded];
   // Perform initial animation.
   __weak TabGridViewController* weakSelf = self;
   [UIView
@@ -3264,7 +3268,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
                animations:^{
                  initialConstraint.active = NO;
                  [weakSelf updateRegularTabsBottomMessageConstraintsIfExists];
-                 [weakSelf.regularTabsViewController.view layoutIfNeeded];
+                 [weakSelf.view layoutIfNeeded];
+                 if (shouldScrollAgainAfterSliding) {
+                   CGFloat newScrollableHeight =
+                       scrollableHeight + bottomMessageView.bounds.size.height;
+                   [regularTabsGridView
+                       setContentOffset:CGPointMake(0, newScrollableHeight)
+                               animated:NO];
+                 }
                }];
 }
 
