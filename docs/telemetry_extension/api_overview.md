@@ -151,30 +151,30 @@ and **events**.
 
 | Function Name | Definition | Permission needed to access | Released in `dpsl` version |
 ------------ | ------------- | ------------- | ------------- |
-| getAvailableRoutines | () => Promise\<List\<RoutineType\>\> | `os.diagnostics` | M96 |
-| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise\<GetRoutineUpdateResponse>\> | `os.diagnostics` | M96 |
-| runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M105 |
-| runBatteryCapacityRoutine | () => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runBatteryHealthRoutine | () => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M99 |
-| runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M99 |
-| runCpuStressRoutine | (params: RunCpuRoutineRequest) => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runDiskReadRoutine | (params: RunDiskReadRequest) => Promise\<Routine\> | `os.diagnostics` | M102 |
-| runDnsResolutionRoutine | () => Promise\<Routine\> | `os.diagnostics` | M108 |
-| runDnsResolverPresentRoutine | () => Promise\<Routine\> | `os.diagnostics` | M108 |
-| runEmmcLifetimeRoutine | () => Promise\<Routine\> | `os.diagnostics` | M110 |
-| runFingerprintAliveRoutine | () => Promise\<Routine\> | `os.diagnostics` | M110 |
-| runGatewayCanBePingedRoutine | () => Promise\<Routine\> | `os.diagnostics` | M108 |
-| runLanConnectivityRoutine | () => Promise\<Routine\> | `os.diagnostics` | M102 |
-| runMemoryRoutine | () => Promise\<Routine\> | `os.diagnostics` | M96 |
-| runNvmeSelfTestRoutine | (params: RunNvmeSelfTestRequest) => Promise\<Routine\> | `os.diagnostics` | M110 |
-| runNvmeWearLevelRoutine | (params: RunNvmeWearLevelRequest) => Promise\<Routine\> | `os.diagnostics` | M102 |
-| runSensitiveSensorRoutine | () => Promise\<Routine\> | `os.diagnostics` | M110 |
-| runSignalStrengthRoutine | () => Promise\<Routine\> | `os.diagnostics` | M108 |
-| runSmartctlCheckRoutine | (params: RunSmartctlCheckRequest?) => Promise\<Routine\> | `os.diagnostics` | initial release: M102, new parameter added: M110. The parameter is only available if "smartctl_check_with_percentage_used" is returned from `GetAvailableRoutines` |
+| getAvailableRoutines | () => Promise<List<RoutineType\>\> | `os.diagnostics` | M96 |
+| getRoutineUpdate | (params: GetRoutineUpdateRequest) => Promise<GetRoutineUpdateResponse>\> | `os.diagnostics` | M96 |
+| runAcPowerRoutine | (params: RunAcPowerRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M105 |
+| runBatteryCapacityRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
+| runBatteryHealthRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
+| runBatteryDischargeRoutine | (params: RunBatteryDischargeRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
+| runBatteryChargeRoutine | (params: RunBatteryChargeRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
+| runCpuCacheRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
+| runCpuFloatingPointAccuracyRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M99 |
+| runCpuPrimeSearchRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M99 |
+| runCpuStressRoutine | (params: RunCpuRoutineRequest) => Promise<Routine\> | `os.diagnostics` | M96 |
+| runDiskReadRoutine | (params: RunDiskReadRequest) => Promise<Routine\> | `os.diagnostics` | M102 |
+| runDnsResolutionRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
+| runDnsResolverPresentRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
+| runEmmcLifetimeRoutine | () => Promise<Routine\> | `os.diagnostics` | M110 |
+| runFingerprintAliveRoutine | () => Promise<Routine\> | `os.diagnostics` | M110 |
+| runGatewayCanBePingedRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
+| runLanConnectivityRoutine | () => Promise<Routine\> | `os.diagnostics` | M102 |
+| runMemoryRoutine | () => Promise<Routine\> | `os.diagnostics` | M96 |
+| runNvmeSelfTestRoutine | (params: RunNvmeSelfTestRequest) => Promise<Routine\> | `os.diagnostics` | M110 |
+| runNvmeWearLevelRoutine | (params: RunNvmeWearLevelRequest) => Promise<Routine\> | `os.diagnostics` | M102 |
+| runSensitiveSensorRoutine | () => Promise<Routine\> | `os.diagnostics` | M110 |
+| runSignalStrengthRoutine | () => Promise<Routine\> | `os.diagnostics` | M108 |
+| runSmartctlCheckRoutine | (params: RunSmartctlCheckRequest?) => Promise<Routine\> | `os.diagnostics` | initial release: M102, new parameter added: M110. The parameter is only available if "smartctl_check_with_percentage_used" is returned from `GetAvailableRoutines` |
 
 # Events
 
@@ -230,7 +230,7 @@ and **events**.
 
 | Function Name | Definition | Permission needed to access | Released in `dpsl` version | Description |
 ------------ | ------------- | ------------- | ------------- | ------------- |
-| isEventSupported | (category: EventCategory) => Promise\<EventSupportStatusInfo\> | `os.events` | M115 | Checks whether an event is supported. The information returned by this method is valid across reboots of the device |
+| isEventSupported | (category: EventCategory) => Promise<EventSupportStatusInfo\> | `os.events` | M115 | Checks whether an event is supported. The information returned by this method is valid across reboots of the device |
 | startCapturingEvents | (category: EventCategory) => () | `os.events` | M115 | Starts capturing events for `EventCategory`. After calling this method, an extension can expect to be updated about events through invocations of `on<EventCategory>Event`, until either the PWA is closed or `stopCapturingEvents` is called. Note that an extension is only able to subscribe to events if the PWA is currently open |
 | stopCapturingEvents | (category: EventCategory) => () | `os.events` | M115 | Stops capturing `EventCategory` events. This means `on<EventCategory>Event` won't be invoked until `startCapturingEvents` is successfully called |
 
@@ -333,7 +333,7 @@ and **events**.
 ------------ | ------- | ----------- |
 | architecture | CpuArchitectureEnum | The CPU architecture - it's assumed all of a device's CPUs share the same architecture |
 | numTotalThreads | number | Number of total threads available |
-| physicalCpus | Array\<PhysicalCpuInfo\> | Information about the device's physical CPUs |
+| physicalCpus | Array<PhysicalCpuInfo\> | Information about the device's physical CPUs |
 
 ### Enum NetworkType
 | Property Name |
@@ -363,13 +363,13 @@ and **events**.
 | state | NetworkState | The current state of the network interface (disabled, enabled, online, etc.) |
 | macAddress | string | (Added in M110): The currently assigned mac address. Only available with the permission os.telemetry.network_info. |
 | ipv4Address | string | The currently assigned ipv4Address of the interface |
-| ipv6Addresses | Array\<string\> | The list of currently assigned ipv6Addresses of the interface |
+| ipv6Addresses | Array<string\> | The list of currently assigned ipv6Addresses of the interface |
 | signalStrength | number | The current signal strength in percent |
 
 ### InternetConnectivityInfo
 | Property Name | Type | Description |
 ------------ | ------- | ----------- |
-| networks | Array\<NetworkInfo\> | List of available network interfaces and their configuration |
+| networks | Array<NetworkInfo\> | List of available network interfaces and their configuration |
 
 ### MarketingInfo
 | Property Name | Type | Description |
@@ -516,7 +516,7 @@ Source:
 | protocolId | number | The protocol id can be used to classify / identify the usb interfaces. See the usb.ids database for the values (https://github.com/gentoo/hwids) |
 | vendorId | number | The vendor id can be used to classify / identify the usb interfaces. See the usb.ids database for the values (https://github.com/gentoo/hwids) |
 | productId | number | The product id can be used to classify / identify the usb interfaces. See the usb.ids database for the values (https://github.com/gentoo/hwids) |
-| interfaces | Array\<UsbBusInterfaceInfo\> | The usb interfaces under the device. A usb device has at least one interface. Each interface may or may not work independently, based on each device. This allows a usb device to provide multiple features. The interfaces are sorted by the `interface_number` field |
+| interfaces | Array<UsbBusInterfaceInfo\> | The usb interfaces under the device. A usb device has at least one interface. Each interface may or may not work independently, based on each device. This allows a usb device to provide multiple features. The interfaces are sorted by the `interface_number` field |
 | fwupdFirmwareVersionInfo | FwupdFirmwareVersionInfo | The firmware version obtained from fwupd |
 | version | UsbVersion | The recognized usb version. It may not be the highest USB version supported by the hardware |
 | spec_speed | UsbSpecSpeed | The spec usb speed |
@@ -530,16 +530,16 @@ Source:
 
 | Function Name | Definition | Permission needed to access | Released in Chrome version |
 ------------ | ------------- | ------------- | ------------- |
-| getVpdInfo | () => Promise\<VpdInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M96 |
-| getOemData | () => Promise\<OemDataInfo\> | `os.telemetry`, `os.telemetry.serial_number` for the whole result | M96 |
-| getCpuInfo | () => Promise\<CpuInfo\> | `os.telemetry` | M99 |
-| getMemoryInfo | () => Promise\<MemoryInfo\> | `os.telemetry` | M99 |
-| getBatteryInfo | () => Promise\<BatteryInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M102 |
-| getStatefulPartitionInfo | () => Promise\<StatefulPartitionInfo\> | `os.telemetry` | M105 |
-| getOsVersionInfo | () => Promise\<OsVersionInfo\> | `os.telemetry` | M105 |
-| getNonRemovableBlockDevicesInfo | () => Promise\<BlockDeviceInfo\> | `os.telemetry` | M108 |
-| getInternetConnectivityInfo | () => Promise\<InternetConnectivityInfo\> | `os.telemetry`, `os.telemetry.network_info` for MAC address field | M108 - Mac address in M111 |
-| getTpmInfo | () => Promise\<TpmInfo\> | `os.telemetry` | M108 |
-| getAudioInfo | () => Promise\<AudioInfo\> | `os.telemetry` | M111 |
-| getMarketingInfo | () => Promise\<MarketingInfo\> | `os.telemetry` | M111 |
+| getVpdInfo | () => Promise<VpdInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M96 |
+| getOemData | () => Promise<OemDataInfo\> | `os.telemetry`, `os.telemetry.serial_number` for the whole result | M96 |
+| getCpuInfo | () => Promise<CpuInfo\> | `os.telemetry` | M99 |
+| getMemoryInfo | () => Promise<MemoryInfo\> | `os.telemetry` | M99 |
+| getBatteryInfo | () => Promise<BatteryInfo\> | `os.telemetry`, `os.telemetry.serial_number` for serial number field | M102 |
+| getStatefulPartitionInfo | () => Promise<StatefulPartitionInfo\> | `os.telemetry` | M105 |
+| getOsVersionInfo | () => Promise<OsVersionInfo\> | `os.telemetry` | M105 |
+| getNonRemovableBlockDevicesInfo | () => Promise<BlockDeviceInfo\> | `os.telemetry` | M108 |
+| getInternetConnectivityInfo | () => Promise<InternetConnectivityInfo\> | `os.telemetry`, `os.telemetry.network_info` for MAC address field | M108 - Mac address in M111 |
+| getTpmInfo | () => Promise<TpmInfo\> | `os.telemetry` | M108 |
+| getAudioInfo | () => Promise<AudioInfo\> | `os.telemetry` | M111 |
+| getMarketingInfo | () => Promise<MarketingInfo\> | `os.telemetry` | M111 |
 | getUsbBusInfo | () => Promise<UsbDevicesInfo\> | `os.telemetry`, `os.attached_device_info` | M114 |
