@@ -129,6 +129,37 @@ bool ShouldAlwaysShowWithExternalKeyboard(ui::TopRowActionKey action_key) {
   }
 }
 
+bool MetaFKeyRewritesAreSuppressed(const ui::InputDevice& keyboard) {
+  if (!features::IsInputDeviceSettingsSplitEnabled()) {
+    return false;
+  }
+
+  const auto* settings =
+      Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
+          keyboard.id);
+  if (!settings) {
+    return false;
+  }
+  return settings->suppress_meta_fkey_rewrites;
+}
+
+bool ShouldShowExternalTopRowActionKeyAlias(
+    const ui::KeyboardDevice& keyboard,
+    ui::TopRowActionKey action_key,
+    const ui::Accelerator& accelerator) {
+  const bool should_show_action_key =
+      Shell::Get()->keyboard_capability()->HasTopRowActionKey(keyboard,
+                                                              action_key) ||
+      ShouldAlwaysShowWithExternalKeyboard(action_key);
+
+  // If Meta + F-Key rewrites are suppressed for the priority keyboard and
+  // the accelerator contains the search key, we should not show the
+  // accelerator.
+  const bool alias_is_suppressed =
+      accelerator.IsCmdDown() && MetaFKeyRewritesAreSuppressed(keyboard);
+  return should_show_action_key && !alias_is_suppressed;
+}
+
 }  // namespace
 
 std::vector<ui::Accelerator> AcceleratorAliasConverter::CreateAcceleratorAlias(
@@ -200,8 +231,6 @@ absl::optional<ui::Accelerator>
 AcceleratorAliasConverter::CreateFunctionKeyAliases(
     const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
-  // TODO(dpad): Handle the case when meta + top row key rewrite is
-  // suppressed.
   // Avoid remapping if [Search] is part of the original accelerator.
   if (accelerator.IsCmdDown()) {
     return {};
@@ -264,8 +293,6 @@ AcceleratorAliasConverter::CreateFunctionKeyAliases(
 absl::optional<ui::Accelerator> AcceleratorAliasConverter::CreateTopRowAliases(
     const ui::KeyboardDevice& keyboard,
     const ui::Accelerator& accelerator) const {
-  // TODO(zhangwenyu): Handle the case when meta + top row key rewrite is
-  // suppressed, following https://crrev.com/c/4160339.
   // Avoid remapping if [Search] is part of the original accelerator.
   if (accelerator.IsCmdDown()) {
     return {};
@@ -404,12 +431,23 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
       // Accelerator should only be seen if the priority or internal keyboard
       // have the key OR if there is an external keyboard and the `action_key`
       // should always been shown when there is an external keyboard.
-      if ((priority_keyboard &&
-           (keyboard_capability->HasTopRowActionKey(*priority_keyboard,
-                                                    *action_key) ||
-            ShouldAlwaysShowWithExternalKeyboard(*action_key))) ||
-          (internal_keyboard && keyboard_capability->HasTopRowActionKey(
-                                    *internal_keyboard, *action_key))) {
+      if (priority_keyboard &&
+          (ShouldShowExternalTopRowActionKeyAlias(*priority_keyboard,
+                                                  *action_key, accelerator))) {
+        filtered_accelerators.push_back(accelerator);
+      } else if (internal_keyboard && keyboard_capability->HasTopRowActionKey(
+                                          *internal_keyboard, *action_key)) {
+        filtered_accelerators.push_back(accelerator);
+      }
+      continue;
+    }
+
+    // If the accelerator is for an FKey + Search, make sure it is only shown if
+    // Meta + F-Key rewrites are allowed.
+    if (accelerator.key_code() > ui::VKEY_F1 &&
+        accelerator.key_code() < ui::VKEY_F24 && accelerator.IsCmdDown()) {
+      if (priority_keyboard &&
+          !MetaFKeyRewritesAreSuppressed(*priority_keyboard)) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;
