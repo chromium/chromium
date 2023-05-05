@@ -401,6 +401,8 @@ source_set("ash") {
     "arc/input_overlay/ui/action_view.h",
     "arc/input_overlay/ui/edit_finish_view.cc",
     "arc/input_overlay/ui/edit_finish_view.h",
+    "arc/input_overlay/ui/editing_list.cc",
+    "arc/input_overlay/ui/editing_list.h",
     "arc/input_overlay/ui/educational_view.cc",
     "arc/input_overlay/ui/educational_view.h",
     "arc/input_overlay/ui/input_mapping_view.cc",

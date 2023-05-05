@@ -19,16 +19,13 @@ class View;
 class Widget;
 }  // namespace views
 
-namespace ash {
-class PillButton;
-}  // namespace ash
-
 namespace arc::input_overlay {
 
 class Action;
 class ActionEditMenu;
 class ActionView;
 class EditFinishView;
+class EditingList;
 class EducationalView;
 class InputMappingView;
 class InputMenuView;
@@ -83,6 +80,8 @@ class DisplayOverlayController : public ui::EventHandler,
   // Remove the action view when removing |action|.
   void OnActionRemoved(Action* action);
 
+  int GetInputMappingListSize();
+
   // For menu entry hover state:
   void SetMenuEntryHoverState(bool curr_hover_state);
 
@@ -104,6 +103,7 @@ class DisplayOverlayController : public ui::EventHandler,
  private:
   friend class ArcInputOverlayManagerTest;
   friend class DisplayOverlayControllerTest;
+  friend class EditingList;
   friend class EducationalView;
   friend class InputMappingView;
   friend class InputMenuView;
@@ -143,7 +143,11 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveEducationalView();
   void OnEducationalViewDismissed();
 
+  void AddEditingList();
+  void RemoveEditingList();
+
   views::Widget* GetOverlayWidget();
+  views::View* GetOverlayWidgetContentsView();
   gfx::Point CalculateMenuEntryPosition();
   views::View* GetParentView();
   bool HasMenuView() const;
@@ -187,9 +191,7 @@ class DisplayOverlayController : public ui::EventHandler,
   raw_ptr<MessageView> message_ = nullptr;
   raw_ptr<EducationalView> educational_view_ = nullptr;
   raw_ptr<NudgeView> nudge_view_ = nullptr;
-  // TODO(b/250900717): Below are temporary UIs for editor feature.
-  raw_ptr<ash::PillButton> add_action_tap_ = nullptr;
-  raw_ptr<ash::PillButton> add_action_move_ = nullptr;
+  raw_ptr<EditingList> editing_list_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

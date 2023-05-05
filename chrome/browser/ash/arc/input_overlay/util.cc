@@ -131,4 +131,8 @@ void ResetFocusTo(views::View* view) {
   focus_manager->SetFocusedView(view);
 }
 
+bool IsBeta() {
+  return ash::features::IsArcInputOverlayBetaEnabled();
+}
+
 }  // namespace arc::input_overlay

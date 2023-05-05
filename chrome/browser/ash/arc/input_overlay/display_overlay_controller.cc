@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_menu.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/educational_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_menu_view.h"
@@ -158,6 +159,21 @@ void DisplayOverlayController::OnNudgeDismissed() {
   RemoveNudgeView();
   DCHECK(touch_injector_);
   touch_injector_->set_show_nudge(false);
+}
+
+void DisplayOverlayController::AddEditingList() {
+  if (!IsBeta() || editing_list_) {
+    return;
+  }
+  editing_list_ = EditingList::Show(this);
+}
+
+void DisplayOverlayController::RemoveEditingList() {
+  if (!IsBeta() || !editing_list_) {
+    return;
+  }
+  GetOverlayWidgetContentsView()->RemoveChildViewT(editing_list_);
+  editing_list_ = nullptr;
 }
 
 gfx::Point DisplayOverlayController::CalculateNudgePosition(int nudge_width) {
@@ -339,6 +355,12 @@ views::Widget* DisplayOverlayController::GetOverlayWidget() {
                             : nullptr;
 }
 
+views::View* DisplayOverlayController::GetOverlayWidgetContentsView() {
+  auto* overlay_widget = GetOverlayWidget();
+  DCHECK(overlay_widget);
+  return overlay_widget->GetContentsView();
+}
+
 gfx::Point DisplayOverlayController::CalculateMenuEntryPosition() {
   if (touch_injector_->menu_entry_location()) {
     auto normalized_location = touch_injector_->menu_entry_location();
@@ -402,6 +424,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       ClearFocus();
       RemoveEditMessage();
       RemoveInputMenuView();
+      RemoveEditingList();
       RemoveEditFinishView();
       RemoveEducationalView();
       RemoveNudgeView();
@@ -421,6 +444,7 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
       RemoveEducationalView();
       RemoveNudgeView();
       AddEditFinishView(overlay_widget);
+      AddEditingList();
       SetEventTarget(overlay_widget, /*on_overlay=*/true);
       break;
     case DisplayMode::kPreMenu:
@@ -571,6 +595,10 @@ void DisplayOverlayController::OnActionAdded(Action* action) {
 
 void DisplayOverlayController::OnActionRemoved(Action* action) {
   input_mapping_view_->OnActionRemoved(action);
+}
+
+int DisplayOverlayController::GetInputMappingListSize() {
+  return input_mapping_view_->children().size();
 }
 
 void DisplayOverlayController::OnMouseEvent(ui::MouseEvent* event) {
