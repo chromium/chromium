@@ -22,12 +22,19 @@ namespace ash {
 // managing the lifetime of its registry correctly. For example, making sure
 // entries are removed from the registry once they are no longer valid, to
 // prevent use-after-free crashes.
-using FilePreviewFactoryTest = testing::Test;
+class FilePreviewFactoryTest : public testing::Test {
+ public:
+  // This forwarding method only needs to exist while
+  // `FilePreviewFactory::CreateImageModel()` is a private method.
+  ui::ImageModel CreateImageModel(const base::FilePath& path,
+                                  const gfx::Size& size) {
+    return FilePreviewFactory::Get()->CreateImageModel(path, size);
+  }
+};
 
 TEST_F(FilePreviewFactoryTest, ControllerRemovedOnModelDestruction) {
   {
-    auto model = FilePreviewFactory::Get()->CreateImageModel(base::FilePath(),
-                                                             gfx::Size(1, 1));
+    auto model = CreateImageModel(base::FilePath(), gfx::Size(1, 1));
     EXPECT_EQ(FilePreviewFactory::Get()->GetRegistryForTest().size(), 1u);
     EXPECT_NE(FilePreviewFactory::Get()->GetController(model), nullptr);
   }
@@ -37,8 +44,7 @@ TEST_F(FilePreviewFactoryTest, ControllerRemovedOnModelDestruction) {
 TEST_F(FilePreviewFactoryTest, CopiedImageModelsKeepControllerAlive) {
   ui::ImageModel model_copy;
   {
-    auto model = FilePreviewFactory::Get()->CreateImageModel(base::FilePath(),
-                                                             gfx::Size(1, 1));
+    auto model = CreateImageModel(base::FilePath(), gfx::Size(1, 1));
     EXPECT_EQ(FilePreviewFactory::Get()->GetRegistryForTest().size(), 1u);
     model_copy = model;
     EXPECT_EQ(FilePreviewFactory::Get()->GetRegistryForTest().size(), 1u);
@@ -56,8 +62,7 @@ TEST_F(FilePreviewFactoryTest, CopiedImageSkiasDoNotKeepControllerAlive) {
   ui::ImageModel non_copied_model;
   {
     ui::ColorProvider color_provider;
-    auto model = FilePreviewFactory::Get()->CreateImageModel(base::FilePath(),
-                                                             gfx::Size(1, 1));
+    auto model = CreateImageModel(base::FilePath(), gfx::Size(1, 1));
 
     // Keep the `gfx::ImageSkia` in a simple `ui::ImageModel::ImageGenerator`
     // so that it can be passed to `GetController()` to confirm that the

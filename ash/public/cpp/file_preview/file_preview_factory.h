@@ -15,6 +15,7 @@
 
 namespace ash {
 
+// DO NOT USE: Work in progress.
 // Used to generate `ui::ImageModel`s capable of representing a preview of a
 // file. Currently only supports gif files, though other types of images may
 // work (http://b/266000882).
@@ -25,11 +26,6 @@ class ASH_PUBLIC_EXPORT FilePreviewFactory {
 
   // Gets the singleton instance of this class.
   static FilePreviewFactory* Get();
-
-  // Creates a `ui::ImageModel` with a representation of a file. The controller
-  // for this model can be fetched by calling `GetController()`.
-  [[nodiscard]] ui::ImageModel CreateImageModel(base::FilePath path,
-                                                gfx::Size size);
 
   // Fetches the controller for a given file preview image model.
   // If the given `ui::ImageModel` was not created through `CreateImageModel()`,
@@ -44,8 +40,17 @@ class ASH_PUBLIC_EXPORT FilePreviewFactory {
 
  private:
   friend base::NoDestructor<FilePreviewFactory>;
+  friend class FilePreviewFactoryTest;
+  friend class FilePreviewTest;
+
   FilePreviewFactory();
   ~FilePreviewFactory();
+
+  // Creates a `ui::ImageModel` with a representation of a file. The controller
+  // for this model can be fetched by calling `GetController()`.
+  // TODO(http://b/266000155): Make public upon code completion.
+  [[nodiscard]] ui::ImageModel CreateImageModel(base::FilePath path,
+                                                gfx::Size size);
 
   // Maps `FilePreviewController::Key` of a `ui::ImageModel` to its matching
   // `FilePreviewController`.

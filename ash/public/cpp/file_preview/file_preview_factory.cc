@@ -18,6 +18,18 @@ FilePreviewFactory* FilePreviewFactory::Get() {
   return instance.get();
 }
 
+FilePreviewController* FilePreviewFactory::GetController(
+    const ui::ImageModel& model) {
+  // All `ui::ImageModel`s created by this factory are
+  // `ui::ImageModel::ImageGenerator`s.
+  if (!model.IsImageGenerator()) {
+    return nullptr;
+  }
+  const auto* key = FilePreviewController::GetKey(model);
+  const auto controller_iter = registry_.find(key);
+  return controller_iter != registry_.end() ? controller_iter->second : nullptr;
+}
+
 ui::ImageModel FilePreviewFactory::CreateImageModel(base::FilePath path,
                                                     gfx::Size size) {
   auto controller = std::make_unique<FilePreviewController>(
@@ -47,18 +59,6 @@ ui::ImageModel FilePreviewFactory::CreateImageModel(base::FilePath path,
           },
           base::Owned(std::move(controller)), std::move(registry_cleanup)),
       std::move(size));
-}
-
-FilePreviewController* FilePreviewFactory::GetController(
-    const ui::ImageModel& model) {
-  // All `ui::ImageModel`s created by this factory are
-  // `ui::ImageModel::ImageGenerator`s.
-  if (!model.IsImageGenerator()) {
-    return nullptr;
-  }
-  const auto* key = FilePreviewController::GetKey(model);
-  const auto controller_iter = registry_.find(key);
-  return controller_iter != registry_.end() ? controller_iter->second : nullptr;
 }
 
 FilePreviewFactory::FilePreviewFactory() = default;
