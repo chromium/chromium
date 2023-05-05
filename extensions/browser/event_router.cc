@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1234,9 +1235,25 @@ void EventRouter::DispatchPendingEvent(
   if (!params)
     return;
   DCHECK(event);
-  if (listeners_.HasProcessListener(params->render_process_host,
-                                    params->worker_thread_id,
-                                    params->extension_id)) {
+
+  // TODO(https://crbug.com/1442744): We shouldn't dispatch events to processes
+  // that don't have a listener for that event. Currently, we enforce this for
+  // the webRequest API (since a bug there can result in a request hanging
+  // indefinitely). We don't do this in all cases yet because extensions may be
+  // unknowingly relying on this behavior for listeners registered
+  // asynchronously (which is not supported, but may be happening).
+  bool check_for_specific_event =
+      base::StartsWith(event->event_name, "webRequest");
+  bool dispatch_to_process =
+      check_for_specific_event
+          ? listeners_.HasProcessListenerForEvent(
+                params->render_process_host, params->worker_thread_id,
+                params->extension_id, event->event_name)
+          : listeners_.HasProcessListener(params->render_process_host,
+                                          params->worker_thread_id,
+                                          params->extension_id);
+
+  if (dispatch_to_process) {
     DispatchEventToProcess(
         params->extension_id, params->url, params->render_process_host,
         params->service_worker_version_id, params->worker_thread_id, *event,

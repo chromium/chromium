@@ -6169,7 +6169,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, TestOnAuthRequired) {
 
 // Tests the behavior of an extension that registers an event listener
 // asynchronously.
-// Regression test for https://crbug.com/1397879.
+// Regression test for https://crbug.com/1397879 and https://crbug.com/1434212.
 IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   static constexpr char kManifest[] =
@@ -6200,6 +6200,13 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, AsyncListenerRegistration) {
                ['blocking']);
            chrome.test.sendMessage('registered');
          });
+         // Register an additional event properly so that the service worker
+         // still has _a_ listener registered in the process.
+         // https://crbug.com/1434212.
+         chrome.webRequest.onHeadersReceived.addListener(
+             (details) => {},
+             {urls: ['<all_urls>'], types: ['main_frame']},
+             ['blocking']);
          chrome.test.sendMessage('ready');)";
 
   // Load the extension and tell it to register the listener.
