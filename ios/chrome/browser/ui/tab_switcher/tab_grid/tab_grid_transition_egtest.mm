@@ -50,7 +50,8 @@ void SelectTab(NSString* title) {
                                               @"GridCell")),
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitStaticText),
-                                          nil)] performAction:grey_tap()];
+                                          grey_hidden(NO), nil)]
+      performAction:grey_tap()];
 }
 
 // Expects that the total number of samples in histogram `histogram` grew by
@@ -544,9 +545,17 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 
   [ChromeEarlGrey showTabSwitcher];
 
-  // Close a tab an open the current selected tab.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          TabGridCloseButtonForCellAtIndex(1)]
+  // Close tab #3 and open the current selected tab.
+  unsigned int tab3_index;
+  if ([ChromeEarlGrey isSortingTabsByRecency]) {
+    // When sorting by recency, the tab #3 moved to the first place.
+    tab3_index = 0;
+  } else {
+    // Otherwise, tab #3 is in the second place.
+    tab3_index = 1;
+  }
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::TabGridCloseButtonForCellAtIndex(tab3_index)]
       performAction:grey_tap()];
   SelectTab(tab1_title);
   [ChromeEarlGrey

@@ -6863,16 +6863,16 @@
             ],
             "experiments": [
                 {
-                    "name": "NoCount-Creation-TwoWeeks",
+                    "name": "NoCount-Recency-TwoWeeks",
                     "params": {
                         "variant": "tab-inactivity-threshold-two-weeks"
                     },
                     "enable_features": [
+                        "TabGridRecencySort",
                         "TabInactivityThreshold"
                     ],
                     "disable_features": [
-                        "ShowInactiveTabsCount",
-                        "TabGridRecencySort"
+                        "ShowInactiveTabsCount"
                     ]
                 }
             ]
