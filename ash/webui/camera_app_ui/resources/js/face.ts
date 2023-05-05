@@ -12,7 +12,7 @@ const RECT_COLOR = 'rgba(249, 171, 0, 0.8)';
 
 /**
  * Rotates the given coordinates in [0, 1] square space by the given
- * orientation.
+ * clockwise orientation.
  *
  * @return The rotated [x, y].
  */
@@ -21,11 +21,11 @@ function rotate(x: number, y: number, orientation: number): [number, number] {
     case 0:
       return [x, y];
     case 90:
-      return [y, 1.0 - x];
+      return [1 - y, x];
     case 180:
-      return [1.0 - x, 1.0 - y];
+      return [1 - x, 1 - y];
     case 270:
-      return [1.0 - y, x];
+      return [y, 1 - x];
     default:
       assertNotReached('Unexpected orientation');
   }
@@ -45,7 +45,7 @@ export class FaceOverlay {
 
   /**
    * @param activeArraySize The active array size of the device.
-   * @param orientation Counter-clockwise angles to apply rotation to
+   * @param orientation Clockwise angles to apply rotation to
    *     the face rectangles.
    */
   constructor(

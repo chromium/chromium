@@ -562,8 +562,8 @@ export class Preview {
     const activeArraySize = await deviceOperator.getActiveArraySize(deviceId);
     const cameraFrameRotation =
         await deviceOperator.getCameraFrameRotation(deviceId);
-    this.faceOverlay = new FaceOverlay(
-        activeArraySize, (360 - cameraFrameRotation) % 360, deviceId);
+    this.faceOverlay =
+        new FaceOverlay(activeArraySize, cameraFrameRotation, deviceId);
 
     const updateFace =
         (mode: AndroidStatisticsFaceDetectMode, rects: number[]) => {
