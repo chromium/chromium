@@ -139,6 +139,14 @@ class BASE_EXPORT FileEnumerator {
   // since the underlying code uses OS-specific matching routines.  In general,
   // Windows matching is less featureful than others, so test there first.
   // If unspecified, this will match all files.
+  //
+  // |folder_search_policy| optionally specifies a search behavior. Refer to
+  // |FolderSearchPolicy| for a list of folder search policies and the meaning
+  // of them. If |recursive| is false, this parameter has no effect.
+  //
+  // |error_policy| optionally specifies the behavior when an error occurs.
+  // Refer to |ErrorPolicy| for a list of error policies and the meaning of
+  // them.
   FileEnumerator(const FilePath& root_path, bool recursive, int file_type);
   FileEnumerator(const FilePath& root_path,
                  bool recursive,
