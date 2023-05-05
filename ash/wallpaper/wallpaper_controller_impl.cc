@@ -3312,7 +3312,7 @@ void WallpaperControllerImpl::HandleSettingOnlineWallpaperFromWallpaperInfo(
   // wallpaper, but updates the variant of the same wallpaper.
   OnlineWallpaperVariantInfoFetcher::FetchParamsCallback callback =
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperVariantsFetched,
-                     weak_factory_.GetWeakPtr(), info.type,
+                     set_wallpaper_weak_factory_.GetWeakPtr(), info.type,
                      /*start_daily_refresh_timer=*/false, base::DoNothing());
 
   variant_info_fetcher_->FetchOnlineWallpaper(
