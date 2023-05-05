@@ -106,7 +106,7 @@ public final class ChromePreferenceKeys {
     public static final String BOOKMARKS_LAST_USED_URL = "enhanced_bookmark_last_used_url";
     public static final String BOOKMARKS_LAST_USED_PARENT =
             "enhanced_bookmark_last_used_parent_folder";
-    public static final String BOOKMARK_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
+    public static final String BOOKMARKS_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
 
     /**
      * Whether Chrome is set as the default browser.
@@ -999,7 +999,7 @@ public final class ChromePreferenceKeys {
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,
                 BLUETOOTH_NOTIFICATION_IDS,
-                BOOKMARK_VISUALS_PREF,
+                BOOKMARKS_VISUALS_PREF,
                 CHROME_SURVEY_DOWNLOAD_ATTEMPTS.pattern(),
                 CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),
                 CLIPBOARD_SHARED_URI,

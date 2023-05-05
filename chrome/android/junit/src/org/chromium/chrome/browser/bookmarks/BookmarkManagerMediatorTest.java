@@ -141,8 +141,6 @@ public class BookmarkManagerMediatorTest {
     private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
     private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
-    @Mock
-    private SharedPreferencesManager mSharedPrefsManager;
 
     @Captor
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
@@ -422,7 +420,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void onPreferenceChanged_ViewPreferenceUpdated() {
-        mMediator.onBookmarkRowDisplayPrefChanged();
+        mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         verify(mRecyclerView).setAdapter(mDragReorderableRecyclerViewAdapter);
     }
 

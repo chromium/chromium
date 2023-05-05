@@ -17,7 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * Self-documenting preference class for bookmarks.
  */
 public class BookmarkUiPrefs {
-    private static final @BookmarkRowDisplayPref int sInitialBookmarkRowDisplayPref =
+    private static final @BookmarkRowDisplayPref int INITIAL_BOOKMARK_ROW_DISPLAY_PREF =
             BookmarkRowDisplayPref.COMPACT;
 
     // This is persisted to preferences, entries shouldn't be reordered or removed.
@@ -30,15 +30,15 @@ public class BookmarkUiPrefs {
 
     /** Observer for changes to prefs. */
     public interface Observer {
-        /** Called when the BookmarkRowDisplayPref changes. */
-        void onBookmarkRowDisplayPrefChanged();
+        /** Called when the current {@link BookmarkRowDisplayPref} changes. */
+        void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref);
     }
 
     private final SharedPreferencesManager mPrefsManager;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     /**
-     * @param prefsManager Instance of SharedPreferencesManager to read/write from prefs.
+     * @param prefsManager Instance of {@link SharedPreferencesManager} to read/write from prefs.
      */
     public BookmarkUiPrefs(SharedPreferencesManager prefsManager) {
         mPrefsManager = prefsManager;
@@ -62,25 +62,22 @@ public class BookmarkUiPrefs {
             return getDisplayPrefForLegacy();
         }
 
-        if (mPrefsManager.contains(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF)) {
-            return mPrefsManager.readInt(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
-        } else {
-            return sInitialBookmarkRowDisplayPref;
-        }
+        return mPrefsManager.readInt(
+                ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, INITIAL_BOOKMARK_ROW_DISPLAY_PREF);
     }
 
     /**
      * Sets the value for the bookmark row display pref.
-     * @param pref The pref value to be set.
+     * @param displayPref The pref value to be set.
      */
-    public void setBookmarkRowDisplayPref(@BookmarkRowDisplayPref int pref) {
-        mPrefsManager.writeInt(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF, pref);
-        for (Observer obs : mObservers) obs.onBookmarkRowDisplayPrefChanged();
+    public void setBookmarkRowDisplayPref(@BookmarkRowDisplayPref int displayPref) {
+        mPrefsManager.writeInt(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, displayPref);
+        for (Observer obs : mObservers) obs.onBookmarkRowDisplayPrefChanged(displayPref);
     }
 
     /**
-     * Some places use @BookmarkRowDisplayPref even for legacy handling. This converts to the new
-     * display pref from feature flags.
+     * Some places use {@link BookmarkRowDisplayPref} even for legacy handling. This converts to the
+     * new display pref from feature flags.
      */
     public static @BookmarkRowDisplayPref int getDisplayPrefForLegacy() {
         assert !BookmarkFeatures.isAndroidImprovedBookmarksEnabled();

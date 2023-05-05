@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.Observer;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
@@ -61,9 +62,8 @@ import java.util.Stack;
 
 /** Responsible for BookmarkManager business logic. */
 // TODO(crbug.com/1416611): Remove BookmarkDelegate if possible.
-class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
-                                         PartnerBookmarksReader.FaviconUpdateObserver,
-                                         BookmarkUiPrefs.Observer {
+class BookmarkManagerMediator
+        implements BookmarkDelegate, TestingDelegate, PartnerBookmarksReader.FaviconUpdateObserver {
     private static final String EMPTY_QUERY = null;
 
     private static boolean sPreventLoadingForTesting;
@@ -303,6 +303,16 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         }
     };
 
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new Observer() {
+        @Override
+        @SuppressWarnings("NotifyDataSetChanged")
+        public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
+            mRecyclerView.setAdapter(null);
+            mRecyclerView.setAdapter(mDragReorderableRecyclerViewAdapter);
+            mDragReorderableRecyclerViewAdapter.notifyDataSetChanged();
+        }
+    };
+
     private final ObserverList<BookmarkUiObserver> mUiObservers = new ObserverList<>();
     private final BookmarkDragStateDelegate mDragStateDelegate = new BookmarkDragStateDelegate();
     private final Context mContext;
@@ -384,7 +394,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
 
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
-        mBookmarkUiPrefs.addObserver(this);
+        mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
         mHideKeyboardRunnable = hideKeyboardRunnable;
 
         final @BookmarkRowDisplayPref int displayPref =
@@ -430,7 +440,7 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         mDragStateDelegate.destroy();
         mBookmarkQueryHandler.destroy();
 
-        mBookmarkUiPrefs.removeObserver(this);
+        mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
 
         for (BookmarkUiObserver observer : mUiObservers) {
             observer.onDestroy();
@@ -1076,16 +1086,6 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         }
 
         return new ListItem(ViewType.IMPROVED_BOOKMARK, propertyModel);
-    }
-
-    // BookmarkUiPrefs.Observer implementation.
-
-    @Override
-    @SuppressWarnings("NotifyDataSetChanged")
-    public void onBookmarkRowDisplayPrefChanged() {
-        mRecyclerView.setAdapter(null);
-        mRecyclerView.setAdapter(mDragReorderableRecyclerViewAdapter);
-        mDragReorderableRecyclerViewAdapter.notifyDataSetChanged();
     }
 
     // ImprovedBookmarkRow methods.

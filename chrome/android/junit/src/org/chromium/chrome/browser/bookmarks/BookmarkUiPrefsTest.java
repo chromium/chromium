@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -53,7 +54,7 @@ public class BookmarkUiPrefsTest {
 
     @After
     public void tearDown() {
-        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
+        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF);
     }
 
     @Test
@@ -102,11 +103,11 @@ public class BookmarkUiPrefsTest {
     public void setBookmarkRowDisplayPref() {
         mBookmarkUiPrefs.addObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
-        verify(mObserver).onBookmarkRowDisplayPrefChanged();
+        verify(mObserver).onBookmarkRowDisplayPrefChanged(BookmarkRowDisplayPref.COMPACT);
 
+        reset(mObserver);
         mBookmarkUiPrefs.removeObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
-        // The observer method shouldn't have been called again.
-        verify(mObserver, times(1)).onBookmarkRowDisplayPrefChanged();
+        verifyNoInteractions(mObserver);
     }
 }
