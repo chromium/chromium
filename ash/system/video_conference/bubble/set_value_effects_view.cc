@@ -4,8 +4,10 @@
 
 #include "ash/system/video_conference/bubble/set_value_effects_view.h"
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
+#include "ash/style/typography.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_delegate.h"
 #include "ash/system/video_conference/effects/video_conference_tray_effects_manager_types.h"
@@ -40,6 +42,10 @@ SetValueEffectSlider::SetValueEffectSlider(const VcHostedEffect* effect)
     auto* label = label_container->AddChildView(
         std::make_unique<views::Label>(effect->label_text()));
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+    label->SetAutoColorReadabilityEnabled(false);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyButton2,
+                                          *label);
+    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
 
     auto* spacer_view =
         label_container->AddChildView(std::make_unique<views::View>());

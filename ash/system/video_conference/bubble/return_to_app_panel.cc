@@ -7,9 +7,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/bubble/bubble_utils.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/typography.h"
 #include "ash/system/video_conference/bubble/bubble_view_ids.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "base/functional/bind.h"
@@ -310,6 +312,11 @@ ReturnToAppButton::ReturnToAppButton(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred));
+
+  label->SetAutoColorReadabilityEnabled(false);
+  TypographyProvider::Get()->StyleLabel(TypographyToken::kLegacyBody2, *label);
+  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+
   label_ = AddChildView(std::move(label));
 
   if (is_top_row) {
