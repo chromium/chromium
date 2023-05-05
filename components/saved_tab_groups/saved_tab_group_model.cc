@@ -259,11 +259,7 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
 
   // Remove the group from the model if the last tab will be removed from it.
   if (group.saved_tabs().size() == 1) {
-    if (update_tab_positions) {
-      Remove(group_id);
-    } else {
-      RemovedFromSync(group_id);
-    }
+    Remove(group_id);
     return;
   }
 

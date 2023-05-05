@@ -33,9 +33,7 @@ class SavedTabGroupUtils {
       const GURL& url,
       Browser* browser,
       Profile* profile,
-      WindowOpenDisposition disposition,
-      absl::optional<int> tabstrip_index = absl::nullopt,
-      absl::optional<tab_groups::TabGroupId> local_group_id = absl::nullopt);
+      WindowOpenDisposition disposition);
 
   // Returns the Browser that contains a local group with id `group_id`.
   static Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id);
