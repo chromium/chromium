@@ -557,6 +557,10 @@ TEST_F(SyncServiceImplTest,
                                     SyncService::DISABLE_REASON_USER_CHOICE),
       service()->GetDisableReasons());
   EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
+#if BUILDFLAG(IS_IOS)
+  SyncPrefs sync_prefs(prefs());
+  EXPECT_FALSE(sync_prefs.IsOptedInForBookmarksAndReadingListAccountStorage());
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 TEST_F(SyncServiceImplTest, DisableReasonUserChoiceIfStartsSignedOut) {

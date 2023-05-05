@@ -357,6 +357,27 @@ TEST_F(SyncPrefsTest, PassphrasePromptMutedProductVersion) {
   EXPECT_EQ(0, sync_prefs_->GetPassphrasePromptMutedProductVersion());
 }
 
+#if BUILDFLAG(IS_IOS)
+TEST_F(SyncPrefsTest, SetBookmarksAndReadingListAccountStorageOptInPrefChange) {
+  // Default value disabled.
+  EXPECT_FALSE(
+      sync_prefs_->IsOptedInForBookmarksAndReadingListAccountStorage());
+
+  // Enable bookmarks and reading list account storage pref.
+  sync_prefs_->SetBookmarksAndReadingListAccountStorageOptIn(true);
+
+  // Check pref change to enabled.
+  EXPECT_TRUE(sync_prefs_->IsOptedInForBookmarksAndReadingListAccountStorage());
+
+  // Clear pref.
+  sync_prefs_->ClearBookmarksAndReadingListAccountStorageOptIn();
+
+  // Default value applied after clearing the pref.
+  EXPECT_FALSE(
+      sync_prefs_->IsOptedInForBookmarksAndReadingListAccountStorage());
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 enum BooleanPrefState { PREF_FALSE, PREF_TRUE, PREF_UNSET };
 
 // Similar to SyncPrefsTest, but does not create a SyncPrefs instance. This lets

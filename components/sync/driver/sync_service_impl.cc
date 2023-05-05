@@ -1801,6 +1801,10 @@ void SyncServiceImpl::StopAndClear() {
   // will need to reenter it if sync gets re-enabled.
   sync_prefs_.ClearEncryptionBootstrapToken();
 
+#if BUILDFLAG(IS_IOS)
+  sync_prefs_.ClearBookmarksAndReadingListAccountStorageOptIn();
+#endif  // BUILDFLAG(IS_IOS)
+
   sync_prefs_.SetSyncRequested(false);
 
   // Also let observers know that Sync-the-feature is now fully disabled

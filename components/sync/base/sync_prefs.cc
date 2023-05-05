@@ -189,6 +189,10 @@ bool SyncPrefs::IsOptedInForBookmarksAndReadingListAccountStorage() {
   return pref_service_->GetBoolean(
       prefs::kBookmarksAndReadingListAccountStorageOptIn);
 }
+
+void SyncPrefs::ClearBookmarksAndReadingListAccountStorageOptIn() {
+  pref_service_->ClearPref(prefs::kBookmarksAndReadingListAccountStorageOptIn);
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

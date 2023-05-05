@@ -100,6 +100,9 @@ class SyncPrefs {
 
   // Gets the transport bookmarks & reading list pref.
   bool IsOptedInForBookmarksAndReadingListAccountStorage();
+
+  // Clears the transport bookmarks & reading list pref on sign out.
+  void ClearBookmarksAndReadingListAccountStorageOptIn();
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
