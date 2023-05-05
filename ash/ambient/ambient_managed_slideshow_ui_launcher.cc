@@ -20,33 +20,29 @@
 namespace ash {
 
 AmbientManagedSlideshowUiLauncher::AmbientManagedSlideshowUiLauncher(
-    AmbientViewDelegateImpl* view_delegate)
+    AmbientViewDelegateImpl* view_delegate,
+    PrefService* active_pref_service)
     : photo_controller_(*view_delegate,
                         CreateAmbientManagedSlideshowPhotoConfig()),
-      delegate_(view_delegate) {
+      delegate_(view_delegate),
+      screensaver_images_policy_handler_(active_pref_service) {
   ambient_backend_model_observer_.Observe(
       photo_controller_.ambient_backend_model());
-  CHECK(AmbientManagedPhotoSource::Get());
-  AmbientManagedPhotoSource::Get()->SetScreensaverImagesUpdatedCallback(
+
+  screensaver_images_policy_handler_.SetScreensaverImagesUpdatedCallback(
       base::BindRepeating(
           &AmbientManagedSlideshowUiLauncher::UpdateImageFilePaths,
           weak_factory_.GetWeakPtr()));
 }
+
 AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
     default;
 
 void AmbientManagedSlideshowUiLauncher::Initialize(
     InitializationCallback on_done) {
   initialization_callback_ = std::move(on_done);
-  if (!AmbientManagedPhotoSource::Get()) {
-    LOG(WARNING) << "AmbientManagedPhotoSource not present. Probably "
-                    "AmbientManagedPhotoController screen update is being "
-                    "started during a shutdown";
-    std::move(initialization_callback_).Run(/*success=*/false);
-    return;
-  }
   photo_controller_.UpdateImageFilePaths(
-      AmbientManagedPhotoSource::Get()->GetScreensaverImages());
+      screensaver_images_policy_handler_.GetScreensaverImages());
   photo_controller_.StartScreenUpdate();
 }
 

@@ -10,8 +10,6 @@
 #include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/ambient/ambient_managed_photo_source.h"
-#include "ash/public/cpp/session/session_observer.h"
-#include "ash/session/session_controller_impl.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -27,21 +25,20 @@ namespace ash {
 // Observes the policy that provides image sources for the managed screensaver
 // feature in order to download and cache the images.
 class ASH_EXPORT ScreensaverImagesPolicyHandler
-    : public AmbientManagedPhotoSource,
-      public SessionObserver {
+    : public AmbientManagedPhotoSource {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  ScreensaverImagesPolicyHandler();
+  explicit ScreensaverImagesPolicyHandler(PrefService* pref_service);
   ~ScreensaverImagesPolicyHandler() override;
-
-  // SessionObserver:
-  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // AmbientManagedPhotoSource overrides
   std::vector<base::FilePath> GetScreensaverImages() override;
   void SetScreensaverImagesUpdatedCallback(
       ScreensaverImagesRepeatingCallback callback) override;
+
+  // Used for setting images in tests.
+  void SetImagesForTesting(const std::vector<base::FilePath>& images);
 
  private:
   friend class ScreensaverImagesPolicyHandlerTest;
@@ -61,7 +58,6 @@ class ASH_EXPORT ScreensaverImagesPolicyHandler
   std::unique_ptr<ScreensaverImageDownloader> image_downloader_;
 
   ScreensaverImagesRepeatingCallback on_images_updated_callback_;
-  ScopedSessionObserver scoped_session_observer_{this};
   base::WeakPtrFactory<ScreensaverImagesPolicyHandler> weak_ptr_factory_{this};
 };
 

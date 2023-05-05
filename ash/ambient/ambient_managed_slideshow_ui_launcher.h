@@ -11,6 +11,7 @@
 
 #include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_view_delegate_impl.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -21,7 +22,8 @@ namespace ash {
 class AmbientManagedSlideshowUiLauncher : public AmbientUiLauncher,
                                           public AmbientBackendModelObserver {
  public:
-  explicit AmbientManagedSlideshowUiLauncher(AmbientViewDelegateImpl* delegate);
+  AmbientManagedSlideshowUiLauncher(AmbientViewDelegateImpl* delegate,
+                                    PrefService* active_pref_service);
   AmbientManagedSlideshowUiLauncher(const AmbientManagedSlideshowUiLauncher&) =
       delete;
   AmbientManagedSlideshowUiLauncher& operator=(
@@ -56,6 +58,8 @@ class AmbientManagedSlideshowUiLauncher : public AmbientUiLauncher,
   InitializationCallback initialization_callback_;
   base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       ambient_backend_model_observer_{this};
+
+  ScreensaverImagesPolicyHandler screensaver_images_policy_handler_;
 
   base::WeakPtrFactory<AmbientManagedSlideshowUiLauncher> weak_factory_{this};
 };

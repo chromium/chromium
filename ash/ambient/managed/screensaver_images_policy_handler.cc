@@ -42,7 +42,32 @@ void ScreensaverImagesPolicyHandler::RegisterPrefs(
       ambient::prefs::kAmbientModeManagedScreensaverImages);
 }
 
-ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler() = default;
+ScreensaverImagesPolicyHandler::ScreensaverImagesPolicyHandler(
+    PrefService* pref_service) {
+  CHECK(pref_service);
+  if (pref_service !=
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService()) {
+    // TODO(b/271093537): Support the policy handler for the sign-in screen
+    return;
+  }
+  user_pref_service_ = pref_service;
+
+  AmbientClient& ambient_client = CHECK_DEREF(AmbientClient::Get());
+  image_downloader_ = std::make_unique<ScreensaverImageDownloader>(
+      ambient_client.GetURLLoaderFactory(), GetDownloaderRootPath());
+
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+
+  // TODO(b/271093110): Use weak ptr factory for this callback.
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeManagedScreensaverImages,
+      base::BindRepeating(&ScreensaverImagesPolicyHandler::
+                              OnAmbientModeManagedScreensaverImagesPrefChanged,
+                          base::Unretained(this)));
+
+  OnAmbientModeManagedScreensaverImagesPrefChanged();
+}
 
 ScreensaverImagesPolicyHandler::~ScreensaverImagesPolicyHandler() = default;
 
@@ -106,38 +131,19 @@ void ScreensaverImagesPolicyHandler::SetScreensaverImagesUpdatedCallback(
   on_images_updated_callback_ = std::move(callback);
 }
 
+void ScreensaverImagesPolicyHandler::SetImagesForTesting(
+    const std::vector<base::FilePath>& images_file_paths) {
+  downloaded_images_ = base::flat_set<base::FilePath>(images_file_paths);
+  if (on_images_updated_callback_) {
+    on_images_updated_callback_.Run(std::vector<base::FilePath>(
+        downloaded_images_.begin(), downloaded_images_.end()));
+  }
+}
+
 std::vector<base::FilePath>
 ScreensaverImagesPolicyHandler::GetScreensaverImages() {
   return std::vector<base::FilePath>(downloaded_images_.begin(),
                                      downloaded_images_.end());
-}
-
-void ScreensaverImagesPolicyHandler::OnActiveUserPrefServiceChanged(
-    PrefService* pref_service) {
-  if (pref_service !=
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService()) {
-    return;
-  }
-
-  if (user_pref_service_) {
-    return;
-  }
-
-  AmbientClient& ambient_client = CHECK_DEREF(AmbientClient::Get());
-  image_downloader_ = std::make_unique<ScreensaverImageDownloader>(
-      ambient_client.GetURLLoaderFactory(), GetDownloaderRootPath());
-
-  user_pref_service_ = pref_service;
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(pref_service);
-
-  pref_change_registrar_->Add(
-      ambient::prefs::kAmbientModeManagedScreensaverImages,
-      base::BindRepeating(&ScreensaverImagesPolicyHandler::
-                              OnAmbientModeManagedScreensaverImagesPrefChanged,
-                          base::Unretained(this)));
-
-  OnAmbientModeManagedScreensaverImagesPrefChanged();
 }
 
 }  // namespace ash

@@ -16,6 +16,7 @@ namespace ash {
 
 // A test only implementation of the managed photo source to be used
 // in unit tests
+// TODO(b/278873241): remove unused class
 class TestAmbientManagedPhotoSource : public AmbientManagedPhotoSource {
  public:
   TestAmbientManagedPhotoSource();

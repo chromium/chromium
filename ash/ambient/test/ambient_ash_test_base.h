@@ -40,6 +40,7 @@ class AmbientPhotoController;
 class AmbientUiSettings;
 class FakeAmbientBackendControllerImpl;
 class MediaStringView;
+class ScreensaverImagesPolicyHandler;
 
 namespace {
 
@@ -203,6 +204,8 @@ class AmbientAshTestBase : public AshTestBase {
   AmbientPhotoController* photo_controller();
 
   AmbientManagedPhotoController* managed_photo_controller();
+
+  ScreensaverImagesPolicyHandler* managed_policy_handler();
 
   AmbientPhotoCache* photo_cache();
 

@@ -1327,8 +1327,8 @@ void AmbientController::CreateUiLauncher() {
   DestroyUiLauncher();
 
   if (IsAmbientModeManagedScreensaverEnabled()) {
-    ambient_ui_launcher_ =
-        std::make_unique<AmbientManagedSlideshowUiLauncher>(&delegate_);
+    ambient_ui_launcher_ = std::make_unique<AmbientManagedSlideshowUiLauncher>(
+        &delegate_, GetActivePrefService());
   } else if (GetCurrentUiSettings().theme() == AmbientTheme::kVideo) {
     ambient_ui_launcher_ = std::make_unique<AmbientVideoUiLauncher>(
         GetPrimaryUserPrefService(), &delegate_);

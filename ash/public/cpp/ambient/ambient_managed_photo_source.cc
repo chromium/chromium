@@ -6,26 +6,8 @@
 
 namespace ash {
 
-namespace {
+AmbientManagedPhotoSource::AmbientManagedPhotoSource() = default;
 
-// Global pointer to the managed photo source, there can only every be one
-// instance of this class.
-AmbientManagedPhotoSource* managed_photo_source_ = nullptr;
-
-}  // namespace
-
-AmbientManagedPhotoSource::AmbientManagedPhotoSource() {
-  CHECK(!managed_photo_source_);
-  managed_photo_source_ = this;
-}
-
-AmbientManagedPhotoSource::~AmbientManagedPhotoSource() {
-  CHECK_EQ(managed_photo_source_, this);
-  managed_photo_source_ = nullptr;
-}
-
-AmbientManagedPhotoSource* AmbientManagedPhotoSource::Get() {
-  return managed_photo_source_;
-}
+AmbientManagedPhotoSource::~AmbientManagedPhotoSource() = default;
 
 }  // namespace ash

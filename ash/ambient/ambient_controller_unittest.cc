@@ -11,10 +11,10 @@
 #include "ash/ambient/ambient_constants.h"
 #include "ash/ambient/ambient_managed_photo_controller.h"
 #include "ash/ambient/ambient_ui_settings.h"
+#include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/test_ambient_client.h"
-#include "ash/ambient/test/test_ambient_managed_photo_source.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/photo_view.h"
@@ -1539,7 +1539,6 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kAmbientModeManagedScreensaver);
     AmbientAshTestBase::SetUp();
-    photo_source_ = std::make_unique<TestAmbientManagedPhotoSource>();
     // Disable consumer ambient mode
     SetAmbientModeEnabled(false);
     GetSessionControllerClient()->set_show_lock_screen_views(true);
@@ -1549,7 +1548,6 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   void TearDown() override {
     ASSERT_TRUE(temp_dir_.Delete());
     image_file_paths_.clear();
-    photo_source_.reset();
     AmbientAshTestBase::TearDown();
   }
 
@@ -1574,14 +1572,9 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
     EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   }
 
-  TestAmbientManagedPhotoSource* ambient_managed_photo_source() {
-    return photo_source_.get();
-  }
-
   base::test::ScopedFeatureList scoped_feature_list_;
   InProcessImageDecoder decoder_;
   std::vector<base::FilePath> image_file_paths_;
-  std::unique_ptr<TestAmbientManagedPhotoSource> photo_source_;
   base::ScopedTempDir temp_dir_;
 };
 
@@ -1589,7 +1582,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
        ScreensaverIsShownWithEnoughImages) {
   SetAmbientModeManagedScreensaverEnabled(true);
 
-  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   SimulateScreensaverStart();
 
   ASSERT_TRUE(GetContainerView());
@@ -1637,7 +1630,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
        DisablingManagedAmbientModeFallsbackToUserAmbientModeIfEnabled) {
   SetAmbientModeEnabled(true);
   SetAmbientModeManagedScreensaverEnabled(true);
-  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   SimulateScreensaverStart();
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
@@ -1710,7 +1703,7 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
 
   SimulateScreensaverStart();
-  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
 
   // Forward the task environment a bit to make sure any pending tasks get
   // started.
@@ -1733,22 +1726,10 @@ TEST_F(AmbientControllerForManagedScreensaverTest,
 }
 
 TEST_F(AmbientControllerForManagedScreensaverTest,
-       AmbientManagedPhotoSourceErrorCase) {
-  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
-  photo_source_.reset();
-  SimulateScreensaverStart();
-
-  // The view will not be created as an initialization callback will be called
-  // with success = false, so the container would be null.
-  ASSERT_FALSE(GetContainerView());
-  EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
-}
-
-TEST_F(AmbientControllerForManagedScreensaverTest,
        ManagedAmbientModeGetsEnabledOnLockScreenAndStartsIt) {
   LockScreen();
-  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   FastForwardByLockScreenInactivityTimeout();
   ASSERT_TRUE(GetContainerView());
   EXPECT_TRUE(
@@ -1763,8 +1744,8 @@ class AmbientControllerForManagedScreensaverLoginScreenTest
     // start on the login screen.
     set_start_session(false);
     AmbientControllerForManagedScreensaverTest::SetUp();
-    ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
     SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+    managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   }
 
   void TriggerLoginScreen() {
@@ -1798,6 +1779,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   // Login screen is shown when the managed mode is disabled
   TriggerLoginScreen();
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   FastForwardByLockScreenInactivityTimeout();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
@@ -1811,7 +1793,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
 }
 
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
-       UserLogsInAmbientModeDisabledAndManagedAmbientModeEnabldd) {
+       UserLogsInAmbientModeDisabledAndManagedAmbientModeEnabled) {
   TriggerLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
@@ -1826,7 +1808,8 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   ASSERT_FALSE(ambient_controller()->ambient_ui_launcher());
 
   // Enabling and locking screen starts the managed ambient mode
-  SetAmbientModeManagedScreensaverEnabled(true);
+  SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
@@ -1858,7 +1841,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
 TEST_F(AmbientControllerForManagedScreensaverTest,
        ManagedScreensaverNotShownOnScreenDim) {
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
-  ambient_managed_photo_source()->SetImagesForTesting(image_file_paths_);
+  managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   SetScreenIdleStateAndWait(/*is_screen_dimmed=*/true, /*is_off=*/false);
   EXPECT_FALSE(IsLocked());
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());

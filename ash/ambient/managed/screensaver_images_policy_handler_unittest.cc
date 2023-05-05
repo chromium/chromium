@@ -76,16 +76,11 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
 
   void TriggerOnDownloadJobCompleted(ScreensaverImageDownloadResult result,
                                      absl::optional<base::FilePath> path) {
-    ASSERT_TRUE(ScreensaverImagesPolicyHandler::Get());
+    ASSERT_TRUE(policy_handler());
     policy_handler_->OnDownloadJobCompleted(result, path);
   }
 
   void CreateHandlerInstanceWithUserProfile() {
-    policy_handler_ = std::make_unique<ScreensaverImagesPolicyHandler>();
-
-    // Verify that the handler is instantiated without an image downloader.
-    EXPECT_FALSE(policy_handler_->image_downloader_);
-
     // Create a fake user prefs map.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
     RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
@@ -104,9 +99,8 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
 
-    // Verify that the policy handler detected the new user and created a new
-    // image downloader instance.
-    EXPECT_TRUE(policy_handler_->image_downloader_);
+    policy_handler_ =
+        std::make_unique<ScreensaverImagesPolicyHandler>(user_prefs_);
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
@@ -128,6 +122,10 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
         .test_url_loader_factory();
   }
 
+  ScreensaverImagesPolicyHandler* policy_handler() {
+    return policy_handler_.get();
+  }
+
  private:
   // Temp directory to simulate user home directory.
   base::ScopedTempDir temp_dir_;
@@ -142,23 +140,10 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   std::unique_ptr<ScreensaverImagesPolicyHandler> policy_handler_;
 };
 
-TEST_F(ScreensaverImagesPolicyHandlerTest, SingletonInitialization) {
-  EXPECT_EQ(nullptr, ScreensaverImagesPolicyHandler::Get());
-
-  {
-    std::unique_ptr<ScreensaverImagesPolicyHandler> handler_instance =
-        std::make_unique<ScreensaverImagesPolicyHandler>();
-
-    EXPECT_EQ(handler_instance.get(), ScreensaverImagesPolicyHandler::Get());
-  }
-
-  EXPECT_EQ(nullptr, ScreensaverImagesPolicyHandler::Get());
-}
-
 TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
   CreateHandlerInstanceWithUserProfile();
   base::test::RepeatingTestFuture<std::vector<base::FilePath>> test_future;
-  ScreensaverImagesPolicyHandler::Get()->SetScreensaverImagesUpdatedCallback(
+  policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
 
   // Expect callbacks when images are downloaded.
@@ -190,7 +175,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
 TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
   CreateHandlerInstanceWithUserProfile();
   base::test::RepeatingTestFuture<std::vector<base::FilePath>> test_future;
-  ScreensaverImagesPolicyHandler::Get()->SetScreensaverImagesUpdatedCallback(
+  policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
 
   base::Value::List image_urls;
@@ -226,7 +211,7 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
 TEST_F(ScreensaverImagesPolicyHandlerTest, VerifyPolicyLimit) {
   CreateHandlerInstanceWithUserProfile();
   base::test::RepeatingTestFuture<std::vector<base::FilePath>> test_future;
-  ScreensaverImagesPolicyHandler::Get()->SetScreensaverImagesUpdatedCallback(
+  policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
 
   base::Value::List image_urls;
