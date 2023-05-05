@@ -305,7 +305,9 @@ void CloudBinaryUploadService::UploadForDeepScanning(
   active_tokens_[raw_request] = token;
 
   if ((!binary_fcm_service_ || !binary_fcm_service_->Connected()) &&
-      !is_auth_request) {
+      !is_auth_request &&
+      raw_request->analysis_connector() !=
+          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
     base::TimeDelta first_backoff;
     if (*IgnoreFCMDelaysStorage()) {
       first_backoff = base::Seconds(0);
@@ -329,9 +331,11 @@ void CloudBinaryUploadService::OnFCMConnected(Request* request) {
   }
 
   bool is_auth_request = request->IsAuthRequest();
-  // Auth requests are never going to need waiting for an async response, so
-  // don't bother getting a token from `binary_fcm_service_`.
-  if (is_auth_request) {
+  // Auth requests and paste requests are never going to need waiting for an
+  // async response, so don't bother getting a token from `binary_fcm_service_`.
+  if (is_auth_request ||
+      request->analysis_connector() ==
+          enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY) {
     request->GetRequestData(
         base::BindOnce(&CloudBinaryUploadService::OnGetRequestData,
                        weakptr_factory_.GetWeakPtr(), request));
