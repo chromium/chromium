@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
 
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -441,6 +442,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
   absl::optional<base::TimeTicks> animation_request_timestamp_;
   absl::optional<base::TimeTicks> request_timestamp_for_current_frame_;
   base::TimeTicks last_frame_request_timestamp_for_test_;
+
+  base::MetricsSubSampler metrics_subsampler_;
 };
 
 }  // namespace blink

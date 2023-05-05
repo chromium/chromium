@@ -16,6 +16,12 @@
 
 namespace base {
 
+namespace {
+
+bool g_subsampling_enabled = true;
+
+}  // namespace
+
 uint64_t RandUint64() {
   uint64_t number;
   RandBytes(&number, sizeof(number));
@@ -131,7 +137,17 @@ double InsecureRandomGenerator::RandDouble() {
 
 MetricsSubSampler::MetricsSubSampler() = default;
 bool MetricsSubSampler::ShouldSample(double probability) {
-  return generator_.RandDouble() < probability;
+  return !g_subsampling_enabled || generator_.RandDouble() < probability;
+}
+
+MetricsSubSampler::ScopedDisableForTesting::ScopedDisableForTesting() {
+  DCHECK(g_subsampling_enabled);
+  g_subsampling_enabled = false;
+}
+
+MetricsSubSampler::ScopedDisableForTesting::~ScopedDisableForTesting() {
+  DCHECK(!g_subsampling_enabled);
+  g_subsampling_enabled = true;
 }
 
 }  // namespace base

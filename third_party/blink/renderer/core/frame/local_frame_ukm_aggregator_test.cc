@@ -257,6 +257,9 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
  private:
+  // Deterministically record metrics in test.
+  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
+
   int64_t source_id_;
   scoped_refptr<LocalFrameUkmAggregator> aggregator_;
   ukm::TestUkmRecorder recorder_;
@@ -750,6 +753,10 @@ class LocalFrameUkmAggregatorSimTest : public SimTest {
             "Blink.IntersectionObservationJavascriptCount.UpdateTime.PostFCP"),
         2);
   }
+
+ private:
+  // Deterministically record metrics in test.
+  base::MetricsSubSampler::ScopedDisableForTesting no_subsampling_;
 };
 
 TEST_F(LocalFrameUkmAggregatorSimTest, GetUkmAggregator) {
