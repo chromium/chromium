@@ -152,6 +152,7 @@ class KioskLaunchController : public KioskProfileLoader::Delegate,
 
  private:
   friend class KioskLaunchControllerTest;
+  friend class KioskLaunchControllerUsingLacrosTest;
 
   enum AppState {
     kCreatingProfile = 0,   // Profile is being created.
