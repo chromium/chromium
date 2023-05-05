@@ -164,6 +164,12 @@ namespace smartCardProviderPrivate {
     // reportDisconnectResult.
     [maxListeners=1] static void onDisconnectRequested(long requestId,
         long scardHandle, Disposition disposition);
+
+    // Browser requested a SCardTransmit call.
+    // Extension must report the result to the browser by calling
+    // reportDataResult.
+    [maxListeners=1] static void onTransmitRequested(long requestId,
+        long scardHandle, Protocol protocol, ArrayBuffer data);
   };
 
   interface Functions {
@@ -193,5 +199,9 @@ namespace smartCardProviderPrivate {
 
       // Reports the result of a SCardDisconnect call.
       static void reportDisconnectResult(long requestId, ResultCode resultCode);
+
+      // Reports the result of a call that sends back data on success.
+      static void reportDataResult(long requestId, ArrayBuffer data,
+          ResultCode resultCode);
   };
 };

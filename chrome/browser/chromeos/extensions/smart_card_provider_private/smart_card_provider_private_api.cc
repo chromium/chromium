@@ -25,6 +25,7 @@ namespace scard_api = extensions::api::smart_card_provider_private;
 using device::mojom::SmartCardConnectResult;
 using device::mojom::SmartCardCreateContextResult;
 using device::mojom::SmartCardCreateContextResultPtr;
+using device::mojom::SmartCardDataResult;
 using device::mojom::SmartCardError;
 using device::mojom::SmartCardListReadersResult;
 using device::mojom::SmartCardResult;
@@ -242,6 +243,23 @@ device::mojom::SmartCardProtocol ToDeviceMojomSmartCardProtocol(
     case scard_api::PROTOCOL_RAW:
       return device::mojom::SmartCardProtocol::kRaw;
   }
+}
+
+scard_api::Protocol ToApiProtocol(device::mojom::SmartCardProtocol protocol) {
+  switch (protocol) {
+    case device::mojom::SmartCardProtocol::kUndefined:
+      return scard_api::PROTOCOL_UNDEFINED;
+    case device::mojom::SmartCardProtocol::kT0:
+      return scard_api::PROTOCOL_T0;
+    case device::mojom::SmartCardProtocol::kT1:
+      return scard_api::PROTOCOL_T1;
+    case device::mojom::SmartCardProtocol::kRaw:
+      return scard_api::PROTOCOL_RAW;
+  }
+}
+
+base::Value ToValue(device::mojom::SmartCardProtocol protocol) {
+  return base::Value(scard_api::ToString(ToApiProtocol(protocol)));
 }
 
 template <class PendingType>
@@ -469,6 +487,28 @@ void SmartCardProviderPrivateAPI::SendDisconnect(
       base::Value::List()
           .Append(handle.GetUnsafeValue())
           .Append(ToValue(disposition)));
+}
+
+void SmartCardProviderPrivateAPI::SendTransmit(
+    ContextId scard_context,
+    Handle handle,
+    device::mojom::SmartCardProtocol protocol,
+    const std::vector<uint8_t>& data,
+    TransmitCallback callback) {
+  auto process_result =
+      base::BindOnce(&SmartCardProviderPrivateAPI::ProcessDataResult,
+                     weak_ptr_factory_.GetWeakPtr());
+
+  DispatchEventWithTimeout(
+      scard_context, scard_api::OnTransmitRequested::kEventName,
+      extensions::events::SMART_CARD_PROVIDER_PRIVATE_ON_TRANSMIT_REQUESTED,
+      std::move(process_result), std::move(callback),
+      &SmartCardProviderPrivateAPI::OnTransmitTimeout,
+      /*event_arguments=*/
+      base::Value::List()
+          .Append(handle.GetUnsafeValue())
+          .Append(ToValue(protocol))
+          .Append(base::Value(std::move(data))));
 }
 
 void SmartCardProviderPrivateAPI::ReportResult(
@@ -700,6 +740,20 @@ void SmartCardProviderPrivateAPI::ProcessDisconnectResult(
     SmartCardCallback callback) {
   CHECK(std::holds_alternative<DisconnectCallback>(callback));
   std::move(std::get<DisconnectCallback>(callback)).Run(std::move(result));
+}
+
+void SmartCardProviderPrivateAPI::ProcessDataResult(
+    ResultArgs result_args,
+    device::mojom::SmartCardResultPtr result,
+    SmartCardCallback callback) {
+  CHECK(std::holds_alternative<std::vector<uint8_t>>(result_args));
+  auto data = std::move(std::get<std::vector<uint8_t>>(result_args));
+
+  CHECK(std::holds_alternative<DataCallback>(callback));
+  std::move(std::get<DataCallback>(callback))
+      .Run(result->is_success()
+               ? SmartCardDataResult::NewData(std::move(data))
+               : SmartCardDataResult::NewError(result->get_error()));
 }
 
 void SmartCardProviderPrivateAPI::SetResponseTimeLimitForTesting(
@@ -949,6 +1003,23 @@ void SmartCardProviderPrivateAPI::Disconnect(
                                    handle, disposition, std::move(callback)));
 }
 
+void SmartCardProviderPrivateAPI::Transmit(
+    device::mojom::SmartCardProtocol protocol,
+    const std::vector<uint8_t>& data,
+    TransmitCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const auto& [context_id, handle] = connection_receivers_.current_context();
+  CHECK(context_id);
+  CHECK(handle);
+
+  RunOrQueueRequest(
+      context_id,
+      base::BindOnce(&SmartCardProviderPrivateAPI::SendTransmit,
+                     weak_ptr_factory_.GetWeakPtr(), context_id, handle,
+                     protocol, std::move(data), std::move(callback)));
+}
+
 SmartCardProviderPrivateAPI::ContextData&
 SmartCardProviderPrivateAPI::GetContextData(ContextId scard_context) {
   auto it = context_data_map_.find(scard_context);
@@ -1010,6 +1081,11 @@ ON_TIMEOUT_IMPL(Connect,
 ON_TIMEOUT_IMPL(Disconnect,
                 ReportResult,
                 std::monostate(),
+                SmartCardResult::NewError(SmartCardError::kNoService))
+
+ON_TIMEOUT_IMPL(Transmit,
+                ReportResult,
+                std::vector<uint8_t>(),
                 SmartCardResult::NewError(SmartCardError::kNoService))
 
 #undef ON_TIMEOUT_IMPL
@@ -1075,6 +1151,12 @@ REPORT_RESULT_FUNCTION_IMPL(
     Disconnect,
     ReportResult,
     std::monostate(),
+    ProviderResultCodeToSmartCardResult(params->result_code))
+
+REPORT_RESULT_FUNCTION_IMPL(
+    Data,
+    ReportResult,
+    std::move(params->data),
     ProviderResultCodeToSmartCardResult(params->result_code))
 
 #undef REPORT_RESULT_FUNCTION_IMPL

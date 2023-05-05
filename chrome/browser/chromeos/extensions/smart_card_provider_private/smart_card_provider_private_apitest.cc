@@ -1071,4 +1071,85 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
   event_router->RemoveObserverForTesting(&event_observer);
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Transmit) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
+                             R"(
+      const equals = (a, b) =>
+        a.length === b.length &&
+        a.every((v, i) => v === b[i]);
+
+      chrome.smartCardProviderPrivate.onTransmitRequested.addListener(
+          transmit);
+
+      function transmit(requestId, scardHandle, protocol, data) {
+
+        const inputArray = new Uint8Array(data);
+        const expectedInputArray = new Uint8Array([3, 2, 1]);
+
+        if (scardHandle !== validHandle || protocol != "T1"
+            || !equals(inputArray, expectedInputArray)) {
+          chrome.smartCardProviderPrivate.reportDataResult(requestId,
+            new Uint8Array().buffer,
+            "INVALID_PARAMETER");
+          return;
+        }
+
+        let responseData = new Uint8Array([1, 100, 255]);
+
+        chrome.smartCardProviderPrivate.reportDataResult(requestId,
+          responseData.buffer, "SUCCESS");
+      }
+      )"});
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
+
+  connection->Transmit(device::mojom::SmartCardProtocol::kT1, {3u, 2u, 1u},
+                       result_future.GetCallback());
+
+  auto result = result_future.Take();
+  ASSERT_TRUE(result->is_data());
+
+  EXPECT_EQ(result->get_data(), std::vector<uint8_t>({1u, 100u, 255u}));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, TransmitTimeout) {
+  ProviderAPI().SetResponseTimeLimitForTesting(base::Seconds(1));
+
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs,
+                             R"(
+      chrome.smartCardProviderPrivate.onTransmitRequested.addListener(
+          function (requestId, scardHandle, protocol, data) {
+            // Do nothing.
+          });
+      )"});
+
+  auto context_result = CreateContext();
+  ASSERT_TRUE(context_result->is_context());
+  mojo::Remote<device::mojom::SmartCardContext> context(
+      std::move(context_result->get_context()));
+
+  mojo::Remote<device::mojom::SmartCardConnection> connection =
+      CreateConnection(*context.get());
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardDataResultPtr> result_future;
+
+  connection->Transmit(device::mojom::SmartCardProtocol::kT1,
+                       std::vector<uint8_t>({3u, 2u, 1u}),
+                       result_future.GetCallback());
+
+  auto result = result_future.Take();
+  ASSERT_TRUE(result->is_error());
+  EXPECT_EQ(result->get_error(), SmartCardError::kNoService);
+}
+
 }  // namespace extensions

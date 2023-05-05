@@ -534,6 +534,7 @@ enum HistogramValue {
   OS_EVENTS_ON_LID_EVENT = 512,
   OS_EVENTS_ON_USB_EVENT = 513,
   OS_EVENTS_ON_SD_CARD_EVENT = 514,
+  SMART_CARD_PROVIDER_PRIVATE_ON_TRANSMIT_REQUESTED = 515,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
