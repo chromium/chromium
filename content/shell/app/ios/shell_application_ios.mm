@@ -90,12 +90,12 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
 }
 
 - (BOOL)application:(UIApplication*)application
-    shouldSaveApplicationState:(NSCoder*)coder {
+    shouldSaveSecureApplicationState:(NSCoder*)coder {
   return YES;
 }
 
 - (BOOL)application:(UIApplication*)application
-    shouldRestoreApplicationState:(NSCoder*)coder {
+    shouldRestoreSecureApplicationState:(NSCoder*)coder {
   // TODO(crbug.com/710329): Make this value configurable in the settings.
   return YES;
 }
