@@ -61,23 +61,6 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, UserLevelSendNativeMessage) {
   ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message"));
 }
 
-#if BUILDFLAG(IS_WIN)
-// On Windows, a new codepath is used to directly launch .EXE-based Native
-// Hosts.
-IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase, SendNativeMessageWinExe) {
-  constexpr bool kUserLevel = false;
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(kUserLevel));
-  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
-}
-
-IN_PROC_BROWSER_TEST_F(NativeMessagingApiTestBase,
-                       UserLevelSendNativeMessageWinExe) {
-  constexpr bool kUserLevel = true;
-  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestExeHost(kUserLevel));
-  ASSERT_TRUE(RunExtensionTest("native_messaging_send_native_message_exe"));
-}
-#endif
-
 class NativeMessagingApiTest : public NativeMessagingApiTestBase,
                                public testing::WithParamInterface<ContextType> {
  public:
