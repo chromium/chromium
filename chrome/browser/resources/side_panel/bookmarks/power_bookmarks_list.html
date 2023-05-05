@@ -122,7 +122,6 @@
 
   cr-toolbar-selection-overlay {
     --cr-toolbar-selection-overlay-padding: 16px;
-    --cr-toolbar-selection-overlay-slot-gap: 8px;
     background: var(--edit-footer-background);
     color: var(--cr-secondary-text-color);
     font-size: 12px;
@@ -143,18 +142,8 @@
   }
 
   :host-context([chrome-refresh-2023]) cr-toolbar-selection-overlay {
-    --cr-toolbar-selection-overlay-slot-gap: 8px;
     background: transparent;
     font-weight: 500;
-  }
-
-  :host-context([chrome-refresh-2023])
-      cr-toolbar-selection-overlay::part(clearIcon),
-  :host-context([chrome-refresh-2023])
-      cr-toolbar-selection-overlay cr-icon-button {
-    --cr-icon-button-icon-size: 20px;
-    height: 28px;
-    width: 28px;
   }
 
   :host-context([chrome-refresh-2023])
@@ -300,21 +289,23 @@
         cancel-label="$i18n{cancelA11yLabel}"
         selection-label="[[getSelectedDescription_(selectedBookmarks_.*)]]"
         on-clear-selected-items="onBulkEditClicked_">
-      <cr-icon-button iron-icon="bookmarks:delete"
-          disabled="[[!selectedBookmarks_.length]]"
-          title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
-          on-click="onDeleteClicked_">
-      </cr-icon-button>
-      <cr-icon-button iron-icon="bookmarks:move"
-          disabled="[[!selectedBookmarks_.length]]"
-          title="$i18n{tooltipMove}" aria-label="$i18n{tooltipMove}"
-          on-click="onMoveClicked_">
-      </cr-icon-button>
-      <cr-icon-button iron-icon="cr:more-vert"
-          disabled="[[!selectedBookmarks_.length]]"
-          title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
-          on-click="onEditMenuClicked_">
-      </cr-icon-button>
+      <div class="sp-icon-buttons-row">
+        <cr-icon-button iron-icon="bookmarks:delete"
+            disabled="[[!selectedBookmarks_.length]]"
+            title="$i18n{tooltipDelete}" aria-label="$i18n{tooltipDelete}"
+            on-click="onDeleteClicked_">
+        </cr-icon-button>
+        <cr-icon-button iron-icon="bookmarks:move"
+            disabled="[[!selectedBookmarks_.length]]"
+            title="$i18n{tooltipMove}" aria-label="$i18n{tooltipMove}"
+            on-click="onMoveClicked_">
+        </cr-icon-button>
+        <cr-icon-button iron-icon="cr:more-vert"
+            disabled="[[!selectedBookmarks_.length]]"
+            title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
+            on-click="onEditMenuClicked_">
+        </cr-icon-button>
+      </div>
     </cr-toolbar-selection-overlay>
   </sp-footer>
 </div>

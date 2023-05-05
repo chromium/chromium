@@ -88,6 +88,17 @@
       var(--color-side-panel-textfield-background-hover);
 }
 
+.sp-icon-buttons-row {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-size: 24px;
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-auto-columns: var(--cr-icon-button-icon-size);
+  grid-auto-flow: column;
+  justify-items: center;
+}
+
 .sp-hr {
   background: var(--google-grey-300);
   border: none;
