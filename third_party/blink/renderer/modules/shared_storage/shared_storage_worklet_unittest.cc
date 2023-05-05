@@ -273,6 +273,19 @@ class SharedStorageWorkletTest : public PageTestBase {
  public:
   SharedStorageWorkletTest() = default;
 
+  void TearDown() override {
+    // Shut down the worklet gracefully. Otherwise, there could the a data race
+    // on accessing the base::FeatureList: the worklet thread may access the
+    // feature during SharedStorageWorkletGlobalScope::FinishOperation() or
+    // SharedStorageWorkletGlobalScope::NotifyContextDestroyed(), which can
+    // occur after the (maybe implicit) ScopedFeatureList is destroyed in the
+    // main thread.
+    shared_storage_worklet_service_.reset();
+    EXPECT_TRUE(worklet_terminated_future_.Wait());
+
+    PageTestBase::TearDown();
+  }
+
   AddModuleResult AddModule(const std::string& script_content,
                             std::string mime_type = "application/javascript") {
     InitializeWorkletServiceOnce();
@@ -2684,15 +2697,6 @@ class SharedStoragePrivateAggregationTest : public SharedStorageWorkletTest {
         {{blink::features::kPrivateAggregationApi,
           {{"enabled_in_shared_storage", "true"}}}},
         /*disabled_features=*/{});
-  }
-
-  void TearDown() override {
-    // Shut down the worklet gracefully. Otherwise, the
-    // `private_aggregation_feature_` may be destroyed before the worklet thread
-    // (e.g. SharedStorageWorkletGlobalScope::NotifyContextDestroyed()) and some
-    // feature state assertions could fail.
-    shared_storage_worklet_service_.reset();
-    EXPECT_TRUE(worklet_terminated_future_.Wait());
   }
 
   // `error_message` being `nullptr` indicates no error is expected.
