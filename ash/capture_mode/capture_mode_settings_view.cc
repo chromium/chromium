@@ -79,9 +79,10 @@ CaptureModeSettingsView::CaptureModeSettingsView(
     const bool audio_capture_managed_by_policy =
         controller->IsAudioCaptureDisabledByPolicy();
 
-    DCHECK(!audio_capture_managed_by_policy ||
-           !active_behavior->IsAudioRecordingRequired())
-        << "A projector session should not be allowed to begin if audio "
+    DCHECK(
+        !audio_capture_managed_by_policy ||
+        active_behavior->SupportsAudioRecordingMode(AudioRecordingMode::kOff))
+        << "A client session should not be allowed to begin if audio "
            "recording is diabled by policy.";
 
     audio_input_menu_group_ =
@@ -90,37 +91,41 @@ CaptureModeSettingsView::CaptureModeSettingsView(
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT),
             audio_capture_managed_by_policy));
 
-    if (!active_behavior->IsAudioRecordingRequired()) {
-      // Disallow the user to turn off audio recording if it is required.
-      audio_input_menu_group_->AddOption(
-          /*option_icon=*/nullptr,
-          l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF),
-          kAudioOff);
-    }
+    // A list of all the possible audio options.
+    struct {
+      // The backend audio recording mode for this option.
+      AudioRecordingMode audio_recording_mode;
+      // The ID of this menu group option.
+      int option_id;
+      // The ID of the string that will be used for the option's label.
+      int string_id;
+      // True if the option can be added if audio recording is managed by an
+      // admin policy.
+      bool add_if_managed_by_policy;
+    } kAudioOptions[] = {
+        {AudioRecordingMode::kOff, kAudioOff,
+         IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_OFF,
+         /*add_if_managed_by_policy=*/true},
+        {AudioRecordingMode::kSystem, kAudioSystem,
+         IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_SYSTEM,
+         /*add_if_managed_by_policy=*/false},
+        {AudioRecordingMode::kMicrophone, kAudioMicrophone,
+         IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE,
+         /*add_if_managed_by_policy=*/false},
+        {AudioRecordingMode::kSystemAndMicrophone, kAudioSystemAndMicrophone,
+         IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_SYSTEM_AND_MICROPHONE,
+         /*add_if_managed_by_policy=*/false},
+    };
 
-    if (!audio_capture_managed_by_policy) {
-      const bool audio_mixing_enabled =
-          features::IsCaptureModeAudioMixingEnabled();
-      if (audio_mixing_enabled) {
+    for (const auto& audio_option : kAudioOptions) {
+      if ((!audio_capture_managed_by_policy ||
+           audio_option.add_if_managed_by_policy) &&
+          active_behavior->SupportsAudioRecordingMode(
+              audio_option.audio_recording_mode)) {
         audio_input_menu_group_->AddOption(
             /*option_icon=*/nullptr,
-            l10n_util::GetStringUTF16(
-                IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_SYSTEM),
-            kAudioSystem);
-      }
-
-      audio_input_menu_group_->AddOption(
-          /*option_icon=*/nullptr,
-          l10n_util::GetStringUTF16(
-              IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_MICROPHONE),
-          kAudioMicrophone);
-
-      if (audio_mixing_enabled) {
-        audio_input_menu_group_->AddOption(
-            /*option_icon=*/nullptr,
-            l10n_util::GetStringUTF16(
-                IDS_ASH_SCREEN_CAPTURE_AUDIO_INPUT_SYSTEM_AND_MICROPHONE),
-            kAudioSystemAndMicrophone);
+            l10n_util::GetStringUTF16(audio_option.string_id),
+            audio_option.option_id);
       }
     }
 
@@ -347,7 +352,8 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
   switch (option_id) {
     case kAudioOff:
       return !audio_capture_managed_by_policy &&
-             !active_behavior_->IsAudioRecordingRequired();
+             active_behavior_->SupportsAudioRecordingMode(
+                 AudioRecordingMode::kOff);
     case kAudioSystem:
     case kAudioMicrophone:
     case kAudioSystemAndMicrophone:

@@ -48,7 +48,8 @@ class CaptureModeBehavior {
   virtual bool ShouldFulscreenCaptureSourceBeAllowed() const;
   virtual bool ShouldRegionCaptureSourceBeAllowed() const;
   virtual bool ShouldWindowCaptureSourceBeAllowed() const;
-  virtual bool IsAudioRecordingRequired() const;
+  // Returns true if the given `mode` is supported by this behavior.
+  virtual bool SupportsAudioRecordingMode(AudioRecordingMode mode) const;
   virtual bool ShouldCameraSelectionSettingsBeIncluded() const;
   virtual bool ShouldDemoToolsSettingsBeIncluded() const;
   virtual bool ShouldSaveToSettingsBeIncluded() const;

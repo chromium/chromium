@@ -129,4 +129,51 @@ TEST_F(CaptureAudioMixingTest, KeyboardNavigation) {
             settings_test_api.GetSystemAndMicrophoneAudioOption());
 }
 
+// -----------------------------------------------------------------------------
+// ProjectorAudioMixingTest:
+
+class ProjectorAudioMixingTest : public CaptureAudioMixingTest {
+ public:
+  ProjectorAudioMixingTest() = default;
+  ~ProjectorAudioMixingTest() override = default;
+
+  // CaptureAudioMixingTest:
+  void SetUp() override {
+    CaptureAudioMixingTest::SetUp();
+    projector_helper_.SetUp();
+  }
+
+  void StartProjectorModeSession() {
+    projector_helper_.StartProjectorModeSession();
+  }
+
+ private:
+  ProjectorCaptureModeIntegrationHelper projector_helper_;
+};
+
+TEST_F(ProjectorAudioMixingTest, AudioSettingsMenu) {
+  StartProjectorModeSession();
+  auto* event_generator = GetEventGenerator();
+
+  // Open the settings menu, and check that only microphone and
+  // system+microphone options are available.
+  ClickOnView(GetSettingsButton(), event_generator);
+
+  CaptureModeSettingsTestApi test_api;
+  views::View* off_option = test_api.GetAudioOffOption();
+  views::View* microphone_option = test_api.GetMicrophoneOption();
+  views::View* system_option = test_api.GetSystemAudioOption();
+  views::View* system_and_microphone_option =
+      test_api.GetSystemAndMicrophoneAudioOption();
+
+  EXPECT_FALSE(off_option);
+  EXPECT_FALSE(system_option);
+  EXPECT_TRUE(microphone_option);
+  EXPECT_TRUE(system_and_microphone_option);
+
+  // Microphone should still be selected by default.
+  EXPECT_TRUE(IsAudioOptionChecked(kAudioMicrophone));
+  EXPECT_FALSE(IsAudioOptionChecked(kAudioSystemAndMicrophone));
+}
+
 }  // namespace ash

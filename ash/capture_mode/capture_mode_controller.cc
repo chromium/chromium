@@ -1785,8 +1785,8 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
 
   CaptureModeBehavior* active_behavior =
       capture_mode_session_->active_behavior();
-  if (active_behavior->IsAudioRecordingRequired() &&
-      GetEffectiveAudioRecordingMode() == AudioRecordingMode::kOff) {
+  if (!active_behavior->SupportsAudioRecordingMode(
+          GetEffectiveAudioRecordingMode())) {
     // Before asking the client to create a folder to host the video file, we
     // check if they require audio recording to be enabled, but it can't be
     // allowed due to admin policy. In this case we just abort the recording by

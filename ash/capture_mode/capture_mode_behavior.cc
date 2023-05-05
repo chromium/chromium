@@ -60,7 +60,17 @@ class ProjectorBehavior : public CaptureModeBehavior {
   bool ShouldSaveToSettingsBeIncluded() const override { return false; }
   bool ShouldGifBeSupported() const override { return false; }
   bool ShouldShowPreviewNotification() const override { return false; }
-  bool IsAudioRecordingRequired() const override { return true; }
+  bool SupportsAudioRecordingMode(AudioRecordingMode mode) const override {
+    switch (mode) {
+      case AudioRecordingMode::kOff:
+      case AudioRecordingMode::kSystem:
+        return false;
+      case AudioRecordingMode::kMicrophone:
+        return true;
+      case AudioRecordingMode::kSystemAndMicrophone:
+        return features::IsCaptureModeAudioMixingEnabled();
+    }
+  }
   bool ShouldCreateRecordingOverlayController() const override { return true; }
   bool ShouldShowUserNudge() const override { return false; }
   bool ShouldAutoSelectFirstCamera() const override { return true; }
@@ -132,8 +142,16 @@ bool CaptureModeBehavior::ShouldWindowCaptureSourceBeAllowed() const {
   return true;
 }
 
-bool CaptureModeBehavior::IsAudioRecordingRequired() const {
-  return false;
+bool CaptureModeBehavior::SupportsAudioRecordingMode(
+    AudioRecordingMode mode) const {
+  switch (mode) {
+    case AudioRecordingMode::kOff:
+    case AudioRecordingMode::kMicrophone:
+      return true;
+    case AudioRecordingMode::kSystem:
+    case AudioRecordingMode::kSystemAndMicrophone:
+      return features::IsCaptureModeAudioMixingEnabled();
+  }
 }
 
 bool CaptureModeBehavior::ShouldCameraSelectionSettingsBeIncluded() const {
