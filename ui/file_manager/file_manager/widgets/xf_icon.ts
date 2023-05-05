@@ -5,7 +5,7 @@
 import {util} from '../common/js/util.js';
 import {constants} from '../foreground/js/constants.js';
 
-import {classMap, css, customElement, html, property, PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
+import {css, customElement, html, property, PropertyValues, styleMap, svg, XfBase} from './xf_base.js';
 
 @customElement('xf-icon')
 export class XfIcon extends XfBase {
@@ -79,15 +79,8 @@ export class XfIcon extends XfBase {
           styleMap(backgroundImageStyle)}></span>`;
     }
 
-    const shouldKeepColor = [
-      constants.ICON_TYPES.EXCEL,
-      constants.ICON_TYPES.POWERPOINT,
-      constants.ICON_TYPES.WORD,
-    ].includes(this.type);
-    const spanClass = {'keep-color': shouldKeepColor};
-
     return html`
-      <span class=${classMap(spanClass)}></span>
+      <span></span>
     `;
   }
 
@@ -222,7 +215,7 @@ function getCSS() {
     }
 
     :host([type="excel"]) span {
-      background-image: url(../foreground/images/filetype/filetype_excel.svg);
+      -webkit-mask-image: url(../foreground/images/filetype/filetype_excel.svg);
     }
 
     :host([type="external_media"]) span,
@@ -300,7 +293,7 @@ function getCSS() {
     }
 
     :host([type="ppt"]) span {
-      background-image: url(../foreground/images/filetype/filetype_ppt.svg);
+      -webkit-mask-image: url(../foreground/images/filetype/filetype_ppt.svg);
     }
 
     :host([type="script"]) span {
@@ -360,7 +353,7 @@ function getCSS() {
     }
 
     :host([type="word"]) span {
-      background-image: url(../foreground/images/filetype/filetype_word.svg);
+      -webkit-mask-image: url(../foreground/images/filetype/filetype_word.svg);
     }
 
     :host([type="check"]) span {
@@ -377,6 +370,51 @@ function getCSS() {
 
     :host([type="error_banner"]) span {
       -webkit-mask-image: url(../foreground/images/files/ui/error_banner_icon.svg);
+    }
+
+    :host([type='gdoc']) span,
+    :host([type='script']) span,
+    :host([type='tini']) span {
+      background-color: var(--cros-sys-progress);
+    }
+
+    :host([type='audio']) span,
+    :host([type='gdraw']) span,
+    :host([type='image']) span,
+    :host([type='gmap']) span,
+    :host([type='pdf']) span,
+    :host([type='video']) span {
+      background-color: var(--cros-sys-error);
+    }
+
+    :host([type='gsheet']) span,
+    :host([type='gtable']) span {
+      background-color: var(--cros-sys-positive);
+    }
+
+    :host([type='gslides']) span {
+      background-color: var(--cros-sys-warning);
+    }
+
+    :host([type='gform']) span {
+      background-color: var(--cros-sys-file_form);
+    }
+
+    :host([type='gsite']) span,
+    :host([type='sites']) span {
+      background-color: var(--cros-sys-file_site);
+    }
+
+    :host([type='excel']) span {
+      background-color: var(--cros-sys-file_ms_excel);
+    }
+
+    :host([type='ppt']) span {
+      background-color: var(--cros-sys-file_ms_ppt);
+    }
+
+    :host([type='word']) span {
+      background-color: var(--cros-sys-file_ms_word);
     }
   `;
 }
