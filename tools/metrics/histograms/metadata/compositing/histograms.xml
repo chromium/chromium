@@ -896,7 +896,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="CompositorLatency.CompositorOnlyFrame{InteractionType}.{StageType}"
-    units="microseconds" expires_after="2023-03-01">
+    units="microseconds" expires_after="2024-05-05">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -906,6 +906,8 @@ chromium-metrics-reviews@google.com.
 
     This metric uses base::Histogram::FactoryMicrosecondsTimeGet so only users
     with high resolution clocks will report this metric.
+
+    Note: This metric was expired from 2023-03-01 to 2023-05-05.
   </summary>
   <token key="InteractionType">
     <variant name=""/>
