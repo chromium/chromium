@@ -71,6 +71,11 @@ void LayerTreeImpl::SetViewportRectAndScale(
     const gfx::Rect& device_viewport_rect,
     float device_scale_factor,
     const viz::LocalSurfaceId& local_surface_id) {
+  if (device_viewport_rect_ == device_viewport_rect &&
+      device_scale_factor_ == device_scale_factor &&
+      local_surface_id_ == local_surface_id) {
+    return;
+  }
   if (local_surface_id_ != local_surface_id) {
     local_surface_id_ = local_surface_id;
     if (frame_sink_) {
