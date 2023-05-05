@@ -100,9 +100,8 @@ void ShoppingListUiTabHelper::RegisterProfilePrefs(
 void ShoppingListUiTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
   if (!load_details.is_in_active_page ||
-      (web_contents()->GetLastCommittedURL() ==
-           load_details.previous_main_frame_url &&
-       is_initial_navigation_committed_)) {
+      IsInitialNavigationCommitted(load_details) ||
+      IsSameDocumentWithSameCommittedUrl(load_details)) {
     is_initial_navigation_committed_ = true;
     return;
   }
@@ -126,6 +125,20 @@ void ShoppingListUiTabHelper::NavigationEntryCommitted(
       web_contents()->GetLastCommittedURL(),
       base::BindOnce(&ShoppingListUiTabHelper::HandleProductInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool ShoppingListUiTabHelper::IsInitialNavigationCommitted(
+    const content::LoadCommittedDetails& load_details) {
+  return load_details.previous_main_frame_url ==
+             web_contents()->GetLastCommittedURL() &&
+         is_initial_navigation_committed_;
+}
+
+bool ShoppingListUiTabHelper::IsSameDocumentWithSameCommittedUrl(
+    const content::LoadCommittedDetails& load_details) {
+  return load_details.previous_main_frame_url ==
+             web_contents()->GetLastCommittedURL() &&
+         load_details.is_same_document;
 }
 
 void ShoppingListUiTabHelper::DidStopLoading() {
