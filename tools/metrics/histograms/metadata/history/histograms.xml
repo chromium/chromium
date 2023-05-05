@@ -353,8 +353,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDeselectedNum"
-    units="units" expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
+    units="units" expires_after="2024-05-04">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
@@ -362,12 +362,15 @@ chromium-metrics-reviews@google.com.
     list of important sites they might want to exclude from clearing browsing
     data. We record the number of sites the user deselected, or protected, from
     clearing. The default has all sites selected.
+
+    This histogram expired between M95 and M115, and may have incomplete data
+    within that range.
   </summary>
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDeselectedPercent"
-    units="%/5" expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
+    units="%/5" expires_after="2024-05-04">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
@@ -376,40 +379,38 @@ chromium-metrics-reviews@google.com.
     data. We record the percent of sites the user deselected, or protected, from
     clearing. The default has all sites selected, which is 0%. Note: To reduce
     the number of empty buckets, the percent is divided by 5.
+
+    This histogram expired between M95 and M115, and may have incomplete data
+    within that range.
   </summary>
 </histogram>
 
 <histogram name="History.ClearBrowsingData.ImportantDialogShown"
-    enum="BooleanShown" expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
+    enum="BooleanShown" expires_after="2024-05-04">
+  <owner>ayui@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
     Recorded when the user presses the 'clear' button in the clear browsing
     dialog. We record 'true' if the important sites dialog is shown.
+
+    This histogram expired between M95 and M115, and may have incomplete data
+    within that range.
   </summary>
 </histogram>
 
 <histogram name="History.ClearBrowsingData.NumImportant" units="units"
-    expires_after="M95">
-  <owner>dmurph@chromium.org</owner>
+    expires_after="2024-05-04">
+  <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
   <summary>
     Recorded when we successfully fetched important sites in the clear browsing
     data screen. This is the number of sites that we think are important to the
     user.
-  </summary>
-</histogram>
 
-<histogram name="History.ClearBrowsingData.NumInstalled" units="units"
-    expires_after="M95">
-  <owner>jarrydg@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Recorded when we successfully fetched installed apps in the clear browsing
-    data screen. This is the number of apps that we think are important to the
-    user and allow the users to exclude from clearing browsing data.
+    This histogram expired between M95 and M115, and may have incomplete data
+    within that range.
   </summary>
 </histogram>
 
