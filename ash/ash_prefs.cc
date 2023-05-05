@@ -48,7 +48,7 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/system/network/cellular_setup_notifier.h"
-#include "ash/system/network/vpn_list_view.h"
+#include "ash/system/network/vpn_detailed_view.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/palette/palette_tray.h"
 #include "ash/system/palette/palette_welcome_bubble.h"

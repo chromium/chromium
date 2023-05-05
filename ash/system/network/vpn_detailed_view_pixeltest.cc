@@ -7,7 +7,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/system/network/tray_network_state_model.h"
-#include "ash/system/network/vpn_list_view.h"
+#include "ash/system/network/vpn_detailed_view.h"
 #include "ash/system/unified/quick_settings_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"

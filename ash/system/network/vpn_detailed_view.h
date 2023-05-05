@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_NETWORK_VPN_LIST_VIEW_H_
-#define ASH_SYSTEM_NETWORK_VPN_LIST_VIEW_H_
+#ifndef ASH_SYSTEM_NETWORK_VPN_DETAILED_VIEW_H_
+#define ASH_SYSTEM_NETWORK_VPN_DETAILED_VIEW_H_
 
 #include <map>
 #include <string>
@@ -112,4 +112,4 @@ class ASH_EXPORT VpnDetailedView : public NetworkStateListDetailedView,
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_NETWORK_VPN_LIST_VIEW_H_
+#endif  // ASH_SYSTEM_NETWORK_VPN_DETAILED_VIEW_H_
