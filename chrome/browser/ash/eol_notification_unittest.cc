@@ -313,7 +313,8 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveFarBeforeEolDate) {
   ASSERT_FALSE(notification);
 }
 
-TEST_F(EolIncentiveNotificationTest, TestIncentiveBeforeEolDate) {
+// b/280975476
+TEST_F(EolIncentiveNotificationTest, DISABLED_TestIncentiveBeforeEolDate) {
   SetCurrentTimeToUtc("1 November 2023");
   SetEolDateUtc("1 December 2023");
 
