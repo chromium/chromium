@@ -302,6 +302,7 @@ foreach(f, css_files) {
 non_web_component_files = [
   "chromeos/assert_extras.ts",
   "chromeos/common/global_scroll_target_mixin.ts",
+  "chromeos/common/setting_id_param_util.ts",
   "chromeos/common/types.ts",
   "chromeos/os_files_page/google_drive_browser_proxy.ts",
   "chromeos/crostini_page/crostini_browser_proxy.ts",
@@ -402,7 +403,6 @@ non_web_component_files = [
   "chromeos/search/combined_search_handler.ts",
   "chromeos/search/personalization_search_handler.ts",
   "chromeos/search/settings_search_handler.ts",
-  "chromeos/setting_id_param_util.ts",
 ]
 
 mojom_webui_files = [
