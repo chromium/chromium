@@ -74,14 +74,6 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
               launched_apps_.push_back(std::move(params));
             }));
 
-    TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-        std::make_unique<SystemNotificationHelper>());
-    tester_ = std::make_unique<NotificationDisplayServiceTester>(
-        /*profile=*/nullptr);
-    tester_->SetNotificationAddedClosure(
-        base::BindLambdaForTesting([this]() { notification_count_++; }));
-    notification_count_ = 0u;
-
     // This test requires that a) the WebAppSettings are correctly read by the
     // WebAppPolicyManager and b) the PWA is installed before RunOnOsLogin
     // happens. WebAppSettings prefs can simply set before the WebAppProvider is
@@ -120,8 +112,6 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
     return launched_apps_;
   }
 
-  unsigned int notification_count_;
-  std::unique_ptr<NotificationDisplayServiceTester> tester_;
   std::vector<apps::AppLaunchParams> launched_apps_;
   raw_ptr<FakeWebAppProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -262,9 +252,6 @@ TEST_P(WebAppRunOnOsLoginManagerParameterizedTest, WebAppRunOnOsLogin) {
     auto actual_container = launched_apps_[0].container;
     // should always open in new window
     ASSERT_EQ(apps::LaunchContainer::kLaunchContainerWindow, actual_container);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ASSERT_EQ(notification_count_, 1u);
-#endif
   }
 }
 

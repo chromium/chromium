@@ -6520,12 +6520,7 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   <message name="IDS_OS_URL_HANDLER_APP_NAME" translateable="false" desc="Name for a hidden app which shows os:// and chrome:// system pages in an app">
     ChromeOS-URLs
   </message>
-
-     <!-- Strings for WebAppSettings -->
-  <message name="IDS_RUN_ON_OS_LOGIN_ENABLED" desc="This is the message of the notification when an application is automatically started on OS login.">
-    The app <ph name="APP_NAME">$1</ph> has been configured by your admin to run on OS login
-  </message>
-
+  
   <!-- Theme Selection -->
   <message name="IDS_THEME_SELECTION_TITLE" desc="Title of the theme selection screen.">
     Personalize your display theme
