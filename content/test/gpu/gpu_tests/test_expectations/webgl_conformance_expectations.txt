@@ -429,7 +429,6 @@ crbug.com/1362937 [ win amd-0x7340 angle-d3d9 passthrough ] conformance/uniforms
 
 crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough release target-cpu-32 win10 ] conformance/glsl/bugs/complex-glsl-does-not-crash.html [ Failure ]
 crbug.com/1378372 [ angle-d3d11 nvidia-0x2184 passthrough release target-cpu-32 win10 ] conformance/glsl/misc/shader-uniform-packing-restrictions.html [ Failure ]
-crbug.com/1439591 [ angle-d3d11 nvidia passthrough win10 ] conformance/extensions/webgl-compressed-texture-s3tc-srgb.html [ RetryOnFailure ]
 
 ## Vulkan / Win / NVIDIA / Passthrough command decoder ##
 
@@ -605,7 +604,7 @@ crbug.com/1372149 [ android android-sm-a235m no-passthrough ] conformance/render
 # TODO(crbug.com/1276153) uncomment after fix for updated part of test applies
 # crbug.com/957807 [ chromeos ] conformance/context/context-attributes-alpha-depth-stencil-antialias.html [ Failure ]
 
-crbug.com/957807 [ chromeos ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
+crbug.com/957807 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 target-cpu-64 ] conformance/uniforms/uniform-samplers-test.html [ Failure ]
 
 # finder:disable-unused Reported by Intel but not currently testable in Chromium
 crbug.com/1237319 [ chromeos chromeos-board-eve passthrough intel ] conformance/textures/misc/texture-size-limit.html [ Failure ]
@@ -618,9 +617,6 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 no-passthrough target-cpu-64 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-## Arm-based issues. ##
-crbug.com/957807 [ chromeos chromeos-board-kevin ] deqp/data/gles2/shaders/conversions* [ Failure ]
-crbug.com/957807 [ chromeos chromeos-board-kevin ] deqp/data/gles2/shaders/swizzles* [ Failure ]
 
 
 crbug.com/1080400 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
