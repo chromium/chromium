@@ -17,7 +17,7 @@ class PrCleanupTool(object):
         _log.info(
             "Close exported PRs where the corresponding CLs have been abandoned."
         )
-        pull_requests = self.retrieve_all_prs(wpt_github)
+        pull_requests = self.retrieve_provisioned_prs(wpt_github)
         past = datetime.utcnow() - timedelta(days=14)
         for pull_request in pull_requests:
             if pull_request.state != 'open':
@@ -49,9 +49,9 @@ class PrCleanupTool(object):
 
         return True
 
-    def retrieve_all_prs(self, wpt_github):
-        """Retrieves last 1000 PRs."""
-        return wpt_github.all_pull_requests()
+    def retrieve_provisioned_prs(self, wpt_github):
+        """Retrieves last 1000 PRs with 'do not merge' label."""
+        return wpt_github.all_provisional_pull_requests()
 
     def close_pr_and_delete_branch(self, wpt_github, pull_request_number,
                                    comment):
