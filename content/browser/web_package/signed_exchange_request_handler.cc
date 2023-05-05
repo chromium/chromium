@@ -61,7 +61,9 @@ void SignedExchangeRequestHandler::MaybeCreateLoader(
         *signed_exchange_loader_->fallback_url()));
     signed_exchange_loader_ = nullptr;
     std::move(fallback_callback)
-        .Run(false /* reset_subresource_loader_params */);
+        .Run(false /* reset_subresource_loader_params */,
+             // TODO(crbug.com/1441384) test workerStart in SXG scenarios
+             net::LoadTimingInfo());
     return;
   }
 

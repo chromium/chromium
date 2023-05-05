@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/load_timing_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -138,7 +139,7 @@ class WorkerScriptLoader : public network::mojom::URLLoader,
   void MaybeStartLoader(
       NavigationLoaderInterceptor* interceptor,
       scoped_refptr<network::SharedURLLoaderFactory> single_request_factory);
-  void LoadFromNetwork(bool reset_subresource_loader_params);
+  void LoadFromNetwork();
   void CommitCompleted(const network::URLLoaderCompletionStatus& status);
 
   // The order of the interceptors is important. The former interceptor can

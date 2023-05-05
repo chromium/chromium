@@ -568,7 +568,9 @@ class PrefetchedNavigationLoaderInterceptor
       signed_exchange_utils::RecordLoadResultHistogram(
           SignedExchangeLoadResult::kHadCookieForCookielessOnlySXG);
       std::move(fallback_callback)
-          .Run(true /* reset_subresource_loader_params */);
+          .Run(true /* reset_subresource_loader_params */,
+               // TODO(crbug.com/1441384) test workerStart in SXG scenarios
+               this->exchange_->outer_response()->load_timing);
       return;
     }
     state_ = State::kInnerResponseRequested;

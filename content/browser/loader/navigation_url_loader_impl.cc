@@ -72,6 +72,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
+#include "net/base/load_timing_info.h"
 #include "net/cert/sct_status_flags.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/http/http_content_disposition.h"
@@ -679,9 +680,13 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
 }
 
 void NavigationURLLoaderImpl::FallbackToNonInterceptedRequest(
-    bool reset_subresource_loader_params) {
+    bool reset_subresource_loader_params,
+    const net::LoadTimingInfo& timing_info) {
   if (reset_subresource_loader_params)
     subresource_loader_params_.reset();
+
+  intercepting_worker_start_time_ = timing_info.service_worker_start_time;
+  intercepting_worker_ready_time_ = timing_info.service_worker_ready_time;
 
   scoped_refptr<network::SharedURLLoaderFactory> factory =
       PrepareForNonInterceptedRequest();
@@ -834,6 +839,13 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
 
   response_body_ = std::move(response_body);
   received_response_ = true;
+
+  if (!intercepting_worker_start_time_.is_null()) {
+    head_->load_timing.service_worker_start_time =
+        intercepting_worker_start_time_;
+    head_->load_timing.service_worker_ready_time =
+        intercepting_worker_ready_time_;
+  }
 
   // If the default loader (network) was used to handle the URL load request
   // we need to see if the interceptors want to potentially create a new

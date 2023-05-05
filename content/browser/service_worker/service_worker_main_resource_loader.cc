@@ -28,6 +28,7 @@
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "net/base/load_timing_info.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"
@@ -443,7 +444,8 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
     container_host_->NotifyControllerLost();
     if (fallback_callback_) {
       std::move(fallback_callback_)
-          .Run(true /* reset_subresource_loader_params */);
+          .Run(true /* reset_subresource_loader_params */,
+               net::LoadTimingInfo());
     }
     return;
   }
@@ -471,11 +473,10 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
       ServiceWorkerFetchDispatcher::FetchEventResult::kShouldFallback) {
     TransitionToStatus(Status::kCompleted);
     RecordTimingMetricsForNetworkFallbackCase();
-    // TODO(falken): Propagate the timing info to the renderer somehow, or else
-    // Navigation Timing etc APIs won't know about service worker.
     if (fallback_callback_) {
       std::move(fallback_callback_)
-          .Run(false /* reset_subresource_loader_params */);
+          .Run(false /* reset_subresource_loader_params */,
+               response_head_->load_timing);
     }
     return;
   }

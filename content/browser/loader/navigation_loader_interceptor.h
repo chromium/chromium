@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/load_timing_info.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -40,7 +41,8 @@ class CONTENT_EXPORT NavigationLoaderInterceptor {
   using LoaderCallback =
       base::OnceCallback<void(scoped_refptr<network::SharedURLLoaderFactory>)>;
   using FallbackCallback =
-      base::OnceCallback<void(bool /* reset_subresource_loader_params */)>;
+      base::OnceCallback<void(bool /* reset_subresource_loader_params */,
+                              const net::LoadTimingInfo& load_timing_info)>;
 
   // Asks this interceptor to handle this resource load request.
   // The interceptor must invoke `callback` eventually with either a non-null

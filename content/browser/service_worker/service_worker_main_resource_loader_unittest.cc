@@ -525,7 +525,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
 
   // The |fallback_callback| passed to the ServiceWorkerMainResourceLoader in
   // StartRequest().
-  void Fallback(bool reset_subresource_loader_params) {
+  void Fallback(bool reset_subresource_loader_params,
+                const net::LoadTimingInfo& timing_info) {
     did_call_fallback_callback_ = true;
     reset_subresource_loader_params_ = reset_subresource_loader_params;
     if (quit_closure_for_fallback_callback_)
