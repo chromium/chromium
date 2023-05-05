@@ -28,12 +28,14 @@
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
+#include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
+#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -247,6 +249,9 @@ void RegisterAshChromeWebUIConfigs() {
       MakeComponentConfigWithDelegate<ash::ScanningUIConfig, ash::ScanningUI,
                                       ash::ChromeScanningAppDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::SetTimeUIConfig>());
+  map.AddWebUIConfig(MakeComponentConfigWithDelegate<
+                     ash::ShimlessRMADialogUIConfig, ash::ShimlessRMADialogUI,
+                     ash::shimless_rma::ChromeShimlessRmaDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::ShortcutCustomizationAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SlowTraceControllerConfig>());
   map.AddWebUIConfig(std::make_unique<ash::SlowUIConfig>());

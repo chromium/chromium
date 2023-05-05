@@ -407,6 +407,17 @@ bool HasLaunchRmaSwitchAndIsAllowed() {
 
 }  // namespace shimless_rma
 
+ShimlessRMADialogUIConfig::ShimlessRMADialogUIConfig(
+    CreateWebUIControllerFunc create_controller_func)
+    : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                          ash::kChromeUIShimlessRMAHost,
+                          create_controller_func) {}
+
+bool ShimlessRMADialogUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return shimless_rma::HasLaunchRmaSwitchAndIsAllowed();
+}
+
 ShimlessRMADialogUI::ShimlessRMADialogUI(
     content::WebUI* web_ui,
     std::unique_ptr<shimless_rma::ShimlessRmaDelegate> shimless_rma_delegate)

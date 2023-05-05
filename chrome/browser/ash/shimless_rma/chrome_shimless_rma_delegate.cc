@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
+#include "content/public/browser/web_ui.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -26,7 +27,7 @@
 namespace ash {
 namespace shimless_rma {
 
-ChromeShimlessRmaDelegate::ChromeShimlessRmaDelegate() = default;
+ChromeShimlessRmaDelegate::ChromeShimlessRmaDelegate(content::WebUI* web_ui) {}
 ChromeShimlessRmaDelegate::~ChromeShimlessRmaDelegate() = default;
 
 void ChromeShimlessRmaDelegate::ExitRmaThenRestartChrome() {

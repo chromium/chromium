@@ -32,7 +32,8 @@ void GenerateFakeQRCode(
 class ChromeShimlessRmaDelegateTest : public testing::Test {
  public:
   ChromeShimlessRmaDelegateTest()
-      : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
+      : chrome_shimless_rma_delegate_(ChromeShimlessRmaDelegate(nullptr)),
+        task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
   ~ChromeShimlessRmaDelegateTest() override = default;
 
   void SetUp() override {

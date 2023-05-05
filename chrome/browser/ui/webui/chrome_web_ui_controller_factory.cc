@@ -214,8 +214,6 @@
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "ash/webui/projector_app/trusted_projector_ui.h"
-#include "ash/webui/shimless_rma/shimless_rma.h"
-#include "ash/webui/shimless_rma/url_constants.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "ash/webui/system_extensions_internals_ui/url_constants.h"
 #include "base/system/sys_info.h"
@@ -234,7 +232,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
@@ -601,13 +598,6 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       base::BindRepeating(&BindEcheConnectionStatusHandler, manager));
 }
 
-template <>
-WebUIController* NewWebUI<ash::ShimlessRMADialogUI>(WebUI* web_ui,
-                                                    const GURL& url) {
-  return new ash::ShimlessRMADialogUI(
-      web_ui, std::make_unique<ash::shimless_rma::ChromeShimlessRmaDelegate>());
-}
-
 void BindMultiDeviceSetup(
     Profile* profile,
     mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
@@ -927,10 +917,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::cellular_setup::MobileSetupUI>;
   if (url.host_piece() == ash::kChromeUIPrintManagementHost)
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
-  if (ash::shimless_rma::HasLaunchRmaSwitchAndIsAllowed() &&
-      url.host_piece() == ash::kChromeUIShimlessRMAHost) {
-    return &NewWebUI<ash::ShimlessRMADialogUI>;
-  }
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
   if (url.host_piece() == ash::multidevice::kChromeUIProximityAuthHost &&

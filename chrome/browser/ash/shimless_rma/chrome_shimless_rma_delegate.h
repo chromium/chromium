@@ -14,11 +14,15 @@
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 
+namespace content {
+class WebUI;
+}  // namespace content
+
 namespace ash::shimless_rma {
 
 class ChromeShimlessRmaDelegate : public ShimlessRmaDelegate {
  public:
-  ChromeShimlessRmaDelegate();
+  explicit ChromeShimlessRmaDelegate(content::WebUI* web_ui);
 
   ChromeShimlessRmaDelegate(const ChromeShimlessRmaDelegate&) = delete;
   ChromeShimlessRmaDelegate& operator=(const ChromeShimlessRmaDelegate&) =
