@@ -505,14 +505,10 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
 }
 
 void PasswordManager::UpdateFormManagers() {
-  std::vector<PasswordFormManager*> form_managers;
-  for (const auto& form_manager : form_managers_)
-    form_managers.push_back(form_manager.get());
-
   // Get the fetchers and all the drivers.
   std::vector<FormFetcher*> fetchers;
   std::vector<PasswordManagerDriver*> drivers;
-  for (PasswordFormManager* form_manager : form_managers) {
+  for (const auto& form_manager : form_managers_) {
     fetchers.push_back(form_manager->GetFormFetcher());
     if (form_manager->GetDriver())
       drivers.push_back(form_manager->GetDriver().get());
