@@ -4601,7 +4601,11 @@
       'remoting_unittests': {},
       'service_manager_unittests': {}, # https://crbug.com/843134
       'snapshot_unittests': {},
-      'sync_integration_tests': {},
+      'sync_integration_tests': {
+        'swarming': {
+          'shards': 3,
+        },
+      },
       'views_unittests': {},
     },
 
