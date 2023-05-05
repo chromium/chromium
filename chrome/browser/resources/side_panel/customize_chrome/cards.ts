@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import './strings.m.js';
 
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cards.html.js';
@@ -38,6 +39,13 @@ export class CardsElement extends PolymerElement {
 
       /** Whether the modules are managed by admin policies or not. */
       managedByPolicy_: Boolean,
+
+      // Checkbox status for when the ChromeCart control is an option instead of
+      // a top-level card item. Only set for ChromeCart+History Cluster module.
+      cartOptionCheckbox_: {
+        type: Boolean,
+        value: false,
+      },
 
       // Discount checkbox is a workaround for crbug.com/1199465 and will be
       // removed after module customization is better defined. Please avoid
@@ -70,6 +78,7 @@ export class CardsElement extends PolymerElement {
   private setModulesSettingsListenerId_: number|null = null;
   private discountCheckbox_: boolean;
   private discountCheckboxEligible_: boolean;
+  private cartOptionCheckbox_: boolean;
   private initialized_: boolean;
 
   constructor() {
@@ -108,6 +117,21 @@ export class CardsElement extends PolymerElement {
       ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
         this.discountCheckbox_ = enabled;
       });
+    } else if (
+        this.modules_.some(module => module.id === 'history_clusters') &&
+        loadTimeData.getBoolean('showCartInQuestModuleSetting')) {
+      ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
+          ({toggleVisible}) => {
+            this.discountCheckboxEligible_ = toggleVisible;
+          });
+
+      ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
+        this.discountCheckbox_ = enabled;
+      });
+
+      ChromeCartProxy.getHandler().getCartFeatureEnabled().then(({enabled}) => {
+        this.cartOptionCheckbox_ = enabled;
+      });
     }
   }
 
@@ -124,15 +148,31 @@ export class CardsElement extends PolymerElement {
         'NewTabPage.Modules.' + (checked ? 'Enabled' : 'Disabled'), id);
   }
 
-  private showDiscountCheckbox_(
-      id: string, checked: boolean, eligible: boolean): boolean {
-    return id === 'chrome_cart' && checked && eligible;
+  private showDiscountOptionCheckbox_(
+      id: string, checked: boolean, eligible: boolean,
+      cartOptionChecked: boolean): boolean {
+    if (id === 'chrome_cart') {
+      return checked && eligible;
+    } else if (id === 'history_clusters') {
+      return checked && eligible && cartOptionChecked;
+    }
+    return false;
+  }
+
+  private showCartOptionCheckbox_(id: string, checked: boolean): boolean {
+    return id === 'history_clusters' && checked &&
+        loadTimeData.getBoolean('showCartInQuestModuleSetting');
   }
 
   private onDiscountCheckboxChange_() {
     if (this.discountCheckboxEligible_) {
       ChromeCartProxy.getHandler().setDiscountEnabled(this.discountCheckbox_);
     }
+  }
+
+  private onCartCheckboxChange_() {
+    this.pageHandler_.setModuleDisabled(
+        'chrome_cart', !this.cartOptionCheckbox_);
   }
 }
 

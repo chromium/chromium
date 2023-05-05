@@ -76,9 +76,24 @@
         </cr-checkbox>
       </div>
       <template is="dom-if"
-          if="[[showDiscountCheckbox_(item.id, item.enabled, discountCheckboxEligible_)]]">
+          if="[[showCartOptionCheckbox_(item.id, item.enabled)]]">
         <div class="card">
-          <div class="card-option-name">$i18n{modulesCartDiscountConsentAccept}</div>
+          <div class="card-option-name"
+              id="cartOption" >$i18n{modulesCartSentence}</div>
+          <cr-checkbox class="card-checkbox"
+              checked="{{cartOptionCheckbox_}}"
+              disabled="[[managedByPolicy_]]"
+              title="$i18n{modulesCartSentence}"
+              on-change="onCartCheckboxChange_">
+          </cr-checkbox>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[showDiscountOptionCheckbox_(item.id, item.enabled,
+          discountCheckboxEligible_, cartOptionCheckbox_)]]">
+        <div class="card">
+          <div class="card-option-name"
+              id="discountOption">$i18n{modulesCartDiscountConsentAccept}</div>
           <cr-checkbox class="card-checkbox"
               checked="{{discountCheckbox_}}"
               disabled="[[managedByPolicy_]]"
