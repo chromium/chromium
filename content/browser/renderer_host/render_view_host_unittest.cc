@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/renderer_host/render_widget_helper.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
@@ -78,6 +79,11 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
 
 // Ensure we do not grant bindings to a process shared with unprivileged views.
 TEST_F(RenderViewHostTest, DontGrantBindingsToSharedProcess) {
+  // This test does not make sense when AllowBindings checks for WebUIs is
+  // enabled as it explicitly violates what the check is supposed to prevent.
+  if (base::FeatureList::IsEnabled(kEnsureAllowBindingsIsAlwaysForWebUI)) {
+    GTEST_SKIP();
+  }
   // Create another view in the same process.
   std::unique_ptr<TestWebContents> new_web_contents(TestWebContents::Create(
       browser_context(), main_rfh()->GetSiteInstance()));
