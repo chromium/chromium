@@ -2053,7 +2053,7 @@ bool LocalFrameView::NotifyResizeObservers() {
         !resize_controller->IsLoopLimitErrorDispatched()) {
       resize_controller->ClearObservations();
       ErrorEvent* error = ErrorEvent::Create(
-          "ResizeObserver loop limit exceeded",
+          "ResizeObserver loop completed with undelivered notifications.",
           CaptureSourceLocation(frame_->DomWindow()), nullptr);
       // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is made
       // by blink itself.
