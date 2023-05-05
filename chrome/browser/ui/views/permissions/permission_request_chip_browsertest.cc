@@ -275,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipGestureSensitiveBrowserTest,
   // After closing the first tab, the chip controller should no longer be
   // observing any permission request manager. It should also no longer hold a
   // reference to a Permission Request Manager instance.
-  ASSERT_FALSE(chip_controller->IsInObserverList());
+  ASSERT_FALSE(chip_controller->permissions::PermissionRequestManager::
+                   Observer::IsInObserverList());
   ASSERT_FALSE(chip_controller->active_permission_request_manager_for_testing()
                    .has_value());
 

@@ -73,7 +73,7 @@ class PermissionRequestManager
       public content::WebContentsUserData<PermissionRequestManager>,
       public PermissionPrompt::Delegate {
  public:
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
     virtual void OnPromptAdded() {}
     virtual void OnPromptRemoved() {}
@@ -96,9 +96,6 @@ class PermissionRequestManager
     virtual void OnNavigation(content::NavigationHandle* navigation_handle) {}
 
     virtual void OnRequestDecided(permissions::PermissionAction action) {}
-
-   protected:
-    virtual ~Observer() = default;
   };
 
   enum AutoResponseType { NONE, ACCEPT_ONCE, ACCEPT_ALL, DENY_ALL, DISMISS };
@@ -240,7 +237,7 @@ class PermissionRequestManager
     enabled_app_level_notification_permission_for_testing_ = enabled;
   }
 
-  base::ObserverList<Observer>::Unchecked* get_observer_list_for_testing() {
+  base::ObserverList<Observer>* get_observer_list_for_testing() {
     CHECK_IS_TEST();
     return &observer_list_;
   }
@@ -429,8 +426,8 @@ class PermissionRequestManager
   // not prempt a request if the incoming request is already validated.
   std::set<PermissionRequest*> validated_requests_set_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
-  AutoResponseType auto_response_for_test_;
+  base::ObserverList<Observer> observer_list_;
+  AutoResponseType auto_response_for_test_ = NONE;
 
   // Suppress notification permission prompts in this tab, regardless of the
   // origin requesting the permission.

@@ -28,15 +28,19 @@ class OmniboxChipButton : public views::MdTextButton {
   OmniboxChipButton& operator=(const OmniboxChipButton& button) = delete;
   ~OmniboxChipButton() override;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnChipVisibilityChanged(bool is_visible) {}
+    virtual void OnExpandAnimationEnded() {}
+    virtual void OnCollapseAnimationEnded() {}
+  };
+
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
   void AnimateCollapse(base::TimeDelta duration);
   void AnimateExpand(base::TimeDelta duration);
   void AnimateToFit(base::TimeDelta duration);
   void ResetAnimation(double value = 0);
-  void SetExpandAnimationEndedCallback(
-      base::RepeatingCallback<void()> callback);
-  void SetCollapseEndedCallback(base::RepeatingCallback<void()> callback);
   bool is_fully_collapsed() const { return fully_collapsed_; }
   bool is_animating() const { return animation_->is_animating(); }
   gfx::SlideAnimation* animation_for_testing() { return animation_.get(); }
@@ -57,9 +61,9 @@ class OmniboxChipButton : public views::MdTextButton {
 
   void SetChipIcon(const gfx::VectorIcon& icon);
 
-  void SetVisibilityChangedCallback(base::RepeatingCallback<void()> callback) {
-    visibility_changed_callback_ = callback;
-  }
+  // Add/remove observer.
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   OmniboxChipTheme get_theme_for_testing() { return theme_; }
 
@@ -98,13 +102,9 @@ class OmniboxChipButton : public views::MdTextButton {
 
   raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
 
-  base::RepeatingCallback<void()> expand_animation_ended_callback_;
-
-  base::RepeatingCallback<void()> collapse_animation_ended_callback_;
-
-  base::RepeatingCallback<void()> visibility_changed_callback_;
-
   bool force_expanded_for_testing_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_OMNIBOX_CHIP_BUTTON_H_
