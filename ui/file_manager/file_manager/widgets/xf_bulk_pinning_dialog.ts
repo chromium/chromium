@@ -6,16 +6,26 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import {str, strf, util} from '../common/js/util.js';
+import {} from '../foreground/elements/files_spinner.js';
 
 import {css, customElement, html, query, XfBase} from './xf_base.js';
 
-/**
- * Different flavors of the XfBulkPinningDialog.
- */
+// Different flavors of the XfBulkPinningDialog.
 const enum State {
-  NORMAL = 'normal',
-  ERROR = 'error',
-  OFFLINE = 'offline',
+  // Currently offline. Cannot compute space requirement for the time being.
+  OFFLINE = 'OFFLINE',
+
+  // Listing files and computing space requirements.
+  LISTING = 'LISTING',
+
+  // An error occurred while computing the space requirements.
+  ERROR = 'ERROR',
+
+  // There isn't enough space to activate the bulk-pinning feature.
+  NOT_ENOUGH_SPACE = 'NOT_ENOUGH_SPACE',
+
+  // Computed space requirements and ready to activate the bulk-pinning feature.
+  READY = 'READY',
 }
 
 /**
@@ -27,25 +37,31 @@ export class XfBulkPinningDialog extends XfBase {
   @query('cr-dialog') private $dialog_!: CrDialogElement;
   @query('#point1') private $point1_!: HTMLElement;
   @query('#continue-button') private $button_!: CrButtonElement;
-  @query('#normal-footer') private $normalFooter_!: HTMLElement;
-  @query('#error-footer') private $errorFooter_!: HTMLElement;
   @query('#offline-footer') private $offlineFooter_!: HTMLElement;
+  @query('#listing-footer') private $listingFooter_!: HTMLElement;
+  @query('#error-footer') private $errorFooter_!: HTMLElement;
+  @query('#not-enough-space-footer')
+  private $notEnoughSpaceFooter_!: HTMLElement;
+  @query('#ready-footer') private $readyFooter_!: HTMLElement;
 
   requiredBytes = 0;
   freeBytes = 0;
 
   set state(s: State) {
     // Show the footer matching the given state.
-    this.$normalFooter_.style.display = s === State.NORMAL ? 'flex' : 'none';
-    this.$errorFooter_.style.display = s === State.ERROR ? 'flex' : 'none';
     this.$offlineFooter_.style.display = s === State.OFFLINE ? 'flex' : 'none';
+    this.$listingFooter_.style.display = s === State.LISTING ? 'flex' : 'none';
+    this.$errorFooter_.style.display = s === State.ERROR ? 'flex' : 'none';
+    this.$notEnoughSpaceFooter_.style.display =
+        s === State.NOT_ENOUGH_SPACE ? 'flex' : 'none';
+    this.$readyFooter_.style.display = s === State.READY ? 'flex' : 'none';
     // Enable or disable the 'Continue' button according to the given state.
-    this.$button_.disabled = s !== State.NORMAL;
+    this.$button_.disabled = s !== State.READY;
   }
 
   show() {
     this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
-    this.$normalFooter_.innerText = strf(
+    this.$readyFooter_.innerText = strf(
         'BULK_PINNING_SPACE', util.bytesToString(this.requiredBytes),
         util.bytesToString(this.freeBytes - this.requiredBytes));
     this.$dialog_.showModal();
@@ -93,17 +109,24 @@ export class XfBulkPinningDialog extends XfBase {
               ${str('BULK_PINNING_POINT_2')}
             </li>
           </ul>
-          <div id="normal-footer"></div>
-          <div id="error-footer">
+          <div id="offline-footer" class="offline-footer">
+            ${str('BULK_PINNING_OFFLINE')}
+          </div>
+          <div id="listing-footer" class="normal-footer">
+            <files-spinner></files-spinner>
+            ${str('BULK_PINNING_LISTING')}
+          </div>
+          <div id="error-footer" class="error-footer">
+            ${str('BULK_PINNING_ERROR')}
+          </div>
+          <div id="not-enough-space-footer" class="error-footer">
             ${str('BULK_PINNING_NOT_ENOUGH_SPACE')}
             &ensp;
             <a href="_blank" @click="${this.onViewStorage}">
               ${str('BULK_PINNING_VIEW_STORAGE')}
             </a>
           </div>
-          <div id="offline-footer">
-            ${str('BULK_PINNING_OFFLINE')}
-          </div>
+          <div id="ready-footer" class="normal-footer"></div>
         </div>
         <div slot="button-container">
           <cr-button class="cancel-button" @click="${this.onCancel}">
@@ -136,7 +159,7 @@ export class XfBulkPinningDialog extends XfBase {
 
       cr-dialog [slot="title"] xf-icon {
         --xf-icon-color: var(--cros-sys-primary);
-        margin-right: 16px;
+        margin-inline-end: 16px;
       }
 
       .description {
@@ -151,35 +174,45 @@ export class XfBulkPinningDialog extends XfBase {
         padding: 20px 18px;
       }
 
-      #normal-footer {
+      .normal-footer {
+        align-items: center;
         background-color: var(--cros-sys-app_base_shaded);
         border: 1px solid var(--cros-separator-color);
         border-radius: 0 0 12px 12px;
         border-top-style: none;
         color: var(--cros-sys-on_surface);
+        display: flex;
         padding: 16px;
       }
 
-      #error-footer {
+      .error-footer {
         background-color: var(--cros-sys-error_container);
         border: 1px solid var(--cros-separator-color);
         border-radius: 0 0 12px 12px;
         border-top-style: none;
         color: var(--cros-sys-on_error_container);
+        display: flex;
         padding: 16px;
       }
 
-      #offline-footer {
+      .offline-footer {
         background-color: var(--cros-sys-surface_variant);
         border: 1px solid var(--cros-separator-color);
         border-radius: 0 0 12px 12px;
         border-top-style: none;
         color: var(--cros-sys-on_surface_variant);
+        display: flex;
         padding: 16px;
       }
 
       a {
         color: var(--cros-sys-on_error_container);
+      }
+
+      files-spinner {
+        transform: scale(0.666);
+        margin: 0;
+        margin-inline-end: 10px;
       }
 
       li {
@@ -193,7 +226,7 @@ export class XfBulkPinningDialog extends XfBase {
 
       li > xf-icon {
         --xf-icon-color: var(--cros-sys-secondary);
-        margin-right: 10px;
+        margin-inline-end: 10px;
       }
 
       cr-button {
