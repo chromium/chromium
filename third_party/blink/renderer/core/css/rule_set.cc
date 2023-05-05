@@ -751,6 +751,103 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                 nullptr /* container_query */, cascade_layer, nullptr);
 }
 
+static void MergeBucket(const HeapVector<RuleData>& src,
+                        int offset,
+                        HeapVector<RuleData>* dst) {
+  for (const RuleData& rule_data : src) {
+    dst->push_back(rule_data);
+    dst->back().AdjustPosition(offset);
+  }
+}
+
+template <class T>
+static void MergeIntervals(const HeapVector<RuleSet::Interval<T>>& src,
+                           int offset,
+                           HeapVector<RuleSet::Interval<T>>* dst) {
+  if (src.empty() || src[0].start_position != 0) {
+    AddRuleToIntervals<T>(nullptr, offset, *dst);
+  }
+  for (const RuleSet::Interval<T>& interval : src) {
+    AddRuleToIntervals<T>(interval.value.Get(),
+                          interval.start_position + offset, *dst);
+  }
+}
+
+void RuleSet::Merge(const RuleSet& other, LayerMap& layer_mapping) {
+  // All RuleDatas have a position, used for tie-breaking between
+  // rules that otherwise have the same specificity. Since the other
+  // one is taken to come after this, it means we need to adjust
+  // its positions. The minimum possible offset is our own number
+  // of rules, so that's what we use.
+  int offset = rule_count_;
+  if (other.rule_count_ > 0) {
+    id_rules_.Merge(other.id_rules_, offset);
+    class_rules_.Merge(other.class_rules_, offset);
+    attr_rules_.Merge(other.attr_rules_, offset);
+    // NOTE: attr_substring_matchers_ will be rebuilt in CompactRules().
+    tag_rules_.Merge(other.tag_rules_, offset);
+    ua_shadow_pseudo_element_rules_.Merge(other.ua_shadow_pseudo_element_rules_,
+                                          offset);
+    MergeBucket(other.link_pseudo_class_rules_, offset,
+                &link_pseudo_class_rules_);
+    MergeBucket(other.cue_pseudo_rules_, offset, &cue_pseudo_rules_);
+    MergeBucket(other.focus_pseudo_class_rules_, offset,
+                &focus_pseudo_class_rules_);
+    MergeBucket(other.spatial_navigation_interest_class_rules_, offset,
+                &spatial_navigation_interest_class_rules_);
+    MergeBucket(other.focus_visible_pseudo_class_rules_, offset,
+                &focus_visible_pseudo_class_rules_);
+    MergeBucket(other.spatial_navigation_interest_class_rules_, offset,
+                &spatial_navigation_interest_class_rules_);
+    MergeBucket(other.universal_rules_, offset, &universal_rules_);
+    MergeBucket(other.shadow_host_rules_, offset, &shadow_host_rules_);
+    MergeBucket(other.part_pseudo_rules_, offset, &part_pseudo_rules_);
+    MergeBucket(other.slotted_pseudo_element_rules_, offset,
+                &slotted_pseudo_element_rules_);
+    MergeBucket(other.selector_fragment_anchor_rules_, offset,
+                &selector_fragment_anchor_rules_);
+    MergeBucket(other.root_element_rules_, offset, &root_element_rules_);
+    features_.Merge(other.features_);
+    page_rules_.AppendVector(other.page_rules_);
+    font_face_rules_.AppendVector(other.font_face_rules_);
+    font_palette_values_rules_.AppendVector(other.font_palette_values_rules_);
+    font_feature_values_rules_.AppendVector(other.font_feature_values_rules_);
+    keyframes_rules_.AppendVector(other.keyframes_rules_);
+    property_rules_.AppendVector(other.property_rules_);
+    counter_style_rules_.AppendVector(other.counter_style_rules_);
+    position_fallback_rules_.AppendVector(other.position_fallback_rules_);
+    media_query_set_results_.AppendVector(other.media_query_set_results_);
+    has_bucket_for_style_attr_ |= other.has_bucket_for_style_attr_;
+    rule_count_ += other.rule_count_;
+    need_compaction_ = true;
+  }
+
+  MergeCascadeLayers(other, offset, layer_mapping);
+  MergeIntervals(other.container_query_intervals_, offset,
+                 &container_query_intervals_);
+  MergeIntervals(other.scope_intervals_, offset, &scope_intervals_);
+}
+
+void RuleSet::MergeCascadeLayers(const RuleSet& other,
+                                 int offset,
+                                 LayerMap& layer_mapping) {
+  if (other.HasCascadeLayers()) {
+    EnsureImplicitOuterLayer()->Merge(*other.implicit_outer_layer_,
+                                      layer_mapping);
+  }
+  if (other.layer_intervals_.empty() ||
+      other.layer_intervals_[0].start_position != 0) {
+    AddRuleToIntervals(implicit_outer_layer_.Get(), offset, layer_intervals_);
+  }
+  for (const RuleSet::Interval<CascadeLayer>& interval :
+       other.layer_intervals_) {
+    auto it = layer_mapping.find(interval.value);
+    DCHECK_NE(it, layer_mapping.end());
+    AddRuleToIntervals<CascadeLayer>(
+        it->value, interval.start_position + offset, layer_intervals_);
+  }
+}
+
 void RuleSet::AddStyleRule(StyleRule* style_rule,
                            const MediaQueryEvaluator& medium,
                            AddRuleFlags add_rule_flags,
@@ -869,6 +966,61 @@ void RuleMap::Uncompact() {
     value.length = i;
   }
   compacted = false;
+}
+
+// Merge another ruleset into this one (ie., create or extend a superruleset),
+// for increased performance during matching. (It is cheaper to look up
+// in each bucket once, instead of in N smaller rulesets.)
+void RuleMap::Merge(const RuleMap& other, int offset) {
+  if (compacted) {
+    Uncompact();
+  }
+  if (other.compacted) {
+    // NOTE: This path is normally not taken.
+    for (const auto& [key, extent] : other.buckets) {
+      // Streamlined version of Add() for multiple inserts to the same key.
+      RuleMap::Extent& rules =
+          buckets.insert(key, RuleMap::Extent()).stored_value->value;
+      if (rules.length == 0) {
+        rules.bucket_number = num_buckets++;
+      }
+      for (const RuleData& rule_data : other.GetRulesFromExtent(extent)) {
+        backing.push_back(rule_data);
+        backing.back().AdjustPosition(offset);
+        backing.back().SetBucketInformation(rules.bucket_number,
+                                            /*order_in_bucket=*/rules.length++);
+      }
+    }
+  } else {
+    // First combine the buckets, by inserting all the new buckets
+    // into our own map and assigning them new bucket numbers.
+    // This gives us a mapping from old to new bucket numbers
+    // (which we'll need to store temporarily, so we do a heap
+    // allocation). For buckets that already exist (i.e., they are
+    // merged), we need to offset the position within the bucket.
+    std::unique_ptr<RuleMap::Extent[]> extents(
+        new RuleMap::Extent[other.num_buckets]);
+
+    for (const auto& [key, src_extent] : other.buckets) {
+      RuleMap::Extent& dst_extent =
+          buckets.insert(key, RuleMap::Extent()).stored_value->value;
+      if (dst_extent.length == 0) {
+        dst_extent.bucket_number = num_buckets++;
+      }
+      extents[src_extent.bucket_number] = dst_extent;
+      dst_extent.length += src_extent.length;
+    }
+
+    // Now that we have the mapping, we can just copy over all the RuleData
+    // and adjust the buckets/positions as we go.
+    for (const RuleData& rule_data : other.backing) {
+      const RuleMap::Extent& extent = extents[rule_data.GetBucketNumber()];
+      backing.push_back(rule_data);
+      backing.back().AdjustPosition(offset);
+      backing.back().AdjustBucketPosition(extent.bucket_number,
+                                          /*offset=*/extent.length);
+    }
+  }
 }
 
 static wtf_size_t GetMinimumRulesetSizeForSubstringMatcher() {

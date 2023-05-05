@@ -261,9 +261,15 @@ void ScopedStyleResolver::ForAllStylesheets(const Func& func) {
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
     ElementRuleCollector& collector) {
-  ForAllStylesheets([&collector](const MatchRequest& match_request) {
+  if (super_rule_set_) {
+    MatchRequest match_request{&scope_->RootNode()};
+    match_request.AddRuleset(super_rule_set_);
     collector.CollectMatchingRules(match_request);
-  });
+  } else {
+    ForAllStylesheets([&collector](const MatchRequest& match_request) {
+      collector.CollectMatchingRules(match_request);
+    });
+  }
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(
@@ -301,7 +307,14 @@ void ScopedStyleResolver::MatchPageRules(PageRuleCollector& collector) {
 
 void ScopedStyleResolver::RebuildCascadeLayerMap(
     const ActiveStyleSheetVector& sheets) {
-  cascade_layer_map_ = MakeGarbageCollected<CascadeLayerMap>(sheets);
+  if (super_rule_set_) {
+    ActiveStyleSheetVector super{{nullptr, super_rule_set_}};
+    cascade_layer_map_ =
+        MakeGarbageCollected<CascadeLayerMap>(super, super_rule_set_mapping_);
+  } else {
+    cascade_layer_map_ =
+        MakeGarbageCollected<CascadeLayerMap>(sheets, super_rule_set_mapping_);
+  }
 }
 
 void ScopedStyleResolver::AddPositionFallbackRules(const RuleSet& rule_set) {
@@ -375,6 +388,33 @@ const FontFeatureValuesStorage* ScopedStyleResolver::FontFeatureValuesForFamily(
   return &(it->value);
 }
 
+void ScopedStyleResolver::RebuildSuperRuleset(
+    const ActiveStyleSheetVector& new_style_sheets) {
+  // TODO(sesse): Consider removing the constituent rulesets to save on RAM.
+  // TODO(sesse): Consider starting with the largest ruleset and merging
+  // all the other ones into it, to save on merge time. (This would naturally
+  // be destructive for the largest one, of course.)
+  // TODO(sesse): Consider keeping some rulesets out; in particular, the ones
+  // that have been modified.
+  super_rule_set_ = MakeGarbageCollected<RuleSet>();
+  super_rule_set_mapping_.clear();
+  for (const ActiveStyleSheet& sheet : new_style_sheets) {
+    AppendToSuperRuleset(sheet);
+  }
+}
+
+void ScopedStyleResolver::AppendToSuperRuleset(
+    const ActiveStyleSheet& new_sheet) {
+  if (new_sheet.second != nullptr) {
+    super_rule_set_->Merge(*new_sheet.second, super_rule_set_mapping_);
+  }
+}
+
+void ScopedStyleResolver::ClearSuperRuleset() {
+  super_rule_set_.Clear();
+  super_rule_set_mapping_.clear();
+}
+
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(scope_);
   visitor->Trace(style_sheets_);
@@ -382,6 +422,8 @@ void ScopedStyleResolver::Trace(Visitor* visitor) const {
   visitor->Trace(position_fallback_rule_map_);
   visitor->Trace(counter_style_map_);
   visitor->Trace(cascade_layer_map_);
+  visitor->Trace(super_rule_set_);
+  visitor->Trace(super_rule_set_mapping_);
 }
 
 }  // namespace blink

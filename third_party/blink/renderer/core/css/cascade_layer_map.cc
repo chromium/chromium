@@ -9,24 +9,8 @@
 namespace blink {
 namespace {
 
-using CanonicalLayerMap =
-    HeapHashMap<Member<const CascadeLayer>, Member<const CascadeLayer>>;
-
-using LayerOrderMap = HeapHashMap<Member<const CascadeLayer>, unsigned>;
-
-void AddLayers(CascadeLayer* canonical_layer,
-               const CascadeLayer& layer_from_sheet,
-               CanonicalLayerMap& canonical_layer_map) {
-  DCHECK_EQ(canonical_layer->GetName(), layer_from_sheet.GetName());
-  canonical_layer_map.insert(&layer_from_sheet, canonical_layer);
-  for (const auto& sub_layer_from_sheet :
-       layer_from_sheet.GetDirectSubLayers()) {
-    StyleRuleBase::LayerName sub_layer_name({sub_layer_from_sheet->GetName()});
-    CascadeLayer* canonical_sub_layer =
-        canonical_layer->GetOrAddSubLayer(sub_layer_name);
-    AddLayers(canonical_sub_layer, *sub_layer_from_sheet, canonical_layer_map);
-  }
-}
+// See layer_map.h.
+using CanonicalLayerMap = LayerMap;
 
 void ComputeLayerOrder(CascadeLayer& layer, unsigned& next) {
   for (const auto& sub_layer : layer.GetDirectSubLayers()) {
@@ -37,15 +21,17 @@ void ComputeLayerOrder(CascadeLayer& layer, unsigned& next) {
 
 }  // namespace
 
-CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets) {
+CascadeLayerMap::CascadeLayerMap(const ActiveStyleSheetVector& sheets,
+                                 const LayerMap& super_rule_set_mapping)
+    : super_rule_set_mapping_(super_rule_set_mapping) {
   CascadeLayer* canonical_root_layer = MakeGarbageCollected<CascadeLayer>();
 
   CanonicalLayerMap canonical_layer_map;
   for (const auto& sheet : sheets) {
     const RuleSet* rule_set = sheet.second;
     if (rule_set && rule_set->HasCascadeLayers()) {
-      AddLayers(canonical_root_layer, rule_set->CascadeLayers(),
-                canonical_layer_map);
+      canonical_root_layer->Merge(rule_set->CascadeLayers(),
+                                  canonical_layer_map);
     }
   }
 
@@ -84,6 +70,7 @@ const CascadeLayer* CascadeLayerMap::GetRootLayer() const {
 void CascadeLayerMap::Trace(blink::Visitor* visitor) const {
   visitor->Trace(layer_order_map_);
   visitor->Trace(canonical_root_layer_);
+  visitor->Trace(super_rule_set_mapping_);
 }
 
 }  // namespace blink

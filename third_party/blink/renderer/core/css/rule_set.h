@@ -169,6 +169,13 @@ class CORE_EXPORT RuleData {
 
   void Trace(Visitor*) const;
 
+  // Used during merging.
+  void AdjustPosition(int offset) { position_ += offset; }
+  void AdjustBucketPosition(int new_bucket_number, int offset) {
+    bucket_number_ = new_bucket_number;
+    order_in_bucket_ += offset;
+  }
+
   // This number is picked fairly arbitrary. If lowered, be aware that there
   // might be sites and extensions using style rules with selector lists
   // exceeding the number of simple selectors to fit in this bitfield.
@@ -271,6 +278,7 @@ class RuleMap {
 
  public:
   void Add(const AtomicString& key, const RuleData& rule_data);
+  void Merge(const RuleMap& other, int offset);
   base::span<const RuleData> Find(const AtomicString& key) const {
     DCHECK(buckets.empty() || compacted);
     auto it = buckets.find(key);
@@ -368,6 +376,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                     const ContainerQuery* container_query = nullptr,
                     CascadeLayer* cascade_layer = nullptr,
                     const StyleScope* style_scope = nullptr);
+  void Merge(const RuleSet& other, LayerMap& layer_mapping);
 
   const RuleFeatureSet& Features() const { return features_; }
 
@@ -585,6 +594,9 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   CascadeLayer* GetOrAddSubLayer(CascadeLayer*,
                                  const StyleRuleBase::LayerName&);
   void AddRuleToLayerIntervals(const CascadeLayer*, unsigned position);
+  void MergeCascadeLayers(const RuleSet& other,
+                          int offset,
+                          LayerMap& layer_mapping);
 
   // May return nullptr for the implicit outer layer.
   const CascadeLayer* GetLayerForTest(const RuleData&) const;

@@ -2426,8 +2426,9 @@ void StyleEngine::ApplyUserRuleSetChanges(
   if (changed_rule_flags & kLayerRules) {
     // Rebuild cascade layer map in all cases, because a newly inserted
     // sub-layer can precede an original layer in the final ordering.
+    LayerMap mapping_unused;
     user_cascade_layer_map_ =
-        MakeGarbageCollected<CascadeLayerMap>(new_style_sheets);
+        MakeGarbageCollected<CascadeLayerMap>(new_style_sheets, mapping_unused);
 
     if (resolver_) {
       resolver_->InvalidateMatchedPropertiesCache();
@@ -2583,6 +2584,33 @@ void StyleEngine::ApplyRuleSetChanges(
       rebuild_cascade_layer_map = (changed_rule_flags & kLayerRules) ||
                                   scoped_resolver->HasCascadeLayerMap();
       scoped_resolver->ResetStyle();
+    }
+  }
+
+  if (RuntimeEnabledFeatures::CSSSuperRulesetsEnabled()) {
+    if (new_style_sheets.size() <= 1) {
+      // Superrulesets are disabled, or we don't need one.
+      if (scoped_resolver) {
+        scoped_resolver->ClearSuperRuleset();
+      }
+    } else {
+      scoped_resolver = &tree_scope.EnsureScopedStyleResolver();
+      if (change == kActiveSheetsAppended &&
+          scoped_resolver->HasSuperRuleset()) {
+        // We can use the existing superruleset, just append the new ones.
+        for (wtf_size_t i = old_style_sheets.size();
+             i < new_style_sheets.size(); ++i) {
+          scoped_resolver->AppendToSuperRuleset(new_style_sheets[i]);
+        }
+      } else {
+        if (append_start_index > 0 && !scoped_resolver->HasSuperRuleset()) {
+          // The cascade layer map is built from a normal RuleSet,
+          // which is now being absorbed into (replaced by) the superruleset,
+          // so we can't just refresh the layer map; it needs a full update.
+          rebuild_cascade_layer_map = true;
+        }
+        scoped_resolver->RebuildSuperRuleset(new_style_sheets);
+      }
     }
   }
 
