@@ -75,7 +75,6 @@ EnableDebuggingTestBase.*
 EncryptionMigrationTest.*
 EnrollmentLocalPolicyServerBase.*
 EnrollmentRecoveryTest.*
-EnrollmentScreenChromadMigrationTest.*
 EnrollmentScreenHandsOffTest.*
 EnrollmentScreenTest.*
 EnterpriseEnrollmentTest.*
@@ -176,7 +175,6 @@ WebviewDeviceOwnedLoginTest.*
 WebviewLoginTest.*
 WebviewProxyAuthLoginTest.*
 WelcomeScreenBrowserTest.*
-WelcomeScreenChromadMigrationBrowserTest.*
 WelcomeScreenChromeVoxHintTest.*
 WelcomeScreenHandsOffBrowserTest.*
 WelcomeScreenInternationalChromeVoxHintTest.*

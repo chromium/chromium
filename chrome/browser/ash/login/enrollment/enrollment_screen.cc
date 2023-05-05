@@ -20,7 +20,6 @@
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
-#include "chrome/browser/ash/login/active_directory_migration_utils.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -152,10 +151,6 @@ EnrollmentScreen::EnrollmentScreen(base::WeakPtr<EnrollmentScreenView> view,
   retry_policy_.entry_lifetime_ms = -1;
   retry_policy_.always_use_initial_delay = true;
   retry_backoff_ = std::make_unique<net::BackoffEntry>(&retry_policy_);
-
-  ad_migration_utils::CheckChromadMigrationOobeFlow(
-      base::BindOnce(&EnrollmentScreen::UpdateChromadMigrationOobeFlow,
-                     weak_ptr_factory_.GetWeakPtr()));
 
   network_state_informer_ = base::MakeRefCounted<NetworkStateInformer>();
   network_state_informer_->Init();
@@ -807,13 +802,8 @@ void EnrollmentScreen::OnUserAction(const base::Value::List& args) {
   BaseScreen::OnUserAction(args);
 }
 
-void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {
-  is_chromad_migration_oobe_flow_ = exists;
-}
-
 bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
-  return is_chromad_migration_oobe_flow_ ||
-         WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
+  return WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {

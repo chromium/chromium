@@ -545,35 +545,6 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenHandsOffBrowserTest, SkipScreen) {
   WaitForScreenExit();
 }
 
-class WelcomeScreenChromadMigrationBrowserTest
-    : public WelcomeScreenBrowserTest {
- public:
-  WelcomeScreenChromadMigrationBrowserTest() = default;
-  ~WelcomeScreenChromadMigrationBrowserTest() override = default;
-
-  // WelcomeScreenBrowserTest:
-  bool SetUpUserDataDirectory() override {
-    if (!WelcomeScreenBrowserTest::SetUpUserDataDirectory())
-      return false;
-
-    base::FilePath preinstalled_components_dir;
-    EXPECT_TRUE(base::PathService::Get(DIR_PREINSTALLED_COMPONENTS,
-                                       &preinstalled_components_dir));
-
-    base::FilePath preserve_dir =
-        preinstalled_components_dir.AppendASCII("preserve/");
-    EXPECT_TRUE(base::CreateDirectory(preserve_dir));
-    EXPECT_TRUE(base::WriteFile(
-        preserve_dir.AppendASCII("chromad_migration_skip_oobe"), "1"));
-
-    return true;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(WelcomeScreenChromadMigrationBrowserTest, SkipScreen) {
-  WaitForScreenExit();
-}
-
 class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {
  public:
   WelcomeScreenTimezone() {

@@ -744,45 +744,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenHandsOffTest,
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
-class EnrollmentScreenChromadMigrationTest : public EnrollmentScreenTest {
- public:
-  EnrollmentScreenChromadMigrationTest() = default;
-  ~EnrollmentScreenChromadMigrationTest() override = default;
-
-  EnrollmentScreenChromadMigrationTest(
-      const EnrollmentScreenChromadMigrationTest&) = delete;
-  EnrollmentScreenChromadMigrationTest& operator=(
-      const EnrollmentScreenChromadMigrationTest&) = delete;
-
-  // EnrollmentScreenTest:
-  bool SetUpUserDataDirectory() override {
-    if (!EnrollmentScreenTest::SetUpUserDataDirectory())
-      return false;
-
-    base::FilePath preinstalled_components_dir;
-    EXPECT_TRUE(base::PathService::Get(DIR_PREINSTALLED_COMPONENTS,
-                                       &preinstalled_components_dir));
-
-    base::FilePath preserve_dir =
-        preinstalled_components_dir.AppendASCII("preserve/");
-    EXPECT_TRUE(base::CreateDirectory(preserve_dir));
-    EXPECT_TRUE(base::WriteFile(
-        preserve_dir.AppendASCII("chromad_migration_skip_oobe"), "1"));
-
-    return true;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(EnrollmentScreenChromadMigrationTest,
-                       SkipEnrollmentCompleteScreen) {
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnDeviceAttributeUpdatePermission(false /* granted */);
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::COMPLETED, screen_result);
-
-  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
-}
-
 // Class to test TPM pre-enrollment check that happens only with
 // --tpm-is-dynamic switch enabled. Test parameter represents take TPM
 // ownership reply possible statuses.

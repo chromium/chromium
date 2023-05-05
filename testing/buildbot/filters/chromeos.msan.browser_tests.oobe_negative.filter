@@ -75,7 +75,6 @@
 -EncryptionMigrationTest.*
 -EnrollmentLocalPolicyServerBase.*
 -EnrollmentRecoveryTest.*
--EnrollmentScreenChromadMigrationTest.*
 -EnrollmentScreenHandsOffTest.*
 -EnrollmentScreenTest.*
 -EnterpriseEnrollmentTest.*
@@ -176,7 +175,6 @@
 -WebviewLoginTest.*
 -WebviewProxyAuthLoginTest.*
 -WelcomeScreenBrowserTest.*
--WelcomeScreenChromadMigrationBrowserTest.*
 -WelcomeScreenChromeVoxHintTest.*
 -WelcomeScreenHandsOffBrowserTest.*
 -WelcomeScreenInternationalChromeVoxHintTest.*

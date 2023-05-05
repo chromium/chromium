@@ -225,10 +225,6 @@ class EnrollmentScreen
   // to reboot the device.
   void CheckInstallAttributesState();
 
-  // Updates the local variable, according to the existence of the Chromad
-  // migration flag file.
-  void UpdateChromadMigrationOobeFlow(bool exists);
-
   // Indicates whether this is an automatic enrollment as part of Zero-Touch
   // Hands Off flow or Chromad Migration.
   bool IsAutomaticEnrollmentFlow();
@@ -265,11 +261,6 @@ class EnrollmentScreen
   int install_state_retries_ = 0;
   // Timer for install attribute to resolve.
   base::OneShotTimer wait_state_timer_;
-
-  // This local flag should be true if the OOBE flow is operating as part of the
-  // Chromad to cloud device migration. If so, "Enterprise enrollment complete"
-  // screen should be skipped.
-  bool is_chromad_migration_oobe_flow_ = false;
 
   // Whether the ongoing flow belongs to an enterprise rollback.
   bool is_rollback_flow_ = false;

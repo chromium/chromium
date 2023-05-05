@@ -175,11 +175,6 @@ class WelcomeScreen : public BaseScreen,
   void NotifyLocaleChange();
   void OnLocaleChangeResult(LocaleNotificationResult result);
 
-  // Updates the local variable according to the existence of the Chromad
-  // migration flag file. Then, simulates a user action, if the flag is set and
-  // the screen is not hidden.
-  void UpdateChromadMigrationOobeFlow(bool exists);
-
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);
   void UpdateA11yState();
@@ -200,10 +195,6 @@ class WelcomeScreen : public BaseScreen,
   std::string selected_language_code_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  // This local flag should be true if the OOBE flow is operating as part of the
-  // Chromad to cloud device migration. If so, this screen should be skipped.
-  bool is_chromad_migration_oobe_flow_ = false;
 
   base::CallbackListSubscription accessibility_subscription_;
 

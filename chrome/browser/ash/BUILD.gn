@@ -1538,8 +1538,6 @@ source_set("ash") {
     "lock_screen_apps/toast_dialog_view.h",
     "logging.cc",
     "logging.h",
-    "login/active_directory_migration_utils.cc",
-    "login/active_directory_migration_utils.h",
     "login/app_mode/force_install_observer.cc",
     "login/app_mode/force_install_observer.h",
     "login/app_mode/kiosk_launch_controller.cc",
