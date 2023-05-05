@@ -96,8 +96,9 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
       SavedTabGroupUtils::CreateSavedTabGroupTabFromWebContents(web_contents,
                                                                 saved_guid_);
   tab.SetLocalTabID(token);
+  tab.SetPosition(relative_index_of_tab_in_group);
   model_->AddTabToGroup(saved_guid_, std::move(tab),
-                        relative_index_of_tab_in_group);
+                        /*update_tab_positions=*/true);
 
   // Link `web_contents` to `token`.
   web_contents_to_tab_id_map_.try_emplace(web_contents, web_contents, token,
