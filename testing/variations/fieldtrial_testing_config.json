@@ -14491,20 +14491,6 @@
             ]
         }
     ],
-    "WebRTC-Aec3PenalyzeHighDelaysInitialPhase": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
     "WebRTC-Aec3PreEchoConfiguration": [
         {
             "platforms": [
