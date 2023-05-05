@@ -108,3 +108,23 @@ void ChromeBrowsingDataModelDelegate::RemoveDataKey(
   // typesdeletion methods that require a callback.
   std::move(callback).Run();
 }
+
+absl::optional<BrowsingDataModel::DataOwner>
+ChromeBrowsingDataModelDelegate::GetDataOwner(
+    BrowsingDataModel::DataKey data_key,
+    BrowsingDataModel::StorageType storage_type) const {
+  switch (static_cast<StorageType>(storage_type)) {
+    case StorageType::kIsolatedWebApp:
+      CHECK(absl::holds_alternative<url::Origin>(data_key))
+          << "Unsupported IWA DataKey type: " << data_key.index();
+      return absl::get<url::Origin>(data_key);
+
+    case StorageType::kTopics:
+      CHECK(absl::holds_alternative<url::Origin>(data_key))
+          << "Unsupported Topics DataKey type: " << data_key.index();
+      return absl::get<url::Origin>(data_key).host();
+
+    default:
+      return absl::nullopt;
+  }
+}

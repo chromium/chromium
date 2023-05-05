@@ -26,11 +26,16 @@ class StoragePartition;
 
 // Provides a model interface into a collection of Browsing Data for use in the
 // UI. Exposes a uniform view into browsing data based on the concept of
-// "primary hosts", which denote which host the data should be closely
+// "data owners", which denote which entity the data should be closely
 // associated with in UI surfaces.
 // TODO(crbug.com/1271155): Implementation in progress, should not be used.
 class BrowsingDataModel {
  public:
+  // The entity that logically owns a set of data. All browsing data will be
+  // grouped by its owner.
+  using DataOwner = absl::variant<std::string,  // Hostname
+                                  url::Origin>;
+
   // Storage types which are represented by the model. Some types have
   // incomplete implementations, and are marked as such.
   // TODO(crbug.com/1271155): Complete implementations for all browsing data.
@@ -86,9 +91,12 @@ class BrowsingDataModel {
     ~BrowsingDataEntryView();
     BrowsingDataEntryView(const BrowsingDataEntryView& other) = delete;
 
-    // The primary host for this browsing data. This is the host which this
+    // Returns true if |origin| is within this browsing data's  owning entity.
+    bool Matches(const url::Origin& origin) const;
+
+    // The logical owner of this browsing data. This is the entity which this
     // information will be most strongly associated with in UX surfaces.
-    const raw_ref<const std::string, DanglingUntriaged> primary_host;
+    const raw_ref<const DataOwner, DanglingUntriaged> data_owner;
 
     // The unique identifier for the data represented by this entry.
     const raw_ref<const DataKey, DanglingUntriaged> data_key;
@@ -99,7 +107,7 @@ class BrowsingDataModel {
    private:
     friend class BrowsingDataModel;
 
-    BrowsingDataEntryView(const std::string& primary_host,
+    BrowsingDataEntryView(const DataOwner& data_owner,
                           const DataKey& data_key,
                           const DataDetails& data_details);
   };
@@ -126,6 +134,12 @@ class BrowsingDataModel {
     virtual void RemoveDataKey(DataKey data_key,
                                StorageTypeSet storage_types,
                                base::OnceClosure callback) = 0;
+    // Returns the owner of the data identified by the given DataKey and
+    // StorageType, or nullopt if the delegate does not manage the entity that
+    // owns the given data.
+    virtual absl::optional<DataOwner> GetDataOwner(
+        DataKey data_key,
+        StorageType storage_type) const = 0;
     virtual ~Delegate() = default;
   };
 
@@ -134,7 +148,7 @@ class BrowsingDataModel {
   // over BrowsingDataEntryViews.
   // Iterators are invalidated whenever the model is updated.
   using DataKeyEntries = std::map<DataKey, DataDetails>;
-  using BrowsingDataEntries = std::map<std::string, DataKeyEntries>;
+  using BrowsingDataEntries = std::map<DataOwner, DataKeyEntries>;
   struct Iterator {
     ~Iterator();
     Iterator(const Iterator& iterator);
@@ -201,16 +215,16 @@ class BrowsingDataModel {
                        // TODO(crbug.com/1359998): Deprecate cookie count.
                        uint64_t cookie_count = 0);
 
-  // Removes all browsing data associated with `primary_host`, reaches out to
+  // Removes all browsing data associated with `data_owner`, reaches out to
   // all supported storage backends to remove the data, and updates the model.
-  // Deletion at more granularity than `primary_host` is purposefully not
+  // Deletion at more granularity than `data_owner` is purposefully not
   // supported by this model. UI that wishes to support such deletion should
   // consider whether it is really required, and if so, implement it separately.
   // The in-memory representation of the model is updated immediately, while
   // actual deletion from disk occurs async, completion reported by `completed`.
   // Invalidates any iterators.
   // Virtual to allow an in-memory only fake to be created.
-  virtual void RemoveBrowsingData(const std::string& primary_host,
+  virtual void RemoveBrowsingData(const DataOwner& data_owner,
                                   base::OnceClosure completed);
 
  protected:
@@ -233,11 +247,11 @@ class BrowsingDataModel {
   // Virtual to allow an in-memory only fake to be created.
   virtual void PopulateFromDisk(base::OnceClosure finished_callback);
 
-  // Backing data structure for this model. Is a map from primary hosts to a
+  // Backing data structure for this model. Is a map from data owners to a
   // list of tuples (stored as a map) of <DataKey, DataDetails>. Building the
-  // model required updating existing entries as data becomes available, so
-  // fast lookup is required. Similarly, keying the outer map on primary host
-  // supports removal by primary host performantly.
+  // model requires updating existing entries as data becomes available, so
+  // fast lookup is required. Similarly, keying the outer map on data owner
+  // supports removal by data owner performantly.
   BrowsingDataEntries browsing_data_entries_;
 
   // Non-owning pointers to storage backends. All derivable from a browser

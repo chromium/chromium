@@ -636,12 +636,12 @@ IN_PROC_BROWSER_TEST_P(BrowsingDataModelBrowserTest,
 
   ValidateBrowsingDataEntries(
       browsing_data_model.get(),
-      {{iwa_url_info1.origin().host(),
+      {{iwa_url_info1.origin(),
         iwa_url_info1.origin(),
         {static_cast<BrowsingDataModel::StorageType>(
              ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),
          /*storage_size=*/105, /*cookie_count=*/0}},
-       {iwa_url_info2.origin().host(),
+       {iwa_url_info2.origin(),
         iwa_url_info2.origin(),
         {static_cast<BrowsingDataModel::StorageType>(
              ChromeBrowsingDataModelDelegate::StorageType::kIsolatedWebApp),

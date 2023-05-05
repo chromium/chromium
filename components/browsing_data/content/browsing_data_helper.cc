@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -205,10 +206,13 @@ void RemoveFederatedSiteSettingsData(
 int GetUniqueHostCount(
     const browsing_data::LocalSharedObjectsContainer& local_shared_objects,
     const BrowsingDataModel& browsing_data_model) {
-  std::set<std::string> unique_hosts = local_shared_objects.GetHosts();
+  std::set<BrowsingDataModel::DataOwner> unique_hosts;
+  for (const std::string& host : local_shared_objects.GetHosts()) {
+    unique_hosts.insert(host);
+  }
 
   for (auto entry : browsing_data_model) {
-    unique_hosts.insert(entry.primary_host.get());
+    unique_hosts.insert(*entry.data_owner);
   }
 
   return unique_hosts.size();

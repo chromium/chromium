@@ -659,7 +659,8 @@ class SiteSettingsHandlerBaseTest : public testing::Test {
     auto mock_cookies_tree_model = std::make_unique<CookiesTreeModel>(
         std::move(container), profile()->GetExtensionSpecialStoragePolicy());
 
-    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>();
+    auto fake_browsing_data_model = std::make_unique<FakeBrowsingDataModel>(
+        ChromeBrowsingDataModelDelegate::CreateForProfile(profile()));
 
     std::move(setup).Run(
         {mock_browsing_data_cookie_helper,
@@ -1559,7 +1560,7 @@ TEST_F(SiteSettingsHandlerTest, AllSitesDisplaysIsolatedWebAppName) {
                  MakeApp(app_id, apps::AppType::kWeb, iwa_url.spec(),
                          apps::Readiness::kReady, apps::InstallReason::kUser));
 
-  SetupModels(base::DoNothing());
+  SetupModelsWithIsolatedWebAppData(iwa_url.spec(), 50);
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
   map->SetContentSettingDefaultScope(iwa_url, iwa_url,
@@ -1578,6 +1579,7 @@ TEST_F(SiteSettingsHandlerTest, AllSitesDisplaysIsolatedWebAppName) {
   EXPECT_EQ(CHECK_DEREF(group1.FindString("etldPlus1")), iwa_url);
   EXPECT_EQ(CHECK_DEREF(group1.FindString("displayName")), "IWA Name");
   EXPECT_EQ(CHECK_DEREF(origin1.FindString("origin")), iwa_url);
+  EXPECT_EQ(origin1.FindDouble("usage").value(), 50.0);
 
   const base::Value::Dict& group2 = site_groups[1].GetDict();
   const base::Value::Dict& origin2 =
@@ -1585,6 +1587,7 @@ TEST_F(SiteSettingsHandlerTest, AllSitesDisplaysIsolatedWebAppName) {
   EXPECT_EQ(CHECK_DEREF(group2.FindString("etldPlus1")), iwa_hostname);
   EXPECT_EQ(CHECK_DEREF(group2.FindString("displayName")), iwa_hostname);
   EXPECT_EQ(CHECK_DEREF(origin2.FindString("origin")), https_url);
+  EXPECT_EQ(origin2.FindDouble("usage").value(), 0.0);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -12,7 +12,7 @@ namespace browsing_data_model_test_util {
 // For testing purposes, it's useful to have a non-view version of a
 // BrowsingDataEntry, so they can be put in vectors etc.
 struct BrowsingDataEntry {
-  BrowsingDataEntry(const std::string& primary_host,
+  BrowsingDataEntry(const BrowsingDataModel::DataOwner& data_owner,
                     BrowsingDataModel::DataKey data_key,
                     BrowsingDataModel::DataDetails data_details);
   explicit BrowsingDataEntry(
@@ -21,7 +21,7 @@ struct BrowsingDataEntry {
   BrowsingDataEntry(const BrowsingDataEntry& other);
   bool operator==(const BrowsingDataEntry& other) const;
 
-  std::string primary_host;
+  BrowsingDataModel::DataOwner data_owner;
   BrowsingDataModel::DataKey data_key;
   BrowsingDataModel::DataDetails data_details;
 };

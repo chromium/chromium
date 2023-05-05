@@ -34,4 +34,16 @@ void TestBrowsingDataModelDelegate::RemoveDataKey(
   std::move(callback).Run();
 }
 
+absl::optional<BrowsingDataModel::DataOwner>
+TestBrowsingDataModelDelegate::GetDataOwner(
+    BrowsingDataModel::DataKey data_key,
+    BrowsingDataModel::StorageType storage_type) const {
+  if (static_cast<StorageType>(storage_type) ==
+          StorageType::kTestDelegateType &&
+      absl::holds_alternative<url::Origin>(data_key)) {
+    return absl::get<url::Origin>(data_key).host();
+  }
+  return absl::nullopt;
+}
+
 }  // namespace browsing_data

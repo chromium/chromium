@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/enum_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/overloaded.h"
 #include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/core/features.h"
@@ -34,36 +35,47 @@ constexpr int kSmallAmountOfDataInBytes = 100;
 // An estimate of storage size of an Interest Group object.
 constexpr int kModerateAmountOfDataInBytes = 1024;
 
-// Visitor which returns the appropriate primary host for a given `data_key`
+// Visitor which returns the appropriate data owner for a given `data_key`
 // and `storage_type`.
-struct GetPrimaryHost {
-  explicit GetPrimaryHost(BrowsingDataModel::StorageType storage_type)
-      : storage_type_(storage_type) {}
+struct GetDataOwner {
+  GetDataOwner(BrowsingDataModel::Delegate* delegate,
+               BrowsingDataModel::StorageType storage_type)
+      : delegate_(delegate), storage_type_(storage_type) {}
 
   template <class T>
-  std::string operator()(const T& data_key) const;
+  BrowsingDataModel::DataOwner operator()(const T& data_key) const {
+    if (delegate_) {
+      absl::optional<BrowsingDataModel::DataOwner> owner =
+          delegate_->GetDataOwner(data_key, storage_type_);
+      if (owner.has_value()) {
+        return *owner;
+      }
+    }
+    // By default all data is owned by its host.
+    return GetOwningHost(data_key);
+  }
 
  private:
+  template <class T>
+  std::string GetOwningHost(const T& data_key) const;
+
+  raw_ptr<BrowsingDataModel::Delegate> delegate_;
   BrowsingDataModel::StorageType storage_type_;
 };
 
 template <>
-std::string GetPrimaryHost::operator()<url::Origin>(
+std::string GetDataOwner::GetOwningHost<url::Origin>(
     const url::Origin& data_key) const {
   if (storage_type_ == BrowsingDataModel::StorageType::kTrustTokens) {
     return data_key.host();
   }
 
-  if (storage_type_ > BrowsingDataModel::StorageType::kLastType) {
-    return data_key.host();
-  }
-
-  NOTREACHED();
+  NOTREACHED() << "Unexpected StorageType: " << static_cast<int>(storage_type_);
   return "";
 }
 
 template <>
-std::string GetPrimaryHost::operator()<blink::StorageKey>(
+std::string GetDataOwner::GetOwningHost<blink::StorageKey>(
     const blink::StorageKey& data_key) const {
   // TODO(crbug.com/1271155): This logic is useful for testing during the
   // implementation of the model, but ultimately these storage types may not
@@ -79,20 +91,20 @@ std::string GetPrimaryHost::operator()<blink::StorageKey>(
   if (storage_type_ == BrowsingDataModel::StorageType::kSharedStorage) {
     return data_key.origin().host();
   }
-  NOTREACHED();
+  NOTREACHED() << "Unexpected StorageType: " << static_cast<int>(storage_type_);
   return "";
 }
 
 template <>
-std::string
-GetPrimaryHost::operator()<content::InterestGroupManager::InterestGroupDataKey>(
+std::string GetDataOwner::GetOwningHost<
+    content::InterestGroupManager::InterestGroupDataKey>(
     const content::InterestGroupManager::InterestGroupDataKey& data_key) const {
   DCHECK_EQ(BrowsingDataModel::StorageType::kInterestGroup, storage_type_);
   return data_key.owner.host();
 }
 
 template <>
-std::string GetPrimaryHost::operator()<content::AttributionDataModel::DataKey>(
+std::string GetDataOwner::GetOwningHost<content::AttributionDataModel::DataKey>(
     const content::AttributionDataModel::DataKey& data_key) const {
   DCHECK_EQ(BrowsingDataModel::StorageType::kAttributionReporting,
             storage_type_);
@@ -113,7 +125,7 @@ struct StorageRemoverHelper {
         delegate_(delegate) {}
 
   void RemoveByPrimaryHost(
-      const std::string& primary_host,
+      const BrowsingDataModel::DataOwner& data_owner,
       const BrowsingDataModel::DataKeyEntries& data_key_entries,
       base::OnceClosure completed);
 
@@ -146,7 +158,7 @@ struct StorageRemoverHelper {
 };
 
 void StorageRemoverHelper::RemoveByPrimaryHost(
-    const std::string& primary_host,
+    const BrowsingDataModel::DataOwner& data_owner,
     const BrowsingDataModel::DataKeyEntries& data_key_entries,
     base::OnceClosure completed) {
   // At a helper level, only a single deletion may occur at a time. However
@@ -162,7 +174,10 @@ void StorageRemoverHelper::RemoveByPrimaryHost(
   auto sync_completion = GetCompleteCallback();
   for (const auto& [key, details] : data_key_entries) {
     absl::visit(Visitor{this, details.storage_types}, key);
-    delegate_->RemoveDataKey(key, details.storage_types, GetCompleteCallback());
+    if (delegate_) {
+      delegate_->RemoveDataKey(key, details.storage_types,
+                               GetCompleteCallback());
+    }
   }
 
   std::move(sync_completion).Run();
@@ -348,13 +363,22 @@ bool BrowsingDataModel::DataDetails::operator==(
 }
 
 BrowsingDataModel::BrowsingDataEntryView::BrowsingDataEntryView(
-    const std::string& primary_host,
+    const DataOwner& data_owner,
     const DataKey& data_key,
     const DataDetails& data_details)
-    : primary_host(primary_host),
-      data_key(data_key),
-      data_details(data_details) {}
+    : data_owner(data_owner), data_key(data_key), data_details(data_details) {}
 BrowsingDataModel::BrowsingDataEntryView::~BrowsingDataEntryView() = default;
+
+bool BrowsingDataModel::BrowsingDataEntryView::Matches(
+    const url::Origin& origin) const {
+  return absl::visit(base::Overloaded{[&](const std::string& entry_host) {
+                                        return entry_host == origin.host();
+                                      },
+                                      [&](const url::Origin& entry_origin) {
+                                        return entry_origin == origin;
+                                      }},
+                     *data_owner);
+}
 
 BrowsingDataModel::Delegate::DelegateEntry::DelegateEntry(
     DataKey data_key,
@@ -475,18 +499,18 @@ void BrowsingDataModel::AddBrowsingData(const DataKey& data_key,
                                         StorageType storage_type,
                                         uint64_t storage_size,
                                         uint64_t cookie_count) {
-  std::string primary_host =
-      absl::visit(GetPrimaryHost(storage_type), data_key);
+  DataOwner data_owner =
+      absl::visit(GetDataOwner(delegate_.get(), storage_type), data_key);
 
   // Find the existing entry if it exists, constructing any missing components.
-  auto& entry = browsing_data_entries_[primary_host][data_key];
+  auto& entry = browsing_data_entries_[data_owner][data_key];
 
   entry.storage_size += storage_size;
   entry.cookie_count += cookie_count;
   entry.storage_types.Put(storage_type);
 }
 
-void BrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,
+void BrowsingDataModel::RemoveBrowsingData(const DataOwner& data_owner,
                                            base::OnceClosure completed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -500,14 +524,14 @@ void BrowsingDataModel::RemoveBrowsingData(const std::string& primary_host,
          base::OnceClosure completed) { std::move(completed).Run(); },
       std::move(helper), std::move(completed));
 
-  helper_pointer->RemoveByPrimaryHost(primary_host,
-                                      browsing_data_entries_[primary_host],
+  helper_pointer->RemoveByPrimaryHost(data_owner,
+                                      browsing_data_entries_[data_owner],
                                       std::move(wrapped_completed));
 
   // Immediately remove the affected entries from the in-memory model. Different
   // UI elements have different sync vs. async expectations. Exposing a
   // completed callback, but updating the model synchronously, serves both.
-  browsing_data_entries_.erase(primary_host);
+  browsing_data_entries_.erase(data_owner);
 }
 
 void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
@@ -573,8 +597,10 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   }
 
   // Data loaded from non-components storage types via the delegate.
-  delegate_->GetAllDataKeys(
-      base::BindOnce(&OnDelegateDataLoaded, this, completion));
+  if (delegate_) {
+    delegate_->GetAllDataKeys(
+        base::BindOnce(&OnDelegateDataLoaded, this, completion));
+  }
 }
 
 BrowsingDataModel::BrowsingDataModel(

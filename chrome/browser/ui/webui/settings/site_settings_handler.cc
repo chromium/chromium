@@ -607,7 +607,7 @@ void ConvertSiteGroupMapToList(
       origin_object.Set("isPartitioned", is_partitioned);
       origin_object.Set("engagement",
                         engagement_service->GetScore(origin.GetURL()));
-      origin_object.Set("usage", 0);
+      origin_object.Set("usage", 0.0);
       origin_object.Set(kNumCookies, 0);
 
       bool is_installed = installed_origins.contains(origin);
@@ -1010,7 +1010,8 @@ void SiteSettingsHandler::OnGetUsageInfo() {
 
   for (const BrowsingDataModel::BrowsingDataEntryView& entry :
        *browsing_data_model_) {
-    if (*entry.primary_host != usage_hostname) {
+    auto usage_origin = url::Origin::Create(GURL(usage_origin_));
+    if (!entry.Matches(usage_origin)) {
       continue;
     }
     size += entry.data_details->storage_size;
@@ -2323,10 +2324,14 @@ void SiteSettingsHandler::GetOriginStorage(
     if (entry.data_details->storage_size == 0)
       continue;
 
-    // Convert the primary host to an HTTPS url to match expecations for this
-    // code.
-    url::Origin origin =
-        ConvertEtldToOrigin(*entry.primary_host, /*secure=*/true);
+    url::Origin origin = absl::visit(
+        base::Overloaded{[](const std::string& host) {
+                           // Convert the primary host to an HTTPS url to match
+                           // expecations for this code.
+                           return ConvertEtldToOrigin(host, /*secure=*/true);
+                         },
+                         [](const url::Origin& origin) { return origin; }},
+        *entry.data_owner);
     UpdateDataFromModel(all_sites_map, origin_size_map, origin,
                         entry.data_details->storage_size);
   }

@@ -6,6 +6,7 @@
 #include <memory>
 #include <string>
 
+#include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -187,7 +188,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
-    std::map<std::string, PageSpecificSiteDataDialogSite> sites_map;
+    std::map<BrowsingDataModel::DataOwner, PageSpecificSiteDataDialogSite>
+        sites_map;
     for (const std::unique_ptr<CookieTreeNode>& node :
          allowed_cookies_tree_model_->GetRoot()->children()) {
       std::string host_name = node->GetDetailedInfo().origin.host();
@@ -208,11 +210,11 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
     for (const BrowsingDataModel::BrowsingDataEntryView& entry :
          *allowed_browsing_data_model()) {
-      auto existing_site = sites_map.find(*entry.primary_host);
+      const BrowsingDataModel::DataOwner& owner = *entry.data_owner;
+      auto existing_site = sites_map.find(owner);
       if (existing_site == sites_map.end()) {
         sites_map.emplace(
-            *entry.primary_host,
-            CreateSiteFromEntryView(entry, /*from_allowed_model=*/true));
+            owner, CreateSiteFromEntryView(entry, /*from_allowed_model=*/true));
       } else {
         // To display the result entry as fully partitioned, entries from both
         // models have to be partitioned.
@@ -238,7 +240,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     }
     for (const BrowsingDataModel::BrowsingDataEntryView& entry :
          *blocked_browsing_data_model()) {
-      auto existing_site = sites_map.find(*entry.primary_host);
+      const BrowsingDataModel::DataOwner& owner = *entry.data_owner;
+      auto existing_site = sites_map.find(owner);
       if (existing_site == sites_map.end()) {
         // If there are multiple entries from the same tree, ignore the entry
         // from the blocked tree. It might be caused by partitioned allowed
@@ -246,9 +249,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         // creating an exception and not reloading the page. Existing site
         // entries doesn't need to be updated as partitioned state isn't
         // relevant for blocked entries.
-        sites_map.emplace(
-            *entry.primary_host,
-            CreateSiteFromEntryView(entry, /*from_allowed_model=*/false));
+        sites_map.emplace(owner, CreateSiteFromEntryView(
+                                     entry, /*from_allowed_model=*/false));
       }
     }
 
@@ -364,15 +366,21 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   PageSpecificSiteDataDialogSite CreateSiteFromEntryView(
       const BrowsingDataModel::BrowsingDataEntryView& entry,
       bool from_allowed_model) {
-    GURL current_url = web_contents_->GetVisibleURL();
     // TODO(crbug.com/1271155): BDM provides host name only while
     // CookieTreeModel provides url::Origin. This classes works with
     // url::Origin, so here we convert host name to origin with some assumptions
     // (which might not be true). We should either convert to work only with
     // host names or BDM should return origins.
-    GURL site_url = net::cookie_util::CookieOriginToURL(
-        *entry.primary_host, current_url.SchemeIsCryptographic());
-    return CreateSite(url::Origin::Create(site_url), from_allowed_model,
+    url::Origin entry_origin = absl::visit(
+        base::Overloaded{[&](const std::string& host) {
+                           GURL current_url = web_contents_->GetVisibleURL();
+                           GURL site_url = net::cookie_util::CookieOriginToURL(
+                               host, current_url.SchemeIsCryptographic());
+                           return url::Origin::Create(site_url);
+                         },
+                         [](const url::Origin& origin) { return origin; }},
+        *entry.data_owner);
+    return CreateSite(entry_origin, from_allowed_model,
                       IsBrowsingDataEntryViewFullyPartitioned(entry));
   }
 
