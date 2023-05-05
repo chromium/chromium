@@ -5,7 +5,7 @@
 import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {remoteCall, setupAndWaitUntilReady} from './background.js';
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {DOWNLOADS_FAKE_TASKS} from './tasks.js';
 import {BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
@@ -585,4 +585,84 @@ testcase.toolbarCloudIconShouldNotShowWhenPrefDisabled = async () => {
   const stage = await sendTestMessage({name: 'getBulkPinningStage'});
   chrome.test.assertEq('Paused', stage);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+};
+
+/**
+ * Tests that the cloud icon should show when a Files app window has started.
+ * This mainly tests that on startup the bulk pin progress is fetched and
+ * doesn't require an async event to show.
+ */
+testcase.toolbarCloudIconShouldShowOnStartupEvenIfSyncing = async () => {
+  await addEntries(['drive'], [ENTRIES.hello]);
+
+  // Mock the free space returned by spaced to be 1 GB.
+  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+
+  // Enable the bulk pinning preference.
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+
+  // Wait until the pin manager enters the syncing stage otherwise the next
+  // syncing event will get ignored.
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const stage = await sendTestMessage({name: 'getBulkPinningStage'});
+    if (stage === 'Syncing') {
+      return true;
+    }
+    return pending(caller, 'Still waiting for syncing stage');
+  });
+
+  // Mock the Drive pinning event completing downloading all the data.
+  await sendTestMessage({
+    name: 'setDrivePinSyncingEvent',
+    path: `/root/${ENTRIES.hello.targetPath}`,
+    bytesTransferred: 100,
+    bytesToTransfer: 100,
+  });
+
+  // Wait until the bulk pinning required space reaches 0 (no bytes left to
+  // pin). This indicates the bulk pinning manager has finished. When Files app
+  // starts after this, no event will go via onBulkPinProgress.
+  await repeatUntil(async () => {
+    const stage = await sendTestMessage({name: 'getBulkPinningStage'});
+    if (stage !== 'Syncing') {
+      return pending(caller, 'Still waiting for syncing stage');
+    }
+    const requiredSpace =
+        await sendTestMessage({name: 'getBulkPinningRequiredSpace'});
+    const parsedSpace = parseInt(requiredSpace, 10);
+    if (parsedSpace > 0) {
+      return pending(caller, 'Still waiting for required space to be 0');
+    }
+    return true;
+  });
+
+  // Open a new window to the Drive root and ensure the cloud button is not
+  // hidden. The cloud button will show on startup as it relies on the bulk
+  // pinning preference to be set.
+  const appId = await openNewWindow(RootPath.DRIVE, /*appState=*/ {});
+  await remoteCall.waitForElement(appId, '#detail-table');
+  await remoteCall.waitForElement(appId, '#cloud-button:not([hidden])');
+
+  // The underlying pin manager has a 60s timer to get free disk space. When
+  // this happens it emits a progress event and updates the UI. However, once
+  // the cloud button is visible the `<xf-cloud-panel>` should have it's data
+  // set. To bypass async issues, only wait 10s to check the data is available
+  // to ensure its done prior to the 60s free disk space check.
+  const futureDate = new Date();
+  futureDate.setSeconds(futureDate.getSeconds() + 10);
+  await repeatUntil(async () => {
+    chrome.test.assertTrue(
+        new Date() < futureDate,
+        'Timed out waiting for data to appear on xf-cloud-panel');
+    const cloudPanel = await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId,
+        ['xf-cloud-panel[percentage="100"][items="1"]']);
+    if (cloudPanel && cloudPanel.length === 1) {
+      return true;
+    }
+    return pending(
+        caller,
+        'Still waiting for xf-cloud-panel to have items and percentage set');
+  });
 };

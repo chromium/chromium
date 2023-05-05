@@ -1377,12 +1377,28 @@ class DriveFsTestVolume : public TestVolume {
   }
 
   void SetFileSyncStatus(const std::string* path,
-                         const drivefs::mojom::ItemEvent::State sync_status) {
+                         const drivefs::mojom::ItemEvent::State sync_status,
+                         const drivefs::mojom::ItemEventReason reason,
+                         int64_t bytes_transferred,
+                         int64_t bytes_to_transfer) {
+    const base::FilePath file_path(*path);
+    const auto& md =
+        fake_drivefs_helper_->fake_drivefs().GetItemMetadata(file_path);
+    CHECK(md.has_value()) << "No metadata found for " << file_path.value();
+
     drivefs::mojom::SyncingStatus syncing_status;
-    syncing_status.item_events.emplace_back(
-        absl::in_place, /* stable_id */ 1, /* group_id */ 1, *path, sync_status,
-        /* bytes_transferred */ 50, /* bytes_to_transfer */ 100,
-        drivefs::mojom::ItemEventReason::kTransfer);
+    drivefs::mojom::ItemEventPtr event = drivefs::mojom::ItemEvent::New();
+    event->stable_id = md.value().stable_id;
+    event->group_id = 1;
+    event->path = *path;
+    event->state = sync_status;
+    event->bytes_transferred = bytes_transferred;
+    event->bytes_to_transfer = bytes_to_transfer;
+    event->reason = reason;
+    event->is_download = (reason == drivefs::mojom::ItemEventReason::kPin);
+    LOG(ERROR) << "Sending sync status event for: " << event->stable_id << " : "
+               << event->path;
+    syncing_status.item_events.push_back(std::move(event));
 
     auto& drivefs_delegate = fake_drivefs_helper_->fake_drivefs().delegate();
     drivefs_delegate->OnSyncingStatusUpdate(syncing_status.Clone());
@@ -3103,6 +3119,16 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (name == "getBulkPinningRequiredSpace") {
+    auto* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    ASSERT_NE(integration_service, nullptr);
+    ASSERT_NE(integration_service->GetPinManager(), nullptr);
+    auto progress = integration_service->GetPinManager()->GetProgress();
+    *output = base::NumberToString(progress.required_space);
+    return;
+  }
+
   if (name == "setCrostiniEnabled") {
     absl::optional<bool> enabled = value.FindBool("enabled");
     ASSERT_TRUE(enabled.has_value());
@@ -3415,13 +3441,36 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     ASSERT_TRUE(sync_status);
     ASSERT_TRUE(path);
     drive_volume_->SetFileSyncStatus(
-        path, *sync_status == "in_progress"
-                  ? drivefs::mojom::ItemEvent::State::kInProgress
-              : *sync_status == "queued"
-                  ? drivefs::mojom::ItemEvent::State::kQueued
-              : *sync_status == "completed"
-                  ? drivefs::mojom::ItemEvent::State::kCompleted
-                  : drivefs::mojom::ItemEvent::State::kFailed);
+        path,
+        *sync_status == "in_progress"
+            ? drivefs::mojom::ItemEvent::State::kInProgress
+        : *sync_status == "queued" ? drivefs::mojom::ItemEvent::State::kQueued
+        : *sync_status == "completed"
+            ? drivefs::mojom::ItemEvent::State::kCompleted
+            : drivefs::mojom::ItemEvent::State::kFailed,
+        drivefs::mojom::ItemEventReason::kTransfer, 50, 100);
+    return;
+  }
+
+  if (name == "setDrivePinSyncingEvent") {
+    const std::string* path = value.FindString("path");
+    ASSERT_TRUE(path);
+    absl::optional<int64_t> bytes_transferred =
+        value.FindInt("bytesTransferred");
+    absl::optional<int64_t> bytes_to_transfer =
+        value.FindInt("bytesToTransfer");
+    ASSERT_TRUE(bytes_transferred.has_value());
+    ASSERT_TRUE(bytes_to_transfer.has_value());
+    using EventState = drivefs::mojom::ItemEvent::State;
+    EventState state = EventState::kQueued;
+    if (bytes_transferred < bytes_to_transfer) {
+      state = EventState::kInProgress;
+    } else if (bytes_transferred == bytes_to_transfer) {
+      state = EventState::kCompleted;
+    }
+    drive_volume_->SetFileSyncStatus(
+        path, state, drivefs::mojom::ItemEventReason::kPin,
+        bytes_transferred.value(), bytes_to_transfer.value());
     return;
   }
 

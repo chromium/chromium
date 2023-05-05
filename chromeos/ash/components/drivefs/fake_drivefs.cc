@@ -394,6 +394,9 @@ absl::optional<FakeDriveFs::FileMetadata> FakeDriveFs::GetItemMetadata(
   if (metadata == metadata_.end()) {
     return absl::nullopt;
   }
+  if (metadata->second.stable_id == 0) {
+    metadata->second.stable_id = next_stable_id_++;
+  }
   return metadata->second;
 }
 

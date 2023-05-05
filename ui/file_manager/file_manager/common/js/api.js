@@ -338,3 +338,11 @@ export async function getUniqueParents(entries) {
 
   return Promise.all([...uniquePaths].map(path => getDirectory(root, path)));
 }
+
+/**
+ * Gets the current bulk pin progress status.
+ * @returns {!Promise<!chrome.fileManagerPrivate.BulkPinProgress>}
+ */
+export async function getBulkPinProgress() {
+  return promisify(chrome.fileManagerPrivate.getBulkPinProgress);
+}

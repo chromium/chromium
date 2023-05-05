@@ -1337,6 +1337,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarCloudIconWhenPressedShouldOpenCloudPanel")
             .EnableBulkPinning(),
         TestCase("toolbarCloudIconShouldNotShowWhenPrefDisabled")
+            .EnableBulkPinning(),
+        TestCase("toolbarCloudIconShouldShowOnStartupEvenIfSyncing")
             .EnableBulkPinning()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

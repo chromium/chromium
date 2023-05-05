@@ -7,7 +7,7 @@ import {NativeEventTarget as EventTarget} from 'chrome://resources/ash/common/ev
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {startColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';
+import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getPreferences} from '../../common/js/api.js';
 import {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {DialogType, isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
@@ -752,6 +752,29 @@ export class FileManager extends EventTarget {
     // store containing the updated data.
     // TODO(b/275635808): Depending on the users corpus size, this API could be
     // quite chatty, consider wrapping it in a concurrency model.
+    this.initBulkPinning_();
+  }
+
+  /**
+   * Retrieve the bulk pinning progress and populate the store. Then subscribe
+   * to any future updates to ensure the store is kept up to date.
+   * @private
+   */
+  async initBulkPinning_() {
+    if (!util.isDriveFsBulkPinningEnabled()) {
+      return;
+    }
+    let progress = null;
+    try {
+      progress = await getBulkPinProgress();
+    } catch (e) {
+      console.error('Failed to get bulk pin progress:', e);
+      return;
+    }
+    if (!progress) {
+      return;
+    }
+    this.store_.dispatch(updateBulkPinProgress(progress));
     chrome.fileManagerPrivate.onBulkPinProgress.addListener((progress) => {
       this.store_.dispatch(updateBulkPinProgress(progress));
     });

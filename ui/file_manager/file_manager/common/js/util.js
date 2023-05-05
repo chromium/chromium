@@ -1569,7 +1569,7 @@ util.canBulkPinningCloudPanelShow = (stage, pref) => {
   if (pref &&
       (stage === chrome.fileManagerPrivate.BulkPinStage.GETTING_FREE_SPACE ||
        stage === chrome.fileManagerPrivate.BulkPinStage.LISTING_FILES ||
-       chrome.fileManagerPrivate.BulkPinStage.SYNCING)) {
+       stage === chrome.fileManagerPrivate.BulkPinStage.SYNCING)) {
     return true;
   }
 
