@@ -237,29 +237,7 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
 
   ASSERT_EQ(REQUIRES_CONSENT, requires_consent);
 
-  class BlockedActionWaiter : public ExtensionActionRunner::TestObserver {
-   public:
-    explicit BlockedActionWaiter(ExtensionActionRunner* runner)
-        : runner_(runner) {
-      runner_->set_observer_for_testing(this);
-    }
-
-    BlockedActionWaiter(const BlockedActionWaiter&) = delete;
-    BlockedActionWaiter& operator=(const BlockedActionWaiter&) = delete;
-
-    ~BlockedActionWaiter() { runner_->set_observer_for_testing(nullptr); }
-
-    void Wait() { run_loop_.Run(); }
-
-   private:
-    // ExtensionActionRunner::TestObserver:
-    void OnBlockedActionAdded() override { run_loop_.Quit(); }
-
-    raw_ptr<ExtensionActionRunner> runner_;
-    base::RunLoop run_loop_;
-  };
-
-  BlockedActionWaiter waiter(runner);
+  browsertest_util::BlockedActionWaiter waiter(runner);
   navigate();
   waiter.Wait();
   EXPECT_TRUE(runner->WantsToRun(extension));

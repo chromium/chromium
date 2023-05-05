@@ -95,4 +95,21 @@ bool DidChangeTitle(content::WebContents& web_contents,
   return false;
 }
 
+BlockedActionWaiter::BlockedActionWaiter(ExtensionActionRunner* runner)
+    : runner_(runner) {
+  runner_->set_observer_for_testing(this);  // IN-TEST
+}
+
+BlockedActionWaiter::~BlockedActionWaiter() {
+  runner_->set_observer_for_testing(nullptr);  // IN-TEST
+}
+
+void BlockedActionWaiter::Wait() {
+  run_loop_.Run();
+}
+
+void BlockedActionWaiter::OnBlockedActionAdded() {
+  run_loop_.Quit();
+}
+
 }  // namespace extensions::browsertest_util

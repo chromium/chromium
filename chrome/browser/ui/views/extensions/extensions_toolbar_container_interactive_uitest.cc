@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
@@ -56,30 +57,6 @@
 namespace {
 
 constexpr char kInjectionSucceededMessage[] = "injection succeeded";
-
-class BlockedActionWaiter
-    : public extensions::ExtensionActionRunner::TestObserver {
- public:
-  explicit BlockedActionWaiter(extensions::ExtensionActionRunner* runner)
-      : runner_(runner), run_loop_(std::make_unique<base::RunLoop>()) {
-    runner_->set_observer_for_testing(this);
-  }
-  BlockedActionWaiter(const BlockedActionWaiter&) = delete;
-  BlockedActionWaiter& operator=(const BlockedActionWaiter&) = delete;
-  ~BlockedActionWaiter() { runner_->set_observer_for_testing(nullptr); }
-
-  void WaitAndReset() {
-    run_loop_->Run();
-    run_loop_ = std::make_unique<base::RunLoop>();
-  }
-
- private:
-  // ExtensionActionRunner::TestObserver:
-  void OnBlockedActionAdded() override { run_loop_->Quit(); }
-
-  raw_ptr<extensions::ExtensionActionRunner> runner_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
 
 views::Widget* CreateBubble(views::View* anchor_point) {
   std::unique_ptr<ui::DialogModel> dialog_model =
@@ -754,7 +731,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   extensions::ExtensionActionRunner* runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  BlockedActionWaiter blocked_action_waiter(runner);
   extensions::PermissionsManager* permissions_manager =
       extensions::PermissionsManager::Get(profile());
 
@@ -762,10 +738,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   GURL urlA = embedded_test_server()->GetURL("example.com", "/title1.html");
   {
     content::TestNavigationObserver observer(web_contents);
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        runner);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urlA));
     EXPECT_TRUE(observer.last_navigation_succeeded());
 
-    blocked_action_waiter.WaitAndReset();
+    blocked_action_waiter.Wait();
     EXPECT_TRUE(runner->WantsToRun(extension()));
     EXPECT_FALSE(
         permissions_manager->HasGrantedHostPermission(*extension(), urlA));
@@ -804,10 +782,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   GURL urlB = embedded_test_server()->GetURL("abc.com", "/title1.html");
   {
     content::TestNavigationObserver observer(web_contents);
+    extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+        runner);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urlB));
     EXPECT_TRUE(observer.last_navigation_succeeded());
 
-    blocked_action_waiter.WaitAndReset();
+    blocked_action_waiter.Wait();
     EXPECT_TRUE(runner->WantsToRun(extension()));
     EXPECT_FALSE(
         permissions_manager->HasGrantedHostPermission(*extension(), urlB));
@@ -861,7 +841,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   extensions::ExtensionActionRunner* runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
-  BlockedActionWaiter blocked_action_waiter(runner);
+  extensions::browsertest_util::BlockedActionWaiter blocked_action_waiter(
+      runner);
   {
     content::TestNavigationObserver observer(web_contents);
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -869,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   }
 
   // Access to |url| should have been withheld.
-  blocked_action_waiter.WaitAndReset();
+  blocked_action_waiter.Wait();
   EXPECT_TRUE(runner->WantsToRun(extension()));
   extensions::PermissionsManager* permissions_manager =
       extensions::PermissionsManager::Get(profile());
