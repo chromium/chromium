@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -64,7 +63,7 @@ public class BookmarkUiPrefsTest {
         ShoppingFeatures.setShoppingListEligibleForTesting(true);
 
         Assert.assertEquals(
-                BookmarkRowDisplayPref.VISUAL, BookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
 
         ShoppingFeatures.setShoppingListEligibleForTesting(false);
     }
@@ -77,14 +76,14 @@ public class BookmarkUiPrefsTest {
 
         // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, BookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
     public void initialBookmarkRowDisplayPref() {
         // Nothing has been written to shared prefs manager.
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, BookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
@@ -92,24 +91,22 @@ public class BookmarkUiPrefsTest {
     public void returnsStoredPref() {
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
         Assert.assertEquals(
-                BookmarkRowDisplayPref.VISUAL, BookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.VISUAL, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
 
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
         Assert.assertEquals(
-                BookmarkRowDisplayPref.COMPACT, BookmarkUiPrefs.getBookmarkRowDisplayPref());
+                BookmarkRowDisplayPref.COMPACT, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     @Test
     public void setBookmarkRowDisplayPref() {
-        BookmarkUiPrefs.Observer obs = Mockito.mock(BookmarkUiPrefs.Observer.class);
-
-        mBookmarkUiPrefs.addObserver(obs);
+        mBookmarkUiPrefs.addObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
-        verify(obs).onBookmarkRowDisplayPrefChanged();
+        verify(mObserver).onBookmarkRowDisplayPrefChanged();
 
-        mBookmarkUiPrefs.removeObserver(obs);
+        mBookmarkUiPrefs.removeObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
         // The observer method shouldn't have been called again.
-        verify(obs, times(1)).onBookmarkRowDisplayPrefChanged();
+        verify(mObserver, times(1)).onBookmarkRowDisplayPrefChanged();
     }
 }

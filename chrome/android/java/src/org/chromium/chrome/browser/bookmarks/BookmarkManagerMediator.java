@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkRow.Location;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksReader;
@@ -386,9 +387,13 @@ class BookmarkManagerMediator implements BookmarkDelegate, TestingDelegate,
         mBookmarkUiPrefs.addObserver(this);
         mHideKeyboardRunnable = hideKeyboardRunnable;
 
-        mIconGenerator = BookmarkUtils.getRoundedIconGenerator(mContext, mContext.getResources());
+        final @BookmarkRowDisplayPref int displayPref =
+                mBookmarkUiPrefs.getBookmarkRowDisplayPref();
+        mIconGenerator = BookmarkUtils.getRoundedIconGenerator(
+                mContext, mContext.getResources(), displayPref);
         mFetchFaviconSize = BookmarkUtils.getFaviconFetchSize(mContext.getResources());
-        mDisplayFaviconSize = BookmarkUtils.getFaviconDisplaySize(mContext.getResources());
+        mDisplayFaviconSize =
+                BookmarkUtils.getFaviconDisplaySize(mContext.getResources(), displayPref);
 
         // Previously we were waiting for BookmarkModel to be loaded, but it's not necessary.
         PartnerBookmarksReader.addFaviconUpdateObserver(this);

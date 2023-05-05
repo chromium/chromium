@@ -655,15 +655,14 @@ public class BookmarkUtils {
 
     /** Returns the RoundedIconGenerator with the appropriate size. */
     public static RoundedIconGenerator getRoundedIconGenerator(
-            Context context, Resources resources) {
-        boolean visual =
-                BookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL;
-        int displayIconSize = getDisplayIconSize(resources);
+            Context context, Resources resources, @BookmarkRowDisplayPref int displayPref) {
+        boolean visual = displayPref == BookmarkRowDisplayPref.VISUAL;
+        int displayIconSize = getDisplayIconSize(resources, displayPref);
 
         return visual
                 ? new RoundedIconGenerator(displayIconSize, displayIconSize, displayIconSize / 2,
                         context.getColor(R.color.default_favicon_background_color),
-                        getDisplayTextSize(resources))
+                        getDisplayTextSize(resources, displayPref))
                 : FaviconUtils.createCircularIconGenerator(context);
     }
 
@@ -672,10 +671,11 @@ public class BookmarkUtils {
         return resources.getDimensionPixelSize(R.dimen.default_favicon_min_size);
     }
 
-    /** Returns the size to use when displaying the favicon */
-    public static int getFaviconDisplaySize(Resources resources) {
+    /** Returns the size to use when displaying the favicon. */
+    public static int getFaviconDisplaySize(
+            Resources resources, @BookmarkRowDisplayPref int displayPref) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return BookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL
+            return displayPref == BookmarkRowDisplayPref.VISUAL
                     ? resources.getDimensionPixelSize(
                             R.dimen.bookmark_refresh_preferred_start_icon_size)
                     : resources.getDimensionPixelSize(R.dimen.circular_monogram_size);
@@ -687,9 +687,10 @@ public class BookmarkUtils {
                 : resources.getDimensionPixelSize(R.dimen.circular_monogram_size);
     }
 
-    private static int getDisplayTextSize(Resources resources) {
+    private static int getDisplayTextSize(
+            Resources resources, @BookmarkRowDisplayPref int displayPref) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return BookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL
+            return displayPref == BookmarkRowDisplayPref.VISUAL
                     ? resources.getDimensionPixelSize(
                             R.dimen.bookmark_refresh_circular_monogram_text_size)
                     : resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
@@ -701,9 +702,10 @@ public class BookmarkUtils {
                 : resources.getDimensionPixelSize(R.dimen.circular_monogram_text_size);
     }
 
-    public static int getDisplayIconSize(Resources resources) {
+    public static int getDisplayIconSize(
+            Resources resources, @BookmarkRowDisplayPref int displayPref) {
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return BookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL
+            return displayPref == BookmarkRowDisplayPref.VISUAL
                     ? resources.getDimensionPixelSize(R.dimen.improved_bookmark_icon_visual_size)
                     : resources.getDimensionPixelSize(R.dimen.improved_bookmark_icon_size);
         }

@@ -368,7 +368,7 @@ public class BookmarkManagerCoordinator
 
     ImprovedBookmarkRow buildAndInitImprovedBookmarkRow(ViewGroup parent) {
         ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(),
-                BookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL);
+                mBookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL);
         row.setSelectionDelegate(mSelectionDelegate);
         return row;
     }

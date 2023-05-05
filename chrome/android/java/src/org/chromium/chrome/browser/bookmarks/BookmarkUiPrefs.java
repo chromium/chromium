@@ -55,18 +55,15 @@ public class BookmarkUiPrefs {
     }
 
     /** Returns how the bookmark rows should be displayed, doesn't write anything to prefs. */
-    public static @BookmarkRowDisplayPref int getBookmarkRowDisplayPref() {
+    public @BookmarkRowDisplayPref int getBookmarkRowDisplayPref() {
         // Special cases for when the new visuals aren't enabled. We should either fallback to the
         // shopping visuals or the compact.
         if (!BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
-                    ? BookmarkRowDisplayPref.VISUAL
-                    : BookmarkRowDisplayPref.COMPACT;
+            return getDisplayPrefForLegacy();
         }
 
-        SharedPreferencesManager prefsManager = SharedPreferencesManager.getInstance();
-        if (prefsManager.contains(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF)) {
-            return prefsManager.readInt(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
+        if (mPrefsManager.contains(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF)) {
+            return mPrefsManager.readInt(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF);
         } else {
             return sInitialBookmarkRowDisplayPref;
         }
@@ -79,5 +76,16 @@ public class BookmarkUiPrefs {
     public void setBookmarkRowDisplayPref(@BookmarkRowDisplayPref int pref) {
         mPrefsManager.writeInt(ChromePreferenceKeys.BOOKMARK_VISUALS_PREF, pref);
         for (Observer obs : mObservers) obs.onBookmarkRowDisplayPrefChanged();
+    }
+
+    /**
+     * Some places use @BookmarkRowDisplayPref even for legacy handling. This converts to the new
+     * display pref from feature flags.
+     */
+    public static @BookmarkRowDisplayPref int getDisplayPrefForLegacy() {
+        assert !BookmarkFeatures.isAndroidImprovedBookmarksEnabled();
+        return BookmarkFeatures.isLegacyBookmarksVisualRefreshEnabled()
+                ? BookmarkRowDisplayPref.VISUAL
+                : BookmarkRowDisplayPref.COMPACT;
     }
 }
