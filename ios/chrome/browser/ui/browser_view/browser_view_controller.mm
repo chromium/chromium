@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
-#import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -199,9 +198,6 @@ enum HeaderBehaviour {
   // Keyboard commands provider.  It offloads most of the keyboard commands
   // management off of the BVC.
   KeyCommandsProvider* _keyCommandsProvider;
-
-  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-  PrerenderService* _prerenderService;
 
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
@@ -426,8 +422,6 @@ enum HeaderBehaviour {
   if (self) {
     _browserContainerViewController = browserContainerViewController;
     _keyCommandsProvider = keyCommandsProvider;
-    // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-    _prerenderService = dependencies.prerenderService;
     _sideSwipeController = dependencies.sideSwipeController;
     [_sideSwipeController setSwipeDelegate:self];
     _bookmarksCoordinator = dependencies.bookmarksCoordinator;
@@ -2548,9 +2542,9 @@ enum HeaderBehaviour {
 
   // Prerender tab does not have a toolbar, return `headerHeight` as promised by
   // API documentation.
-  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-  if (_prerenderService && _prerenderService->IsLoadingPrerender())
+  if ([self.primaryToolbarCoordinator isLoadingPrerenderer]) {
     return self.headerHeight;
+  }
 
   UIView* topHeader = headers[0].view;
   return -(topHeader.frame.origin.y - self.headerOffset);

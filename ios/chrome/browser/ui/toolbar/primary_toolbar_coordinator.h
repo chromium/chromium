@@ -38,6 +38,9 @@
 // Updates toolbar appearance.
 - (void)updateToolbar;
 
+// YES when a prerendered webstate is being inserted into a webStateList.
+- (BOOL)isLoadingPrerenderer;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_COORDINATOR_H_

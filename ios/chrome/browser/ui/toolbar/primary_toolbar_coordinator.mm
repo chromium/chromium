@@ -171,17 +171,15 @@
   if (!webState)
     return;
 
-  BOOL isPrerendered =
-      (_prerenderService && _prerenderService->IsLoadingPrerender());
-
   // Please note, this notion of isLoading is slightly different from WebState's
   // IsLoading().
   BOOL isToolbarLoading =
       webState->IsLoading() &&
       !webState->GetLastCommittedURL().SchemeIs(kChromeUIScheme);
 
-  if (isPrerendered && isToolbarLoading)
+  if (self.isLoadingPrerenderer && isToolbarLoading) {
     [self showPrerenderingAnimation];
+  }
 
   id<FindInPageCommands> findInPageCommandsHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), FindInPageCommands);
@@ -209,6 +207,10 @@
                      IsSplitToolbarMode(self.viewController);
 
   [self.viewController.view setHidden:hideToolbar];
+}
+
+- (BOOL)isLoadingPrerenderer {
+  return _prerenderService && _prerenderService->IsLoadingPrerender();
 }
 
 #pragma mark - PrimaryToolbarViewControllerDelegate

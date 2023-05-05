@@ -850,7 +850,6 @@ enum class ToolbarKind {
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
-  _viewControllerDependencies.prerenderService = prerenderService;
   _viewControllerDependencies.bubblePresenter = _bubblePresenter;
   _viewControllerDependencies.toolbarAccessoryPresenter =
       _toolbarAccessoryPresenter;
@@ -941,7 +940,6 @@ enum class ToolbarKind {
 
 // Destroys the browser view controller dependencies.
 - (void)destroyViewControllerDependencies {
-  _viewControllerDependencies.prerenderService = nil;
   _viewControllerDependencies.bubblePresenter = nil;
   _viewControllerDependencies.toolbarAccessoryPresenter = nil;
   _viewControllerDependencies.popupMenuCoordinator = nil;

@@ -51,9 +51,7 @@ class FullscreenController;
 class PagePlaceholderBrowserAgent;
 @protocol PopupMenuCommands;
 @class PopupMenuCoordinator;
-// TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 @protocol PopupMenuUIUpdating;
-class PrerenderService;
 @class PrimaryToolbarCoordinator;
 @class SafeAreaProvider;
 @class SecondaryToolbarCoordinator;
@@ -71,9 +69,7 @@ class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
 class WebNavigationBrowserAgent;
 
-// TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 typedef struct {
-  PrerenderService* prerenderService;
   BubblePresenter* bubblePresenter;
   ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
   PopupMenuCoordinator* popupMenuCoordinator;

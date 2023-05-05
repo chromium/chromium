@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/lens/lens_browser_agent.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
-#import "ios/chrome/browser/prerender/fake_prerender_service.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
@@ -218,8 +217,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     safe_area_provider_ =
         [[SafeAreaProvider alloc] initWithBrowser:browser_.get()];
 
-    fake_prerender_service_ = std::make_unique<FakePrerenderService>();
-
     popup_menu_coordinator_ =
         [[PopupMenuCoordinator alloc] initWithBrowser:browser_.get()];
     [popup_menu_coordinator_ start];
@@ -270,7 +267,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
 
     BrowserViewControllerDependencies dependencies;
-    dependencies.prerenderService = fake_prerender_service_.get();
     dependencies.bubblePresenter = bubble_presenter_;
     dependencies.popupMenuCoordinator = popup_menu_coordinator_;
     dependencies.primaryToolbarCoordinator = primary_toolbar_coordinator_;
@@ -373,7 +369,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<PrerenderService> fake_prerender_service_;
   KeyCommandsProvider* key_commands_provider_;
   PKAddPassesViewController* passKitViewController_;
   OCMockObject* dependencyFactory_;
