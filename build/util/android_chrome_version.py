@@ -104,7 +104,6 @@ _APKS = {
         ('TRICHROME_64_32', 'TRICHROME', '64_32'),
         ('TRICHROME_64_32_HIGH', 'TRICHROME', '64_32_high'),
         ('TRICHROME_64', 'TRICHROME', '64'),
-        ('TRICHROME_64_HIGH', 'TRICHROME', '64_32_high'),  # Deprecated.
         ('TRICHROME_AUTO_64_32', 'TRICHROME_AUTO', '64_32'),
         ('TRICHROME_BETA', 'TRICHROME_BETA', '32_64'),
         ('TRICHROME_32_BETA', 'TRICHROME_BETA', '32'),
@@ -112,8 +111,6 @@ _APKS = {
         ('TRICHROME_64_32_BETA', 'TRICHROME_BETA', '64_32'),
         ('TRICHROME_64_32_HIGH_BETA', 'TRICHROME_BETA', '64_32_high'),
         ('TRICHROME_64_BETA', 'TRICHROME_BETA', '64'),
-        # Deprecated
-        ('TRICHROME_64_HIGH_BETA', 'TRICHROME_BETA', '64_32_high'),
         ('WEBVIEW_STABLE', 'WEBVIEW_STABLE', '32_64'),
         ('WEBVIEW_BETA', 'WEBVIEW_BETA', '32_64'),
         ('WEBVIEW_DEV', 'WEBVIEW_DEV', '32_64'),
