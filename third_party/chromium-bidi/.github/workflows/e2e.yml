@@ -26,8 +26,8 @@ jobs:
       - uses: google/wireit@setup-github-actions-caching/v1
       - name: Install and build npm dependencies
         run: npm ci
-      - name: Install Chrome
-        run: echo "chrome_binary=$(npx @puppeteer/browsers install chrome@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
+      - name: Install Chromium
+        run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -43,14 +43,14 @@ jobs:
           npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
-          BROWSER_BIN: ${{ env.chrome_binary }}
+          BROWSER_BIN: ${{ env.chromium_binary }}
       - name: Run E2E tests
         if: ${{ matrix.os == 'macos-latest' || (matrix.os == 'ubuntu-latest' && matrix.head == 'headless') }}
         timeout-minutes: 20
         run: npm run e2e-${{ matrix.head }}
         # For verbose logging, set `DEBUG: 'bidiMapper:mapperDebug:*'` and `VERBOSE: true`.
         env:
-          BROWSER_BIN: ${{ env.chrome_binary }}
+          BROWSER_BIN: ${{ env.chromium_binary }}
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
