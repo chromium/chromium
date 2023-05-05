@@ -366,6 +366,7 @@ void ShowWebAppDetailedInstallDialog(
                 delegate->OnCancel();
               },
               base::Unretained(delegate_ptr)))
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
           .Build();
 
   auto dialog = views::BubbleDialogModelHost::CreateModal(
