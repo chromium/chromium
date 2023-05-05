@@ -2,6 +2,11 @@
 :host {
   --focus-border-width: 1px;
 }
+
+:host-context(body.jelly-enabled) .navigation-item {
+  font: var(--cros-button-2-font);
+}
+
 .navigation-item {
   --active-shadow-rgb: transparent; /* Disable Active Shadow on cr-button */
   --focus-shadow-color: transparent; /* Disable Focus Shadow on cr-button */
