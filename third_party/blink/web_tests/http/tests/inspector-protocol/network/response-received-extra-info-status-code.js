@@ -3,6 +3,7 @@
       `Tests that the IP address space is reported on responseReceivedExtraInfo.`);
 
   await dp.Network.enable();
+  await dp.Network.setCacheDisabled({cacheDisabled: true});
   testRunner.log('Network Enabled');
 
   session.evaluateAsync(`fetch('index.html');`);
