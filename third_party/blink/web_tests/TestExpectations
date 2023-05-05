@@ -6008,6 +6008,7 @@ crbug.com/1422340 [ Win ] virtual/media-foundation-for-clear-dcomp/media/video-m
 
 crbug.com/1434123 media/video-source-type.html [ Failure Pass ]
 crbug.com/1434123 media/video-source-type-params.html [ Failure Pass ]
+crbug.com/1266821 [ Mac10.14 ] compositing/reflections/reflection-in-composited.html [ Timeout ]
 
 # Suppress http/tests/inspector-protocol/network/navigate-iframe-in2out.js test cluster
 crbug.com/1395412 [ Mac ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/navigate-iframe-in2out.js [ Failure ]
