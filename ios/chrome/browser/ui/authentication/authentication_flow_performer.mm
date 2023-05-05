@@ -101,11 +101,6 @@ NSString* const kAuthenticationSnackbarCategory =
   [self stopWatchdogTimer];
 }
 
-- (void)commitSyncForBrowserState:(ChromeBrowserState*)browserState {
-  SyncSetupServiceFactory::GetForBrowserState(browserState)
-      ->CommitSyncChanges();
-}
-
 - (void)fetchManagedStatus:(ChromeBrowserState*)browserState
                forIdentity:(id<SystemIdentity>)identity {
   SystemIdentityManager* systemIdentityManager =

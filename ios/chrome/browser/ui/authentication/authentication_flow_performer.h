@@ -31,9 +31,6 @@ class PrefService;
 // animation if `animated` is true.
 - (void)cancelAndDismissAnimated:(BOOL)animated;
 
-// Starts sync for `browserState`.
-- (void)commitSyncForBrowserState:(ChromeBrowserState*)browserState;
-
 // Fetches the managed status for `identity`.
 - (void)fetchManagedStatus:(ChromeBrowserState*)browserState
                forIdentity:(id<SystemIdentity>)identity;

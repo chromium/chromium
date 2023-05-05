@@ -181,8 +181,6 @@ TEST_F(AuthenticationFlowTest, TestSignInSimple) {
   SetSigninSuccessExpectations(
       identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
 
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
-
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -210,8 +208,6 @@ TEST_F(AuthenticationFlowTest, TestAlreadySignedIn) {
 
   SetSigninSuccessExpectations(
       identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
-
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
       ->SignIn(identity1_, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
@@ -259,8 +255,6 @@ TEST_F(AuthenticationFlowTest, TestSignOutUserChoice) {
 
   SetSigninSuccessExpectations(
       identity1_, signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE, nil);
-
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
       ->SignIn(identity2_,
@@ -359,8 +353,6 @@ TEST_F(AuthenticationFlowTest, TestShowManagedConfirmation) {
       managed_identity_,
       signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER, @"foo.com");
 
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
-
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
   CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -420,7 +412,6 @@ TEST_F(AuthenticationFlowTest, TestSyncAfterSigninAndSync) {
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
 
@@ -462,7 +453,6 @@ TEST_F(AuthenticationFlowTest,
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken
@@ -516,7 +506,6 @@ TEST_F(AuthenticationFlowTest,
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:@""
@@ -567,7 +556,6 @@ TEST_F(AuthenticationFlowTest, TestCanSyncWithUserPolicyFetchFailure) {
   }] showManagedConfirmationForHostedDomain:@"foo.com"
                              viewController:view_controller_
                                     browser:browser_.get()];
-  [[performer_ expect] commitSyncForBrowserState:browser_state_.get()];
 
   [[[performer_ expect] andDo:^(NSInvocation*) {
     [authentication_flow_ didRegisterForUserPolicyWithDMToken:kFakeDMToken

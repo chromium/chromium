@@ -142,8 +142,6 @@ class UserSigninMediatorTest : public PlatformTest {
                              browserStatePrefs:browser_state_->GetPrefs()])
           .andReturn(NO);
       NSLog(@" shouldHandleMergeCaseForIdentity ");
-      OCMExpect(
-          [performer_mock_ commitSyncForBrowserState:browser_state_.get()]);
     }
   }
 

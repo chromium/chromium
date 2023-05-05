@@ -352,7 +352,7 @@ enum AuthenticationState {
       return;
 
     case COMMIT_SYNC:
-      [_performer commitSyncForBrowserState:browserState];
+      // TODO(crbug.com/1254359): This step should grant sync consent.
       [self continueSignin];
       return;
 
@@ -379,9 +379,6 @@ enum AuthenticationState {
     case COMPLETE_WITH_FAILURE:
       if (_didSignIn) {
         [_performer signOutImmediatelyFromBrowserState:browserState];
-        // Enabling/disabling sync does not take effect in the sync backend
-        // until committing changes.
-        [_performer commitSyncForBrowserState:browserState];
       }
       [self completeSignInWithSuccess:NO];
       return;
