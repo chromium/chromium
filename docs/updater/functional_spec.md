@@ -209,6 +209,10 @@ To maintain backwards compatibility with
 [Keystone](https://code.google.com/archive/p/update-engine/), the updater
 installs small versions of those programs that implement a subset of their APIs.
 
+The updater also imports the properties and state of the apps that have been
+registered with Omaha and Keystone, so they show up as registered with the
+updater.
+
 #### Keystone Shims
 The updater installs a Keystone-like application that contains these shims:
 

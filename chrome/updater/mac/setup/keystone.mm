@@ -341,6 +341,10 @@ bool MigrateKeystoneApps(
       registration.dlrc =
           [metrics_store dateLastRollcallForApp:ticket.productID];
 
+      registration.cohort = base::SysNSStringToUTF8(ticket.cohort);
+      registration.cohort_name = base::SysNSStringToUTF8(ticket.cohortName);
+      registration.cohort_hint = base::SysNSStringToUTF8(ticket.cohortHint);
+
       register_callback.Run(registration);
     }
   }

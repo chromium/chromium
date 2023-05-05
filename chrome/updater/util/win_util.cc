@@ -357,6 +357,14 @@ std::wstring GetAppClientStateKey(const std::wstring& app_id) {
   return base::StrCat({CLIENT_STATE_KEY, app_id});
 }
 
+std::wstring GetAppCohortKey(const std::string& app_id) {
+  return GetAppCohortKey(base::ASCIIToWide(app_id));
+}
+
+std::wstring GetAppCohortKey(const std::wstring& app_id) {
+  return base::StrCat({COHORT_KEY, app_id});
+}
+
 std::wstring GetAppCommandKey(const std::wstring& app_id,
                               const std::wstring& command_id) {
   return base::StrCat(

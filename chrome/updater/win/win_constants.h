@@ -30,6 +30,7 @@ extern const wchar_t kGlobalPrefix[];
 #define CLIENTS_KEY UPDATER_KEY L"Clients\\"
 #define CLIENT_STATE_KEY UPDATER_KEY L"ClientState\\"
 #define CLIENT_STATE_MEDIUM_KEY UPDATER_KEY L"ClientStateMedium\\"
+#define COHORT_KEY CLIENT_STATE_KEY L"cohort\\"
 
 #define COMPANY_POLICIES_KEY \
   L"Software\\Policies\\" COMPANY_SHORTNAME_STRING L"\\"
@@ -54,6 +55,10 @@ extern const wchar_t kRegValueName[];
 // Values created under `UPDATER_KEY`.
 extern const wchar_t kRegValueUninstallCmdLine[];
 extern const wchar_t kRegValueVersion[];
+
+// Cohort values under `COHORT_KEY`.
+extern const wchar_t kRegValueCohortName[];
+extern const wchar_t kRegValueCohortHint[];
 
 // Installer API registry names.
 // Registry values read from the Clients key for transmitting custom install

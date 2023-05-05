@@ -1511,6 +1511,19 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   ASSERT_EQ(
       key.Create(
           root,
+          GetAppCohortKey(L"{8A69D345-D564-463C-AFF1-A69D9E530F96}").c_str(),
+          Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(nullptr, L"TestCohort"), ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueCohortName, L"TestCohortName"),
+            ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValueCohortHint, L"TestCohortHint"),
+            ERROR_SUCCESS);
+  key.Close();
+
+  ASSERT_EQ(
+      key.Create(
+          root,
           GetAppClientsKey(L"{fc54d8f9-b6fd-4274-92eb-c4335cd8761e}").c_str(),
           Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
@@ -1636,6 +1649,9 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_TRUE(persisted_data->GetFingerprint(kChromeAppId).empty());
   EXPECT_EQ(persisted_data->GetDateLastActive(kChromeAppId).value(), -1);
   EXPECT_EQ(persisted_data->GetDateLastRollcall(kChromeAppId).value(), 5929);
+  EXPECT_EQ(persisted_data->GetCohort(kChromeAppId), "TestCohort");
+  EXPECT_EQ(persisted_data->GetCohortName(kChromeAppId), "TestCohortName");
+  EXPECT_EQ(persisted_data->GetCohortHint(kChromeAppId), "TestCohortHint");
 
   int count_entries = 0;
   if (IsSystemInstall(scope)) {

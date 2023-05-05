@@ -54,6 +54,15 @@ struct RegistrationRequest {
 
   // Date-last-rollcall. The value is the number of days since Jan 1, 2007.
   absl::optional<int> dlrc;
+
+  // Opaque cohort string meaningful to the server.
+  std::string cohort;
+
+  // Human-readable interpretation of the cohort.
+  std::string cohort_name;
+
+  // Server may use to move the app to a new cohort.
+  std::string cohort_hint;
 };
 
 }  // namespace updater

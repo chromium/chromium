@@ -321,6 +321,14 @@ void ExpectLegacyUpdaterMigrated(UpdaterScope scope) {
   EXPECT_EQ(persisted_data->GetDateLastActive(kPopularApp).value(), 5921);
   EXPECT_EQ(persisted_data->GetDateLastRollcall(kPopularApp).value(), 5922);
 
+// TODO(crbug.com/1442695): Enable this after updating the `ticketstore` under
+// chrome/test/data/updater/Keystone.legacy.ticketstore.
+#if 0
+  EXPECT_EQ(persisted_data->GetCohort(kPopularApp), "TestCohort");
+  EXPECT_EQ(persisted_data->GetCohortName(kPopularApp), "TestCohortName");
+  EXPECT_EQ(persisted_data->GetCohortHint(kPopularApp), "TestCohortHint");
+#endif
+
   // App CorruptedApp (client-regulated counting data is corrupted).
   const std::string kCorruptedApp = "com.chromium.CorruptedApp";
   EXPECT_EQ(persisted_data->GetProductVersion(kCorruptedApp),

@@ -84,6 +84,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   absl::optional<int> GetDateLastRollcall(const std::string& id) const;
   void SetDateLastRollcall(const std::string& id, int dlrc);
 
+  // These functions access the cohort values for the specified id.
+  std::string GetCohort(const std::string& id) const;
+  void SetCohort(const std::string& id, const std::string& cohort);
+  std::string GetCohortName(const std::string& id) const;
+  void SetCohortName(const std::string& id, const std::string& cohort_name);
+  std::string GetCohortHint(const std::string& id) const;
+  void SetCohortHint(const std::string& id, const std::string& cohort_hint);
+
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
