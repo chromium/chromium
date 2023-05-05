@@ -932,7 +932,7 @@ void RootWindowController::CreateAmbientWidget() {
   DCHECK(!ambient_widget_);
 
   auto* ambient_controller = Shell::Get()->ambient_controller();
-  if (ambient_controller && ambient_controller->IsShown()) {
+  if (ambient_controller && ambient_controller->ShouldShowAmbientUi()) {
     ambient_widget_ = ambient_controller->CreateWidget(
         GetRootWindow()->GetChildById(kShellWindowId_AmbientModeContainer));
   }

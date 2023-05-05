@@ -266,9 +266,9 @@ void AmbientAshTestBase::DisableJitter() {
   }
 }
 
-void AmbientAshTestBase::ShowAmbientScreen() {
+void AmbientAshTestBase::SetAmbientShownAndWaitForWidgets() {
   // The widget will be destroyed in |AshTestBase::TearDown()|.
-  ambient_controller()->ShowUi();
+  ambient_controller()->SetUiVisibilityShown();
 
   static constexpr base::TimeDelta kTimeout = base::Seconds(10);
   base::test::ScopedRunLoopTimeout loop_timeout(FROM_HERE, kTimeout);
@@ -295,11 +295,11 @@ void AmbientAshTestBase::SpinWaitForAmbientViewAvailable(
 }
 
 void AmbientAshTestBase::HideAmbientScreen() {
-  ambient_controller()->ShowHiddenUi();
+  ambient_controller()->SetUiVisibilityHidden();
 }
 
 void AmbientAshTestBase::CloseAmbientScreen() {
-  ambient_controller()->CloseUi();
+  ambient_controller()->SetUiVisibilityClosed();
 }
 
 void AmbientAshTestBase::LockScreen() {

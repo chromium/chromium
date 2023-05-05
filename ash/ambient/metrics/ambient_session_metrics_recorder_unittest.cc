@@ -41,7 +41,7 @@ class AmbientSessionMetricsRecorderTest
   void SetUp() override {
     AshTestBase::SetUp();
     // Simulate the screensaver being launched in all tests.
-    AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShown);
+    AmbientUiModel::Get()->SetUiVisibility(AmbientUiVisibility::kShouldShow);
   }
 
   std::string GetMetricNameForTheme(base::StringPiece prefix) {

@@ -698,7 +698,7 @@ void PersonalizationAppAmbientProviderImpl::ResetLocalSettings() {
 }
 
 void PersonalizationAppAmbientProviderImpl::StartScreenSaverPreview() {
-  Shell::Get()->ambient_controller()->StartScreenSaverPreview();
+  Shell::Get()->ambient_controller()->SetUiVisibilityPreview();
 }
 
 void PersonalizationAppAmbientProviderImpl::ShouldShowTimeOfDayBanner(

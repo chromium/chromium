@@ -44,7 +44,6 @@
 #include "ui/base/user_activity/user_activity_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
 
 class PrefRegistrySimple;
 
@@ -133,12 +132,22 @@ class ASH_EXPORT AmbientController
   // on `OnLockStateChanged` method.
   void OnLoginOrLockScreenCreated();
 
-  void ShowUi();
-  void StartScreenSaverPreview();
-  // Ui will be enabled but not shown immediately. If there is no user activity
-  // Ui will be shown after a short delay.
-  void ShowHiddenUi();
-  void CloseUi(bool immediately = false);
+  // Set the ui state to begin showing ambient mode. After calling this
+  // function, there will be a delay while content downloads or reads from disk
+  // until ambient mode widget is actually constructed.
+  void SetUiVisibilityShown();
+
+  // Set the ui state to begin showing preview ambient mode. After calling this
+  // function, there will be a delay while content downloads or reads from disk
+  // until ambient mode widget is actually constructed.
+  void SetUiVisibilityPreview();
+
+  // Ui will be enabled but media will not load and UI will not be shown
+  // immediately. Typically used by lock screen. If there is no user activity Ui
+  // will be transitioned to shown state after a short delay.
+  void SetUiVisibilityHidden();
+
+  void SetUiVisibilityClosed(bool immediately = false);
 
   // |minutes| is the number of minutes to run screen saver before putting the
   // device into sleep. |minutes| with a value 0 means forever.
@@ -146,9 +155,15 @@ class ASH_EXPORT AmbientController
 
   void StartTimerToReleaseWakeLock();
 
-  // Returns true if ambient mode containers are visible or are being
+  // Returns true if current state should be visible in UI. When this becomes
+  // true, there is a delay while media loads before `IsAmbientRunning` will
+  // also return true.
+  bool ShouldShowAmbientUi() const;
+
+  // Returns true if ambient is actually started and visible. Implies
+  // `ShouldShowAmbientUi`. Media has already loaded and widget is
   // constructed.
-  bool IsShown() const;
+  bool IsShowing() const;
 
   void RequestAccessToken(
       AmbientAccessTokenController::AccessTokenCallback callback,
@@ -227,6 +242,12 @@ class ASH_EXPORT AmbientController
   void ReleaseWakeLock();
 
   void CloseAllWidgets(bool immediately);
+
+  // Start receiving mouse/key/touch events from `ash::Shell`.
+  void SetUpPreTargetHandler();
+
+  // Stop receiving mouse/key/touch events from `ash::Shell`.
+  void ClearPreTargetHandler();
 
   // Removes any and all ambient mode ui model related settings pref observers
   void RemoveAmbientModeSettingsPrefObservers();
@@ -341,6 +362,10 @@ class ASH_EXPORT AmbientController
   // Flag used to prevent multiple calls to OnEnabledPrefChanged initializing
   // the controller.
   bool is_initialized_ = false;
+
+  // Flag used to monitor if receiving events, such as mouse/key/touch, from
+  // `ash::Shell`.
+  bool is_receiving_pretarget_events_ = false;
 
   std::unique_ptr<AmbientSessionMetricsRecorder> session_metrics_recorder_;
   std::unique_ptr<AmbientUiLauncher> ambient_ui_launcher_;

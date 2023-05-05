@@ -24,7 +24,7 @@ TEST_F(AutotestAmbientApiTest,
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   prefs->SetInteger(ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds, 2);
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
   // Wait for 10 photo transition animation to complete.
   base::RunLoop run_loop;
@@ -42,7 +42,7 @@ TEST_F(AutotestAmbientApiTest,
       Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   prefs->SetInteger(ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds, 2);
 
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
 
   base::RunLoop run_loop;
   AutotestAmbientApi test_api;

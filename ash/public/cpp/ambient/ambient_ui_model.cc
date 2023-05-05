@@ -102,7 +102,7 @@ std::ostream& operator<<(std::ostream& out, AmbientUiMode mode) {
 
 std::ostream& operator<<(std::ostream& out, AmbientUiVisibility visibility) {
   switch (visibility) {
-    case AmbientUiVisibility::kShown:
+    case AmbientUiVisibility::kShouldShow:
       out << "kShown";
       break;
     case AmbientUiVisibility::kPreview:

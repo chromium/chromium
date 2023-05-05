@@ -33,7 +33,7 @@ class AmbientInfoViewTest : public AmbientAshTestBase {
 };
 
 TEST_F(AmbientInfoViewTest, ShowAmbientInfoView) {
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
   DisableJitter();
 
   WeatherInfo info;

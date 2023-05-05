@@ -469,8 +469,8 @@ MojomAmbientUiVisibility
 EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::ToMojom(
     ash::AmbientUiVisibility input) {
   switch (input) {
-    case ash::AmbientUiVisibility::kShown:
-      return MojomAmbientUiVisibility::kShown;
+    case ash::AmbientUiVisibility::kShouldShow:
+      return MojomAmbientUiVisibility::kShouldShow;
     case ash::AmbientUiVisibility::kPreview:
       return MojomAmbientUiVisibility::kPreview;
     case ash::AmbientUiVisibility::kHidden:
@@ -484,8 +484,8 @@ bool EnumTraits<MojomAmbientUiVisibility, ash::AmbientUiVisibility>::FromMojom(
     MojomAmbientUiVisibility input,
     ash::AmbientUiVisibility* output) {
   switch (input) {
-    case MojomAmbientUiVisibility::kShown:
-      *output = ash::AmbientUiVisibility::kShown;
+    case MojomAmbientUiVisibility::kShouldShow:
+      *output = ash::AmbientUiVisibility::kShouldShow;
       return true;
     case MojomAmbientUiVisibility::kPreview:
       *output = ash::AmbientUiVisibility::kPreview;

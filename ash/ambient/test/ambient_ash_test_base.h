@@ -81,7 +81,7 @@ class AmbientAshTestBase : public AshTestBase {
   void DisableJitter();
 
   // Creates ambient screen in its own widget.
-  void ShowAmbientScreen();
+  void SetAmbientShownAndWaitForWidgets();
 
   // Hides ambient screen. Can only be called after |ShowAmbientScreen| has been
   // called.

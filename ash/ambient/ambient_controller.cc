@@ -4,6 +4,7 @@
 
 #include "ash/ambient/ambient_controller.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -274,13 +275,13 @@ AmbientController::AmbientController(
 }
 
 AmbientController::~AmbientController() {
-  CloseUi(/*immediately=*/true);
+  SetUiVisibilityClosed(/*immediately=*/true);
 }
 
 void AmbientController::OnAmbientUiVisibilityChanged(
     AmbientUiVisibility visibility) {
   switch (visibility) {
-    case AmbientUiVisibility::kShown:
+    case AmbientUiVisibility::kShouldShow:
       // Cancels the timer upon shown.
       inactivity_timer_.Stop();
 
@@ -315,7 +316,7 @@ void AmbientController::OnAmbientUiVisibilityChanged(
         screensaver_running_timer_.Stop();
       }
 
-      Shell::Get()->RemovePreTargetHandler(this);
+      ClearPreTargetHandler();
 
       // Should stop observing AssistantInteractionModel when ambient screen is
       // not shown.
@@ -349,7 +350,7 @@ void AmbientController::OnAutoShowTimeOut() {
   DCHECK(IsUiHidden(ambient_ui_model_.ui_visibility()));
 
   // Show ambient screen after time out.
-  ShowUi();
+  SetUiVisibilityShown();
 }
 
 void AmbientController::OnLoginOrLockScreenCreated() {
@@ -360,14 +361,14 @@ void AmbientController::OnLoginOrLockScreenCreated() {
     return;
   }
 
-  ShowHiddenUi();
+  SetUiVisibilityHidden();
 }
 
 void AmbientController::OnLockStateChanged(bool locked) {
   if (!locked) {
     // Ambient screen will be destroyed along with the lock screen when user
     // logs in.
-    CloseUi();
+    SetUiVisibilityClosed();
     return;
   }
 
@@ -402,10 +403,10 @@ void AmbientController::OnLockStateChanged(bool locked) {
   //        wait.
   RequestAccessToken(base::DoNothing(), /*may_refresh_token_on_lock=*/true);
 
-  if (!IsShown()) {
+  if (!IsShowing()) {
     // When lock screen starts, we don't immediately show the UI. The Ui is
     // hidden and will show after a delay.
-    ShowHiddenUi();
+    SetUiVisibilityHidden();
   }
 }
 
@@ -482,7 +483,7 @@ void AmbientController::OnSigninScreenPrefServiceInitialized(
 }
 
 void AmbientController::OnPowerStatusChanged() {
-  if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShown ||
+  if (ambient_ui_model_.ui_visibility() != AmbientUiVisibility::kShouldShow ||
       ash::features::IsScreenSaverDurationEnabled()) {
     // No action needed if ambient screen is not shown.
     return;
@@ -508,7 +509,7 @@ void AmbientController::ScreenIdleStateChanged(
   if (idle_state.off()) {
     DVLOG(1) << "Screen is off, close ambient mode.";
 
-    CloseUi(/*immediately=*/true);
+    SetUiVisibilityClosed(/*immediately=*/true);
     return;
   }
 
@@ -526,25 +527,25 @@ void AmbientController::ScreenIdleStateChanged(
       return;
     }
 
-    ShowUi();
+    SetUiVisibilityShown();
     return;
   }
 
   if (LockScreen::HasInstance() &&
       ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
     // Restart hidden ui if the screen is back on and lockscreen is shown.
-    ShowHiddenUi();
+    SetUiVisibilityHidden();
   }
 }
 
 void AmbientController::OnBacklightsForcedOffChanged(bool forced_off) {
   if (forced_off) {
-    CloseUi(/*immediately=*/true);
+    SetUiVisibilityClosed(/*immediately=*/true);
   }
   if (!forced_off && LockScreen::HasInstance() &&
       ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kClosed) {
     // Restart hidden ui if the screen is back on and lockscreen is shown.
-    ShowHiddenUi();
+    SetUiVisibilityHidden();
   }
 }
 
@@ -557,7 +558,7 @@ void AmbientController::SuspendImminent(
   // the UI before device goes to suspend. Otherwise when opening lid after
   // lid closed, there may be a flash of the old window before previous
   // closing finished.
-  CloseUi(/*immediately=*/true);
+  SetUiVisibilityClosed(/*immediately=*/true);
   is_suspend_imminent_ = true;
 }
 
@@ -579,7 +580,7 @@ void AmbientController::OnUserActivity(const ui::Event* event) {
   // The following events are handled separately so that we can consume them.
   // In case events come from external sources (i.e. Chrome extensions), the
   // event will be nullptr.
-  if (IsShown() && event &&
+  if (is_receiving_pretarget_events_ && event &&
       (event->IsMouseEvent() || event->IsTouchEvent() || event->IsKeyEvent() ||
        event->IsFlingScrollEvent())) {
     return;
@@ -587,7 +588,7 @@ void AmbientController::OnUserActivity(const ui::Event* event) {
   // While |kPreview| is loading, don't |DismissUI| on user activity.
   // Users can still |DismissUI| with mouse, touch, key or assistant events.
   if (ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview &&
-      !Shell::GetPrimaryRootWindowController()->HasAmbientWidget()) {
+      !IsShowing()) {
     return;
   }
   DismissUI();
@@ -636,7 +637,7 @@ void AmbientController::OnInteractionStateChanged(
   }
 }
 
-void AmbientController::ShowUi() {
+void AmbientController::SetUiVisibilityShown() {
   DVLOG(1) << __func__;
 
   // TODO(meilinw): move the eligibility check to the idle entry point once
@@ -659,10 +660,10 @@ void AmbientController::ShowUi() {
     return;
   }
 
-  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShown);
+  ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kShouldShow);
 }
 
-void AmbientController::StartScreenSaverPreview() {
+void AmbientController::SetUiVisibilityPreview() {
   if (!IsAmbientModeEnabled()) {
     LOG(WARNING) << "Ambient mode is not allowed.";
     return;
@@ -672,7 +673,7 @@ void AmbientController::StartScreenSaverPreview() {
   base::RecordAction(base::UserMetricsAction(kScreenSaverPreviewUserAction));
 }
 
-void AmbientController::ShowHiddenUi() {
+void AmbientController::SetUiVisibilityHidden() {
   DVLOG(1) << __func__;
 
   if (!IsAmbientModeEnabled()) {
@@ -693,7 +694,7 @@ void AmbientController::ShowHiddenUi() {
   ambient_ui_model_.SetUiVisibility(AmbientUiVisibility::kHidden);
 }
 
-void AmbientController::CloseUi(bool immediately) {
+void AmbientController::SetUiVisibilityClosed(bool immediately) {
   DVLOG(1) << __func__;
 
   close_widgets_immediately_ = immediately;
@@ -732,9 +733,29 @@ void AmbientController::StartTimerToReleaseWakeLock() {
   }
 }
 
-bool AmbientController::IsShown() const {
-  return ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kShown ||
+bool AmbientController::ShouldShowAmbientUi() const {
+  return ambient_ui_model_.ui_visibility() ==
+             AmbientUiVisibility::kShouldShow ||
          ambient_ui_model_.ui_visibility() == AmbientUiVisibility::kPreview;
+}
+
+bool AmbientController::IsShowing() const {
+  const std::vector<RootWindowController*> root_window_controllers =
+      RootWindowController::root_window_controllers();
+
+  const bool has_at_least_one_widget = std::any_of(
+      root_window_controllers.cbegin(), root_window_controllers.cend(),
+      [](const RootWindowController* const controller) {
+        return controller->HasAmbientWidget();
+      });
+
+#if DCHECK_IS_ON()
+  if (!ShouldShowAmbientUi()) {
+    DCHECK(!has_at_least_one_widget);
+  }
+#endif  // DCHECK_IS_ON()
+
+  return has_at_least_one_widget;
 }
 
 void AmbientController::AcquireWakeLock() {
@@ -779,6 +800,20 @@ void AmbientController::CloseAllWidgets(bool immediately) {
   for (auto* root_window_controller :
        RootWindowController::root_window_controllers()) {
     root_window_controller->CloseAmbientWidget(immediately);
+  }
+}
+
+void AmbientController::SetUpPreTargetHandler() {
+  if (!is_receiving_pretarget_events_) {
+    Shell::Get()->AddPreTargetHandler(this);
+    is_receiving_pretarget_events_ = true;
+  }
+}
+
+void AmbientController::ClearPreTargetHandler() {
+  if (is_receiving_pretarget_events_) {
+    Shell::Get()->RemovePreTargetHandler(this);
+    is_receiving_pretarget_events_ = false;
   }
 }
 
@@ -866,7 +901,7 @@ void AmbientController::OnManagedScreensaverEnabledPrefChanged() {
   }
   // Start hidden ambient mode immediately if the lock screen has an instance
   // and ambient mode is enabled.
-  ShowHiddenUi();
+  SetUiVisibilityHidden();
 }
 
 void AmbientController::AddAmbientModeUserSettingsPolicyPrefObservers() {
@@ -952,7 +987,7 @@ void AmbientController::OnEnabledPrefChanged() {
 }
 
 void AmbientController::ResetAmbientControllerResources() {
-  CloseUi();
+  SetUiVisibilityClosed();
 
   ambient_animation_progress_tracker_.reset();
 
@@ -1051,8 +1086,12 @@ void AmbientController::RequestAccessToken(
 }
 
 void AmbientController::DismissUI() {
+  // Call `ClearPreTargetHandler` immediately so that `OnKeyEvent` has no
+  // chance of being called and consuming the keypress.
+  ClearPreTargetHandler();
+
   if (!IsAmbientModeEnabled()) {
-    CloseUi();
+    SetUiVisibilityClosed();
     return;
   }
 
@@ -1065,11 +1104,11 @@ void AmbientController::DismissUI() {
   }
 
   if (LockScreen::HasInstance()) {
-    ShowHiddenUi();
+    SetUiVisibilityHidden();
     return;
   }
 
-  CloseUi();
+  SetUiVisibilityClosed();
 }
 
 AmbientBackendModel* AmbientController::GetAmbientBackendModel() {
@@ -1096,7 +1135,7 @@ void AmbientController::OnImagesReady() {
 
 void AmbientController::OnImagesFailed() {
   LOG(ERROR) << "Ambient mode failed to start";
-  CloseUi();
+  SetUiVisibilityClosed();
 }
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
@@ -1239,7 +1278,8 @@ void AmbientController::MaybeStartScreenSaver() {
       std::make_unique<AmbientAnimationFrameRateController>(
           Shell::Get()->frame_throttling_controller());
 
-  Shell::Get()->AddPreTargetHandler(this);
+  SetUpPreTargetHandler();
+
   if (ambient_ui_launcher_) {
     ambient_ui_launcher_->Initialize(
         base::BindOnce(&AmbientController::OnUiLauncherInitialized,
@@ -1260,8 +1300,7 @@ AmbientUiSettings AmbientController::GetCurrentUiSettings() const {
 void AmbientController::MaybeDismissUIOnMouseMove() {
   // If the move was not an actual mouse move event or the screen saver widget
   // is not shown yet (images are not downloaded), don't dismiss.
-  if (!last_mouse_event_was_move_ ||
-      !Shell::GetPrimaryRootWindowController()->HasAmbientWidget()) {
+  if (!last_mouse_event_was_move_ || !IsShowing()) {
     return;
   }
 

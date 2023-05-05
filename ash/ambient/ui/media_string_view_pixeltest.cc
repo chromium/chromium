@@ -35,7 +35,7 @@ class MediaStringViewTest : public AmbientAshTestBase {
 };
 
 TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortText) {
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
   DisableJitter();
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
@@ -57,7 +57,7 @@ TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortText) {
 
 TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortTextDarkMode) {
   DarkLightModeController::Get()->SetDarkModeEnabledForTest(true);
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
   DisableJitter();
   // Sets metadata for current session.
   media_session::MediaMetadata metadata;
@@ -80,7 +80,7 @@ TEST_F(MediaStringViewTest, ShowMediaStringViewWithShortTextDarkMode) {
 TEST_F(MediaStringViewTest, ShowMediaStringViewWithLongText) {
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
   DisableJitter();
 
   // Sets metadata for current session.

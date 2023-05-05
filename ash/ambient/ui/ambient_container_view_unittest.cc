@@ -17,7 +17,7 @@ using AmbientContainerViewTest = AmbientAshTestBase;
 
 // Tests that AmbientContainerView window should be fullscreen.
 TEST_F(AmbientContainerViewTest, WindowFullscreenSize) {
-  ShowAmbientScreen();
+  SetAmbientShownAndWaitForWidgets();
   for (const auto* container : GetContainerViews()) {
     const views::Widget* widget = container->GetWidget();
 

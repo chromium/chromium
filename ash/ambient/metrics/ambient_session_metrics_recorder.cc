@@ -28,7 +28,8 @@ AmbientSessionMetricsRecorder::AmbientSessionMetricsRecorder(
       clock_(tick_clock ? tick_clock : base::DefaultTickClock::GetInstance()),
       session_start_time_(clock_->NowTicks()) {
   // Don't record this metric for `kPreview` mode.
-  if (AmbientUiModel::Get()->ui_visibility() == AmbientUiVisibility::kShown) {
+  if (AmbientUiModel::Get()->ui_visibility() ==
+      AmbientUiVisibility::kShouldShow) {
     ambient::RecordAmbientModeActivation(
         /*ui_mode=*/LockScreen::HasInstance() ? AmbientUiMode::kLockScreenUi
                                               : AmbientUiMode::kInSessionUi,
@@ -58,8 +59,8 @@ void AmbientSessionMetricsRecorder::RegisterScreen(
   ++num_registered_screens_;
   // The very first screen registered means the ambient session has finished
   // initializing the required assets and is starting to render.
-  if (num_registered_screens_ == 1 &&
-      AmbientUiModel::Get()->ui_visibility() == AmbientUiVisibility::kShown) {
+  if (num_registered_screens_ == 1 && AmbientUiModel::Get()->ui_visibility() ==
+                                          AmbientUiVisibility::kShouldShow) {
     ambient::RecordAmbientModeStartupTime(
         clock_->NowTicks() - session_start_time_, ui_settings_);
   }

@@ -583,7 +583,7 @@ enum TemperatureUnit {
 // Enumeration of UI visibility states.
 // This should be kept in sync with |ash:AmbientUiVisibility|.
 enum AmbientUiVisibility {
-  kShown = 0,
+  kShouldShow = 0,
   kPreview = 1,
   kHidden = 2,
   kClosed = 3,
