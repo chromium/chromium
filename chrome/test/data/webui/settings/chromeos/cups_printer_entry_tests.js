@@ -205,19 +205,6 @@ suite('CupsPrinterEntry', function() {
     }
   });
 
-  // Verify the printer status icons are only visible for saved printers.
-  test('savedPrinterShowPrinterStatusIcons', function() {
-    printerEntryTestElement.printerEntry =
-        createPrinterEntry(PrinterType.SAVED);
-    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
-        '#printerStatusIcon')));
-
-    printerEntryTestElement.printerEntry =
-        createPrinterEntry(PrinterType.AUTOMATIC);
-    assertFalse(isVisible(printerEntryTestElement.shadowRoot.querySelector(
-        '#printerStatusIcon')));
-  });
-
   // Verify the correct printer status icon is shown based on the printer's
   // status reason.
   test('savedPrinterCorrectPrinterStatusIcon', function() {
@@ -247,5 +234,28 @@ suite('CupsPrinterEntry', function() {
         'os-settings:printer-status-red',
         printerEntryTestElement.shadowRoot.querySelector('#printerStatusIcon')
             .icon);
+  });
+
+  // Verify the printer icon is visible based on the printer's type.
+  test('visiblePrinterIconByPrinterType', function() {
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.ENTERPRISE);
+    assertFalse(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.DISCOVERED);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.AUTOMATIC);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
+
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
+    assertTrue(isVisible(printerEntryTestElement.shadowRoot.querySelector(
+        '#printerStatusIcon')));
   });
 });

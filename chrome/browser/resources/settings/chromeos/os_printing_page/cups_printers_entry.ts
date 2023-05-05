@@ -69,6 +69,17 @@ export class SettingsCupsPrintersEntryElement extends
         },
         readOnly: true,
       },
+
+      /**
+       * True when the "printer-settings-revamp" feature flag is enabled.
+       */
+      isPrinterSettingsRevampEnabled_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isPrinterSettingsRevampEnabled');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -145,6 +156,10 @@ export class SettingsCupsPrintersEntryElement extends
     return this.printerEntry.printerType === PrinterType.SAVED;
   }
 
+  private isEnterprisePrinter_(): boolean {
+    return this.printerEntry.printerType === PrinterType.ENTERPRISE;
+  }
+
   private isConfigureDisabled_(): boolean {
     return !this.userPrintersAllowed || this.savingPrinter;
   }
@@ -159,12 +174,31 @@ export class SettingsCupsPrintersEntryElement extends
         'setupPrinterAria', this.printerEntry.printerInfo.printerName);
   }
 
+  // The standard printer icon shows for printer entries classified as nearby
+  // printers. An exception is enterprise printers which display the managed
+  // icon.
+  private showNearbyPrinterIcon_(): boolean {
+    return !this.isSavedPrinter_() && !this.isEnterprisePrinter_() &&
+        this.isPrinterSettingsRevampEnabled_;
+  }
+
+  // Printer status icons are only shown for saved printers.
   private showPrinterStatusIcon_(): boolean {
     return this.isSavedPrinter_() &&
         this.isPrinterSettingsPrinterStatusEnabled_;
   }
 
-  private getPrinterStatusIcon_(): string {
+  private showPrinterIcon_(): boolean {
+    return this.showNearbyPrinterIcon_() || this.showPrinterStatusIcon_();
+  }
+
+  private getPrinterIcon_(): string {
+    // Only saved printers need to display an icon with printer status.
+    if (!this.isSavedPrinter_()) {
+      // TODO(b/278621575): Replace with standard printer icon once available.
+      return `os-settings:printer-status-green`;
+    }
+
     let iconColor = '';
     switch (computePrinterState(
         this.printerEntry.printerInfo.printerStatusReason)) {
