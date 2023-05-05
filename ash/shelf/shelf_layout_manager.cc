@@ -939,6 +939,13 @@ bool ShelfLayoutManager::ProcessGestureEvent(
     return false;
   }
 
+  // In certain edge cases, SHOW_PRESS gesture may come just as scroll starts.
+  // Ignore it, as it's not actoinable, and should not cancel drag and drop.
+  // See b/277846859 for more details.
+  if (event_in_screen.type() == ui::ET_GESTURE_SHOW_PRESS) {
+    return true;
+  }
+
   if (event_in_screen.type() == ui::ET_GESTURE_SCROLL_UPDATE) {
     UpdateGestureDrag(event_in_screen);
     return true;
