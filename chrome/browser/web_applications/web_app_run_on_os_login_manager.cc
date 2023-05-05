@@ -62,6 +62,11 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
       continue;
     }
 
+    // In case of already opened/restored apps, we do not launch them again.
+    if (lock.ui_manager().GetNumWindowsForApp(app_id) > 0) {
+      continue;
+    }
+
     // TODO(crbug.com/1091964): Implement Run on OS Login mode selection and
     // launch app appropriately
     apps::AppLaunchParams params(
