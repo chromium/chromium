@@ -775,7 +775,7 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 #elif BUILDFLAG(IS_APPLE)
 // Mac OS X specific implementation of file string comparisons.
 
-// cf. http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
+// cf. https://developer.apple.com/library/archive/technotes/tn/tn1150.html#UnicodeSubtleties
 //
 // "When using CreateTextEncoding to create a text encoding, you should set
 // the TextEncodingBase to kTextEncodingUnicodeV2_0, set the
@@ -801,11 +801,12 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
 // Ignored characters are mapped to zero.
 //
 // cf. downloadable file linked in
-// http://developer.apple.com/mac/library/technotes/tn/tn1150.html#StringComparisonAlgorithm
+// https://developer.apple.com/library/archive/technotes/tn/tn1150.html#Downloads
 
 namespace {
 
-const UInt16 lower_case_table[] = {
+// clang-format off
+const UInt16 lower_case_table[11 * 256] = {
   // High-byte indices ( == 0 iff no case mapping and no ignorables )
 
   /* 0 */ 0x0100, 0x0200, 0x0000, 0x0300, 0x0400, 0x0500, 0x0000, 0x0000,
@@ -1191,11 +1192,12 @@ const UInt16 lower_case_table[] = {
   /* F */ 0xFFF0, 0xFFF1, 0xFFF2, 0xFFF3, 0xFFF4, 0xFFF5, 0xFFF6, 0xFFF7,
           0xFFF8, 0xFFF9, 0xFFFA, 0xFFFB, 0xFFFC, 0xFFFD, 0xFFFE, 0xFFFF,
 };
+// clang-format on
 
-// Returns the next non-ignorable codepoint within string starting from the
-// position indicated by index, or zero if there are no more.
-// The passed-in index is automatically advanced as the characters in the input
-// HFS-decomposed UTF-8 strings are read.
+// Returns the next non-ignorable codepoint within `string` starting from the
+// position indicated by `index`, or zero if there are no more.
+// The passed-in `index` is automatically advanced as the characters in the
+// input HFS-decomposed UTF-8 strings are read.
 inline base_icu::UChar32 HFSReadNextNonIgnorableCodepoint(const char* string,
                                                           size_t length,
                                                           size_t* index) {
@@ -1206,12 +1208,16 @@ inline base_icu::UChar32 HFSReadNextNonIgnorableCodepoint(const char* string,
     CBU8_NEXT(reinterpret_cast<const uint8_t*>(string), *index, length,
               codepoint);
     DCHECK_GT(codepoint, 0);
-    if (codepoint > 0) {
+
+    // Note: Here, there are no lower case conversion implemented in the
+    // Supplementary Multilingual Plane (codepoint > 0xFFFF).
+
+    if (codepoint > 0 && codepoint <= 0xFFFF) {
       // Check if there is a subtable for this upper byte.
       int lookup_offset = lower_case_table[codepoint >> 8];
       if (lookup_offset != 0)
         codepoint = lower_case_table[lookup_offset + (codepoint & 0x00FF)];
-      // Note: codepoint1 may be again 0 at this point if the character was
+      // Note: `codepoint` may be again 0 at this point if the character was
       // an ignorable.
     }
   }
