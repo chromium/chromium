@@ -82,13 +82,12 @@ suite('inputKeyTest', function() {
     inputKeyElement.key = 'PrintScreen';
     await flush();
 
-    const iconWrapperElement = inputKeyElement.shadowRoot!.querySelector(
-                                   '#key > div') as HTMLDivElement;
-    assertTrue(isVisible(iconWrapperElement));
-    assertEquals('img', iconWrapperElement.getAttribute('role'));
-    const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
-                                       '#icon-description') as HTMLDivElement;
-    assertEquals('take screenshot', iconDescriptionElement.textContent);
+    const iconElement = inputKeyElement.shadowRoot!.querySelector(
+                            '#key-icon') as IronIconElement;
+    assertTrue(isVisible(iconElement));
+    assertEquals('shortcut-customization-keys:screenshot', iconElement.icon);
+    assertEquals('take screenshot', iconElement.ariaLabel);
+    assertEquals('img', iconElement.getAttribute('role'));
   });
 
   test('MetaKeyShowLauncherIcon', async () => {
@@ -101,14 +100,10 @@ suite('inputKeyTest', function() {
     // Should show launcher icon when hasLauncherButton is true.
     const iconElement = inputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
-    const iconWrapperElement = inputKeyElement.shadowRoot!.querySelector(
-                                   '#key > div') as HTMLDivElement;
     assertTrue(isVisible(iconElement));
-    assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-customization-keys:launcher', iconElement.icon);
-    const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
-                                       '#icon-description') as HTMLDivElement;
-    assertEquals('open launcher', iconDescriptionElement.textContent);
+    assertEquals('open launcher', iconElement.ariaLabel);
+    assertEquals('img', iconElement.getAttribute('role'));
   });
 
   test('MetaKeyShowSearchIcon', async () => {
@@ -121,15 +116,10 @@ suite('inputKeyTest', function() {
     // Should show search icon when hasLauncherButton is false.
     const iconElement = inputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
-    const iconWrapperElement = inputKeyElement.shadowRoot!.querySelector(
-                                   '#key > div') as HTMLDivElement;
     assertTrue(isVisible(iconElement));
-    assertTrue(isVisible(iconWrapperElement));
     assertEquals('shortcut-customization-keys:search', iconElement.icon);
-
-    const iconDescriptionElement = inputKeyElement.shadowRoot!.querySelector(
-                                       '#icon-description') as HTMLDivElement;
-    assertEquals('open search', iconDescriptionElement.textContent);
+    assertEquals('open search', iconElement.ariaLabel);
+    assertEquals('img', iconElement.getAttribute('role'));
   });
 
   test('MetaKeyIsAlwaysModifier', async () => {
