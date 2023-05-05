@@ -48,7 +48,6 @@
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
-#include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/host/host_display_client.h"
 #include "content/browser/browser_main_loop.h"
@@ -316,24 +315,16 @@ class CompositorImpl::ScopedCachedBackBuffer {
 class CompositorImpl::ReadbackRefImpl
     : public ui::WindowAndroidCompositor::ReadbackRef {
  public:
-  ReadbackRefImpl(base::WeakPtr<CompositorImpl> weakptr,
-                  const viz::SurfaceId& surface_id_to_copy);
+  explicit ReadbackRefImpl(base::WeakPtr<CompositorImpl> weakptr);
   ~ReadbackRefImpl() override;
 
  private:
   base::WeakPtr<CompositorImpl> compositor_weakptr_;
-  std::unique_ptr<cc::slim::LayerTree::ScopedKeepSurfaceAlive> keep_alive_;
 };
 
 CompositorImpl::ReadbackRefImpl::ReadbackRefImpl(
-    base::WeakPtr<CompositorImpl> weakptr,
-    const viz::SurfaceId& surface_id_to_copy)
-    : compositor_weakptr_(std::move(weakptr)) {
-  DCHECK(compositor_weakptr_);
-  DCHECK(compositor_weakptr_->host_);
-  keep_alive_ = compositor_weakptr_->host_->CreateScopedKeepSurfaceAlive(
-      surface_id_to_copy);
-}
+    base::WeakPtr<CompositorImpl> weakptr)
+    : compositor_weakptr_(weakptr) {}
 
 CompositorImpl::ReadbackRefImpl::~ReadbackRefImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -769,11 +760,9 @@ void CompositorImpl::DidLoseLayerTreeFrameSink() {
 }
 
 std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef>
-CompositorImpl::TakeReadbackRef(const viz::SurfaceId& surface_id) {
-  DCHECK(surface_id.is_valid());
+CompositorImpl::TakeReadbackRef() {
   ++pending_readbacks_;
-  return std::make_unique<ReadbackRefImpl>(weak_factory_.GetWeakPtr(),
-                                           surface_id);
+  return std::make_unique<ReadbackRefImpl>(weak_factory_.GetWeakPtr());
 }
 
 void CompositorImpl::RequestCopyOfOutputOnRootLayer(

@@ -121,11 +121,10 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     base::OnceCallback<void(const SkBitmap&)> callback) {
   DCHECK(CanCopyFromCompositingSurface());
 
-  const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
   std::unique_ptr<ui::WindowAndroidCompositor::ReadbackRef> readback_ref;
   if (view_->GetWindowAndroid() && view_->GetWindowAndroid()->GetCompositor()) {
     readback_ref =
-        view_->GetWindowAndroid()->GetCompositor()->TakeReadbackRef(surface_id);
+        view_->GetWindowAndroid()->GetCompositor()->TakeReadbackRef();
   }
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
@@ -161,7 +160,8 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
         gfx::Vector2d(output_size.width(), output_size.height()));
   }
 
-  host_frame_sink_manager_->RequestCopyOfOutput(surface_id, std::move(request));
+  host_frame_sink_manager_->RequestCopyOfOutput(
+      viz::SurfaceId(frame_sink_id_, local_surface_id_), std::move(request));
 }
 
 bool DelegatedFrameHostAndroid::CanCopyFromCompositingSurface() const {
