@@ -196,9 +196,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // regenerated.
   bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);
 
-  // Returns whether the browser should always use the dark theme no matter user
-  // makes any selection.
-  bool ShouldUseDarkTheme() const;
+  // Returns true if the browser instance belongs to an incognito profile.
+  bool IsIncognitoBrowser() const;
 
   raw_ptr<NativeBrowserFrame> native_browser_frame_;
 
