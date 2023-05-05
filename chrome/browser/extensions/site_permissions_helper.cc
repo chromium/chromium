@@ -7,6 +7,7 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -152,6 +153,14 @@ void SitePermissionsHelper::UpdateSiteAccess(
     runner->ShowReloadPageBubbleWithReloadPageCallback(extension.id());
   } else if (blocked_actions != BLOCKED_ACTION_NONE) {
     runner->RunBlockedActions(&extension);
+  }
+
+  // Clear extension's active tab permission since it is set when granting user
+  // site permissions.
+  if (revoking_current_site_permissions) {
+    TabHelper::FromWebContents(web_contents)
+        ->active_tab_permission_granter()
+        ->ClearActiveExtensionAndNotify(extension.id());
   }
 }
 

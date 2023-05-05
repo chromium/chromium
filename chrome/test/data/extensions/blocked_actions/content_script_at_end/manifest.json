@@ -1,0 +1,11 @@
+{
+  "name": "Blocked Actions Doc End",
+  "description": "An extension that wants to run at document end on all urls.",
+  "version": "0.1",
+  "manifest_version": 3,
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "run_at": "document_end",
+    "js": ["script.js"]
+  }]
+}

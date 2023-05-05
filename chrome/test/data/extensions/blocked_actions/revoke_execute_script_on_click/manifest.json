@@ -1,0 +1,17 @@
+{
+  "name": "Blocked Actions Change Title all urls",
+  "action": {},
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": [
+    "scripting",
+    "webNavigation",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
+}
