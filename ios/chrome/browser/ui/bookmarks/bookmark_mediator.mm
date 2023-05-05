@@ -118,8 +118,11 @@ using bookmarks::BookmarkNode;
 
   NSString* folderTitle =
       bookmark_utils_ios::TitleForBookmarkNode(defaultFolder);
+  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
+      defaultFolder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   NSString* text = [self
       messageForAddingBookmarksInFolder:!IsLastUsedBookmarkFolderSet(_prefs)
+                      folderStorageType:storageType
                                   title:folderTitle
                                   count:1];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
@@ -141,7 +144,10 @@ using bookmarks::BookmarkNode;
   }
 
   NSString* folderTitle = bookmark_utils_ios::TitleForBookmarkNode(folder);
+  bookmarks::StorageType storageType = bookmark_utils_ios::GetBookmarkModelType(
+      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
   NSString* text = [self messageForAddingBookmarksInFolder:(folderTitle.length)
+                                         folderStorageType:storageType
                                                      title:folderTitle
                                                      count:URLs.count];
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
@@ -157,16 +163,30 @@ using bookmarks::BookmarkNode;
 // `folderTitle`: The name of the folder. Assumed to be non-nil if `addFolder`
 // is true. `count`: the number of bookmarks. Used for localization.
 - (NSString*)messageForAddingBookmarksInFolder:(BOOL)addFolder
+                             folderStorageType:
+                                 (bookmarks::StorageType)storageType
                                          title:(NSString*)folderTitle
                                          count:(int)count {
   std::u16string result;
   id<SystemIdentity> identity =
-      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  BOOL hasSyncConsent =
+      _authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
+  // TODO(crbug.com/1442345): Once `kEnableEmailInBookmarksReadingListSnackbar`
+  // and `kEnableBookmarksAccountStorage` are removed, `saveIntoAccount` can be
+  // set with the value from `ShouldDisplayCloudSlashIconForProfileModel()`. We
+  // will need to rename the function to something like:
+  // `IsLocalOrSyncableModelSynced()`.
+  // The bookmark is saved in the account if either following condition is true:
+  // * the saved folder is in the account model,
+  // * the sync consent has been granted and the bookmark data type is enabled
+  BOOL saveIntoAccount =
+      (storageType == bookmarks::StorageType::kAccount) ||
+      (hasSyncConsent && _syncSetupService->IsDataTypePreferred(
+                             syncer::UserSelectableType::kBookmarks));
   if (base::FeatureList::IsEnabled(
           kEnableEmailInBookmarksReadingListSnackbar) &&
-      identity &&
-      _syncSetupService->IsDataTypePreferred(
-          syncer::UserSelectableType::kBookmarks)) {
+      saveIntoAccount) {
     std::u16string email = base::SysNSStringToUTF16(identity.userEmail);
     if (addFolder) {
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
