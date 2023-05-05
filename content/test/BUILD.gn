@@ -1998,6 +1998,10 @@ test("content_browsertests") {
     ]
   }
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   if (is_mac) {
     sources += [
       "../browser/accessibility/ax_tree_formatter_mac_browsertest.mm",

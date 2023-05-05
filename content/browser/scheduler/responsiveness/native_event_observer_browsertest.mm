@@ -12,8 +12,11 @@
 
 #import <Carbon/Carbon.h>
 
-namespace content {
-namespace responsiveness {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace content::responsiveness {
 
 namespace {
 
@@ -55,9 +58,8 @@ IN_PROC_BROWSER_TEST_F(ResponsivenessNativeEventObserverBrowserTest,
       kVK_Return, '\r', NSEventTypeKeyDown, 0);
   [NSApp sendEvent:event];
 
-  EXPECT_EQ(observer.will_run_id(), event);
-  EXPECT_EQ(observer.did_run_id(), event);
+  EXPECT_EQ(observer.will_run_id(), (__bridge void*)event);
+  EXPECT_EQ(observer.did_run_id(), (__bridge void*)event);
 }
 
-}  // namespace responsiveness
-}  // namespace content
+}  // namespace content::responsiveness
