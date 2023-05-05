@@ -271569,16 +271569,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "5bea07f2768ec69d90538e09cbb1c85d76b2f755",
-     []
-    ],
-    "mtime.json": [
-     "f1b5cf74ee5df497a766b77a0590606e50e1f9b4",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -454928,7 +454918,7 @@
       ]
      ],
      "fragment-scrolling-anchors.html": [
-      "74b633be987ac6a2dd63ebab3ddb427836f78b7a",
+      "99c679acaa5822df3632c42fa5892c9a96686000",
       [
        null,
        {}
