@@ -68,16 +68,12 @@ void WebAppRunOnOsLoginManager::RunAppsOnOsLogin(AllAppsLock& lock) {
     }
 
     // TODO(crbug.com/1091964): Implement Run on OS Login mode selection and
-    // launch app appropriately
+    // launch app appropriately.
+    // For ROOL on ChromeOS, we only have managed web apps which need to be run
+    // as standalone windows, never as tabs
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerWindow,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromOsLogin);
-
-    if (lock.registrar().GetAppEffectiveDisplayMode(app_id) ==
-        blink::mojom::DisplayMode::kBrowser) {
-      params.container = apps::LaunchContainer::kLaunchContainerTab;
-      params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-    }
 
     const std::string app_name = lock.registrar().GetAppShortName(app_id);
 

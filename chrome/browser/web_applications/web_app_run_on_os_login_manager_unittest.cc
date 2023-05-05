@@ -252,10 +252,6 @@ TEST_P(WebAppRunOnOsLoginManagerParameterizedTest, WebAppRunOnOsLogin) {
       GetUserRunOnOsLoginMode() != RunOnOsLoginMode::kNotRun;
   bool launched = launch_by_policy || launch_by_user_mode;
 
-  auto launch_container = GetDisplayMode() == DisplayMode::kBrowser
-                              ? apps::LaunchContainer::kLaunchContainerTab
-                              : apps::LaunchContainer::kLaunchContainerWindow;
-
   AwaitAllCommandsComplete();
 
   const std::vector<apps::AppLaunchParams>& launched_apps_ = launched_apps();
@@ -264,7 +260,8 @@ TEST_P(WebAppRunOnOsLoginManagerParameterizedTest, WebAppRunOnOsLogin) {
 
   if (launched) {
     auto actual_container = launched_apps_[0].container;
-    ASSERT_EQ(launch_container, actual_container);
+    // should always open in new window
+    ASSERT_EQ(apps::LaunchContainer::kLaunchContainerWindow, actual_container);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ASSERT_EQ(notification_count_, 1u);
 #endif
