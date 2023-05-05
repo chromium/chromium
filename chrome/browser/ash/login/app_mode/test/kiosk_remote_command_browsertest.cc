@@ -192,10 +192,10 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     }
     em::SignedData signed_command =
         policy::SignedDataBuilder()
-            .WithCommandId(remote_command_server_->GetNextCommandId())
-            .WithTargetDeviceId(kDeviceId)
-            .WithCommandType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
-            .WithCommandPayload(command_payload)
+            .SetCommandId(remote_command_server_->GetNextCommandId())
+            .SetTargetDeviceId(kDeviceId)
+            .SetCommandType(em::RemoteCommand_Type_DEVICE_SET_VOLUME)
+            .SetCommandPayload(command_payload)
             .Build();
 
     return signed_command;
@@ -204,9 +204,9 @@ class KioskRemoteCommandTest : public KioskBaseTest {
   em::SignedData CreateRebootRemoteCommand() {
     em::SignedData signed_command =
         policy::SignedDataBuilder()
-            .WithCommandId(remote_command_server_->GetNextCommandId())
-            .WithTargetDeviceId(kDeviceId)
-            .WithCommandType(em::RemoteCommand_Type_DEVICE_REBOOT)
+            .SetCommandId(remote_command_server_->GetNextCommandId())
+            .SetTargetDeviceId(kDeviceId)
+            .SetCommandType(em::RemoteCommand_Type_DEVICE_REBOOT)
             .Build();
     return signed_command;
   }
@@ -222,10 +222,10 @@ class KioskRemoteCommandTest : public KioskBaseTest {
     }
     em::SignedData signed_command =
         policy::SignedDataBuilder()
-            .WithCommandId(remote_command_server_->GetNextCommandId())
-            .WithTargetDeviceId(kDeviceId)
-            .WithCommandType(em::RemoteCommand_Type_DEVICE_SCREENSHOT)
-            .WithCommandPayload(command_payload)
+            .SetCommandId(remote_command_server_->GetNextCommandId())
+            .SetTargetDeviceId(kDeviceId)
+            .SetCommandType(em::RemoteCommand_Type_DEVICE_SCREENSHOT)
+            .SetCommandPayload(command_payload)
             .Build();
     return signed_command;
   }
