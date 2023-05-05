@@ -51,7 +51,7 @@ void ChangeOwners(scoped_refptr<PersistedData> persisted_data,
     files.push_back(persisted_data->GetExistenceCheckerPath(id));
   }
   base::ThreadPool::PostTaskAndReply(
-      FROM_HERE,
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           [](const std::vector<base::FilePath>& paths, UpdaterScope scope) {
             for (const base::FilePath& path : paths) {
