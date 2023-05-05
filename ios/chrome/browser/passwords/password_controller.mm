@@ -571,8 +571,11 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)attachListenersForBottomSheet:
             (const std::vector<autofill::FieldRendererId>&)rendererIds
                               inFrame:(web::WebFrame*)frame {
-  BottomSheetTabHelper::FromWebState(_webState)->AttachListeners(rendererIds,
-                                                                 frame);
+  BottomSheetTabHelper* bottomSheetTabHelper =
+      BottomSheetTabHelper::FromWebState(_webState);
+  if (bottomSheetTabHelper) {
+    bottomSheetTabHelper->AttachListeners(rendererIds, frame);
+  }
 }
 
 - (BOOL)shouldShowAccountStorageNotice {

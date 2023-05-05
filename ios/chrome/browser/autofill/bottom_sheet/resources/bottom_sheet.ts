@@ -82,9 +82,8 @@ function attachListeners_(): void {
 
 /**
  * Removes all listeners and clears the list of observed elements
- * @private
  */
-function detachListeners_(): void {
+function detachListeners(): void {
   for (const element of observedElements_) {
     element.removeEventListener('focus', focusEventHandler_, true);
   }
@@ -115,7 +114,7 @@ function attachListeners(renderer_ids: number[]): void {
 function detachListenersAndRefocus(): void {
   // If the form was dismissed, we don't need to show it anymore on this page,
   // so remove the event listeners.
-  detachListeners_();
+  detachListeners();
 
   // Re-focus the previously blurred element
   if (lastBlurredElement_) {
@@ -125,5 +124,6 @@ function detachListenersAndRefocus(): void {
 
 gCrWeb.bottomSheet = {
   attachListeners,
-  detachListenersAndRefocus
+  detachListenersAndRefocus,
+  detachListeners
 };

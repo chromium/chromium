@@ -11,6 +11,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
+#import "ios/chrome/browser/autofill/bottom_sheet/bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -165,6 +166,21 @@ NSArray* FindDescendantToolbarItemsForActionName(
   _lastFocusFormActivityWebFrameID = frameID;
 }
 
+- (void)willShowKeyboardAccessory:(autofill::PopupType)suggestionType {
+  if (!_webState) {
+    return;
+  }
+
+  web::WebFrame* frame = [self webFrame];
+
+  if (frame) {
+    BottomSheetTabHelper* bottomSheetTabHelper =
+        BottomSheetTabHelper::FromWebState(_webState);
+    CHECK(bottomSheetTabHelper);
+    bottomSheetTabHelper->WillShowKeyboardAccessory(suggestionType, frame);
+  }
+}
+
 // Attempts to execute/tap/send-an-event-to the iOS built-in "next" and
 // "previous" form assist controls. Returns NO if this attempt failed, YES
 // otherwise. [HACK] Because the buttons on the assist controls can change any
@@ -254,11 +270,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
     return;
   }
 
-  web::WebFramesManager* framesManager =
-      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-          ->GetWebFramesManager(_webState);
-  web::WebFrame* frame = framesManager->GetFrameWithId(
-      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+  web::WebFrame* frame = [self webFrame];
 
   if (!frame) {
     completionHandler(false, false);
@@ -294,11 +306,7 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    web::WebFramesManager* framesManager =
-        autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-            ->GetWebFramesManager(_webState);
-    web::WebFrame* frame = framesManager->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+    web::WebFrame* frame = [self webFrame];
 
     if (frame) {
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
@@ -316,17 +324,22 @@ NSArray* FindDescendantToolbarItemsForActionName(
   if (!performedAction && _webState) {
     // We could not find the built-in form assist controls, so try to focus
     // the next or previous control using JavaScript.
-    web::WebFramesManager* framesManager =
-        autofill::SuggestionControllerJavaScriptFeature::GetInstance()
-            ->GetWebFramesManager(_webState);
-    web::WebFrame* frame = framesManager->GetFrameWithId(
-        base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
+    web::WebFrame* frame = [self webFrame];
 
     if (frame) {
       autofill::SuggestionControllerJavaScriptFeature::GetInstance()
           ->SelectNextElementInFrame(frame);
     }
   }
+}
+
+// Attempts to fetch the frame object from its id. May return nil.
+- (web::WebFrame*)webFrame {
+  web::WebFramesManager* framesManager =
+      autofill::SuggestionControllerJavaScriptFeature::GetInstance()
+          ->GetWebFramesManager(_webState);
+  return framesManager->GetFrameWithId(
+      base::SysNSStringToUTF8(_lastFocusFormActivityWebFrameID));
 }
 
 @end

@@ -65,3 +65,7 @@ void BottomSheetJavaScriptFeature::DetachListenersAndRefocus(
     web::WebFrame* frame) {
   CallJavaScriptFunction(frame, "bottomSheet.detachListenersAndRefocus", {});
 }
+
+void BottomSheetJavaScriptFeature::DetachListeners(web::WebFrame* frame) {
+  CallJavaScriptFunction(frame, "bottomSheet.detachListeners", {});
+}
