@@ -182,9 +182,10 @@ export {OsResetBrowserProxyImpl} from './os_reset_page/os_reset_browser_proxy.js
 export {OsSettingsSearchPageElement} from './os_search_page/os_search_page.js';
 export {SearchEngine, SearchEnginesBrowserProxy, SearchEnginesBrowserProxyImpl, SearchEnginesInfo} from './os_search_page/search_engines_browser_proxy.js';
 export {OsSettingsMainElement} from './os_settings_main/os_settings_main.js';
+export {OsSettingsMenuElement} from './os_settings_menu/os_settings_menu.js';
 export {OsSettingsPageElement} from './os_settings_page/os_settings_page.js';
 export {OsSettingsSectionElement} from './os_settings_page/os_settings_section.js';
-export {routes} from './os_settings_routes.js';
+export {OsSettingsRoutes, routes} from './os_settings_routes.js';
 export {OsSettingsSearchBoxElement} from './os_settings_search_box/os_settings_search_box.js';
 export {OsSettingsSearchBoxBrowserProxyImpl} from './os_settings_search_box/os_settings_search_box_browser_proxy.js';
 export {OsSettingsHatsBrowserProxy, OsSettingsHatsBrowserProxyImpl} from './os_settings_ui/os_settings_hats_browser_proxy.js';

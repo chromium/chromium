@@ -34,7 +34,7 @@ interface MenuItemData {
   hidden: boolean;
 }
 
-interface OsSettingsMenuElement {
+export interface OsSettingsMenuElement {
   $: {
     topMenu: IronSelectorElement,
     topMenuRepeat: DomRepeat,
@@ -45,7 +45,7 @@ interface OsSettingsMenuElement {
 
 const OsSettingsMenuElementBase = RouteObserverMixin(I18nMixin(PolymerElement));
 
-class OsSettingsMenuElement extends OsSettingsMenuElementBase {
+export class OsSettingsMenuElement extends OsSettingsMenuElementBase {
   static get is() {
     return 'os-settings-menu';
   }
