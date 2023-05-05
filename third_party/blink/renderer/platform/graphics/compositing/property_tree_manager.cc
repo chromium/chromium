@@ -644,27 +644,25 @@ int PropertyTreeManager::EnsureCompositorScrollNodeInternal(
 }
 
 int PropertyTreeManager::EnsureCompositorScrollAndTransformNode(
-    const TransformPaintPropertyNode& scroll_offset_translation) {
-  const auto* scroll_node = scroll_offset_translation.ScrollNode();
+    const TransformPaintPropertyNode& scroll_translation) {
+  const auto* scroll_node = scroll_translation.ScrollNode();
   DCHECK(scroll_node);
-  EnsureCompositorTransformNode(scroll_offset_translation);
+  EnsureCompositorTransformNode(scroll_translation);
   int id = scroll_node->CcNodeId(new_sequence_number_);
   DCHECK(scroll_tree_.Node(id));
   return id;
 }
 
-int PropertyTreeManager::EnsureCompositorInnerScrollNode(
-    const TransformPaintPropertyNode& scroll_offset_translation) {
-  int node_id =
-      EnsureCompositorScrollAndTransformNode(scroll_offset_translation);
+int PropertyTreeManager::EnsureCompositorInnerScrollAndTransformNode(
+    const TransformPaintPropertyNode& scroll_translation) {
+  int node_id = EnsureCompositorScrollAndTransformNode(scroll_translation);
   scroll_tree_.Node(node_id)->scrolls_inner_viewport = true;
   return node_id;
 }
 
-int PropertyTreeManager::EnsureCompositorOuterScrollNode(
-    const TransformPaintPropertyNode& scroll_offset_translation) {
-  int node_id =
-      EnsureCompositorScrollAndTransformNode(scroll_offset_translation);
+int PropertyTreeManager::EnsureCompositorOuterScrollAndTransformNode(
+    const TransformPaintPropertyNode& scroll_translation) {
+  int node_id = EnsureCompositorScrollAndTransformNode(scroll_translation);
   scroll_tree_.Node(node_id)->scrolls_outer_viewport = true;
   return node_id;
 }

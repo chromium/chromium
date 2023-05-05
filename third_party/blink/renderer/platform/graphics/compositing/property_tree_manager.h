@@ -110,9 +110,9 @@ class PropertyTreeManager {
       const TransformPaintPropertyNode& scroll_offset_translation);
 
   // Same as above but marks the scroll nodes as being the viewport.
-  int EnsureCompositorInnerScrollNode(
+  int EnsureCompositorInnerScrollAndTransformNode(
       const TransformPaintPropertyNode& scroll_offset_translation);
-  int EnsureCompositorOuterScrollNode(
+  int EnsureCompositorOuterScrollAndTransformNode(
       const TransformPaintPropertyNode& scroll_offset_translation);
 
   // Ensures a cc::ScrollNode for a scroll translation node.

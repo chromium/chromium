@@ -366,10 +366,10 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   class OldPendingLayerMatcher;
   PendingLayers pending_layers_;
 
-  // ScrollTranslationNodes of the PaintArtifact that are painted.
+  // Scroll translation nodes of the PaintArtifact that are painted.
   // This member variable is only used in PaintArtifactCompositor::Update.
   // The value indicates if the scroll should be composited.
-  HashMap<const TransformPaintPropertyNode*, bool> scroll_translation_nodes_;
+  HashMap<const TransformPaintPropertyNode*, bool> painted_scroll_translations_;
 
   friend class StubChromeClientForCAP;
   friend class PaintArtifactCompositorTest;
