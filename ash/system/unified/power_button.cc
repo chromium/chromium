@@ -26,7 +26,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/user_manager/user_type.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -185,9 +184,8 @@ class PowerButtonContainer : public views::Button {
         kUnifiedMenuPowerIcon, cros_tokens::kCrosSysOnSurface));
     power_icon->SetImageSize(kIconSize);
     auto* arrow_icon = AddChildView(std::make_unique<views::ImageView>());
-    // TODO(b/278747569): Might need to use a small style arrow down icon.
     arrow_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kCaretDownIcon, cros_tokens::kCrosSysOnSurface));
+        kChevronDownSmallIcon, cros_tokens::kCrosSysOnSurface));
     arrow_icon->SetImageSize(kIconSize);
 
     SetBorder(views::CreateEmptyBorder(gfx::Insets(6)));

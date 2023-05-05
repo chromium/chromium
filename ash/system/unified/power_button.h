@@ -42,6 +42,7 @@ class ASH_EXPORT PowerButton : public views::View {
   views::View* button_content_for_testing() { return button_content_; }
 
  private:
+  friend class PowerButtonPixelTest;
   friend class PowerButtonTest;
   friend class QuickSettingsFooterTest;
 
