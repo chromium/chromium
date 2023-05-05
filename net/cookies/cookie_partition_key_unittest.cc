@@ -315,4 +315,40 @@ TEST_P(CookiePartitionKeyTest, Localhost) {
   EXPECT_EQ(PartitionedCookiesEnabled(), key.has_value());
 }
 
+// Test that creating nonced partition keys works with both types of
+// NetworkIsolationKey modes. See https://crbug.com/1442260.
+TEST_P(CookiePartitionKeyTest, NetworkIsolationKeyMode) {
+  if (!PartitionedCookiesEnabled()) {
+    return;
+  }
+
+  const net::SchemefulSite kTopFrameSite(GURL("https://a.com"));
+  const net::SchemefulSite kFrameSite(GURL("https://b.com"));
+  const auto kNonce = base::UnguessableToken::Create();
+
+  {  // Frame site mode.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {}, {net::features::kEnableCrossSiteFlagNetworkIsolationKey});
+
+    const auto key = CookiePartitionKey::FromNetworkIsolationKey(
+        NetworkIsolationKey(kTopFrameSite, kFrameSite, kNonce));
+    EXPECT_TRUE(key);
+    EXPECT_EQ(key->site(), kFrameSite);
+    EXPECT_EQ(key->nonce().value(), kNonce);
+  }
+
+  {  // Cross-site flag mode.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        {net::features::kEnableCrossSiteFlagNetworkIsolationKey}, {});
+
+    const auto key = CookiePartitionKey::FromNetworkIsolationKey(
+        NetworkIsolationKey(kTopFrameSite, kFrameSite, kNonce));
+    EXPECT_TRUE(key);
+    EXPECT_EQ(key->site(), kFrameSite);
+    EXPECT_EQ(key->nonce().value(), kNonce);
+  }
+}
+
 }  // namespace net

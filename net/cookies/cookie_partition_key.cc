@@ -119,7 +119,8 @@ absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
   // align CookiePartitionKey's implementation of nonced partitions with
   // StorageKey's. See https://crbug.com/1440765.
   const absl::optional<SchemefulSite>& partition_key_site =
-      nonce ? network_isolation_key.GetFrameSite()
+      nonce ? network_isolation_key.GetFrameSiteForCookiePartitionKey(
+                  NetworkIsolationKey::CookiePartitionKeyPasskey())
             : network_isolation_key.GetTopFrameSite();
   if (!partition_key_site)
     return absl::nullopt;

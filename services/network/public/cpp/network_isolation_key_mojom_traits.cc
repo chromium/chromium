@@ -44,15 +44,18 @@ bool StructTraits<
     Read(network::mojom::CrossSiteFlagEnabledNetworkIsolationKeyDataView data,
          net::NetworkIsolationKey* out) {
   net::SchemefulSite top_frame_site;
+  net::SchemefulSite frame_site;
   absl::optional<base::UnguessableToken> nonce;
 
-  if (!data.ReadTopFrameSite(&top_frame_site) || !data.ReadNonce(&nonce)) {
+  if (!data.ReadTopFrameSite(&top_frame_site) ||
+      !data.ReadFrameSite(&frame_site) || !data.ReadNonce(&nonce)) {
     return false;
   }
 
-  *out = net::NetworkIsolationKey(
-      net::NetworkIsolationKey::SerializationPasskey(),
-      std::move(top_frame_site), data.is_cross_site(), std::move(nonce));
+  *out =
+      net::NetworkIsolationKey(net::NetworkIsolationKey::SerializationPasskey(),
+                               std::move(top_frame_site), std::move(frame_site),
+                               data.is_cross_site(), std::move(nonce));
   return true;
 }
 

@@ -28,9 +28,11 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 NetworkIsolationKey::NetworkIsolationKey(
     SerializationPasskey,
     SchemefulSite top_frame_site,
+    SchemefulSite frame_site,
     bool is_cross_site,
     absl::optional<base::UnguessableToken> nonce)
     : top_frame_site_(std::move(top_frame_site)),
+      frame_site_(std::move(frame_site)),
       is_cross_site_(is_cross_site),
       nonce_(std::move(nonce)) {
   CHECK_EQ(GetMode(), Mode::kCrossSiteFlagEnabled);
@@ -49,11 +51,9 @@ NetworkIsolationKey::NetworkIsolationKey(
     SchemefulSite&& frame_site,
     absl::optional<base::UnguessableToken>&& nonce)
     : top_frame_site_(std::move(top_frame_site)),
-      frame_site_((GetMode() == Mode::kFrameSiteEnabled)
-                      ? absl::make_optional(std::move(frame_site))
-                      : absl::nullopt),
+      frame_site_(absl::make_optional(std::move(frame_site))),
       is_cross_site_((GetMode() == Mode::kCrossSiteFlagEnabled)
-                         ? absl::make_optional(*top_frame_site_ != frame_site)
+                         ? absl::make_optional(*top_frame_site_ != *frame_site_)
                          : absl::nullopt),
       nonce_(std::move(nonce)) {
   DCHECK(!nonce_ || !nonce_->is_empty());
