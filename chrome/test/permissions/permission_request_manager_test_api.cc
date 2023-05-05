@@ -8,7 +8,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_desktop.h"
 #include "components/permissions/permission_request.h"
 #include "ui/views/widget/widget.h"

@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
 

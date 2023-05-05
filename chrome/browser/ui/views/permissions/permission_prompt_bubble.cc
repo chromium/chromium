@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
@@ -35,7 +36,7 @@ PermissionPromptBubble::~PermissionPromptBubble() {
 }
 
 void PermissionPromptBubble::ShowBubble() {
-  prompt_bubble_ = new PermissionPromptBubbleView(
+  prompt_bubble_ = new PermissionPromptBubbleOneOriginView(
       browser(), delegate()->GetWeakPtr(), permission_requested_time_,
       PermissionPromptStyle::kBubbleOnly);
   prompt_bubble_->Show();

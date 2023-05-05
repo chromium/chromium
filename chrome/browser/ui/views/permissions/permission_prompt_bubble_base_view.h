@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_
 
 #include <string>
 
@@ -25,22 +25,35 @@ class Browser;
 
 constexpr int DISTANCE_BUTTON_VERTICAL = 12;
 
-// Bubble that prompts the user to grant or deny a permission request from a
-// website.
-class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
+// Base bubble view that prompts the user to grant or deny a permission request
+// from a website. Should not be used directly, instead create one of the more
+// specific subclasses.
+// ----------------------------------------------
+// |                                       [ X ]|
+// | Prompt title                               |
+// | ------------------------------------------ |
+// | Extra text                                 |
+// | ------------------------------------------ |
+// |                        [ Block ] [ Allow ] |
+// ----------------------------------------------
+class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
  public:
-  METADATA_HEADER(PermissionPromptBubbleView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionPromptBubbleViewIdentifier);
+  METADATA_HEADER(PermissionPromptBubbleBaseView);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMainViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonElementId);
-  PermissionPromptBubbleView(
+  PermissionPromptBubbleBaseView(
       Browser* browser,
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
       base::TimeTicks permission_requested_time,
-      PermissionPromptStyle prompt_style);
-  PermissionPromptBubbleView(const PermissionPromptBubbleView&) = delete;
-  PermissionPromptBubbleView& operator=(const PermissionPromptBubbleView&) =
+      PermissionPromptStyle prompt_style,
+      std::u16string window_title,
+      std::u16string accessible_window_title_,
+      absl::optional<std::u16string> extra_text);
+  PermissionPromptBubbleBaseView(const PermissionPromptBubbleBaseView&) =
       delete;
-  ~PermissionPromptBubbleView() override;
+  PermissionPromptBubbleBaseView& operator=(
+      const PermissionPromptBubbleBaseView&) = delete;
+  ~PermissionPromptBubbleBaseView() override;
 
   void Show();
 
@@ -61,9 +74,20 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   void DenyPermission();
   void ClosingPermission();
 
- private:
-  void AddRequestLine(permissions::PermissionRequest* request);
+ protected:
+  UrlIdentity GetUrlIdentityObject() { return url_identity_; }
 
+  // Determines whether the current request should also display an
+  // "Allow only this time" option in addition to the "Allow on every visit"
+  // option.
+  static bool IsOneTimePermission(
+      permissions::PermissionPrompt::Delegate& delegate);
+
+  static UrlIdentity GetUrlIdentity(
+      Browser* browser,
+      permissions::PermissionPrompt::Delegate& delegate);
+
+ private:
   // Record UMA Permissions.*.TimeToDecision.|action| metric. Can be
   // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
   // depending on which UI is used.
@@ -82,4 +106,4 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   const std::u16string window_title_;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_

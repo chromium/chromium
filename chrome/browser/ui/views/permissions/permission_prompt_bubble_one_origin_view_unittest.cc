@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
@@ -15,7 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-using PermissionPromptBubbleViewTest = ChromeViewsTestBase;
+using PermissionPromptBubbleOneOriginViewTest = ChromeViewsTestBase;
 
 namespace {
 
@@ -82,16 +82,16 @@ class TestDelegate : public permissions::PermissionPrompt::Delegate {
   base::WeakPtrFactory<TestDelegate> weak_factory_{this};
 };
 
-std::unique_ptr<PermissionPromptBubbleView> CreateBubble(
+std::unique_ptr<PermissionPromptBubbleOneOriginView> CreateBubble(
     TestDelegate* delegate) {
-  return std::make_unique<PermissionPromptBubbleView>(
+  return std::make_unique<PermissionPromptBubbleOneOriginView>(
       nullptr, delegate->GetWeakPtr(), base::TimeTicks::Now(),
       PermissionPromptStyle::kBubbleOnly);
 }
 
 }  // namespace
 
-TEST_F(PermissionPromptBubbleViewTest,
+TEST_F(PermissionPromptBubbleOneOriginViewTest,
        AccessibleTitleMentionsOriginAndPermissions) {
   TestDelegate delegate(GURL("https://test.origin"),
                         {permissions::RequestType::kMicStream,
@@ -107,7 +107,7 @@ TEST_F(PermissionPromptBubbleViewTest,
                       base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
 }
 
-TEST_F(PermissionPromptBubbleViewTest,
+TEST_F(PermissionPromptBubbleOneOriginViewTest,
        AccessibleTitleDoesNotMentionTooManyPermissions) {
   TestDelegate delegate(GURL(), {permissions::RequestType::kGeolocation,
                                  permissions::RequestType::kNotifications,
@@ -122,7 +122,7 @@ TEST_F(PermissionPromptBubbleViewTest,
   EXPECT_PRED_FORMAT2(::testing::IsNotSubstring, "camera", title);
 }
 
-TEST_F(PermissionPromptBubbleViewTest,
+TEST_F(PermissionPromptBubbleOneOriginViewTest,
        AccessibleTitleFileSchemeMentionsThisFile) {
   TestDelegate delegate(GURL("file:///tmp/index.html"),
                         {permissions::RequestType::kMicStream});
@@ -134,7 +134,7 @@ TEST_F(PermissionPromptBubbleViewTest,
                       base::UTF16ToUTF8(bubble->GetAccessibleWindowTitle()));
 }
 
-TEST_F(PermissionPromptBubbleViewTest,
+TEST_F(PermissionPromptBubbleOneOriginViewTest,
        AccessibleTitleIncludesOnlyVisiblePermissions) {
   TestDelegate delegate(GURL(), {permissions::RequestType::kMicStream,
                                  permissions::RequestType::kCameraStream,

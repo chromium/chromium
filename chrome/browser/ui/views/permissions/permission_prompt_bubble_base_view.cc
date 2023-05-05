@@ -1,8 +1,8 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 
 #include <memory>
 
@@ -63,142 +63,28 @@ constexpr UrlIdentity::FormatOptions options = {
     .default_options = {
         UrlIdentity::DefaultFormatOptions::kOmitCryptographicScheme}};
 
-UrlIdentity GetUrlIdentity(Browser* browser,
-                           permissions::PermissionPrompt::Delegate& delegate) {
-  DCHECK(!delegate.Requests().empty());
-  GURL origin_url = delegate.GetRequestingOrigin();
-
-  UrlIdentity url_identity =
-      UrlIdentity::CreateFromUrl(browser ? browser->profile() : nullptr,
-                                 origin_url, allowed_types, options);
-
-  if (url_identity.type == UrlIdentity::Type::kFile) {
-    // File URLs will show the same constant.
-    url_identity.name =
-        l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
-  }
-
-  return url_identity;
-}
-
-// Determines whether the current request should also display an
-// "Allow only this time" option in addition to the "Allow on every visit"
-// option.
-bool IsOneTimePermission(permissions::PermissionPrompt::Delegate& delegate) {
-  if (!base::FeatureList::IsEnabled(
-          permissions::features::kOneTimePermission)) {
-    return false;
-  }
-  CHECK_GT(delegate.Requests().size(), 0u);
-  for (auto* request : delegate.Requests()) {
-    auto content_setting_type =
-        permissions::RequestTypeToContentSettingsType(request->request_type());
-    if (!content_setting_type.has_value() ||
-        !permissions::PermissionUtil::CanPermissionBeAllowedOnce(
-            content_setting_type.value())) {
-      return false;
-    }
-  }
-  return true;
-}
-
-std::u16string GetAccessibleWindowTitleInternal(
-    const std::u16string display_name,
-    std::vector<permissions::PermissionRequest*> visible_requests) {
-  // Generate one of:
-  //   $origin wants to: $permission
-  //   $origin wants to: $permission and $permission
-  //   $origin wants to: $permission, $permission, and more
-  // where $permission is the permission's text fragment, a verb phrase
-  // describing what the permission is, like:
-  //   "Download multiple files"
-  //   "Use your camera"
-  //
-  // There are three separate internationalized messages used, one for each
-  // format of title, to provide for accurate i18n. See https://crbug.com/434574
-  // for more details.
-
-  DCHECK(!visible_requests.empty());
-
-  if (visible_requests.size() == 1) {
-    return l10n_util::GetStringFUTF16(
-        IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_ONE_PERM, display_name,
-        visible_requests[0]->GetMessageTextFragment());
-  }
-
-  int template_id =
-      visible_requests.size() == 2
-          ? IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS
-          : IDS_PERMISSIONS_BUBBLE_PROMPT_ACCESSIBLE_TITLE_TWO_PERMS_MORE;
-  return l10n_util::GetStringFUTF16(
-      template_id, display_name, visible_requests[0]->GetMessageTextFragment(),
-      visible_requests[1]->GetMessageTextFragment());
-}
-
-bool ShouldShowRequest(permissions::PermissionPrompt::Delegate& delegate,
-                       permissions::RequestType type) {
-  if (type == permissions::RequestType::kCameraStream) {
-    // Hide camera request if camera PTZ request is present as well.
-    return !base::Contains(delegate.Requests(),
-                           permissions::RequestType::kCameraPanTiltZoom,
-                           &permissions::PermissionRequest::request_type);
-  }
-  return true;
-}
-
-std::vector<permissions::PermissionRequest*> GetVisibleRequests(
-    permissions::PermissionPrompt::Delegate& delegate) {
-  std::vector<permissions::PermissionRequest*> visible_requests;
-  for (permissions::PermissionRequest* request : delegate.Requests()) {
-    if (ShouldShowRequest(delegate, request->request_type())) {
-      visible_requests.push_back(request);
-    }
-  }
-  return visible_requests;
-}
-
-// Get extra information to display for the permission, if any.
-absl::optional<std::u16string> GetExtraText(
-    permissions::PermissionPrompt::Delegate& delegate) {
-  switch (delegate.Requests()[0]->request_type()) {
-    case permissions::RequestType::kStorageAccess:
-      return l10n_util::GetStringFUTF16(
-          IDS_STORAGE_ACCESS_PERMISSION_EXPLANATION,
-          url_formatter::FormatUrlForSecurityDisplay(
-              delegate.GetRequestingOrigin(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
-          url_formatter::FormatUrlForSecurityDisplay(
-              delegate.GetEmbeddingOrigin(),
-              url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-    case permissions::RequestType::kU2fApiRequest:
-      return l10n_util::GetStringUTF16(IDS_U2F_API_PERMISSION_EXPLANATION);
-    default:
-      return absl::nullopt;
-  }
-}
-
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
-                                      kPermissionPromptBubbleViewIdentifier);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
+                                      kMainViewId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleBaseView,
                                       kAllowButtonElementId);
 
-PermissionPromptBubbleView::PermissionPromptBubbleView(
+PermissionPromptBubbleBaseView::PermissionPromptBubbleBaseView(
     Browser* browser,
     base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate,
     base::TimeTicks permission_requested_time,
-    PermissionPromptStyle prompt_style)
+    PermissionPromptStyle prompt_style,
+    std::u16string window_title,
+    std::u16string accessible_window_title,
+    absl::optional<std::u16string> extra_text)
     : browser_(browser),
       delegate_(delegate),
       permission_requested_time_(permission_requested_time),
       is_one_time_permission_(IsOneTimePermission(*delegate.get())),
       url_identity_(GetUrlIdentity(browser, *delegate)),
-      accessible_window_title_(GetAccessibleWindowTitleInternal(
-          url_identity_.name,
-          GetVisibleRequests(*delegate.get()))),
-      window_title_(l10n_util::GetStringFUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT,
-                                               url_identity_.name)) {
+      accessible_window_title_(accessible_window_title),
+      window_title_(window_title) {
   // Note that browser_ may be null in unit tests.
 
   // To prevent permissions being accepted accidentally, and as a security
@@ -215,12 +101,6 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
-  for (permissions::PermissionRequest* request :
-       GetVisibleRequests(*delegate.get())) {
-    AddRequestLine(request);
-  }
-
-  absl::optional<std::u16string> extra_text = GetExtraText(*delegate.get());
   if (extra_text.has_value()) {
     auto* extra_text_label =
         AddChildView(std::make_unique<views::Label>(extra_text.value()));
@@ -240,12 +120,12 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
         views::BoxLayout::CrossAxisAlignment::kStretch);
     auto allow_once_button = std::make_unique<views::MdTextButton>(
         base::BindRepeating(
-            &PermissionPromptBubbleView::AcceptPermissionThisTime,
+            &PermissionPromptBubbleBaseView::AcceptPermissionThisTime,
             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_THIS_TIME));
 
     auto allow_always_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&PermissionPromptBubbleView::AcceptPermission,
+        base::BindRepeating(&PermissionPromptBubbleBaseView::AcceptPermission,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW_EVERY_VISIT));
     allow_always_button->SetProperty(views::kElementIdentifierKey,
@@ -256,7 +136,7 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
             ? IDS_PERMISSION_NEVER_ALLOW
             : IDS_PERMISSION_DONT_ALLOW;
     auto block_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&PermissionPromptBubbleView::DenyPermission,
+        base::BindRepeating(&PermissionPromptBubbleBaseView::DenyPermission,
                             base::Unretained(this)),
         l10n_util::GetStringUTF16(block_message_id));
 
@@ -273,13 +153,15 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
   } else {
     SetButtonLabel(ui::DIALOG_BUTTON_OK,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
-    SetAcceptCallback(base::BindOnce(
-        &PermissionPromptBubbleView::AcceptPermission, base::Unretained(this)));
+    SetAcceptCallback(
+        base::BindOnce(&PermissionPromptBubbleBaseView::AcceptPermission,
+                       base::Unretained(this)));
 
     SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
                    l10n_util::GetStringUTF16(IDS_PERMISSION_DENY));
-    SetCancelCallback(base::BindOnce(
-        &PermissionPromptBubbleView::DenyPermission, base::Unretained(this)));
+    SetCancelCallback(
+        base::BindOnce(&PermissionPromptBubbleBaseView::DenyPermission,
+                       base::Unretained(this)));
 
     if (features::IsChromeRefresh2023()) {
       SetButtonStyle(ui::DIALOG_BUTTON_OK, views::MdTextButton::Style::kTonal);
@@ -288,13 +170,12 @@ PermissionPromptBubbleView::PermissionPromptBubbleView(
     }
   }
 
-  SetProperty(views::kElementIdentifierKey,
-              kPermissionPromptBubbleViewIdentifier);
+  SetProperty(views::kElementIdentifierKey, kMainViewId);
 }
 
-PermissionPromptBubbleView::~PermissionPromptBubbleView() = default;
+PermissionPromptBubbleBaseView::~PermissionPromptBubbleBaseView() = default;
 
-void PermissionPromptBubbleView::Show() {
+void PermissionPromptBubbleBaseView::Show() {
   DCHECK(browser_->window());
 
   UpdateAnchorPosition();
@@ -321,31 +202,7 @@ void PermissionPromptBubbleView::Show() {
   SizeToContents();
 }
 
-void PermissionPromptBubbleView::AddRequestLine(
-    permissions::PermissionRequest* request) {
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-
-  auto* line_container = AddChildView(std::make_unique<views::View>());
-  line_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::VH(0, provider->GetDistanceMetric(
-                             DISTANCE_SUBSECTION_HORIZONTAL_INDENT)),
-      provider->GetDistanceMetric(views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
-
-  constexpr int kPermissionIconSize = 18;
-  auto* icon = line_container->AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          permissions::GetIconId(request->request_type()), ui::kColorIcon,
-          kPermissionIconSize)));
-  icon->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-
-  auto* label = line_container->AddChildView(
-      std::make_unique<views::Label>(request->GetMessageTextFragment()));
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetMultiLine(true);
-}
-
-void PermissionPromptBubbleView::UpdateAnchorPosition() {
+void PermissionPromptBubbleBaseView::UpdateAnchorPosition() {
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPermissionPromptBubbleAnchorConfiguration(
           browser_);
@@ -365,7 +222,7 @@ void PermissionPromptBubbleView::UpdateAnchorPosition() {
   SetArrow(configuration.bubble_arrow);
 }
 
-void PermissionPromptBubbleView::SetPromptStyle(
+void PermissionPromptBubbleBaseView::SetPromptStyle(
     PermissionPromptStyle prompt_style) {
   prompt_style_ = prompt_style;
   // If bubble hanging off the padlock icon, with no chip showing, closing the
@@ -373,7 +230,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
   // the bubble back.
   if (prompt_style_ == PermissionPromptStyle::kBubbleOnly) {
     DialogDelegate::SetCloseCallback(
-        base::BindOnce(&PermissionPromptBubbleView::ClosingPermission,
+        base::BindOnce(&PermissionPromptBubbleBaseView::ClosingPermission,
                        base::Unretained(this)));
   } else if (prompt_style_ == PermissionPromptStyle::kChip ||
              prompt_style_ == PermissionPromptStyle::kQuietChip) {
@@ -382,7 +239,7 @@ void PermissionPromptBubbleView::SetPromptStyle(
   }
 }
 
-void PermissionPromptBubbleView::AddedToWidget() {
+void PermissionPromptBubbleBaseView::AddedToWidget() {
   if (url_identity_.type == UrlIdentity::Type::kDefault) {
     // There is a risk of URL spoofing from origins that are too wide to fit in
     // the bubble; elide origins from the front to prevent this.
@@ -391,40 +248,41 @@ void PermissionPromptBubbleView::AddedToWidget() {
   }
 }
 
-bool PermissionPromptBubbleView::ShouldShowCloseButton() const {
+bool PermissionPromptBubbleBaseView::ShouldShowCloseButton() const {
   return true;
 }
 
-std::u16string PermissionPromptBubbleView::GetWindowTitle() const {
+std::u16string PermissionPromptBubbleBaseView::GetWindowTitle() const {
   return window_title_;
 }
 
-std::u16string PermissionPromptBubbleView::GetAccessibleWindowTitle() const {
+std::u16string PermissionPromptBubbleBaseView::GetAccessibleWindowTitle()
+    const {
   return accessible_window_title_;
 }
 
-void PermissionPromptBubbleView::AcceptPermission() {
+void PermissionPromptBubbleBaseView::AcceptPermission() {
   RecordDecision(permissions::PermissionAction::GRANTED);
   if (delegate_) {
     delegate_->Accept();
   }
 }
 
-void PermissionPromptBubbleView::AcceptPermissionThisTime() {
+void PermissionPromptBubbleBaseView::AcceptPermissionThisTime() {
   RecordDecision(permissions::PermissionAction::GRANTED_ONCE);
   if (delegate_) {
     delegate_->AcceptThisTime();
   }
 }
 
-void PermissionPromptBubbleView::DenyPermission() {
+void PermissionPromptBubbleBaseView::DenyPermission() {
   RecordDecision(permissions::PermissionAction::DENIED);
   if (delegate_) {
     delegate_->Deny();
   }
 }
 
-void PermissionPromptBubbleView::ClosingPermission() {
+void PermissionPromptBubbleBaseView::ClosingPermission() {
   DCHECK_EQ(prompt_style_, PermissionPromptStyle::kBubbleOnly);
   RecordDecision(permissions::PermissionAction::DISMISSED);
   if (delegate_) {
@@ -432,7 +290,47 @@ void PermissionPromptBubbleView::ClosingPermission() {
   }
 }
 
-void PermissionPromptBubbleView::RecordDecision(
+// static
+bool PermissionPromptBubbleBaseView::IsOneTimePermission(
+    permissions::PermissionPrompt::Delegate& delegate) {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kOneTimePermission)) {
+    return false;
+  }
+  CHECK_GT(delegate.Requests().size(), 0u);
+  for (auto* request : delegate.Requests()) {
+    auto content_setting_type =
+        permissions::RequestTypeToContentSettingsType(request->request_type());
+    if (!content_setting_type.has_value() ||
+        !permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+            content_setting_type.value())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// static
+UrlIdentity PermissionPromptBubbleBaseView::GetUrlIdentity(
+    Browser* browser,
+    permissions::PermissionPrompt::Delegate& delegate) {
+  DCHECK(!delegate.Requests().empty());
+  GURL origin_url = delegate.GetRequestingOrigin();
+
+  UrlIdentity url_identity =
+      UrlIdentity::CreateFromUrl(browser ? browser->profile() : nullptr,
+                                 origin_url, allowed_types, options);
+
+  if (url_identity.type == UrlIdentity::Type::kFile) {
+    // File URLs will show the same constant.
+    url_identity.name =
+        l10n_util::GetStringUTF16(IDS_PERMISSIONS_BUBBLE_PROMPT_THIS_FILE);
+  }
+
+  return url_identity;
+}
+
+void PermissionPromptBubbleBaseView::RecordDecision(
     permissions::PermissionAction action) {
   const std::string uma_suffix =
       permissions::PermissionUmaUtil::GetPermissionActionString(action);
@@ -445,5 +343,5 @@ void PermissionPromptBubbleView::RecordDecision(
       base::TimeTicks::Now() - permission_requested_time_);
 }
 
-BEGIN_METADATA(PermissionPromptBubbleView, views::BubbleDialogDelegateView)
+BEGIN_METADATA(PermissionPromptBubbleBaseView, views::BubbleDialogDelegateView)
 END_METADATA

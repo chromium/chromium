@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
+#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_one_origin_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_chip_model.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -492,8 +493,8 @@ void ChipController::OpenPermissionPromptBubble() {
   if (permission_prompt_model_->GetPromptStyle() ==
       PermissionPromptStyle::kChip) {
     // Loud prompt bubble
-    raw_ptr<PermissionPromptBubbleView> prompt_bubble =
-        new PermissionPromptBubbleView(
+    raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =
+        new PermissionPromptBubbleOneOriginView(
             browser_,
             permission_prompt_model_->GetDelegate().value()->GetWeakPtr(),
             request_chip_shown_time_, PermissionPromptStyle::kChip);
@@ -670,15 +671,15 @@ LocationBarView* ChipController::GetLocationBarView() {
 
 views::Widget* ChipController::GetBubbleWidget() {
   // We can't call GetPromptBubbleView() here, because the bubble_tracker may
-  // hold objects that aren't of typ `PermissionPromptBubbleView`.
+  // hold objects that aren't of typ `PermissionPromptBubbleBaseView`.
   return bubble_tracker_.view() ? bubble_tracker_.view()->GetWidget() : nullptr;
 }
 
-PermissionPromptBubbleView* ChipController::GetPromptBubbleView() {
-  // The tracked bubble view is a `PermissionPromptBubbleView` only when `kChip`
-  // is used.
+PermissionPromptBubbleBaseView* ChipController::GetPromptBubbleView() {
+  // The tracked bubble view is a `PermissionPromptBubbleBaseView` only when
+  // `kChip` is used.
   CHECK_EQ(permission_prompt_model_->GetPromptStyle(),
            PermissionPromptStyle::kChip);
   auto* view = bubble_tracker_.view();
-  return view ? static_cast<PermissionPromptBubbleView*>(view) : nullptr;
+  return view ? static_cast<PermissionPromptBubbleBaseView*>(view) : nullptr;
 }

@@ -95,7 +95,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   views::Widget* GetBubbleWidget();
 
-  PermissionPromptBubbleView* GetPromptBubbleView();
+  PermissionPromptBubbleBaseView* GetPromptBubbleView();
 
   bool should_expand_for_testing();
 
