@@ -6200,6 +6200,28 @@
             ]
         }
     ],
+    "HappinessTrackingSystemBatteryLife": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "histogram_name": "ChromeOS.HaTS.BatteryLife",
+                        "prob": "0.02",
+                        "survey_cycle_length": "7",
+                        "survey_start_date_ms": "1681974000000",
+                        "trigger_id": "1xncr1Dp20jBnuKU19R0XpozVULu"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingSystemBatteryLife"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSystemPerformance": [
         {
             "platforms": [
