@@ -10,9 +10,11 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 
 static Keychain* g_keychain_instance_override = nullptr;
 
@@ -73,6 +75,4 @@ OSStatus Keychain::ItemUpdate(
   return SecItemUpdate(query, keychain_data);
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

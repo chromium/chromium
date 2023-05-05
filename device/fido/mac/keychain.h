@@ -13,15 +13,13 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/no_destructor.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 // Keychain wraps some operations from the macOS Security framework to work with
 // keys and keychain items.
 //
 // The Touch ID authenticator creates keychain items in the "iOS-style"
-// keychain, which scopes item access based on the application-identifer or
+// keychain, which scopes item access based on the application-identifier or
 // keychain-access-group entitlements, and therefore requires code signing with
 // a real Apple developer ID. We therefore group these function here, so they
 // can be mocked out in testing.
@@ -68,8 +66,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Keychain {
   static void SetInstanceOverride(Keychain* keychain);
   static void ClearInstanceOverride();
 };
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_KEYCHAIN_H_

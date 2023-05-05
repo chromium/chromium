@@ -12,9 +12,7 @@
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/mac/authenticator_config.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 class TouchIdAuthenticator;
 
@@ -36,8 +34,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoTouchIdDiscovery
   base::WeakPtrFactory<FidoTouchIdDiscovery> weak_factory_;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_DISCOVERY_H_

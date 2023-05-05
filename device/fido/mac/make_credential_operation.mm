@@ -30,9 +30,11 @@
 #include "device/fido/strings/grit/fido_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 
 MakeCredentialOperation::MakeCredentialOperation(
     CtapMakeCredentialRequest request,
@@ -167,6 +169,4 @@ void MakeCredentialOperation::CreateCredential(bool has_uv) {
                            std::move(response));
 }
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

@@ -244,6 +244,8 @@ component("fido") {
       "LocalAuthentication.framework",
       "Security.framework",
     ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
@@ -452,5 +454,7 @@ source_set("test_support") {
       "mac/scoped_touch_id_test_environment.h",
       "mac/scoped_touch_id_test_environment.mm",
     ]
+
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 }

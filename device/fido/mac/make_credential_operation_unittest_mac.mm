@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
-
 #include <Foundation/Foundation.h>
 #include <Security/Security.h>
 
-#include "base/strings/string_number_conversions.h"
+#include <array>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
@@ -19,9 +18,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+namespace device::fido::mac {
 namespace {
 
 using test::TestCallbackReceiver;
@@ -64,6 +65,4 @@ TEST(MakeCredentialOperationTest, DISABLED_TestRun) {
 }
 
 }  // namespace
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac

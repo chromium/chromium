@@ -12,9 +12,7 @@
 #include "base/component_export.h"
 #include "device/fido/mac/authenticator_config.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 class FakeTouchIdContext;
 class ScopedFakeKeychain;
@@ -71,8 +69,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedTouchIdTestEnvironment {
   bool touch_id_available_ = true;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_SCOPED_TOUCH_ID_TEST_ENVIRONMENT_H_

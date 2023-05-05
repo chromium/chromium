@@ -14,9 +14,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "device/fido/mac/keychain.h"
 
-namespace device {
-namespace fido {
-namespace mac {
+namespace device::fido::mac {
 
 // FakeKeychain is an implementation of the Keychain API for testing. It works
 // around behavior that can't be relied on in tests, such as writing to the
@@ -55,8 +53,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ScopedFakeKeychain : public FakeKeychain {
   ~ScopedFakeKeychain() override;
 };
 
-}  // namespace mac
-}  // namespace fido
-}  // namespace device
+}  // namespace device::fido::mac
 
 #endif  // DEVICE_FIDO_MAC_FAKE_KEYCHAIN_H_
