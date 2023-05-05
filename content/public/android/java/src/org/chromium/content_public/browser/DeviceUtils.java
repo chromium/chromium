@@ -18,4 +18,11 @@ public final class DeviceUtils {
     public static void addDeviceSpecificUserAgentSwitch() {
         DeviceUtilsImpl.addDeviceSpecificUserAgentSwitch();
     }
+
+    /**
+     * Appends or removes the switch specifying which user agent should be used for this device.
+     */
+    public static void updateDeviceSpecificUserAgentSwitch(boolean isTablet) {
+        DeviceUtilsImpl.updateDeviceSpecificUserAgentSwitch(isTablet);
+    }
 }

@@ -22,4 +22,14 @@ public class DeviceUtilsImpl {
             }
         }
     }
+
+    public static void updateDeviceSpecificUserAgentSwitch(boolean isTablet) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+            if (isTablet) {
+                CommandLine.getInstance().removeSwitch(ContentSwitches.USE_MOBILE_UA);
+            } else {
+                CommandLine.getInstance().appendSwitch(ContentSwitches.USE_MOBILE_UA);
+            }
+        }
+    }
 }

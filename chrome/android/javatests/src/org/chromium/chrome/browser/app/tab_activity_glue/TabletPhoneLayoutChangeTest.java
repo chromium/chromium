@@ -62,8 +62,8 @@ public class TabletPhoneLayoutChangeTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivityTestRule.getActivity().getLifecycleDispatcher().register(
                     (RecreateObserver) helper::notifyCalled);
-            Assert.assertTrue(
-                    "Activity should be ready for tablet mode change.", cta.didChangeTabletMode());
+            Assert.assertTrue("Activity should be ready for tablet mode change.",
+                    cta.getTabletMode().changed);
             cta.getDisplayAndroidObserverForTesting().onCurrentModeChanged(null);
             Assert.assertTrue("ChromeActivity#mIsRecreatingForTabletModeChange should be true.",
                     cta.recreatingForTabletModeChangeForTesting());
