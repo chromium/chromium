@@ -40,13 +40,12 @@ export enum PrinterStatusSeverity {
 
 /**
  * Enumeration giving a local Chrome OS printer 3 different state possibilities
- * depending on its current online status. These values must be kept in sync
- * with the PrinterOnlineState enum in //chromeos/printing/printer_translator.h.
+ * depending on its current status.
  */
-export enum PrinterOnlineState {
-  UNKNOWN = 0,
-  OFFLINE = 1,
-  ONLINE = 2,
+export enum PrinterState {
+  GOOD = 0,
+  ERROR = 1,
+  UNKNOWN = 2,
 }
 
 interface StatusReasonEntry {
@@ -103,4 +102,16 @@ export function getStatusReasonFromPrinterStatus(printerStatus: PrinterStatus):
     }
   }
   return statusReason;
+}
+
+export function computePrinterState(
+    printerStatusReason: (PrinterStatusReason|null)): PrinterState {
+  if (printerStatusReason === null ||
+      printerStatusReason === PrinterStatusReason.UNKNOWN_REASON) {
+    return PrinterState.UNKNOWN;
+  }
+  if (printerStatusReason === PrinterStatusReason.NO_ERROR) {
+    return PrinterState.GOOD;
+  }
+  return PrinterState.ERROR;
 }

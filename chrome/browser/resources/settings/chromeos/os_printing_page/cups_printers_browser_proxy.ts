@@ -9,7 +9,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {PrinterOnlineState, PrinterStatus} from './printer_status.js';
+import {PrinterStatus, PrinterStatusReason} from './printer_status.js';
 
 /**
  * Note: |printerPPDPath| refers to a PPD retrieved from the user at the
@@ -25,7 +25,6 @@ export interface CupsPrinterInfo {
   printerId: string;
   printerMakeAndModel: string;
   printerName: string;
-  printerOnlineState: PrinterOnlineState;
   printerPPDPath: string;
   printerPpdReference: {
     userSuppliedPpdUrl: string,
@@ -34,6 +33,7 @@ export interface CupsPrinterInfo {
   };
   printerProtocol: string;
   printerQueue: string;
+  printerStatusReason: PrinterStatusReason;
   printServerUri: string;
 }
 
