@@ -567,7 +567,8 @@ bool ClientBase::Init(const InitParams& params) {
           CastToClientBase(data)->HandleScale(data, wl_output, factor);
         }};
 
-    wl_output_add_listener(globals_.output.get(), &kOutputListener, this);
+    wl_output_add_listener(globals_.outputs.back().get(), &kOutputListener,
+                           this);
   } else {
     for (size_t i = 0; i < params.num_buffers; ++i) {
       auto buffer =
@@ -1235,10 +1236,13 @@ void ClientBase::SetupAuraShellIfAvailable() {
          uint32_t display_id_lo) {},
   };
 
-  std::unique_ptr<zaura_output> aura_output(zaura_shell_get_aura_output(
-      globals_.aura_shell.get(), globals_.output.get()));
-  zaura_output_add_listener(aura_output.get(), &kAuraOutputListener, this);
-  globals_.aura_output = std::move(aura_output);
+  while (globals_.aura_outputs.size() < globals_.outputs.size()) {
+    size_t offset = globals_.aura_outputs.size();
+    std::unique_ptr<zaura_output> aura_output(zaura_shell_get_aura_output(
+        globals_.aura_shell.get(), globals_.outputs[offset].get()));
+    zaura_output_add_listener(aura_output.get(), &kAuraOutputListener, this);
+    globals_.aura_outputs.emplace_back(std::move(aura_output));
+  }
 }
 
 void ClientBase::SetupPointerStylus() {

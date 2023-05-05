@@ -109,7 +109,7 @@ void Simple::Run(int frames,
   if (log_vsync_timing_updates) {
     if (globals_.vsync_feedback) {
       vsync_timing.reset(zcr_vsync_feedback_v1_get_vsync_timing(
-          globals_.vsync_feedback.get(), globals_.output.get()));
+          globals_.vsync_feedback.get(), globals_.outputs.back().get()));
       DCHECK(vsync_timing);
       static zcr_vsync_timing_v1_listener vsync_timing_listener = {
           VSyncTimingUpdate};

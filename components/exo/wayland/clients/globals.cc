@@ -39,6 +39,17 @@ void RegistryHandler(void* data,
     return;                                                        \
   }
 
+#define BIND_VECTOR(interface_type, global_member)                 \
+  if (strcmp(interface, #interface_type) == 0) {                   \
+    globals->global_member.emplace_back(                           \
+        static_cast<interface_type*>(wl_registry_bind(             \
+            registry, id, &interface_type##_interface,             \
+            CalculateVersion(version, globals->requested_versions, \
+                             #interface_type))));                  \
+    globals->global_member.back().set_name(id);                    \
+    return;                                                        \
+  }
+
   BIND(wl_compositor, compositor)
   BIND(wl_shm, shm)
   BIND(wl_shell, shell)
@@ -51,7 +62,7 @@ void RegistryHandler(void* data,
   BIND(zcr_color_manager_v1, color_manager)
   BIND(zwp_input_timestamps_manager_v1, input_timestamps_manager)
   BIND(zwp_fullscreen_shell_v1, fullscreen_shell)
-  BIND(wl_output, output)
+  BIND_VECTOR(wl_output, outputs)
   BIND(zwp_linux_explicit_synchronization_v1, linux_explicit_synchronization)
   BIND(zcr_vsync_feedback_v1, vsync_feedback)
   BIND(zxdg_shell_v6, xdg_shell_v6)
@@ -62,6 +73,7 @@ void RegistryHandler(void* data,
   BIND(surface_augmenter, surface_augmenter)
 
 #undef BIND
+#undef BIND_VECTOR
 }
 
 void RegistryRemover(void* data, wl_registry* registry, uint32_t id) {
