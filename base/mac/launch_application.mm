@@ -87,9 +87,9 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
   if (!bundle_url) {
     dispatch_async(dispatch_get_main_queue(), ^{
       std::move(callback_block_access)
-          .Run(base::unexpected([NSError errorWithDomain:NSCocoaErrorDomain
-                                                    code:NSFileNoSuchFileError
-                                                userInfo:nil]));
+          .Run(nil, [NSError errorWithDomain:NSCocoaErrorDomain
+                                        code:NSFileNoSuchFileError
+                                    userInfo:nil]);
     });
     return;
   }
@@ -109,9 +109,9 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
           dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
               LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
-              std::move(callback_block_access).Run(base::unexpected(error));
+              std::move(callback_block_access).Run(nil, error);
             } else {
-              std::move(callback_block_access).Run(app);
+              std::move(callback_block_access).Run(app, nil);
             }
           });
         };
@@ -155,9 +155,9 @@ void LaunchApplication(const base::FilePath& app_bundle_path,
     dispatch_async(dispatch_get_main_queue(), ^{
       if (error) {
         LOG(ERROR) << base::SysNSStringToUTF8(error.localizedDescription);
-        std::move(callback_block_access).Run(base::unexpected(error));
+        std::move(callback_block_access).Run(nil, error);
       } else {
-        std::move(callback_block_access).Run(app);
+        std::move(callback_block_access).Run(app, nil);
       }
     });
   }

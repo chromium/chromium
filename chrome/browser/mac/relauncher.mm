@@ -339,16 +339,14 @@ int RelauncherMain(content::MainFunctionParams main_parameters) {
         {.activate = activate,
          .create_new_instance = true,
          .prompt_user_if_needed = true},
-        base::BindOnce(
-            [](base::expected<NSRunningApplication*, NSError*> result) {
-              if (!result.has_value()) {
-                LOG(ERROR) << "Failed to relaunch: "
-                           << base::SysNSStringToUTF8(
-                                  result.error().description);
-              }
+        base::BindOnce([](NSRunningApplication* app, NSError* error) {
+          if (error) {
+            LOG(ERROR) << "Failed to relaunch: "
+                       << base::SysNSStringToUTF8(error.description);
+          }
 
-              CFRunLoopStop(CFRunLoopGetMain());
-            }));
+          CFRunLoopStop(CFRunLoopGetMain());
+        }));
 
     // This is running the main thread.
     CFRunLoopRun();

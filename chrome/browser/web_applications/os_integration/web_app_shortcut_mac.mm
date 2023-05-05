@@ -455,9 +455,9 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
              const std::vector<std::string>& url_specs,
              base::mac::LaunchApplicationOptions options,
              base::mac::LaunchApplicationCallback callback,
-             base::expected<NSRunningApplication*, NSError*> result) {
-            if (result.has_value()) {
-              std::move(callback).Run(std::move(result));
+             NSRunningApplication* app, NSError* error) {
+            if (app) {
+              std::move(callback).Run(app, nil);
               return;
             }
 
@@ -465,15 +465,15 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
               // In newer Mac OS versions this workaround isn't needed, and in
               // fact can itself cause flaky tests by launching the app twice
               // when only one launch is expected.
-              std::move(callback).Run(std::move(result));
+              std::move(callback).Run(app, error);
               return;
             }
 
             // Only retry for the one specific error code that seems to need
             // this. Like above, retrying in all cases can otherwise itself
             // cause flaky tests.
-            if (result.error().domain == NSCocoaErrorDomain &&
-                result.error().code == NSFileReadCorruptFileError) {
+            if (error.domain == NSCocoaErrorDomain &&
+                error.code == NSFileReadCorruptFileError) {
               LOG(ERROR) << "Failed to open application with path: "
                          << app_bundle_path << ", retrying in 100ms";
               internals::GetShortcutIOTaskRunner()->PostDelayedTask(
@@ -484,7 +484,7 @@ void LaunchApplicationWithRetry(const base::FilePath& app_bundle_path,
                   base::Milliseconds(100));
               return;
             }
-            std::move(callback).Run(std::move(result));
+            std::move(callback).Run(nil, error);
           },
           app_bundle_path, command_line, url_specs, options,
           std::move(callback)));
@@ -509,26 +509,26 @@ void LaunchApplicationWithWorkaround(
              base::mac::LaunchApplicationOptions options,
              const std::string& bundle_id,
              base::mac::LaunchApplicationCallback callback,
-             base::expected<NSRunningApplication*, NSError*> result) {
-            if (result.has_value()) {
-              std::move(callback).Run(std::move(result));
+             NSRunningApplication* app, NSError* error) {
+            if (app) {
+              std::move(callback).Run(app, nil);
               return;
             }
 
             LOG(ERROR) << "Failed to open application with path: "
                        << app_bundle_path;
             if (!options.create_new_instance) {
-              NSRunningApplication* app =
+              NSRunningApplication* actual_app =
                   FindRunningApplicationForBundleIdAndPath(bundle_id,
                                                            app_bundle_path);
-              if (app) {
+              if (actual_app) {
                 LOG(ERROR) << "But found a running application anyway.";
-                std::move(callback).Run(app);
+                std::move(callback).Run(actual_app, nil);
                 return;
               }
             }
 
-            std::move(callback).Run(result);
+            std::move(callback).Run(app, error);
           },
           app_bundle_path, options, bundle_id, std::move(callback)));
 }
@@ -571,10 +571,9 @@ void LaunchTheFirstShimThatWorksOnFileThread(
              bool launched_after_rebuild, const std::string& bundle_id,
              ShimLaunchedCallback launched_callback,
              ShimTerminatedCallback terminated_callback,
-             base::expected<NSRunningApplication*, NSError*> result) {
-            if (result.has_value()) {
-              RunAppLaunchCallbacks(result.value(),
-                                    std::move(launched_callback),
+             NSRunningApplication* app, NSError* error) {
+            if (app) {
+              RunAppLaunchCallbacks(app, std::move(launched_callback),
                                     std::move(terminated_callback));
               return;
             }
@@ -1727,15 +1726,15 @@ void LaunchShimForTesting(const base::FilePath& shim_path,  // IN-TEST
           [](const base::FilePath& shim_path,
              ShimLaunchedCallback launched_callback,
              ShimTerminatedCallback terminated_callback,
-             base::expected<NSRunningApplication*, NSError*> result) {
-            if (!result.has_value()) {
+             NSRunningApplication* app, NSError* error) {
+            if (error) {
               LOG(ERROR) << "Failed to open application with path: "
                          << shim_path;
 
               std::move(launched_callback).Run(base::Process());
               return;
             }
-            RunAppLaunchCallbacks(result.value(), std::move(launched_callback),
+            RunAppLaunchCallbacks(app, std::move(launched_callback),
                                   std::move(terminated_callback));
           },
           shim_path, std::move(launched_callback),
