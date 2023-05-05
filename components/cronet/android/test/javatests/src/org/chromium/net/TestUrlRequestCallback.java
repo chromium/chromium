@@ -53,9 +53,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     // Whether to permit calls on the network thread.
     private boolean mAllowDirectExecutor;
 
-    // Whether to stop the executor thread after reaching a terminal method.
+    // The executor thread will block on this after reaching a terminal method.
     // Terminal methods are (onSucceeded, onFailed or onCancelled)
-    private boolean mBlockOnTerminalState;
+    private ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
 
     // Conditionally fail on certain steps.
     private FailureType mFailureType = FailureType.NONE;
@@ -154,9 +154,10 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
      * @param blockOnTerminalState the state to set for the executor thread
      */
     public void setBlockOnTerminalState(boolean blockOnTerminalState) {
-        mBlockOnTerminalState = blockOnTerminalState;
-        if (!blockOnTerminalState) {
-            mDone.open();
+        if (blockOnTerminalState) {
+            mBlockOnTerminalState.close();
+        } else {
+            mBlockOnTerminalState.open();
         }
     }
 
@@ -288,7 +289,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         mResponseStep = ResponseStep.ON_SUCCEEDED;
         mResponseInfo = info;
         mWaitForTerminalToStart.open();
-        if (mBlockOnTerminalState) mDone.block();
+        mBlockOnTerminalState.block();
         openDone();
         maybeThrowCancelOrPause(request);
     }
@@ -320,7 +321,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         mOnErrorCalled = true;
         mError = error;
         mWaitForTerminalToStart.open();
-        if (mBlockOnTerminalState) mDone.block();
+        mBlockOnTerminalState.block();
         openDone();
         maybeThrowCancelOrPause(request);
     }
@@ -337,7 +338,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         mResponseStep = ResponseStep.ON_CANCELED;
         mOnCanceledCalled = true;
         mWaitForTerminalToStart.open();
-        if (mBlockOnTerminalState) mDone.block();
+        mBlockOnTerminalState.block();
         openDone();
         maybeThrowCancelOrPause(request);
     }
