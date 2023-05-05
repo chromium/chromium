@@ -1303,8 +1303,8 @@ html[dir=rtl] .menu-header .icon {
 }
 
 #view-warning {
-  background: var(--grey-900);
-  color: white;
+  background: var(--cros-sys-app_base);
+  color: var(--cros-sys-on_surface);
 }
 
 #view-warning #error-msg {
