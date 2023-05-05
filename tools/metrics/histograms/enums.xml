@@ -26990,7 +26990,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
 
 <enum name="DevToolsMediaType">
   <int value="0" label="Unknown"/>
-  <int value="1" label="text/javascript"/>
   <int value="2" label="text/css"/>
   <int value="3" label="text/html"/>
   <int value="4" label="application/xml"/>
@@ -27020,6 +27019,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="28" label="text/x-kotlin"/>
   <int value="29" label="text/x-scala"/>
   <int value="30" label="text/x.svelte"/>
+  <int value="31" label="text/javascript+plain"/>
+  <int value="32" label="text/javascript+minified"/>
+  <int value="33" label="text/javascript+sourcemapped"/>
+  <int value="34" label="text/x.angular"/>
+  <int value="35" label="text/x.vue"/>
 </enum>
 
 <enum name="DevToolsMutatingHttpActionVerb">
