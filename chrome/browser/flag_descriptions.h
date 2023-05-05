@@ -2337,9 +2337,6 @@ extern const char kReaderModeHeuristicsAlwaysOn[];
 extern const char kReaderModeInCCTName[];
 extern const char kReaderModeInCCTDescription[];
 
-extern const char kReadLaterReminderNotificationName[];
-extern const char kReadLaterReminderNotificationDescription[];
-
 extern const char kRecoverFromNeverSaveAndroidName[];
 extern const char kRecoverFromNeverSaveAndroidDescription[];
 

@@ -6371,11 +6371,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "read-later-reminder-notification",
-    "owners": [ "wylieb" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "read-printer-capabilities-with-xps",
     "owners": [ "awscreen", "//printing/OWNERS" ],
     "expiry_milestone": 120

@@ -3955,14 +3955,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_READING_LIST_MARK_AS_UNREAD" desc="The text for the action to mark the reading list as unread.">
         Mark as unread
       </message>
-      <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_TITLE" desc="The title of the reminder notification for reading list.">
-        Catch up on your reading list
-      </message>
-      <message name="IDS_READING_LIST_REMINDER_NOTIFICATION_SUBTITLE" desc="The subtitle of the reminder notification for reading list.">
-          {READING_LIST_REMINDER_NOTIFICATION_SUBTITLE, plural,
-          =1 {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_ONE">%1$d<ex>1</ex></ph> unread page}
-          other {You have <ph name="READING_LIST_REMINDER_NOTIFICATION_SUBTITLE_MANY">%1$d<ex>8</ex></ph> unread pages}}
-      </message>
       <message name="IDS_READING_LIST_UNREAD_PAGE_COUNT" desc="Inform the user about the number of unread reading list items.">
           {READING_LIST_UNREAD_PAGE_COUNT, plural,
           =1 {<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE">%1$d<ex>1</ex></ph> unread page}

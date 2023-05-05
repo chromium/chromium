@@ -16,13 +16,6 @@ BASE_FEATURE(kReadLaterBackendMigration,
              "ReadLaterBackendMigration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature flag used for enabling read later reminder notification.
-BASE_FEATURE(kReadLaterReminderNotification,
-             "ReadLaterReminderNotification",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kReadingListEnableDualReadingListModel,
              "ReadingListEnableDualReadingListModel",
              base::FEATURE_DISABLED_BY_DEFAULT);

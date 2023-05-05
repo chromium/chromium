@@ -23,11 +23,8 @@
 #include "content/public/browser/storage_partition.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/notifications/scheduler/display_agent_android.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
-#include "chrome/browser/reading_list/android/reading_list_notification_client.h"
-#include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -37,19 +34,6 @@ RegisterClients(ProfileKey* key) {
   auto client_registrar =
       std::make_unique<notifications::NotificationSchedulerClientRegistrar>();
 #if BUILDFLAG(IS_ANDROID)
-  // Register reading list client.
-  if (ReadingListNotificationService::IsEnabled()) {
-    Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
-    auto reading_list_service_getter = base::BindRepeating(
-        &ReadingListNotificationServiceFactory::GetForBrowserContext, profile);
-
-    auto reading_list_client = std::make_unique<ReadingListNotificationClient>(
-        reading_list_service_getter);
-    client_registrar->RegisterClient(
-        notifications::SchedulerClientType::kReadingList,
-        std::move(reading_list_client));
-  }
-
   if (base::FeatureList::IsEnabled(
           feature_guide::features::kFeatureNotificationGuide)) {
     Profile* profile = ProfileManager::GetProfileFromProfileKey(key);

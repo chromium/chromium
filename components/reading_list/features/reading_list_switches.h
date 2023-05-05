@@ -20,11 +20,6 @@ namespace switches {
 // details.
 BASE_DECLARE_FEATURE(kReadLaterBackendMigration);
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature flag used for enabling read later reminder notification.
-BASE_DECLARE_FEATURE(kReadLaterReminderNotification);
-#endif
-
 // Feature flag that controls a technical rollout of a new codepath that doesn't
 // itself cause user-facing changes but sets the foundation for later rollouts
 // namely, `kReadingListEnableSyncTransportModeUponSignIn` below).

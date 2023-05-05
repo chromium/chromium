@@ -6119,14 +6119,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kQuickSettingsPWANotifications)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"read-later-reminder-notification",
-     flag_descriptions::kReadLaterReminderNotificationName,
-     flag_descriptions::kReadLaterReminderNotificationDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         reading_list::switches::kReadLaterReminderNotification)},
-#endif
-
     {"tab-groups-save", flag_descriptions::kTabGroupsSaveName,
      flag_descriptions::kTabGroupsSaveDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabGroupsSave)},

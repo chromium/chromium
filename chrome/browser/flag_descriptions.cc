@@ -4008,11 +4008,6 @@ const char kReaderModeInCCTName[] = "Reader Mode in CCT";
 const char kReaderModeInCCTDescription[] =
     "Open Reader Mode in Chrome Custom Tabs.";
 
-const char kReadLaterReminderNotificationName[] =
-    "Read later reminder notification";
-const char kReadLaterReminderNotificationDescription[] =
-    "Enables read later weekly reminder notification.";
-
 const char kRecoverFromNeverSaveAndroidName[] =
     "UI to recover from never save passwords on Android";
 const char kRecoverFromNeverSaveAndroidDescription[] =
