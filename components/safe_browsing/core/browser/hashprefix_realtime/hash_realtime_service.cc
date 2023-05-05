@@ -529,7 +529,12 @@ HashRealTimeService::ParseResponseAndUpdateBackoff(
   if (response.has_value()) {
     backoff_operator_->ReportSuccess();
   } else if (response.error() != OperationResult::kRetriableError) {
-    backoff_operator_->ReportError();
+    bool newly_in_backoff_mode = backoff_operator_->ReportError();
+    if (newly_in_backoff_mode) {
+      RecordHttpResponseOrErrorCode(
+          "SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff", net_error,
+          response_code);
+    }
   }
   return response;
 }

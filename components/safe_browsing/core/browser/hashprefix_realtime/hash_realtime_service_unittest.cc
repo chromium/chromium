@@ -353,6 +353,18 @@ class HashRealTimeServiceTest : public PlatformTest {
         /*name=*/"SafeBrowsing.HPRT.Network.Result",
         /*expected_count=*/0);
   }
+  void CheckEnteringBackoffMetric(absl::optional<int> expected_network_result) {
+    if (expected_network_result.has_value()) {
+      histogram_tester_->ExpectUniqueSample(
+          /*name=*/"SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff",
+          /*sample=*/expected_network_result.value(),
+          /*expected_bucket_count=*/1);
+    } else {
+      histogram_tester_->ExpectTotalCount(
+          /*name=*/"SafeBrowsing.HPRT.Network.Result.WhenEnteringBackoff",
+          /*expected_count=*/0);
+    }
+  }
   V5::FullHash CreateFullHashProto(
       std::vector<V5::ThreatType> threat_types,
       std::string full_hash,
@@ -1352,8 +1364,12 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   RunSimpleFailingRequest(url);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
+  ResetMetrics();
   RunSimpleFailingRequest(url);
   EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/net::ERR_FAILED);
+  ResetMetrics();
 
   // Backoff mode should still be set until 5 minutes later.
   task_environment_.FastForwardBy(base::Seconds(299));
@@ -1372,6 +1388,7 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet) {
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   RunSimpleFailingRequest(url);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_RetriableError) {
@@ -1383,8 +1400,12 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_RetriableError) {
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
   RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
   EXPECT_FALSE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
+  ResetMetrics();
   RunSimpleFailingRequest(url, /*net_error=*/net::ERR_INTERNET_DISCONNECTED);
   EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
+  CheckEnteringBackoffMetric(
+      /*expected_network_result=*/net::ERR_INTERNET_DISCONNECTED);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
@@ -1406,6 +1427,7 @@ TEST_F(HashRealTimeServiceTest, TestBackoffModeSet_MissingOhttpKey) {
 
   // Key related failure should also affect the backoff status.
   EXPECT_EQ(service_->backoff_operator_->IsInBackoffMode(), true);
+  CheckEnteringBackoffMetric(/*expected_network_result=*/absl::nullopt);
 }
 
 TEST_F(HashRealTimeServiceTest, TestBackoffModeRespected_FullyCached) {
@@ -1596,7 +1618,8 @@ class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
       const GURL& url,
       net::Error net_error,
       int expected_prefix_count,
-      HashRealTimeService::OperationResult expected_operation_result) {
+      HashRealTimeService::OperationResult expected_operation_result,
+      bool expected_enter_backoff) {
     auto num_requests = test_url_loader_factory_->total_requests();
 
     // Set up request and response.
@@ -1630,6 +1653,10 @@ class HashRealTimeServiceDirectFetchTest : public HashRealTimeServiceTest {
         /*expected_operation_result=*/
         expected_operation_result,
         /*expected_found_unmatched_full_hashes=*/absl::nullopt);
+    CheckEnteringBackoffMetric(
+        /*expected_network_result=*/expected_enter_backoff
+            ? net_error
+            : absl::optional<int>());
     ResetMetrics();
 
     EXPECT_EQ(test_url_loader_factory_->total_requests(), num_requests + 1u);
@@ -1665,13 +1692,15 @@ TEST_F(HashRealTimeServiceDirectFetchTest,
        TestLookupFailure_RetriableNetError) {
   GURL url = GURL("https://example.test");
   auto run_net_error_failure_test =
-      [this, url](net::Error net_error, bool expected_is_retriable_error) {
+      [this, url](net::Error net_error, bool expected_is_retriable_error,
+                  bool expected_enter_backoff = false) {
         RunRequestNetErrorFailureTest(
             /*url=*/url, /*net_error=*/net_error, /*expected_prefix_count=*/1,
             /*expected_operation_result=*/
             expected_is_retriable_error
                 ? HashRealTimeService::OperationResult::kRetriableError
-                : HashRealTimeService::OperationResult::kNetworkError);
+                : HashRealTimeService::OperationResult::kNetworkError,
+            expected_enter_backoff);
       };
 
   // Retriable errors should not trigger backoff mode.
@@ -1697,7 +1726,8 @@ TEST_F(HashRealTimeServiceDirectFetchTest,
   run_net_error_failure_test(net::ERR_INTERNET_DISCONNECTED,
                              /*expected_is_retriable_error=*/true);
   run_net_error_failure_test(net::ERR_FAILED,
-                             /*expected_is_retriable_error=*/false);
+                             /*expected_is_retriable_error=*/false,
+                             /*expected_enter_backoff=*/true);
   EXPECT_TRUE(service_->backoff_operator_->IsInBackoffMode());
 }
 
