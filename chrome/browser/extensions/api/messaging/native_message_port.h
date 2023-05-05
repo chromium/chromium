@@ -10,7 +10,6 @@
 #include "base/threading/thread_checker.h"
 #include "extensions/browser/api/messaging/message_port.h"
 #include "extensions/common/api/messaging/port_id.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -35,9 +34,6 @@ class NativeMessagePort : public MessagePort {
  private:
   class Core;
   void PostMessageFromNativeHost(const std::string& message);
-  void PostMessageFromNativeHostCallback(
-      const std::string& message,
-      data_decoder::DataDecoder::ValueOrError);
   void CloseChannel(const std::string& error_message);
 
   base::ThreadChecker thread_checker_;

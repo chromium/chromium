@@ -103,8 +103,6 @@ def Main():
     if 'bigMessageTest' in text:
       text = {"key": "x" * 1024 * 1024}
 
-    send_invalid_response = 'sendInvalidResponse' in text
-
     # "stopHostTest" verifies that Chrome properly handles the case when the
     # host quits before port is closed. When the test receives response it
     # will try sending second message and it should fail becasue the stdin
@@ -119,16 +117,10 @@ def Main():
 
     message_number += 1
 
-    message = None
-
-    if send_invalid_response:
-      message = '{'.encode('utf-8')
-    else:
-      message = json.dumps({
-          'id': message_number, 'echo': text, 'caller_url': caller_url,
-          'args': reconnect_args, 'connect_id': args.native_messaging_connect_id
-      }).encode('utf-8')
-
+    message = json.dumps({
+        'id': message_number, 'echo': text, 'caller_url': caller_url,
+        'args': reconnect_args, 'connect_id': args.native_messaging_connect_id,
+    }).encode('utf-8')
     if not WriteMessage(message):
       break
 
