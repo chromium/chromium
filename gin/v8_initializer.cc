@@ -244,9 +244,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--no-compact-code-space-with-stack");
   SetV8FlagsIfOverridden(features::kV8CompactWithStack, "--compact-with-stack",
                          "--no-compact-with-stack");
-  SetV8FlagsIfOverridden(features::kV8CrashOnEvacuationFailure,
-                         "--crash-on-aborted-evacuation",
-                         "--no-crash-on-aborted-evacuation");
   SetV8FlagsIfOverridden(features::kV8OptimizeJavascript, "--opt", "--no-opt");
   SetV8FlagsIfOverridden(features::kV8FlushBytecode, "--flush-bytecode",
                          "--no-flush-bytecode");

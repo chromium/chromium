@@ -17,11 +17,6 @@ BASE_FEATURE(kV8CompactWithStack,
              "V8CompactWithStack",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Crashes on evacuation failures in a full GC instead of aborting evacuation.
-BASE_FEATURE(kV8CrashOnEvacuationFailure,
-             "V8CrashOnEvacuationFailure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables optimization of JavaScript in V8.
 BASE_FEATURE(kV8OptimizeJavascript,
              "V8OptimizeJavascript",
