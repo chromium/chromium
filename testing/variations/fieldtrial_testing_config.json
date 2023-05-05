@@ -7522,6 +7522,26 @@
             ]
         }
     ],
+    "JourneysZeroStateFiltering": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230419",
+                    "enable_features": [
+                        "JourneysZeroStateFiltering"
+                    ]
+                }
+            ]
+        }
+    ],
     "KeepAndroidTintedResources": [
         {
             "platforms": [
