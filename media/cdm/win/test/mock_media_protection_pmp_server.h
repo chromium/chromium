@@ -49,6 +49,9 @@ class MockMediaProtectionPMPServer final
  private:
   Microsoft::WRL::ComPtr<ABI::Windows::Foundation::Collections::IPropertySet>
       property_pmp_;
+  Microsoft::WRL::ComPtr<IMFPMPServer> pmp_server_;
+  Microsoft::WRL::ComPtr<IMFPMPHost> pmp_host_;
+  Microsoft::WRL::ComPtr<IMFMediaSession> media_session_;
 };
 
 }  // namespace media

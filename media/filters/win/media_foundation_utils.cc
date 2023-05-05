@@ -330,10 +330,11 @@ GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
   }
 }
 
-HRESULT GenerateSampleFromDecoderBuffer(scoped_refptr<DecoderBuffer> buffer,
-                                        IMFSample** sample_out,
-                                        GUID* last_key_id,
-                                        TransformSampleCB transform_sample_cb) {
+HRESULT GenerateSampleFromDecoderBuffer(
+    const scoped_refptr<DecoderBuffer>& buffer,
+    IMFSample** sample_out,
+    GUID* last_key_id,
+    TransformSampleCB transform_sample_cb) {
   DVLOG(3) << __func__;
 
   ComPtr<IMFSample> mf_sample;
@@ -374,6 +375,96 @@ HRESULT GenerateSampleFromDecoderBuffer(scoped_refptr<DecoderBuffer> buffer,
   }
 
   *sample_out = mf_sample.Detach();
+
+  return S_OK;
+}
+
+HRESULT CreateDecryptConfigFromSample(
+    IMFSample* mf_sample,
+    const GUID& key_id,
+    std::unique_ptr<DecryptConfig>* decrypt_config) {
+  DVLOG(3) << __func__;
+  CHECK(mf_sample);
+
+  EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted;
+  UINT32 mf_protection_scheme = 0;
+  RETURN_IF_FAILED(mf_sample->GetUINT32(
+      MFSampleExtension_Encryption_ProtectionScheme, &mf_protection_scheme));
+  switch (mf_protection_scheme) {
+    case MFSampleEncryptionProtectionScheme::
+        MF_SAMPLE_ENCRYPTION_PROTECTION_SCHEME_AES_CTR:
+      encryption_scheme = EncryptionScheme::kCenc;
+      break;
+    case MFSampleEncryptionProtectionScheme::
+        MF_SAMPLE_ENCRYPTION_PROTECTION_SCHEME_AES_CBC:
+      encryption_scheme = EncryptionScheme::kCbcs;
+      break;
+    case MFSampleEncryptionProtectionScheme::
+        MF_SAMPLE_ENCRYPTION_PROTECTION_SCHEME_NONE:
+      DLOG(ERROR) << __func__
+                  << ": Unexpected encryption scheme: mf_protection_scheme="
+                  << mf_protection_scheme;
+      return MF_E_UNEXPECTED;
+  }
+
+  // IV
+  UINT32 iv_length = 0;
+  base::win::ScopedCoMem<BYTE> iv;
+  RETURN_IF_FAILED(mf_sample->GetBlobSize(MFSampleExtension_Encryption_SampleID,
+                                          &iv_length));
+  if (iv_length == 8) {
+    // A 8-byte IV is set (this allows hardware decryption to work on hardware
+    // / drivers which don't support CTR decryption with 16-byte IVs). For
+    // DecryptBuffer, a 16-byte IV should be specified, but ensure the low
+    // 8-bytes are all 0.
+    iv_length = 16;
+  }
+  iv.Reset(reinterpret_cast<BYTE*>(CoTaskMemAlloc(iv_length * sizeof(BYTE))));
+  if (!iv) {
+    return E_OUTOFMEMORY;
+  }
+  ZeroMemory(iv, iv_length * sizeof(BYTE));
+  RETURN_IF_FAILED(mf_sample->GetBlob(MFSampleExtension_Encryption_SampleID, iv,
+                                      iv_length, nullptr));
+
+  // Subsample entries
+  std::vector<media::SubsampleEntry> subsamples;
+  base::win::ScopedCoMem<MediaFoundationSubsampleEntry> subsample_mappings;
+  uint32_t subsample_mappings_size = 0;
+
+  // If `MFSampleExtension_Encryption_SubSample_Mapping` attribute doesn't
+  // exist, we should not fail the call. i.e., Encrypted audio content.
+  if (SUCCEEDED(mf_sample->GetAllocatedBlob(
+          MFSampleExtension_Encryption_SubSample_Mapping,
+          reinterpret_cast<uint8_t**>(&subsample_mappings),
+          &subsample_mappings_size))) {
+    if (subsample_mappings_size >= sizeof(MediaFoundationSubsampleEntry)) {
+      uint32_t subsample_count =
+          subsample_mappings_size / sizeof(MediaFoundationSubsampleEntry);
+      for (uint32_t i = 0; i < subsample_count; ++i) {
+        DVLOG(3) << __func__ << "subsample_mappings[" << i
+                 << "].clear_bytes=" << subsample_mappings[i].clear_bytes
+                 << ", cipher_bytes=" << subsample_mappings[i].cipher_bytes;
+        subsamples.emplace_back(subsample_mappings[i].clear_bytes,
+                                subsample_mappings[i].cipher_bytes);
+      }
+    }
+  }
+
+  // Key ID
+  const auto key_id_string = GetStringFromGUID(key_id);
+  const auto iv_string = std::string(iv.get(), iv.get() + iv_length);
+  DVLOG(3) << __func__ << "key_id_string=" << key_id_string
+           << ", iv_string=" << iv_string
+           << ", iv_string.size()=" << iv_string.size();
+
+  if (encryption_scheme == EncryptionScheme::kCenc) {
+    *decrypt_config =
+        DecryptConfig::CreateCencConfig(key_id_string, iv_string, subsamples);
+  } else {
+    *decrypt_config = DecryptConfig::CreateCbcsConfig(
+        key_id_string, iv_string, subsamples, EncryptionPattern());
+  }
 
   return S_OK;
 }

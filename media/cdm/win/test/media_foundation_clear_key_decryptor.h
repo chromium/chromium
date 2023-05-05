@@ -5,14 +5,37 @@
 #ifndef MEDIA_CDM_WIN_TEST_MEDIA_FOUNDATION_CLEAR_KEY_DECRYPTOR_H_
 #define MEDIA_CDM_WIN_TEST_MEDIA_FOUNDATION_CLEAR_KEY_DECRYPTOR_H_
 
+#include <mferror.h>
 #include <mfidl.h>
 #include <wrl/implements.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
+#include "media/base/decoder_buffer.h"
 #include "media/cdm/aes_decryptor.h"
 
 namespace media {
 
+enum class StreamType { kUnknown, kVideo, kAudio };
+
+// This transform (decryptor) decrypts the encrypted content or bypasses the
+// clear content. An instance for audio or video gets created by
+// `IMFInputTrustAuthority::GetDecrypter()`.
+// - Once an instance is created and the streaming is about to start, a set of
+// Set and Get interfaces (i.e., `SetInputType`, `GetOutputAvailableType`,
+// `SetOutputType`, `GetStreamCount`, `GetStreamIDs` and etc) are getting called
+// to set up the transform to be ready for processing the stream data.
+// - `ProcessMessage()` receives `MFT_MESSAGE_NOTIFY_START_OF_STREAM` when the
+// streaming begins.
+// - The input samples are getting fed into `ProcessInput()` while
+// `MediaFoundationStreamWrapper` produces the input stream data.
+// - As a synchronous MFT decryptor, the input sample is simply stored for
+// `ProcessOutput()` to process it later. Note that `ProcessOutput()` can be
+// called first before `ProcessInput()`. In this case it should return
+// `MF_E_TRANSFORM_NEED_MORE_INPUT` saying the transform cannot produce output
+// data until it receives more input data.
+// `ProcessMessage()` receives `MFT_MESSAGE_NOTIFY_END_OF_STREAM` message once
+// the stream reaches the end of stream.
 class MediaFoundationClearKeyDecryptor final
     : public Microsoft::WRL::RuntimeClass<
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
@@ -94,7 +117,49 @@ class MediaFoundationClearKeyDecryptor final
   STDMETHODIMP GetShutdownStatus(_Out_ MFSHUTDOWN_STATUS* status) override;
 
  private:
+  HRESULT GetShutdownStatus() {
+    base::AutoLock lock(lock_);
+    return (is_shutdown_) ? MF_E_SHUTDOWN : S_OK;
+  }
+
+  // Generates a DecoderBuffer from a Media Foundation sample.
+  HRESULT GenerateDecoderBufferFromSample(
+      IMFSample* mf_sample,
+      GUID* key_id,
+      scoped_refptr<DecoderBuffer>* buffer_out);
+
+  // Flushes all stored data as the transform receives a flush command or a
+  // request to release all resources.
+  void FlushAllStoredData();
+
+  // For IMFShutdown
+  bool is_shutdown_ GUARDED_BY(lock_) = false;
+
+  // AES decryptor
   scoped_refptr<AesDecryptor> aes_decryptor_;
+
+  // The media type for an input stream on the transform.
+  Microsoft::WRL::ComPtr<IMFMediaType> input_media_type_ GUARDED_BY(lock_);
+
+  // The media type for an output stream on the transform.
+  Microsoft::WRL::ComPtr<IMFMediaType> output_media_type_ GUARDED_BY(lock_);
+
+  // The available media type for an output stream on the transform.
+  Microsoft::WRL::ComPtr<IMFMediaType> available_output_media_type_
+      GUARDED_BY(lock_);
+
+  // The input sample data to the input stream on the transform.
+  Microsoft::WRL::ComPtr<IMFSample> sample_ GUARDED_BY(lock_);
+
+  // The input stream type (either Audio or Video).
+  StreamType stream_type_ GUARDED_BY(lock_) = StreamType::kUnknown;
+
+  // To protect access to data from multiple threads. GetAttributes,
+  // GetInputCurrentType, GetOutputCurrentType, GetStreamCount, GetStreamIDs,
+  // GetOutputStreamInfo, GetInputAvailableType, GetOutputAvailableType,
+  // SetInputType, SetOutputType, ProcessMessage ProcessInput and ProcessOutput
+  // methods can run from MF work queue threads.
+  base::Lock lock_;
 };
 
 }  // namespace media

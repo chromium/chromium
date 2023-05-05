@@ -1005,11 +1005,10 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
 // and H264 is always supported.
 class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
  public:
-  void TestLicenseExchange(const std::string& encrypted_media) {
-    // Skip the playback since we test the EME parts only.
+  void TestMediaFoundationPlayback(const std::string& encrypted_media) {
     RunSimpleEncryptedMediaTest(encrypted_media,
                                 media::kMediaFoundationClearKeyKeySystem,
-                                SrcType::MSE, PlayCount::ZERO);
+                                SrcType::MSE, PlayCount::ONCE);
   }
 
  protected:
@@ -1028,7 +1027,6 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
     // Run test only if the test machine supports MediaFoundation playback.
     // Otherwise, NotSupportedError is expected.
     if (!is_mediafoundation_encrypted_playback_supported) {
-      // if (!is_mediafoundation_encrypted_playback_supported) {
       auto os_version = static_cast<int>(base::win::GetVersion());
       DLOG(WARNING)
           << "Test method "
@@ -1048,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
     GTEST_SKIP();
   }
 
-  TestLicenseExchange("bear-640x360-v_frag-cenc.mp4");  // H.264
+  TestMediaFoundationPlayback("bear-640x360-v_frag-cenc.mp4");  // H.264
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
@@ -1057,17 +1055,25 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
     GTEST_SKIP();
   }
 
-  TestLicenseExchange("bear-640x360-v_frag-cbcs.mp4");  // H.264
+  TestMediaFoundationPlayback("bear-640x360-v_frag-cbcs.mp4");  // H.264
 }
 
+// TODO(crbug.com/1442373): Enable this test after fixing the error with no
+// audio device (i.e., Windows trybots don't have any audio device will fail).
+// "Activate failed to create mediasink. Call
+// OutputNode::GetUINT32(MF_TOPONODE_MAJORTYPE) for more information.
+// (0xC00D36FA)"
+/*
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                        Playback_EncryptedCencAudio_Success) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP();
   }
 
-  TestLicenseExchange("bear-640x360-a_frag-cenc.mp4");  // MP4 AAC audio only
+  TestMediaFoundationPlayback(
+      "bear-640x360-a_frag-cenc.mp4");  // MP4 AAC audio only
 }
+*/
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                        Playback_EncryptedVp9CencAudio_MediaTypeUnsupported) {

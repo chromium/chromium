@@ -115,6 +115,9 @@ MEDIA_EXPORT std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid);
 // order format.
 MEDIA_EXPORT GUID GetGUIDFromString(const std::string& guid_string);
 
+// Returns a binary serialization of a GUID string in network byte order format.
+MEDIA_EXPORT std::string GetStringFromGUID(REFGUID guid);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_HELPERS_H_

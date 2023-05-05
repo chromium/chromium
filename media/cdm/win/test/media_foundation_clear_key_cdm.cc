@@ -127,9 +127,8 @@ HRESULT MediaFoundationClearKeyCdm::RuntimeClassInitialize(
   // Note that we don't need to add this property
   // "Windows.Media.Protection.MediaProtectionSystemIdMapping".
 
-  // TODO(crbug.com/1424442): Use a mock PMP server since the MediaEngine will
-  // fail to create an in-process PMP server when the system doesn't support
-  // HWDRM.
+  // Use a custom PMP server so that MediaEngine can create an in-process PMP
+  // server regardless of the system's hardware decryption capability.
   RETURN_IF_FAILED((MakeAndInitialize<
                     MockMediaProtectionPMPServer,
                     ABI::Windows::Media::Protection::IMediaProtectionPMPServer>(
