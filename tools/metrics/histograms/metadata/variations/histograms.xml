@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Variations.ExtendedSafeMode.BeaconFileWrite"
-    enum="BooleanSuccess" expires_after="2023-05-31">
+    enum="BooleanSuccess" expires_after="2023-10-31">
   <owner>caitlinfischer@google.com</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <component>Internals&gt;Metrics&gt;Variations</component>
