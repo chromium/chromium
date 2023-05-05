@@ -20,6 +20,9 @@ class EmbeddedTestServer;
 // Base class for all Chrome Earl Grey tests.
 @interface ChromeTestCase : BaseEarlGreyTestCase
 
+// Invoked upon end of each test method in a test case.
+- (void)tearDown NS_REQUIRES_SUPER;
+
 // Removes any UI elements that are present, to ensure it is in a clean state.
 + (void)removeAnyOpenMenusAndInfoBars;
 

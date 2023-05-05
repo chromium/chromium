@@ -26,6 +26,9 @@
 // Invoked upon starting each test method in a test case.
 - (void)setUp NS_REQUIRES_SUPER;
 
+// Invoked upon end of each test method in a test case.
++ (void)tearDown NS_REQUIRES_SUPER;
+
 // Provides an |AppLaunchConfiguration| for host app used across a TestCase.
 // Subclasses must override this method to change app launching configuration
 // (f.e. features or flags). Default implementation returns default

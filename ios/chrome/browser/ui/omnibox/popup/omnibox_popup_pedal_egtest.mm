@@ -51,6 +51,7 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
 
 - (void)tearDown {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
+  [super tearDown];
 }
 
 // Tests that the dino pedal is present and that it opens the dino game.

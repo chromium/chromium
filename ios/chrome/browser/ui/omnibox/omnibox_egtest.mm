@@ -760,6 +760,7 @@ void FocusFakebox() {
 - (void)tearDown {
   // Clear the pasteboard after every test.
   [ChromeEarlGrey clearPasteboard];
+  [super tearDown];
 }
 
 // Tests that tapping on steady view on webpage and starting typing a query
