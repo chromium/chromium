@@ -11,6 +11,6 @@ namespace features {
 // preloading, and extended preloading.
 BASE_FEATURE(kPreloadingDesktopSettingsSubPage,
              "PreloadingDesktopSettingsSubPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
