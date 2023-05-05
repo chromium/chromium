@@ -4852,7 +4852,10 @@ Press an assigned switch or key to remove assignment.
     Reset keys
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_NO_KEYBOARDS_HELP_MESSAGE" desc="In Keyboard remap keys subpage, the message that notifies users that no keyboards are connected.">
-    No keyboard detected
+    No keyboard connected
+  </message>
+  <message name="IDS_SETTINGS_KEYBOARD_VIEW_AND_CUSTOMIZE_SHORTCUTS" desc="The link to view and customize the keyboard shortut.">
+    View and customize keyboard shortcuts
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_LEFT_ALT" desc="In keyboard remap keys subpage, the label and dropdown list item for the Alt key.">
     alt

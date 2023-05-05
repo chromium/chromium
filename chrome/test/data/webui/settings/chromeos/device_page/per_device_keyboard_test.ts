@@ -182,7 +182,7 @@ suite('<settings-per-device-keyboard>', () => {
     assertTrue(isVisible(perDeviceKeyboardPage.shadowRoot!.querySelector(
         '#noKeyboardsConnectedContainer')));
     assertEquals(
-        'No keyboard detected',
+        'No keyboard connected',
         perDeviceKeyboardPage.shadowRoot!
             .querySelector<HTMLElement>(
                 '#noKeyboardsConnectedMessage')!.innerText.trim());

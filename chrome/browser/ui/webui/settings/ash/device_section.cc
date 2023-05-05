@@ -824,6 +824,8 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_KEYBOARD_REMAP_KEYS_DESCRIPTION},
       {"showKeyboardShortcutViewer",
        IDS_SETTINGS_KEYBOARD_SHOW_SHORTCUT_VIEWER},
+      {"viewAndCustomizeKeyboardShortcut",
+       IDS_SETTINGS_KEYBOARD_VIEW_AND_CUSTOMIZE_SHORTCUTS},
       {"keyboardKeyLauncher", IDS_SETTINGS_KEYBOARD_KEY_LAUNCHER},
       {"keyboardKeySearch", IDS_SETTINGS_KEYBOARD_KEY_SEARCH},
       {"keyboardRemapRestoreDefaultsLabel",

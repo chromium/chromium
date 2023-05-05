@@ -1,13 +1,9 @@
 <style include="settings-shared input-device-settings-shared"></style>
 <template is="dom-if" if="[[!hasKeyboards(keyboards.length)]]">
-  <div id="noKeyboardsConnectedContainer">
-    <div class="settings-box first">
-      <div class="start">
-        <span id="noKeyboardsConnectedMessage">
-          $i18n{noKeyboardsConnected}
-        </span>
-      </div>
-    </div>
+  <div id="noKeyboardsConnectedContainer" class="settings-box start first">
+    <h2 id="noKeyboardsConnectedMessage">
+      $i18n{noKeyboardsConnected}
+    </h2>
   </div>
 </template>
 <template is="dom-if" if="[[hasKeyboards(keyboards.length)]]">
@@ -112,7 +108,7 @@
 </template>
 <cr-link-row id="keyboardShortcutViewer" class="hr"
     on-click="onShowKeyboardShortcutViewerTap"
-    label="$i18n{showKeyboardShortcutViewer}"
+    label="$i18n{viewAndCustomizeKeyboardShortcut}"
     external
     deep-link-focus-id$="[[Setting.kKeyboardShortcuts]]">
 </cr-link-row>
