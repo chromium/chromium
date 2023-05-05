@@ -11,6 +11,7 @@
 #import "content/public/browser/page.h"
 #import "content/public/browser/web_contents.h"
 #import "ios/web/content/js_messaging/content_web_frame.h"
+#import "ios/web/content/js_messaging/ios_web_message_host_factory.h"
 #import "ios/web/content/web_state/content_web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -25,7 +26,11 @@ ContentWebFramesManager::ContentWebFramesManager(
       content_web_state_(content_web_state),
       js_communication_host_(
           std::make_unique<js_injection::JsCommunicationHost>(
-              content_web_state->GetWebContents())) {}
+              content_web_state->GetWebContents())) {
+  auto message_host_factory = std::make_unique<IOSWebMessageHostFactory>();
+  js_communication_host_->AddWebMessageHostFactory(
+      std::move(message_host_factory), u"webkitMessageHandler", {"*"});
+}
 
 ContentWebFramesManager::~ContentWebFramesManager() = default;
 
