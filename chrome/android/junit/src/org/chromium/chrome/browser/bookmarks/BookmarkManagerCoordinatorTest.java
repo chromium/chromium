@@ -79,6 +79,8 @@ public class BookmarkManagerCoordinatorTest {
     BookmarkModel mBookmarkModel;
     @Mock
     BookmarkUiPrefs mBookmarkUiPrefs;
+    @Mock
+    View mView;
 
     private Activity mActivity;
     private BookmarkManagerCoordinator mCoordinator;
@@ -126,5 +128,7 @@ public class BookmarkManagerCoordinatorTest {
         Assert.assertNotNull(mCoordinator.buildAndInitShoppingItemView(parent));
         Assert.assertNotNull(BookmarkManagerCoordinator.buildDividerView(parent));
         Assert.assertNotNull(BookmarkManagerCoordinator.buildShoppingFilterView(parent));
+        Assert.assertNotNull(mCoordinator.buildAndInitCompactImprovedBookmarkRow(parent));
+        Assert.assertNotNull(mCoordinator.buildAndInitVisualImprovedBookmarkRow(parent));
     }
 }

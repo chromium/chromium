@@ -21,16 +21,20 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
     private final SyncService mSyncService;
     private final SyncStateChangedListener mSyncStateChangedListener = this::syncStateChanged;
     private final List<BookmarkId> mTopLevelFolders = new ArrayList<>();
+    private final BookmarkUiPrefs mBookmarkUiPrefs;
 
     /**
      * @param bookmarkModel The underlying source of bookmark data.
+     * @param bookmarkUiPrefs Stores display preferences for bookmarks.
      */
-    public LegacyBookmarkQueryHandler(BookmarkModel bookmarkModel) {
+    public LegacyBookmarkQueryHandler(
+            BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
         mBookmarkModel = bookmarkModel;
         mBookmarkModel.finishLoadingBookmarkModel(this::onBookmarkModelLoaded);
         mSyncService = SyncService.get();
         mSyncService.addSyncStateChangedListener(mSyncStateChangedListener);
-        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel);
+        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, bookmarkUiPrefs);
+        mBookmarkUiPrefs = bookmarkUiPrefs;
     }
 
     @Override
@@ -58,8 +62,8 @@ public class LegacyBookmarkQueryHandler implements BookmarkQueryHandler {
         for (BookmarkId bookmarkId : mTopLevelFolders) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-            BookmarkListEntry bookmarkListEntry =
-                    BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
+            BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
+                    bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
             bookmarkListEntries.add(bookmarkListEntry);
         }
 

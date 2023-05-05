@@ -25,7 +25,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
-import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,10 +44,6 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
 
 /** Responsible for setting up sub-components and routing incoming/outgoing signals */
 public class BookmarkManagerCoordinator
@@ -184,8 +179,10 @@ public class BookmarkManagerCoordinator
         dragReorderableRecyclerViewAdapter.registerType(ViewType.SHOPPING_FILTER,
                 BookmarkManagerCoordinator::buildShoppingFilterView,
                 BookmarkManagerViewBinder::bindShoppingFilterView);
-        dragReorderableRecyclerViewAdapter.registerType(ViewType.IMPROVED_BOOKMARK,
-                this::buildAndInitImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.IMPROVED_BOOKMARK_VISUAL,
+                this::buildAndInitVisualImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
+        dragReorderableRecyclerViewAdapter.registerType(ViewType.IMPROVED_BOOKMARK_COMPACT,
+                this::buildAndInitCompactImprovedBookmarkRow, ImprovedBookmarkRowViewBinder::bind);
 
         RecordUserAction.record("MobileBookmarkManagerOpen");
         if (!isDialogUi) {
@@ -288,43 +285,6 @@ public class BookmarkManagerCoordinator
                 FAVICON_MAX_CACHE_SIZE_BYTES);
     }
 
-    public void bindView(View view, @ViewType int viewType, PropertyModel model) {
-        ViewBinder<PropertyModel, View, PropertyKey> viewBinder = null;
-        switch (viewType) {
-            case ViewType.PERSONALIZED_SIGNIN_PROMO:
-            case ViewType.PERSONALIZED_SYNC_PROMO:
-                viewBinder = BookmarkManagerViewBinder::bindPersonalizedPromoView;
-                break;
-            case ViewType.SYNC_PROMO:
-                viewBinder = BookmarkManagerViewBinder::bindLegacyPromoView;
-                break;
-            case ViewType.SECTION_HEADER:
-                viewBinder = BookmarkManagerViewBinder::bindSectionHeaderView;
-                break;
-            case ViewType.FOLDER:
-                viewBinder = BookmarkManagerViewBinder::bindBookmarkFolderView;
-                break;
-            case ViewType.BOOKMARK:
-                viewBinder = BookmarkManagerViewBinder::bindBookmarkItemView;
-                break;
-            case ViewType.SHOPPING_POWER_BOOKMARK:
-                viewBinder = BookmarkManagerViewBinder::bindShoppingItemView;
-                break;
-            case ViewType.DIVIDER:
-                viewBinder = BookmarkManagerViewBinder::bindDividerView;
-                break;
-            case ViewType.SHOPPING_FILTER:
-                viewBinder = BookmarkManagerViewBinder::bindShoppingFilterView;
-                break;
-            case ViewType.IMPROVED_BOOKMARK:
-                viewBinder = ImprovedBookmarkRowViewBinder::bind;
-                break;
-            default:
-                assert false;
-        }
-        PropertyModelChangeProcessor.create(model, view, viewBinder);
-    }
-
     @VisibleForTesting
     View buildPersonalizedPromoView(ViewGroup parent) {
         return mPromoHeaderManager.createPersonalizedSigninAndSyncPromoHolder(parent);
@@ -366,9 +326,14 @@ public class BookmarkManagerCoordinator
         return inflate(parent, org.chromium.chrome.R.layout.shopping_filter_row);
     }
 
-    ImprovedBookmarkRow buildAndInitImprovedBookmarkRow(ViewGroup parent) {
-        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(),
-                mBookmarkUiPrefs.getBookmarkRowDisplayPref() == BookmarkRowDisplayPref.VISUAL);
+    ImprovedBookmarkRow buildAndInitCompactImprovedBookmarkRow(ViewGroup parent) {
+        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), false);
+        row.setSelectionDelegate(mSelectionDelegate);
+        return row;
+    }
+
+    ImprovedBookmarkRow buildAndInitVisualImprovedBookmarkRow(ViewGroup parent) {
+        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(parent.getContext(), true);
         row.setSelectionDelegate(mSelectionDelegate);
         return row;
     }
@@ -407,6 +372,7 @@ public class BookmarkManagerCoordinator
     }
 
     // Testing methods.
+
     public BookmarkToolbarCoordinator getToolbarCoordinatorForTesting() {
         return mBookmarkToolbarCoordinator;
     }

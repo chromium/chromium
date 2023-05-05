@@ -28,14 +28,18 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
 
     private final BookmarkModel mBookmarkModel;
     private final BasicBookmarkQueryHandler mBasicBookmarkQueryHandler;
+    private final BookmarkUiPrefs mBookmarkUiPrefs;
 
     /**
      * Constructs a handle that operates on the given backend.
      * @param bookmarkModel The backend that holds the truth of what the bookmark state looks like.
+     * @param bookmarkUiPrefs Stores the display prefs for bookmarmks.
      */
-    public ImprovedBookmarkQueryHandler(BookmarkModel bookmarkModel) {
+    public ImprovedBookmarkQueryHandler(
+            BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
         mBookmarkModel = bookmarkModel;
-        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel);
+        mBookmarkUiPrefs = bookmarkUiPrefs;
+        mBasicBookmarkQueryHandler = new BasicBookmarkQueryHandler(bookmarkModel, mBookmarkUiPrefs);
     }
 
     @Override
@@ -76,7 +80,8 @@ public class ImprovedBookmarkQueryHandler implements BookmarkQueryHandler {
         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
         // Root view items are never re-orderable, as it's not a single folder.
         bookmarkItem = new NoDragWrappedBookmarkItem(bookmarkItem);
-        return BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
+        return BookmarkListEntry.createBookmarkEntry(
+                bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
     }
 
     private int compareBookmarkListEntry(BookmarkListEntry entry1, BookmarkListEntry entry2) {

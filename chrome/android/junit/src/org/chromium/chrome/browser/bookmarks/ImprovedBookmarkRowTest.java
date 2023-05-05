@@ -50,6 +50,8 @@ public class ImprovedBookmarkRowTest {
     @Mock
     View mView;
     @Mock
+    ViewGroup mViewGroup;
+    @Mock
     ListMenu mListMenu;
     @Mock
     Runnable mPopupListener;

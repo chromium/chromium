@@ -30,7 +30,7 @@ import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
 
-/** Unit tests for {@link ImprovedBookmarkQueryHandler}. */
+/** Unit tests for {@link ImprovedmHandler}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -41,23 +41,26 @@ public class ImprovedBookmarkQueryHandlerTest {
     @Mock
     private BookmarkModel mBookmarkModel;
     @Mock
-    Tracker mTracker;
+    private Tracker mTracker;
     @Mock
-    Profile mProfile;
+    private Profile mProfile;
+    @Mock
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+
+    private ImprovedBookmarkQueryHandler mHandler;
 
     @Before
     public void setup() {
         Profile.setLastUsedProfileForTesting(mProfile);
         TrackerFactory.setTrackerForTests(mTracker);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
+
+        mHandler = new ImprovedBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs);
     }
 
     @Test
     public void testBuildBookmarkListForParent_rootFolder() {
-        BookmarkQueryHandler bookmarkQueryHandler =
-                new ImprovedBookmarkQueryHandler(mBookmarkModel);
-        List<BookmarkListEntry> result =
-                bookmarkQueryHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
+        List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(ROOT_BOOKMARK_ID);
         Assert.assertEquals(6, result.size());
         Assert.assertEquals(DESKTOP_BOOKMARK_ID, result.get(0).getBookmarkItem().getId());
         Assert.assertEquals(FOLDER_BOOKMARK_ID_A, result.get(1).getBookmarkItem().getId());

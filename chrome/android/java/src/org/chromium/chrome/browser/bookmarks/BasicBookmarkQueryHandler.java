@@ -18,12 +18,15 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     private static final int MAXIMUM_NUMBER_OF_SEARCH_RESULTS = 500;
 
     private final BookmarkModel mBookmarkModel;
+    private final BookmarkUiPrefs mBookmarkUiPrefs;
 
     /**
      * @param bookmarkModel The underlying source of bookmark data.
+     * @param bookmarkUiPrefs Stores display preferences for bookmarks.
      */
-    public BasicBookmarkQueryHandler(BookmarkModel bookmarkModel) {
+    public BasicBookmarkQueryHandler(BookmarkModel bookmarkModel, BookmarkUiPrefs bookmarkUiPrefs) {
         mBookmarkModel = bookmarkModel;
+        mBookmarkUiPrefs = bookmarkUiPrefs;
     }
 
     @Override
@@ -41,8 +44,8 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
             }
 
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-            BookmarkListEntry bookmarkListEntry =
-                    BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
+            BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
+                    bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
             bookmarkListEntries.add(bookmarkListEntry);
         }
 
@@ -61,8 +64,8 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         for (BookmarkId bookmarkId : searchIdList) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);
             BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
-            BookmarkListEntry bookmarkListEntry =
-                    BookmarkListEntry.createBookmarkEntry(bookmarkItem, powerBookmarkMeta);
+            BookmarkListEntry bookmarkListEntry = BookmarkListEntry.createBookmarkEntry(
+                    bookmarkItem, powerBookmarkMeta, mBookmarkUiPrefs.getBookmarkRowDisplayPref());
             bookmarkListEntries.add(bookmarkListEntry);
         }
         return bookmarkListEntries;

@@ -9,6 +9,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 
@@ -28,7 +29,8 @@ public final class BookmarkListEntry {
     @IntDef({ViewType.INVALID, ViewType.PERSONALIZED_SIGNIN_PROMO, ViewType.PERSONALIZED_SYNC_PROMO,
             ViewType.SYNC_PROMO, ViewType.FOLDER, ViewType.BOOKMARK, ViewType.DIVIDER,
             ViewType.SECTION_HEADER, ViewType.SHOPPING_POWER_BOOKMARK, ViewType.TAG_CHIP_LIST,
-            ViewType.SHOPPING_FILTER, ViewType.IMPROVED_BOOKMARK})
+            ViewType.SHOPPING_FILTER, ViewType.IMPROVED_BOOKMARK_VISUAL,
+            ViewType.IMPROVED_BOOKMARK_COMPACT})
     public @interface ViewType {
         int INVALID = -1;
         int PERSONALIZED_SIGNIN_PROMO = 0;
@@ -41,7 +43,8 @@ public final class BookmarkListEntry {
         int SHOPPING_POWER_BOOKMARK = 7;
         int TAG_CHIP_LIST = 8;
         int SHOPPING_FILTER = 9;
-        int IMPROVED_BOOKMARK = 10;
+        int IMPROVED_BOOKMARK_VISUAL = 10;
+        int IMPROVED_BOOKMARK_COMPACT = 11;
     }
 
     /** Contains data used by section header in bookmark UI. */
@@ -73,13 +76,17 @@ public final class BookmarkListEntry {
     /**
      * Create an entry presenting a bookmark folder or bookmark.
      * @param bookmarkItem The data object created from the bookmark backend.
+     * @param meta The PowerBookmarkMeta for the bookmark.
+     * @param displayPref The display pref for the bookmark.
      */
-    static BookmarkListEntry createBookmarkEntry(
-            @Nonnull BookmarkItem bookmarkItem, @Nullable PowerBookmarkMeta meta) {
+    static BookmarkListEntry createBookmarkEntry(@Nonnull BookmarkItem bookmarkItem,
+            @Nullable PowerBookmarkMeta meta, @BookmarkRowDisplayPref int displayPref) {
         @ViewType
         int viewType = bookmarkItem.isFolder() ? ViewType.FOLDER : ViewType.BOOKMARK;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            viewType = ViewType.IMPROVED_BOOKMARK;
+            viewType = displayPref == BookmarkRowDisplayPref.VISUAL
+                    ? ViewType.IMPROVED_BOOKMARK_VISUAL
+                    : ViewType.IMPROVED_BOOKMARK_COMPACT;
         } else if (meta != null && meta.hasShoppingSpecifics()) {
             viewType = ViewType.SHOPPING_POWER_BOOKMARK;
         }

@@ -32,7 +32,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import java.util.Arrays;
 import java.util.List;
 
-/** Unit tests for {@link BasicBookmarkQueryHandler}. */
+/** Unit tests for {@link BasicmHandler}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -42,17 +42,20 @@ public class BasicBookmarkQueryHandlerTest {
 
     @Mock
     private BookmarkModel mBookmarkModel;
+    @Mock
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+
+    private BasicBookmarkQueryHandler mHandler;
 
     @Before
     public void setup() {
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
+        mHandler = new BasicBookmarkQueryHandler(mBookmarkModel, mBookmarkUiPrefs);
     }
 
     @Test
     public void testBuildBookmarkListForParent_nonRootFolder() {
-        BookmarkQueryHandler bookmarkQueryHandler = new BasicBookmarkQueryHandler(mBookmarkModel);
-        List<BookmarkListEntry> result =
-                bookmarkQueryHandler.buildBookmarkListForParent(MOBILE_BOOKMARK_ID);
+        List<BookmarkListEntry> result = mHandler.buildBookmarkListForParent(MOBILE_BOOKMARK_ID);
 
         Assert.assertEquals(2, result.size());
         Assert.assertEquals(FOLDER_BOOKMARK_ID_A, result.get(0).getBookmarkItem().getId());
@@ -61,9 +64,8 @@ public class BasicBookmarkQueryHandlerTest {
 
     @Test
     public void testBuildBookmarkListForParent_shopping() {
-        BookmarkQueryHandler bookmarkQueryHandler = new BasicBookmarkQueryHandler(mBookmarkModel);
         List<BookmarkListEntry> result =
-                bookmarkQueryHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
+                mHandler.buildBookmarkListForParent(BookmarkId.SHOPPING_FOLDER);
 
         // Both URL_BOOKMARK_ID_B and URL_BOOKMARK_ID_C will be returned as children of
         // BookmarkId.SHOPPING_FOLDER , but only URL_BOOKMARK_ID_B will have a correct meta.
@@ -73,9 +75,8 @@ public class BasicBookmarkQueryHandlerTest {
 
     @Test
     public void testBuildBookmarkListForParent_readingList() {
-        BookmarkQueryHandler bookmarkQueryHandler = new BasicBookmarkQueryHandler(mBookmarkModel);
         List<BookmarkListEntry> result =
-                bookmarkQueryHandler.buildBookmarkListForParent(READING_LIST_BOOKMARK_ID);
+                mHandler.buildBookmarkListForParent(READING_LIST_BOOKMARK_ID);
 
         Assert.assertEquals(4, result.size());
         // While the getChildIds call will return [D, E], due to the read status, they should get
@@ -88,11 +89,10 @@ public class BasicBookmarkQueryHandlerTest {
 
     @Test
     public void testBuildBookmarkListForSearch() {
-        BookmarkQueryHandler bookmarkQueryHandler = new BasicBookmarkQueryHandler(mBookmarkModel);
         doReturn(Arrays.asList(FOLDER_BOOKMARK_ID_A, URL_BOOKMARK_ID_A))
                 .when(mBookmarkModel)
                 .searchBookmarks("A", 500);
-        List<BookmarkListEntry> result = bookmarkQueryHandler.buildBookmarkListForSearch("A");
+        List<BookmarkListEntry> result = mHandler.buildBookmarkListForSearch("A");
         Assert.assertEquals(2, result.size());
     }
 }

@@ -307,9 +307,14 @@ class BookmarkManagerMediator
         @Override
         @SuppressWarnings("NotifyDataSetChanged")
         public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
-            mRecyclerView.setAdapter(null);
-            mRecyclerView.setAdapter(mDragReorderableRecyclerViewAdapter);
+            mModelList.clear();
             mDragReorderableRecyclerViewAdapter.notifyDataSetChanged();
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
+                search(mSearchText);
+            } else {
+                setBookmarks(
+                        mBookmarkQueryHandler.buildBookmarkListForParent(getCurrentFolderId()));
+            }
         }
     };
 
@@ -387,9 +392,10 @@ class BookmarkManagerMediator
         mPromoHeaderManager = new BookmarkPromoHeader(mContext, mProfile, this::updateHeader);
         mBookmarkUndoController = bookmarkUndoController;
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mBookmarkQueryHandler = new ImprovedBookmarkQueryHandler(mBookmarkModel);
+            mBookmarkQueryHandler =
+                    new ImprovedBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
         } else {
-            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel);
+            mBookmarkQueryHandler = new LegacyBookmarkQueryHandler(mBookmarkModel, bookmarkUiPrefs);
         }
 
         mModelList = modelList;
@@ -848,12 +854,8 @@ class BookmarkManagerMediator
         // back, but instead it sees items being changed.
         // TODO(https://crbug.com/1413463): Rework promo/header methods to simplify initial index.
         int index = hasPromoHeader() ? 1 : 0;
-
         for (BookmarkListEntry bookmarkListEntry : bookmarkListEntryList) {
-            updateOrAdd(index,
-                    BookmarkFeatures.isAndroidImprovedBookmarksEnabled()
-                            ? buildImprovedBookmarkRow(bookmarkListEntry, index)
-                            : buildBookmarkListItem(bookmarkListEntry));
+            updateOrAdd(index, buildBookmarkListItem(bookmarkListEntry, index));
             index++;
         }
 
@@ -1029,7 +1031,11 @@ class BookmarkManagerMediator
         return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
 
-    private ListItem buildBookmarkListItem(BookmarkListEntry bookmarkListEntry) {
+    private ListItem buildBookmarkListItem(BookmarkListEntry bookmarkListEntry, int index) {
+        if (bookmarkListEntry.getViewType() == ViewType.IMPROVED_BOOKMARK_COMPACT
+                || bookmarkListEntry.getViewType() == ViewType.IMPROVED_BOOKMARK_VISUAL) {
+            return buildImprovedBookmarkRow(bookmarkListEntry, index);
+        }
         BookmarkItem bookmarkItem = bookmarkListEntry.getBookmarkItem();
         BookmarkId bookmarkId = bookmarkItem == null ? null : bookmarkItem.getId();
         PropertyModel propertyModel = new PropertyModel(BookmarkManagerProperties.ALL_KEYS);
@@ -1085,7 +1091,7 @@ class BookmarkManagerMediator
             propertyModel.set(ImprovedBookmarkRowProperties.ACCESSORY_VIEW, null);
         }
 
-        return new ListItem(ViewType.IMPROVED_BOOKMARK, propertyModel);
+        return new ListItem(bookmarkListEntry.getViewType(), propertyModel);
     }
 
     // ImprovedBookmarkRow methods.

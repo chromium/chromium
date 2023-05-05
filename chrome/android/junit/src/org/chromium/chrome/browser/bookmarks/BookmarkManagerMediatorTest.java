@@ -49,6 +49,7 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -69,6 +70,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -141,6 +143,8 @@ public class BookmarkManagerMediatorTest {
     private UrlFormatter.Natives mUrlFormatterJniMock;
     @Mock
     private CurrencyFormatter.Natives mCurrencyFormatterJniMock;
+    @Mock
+    private Tracker mTracker;
 
     @Captor
     private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
@@ -160,6 +164,10 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkId mFolderId2 = new BookmarkId(/*id=*/3, BookmarkType.NORMAL);
     private final BookmarkId mFolderId3 = new BookmarkId(/*id=*/4, BookmarkType.NORMAL);
     private final BookmarkId mBookmarkId21 = new BookmarkId(/*id=*/5, BookmarkType.NORMAL);
+    private final BookmarkId mReadingListFolderId =
+            new BookmarkId(/*id=*/5, BookmarkType.READING_LIST);
+    private final BookmarkId mReadingListId = new BookmarkId(/*id=*/6, BookmarkType.READING_LIST);
+
     private final BookmarkItem mFolderItem1 =
             new BookmarkItem(mFolderId1, "Folder1", null, true, null, true, false, 0, false);
     private final BookmarkItem mFolderItem2 =
@@ -169,6 +177,12 @@ public class BookmarkManagerMediatorTest {
     private final BookmarkItem mBookmarkItem21 = new BookmarkItem(mBookmarkId21, "Bookmark21",
             JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mFolderId1, true, false, 0,
             false);
+    private final BookmarkItem mReadingListFolderItem = new BookmarkItem(mReadingListFolderId,
+            "ReadingList", JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), true, null, false,
+            false, 0, false);
+    private final BookmarkItem mReadingListItem = new BookmarkItem(mReadingListId, "ReadingList",
+            JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL), false, mReadingListFolderId, true,
+            false, 0, false);
     private final ModelList mModelList = new ModelList();
     private final Bitmap mBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
     private BookmarkUiPrefs mBookmarkUiPrefs =
@@ -195,6 +209,9 @@ public class BookmarkManagerMediatorTest {
             // Setup CurrencyFormatter.
             mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
 
+            // Setup TrackerFactory.
+            TrackerFactory.setTrackerForTests(mTracker);
+
             // Setup BookmarkModel.
             doReturn(mRootFolderId).when(mBookmarkModel).getRootFolderId();
             doReturn(true).when(mBookmarkModel).doesBookmarkExist(any());
@@ -207,6 +224,13 @@ public class BookmarkManagerMediatorTest {
             doReturn(Arrays.asList(mBookmarkId21)).when(mBookmarkModel).getChildIds(mFolderId2);
             doReturn(1).when(mBookmarkModel).getTotalBookmarkCount(mFolderId2);
             doReturn(mFolderItem3).when(mBookmarkModel).getBookmarkById(mFolderId3);
+            doReturn(Arrays.asList(mReadingListId))
+                    .when(mBookmarkModel)
+                    .getChildIds(mReadingListFolderId);
+            doReturn(mReadingListFolderItem)
+                    .when(mBookmarkModel)
+                    .getBookmarkById(mReadingListFolderId);
+            doReturn(mReadingListItem).when(mBookmarkModel).getBookmarkById(mReadingListId);
 
             // Setup SelectableListLayout.
             doReturn(mActivity).when(mSelectableListLayout).getContext();
@@ -419,9 +443,11 @@ public class BookmarkManagerMediatorTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
     public void onPreferenceChanged_ViewPreferenceUpdated() {
+        mMediator.openFolder(mFolderId1);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.VISUAL);
-        verify(mRecyclerView).setAdapter(mDragReorderableRecyclerViewAdapter);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_VISUAL, mModelList.get(0).type);
     }
 
     @Test
@@ -431,9 +457,8 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolderId2);
         assertEquals(1, mModelList.size());
 
-        ListItem item = mMediator.buildImprovedBookmarkRow(
-                BookmarkListEntry.createBookmarkEntry(mBookmarkItem21, null), 0);
-        assertEquals(ViewType.IMPROVED_BOOKMARK, item.type);
+        ListItem item = mModelList.get(0);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
         assertNotNull(model);
@@ -441,6 +466,33 @@ public class BookmarkManagerMediatorTest {
                 model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
         assertEquals(mBookmarkId21, model.get(BookmarkManagerProperties.BOOKMARK_ID));
         assertEquals(mBookmarkItem21.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
+        assertEquals(
+                "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.ICON));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
+        assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
+        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU));
+        assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
+        assertNotNull(model.get(ImprovedBookmarkRowProperties.OPEN_BOOKMARK_CALLBACK));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
+    public void testBuildImprovedBookmarkRow_ReadingList() {
+        finishLoading();
+        mMediator.openFolder(mReadingListFolderId);
+        assertEquals(3, mModelList.size());
+
+        ListItem item = mModelList.get(1);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
+
+        PropertyModel model = item.model;
+        assertNotNull(model);
+        assertEquals(mReadingListItem,
+                model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY).getBookmarkItem());
+        assertEquals(mReadingListId, model.get(BookmarkManagerProperties.BOOKMARK_ID));
+        assertEquals(mReadingListItem.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertEquals(
                 "https://www.example.com/", model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ICON));
@@ -475,7 +527,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(1, mModelList.size());
 
         ListItem item = mModelList.get(0);
-        assertEquals(ViewType.IMPROVED_BOOKMARK, item.type);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
         assertNotNull(model);
@@ -490,7 +542,7 @@ public class BookmarkManagerMediatorTest {
         assertEquals(2, mModelList.size());
 
         ListItem item = mModelList.get(0);
-        assertEquals(ViewType.IMPROVED_BOOKMARK, item.type);
+        assertEquals(ViewType.IMPROVED_BOOKMARK_COMPACT, item.type);
 
         PropertyModel model = item.model;
         assertNotNull(model);

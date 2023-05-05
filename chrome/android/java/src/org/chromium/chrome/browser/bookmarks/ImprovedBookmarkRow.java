@@ -105,6 +105,7 @@ public class ImprovedBookmarkRow extends SelectableItemViewBase<BookmarkId> {
     void setAccessoryView(@Nullable View view) {
         mAccessoryViewGroup.removeAllViews();
         if (view == null) return;
+
         mAccessoryViewGroup.addView(view);
     }
 
