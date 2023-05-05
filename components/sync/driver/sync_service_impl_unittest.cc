@@ -563,6 +563,43 @@ TEST_F(SyncServiceImplTest,
 #endif  // BUILDFLAG(IS_IOS)
 }
 
+TEST_F(SyncServiceImplTest,
+       SignOutDuringTransportModeClearsTransportDataAndAccountStorageOptIn) {
+  // Sign-in.
+  SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START);
+  InitializeForFirstSync();
+
+  ASSERT_FALSE(service()->IsSyncFeatureActive());
+  ASSERT_FALSE(service()->IsSyncFeatureEnabled());
+
+  // Sync-the-transport should become active.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+
+#if BUILDFLAG(IS_IOS)
+  // Opt in bookmarks and reading list account storage.
+  SyncPrefs sync_prefs(prefs());
+  sync_prefs.SetBookmarksAndReadingListAccountStorageOptIn(true);
+#endif  // BUILDFLAG(IS_IOS)
+
+  // Sign-out.
+  signin::PrimaryAccountMutator* account_mutator =
+      identity_manager()->GetPrimaryAccountMutator();
+  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
+  account_mutator->ClearPrimaryAccount(
+      signin_metrics::ProfileSignout::kTest,
+      signin_metrics::SignoutDelete::kIgnoreMetric);
+  // Wait for SyncServiceImpl to be notified.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, component_factory()->clear_transport_data_call_count());
+#if BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(sync_prefs.IsOptedInForBookmarksAndReadingListAccountStorage());
+#endif  // BUILDFLAG(IS_IOS)
+}
+
 TEST_F(SyncServiceImplTest, DisableReasonUserChoiceIfStartsSignedOut) {
   // Set up bad state.
   SyncPrefs sync_prefs(prefs());
