@@ -180,6 +180,14 @@ history::Cluster SampleCluster(int srp_visits,
   return SampleCluster(1, srp_visits, non_srp_visits, related_searches);
 }
 
+TEST_F(HistoryClustersModuleServiceTest, GetClustersJourneysNotEnabled) {
+  test_history_clusters_service().SetIsJourneysEnabled(
+      /*is_journeys_enabled=*/false);
+
+  std::vector<history::Cluster> clusters = GetClusters();
+  EXPECT_TRUE(clusters.empty());
+}
+
 TEST_F(HistoryClustersModuleServiceTest, GetClusters) {
   base::HistogramTester histogram_tester;
 

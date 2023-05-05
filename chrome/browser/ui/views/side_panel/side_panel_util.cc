@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_ui_coordinator.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/history_clusters/core/features.h"
-#include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_notes/user_notes_features.h"
@@ -78,13 +77,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
 
   // Add history clusters.
   if (HistoryClustersSidePanelCoordinator::IsSupported(browser->profile())) {
-    auto* history_clusters_side_panel_coordinator =
-        HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser);
-    if (browser->profile()->GetPrefs()->GetBoolean(
-            history_clusters::prefs::kVisible)) {
-      history_clusters_side_panel_coordinator->CreateAndRegisterEntry(
-          global_registry);
-    }
+    HistoryClustersSidePanelCoordinator::GetOrCreateForBrowser(browser)
+        ->CreateAndRegisterEntry(global_registry);
   }
 
   // Add read anything.

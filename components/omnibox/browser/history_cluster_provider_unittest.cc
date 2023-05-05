@@ -51,6 +51,13 @@ class HistoryClustersProviderTest : public testing::Test,
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);
 
+    autocomplete_provider_client_ =
+        std::make_unique<FakeAutocompleteProviderClient>();
+    static_cast<TestingPrefServiceSimple*>(
+        autocomplete_provider_client_->GetPrefs())
+        ->registry()
+        ->RegisterBooleanPref(history_clusters::prefs::kVisible, true);
+
     history_clusters_service_ =
         std::make_unique<history_clusters::HistoryClustersService>(
             "en-US", history_service_.get(),
@@ -58,22 +65,16 @@ class HistoryClustersProviderTest : public testing::Test,
             /*url_loader_factory=*/nullptr,
             /*engagement_score_provider=*/nullptr,
             /*template_url_service=*/nullptr,
-            /*optimization_guide_decider=*/nullptr, /*pref_service=*/nullptr);
+            /*optimization_guide_decider=*/nullptr,
+            autocomplete_provider_client_->GetPrefs());
 
     history_clusters_service_test_api_ =
         std::make_unique<history_clusters::HistoryClustersServiceTestApi>(
             history_clusters_service_.get(), history_service_.get());
     history_clusters_service_test_api_->SetAllKeywordsCache(
         {{u"keyword", {}}, {u"keyword2", {}}});
-
-    autocomplete_provider_client_ =
-        std::make_unique<FakeAutocompleteProviderClient>();
     autocomplete_provider_client_->set_history_clusters_service(
         history_clusters_service_.get());
-    static_cast<TestingPrefServiceSimple*>(
-        autocomplete_provider_client_->GetPrefs())
-        ->registry()
-        ->RegisterBooleanPref(history_clusters::prefs::kVisible, true);
 
     search_provider_ =
         new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);

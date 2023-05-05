@@ -1432,18 +1432,6 @@ TEST_F(HistoryClustersServiceJourneysDisabledTest,
       history_clusters_service_->HasIncompleteVisitContextAnnotations(0));
 }
 
-TEST_F(HistoryClustersServiceJourneysDisabledTest, QueryClusters) {
-  // Create 5 persisted visits with visit times 2, 1, 1, 60, and 1 days ago.
-  AddHardcodedTestDataToHistoryService();
-
-  QueryClustersContinuationParams continuation_params = {};
-  continuation_params.continuation_time = base::Time::Now();
-
-  const auto [clusters, visits] = NextQueryClusters(
-      continuation_params, /*expect_clustering_backend_call=*/false);
-  EXPECT_TRUE(clusters.empty());
-}
-
 class HistoryClustersServiceMaxKeywordsTest
     : public HistoryClustersServiceTestBase {
  public:

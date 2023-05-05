@@ -19,6 +19,10 @@ TestHistoryClustersService::TestHistoryClustersService()
                              /*pref_service=*/nullptr) {}
 TestHistoryClustersService::~TestHistoryClustersService() = default;
 
+bool TestHistoryClustersService::IsJourneysEnabled() const {
+  return is_journeys_enabled_;
+}
+
 std::unique_ptr<HistoryClustersServiceTask>
 TestHistoryClustersService::QueryClusters(
     ClusteringRequestSource clustering_request_source,
@@ -36,6 +40,11 @@ TestHistoryClustersService::QueryClusters(
   // Set the next query to done so the query eventually finishes.
   next_query_is_done_ = true;
   return nullptr;
+}
+
+void TestHistoryClustersService::SetIsJourneysEnabled(
+    bool is_journeys_enabled) {
+  is_journeys_enabled_ = is_journeys_enabled;
 }
 
 void TestHistoryClustersService::SetClustersToReturn(

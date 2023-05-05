@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/optimization_guide/core/entity_metadata.h"
-#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/url_util.h"
 
@@ -188,7 +187,6 @@ HistoryClustersAction::~HistoryClustersAction() = default;
 // Should be invoked after `AutocompleteResult::AttachPedalsToMatches()`.
 void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
-    PrefService* prefs,
     AutocompleteResult& result) {
 #if BUILDFLAG(IS_IOS)
   // Compile out this method for Mobile, which doesn't omnibox actions yet.
@@ -196,8 +194,9 @@ void AttachHistoryClustersActions(
   return;
 #else
 
-  if (!IsJourneysEnabledInOmnibox(service, prefs))
+  if (!service || !service->IsJourneysEnabled()) {
     return;
+  }
 
   if (!GetConfig().omnibox_action)
     return;
