@@ -1051,6 +1051,10 @@ void AppsGridView::ClearDragState() {
   MaybeStopPageFlip();
   StopAutoScroll();
 
+  if (drag_item_ && app_list_features::IsDragAndDropRefactorEnabled()) {
+    drag_item_->RemoveObserver(this);
+  }
+
   drag_view_ = nullptr;
   drag_item_ = nullptr;
   drag_out_of_folder_container_ = false;
@@ -1139,6 +1143,13 @@ void AppsGridView::OnDragExited() {
   CancelDragWithNoDropAnimation();
 }
 
+void AppsGridView::ItemBeingDestroyed() {
+  DCHECK(drag_item_);
+  DCHECK(app_list_features::IsDragAndDropRefactorEnabled());
+  EndDrag(/*cancel=*/true);
+  DCHECK(!drag_item_);
+}
+
 void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   if (!app_list_features::IsDragAndDropRefactorEnabled()) {
     views::View::OnDragEntered(event);
@@ -1159,6 +1170,7 @@ void AppsGridView::OnDragEntered(const ui::DropTargetEvent& event) {
   if (!drag_item_) {
     return;
   }
+  drag_item_->AddObserver(this);
 
   // Finalize previous drag icon animation if it's still in progress.
   drag_view_hider_.reset();

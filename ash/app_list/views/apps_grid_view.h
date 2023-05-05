@@ -66,6 +66,7 @@ class PagedAppsGridViewTest;
 class ASH_EXPORT AppsGridView : public views::View,
                                 public AppListItemView::GridDelegate,
                                 public AppListItemListObserver,
+                                public AppListItemObserver,
                                 public AppListModelObserver {
  public:
   METADATA_HEADER(AppsGridView);
@@ -757,6 +758,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnListItemMoved(size_t from_index,
                        size_t to_index,
                        AppListItem* item) override;
+
+  // AppListItemObserver:
+  void ItemBeingDestroyed() override;
 
   // Overridden from AppListModelObserver:
   void OnAppListModelStatusChanged() override;

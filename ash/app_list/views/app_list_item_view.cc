@@ -1722,9 +1722,9 @@ void AppListItemView::ItemBeingDestroyed() {
     folder_icon_->ResetFolderItem();
   }
 
-  // TODO(b/261985897): Consider canceling drag when the item is being
-  // destroyed.
   if (app_list_features::IsDragAndDropRefactorEnabled()) {
+    // When drag and drop refactor is enabled, AppsGridView observes dragged
+    // item destruction to ensure the drag is finalized.
     return;
   }
 
