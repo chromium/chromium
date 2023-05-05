@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -146,7 +146,7 @@ void TokenHandleFetcher::OnGetTokenInfoResponse(
   }
   const base::TimeDelta duration =
       base::TimeTicks::Now() - tokeninfo_response_start_time_;
-  UMA_HISTOGRAM_TIMES("Login.TokenObtainResponseTime", duration);
+  base::UmaHistogramTimes("Login.TokenObtainResponseTime", duration);
   std::move(callback_).Run(account_id_, success);
 }
 

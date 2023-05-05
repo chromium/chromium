@@ -58,8 +58,6 @@ class TokenHandleUtil {
   static void StoreTokenHandle(const AccountId& account_id,
                                const std::string& handle);
 
-  static void ClearTokenHandle(const AccountId& account_id);
-
   static void SetInvalidTokenForTesting(const char* token);
 
   static void SetLastCheckedPrefForTesting(const AccountId& account_id,
@@ -81,12 +79,18 @@ class TokenHandleUtil {
 
     ~TokenDelegate() override;
 
+    // gaia::GaiaOAuthClient::Delegate overrides.
     void OnOAuthError() override;
     void OnNetworkError(int response_code) override;
     void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
-    void NotifyDone();
+
+    // Completes the validation request at the owner TokenHandleUtil. The bool
+    // flag signals if we actually got any data from the Gaia endpoint.
+    void NotifyDone(bool request_completed);
 
    private:
+    void RecordTokenCheckResponseTime();
+
     base::WeakPtr<TokenHandleUtil> owner_;
     AccountId account_id_;
     std::string token_;

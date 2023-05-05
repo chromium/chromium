@@ -589,45 +589,6 @@ IN_PROC_BROWSER_TEST_F(TokenAfterCrash, ValidToken) {
                    ->token_handle_backfill_tried_for_testing());
 }
 
-class RotationTokenTest : public LoginManagerTest {
- public:
-  RotationTokenTest() {
-    login_mixin_.AppendRegularUsers(1);
-    account_id_ = login_mixin_.users()[0].account_id;
-  }
-
- protected:
-  LoginManagerMixin login_mixin_{&mixin_host_};
-  AccountId account_id_;
-};
-
-// Test verifies one-time rotation for the token handle.
-IN_PROC_BROWSER_TEST_F(RotationTokenTest, PRE_Rotated) {
-  TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
-
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  // Emulate state before rotation.
-  known_user.RemovePref(account_id_, "TokenHandleRotated");
-
-  // Focus should not trigger online login.
-  LoginScreenTestApi::FocusUser(account_id_);
-  ASSERT_FALSE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
-
-  // Should be considered for rotation.
-  EXPECT_TRUE(TokenHandleUtil::ShouldObtainHandle(account_id_));
-
-  login_mixin_.LoginWithDefaultContext(login_mixin_.users().back());
-  login_mixin_.WaitForActiveSession();
-
-  // Emulate obtaining token handle.
-  TokenHandleUtil::StoreTokenHandle(account_id_, kTokenHandle);
-}
-
-IN_PROC_BROWSER_TEST_F(RotationTokenTest, Rotated) {
-  // Token should not be considered for rotation..
-  EXPECT_FALSE(TokenHandleUtil::ShouldObtainHandle(account_id_));
-}
-
 class IgnoreOldTokenTest
     : public LoginManagerTest,
       public LocalStateMixin::Delegate,
@@ -651,10 +612,6 @@ class IgnoreOldTokenTest
       // rotated token.
       return;
     }
-
-    user_manager::KnownUser known_user(g_browser_process->local_state());
-    // Emulate token was not rotated.
-    known_user.RemovePref(account_id_, "TokenHandleRotated");
   }
 
   // LoginManagerTest:
@@ -677,18 +634,18 @@ class IgnoreOldTokenTest
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
 };
 
-// Verify case when a user got token invalidated on a previous version and then
-// updated to the version when not rotated tokens are ignored for managed users.
+// Verify case when a user got token invalidated on a pre-rotated version and
+// then never re-authenticated. Such scenario should now lead to an online
+// sign-in and fetching a new token handle.
 IN_PROC_BROWSER_TEST_P(IgnoreOldTokenTest, PRE_IgnoreNotRotated) {
   ASSERT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
 }
 
-// Old tokens should be ignored for managed users. Regular users should be
-// forced to go through online signin.
+// If any pre-rotated token handle is still left for either regular or managed
+// user it will verified as invalid and lead to online re-authenication.
 IN_PROC_BROWSER_TEST_P(IgnoreOldTokenTest, IgnoreNotRotated) {
-  ASSERT_NE(TokenHandleUtil::HasToken(account_id_), IsManagedUser());
-  ASSERT_NE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_),
-            IsManagedUser());
+  ASSERT_TRUE(TokenHandleUtil::HasToken(account_id_));
+  ASSERT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(account_id_));
 }
 
 INSTANTIATE_TEST_SUITE_P(All, IgnoreOldTokenTest, testing::Bool());
