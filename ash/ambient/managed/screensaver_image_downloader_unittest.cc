@@ -25,10 +25,9 @@
 namespace ash {
 
 namespace {
-
-constexpr char kImageUrl1[] = "http://example.com/image1.jpg";
-constexpr char kImageUrl2[] = "http://example.com/image2.jpg";
-constexpr char kImageUrl3[] = "http://example.com/image3.jpg";
+constexpr char kImageUrl1[] = "https://example.com/image1.jpg";
+constexpr char kImageUrl2[] = "https://example.com/image2.jpg";
+constexpr char kImageUrl3[] = "https://example.com/image3.jpg";
 constexpr char kFileContents[] = "file contents";
 constexpr char kCacheFileExt[] = ".cache";
 

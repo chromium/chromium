@@ -40,8 +40,9 @@ constexpr char kFakeFilePath2[] = "/path/to/file2";
 constexpr char kCacheDirectoryName[] = "managed_screensaver";
 constexpr char kCacheFileExt[] = ".cache";
 
-constexpr char kImageUrl1[] = "http://example.com/1.jpg";
-constexpr char kImageUrl2[] = "http://example.com/2.jpg";
+constexpr char kImageUrl1[] = "https://example.com/1.jpg";
+constexpr char kImageUrl1Alt[] = "https://EXAMPLE.com/1.jpg";
+constexpr char kImageUrl2[] = "https://example.com/2.jpg";
 constexpr char kFileContents1[] = "file contents 1";
 constexpr char kFileContents2[] = "file contents 2";
 
@@ -178,15 +179,19 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
   policy_handler()->SetScreensaverImagesUpdatedCallback(
       test_future.GetCallback<const std::vector<base::FilePath>&>());
 
+  ASSERT_NE(GetExpectedFilePath(kImageUrl1),
+            GetExpectedFilePath(kImageUrl1Alt));
+
   base::Value::List image_urls;
   image_urls.Append(kImageUrl1);
+  image_urls.Append(kImageUrl1Alt);
   image_urls.Append(kImageUrl2);
 
   // Fill the pref service to trigger the logic under test.
   user_prefs()->SetManagedPref(
       ambient::prefs::kAmbientModeManagedScreensaverImages, image_urls.Clone());
 
-  // Verify that the first request is resolved
+  // Verify that request 1 is resolved
   {
     url_loader_factory().AddResponse(image_urls[0].GetString(), kFileContents1);
     EXPECT_TRUE(test_future.Wait());
@@ -195,12 +200,21 @@ TEST_F(ScreensaverImagesPolicyHandlerTest, DownloadImagesTest) {
     EXPECT_EQ(GetExpectedFilePath(kImageUrl1), file_paths.front());
   }
 
-  // Verify that the second request is resolved and both file paths are present.
+  // Verify that request 2 resolves to the same file as request 1.
   {
-    url_loader_factory().AddResponse(image_urls[1].GetString(), kFileContents2);
+    url_loader_factory().AddResponse(image_urls[1].GetString(), kFileContents1);
     EXPECT_TRUE(test_future.Wait());
     std::vector<base::FilePath> file_paths = test_future.Take();
-    ASSERT_EQ(2u, file_paths.size());
+    ASSERT_EQ(1u, file_paths.size());
+    EXPECT_NE(GetExpectedFilePath(kImageUrl1Alt), file_paths.front());
+  }
+
+  // Verify that request 3 is resolved and both file paths are present.
+  {
+    url_loader_factory().AddResponse(image_urls[2].GetString(), kFileContents2);
+    EXPECT_TRUE(test_future.Wait());
+    std::vector<base::FilePath> file_paths = test_future.Take();
+    EXPECT_EQ(2u, file_paths.size());
     EXPECT_NE(file_paths.end(), std::find(file_paths.begin(), file_paths.end(),
                                           GetExpectedFilePath(kImageUrl1)));
     EXPECT_NE(file_paths.end(), std::find(file_paths.begin(), file_paths.end(),

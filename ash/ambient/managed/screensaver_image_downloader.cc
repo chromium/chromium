@@ -70,6 +70,7 @@ std::unique_ptr<network::SimpleURLLoader> CreateSimpleURLLoader(
   request->url = GURL(url);
   request->method = net::HttpRequestHeaders::kGetMethod;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  CHECK(request->url.SchemeIs(url::kHttpsScheme));
 
   auto loader = network::SimpleURLLoader::Create(
       std::move(request), kScreensaverImageDownloaderNetworkTag);

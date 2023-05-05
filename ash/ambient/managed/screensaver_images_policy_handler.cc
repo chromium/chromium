@@ -97,12 +97,18 @@ void ScreensaverImagesPolicyHandler::
 
   for (size_t i = 0; i < kMaxUrlsToProcessFromPolicy && i < url_list.size();
        ++i) {
-    const base::Value& url = url_list[i];
-    if (!url.is_string() || url.GetString().empty()) {
+    const base::Value& value = url_list[i];
+    if (!value.is_string() || value.GetString().empty()) {
+      continue;
+    }
+    // Canonicalize URLs and require HTTPS.
+    GURL url(value.GetString());
+    if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
+      LOG(WARNING) << "Ignored invalid URL: " << url;
       continue;
     }
     auto job = std::make_unique<ScreensaverImageDownloader::Job>(
-        url.GetString(),
+        url.spec(),
         base::BindOnce(&ScreensaverImagesPolicyHandler::OnDownloadJobCompleted,
                        weak_ptr_factory_.GetWeakPtr()));
 
