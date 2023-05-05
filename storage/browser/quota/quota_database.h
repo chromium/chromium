@@ -295,6 +295,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool is_recreating_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_disabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
+  int sqlite_error_code_ = 0;
+
   base::OneShotTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   friend class QuotaDatabaseTest;

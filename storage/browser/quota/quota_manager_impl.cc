@@ -2184,7 +2184,8 @@ void QuotaManagerImpl::DidEvictBucketData(
     // an error and exclude it from future eviction if the error happens
     // consistently (> kThresholdOfErrorsToBeDenylisted).
     buckets_in_error_[eviction_context_.evicted_bucket.id]++;
-    std::move(eviction_context_.evict_bucket_data_callback).Run(entry.error());
+    std::move(eviction_context_.evict_bucket_data_callback)
+        .Run(entry.error().quota_error);
   }
 }
 

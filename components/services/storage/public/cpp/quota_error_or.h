@@ -20,10 +20,19 @@ enum class QuotaError {
   kQuotaExceeded,
 };
 
+struct DetailedQuotaError {
+  DetailedQuotaError(QuotaError error) : quota_error(error) {}
+
+  bool operator==(QuotaError error) const { return quota_error == error; }
+
+  QuotaError quota_error;
+  int sqlite_error = 0;
+};
+
 // Helper for methods which perform database operations which may fail. Objects
 // of this type can on either a QuotaError or a result value of arbitrary type.
 template <class ValueType>
-using QuotaErrorOr = base::expected<ValueType, QuotaError>;
+using QuotaErrorOr = base::expected<ValueType, DetailedQuotaError>;
 
 }  // namespace storage
 
