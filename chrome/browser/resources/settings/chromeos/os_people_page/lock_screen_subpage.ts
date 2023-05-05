@@ -222,6 +222,7 @@ export class SettingsLockScreenElement extends SettingsLockScreenElementBase {
         value: () => new Set<Setting>([
           Setting.kLockScreenV2,
           Setting.kChangeAuthPinV2,
+          Setting.kLockScreenNotification,
         ]),
       },
     };

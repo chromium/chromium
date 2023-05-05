@@ -129,6 +129,9 @@ interface LockScreenSettings {
 
   // Asserts that the auto screen lock control is currently focused.
   AssertAutoLockScreenFocused() => ();
+
+  // Asserts when lock screen notification setting is not in focus.
+  AssertLockScreenNotificationFocused() => ();
 };
 
 // The interface used to control Google drive settings.

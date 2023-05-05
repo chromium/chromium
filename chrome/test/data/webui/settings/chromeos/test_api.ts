@@ -5,6 +5,7 @@
 import 'chrome://os-settings/chromeos/os_settings.js';
 import 'chrome://os-settings/chromeos/lazy_load.js';
 
+import {SettingsRadioGroupElement} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {CrButtonElement, SettingsGoogleDriveSubpageElement, SettingsToggleButtonElement} from 'chrome://os-settings/chromeos/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -733,14 +734,21 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
     return toggle;
   }
 
+  private queryLockScreenNotificationSettings(): SettingsRadioGroupElement {
+    const notificationSettings =
+        this.shadowRoot().getElementById('notificationSettings');
+    assertTrue(notificationSettings instanceof SettingsRadioGroupElement);
+    return notificationSettings;
+  }
+
   async assertAutoLockScreenEnabled(isEnabled: boolean): Promise<void> {
     const isAutoLockScreenEnabled = () => {
       const toggle = this.queryAutoLockScreenToggle();
       return toggle.checked === isEnabled;
     };
 
-    assertAsync(isAutoLockScreenEnabled);
-    assertForDuration(isAutoLockScreenEnabled);
+    await assertAsync(isAutoLockScreenEnabled);
+    await assertForDuration(isAutoLockScreenEnabled);
   }
 
   async enableAutoLockScreen(): Promise<void> {
@@ -762,6 +770,13 @@ export class LockScreenSettings implements LockScreenSettingsInterface {
         this.shadowRoot().activeElement === this.queryAutoLockScreenToggle();
     assertAsync(isFocused);
     assertForDuration(isFocused);
+  }
+
+  async assertLockScreenNotificationFocused(): Promise<void> {
+    const isFocused = () => this.queryLockScreenNotificationSettings().contains(
+        this.shadowRoot().activeElement);
+    await assertAsync(isFocused);
+    await assertForDuration(isFocused);
   }
 }
 

@@ -215,6 +215,7 @@ enum Setting {
   kCameraOnOff = 1116,
   kMicrophoneOnOff = 1117,
   kGeolocationOnOff = 1118,
+  kLockScreenNotification = 1119,
 
   // Languages and Input section.
   kAddLanguage = 1200,

@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/hats_unlock_survey_trigger.h"
@@ -32,6 +33,7 @@
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/setting.mojom-shared.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "components/session_manager/core/session_manager.h"
@@ -288,7 +290,10 @@ void LoginScreenClientImpl::ShowParentAccessHelpApp() {
 void LoginScreenClientImpl::ShowLockScreenNotificationSettings() {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(),
-      chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
+      std::string(chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2) +
+          "?settingId=" +
+          base::NumberToString(static_cast<int>(
+              chromeos::settings::mojom::Setting::kLockScreenNotification)));
 }
 
 void LoginScreenClientImpl::OnFocusLeavingSystemTray(bool reverse) {

@@ -114,8 +114,10 @@
     </h2>
     <div class="list-frame">
       <settings-radio-group
+          id="notificationSettings"
           pref="{{prefs.ash.message_center.lock_screen_mode}}"
-          group-aria-label="$i18n{lockScreenNotificationTitle}">
+          group-aria-label="$i18n{lockScreenNotificationTitle}"
+          deep-link-focus-id$="[[Setting.kLockScreenNotification]]">
         <template is="dom-if"
             if="[[lockScreenHideSensitiveNotificationSupported_]]">
           <cr-radio-button name="hideSensitive" class="list-item underbar"
