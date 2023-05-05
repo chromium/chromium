@@ -307,10 +307,8 @@ packager_builder(
 ci.builder(
     name = "android-device-flasher",
     executable = "recipe:android/device_flasher",
-    # Triggered manually through the scheduler UI
-    # https://luci-scheduler.appspot.com/jobs/chromium/android-device-flasher
-    # TODO(crbug.com/1260195): Run the build regularly once recipe fully works
-    schedule = "triggered",
+    # TODO(crbug.com/1260195): Find the sweet spot for the frequency.
+    schedule = "0 9 * * 1",  # at 9am UTC every Monday.
     triggered_by = [],
     console_view_entry = consoles.console_view_entry(
         short_name = "flash",
@@ -332,7 +330,7 @@ ci.builder(
                 "pool": "chromium.tests",
                 "device_type": "walleye",
                 "device_os": "PQ3A.190801.002",
-                "max_uid_threshold": 19500,
+                "max_uid_threshold": 18000,
             },
             # Used by ci/android-pie-arm64-rel
             # This is mirrored by the CQ builder android-arm64-rel
