@@ -29,6 +29,41 @@ class CompanionMetricsLoggerTest : public testing::Test {
 
   ukm::TestUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
+  void ExpectUkmEntry(const char* metric_name, int expected_value) {
+    // There should be only one UKM entry of Companion_PageView type.
+    const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+    EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
+    auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
+
+    // Verify the metric.
+    ukm_recorder()->EntryHasMetric(entry, metric_name);
+    ukm_recorder()->ExpectEntryMetric(entry, metric_name, expected_value);
+  }
+
+  void TestPromoEvent(PromoType promo_type,
+                      PromoAction promo_action,
+                      PromoEvent expected_promo_event) {
+    logger_ = std::make_unique<CompanionMetricsLogger>(/*ukm_source_id=*/2);
+    base::HistogramTester histogram_tester;
+
+    // Show a promo.
+    logger_->OnPromoAction(promo_type, promo_action);
+    histogram_tester.ExpectBucketCount("Companion.PromoEvent",
+                                       expected_promo_event,
+                                       /*expected_count=*/1);
+    // Destroy the logger. Verify the last UKM event of Companion_PageView type.
+    logger_.reset();
+    const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
+    auto entries = ukm_recorder()->GetEntriesByName(entry_name);
+    auto* entry = entries[entries.size() - 1];
+
+    ukm_recorder()->EntryHasMetric(
+        entry, ukm::builders::Companion_PageView::kPromoEventName);
+    ukm_recorder()->ExpectEntryMetric(
+        entry, ukm::builders::Companion_PageView::kPromoEventName,
+        static_cast<int>(expected_promo_event));
+  }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<ukm::TestUkmRecorder> ukm_recorder_;
@@ -42,14 +77,8 @@ TEST_F(CompanionMetricsLoggerTest, RecordOpenTrigger) {
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
 
-  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
-  EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
-  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
-  ukm_recorder()->EntryHasMetric(
-      entry, ukm::builders::Companion_PageView::kOpenTriggerName);
-  ukm_recorder()->ExpectEntryMetric(
-      entry, ukm::builders::Companion_PageView::kOpenTriggerName,
-      static_cast<int>(OpenTrigger::kContextMenuTextSearch));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kOpenTriggerName,
+                 static_cast<int>(OpenTrigger::kContextMenuTextSearch));
 }
 
 TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
@@ -71,48 +100,45 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
 
-  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
-  EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
-  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
-  ukm_recorder()->EntryHasMetric(
-      entry, ukm::builders::Companion_PageView::kPH_LastEventName);
-  ukm_recorder()->ExpectEntryMetric(
-      entry, ukm::builders::Companion_PageView::kPH_LastEventName,
-      static_cast<int>(UiEvent::kShown));
-
-  ukm_recorder()->EntryHasMetric(
-      entry, ukm::builders::Companion_PageView::kCQ_LastEventName);
-  ukm_recorder()->ExpectEntryMetric(
-      entry, ukm::builders::Companion_PageView::kCQ_LastEventName,
-      static_cast<int>(UiEvent::kClicked));
-  ukm_recorder()->EntryHasMetric(
-      entry, ukm::builders::Companion_PageView::kCQ_ChildElementCountName);
-  ukm_recorder()->ExpectEntryMetric(
-      entry, ukm::builders::Companion_PageView::kCQ_ChildElementCountName, 3);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_LastEventName,
+                 static_cast<int>(UiEvent::kShown));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_LastEventName,
+                 static_cast<int>(UiEvent::kClicked));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_ChildElementCountName,
+                 3);
 }
 
 TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
+  TestPromoEvent(PromoType::kSignin, PromoAction::kAccepted,
+                 PromoEvent::kSignInAccepted);
+  TestPromoEvent(PromoType::kSignin, PromoAction::kRejected,
+                 PromoEvent::kSignInRejected);
+  TestPromoEvent(PromoType::kSignin, PromoAction::kShown,
+                 PromoEvent::kSignInShown);
+  TestPromoEvent(PromoType::kMsbb, PromoAction::kAccepted,
+                 PromoEvent::kMsbbAccepted);
+  TestPromoEvent(PromoType::kMsbb, PromoAction::kRejected,
+                 PromoEvent::kMsbbRejected);
+  TestPromoEvent(PromoType::kMsbb, PromoAction::kShown, PromoEvent::kMsbbShown);
+  TestPromoEvent(PromoType::kExps, PromoAction::kAccepted,
+                 PromoEvent::kExpsAccepted);
+  TestPromoEvent(PromoType::kExps, PromoAction::kRejected,
+                 PromoEvent::kExpsRejected);
+  TestPromoEvent(PromoType::kExps, PromoAction::kShown, PromoEvent::kExpsShown);
+}
+
+TEST_F(CompanionMetricsLoggerTest, RegionSearchClicks) {
   base::HistogramTester histogram_tester;
 
-  // Show a promo, user accepts it.
-  logger_->OnPromoAction(PromoType::kSignin, PromoAction::kAccepted);
+  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch);
+  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch);
+  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch);
 
-  // Verify histograms for click and shown events.
-  histogram_tester.ExpectBucketCount("Companion.PromoEvent",
-                                     PromoEvent::kSignInAccepted,
-                                     /*expected_count=*/1);
-
-  // Destroy the logger. Verify that UKM event is recorded.
+  histogram_tester.ExpectBucketCount("Companion.RegionSearch.Clicked",
+                                     /*sample=*/true, /*expected_count=*/3);
   logger_.reset();
-
-  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
-  EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
-  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
-  ukm_recorder()->EntryHasMetric(
-      entry, ukm::builders::Companion_PageView::kPromoEventName);
-  ukm_recorder()->ExpectEntryMetric(
-      entry, ukm::builders::Companion_PageView::kPromoEventName,
-      static_cast<int>(PromoEvent::kSignInAccepted));
+  ExpectUkmEntry(
+      ukm::builders::Companion_PageView::kRegionSearch_ClickCountName, 3);
 }
 
 TEST_F(CompanionMetricsLoggerTest, RecordPhFeedback) {
@@ -124,14 +150,8 @@ TEST_F(CompanionMetricsLoggerTest, RecordPhFeedback) {
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
 
-  const char* entry_name = ukm::builders::Companion_PageView::kEntryName;
-  EXPECT_EQ(ukm_recorder()->GetEntriesByName(entry_name).size(), 1ul);
-  auto* entry = ukm_recorder()->GetEntriesByName(entry_name)[0];
-  ukm_recorder()->EntryHasMetric(
-      entry, ukm::builders::Companion_PageView::kPH_FeedbackName);
-  ukm_recorder()->ExpectEntryMetric(
-      entry, ukm::builders::Companion_PageView::kPH_FeedbackName,
-      static_cast<int>(PhFeedback::kThumbsDown));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_FeedbackName,
+                 static_cast<int>(PhFeedback::kThumbsDown));
 }
 
 }  // namespace companion

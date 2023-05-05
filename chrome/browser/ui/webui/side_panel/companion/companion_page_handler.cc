@@ -150,6 +150,8 @@ void CompanionPageHandler::OnRegionSearchClicked() {
   auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
   CHECK(helper);
   helper->StartRegionSearch(web_contents(), /*use_fullscreen_capture=*/false);
+  metrics_logger_->RecordUiSurfaceClicked(
+      side_panel::mojom::UiSurface::kRegionSearch);
 }
 
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {

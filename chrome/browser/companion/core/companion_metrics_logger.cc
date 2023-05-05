@@ -150,7 +150,7 @@ void CompanionMetricsLogger::FlushStats() {
   }
 
   // Region search.
-  iter = ui_surface_metrics_.find(UiSurface::kPH);
+  iter = ui_surface_metrics_.find(UiSurface::kRegionSearch);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetRegionSearch_ClickCount(iter->second.click_count);
   }
