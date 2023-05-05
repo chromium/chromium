@@ -64,7 +64,8 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
   // Remove `contents` from its current saved group, if it's in one.
   for (auto& [local_group_id, listener] : local_tab_group_listeners_) {
     if (local_group_id != new_local_group_id) {
-      if (!listener.RemoveWebContentsIfPresent(contents)) {
+      if (listener.MaybeRemoveWebContentsFromLocal(contents) ==
+          LocalTabGroupListener::Liveness::kGroupDeleted) {
         // If this emptied the group, the saved group was removed, so we must
         // stop listening to `local_group_id`.
         DisconnectLocalTabGroup(local_group_id);
@@ -83,7 +84,8 @@ void SavedTabGroupModelListener::TabGroupedStateChanged(
     const Browser* const browser = SavedTabGroupUtils::GetBrowserWithTabGroupId(
         new_local_group_id.value());
     CHECK(browser);
-    listener.AddWebContents(contents, browser->tab_strip_model(), index);
+    listener.AddWebContentsFromLocal(contents, browser->tab_strip_model(),
+                                     index);
   }
 }
 
@@ -160,6 +162,28 @@ void SavedTabGroupModelListener::ResumeTrackingLocalTabGroup(
 void SavedTabGroupModelListener::DisconnectLocalTabGroup(
     tab_groups::TabGroupId tab_group_id) {
   local_tab_group_listeners_.erase(tab_group_id);
+}
+
+void SavedTabGroupModelListener::RemoveLocalGroupFromSync(
+    tab_groups::TabGroupId local_group_id) {
+  if (!local_tab_group_listeners_.contains(local_group_id)) {
+    return;
+  }
+
+  local_tab_group_listeners_.at(local_group_id).GroupRemovedFromSync();
+  DisconnectLocalTabGroup(local_group_id);
+}
+
+void SavedTabGroupModelListener::UpdateLocalGroupFromSync(
+    tab_groups::TabGroupId local_group_id) {
+  if (!local_tab_group_listeners_.contains(local_group_id)) {
+    return;
+  }
+
+  if (local_tab_group_listeners_.at(local_group_id).UpdateFromSync() ==
+      LocalTabGroupListener::Liveness::kGroupDeleted) {
+    DisconnectLocalTabGroup(local_group_id);
+  }
 }
 
 void SavedTabGroupModelListener::OnBrowserAdded(Browser* browser) {

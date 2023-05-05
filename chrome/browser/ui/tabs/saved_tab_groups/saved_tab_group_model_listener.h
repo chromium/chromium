@@ -49,6 +49,14 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // `tab_group_id` when the local group changes.
   void DisconnectLocalTabGroup(tab_groups::TabGroupId tab_group_id);
 
+  // The saved group corresponding to `local_group_id` was removed, so we must
+  // remove the local group to match.
+  void RemoveLocalGroupFromSync(tab_groups::TabGroupId local_group_id);
+
+  // Updates the local group with id `local_group_id` to match the current state
+  // of the saved tab group, if it is open locally.
+  void UpdateLocalGroupFromSync(tab_groups::TabGroupId local_group_id);
+
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;

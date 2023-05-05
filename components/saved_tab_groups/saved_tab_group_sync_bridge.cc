@@ -374,7 +374,7 @@ void SavedTabGroupSyncBridge::DeleteDataFromLocalStorage(
   // Check if the model contains the group guid. If so, remove that group and
   // all of its tabs.
   if (model_->Contains(guid)) {
-    model_->Remove(guid);
+    model_->RemovedFromSync(guid);
     return;
   }
 
