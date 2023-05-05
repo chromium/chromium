@@ -127,10 +127,32 @@ int64_t av1_calc_frame_error_c(const uint8_t *const ref, int stride, const uint8
 #define av1_calc_frame_error av1_calc_frame_error_c
 
 void av1_calc_indices_dim1_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
-#define av1_calc_indices_dim1 av1_calc_indices_dim1_c
+void av1_calc_indices_dim1_neon(const int16_t* data,
+                                const int16_t* centroids,
+                                uint8_t* indices,
+                                int64_t* total_dist,
+                                int n,
+                                int k);
+RTCD_EXTERN void (*av1_calc_indices_dim1)(const int16_t* data,
+                                          const int16_t* centroids,
+                                          uint8_t* indices,
+                                          int64_t* total_dist,
+                                          int n,
+                                          int k);
 
 void av1_calc_indices_dim2_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
-#define av1_calc_indices_dim2 av1_calc_indices_dim2_c
+void av1_calc_indices_dim2_neon(const int16_t* data,
+                                const int16_t* centroids,
+                                uint8_t* indices,
+                                int64_t* total_dist,
+                                int n,
+                                int k);
+RTCD_EXTERN void (*av1_calc_indices_dim2)(const int16_t* data,
+                                          const int16_t* centroids,
+                                          uint8_t* indices,
+                                          int64_t* total_dist,
+                                          int n,
+                                          int k);
 
 void av1_convolve_2d_scale_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int x_step_qn, const int subpel_y_qn, const int y_step_qn, ConvolveParams *conv_params);
 #define av1_convolve_2d_scale av1_convolve_2d_scale_c
@@ -586,6 +608,14 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) av1_block_error_lp = av1_block_error_lp_neon;
     av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_c;
     if (flags & HAS_NEON) av1_build_compound_diffwtd_mask_d16 = av1_build_compound_diffwtd_mask_d16_neon;
+    av1_calc_indices_dim1 = av1_calc_indices_dim1_c;
+    if (flags & HAS_NEON) {
+      av1_calc_indices_dim1 = av1_calc_indices_dim1_neon;
+    }
+    av1_calc_indices_dim2 = av1_calc_indices_dim2_c;
+    if (flags & HAS_NEON) {
+      av1_calc_indices_dim2 = av1_calc_indices_dim2_neon;
+    }
     av1_convolve_2d_sr = av1_convolve_2d_sr_c;
     if (flags & HAS_NEON) av1_convolve_2d_sr = av1_convolve_2d_sr_neon;
     av1_convolve_x_sr = av1_convolve_x_sr_c;

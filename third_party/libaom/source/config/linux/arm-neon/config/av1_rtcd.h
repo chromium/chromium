@@ -127,10 +127,22 @@ int64_t av1_calc_frame_error_c(const uint8_t *const ref, int stride, const uint8
 #define av1_calc_frame_error av1_calc_frame_error_c
 
 void av1_calc_indices_dim1_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
-#define av1_calc_indices_dim1 av1_calc_indices_dim1_c
+void av1_calc_indices_dim1_neon(const int16_t* data,
+                                const int16_t* centroids,
+                                uint8_t* indices,
+                                int64_t* total_dist,
+                                int n,
+                                int k);
+#define av1_calc_indices_dim1 av1_calc_indices_dim1_neon
 
 void av1_calc_indices_dim2_c(const int16_t *data, const int16_t *centroids, uint8_t *indices, int64_t *total_dist, int n, int k);
-#define av1_calc_indices_dim2 av1_calc_indices_dim2_c
+void av1_calc_indices_dim2_neon(const int16_t* data,
+                                const int16_t* centroids,
+                                uint8_t* indices,
+                                int64_t* total_dist,
+                                int n,
+                                int k);
+#define av1_calc_indices_dim2 av1_calc_indices_dim2_neon
 
 void av1_convolve_2d_scale_c(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int w, int h, const InterpFilterParams *filter_params_x, const InterpFilterParams *filter_params_y, const int subpel_x_qn, const int x_step_qn, const int subpel_y_qn, const int y_step_qn, ConvolveParams *conv_params);
 #define av1_convolve_2d_scale av1_convolve_2d_scale_c
