@@ -484,6 +484,15 @@ bool IsABookmarkNodeSectionForIdentifier(
   if (self.currentlyShowingSearchResults) {
     [self.consumer refreshContents];
   }
+  // If we're displaying bookmark root then `bookmarkNode` will never be equal
+  // to `self.displayNode`. In this case always update the UI when a node is
+  // added/deleted (this method is also called when a node is deleted). Because
+  // this update may render bookmark list visible (if there were no bookmarks
+  // before) or hide bookmark list (if the last node was deleted).
+  if (self.consumer.isDisplayingBookmarkRoot) {
+    [self.consumer refreshContents];
+    return;
+  }
   // The currently displayed folder's children changed. Reload everything.
   // (When adding new folder, table is already been updated. So no need to
   // reload here.)
