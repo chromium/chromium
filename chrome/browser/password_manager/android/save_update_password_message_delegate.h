@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/password_edit_dialog/android/password_edit_dialog_bridge.h"
+#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "components/messages/android/message_enums.h"
 #include "components/messages/android/message_wrapper.h"
@@ -77,7 +78,9 @@ class SaveUpdatePasswordMessageDelegate {
   enum class SavePasswordDialogMenuItem { kNeverSave = 0, kEditPassword = 1 };
 
   SaveUpdatePasswordMessageDelegate(
-      PasswordEditDialogFactory password_edit_dialog_factory);
+      PasswordEditDialogFactory password_edit_dialog_factory,
+      base::RepeatingCallback<void(gfx::NativeWindow)>
+          password_migration_warning_bridge_callback);
 
   void DismissSaveUpdatePasswordMessage(messages::DismissReason dismiss_reason);
 
@@ -164,6 +167,8 @@ class SaveUpdatePasswordMessageDelegate {
 
   std::unique_ptr<messages::MessageWrapper> message_;
   std::unique_ptr<PasswordEditDialog> password_edit_dialog_;
+  base::RepeatingCallback<void(gfx::NativeWindow)>
+      create_migration_warning_callback_;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_SAVE_UPDATE_PASSWORD_MESSAGE_DELEGATE_H_

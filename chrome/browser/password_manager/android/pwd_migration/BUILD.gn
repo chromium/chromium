@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("utils") {
+  sources = [
+    "../local_passwords_migration_warning_util.cc",
+    "../local_passwords_migration_warning_util.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//ui/android:android",
+    "//ui/gfx:native_widget_types",
+  ]
+}
+
+generate_jni("jni_headers") {
+  visibility = [
+    ":utils",
+    "//chrome/browser",
+  ]
+  sources = [ "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningBridge.java" ]
+}
+
+android_library("java") {
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningBridge.java",
+    "java/src/org/chromium/chrome/browser/pwd_migration/PasswordMigrationWarningCoordinator.java",
+  ]
+}

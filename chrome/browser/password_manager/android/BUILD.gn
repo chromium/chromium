@@ -450,6 +450,7 @@ source_set("unit_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser/autofill",
+    "//chrome/browser/password_manager/android/pwd_migration:utils",
     "//chrome/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
