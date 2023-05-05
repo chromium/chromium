@@ -24,7 +24,7 @@ using CrashReportingContextTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(CrashReportingContextTest, OnCloudReportingLaunched) {
   ::policy::SetDMTokenForTesting(
-      ::policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN"));
+      ::policy::DMToken::CreateValidToken("FAKE_DM_TOKEN"));
 
   auto* profile = browser()->profile();
   profile->GetPrefs()->SetInteger(kOnSecurityEventScopePref,
