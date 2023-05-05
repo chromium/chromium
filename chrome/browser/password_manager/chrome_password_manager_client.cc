@@ -235,7 +235,7 @@ bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
       PasswordManagerSettingsServiceFactory::GetForProfile(profile_);
   return settings_service->IsSettingEnabled(
              PasswordManagerSetting::kOfferToSavePasswords) &&
-         !IsIncognito() && IsFillingEnabled(url);
+         !IsOffTheRecord() && IsFillingEnabled(url);
 }
 
 bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
@@ -641,7 +641,7 @@ const syncer::SyncService* ChromePasswordManagerClient::GetSyncService() const {
 
 password_manager::PasswordStoreInterface*
 ChromePasswordManagerClient::GetProfilePasswordStore() const {
-  // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
+  // Always use EXPLICIT_ACCESS as the password manager checks IsOffTheRecord
   // itself when it shouldn't access the PasswordStore.
   return PasswordStoreFactory::GetForProfile(profile_,
                                              ServiceAccessType::EXPLICIT_ACCESS)
@@ -650,7 +650,7 @@ ChromePasswordManagerClient::GetProfilePasswordStore() const {
 
 password_manager::PasswordStoreInterface*
 ChromePasswordManagerClient::GetAccountPasswordStore() const {
-  // Always use EXPLICIT_ACCESS as the password manager checks IsIncognito
+  // Always use EXPLICIT_ACCESS as the password manager checks IsOffTheRecord
   // itself when it shouldn't access the PasswordStore.
   return AccountPasswordStoreFactory::GetForProfile(
              profile_, ServiceAccessType::EXPLICIT_ACCESS)
@@ -720,9 +720,7 @@ void ChromePasswordManagerClient::PromptUserToEnableAutosignin() {
 #endif
 }
 
-// TODO(https://crbug.com/1225171): If off-the-record Guest is not deprecated,
-// rename this function to IsOffTheRecord for better readability.
-bool ChromePasswordManagerClient::IsIncognito() const {
+bool ChromePasswordManagerClient::IsOffTheRecord() const {
   return web_contents()->GetBrowserContext()->IsOffTheRecord();
 }
 

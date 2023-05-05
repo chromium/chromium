@@ -124,10 +124,12 @@ class MockPasswordManagerClient
 
   ~MockPasswordManagerClient() override = default;
 
-  MOCK_CONST_METHOD0(IsIncognito, bool());
-  MOCK_METHOD1(PromptUserToSaveOrUpdatePasswordPtr,
-               void(PasswordFormManagerForUI*));
-  MOCK_CONST_METHOD1(IsSavingAndFillingEnabled, bool(const GURL&));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const override));
+  MOCK_METHOD(void,
+              PromptUserToSaveOrUpdatePasswordPtr,
+              (PasswordFormManagerForUI*),
+              ());
+  MOCK_METHOD(bool, IsSavingAndFillingEnabled, (const GURL&), (const override));
 
   PrefService* GetPrefs() const override { return prefs_; }
 

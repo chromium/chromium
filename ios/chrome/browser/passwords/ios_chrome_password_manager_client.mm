@@ -160,7 +160,7 @@ void IOSChromePasswordManagerClient::PromptUserToEnableAutosignin() {
   NOTIMPLEMENTED();
 }
 
-bool IOSChromePasswordManagerClient::IsIncognito() const {
+bool IOSChromePasswordManagerClient::IsOffTheRecord() const {
   return (bridge_.browserState)->IsOffTheRecord();
 }
 
@@ -253,7 +253,7 @@ void IOSChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
 
 bool IOSChromePasswordManagerClient::IsSavingAndFillingEnabled(
     const GURL& url) const {
-  return *saving_passwords_enabled_ && !IsIncognito() &&
+  return *saving_passwords_enabled_ && !IsOffTheRecord() &&
          !net::IsCertStatusError(GetMainFrameCertStatus()) &&
          IsFillingEnabled(url);
 }

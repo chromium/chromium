@@ -74,7 +74,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (const GURL&),
               (const, override));
   MOCK_METHOD(bool, IsFillingEnabled, (const GURL&), (const, override));
-  MOCK_METHOD(bool, IsIncognito, (), (const, override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(bool, NotifyUserAutoSigninPtr, (), ());
   MOCK_METHOD(bool,
               NotifyUserCouldBeAutoSignedInPtr,
@@ -263,7 +263,7 @@ class CredentialManagerImplTest : public testing::Test,
     ON_CALL(*client_, IsSavingAndFillingEnabled(_))
         .WillByDefault(testing::Return(true));
     ON_CALL(*client_, IsFillingEnabled(_)).WillByDefault(testing::Return(true));
-    ON_CALL(*client_, IsIncognito()).WillByDefault(testing::Return(false));
+    ON_CALL(*client_, IsOffTheRecord()).WillByDefault(testing::Return(false));
 
     form_.username_value = u"Username";
     form_.display_name = u"Display Name";
@@ -840,7 +840,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnPreventMediatedAccessIncognito) {
-  EXPECT_CALL(*client_, IsIncognito()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(testing::Return(true));
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
   store_->AddLogin(form_);
   RunAllPendingTasks();
@@ -1471,7 +1471,7 @@ TEST_P(CredentialManagerImplTest,
 }
 
 TEST_P(CredentialManagerImplTest, IncognitoZeroClickRequestCredential) {
-  EXPECT_CALL(*client_, IsIncognito()).WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(testing::Return(true));
   store_->AddLogin(form_);
 
   std::vector<GURL> federations;

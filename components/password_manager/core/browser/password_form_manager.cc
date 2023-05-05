@@ -328,8 +328,8 @@ bool PasswordFormManager::IsMovableToAccountStore() const {
 }
 
 void PasswordFormManager::Save() {
-  DCHECK_EQ(FormFetcher::State::NOT_WAITING, form_fetcher_->GetState());
-  DCHECK(!client_->IsIncognito());
+  CHECK_EQ(form_fetcher_->GetState(), FormFetcher::State::NOT_WAITING);
+  CHECK(!client_->IsOffTheRecord());
   if (IsBlocklisted()) {
     password_save_manager_->Unblocklist(ConstructObservedFormDigest());
     newly_blocklisted_ = false;
@@ -457,7 +457,7 @@ void PasswordFormManager::OnNoInteraction(bool is_update) {
 }
 
 void PasswordFormManager::Blocklist() {
-  DCHECK(!client_->IsIncognito());
+  CHECK(!client_->IsOffTheRecord());
   password_save_manager_->Blocklist(ConstructObservedFormDigest());
   newly_blocklisted_ = true;
 }

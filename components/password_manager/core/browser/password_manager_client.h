@@ -340,7 +340,7 @@ class PasswordManagerClient {
   virtual void PromptUserToEnableAutosignin();
 
   // If this browsing session should not be persisted.
-  virtual bool IsIncognito() const;
+  virtual bool IsOffTheRecord() const;
 
   // Returns the profile type of the session.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;

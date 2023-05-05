@@ -49,7 +49,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (override));
   MOCK_METHOD(void, PromptUserToEnableAutosignin, (), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
-  MOCK_METHOD(bool, IsIncognito, (), (const, override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
 };
 
@@ -119,7 +119,7 @@ TEST_F(PasswordManagerClientHelperTest, PromptAutosigninAfterSuccessfulLogin) {
 
 TEST_F(PasswordManagerClientHelperTest,
        PromptAutosigninAndMoveDisabledInIncognito) {
-  EXPECT_CALL(*client(), IsIncognito)
+  EXPECT_CALL(*client(), IsOffTheRecord)
       .Times(AnyNumber())
       .WillRepeatedly(Return(true));
   // In Incognito, both the auto-signin and the "Move password to account?"

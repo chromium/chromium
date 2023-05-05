@@ -205,7 +205,7 @@ LikelyFormFilling SendFillInformationToRenderer(
       PasswordFormMetricsRecorder::WaitForUsernameReason;
   WaitForUsernameReason wait_for_username_reason =
       WaitForUsernameReason::kDontWait;
-  if (client->IsIncognito()) {
+  if (client->IsOffTheRecord()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   } else if (client->GetPasswordFeatureManager()

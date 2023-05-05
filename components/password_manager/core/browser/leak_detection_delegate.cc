@@ -44,7 +44,7 @@ LeakDetectionDelegate::~LeakDetectionDelegate() = default;
 
 void LeakDetectionDelegate::StartLeakCheck(LeakDetectionInitiator initiator,
                                            const PasswordForm& credentials) {
-  if (client_->IsIncognito())
+  if (client_->IsOffTheRecord())
     return;
 
   if (!CanStartLeakCheck(*client_->GetPrefs(), client_))

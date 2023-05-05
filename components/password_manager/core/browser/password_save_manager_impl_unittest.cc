@@ -155,7 +155,7 @@ class MockFormSaver : public StubFormSaver {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_METHOD(bool, IsIncognito, (), (const, override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(autofill::AutofillDownloadManager*,
               GetAutofillDownloadManager,
               (),

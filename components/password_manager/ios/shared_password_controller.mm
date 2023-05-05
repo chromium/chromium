@@ -107,7 +107,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
 // Tracks current potential generated password until accepted or rejected.
 @property(nonatomic, copy) NSString* generatedPotentialPassword;
 
-- (BOOL)isIncognito;
+- (BOOL)IsOffTheRecord;
 
 @end
 
@@ -193,9 +193,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   }
 }
 
-- (BOOL)isIncognito {
+- (BOOL)IsOffTheRecord {
   DCHECK(_delegate.passwordManagerClient);
-  return _delegate.passwordManagerClient->IsIncognito();
+  return _delegate.passwordManagerClient->IsOffTheRecord();
 }
 
 #pragma mark - PasswordGenerationProvider
@@ -493,7 +493,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   }
 
   if (suggestionState) {
-    LogPasswordDropdownShown(*suggestionState, [self isIncognito]);
+    LogPasswordDropdownShown(*suggestionState, [self IsOffTheRecord]);
   }
 
   if (suggestions.count == 0 || ![_delegate shouldShowAccountStorageNotice]) {
@@ -538,7 +538,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kShowAll,
-          [self isIncognito]);
+          [self IsOffTheRecord]);
       return;
     }
     case autofill::POPUP_ITEM_ID_GENERATE_PASSWORD_ENTRY: {
@@ -551,14 +551,14 @@ NSString* const kSuggestionSuffix = @" ••••••••";
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kGenerate,
-          [self isIncognito]);
+          [self IsOffTheRecord]);
       return;
     }
     default: {
       password_manager::metrics_util::LogPasswordDropdownItemSelected(
           password_manager::metrics_util::PasswordDropdownSelectedOption::
               kPassword,
-          [self isIncognito]);
+          [self IsOffTheRecord]);
       DCHECK([suggestion.value hasSuffix:kSuggestionSuffix]);
       NSString* username = [suggestion.value
           substringToIndex:suggestion.value.length - kSuggestionSuffix.length];

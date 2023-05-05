@@ -436,7 +436,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
       password_client_->GeneratePassword(PasswordGenerationType::kAutomatic);
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kGenerate,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
       break;
     case autofill::POPUP_ITEM_ID_ALL_SAVED_PASSWORDS_ENTRY:
     case autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_EMPTY:
@@ -444,7 +444,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           ManagePasswordsReferrer::kPasswordDropdown);
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kShowAll,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
 
       if (password_client_->GetMetricsRecorder()) {
         using UserAction = password_manager::PasswordManagerMetricsRecorder::
@@ -458,7 +458,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN);
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kResigninToUnlockAccountStore,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
       break;
     case autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN:
     case autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN_AND_GENERATE:
@@ -469,12 +469,12 @@ void PasswordAutofillManager::DidAcceptSuggestion(
                   autofill::POPUP_ITEM_ID_PASSWORD_ACCOUNT_STORAGE_OPT_IN
               ? PasswordDropdownSelectedOption::kUnlockAccountStorePasswords
               : PasswordDropdownSelectedOption::kUnlockAccountStoreGeneration,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
       break;
     case autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL:
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kWebAuthn,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
           ->SelectPasskey(
@@ -488,7 +488,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     case autofill::POPUP_ITEM_ID_WEBAUTHN_SIGN_IN_WITH_ANOTHER_DEVICE:
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kWebAuthnSignInWithAnotherDevice,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
           ->LaunchWebAuthnFlow();
@@ -496,7 +496,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
     default:
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kPassword,
-          password_client_->IsIncognito());
+          password_client_->IsOffTheRecord());
 
       CancelBiometricReauthIfOngoing();
       scoped_refptr<device_reauth::DeviceAuthenticator> authenticator =
@@ -798,7 +798,7 @@ void PasswordAutofillManager::LogMetricsForSuggestions(
     }
   }
   metrics_util::LogPasswordDropdownShown(dropdown_state,
-                                         password_client_->IsIncognito());
+                                         password_client_->IsOffTheRecord());
 }
 
 bool PasswordAutofillManager::ShowPopup(

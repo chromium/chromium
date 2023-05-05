@@ -88,7 +88,7 @@ net::CertStatus PasswordManagerClient::GetMainFrameCertStatus() const {
 
 void PasswordManagerClient::PromptUserToEnableAutosignin() {}
 
-bool PasswordManagerClient::IsIncognito() const {
+bool PasswordManagerClient::IsOffTheRecord() const {
   return false;
 }
 

@@ -166,7 +166,7 @@ class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
 
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
-  MOCK_METHOD(bool, IsIncognito, (), (const, override));
+  MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
   MOCK_METHOD(autofill::AutofillDownloadManager*,
               GetAutofillDownloadManager,
               (),
@@ -833,7 +833,7 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
   // pretending we are in incognito mode.
 #if !BUILDFLAG(IS_IOS) && !defined(ANDROID)
   for (bool is_incognito : {false, true}) {
-    EXPECT_CALL(client_, IsIncognito).WillOnce(Return(is_incognito));
+    EXPECT_CALL(client_, IsOffTheRecord).WillOnce(Return(is_incognito));
 #endif
     form_manager_->Fill();
     EXPECT_TRUE(

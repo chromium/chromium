@@ -171,7 +171,7 @@ void WebViewPasswordManagerClient::PromptUserToEnableAutosignin() {
   NOTIMPLEMENTED();
 }
 
-bool WebViewPasswordManagerClient::IsIncognito() const {
+bool WebViewPasswordManagerClient::IsOffTheRecord() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 
@@ -253,7 +253,7 @@ void WebViewPasswordManagerClient::NotifyUserCredentialsWereLeaked(
 
 bool WebViewPasswordManagerClient::IsSavingAndFillingEnabled(
     const GURL& url) const {
-  return *saving_passwords_enabled_ && !IsIncognito() &&
+  return *saving_passwords_enabled_ && !IsOffTheRecord() &&
          !net::IsCertStatusError(GetMainFrameCertStatus()) &&
          IsFillingEnabled(url);
 }
