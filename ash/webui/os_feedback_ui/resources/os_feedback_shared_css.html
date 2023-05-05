@@ -23,6 +23,10 @@
       --cr-checkbox-unchecked-box-color: var(--cros-icon-color-primary);
     }
 
+    :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+      border-radius: 20px;
+    }
+
     a {
       color: var(--cros-link-color);
       text-decoration: underline;
