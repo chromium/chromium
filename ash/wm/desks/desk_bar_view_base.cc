@@ -26,6 +26,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/uuid.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -1155,7 +1156,7 @@ void DeskBarViewBase::OnLibraryButtonPressed() {
         OverviewStartAction::kDeskButton);
     overview_session = Shell::Get()->overview_controller()->overview_session();
   }
-  overview_session->ShowSavedDeskLibrary(base::GUID(), /*saved_desk_name=*/u"",
+  overview_session->ShowSavedDeskLibrary(base::Uuid(), /*saved_desk_name=*/u"",
                                          root);
 }
 

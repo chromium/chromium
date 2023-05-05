@@ -9,6 +9,7 @@
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/uuid.h"
 #include "components/app_restore/restore_data.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -99,7 +100,7 @@ class AdminTemplateTest : public OverviewTestBase,
     }
 
     auto admin_template = std::make_unique<DeskTemplate>(
-        base::GUID::GenerateRandomV4(), DeskTemplateSource::kPolicy,
+        base::Uuid::GenerateRandomV4(), DeskTemplateSource::kPolicy,
         "admin template", base::Time::Now(), DeskTemplateType::kTemplate);
     admin_template->set_desk_restore_data(
         std::make_unique<app_restore::RestoreData>(

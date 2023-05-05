@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/guid.h"
+#include "base/uuid.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {

@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/uuid.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "components/desks_storage/core/desk_model.h"
 #include "components/desks_storage/core/desk_model_observer.h"
@@ -174,7 +175,7 @@ class FloatingWorkspaceService : public KeyedService,
 
   // The uuid associated with this device's floating workspace template. This is
   // populated when we first capture a floating workspace template.
-  absl::optional<base::GUID> floating_workspace_uuid_;
+  absl::optional<base::Uuid> floating_workspace_uuid_;
 
   // Weak pointer factory used to provide references to this service.
   base::WeakPtrFactory<FloatingWorkspaceService> weak_pointer_factory_{this};

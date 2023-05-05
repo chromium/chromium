@@ -15,6 +15,7 @@
 #include "base/check_is_test.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_metrics_util.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
@@ -424,7 +425,7 @@ void FloatingWorkspaceService::OnTemplateCaptured(
   // bridge. However, the sync bridge does not need to know the new uuid since
   // the current service will handle it. Ignore for testing.
   if (!floating_workspace_uuid_.has_value() && !is_testing_) {
-    absl::optional<base::GUID> floating_workspace_uuid_from_desk_model =
+    absl::optional<base::Uuid> floating_workspace_uuid_from_desk_model =
         desk_sync_service_->GetDeskSyncBridge()->GetFloatingWorkspaceUuid();
     if (floating_workspace_uuid_from_desk_model.has_value()) {
       floating_workspace_uuid_ =

@@ -162,7 +162,9 @@ IN_PROC_BROWSER_TEST_F(DownloadStatusUpdaterBrowserTest, Update) {
 
   // Create a mock in-progress download `item`.
   testing::NiceMock<download::MockDownloadItem> item;
-  ON_CALL(item, GetGuid()).WillByDefault(ReturnRefOfCopy(base::GenerateUuid()));
+  ON_CALL(item, GetGuid())
+      .WillByDefault(
+          ReturnRefOfCopy(base::Uuid::GenerateRandomV4().AsLowercaseString()));
   ON_CALL(item, GetState())
       .WillByDefault(Return(download::DownloadItem::IN_PROGRESS));
 
