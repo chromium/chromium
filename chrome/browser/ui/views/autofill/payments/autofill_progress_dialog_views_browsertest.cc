@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/autofill_progress_dialog_view.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,22 +27,6 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
   AutofillProgressDialogViewsBrowserTest& operator=(
       const AutofillProgressDialogViewsBrowserTest&) = delete;
 
-  // DialogBrowserTest:
-  void SetUpOnMainThread() override {
-    controller_ = std::make_unique<AutofillProgressDialogControllerImpl>(
-        browser()->tab_strip_model()->GetActiveWebContents());
-  }
-
-  void TearDownOnMainThread() override {
-    // Reset the controller explicitly to avoid that its raw pointer to the
-    // `WebContents` becomes dangling. This mirrors the behavior in production
-    // code in which `ChromeAutofillClient` owns the controller and is destroyed
-    // prior to the destruction of the respective `WebContents`.
-    controller_.reset();
-
-    DialogBrowserTest::TearDownOnMainThread();
-  }
-
   void ShowUi(const std::string& name) override {
     AutofillProgressDialogType autofill_progress_dialog_type_;
     CHECK_EQ(name, "VirtualCardUnmask");
@@ -62,11 +47,10 @@ class AutofillProgressDialogViewsBrowserTest : public DialogBrowserTest {
   }
 
   AutofillProgressDialogControllerImpl* controller() {
-    return controller_.get();
+    auto* client = ChromeAutofillClient::FromWebContentsForTesting(
+        browser()->tab_strip_model()->GetActiveWebContents());
+    return client->AutofillProgressDialogControllerForTesting();
   }
-
- private:
-  std::unique_ptr<AutofillProgressDialogControllerImpl> controller_;
 };
 
 IN_PROC_BROWSER_TEST_F(AutofillProgressDialogViewsBrowserTest,

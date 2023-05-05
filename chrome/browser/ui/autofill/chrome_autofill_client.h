@@ -282,6 +282,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
       const zoom::ZoomController::ZoomChangedEventData& data) override;
 #endif
 
+  AutofillProgressDialogControllerImpl*
+  AutofillProgressDialogControllerForTesting() {
+    return autofill_progress_dialog_controller_.get();
+  }
+
  protected:
   explicit ChromeAutofillClient(content::WebContents* web_contents);
 
