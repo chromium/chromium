@@ -19,6 +19,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_google_chrome_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -322,7 +323,7 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 
 // Configures the title view of this ViewController.
 - (UIView*)setUpTitleView {
-  NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER);
+  NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE);
   return password_manager::CreatePasswordManagerTitleView(title);
 }
 

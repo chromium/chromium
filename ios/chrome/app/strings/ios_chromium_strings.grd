@@ -551,6 +551,9 @@ Things to consider:
       <message name="IDS_IOS_SUGGESTED_STRONG_PASSWORD_HINT_DISPLAYING_EMAIL" desc="Text shown alongside a suggested password to tell user that generated passwords are recorded by chrome. [Length: unlimited] [iOS only]">
             You won't need to remember this password. It will be saved to Password Manager for <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
+      <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
+          Google Password Manager
+      </message>
       <message name="IDS_IOS_PASSWORD_CHECK_ERROR" desc="Description of the password check cell, explaining that Password Check failed. [iOS only]" meaning="Password Check failed due to some error.">
         Chromium can't check your passwords
       </message>
