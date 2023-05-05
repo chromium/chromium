@@ -13,10 +13,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
-#include "base/types/expected.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/infra/cached_callback.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 
@@ -33,8 +33,7 @@ class ScopedVolume {
       base::FilePath remote_path,
       const ash::disks::DiskMountManager::MountPoint& mount_info,
       VmType vm_type)
-      : profile_(profile),
-        mount_label_(std::move(mount_label)),
+      : mount_label_(std::move(mount_label)),
         display_name_(std::move(display_name)),
         mount_path_(mount_info.mount_path),
         remote_path_(std::move(remote_path)),
@@ -52,39 +51,50 @@ class ScopedVolume {
 
   // Adds the volume to the VolumeManager for `profile`. Since Incognito
   // profiles have their own volume managers the same mount might be added to
-  // multiple profiles.
+  // multiple profiles. No-op if already added for the profile.
   void AddVolumeForProfile(Profile* profile) {
+    for (const auto p : profiles_) {
+      if (p && p.get() == profile) {
+        // Already added a volume for this profile, skip.
+        return;
+      }
+    }
     auto* vmgr = file_manager::VolumeManager::Get(profile);
     if (vmgr) {
       // vmgr may be null in unit tests.
       vmgr->AddSftpGuestOsVolume(display_name_, mount_path_, remote_path_,
                                  vm_type_);
     }
+    profiles_.push_back(profile->GetWeakPtr());
   }
 
   ~ScopedVolume() {
-    if (profile_->ShutdownStarted()) {
-      // We're shutting down, but because we're not a keyed service we don't get
-      // two-phase shutdown, we just can't call anything. Either the whole
-      // system is shutting down (in which case everything gets undone anyway)
-      // or it's just the browser (in which case it's basically the same as a
-      // browser crash which we also need to handle).
-      // So do nothing.
-      return;
-    }
+    for (auto& profile : profiles_) {
+      if (!profile || profile->ShutdownStarted()) {
+        // We're shutting down or have shut down, but because we're not a keyed
+        // service we don't get two-phase shutdown, we just can't call anything.
+        // Either the whole system is shutting down (in which case everything
+        // gets undone anyway) or it's just the browser (in which case it's
+        // basically the same as a browser crash which we also need to handle).
+        // So do nothing.
+        return;
+      }
 
-    auto* vmgr = file_manager::VolumeManager::Get(profile_);
-    if (vmgr) {
-      // vmgr is null in unit tests. Also, this calls disk_manager to unmount
-      // for us (and we never unregister the filesystem) hence unmount doesn't
-      // seem symmetric with mount.
-      vmgr->RemoveSftpGuestOsVolume(
-          file_manager::util::GetGuestOsMountDirectory(mount_label_), vm_type_,
-          base::DoNothing());
+      auto* vmgr = file_manager::VolumeManager::Get(profile.get());
+      if (vmgr) {
+        // vmgr is null in unit tests. Also, this calls disk_manager to unmount
+        // for us (and we never unregister the filesystem) hence unmount doesn't
+        // seem symmetric with mount.
+        vmgr->RemoveSftpGuestOsVolume(
+            file_manager::util::GetGuestOsMountDirectory(mount_label_),
+            vm_type_, base::DoNothing());
+      }
     }
   }
 
-  raw_ptr<Profile, ExperimentalAsh> profile_;
+  // A mount can be present in multiple profiles at the same time e.g. parent
+  // and child incognito profile.
+  std::vector<base::WeakPtr<Profile>> profiles_;
   std::string mount_label_;
   const std::string display_name_;
   const base::FilePath mount_path_;
@@ -116,6 +126,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
                                 weak_ptr_factory_.GetWeakPtr(),
                                 std::move(callback)));
   }
+
   void MountPath(RealCallback callback,
                  bool success,
                  int cid,
@@ -140,6 +151,7 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
                                    weak_ptr_factory_.GetWeakPtr(),
                                    std::move(callback), remote_path));
   }
+
   void OnMountEvent(
       RealCallback callback,
       base::FilePath remote_path,
@@ -189,6 +201,12 @@ void GuestOsMountProvider::Mount(Profile* target_profile,
       [](base::OnceCallback<void(bool)> callback, Profile* target_profile,
          guest_os::GuestOsMountProviderInner::Result result) {
         if (result.has_value()) {
+          // By this point the filesystem is mounted, and volume created in
+          // `profile()`, which is the user's main profile. But it's possible
+          // that the active/target profile is a child profile e.g. incognito.
+          // This profile has its own volume manager, so add it there too. We
+          // unconditionally add it, since ScopedVolume has its own checks to
+          // avoid double-adding.
           result.value()->AddVolumeForProfile(target_profile);
         }
         std::move(callback).Run(result.has_value());
