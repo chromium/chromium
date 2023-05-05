@@ -15,6 +15,10 @@
 #import "chrome/services/mac_notifications/mac_notification_service_ns.h"
 #import "chrome/services/mac_notifications/mac_notification_service_un.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace mac_notifications {
 
 MacNotificationProviderImpl::MacNotificationProviderImpl() = default;

@@ -30,6 +30,10 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace mac_notifications {
 
 namespace {
@@ -111,35 +115,33 @@ class MacNotificationServiceUNTest : public testing::Test {
   }
 
   API_AVAILABLE(macos(10.14))
-  base::scoped_nsobject<FakeUNNotification> CreateNotification(
-      const std::string& notification_id,
-      const std::string& profile_id,
-      bool incognito,
-      bool display = true,
-      const std::string& category_id = "") {
+  FakeUNNotification* CreateNotification(const std::string& notification_id,
+                                         const std::string& profile_id,
+                                         bool incognito,
+                                         bool display = true,
+                                         const std::string& category_id = "") {
     NSString* identifier = base::SysUTF8ToNSString(
         DeriveMacNotificationId(mojom::NotificationIdentifier::New(
             notification_id,
             mojom::ProfileIdentifier::New(profile_id, incognito))));
 
-    base::scoped_nsobject<UNMutableNotificationContent> content(
-        [[UNMutableNotificationContent alloc] init]);
-    content.get().userInfo = @{
+    UNMutableNotificationContent* content =
+        [[UNMutableNotificationContent alloc] init];
+    content.userInfo = @{
       kNotificationId : base::SysUTF8ToNSString(notification_id),
       kNotificationProfileId : base::SysUTF8ToNSString(profile_id),
       kNotificationIncognito : [NSNumber numberWithBool:incognito],
     };
     if (!category_id.empty())
-      content.get().categoryIdentifier = base::SysUTF8ToNSString(category_id);
+      content.categoryIdentifier = base::SysUTF8ToNSString(category_id);
 
     UNNotificationRequest* request =
         [UNNotificationRequest requestWithIdentifier:identifier
-                                             content:content.get()
+                                             content:content
                                              trigger:nil];
 
-    base::scoped_nsobject<FakeUNNotification> notification(
-        [[FakeUNNotification alloc] init]);
-    [notification setRequest:request];
+    FakeUNNotification* notification = [[FakeUNNotification alloc] init];
+    notification.request = request;
 
     // Also call the |service_remote_| to setup the new notification. This will
     // make sure that any internal state is updated as well.
@@ -150,8 +152,8 @@ class MacNotificationServiceUNTest : public testing::Test {
   }
 
   API_AVAILABLE(macos(10.14))
-  std::vector<base::scoped_nsobject<FakeUNNotification>> SetupNotifications() {
-    std::vector<base::scoped_nsobject<FakeUNNotification>> notifications = {
+  std::vector<FakeUNNotification*> SetupNotifications() {
+    std::vector<FakeUNNotification*> notifications = {
         CreateNotification("notificationId", "profileId", /*incognito=*/false),
         CreateNotification("notificationId", "profileId2", /*incognito=*/true),
         CreateNotification("notificationId2", "profileId", /*incognito=*/true),
@@ -161,7 +163,7 @@ class MacNotificationServiceUNTest : public testing::Test {
     NSMutableArray* notifications_ns =
         [NSMutableArray arrayWithCapacity:notifications.size()];
     for (const auto& notification : notifications)
-      [notifications_ns addObject:notification.get()];
+      [notifications_ns addObject:notification];
 
     [[[mock_notification_center_ stub] andDo:^(NSInvocation* invocation) {
       __unsafe_unretained void (^callback)(NSArray* _Nonnull toasts);
@@ -540,10 +542,10 @@ TEST_F(MacNotificationServiceUNTest, InitializeDeliveredNotifications) {
         NotificationCategoryManager::CreateCategory(
             {{{u"Action", /*reply=*/absl::nullopt}}, /*settings_button=*/true});
     std::string category_id = base::SysNSStringToUTF8(category_ns.identifier);
-    base::scoped_nsobject<FakeUNNotification> notification =
+    FakeUNNotification* notification =
         CreateNotification("notificationId", "profileId",
                            /*incognito=*/false, /*display=*/false, category_id);
-    auto notification_ns = static_cast<UNNotification*>(notification.get());
+    auto notification_ns = static_cast<UNNotification*>(notification);
 
     // Expect the service to initialize internal state based on the existing
     // notifications and categories.
@@ -586,7 +588,7 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
     };
 
     for (const auto& params : kNotificationActionParams) {
-      base::scoped_nsobject<FakeUNNotification> notification =
+      FakeUNNotification* notification =
           CreateNotification("notificationId", "profileId",
                              /*incognito=*/false);
 
@@ -610,7 +612,7 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
           mockForClass:params.reply ? [UNTextInputNotificationResponse class]
                                     : [UNNotificationResponse class]];
       [[[response stub] andReturn:params.action_identifier] actionIdentifier];
-      [[[response stub] andReturn:notification.get()] notification];
+      [[[response stub] andReturn:notification] notification];
 
       if (params.reply) {
         [[[response stub] andReturn:base::SysUTF16ToNSString(*params.reply)]

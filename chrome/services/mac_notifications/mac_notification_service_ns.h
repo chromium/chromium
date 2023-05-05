@@ -5,11 +5,14 @@
 #ifndef CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_NS_H_
 #define CHROME_SERVICES_MAC_NOTIFICATIONS_MAC_NOTIFICATION_SERVICE_NS_H_
 
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class AlertNSNotificationCenterDelegate;
 @class NSUserNotificationCenter;
@@ -40,8 +43,8 @@ class MacNotificationServiceNS : public mojom::MacNotificationService {
 
  private:
   mojo::Receiver<mojom::MacNotificationService> binding_;
-  base::scoped_nsobject<AlertNSNotificationCenterDelegate> delegate_;
-  base::scoped_nsobject<NSUserNotificationCenter> notification_center_;
+  AlertNSNotificationCenterDelegate* __strong delegate_;
+  NSUserNotificationCenter* __strong notification_center_;
 };
 
 }  // namespace mac_notifications

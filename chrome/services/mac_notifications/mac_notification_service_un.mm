@@ -25,6 +25,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // This uses a private API so that updated banners do not keep reappearing on
 // the screen, for example banners that are used to show progress would keep
 // reappearing on the screen without the usage of this private API.
@@ -89,7 +93,7 @@ absl::optional<std::u16string> GetReplyFromResponse(
   if (![response isKindOfClass:[UNTextInputNotificationResponse class]])
     return absl::nullopt;
   auto* textResponse = static_cast<UNTextInputNotificationResponse*>(response);
-  return base::SysNSStringToUTF16([textResponse userText]);
+  return base::SysNSStringToUTF16(textResponse.userText);
 }
 
 }  // namespace
@@ -105,14 +109,14 @@ MacNotificationServiceUN::MacNotificationServiceUN(
     UNUserNotificationCenter* notification_center)
     : binding_(this),
       action_handler_(std::move(handler)),
-      notification_center_([notification_center retain]),
+      notification_center_(notification_center),
       category_manager_(notification_center) {
-  delegate_.reset([[AlertUNNotificationCenterDelegate alloc]
+  delegate_ = [[AlertUNNotificationCenterDelegate alloc]
       initWithActionHandler:base::BindRepeating(
                                 &MacNotificationServiceUN::OnNotificationAction,
-                                weak_factory_.GetWeakPtr())]);
-  [notification_center_ setDelegate:delegate_.get()];
-  LogUNNotificationSettings(notification_center_.get());
+                                weak_factory_.GetWeakPtr())];
+  notification_center_.delegate = delegate_;
+  LogUNNotificationSettings(notification_center_);
   // TODO(crbug.com/1129366): Determine when to ask for permissions.
   RequestPermission();
   // Schedule a timer to regularly check for any closed notifications.
@@ -135,13 +139,13 @@ MacNotificationServiceUN::~MacNotificationServiceUN() {
 void MacNotificationServiceUN::DisplayNotification(
     mojom::NotificationPtr notification) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::scoped_nsobject<UNMutableNotificationContent> content(
-      [[UNMutableNotificationContent alloc] init]);
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
 
-  [content setTitle:base::SysUTF16ToNSString(notification->title)];
-  [content setSubtitle:base::SysUTF16ToNSString(notification->subtitle)];
-  [content setBody:base::SysUTF16ToNSString(notification->body)];
-  [content setUserInfo:GetMacNotificationUserInfo(notification)];
+  content.title = base::SysUTF16ToNSString(notification->title);
+  content.subtitle = base::SysUTF16ToNSString(notification->subtitle);
+  content.body = base::SysUTF16ToNSString(notification->body);
+  content.userInfo = GetMacNotificationUserInfo(notification);
 
   std::string notification_id = DeriveMacNotificationId(notification->meta->id);
   NSString* notification_id_ns = base::SysUTF8ToNSString(notification_id);
@@ -151,11 +155,11 @@ void MacNotificationServiceUN::DisplayNotification(
 
   NotificationCategoryManager::Buttons buttons;
   for (const auto& button : notification->buttons)
-    buttons.push_back({button->title, button->placeholder});
+    buttons.emplace_back(button->title, button->placeholder);
 
   NSString* category_id = category_manager_.GetOrCreateCategory(
       notification_id, buttons, notification->show_settings_button);
-  [content setCategoryIdentifier:category_id];
+  content.categoryIdentifier = category_id;
 
   if (!notification->icon.isNull()) {
     gfx::Image icon(notification->icon);
@@ -203,14 +207,14 @@ void MacNotificationServiceUN::DisplayNotification(
     // it and show it on the screen.
     [notification_center_
         replaceContentForRequestWithIdentifier:notification_id_ns
-                            replacementContent:content.get()
+                            replacementContent:content
                              completionHandler:completion_handler];
     return;
   }
 
   UNNotificationRequest* request =
       [UNNotificationRequest requestWithIdentifier:notification_id_ns
-                                           content:content.get()
+                                           content:content
                                            trigger:nil];
 
   [notification_center_ addNotificationRequest:request
@@ -238,7 +242,7 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
     std::vector<mojom::NotificationIdentifierPtr> notifications;
 
     for (UNNotification* toast in toasts) {
-      NSDictionary* user_info = [[[toast request] content] userInfo];
+      NSDictionary* user_info = toast.request.content.userInfo;
       NSString* toast_id = [user_info objectForKey:kNotificationId];
       NSString* toast_profile_id =
           [user_info objectForKey:kNotificationProfileId];
@@ -281,13 +285,12 @@ void MacNotificationServiceUN::CloseNotificationsForProfile(
 
   [notification_center_ getDeliveredNotificationsWithCompletionHandler:^(
                             NSArray<UNNotification*>* _Nonnull toasts) {
-    base::scoped_nsobject<NSMutableArray> identifiers(
-        [[NSMutableArray alloc] init]);
+    NSMutableArray* identifiers = [[NSMutableArray alloc] init];
     std::vector<std::string> closed_notification_ids;
 
     for (UNNotification* toast in toasts) {
-      NSDictionary* user_info = [[[toast request] content] userInfo];
-      NSString* toast_id = [[toast request] identifier];
+      NSDictionary* user_info = toast.request.content.userInfo;
+      NSString* toast_id = toast.request.identifier;
       NSString* toast_profile_id =
           [user_info objectForKey:kNotificationProfileId];
       bool toast_incognito =
@@ -346,24 +349,20 @@ void MacNotificationServiceUN::InitializeDeliveredNotifications(
     [notification_center_
         getNotificationCategoriesWithCompletionHandler:^(
             NSSet<UNNotificationCategory*>* _Nonnull categories) {
-          std::move(do_initialize)
-              .Run(base::scoped_nsobject<NSArray<UNNotification*>>(
-                       [notifications retain]),
-                   base::scoped_nsobject<NSSet<UNNotificationCategory*>>(
-                       [categories retain]));
+          std::move(do_initialize).Run(notifications, categories);
         }];
   }];
 }
 
 void MacNotificationServiceUN::DoInitializeDeliveredNotifications(
     base::OnceClosure callback,
-    base::scoped_nsobject<NSArray<UNNotification*>> notifications,
-    base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories) {
+    NSArray<UNNotification*>* notifications,
+    NSSet<UNNotificationCategory*>* categories) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (UNNotification* notification in notifications.get()) {
+  for (UNNotification* notification in notifications) {
     auto meta = mac_notifications::GetMacNotificationMetadata(
-        [[[notification request] content] userInfo]);
+        notification.request.content.userInfo);
     std::string notification_id = DeriveMacNotificationId(meta->id);
     delivered_notifications_[notification_id] = std::move(meta);
   }
@@ -478,10 +477,10 @@ void MacNotificationServiceUN::OnNotificationsClosed(
              withCompletionHandler:(void (^)(void))completionHandler {
   mac_notifications::mojom::NotificationMetadataPtr meta =
       mac_notifications::GetMacNotificationMetadata(
-          [[[[response notification] request] content] userInfo]);
+          response.notification.request.content.userInfo);
   NotificationOperation operation =
-      GetNotificationOperationFromAction([response actionIdentifier]);
-  int buttonIndex = GetActionButtonIndexFromAction([response actionIdentifier]);
+      GetNotificationOperationFromAction(response.actionIdentifier);
+  int buttonIndex = GetActionButtonIndexFromAction(response.actionIdentifier);
   absl::optional<std::u16string> reply = GetReplyFromResponse(response);
   auto actionInfo = mac_notifications::mojom::NotificationActionInfo::New(
       std::move(meta), operation, buttonIndex, std::move(reply));

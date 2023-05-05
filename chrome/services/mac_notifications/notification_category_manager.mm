@@ -11,6 +11,10 @@
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace mac_notifications {
 
 namespace {
@@ -52,29 +56,28 @@ NotificationCategoryManager::Button GetButtonFromAction(
 
 NotificationCategoryManager::NotificationCategoryManager(
     UNUserNotificationCenter* notification_center)
-    : notification_center_([notification_center retain]) {}
+    : notification_center_(notification_center) {}
 
 NotificationCategoryManager::~NotificationCategoryManager() = default;
 
 void NotificationCategoryManager::InitializeExistingCategories(
-    base::scoped_nsobject<NSArray<UNNotification*>> notifications,
-    base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories) {
-  base::flat_map<std::string, base::scoped_nsobject<UNNotificationCategory>>
-      category_map;
+    NSArray<UNNotification*>* notifications,
+    NSSet<UNNotificationCategory*>* categories) {
+  base::flat_map<std::string, UNNotificationCategory*> category_map;
 
   // Setup map from category ID to category for faster lookup.
-  for (UNNotificationCategory* category in categories.get()) {
-    std::string category_id = base::SysNSStringToUTF8([category identifier]);
-    category_map.emplace(category_id, [category retain]);
+  for (UNNotificationCategory* category in categories) {
+    std::string category_id = base::SysNSStringToUTF8(category.identifier);
+    category_map.emplace(category_id, category);
   }
 
   // Setup links from notifications to categories and count how many times each
   // category is used.
-  for (UNNotification* notification in notifications.get()) {
+  for (UNNotification* notification in notifications) {
     std::string notification_id =
         base::SysNSStringToUTF8([[notification request] identifier]);
     std::string category_id = base::SysNSStringToUTF8(
-        [[[notification request] content] categoryIdentifier]);
+        notification.request.content.categoryIdentifier);
 
     if (notification_id_buttons_map_.count(notification_id))
       continue;
@@ -84,7 +87,7 @@ void NotificationCategoryManager::InitializeExistingCategories(
       continue;
 
     // Link |notification_id| to |category_key|.
-    auto category_key = GetCategoryKey(entry->second.get());
+    auto category_key = GetCategoryKey(entry->second);
     notification_id_buttons_map_.emplace(notification_id, category_key);
 
     // Increment refcount for |category_key|.
@@ -110,7 +113,7 @@ NSString* NotificationCategoryManager::GetOrCreateCategory(
   // Try to find an existing category with the given buttons.
   auto existing = buttons_category_map_.find(category_key);
   if (existing != buttons_category_map_.end()) {
-    UNNotificationCategory* category = existing->second.first.get();
+    UNNotificationCategory* category = existing->second.first;
     int& refcount = existing->second.second;
     // Increment refcount so we keep the category alive.
     ++refcount;
@@ -119,12 +122,12 @@ NSString* NotificationCategoryManager::GetOrCreateCategory(
 
   // Create a new category with the given buttons.
   UNNotificationCategory* category = CreateCategory(category_key);
-  CategoryEntry category_entry([category retain], /*refcount=*/1);
+  CategoryEntry category_entry(category, /*refcount=*/1);
   buttons_category_map_.emplace(category_key, std::move(category_entry));
 
   UpdateNotificationCenterCategories();
 
-  return [category identifier];
+  return category.identifier;
 }
 
 void NotificationCategoryManager::ReleaseCategories(
@@ -167,7 +170,7 @@ void NotificationCategoryManager::ReleaseAllCategories() {
 }
 
 void NotificationCategoryManager::UpdateNotificationCenterCategories() {
-  base::scoped_nsobject<NSMutableSet> categories([[NSMutableSet alloc] init]);
+  NSMutableSet* categories = [[NSMutableSet alloc] init];
   for (const auto& entry : buttons_category_map_)
     [categories addObject:entry.second.first];
 
@@ -209,7 +212,7 @@ UNNotificationCategory* NotificationCategoryManager::CreateCategory(
   // be set as [button, Close] so that close is on top. If there are more than 2
   // buttons or we're on macOS 11, the buttons end up in an overflow menu which
   // shows them the correct way around.
-  if (!base::mac::IsAtLeastOS11() && [buttons_array count] == 2) {
+  if (!base::mac::IsAtLeastOS11() && buttons_array.count == 2) {
     // Remove the close button and move it to the end of the array.
     [buttons_array removeObject:close_button];
     [buttons_array addObject:close_button];
@@ -250,8 +253,8 @@ NotificationCategoryManager::GetCategoryKey(UNNotificationCategory* category) {
   Buttons buttons;
   bool settings_button = false;
 
-  for (UNNotificationAction* action in [category actions]) {
-    NSString* identifier = [action identifier];
+  for (UNNotificationAction* action in category.actions) {
+    NSString* identifier = action.identifier;
     if ([kNotificationSettingsButtonTag isEqualToString:identifier]) {
       settings_button = true;
     } else if ([kNotificationButtonOne isEqualToString:identifier] ||

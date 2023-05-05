@@ -14,8 +14,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace mac_notifications {
 
@@ -39,9 +42,8 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
   ~NotificationCategoryManager();
 
   // Initializes notification categories from displayed notifications.
-  void InitializeExistingCategories(
-      base::scoped_nsobject<NSArray<UNNotification*>> notifications,
-      base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories);
+  void InitializeExistingCategories(NSArray<UNNotification*>* notifications,
+                                    NSSet<UNNotificationCategory*>* categories);
 
   // Gets an existing category identifier that matches the given action buttons
   // or creates a new one. The returned identifier will stay valid until all
@@ -68,11 +70,12 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
   void UpdateNotificationCenterCategories();
 
   using CategoryKey = std::pair<Buttons, /*settings_button*/ bool>;
-  using CategoryEntry = std::pair<base::scoped_nsobject<UNNotificationCategory>,
+  using CategoryEntry = std::pair<UNNotificationCategory*,
                                   /*refcount*/ int>;
 
   // Creates a new category that shows the buttons given via |key|.
   static UNNotificationCategory* CreateCategory(const CategoryKey& key);
+
   // Gets the CategoryKey used to create |category|.
   static CategoryKey GetCategoryKey(UNNotificationCategory* category);
 
@@ -82,7 +85,7 @@ class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
   // Maps a notification id to its set of notification action buttons.
   base::flat_map<std::string, CategoryKey> notification_id_buttons_map_;
 
-  base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
+  UNUserNotificationCenter* __strong notification_center_;
 };
 
 }  // namespace mac_notifications

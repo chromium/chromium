@@ -16,17 +16,19 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace mac_notifications {
 
 class NotificationCategoryManagerTest : public testing::Test {
  public:
   NotificationCategoryManagerTest() {
     if (@available(macOS 10.14, *)) {
-      fake_notification_center_.reset(
-          [[FakeUNUserNotificationCenter alloc] init]);
+      fake_notification_center_ = [[FakeUNUserNotificationCenter alloc] init];
       manager_ = std::make_unique<NotificationCategoryManager>(
-          static_cast<UNUserNotificationCenter*>(
-              fake_notification_center_.get()));
+          static_cast<UNUserNotificationCenter*>(fake_notification_center_));
     }
   }
 
@@ -46,26 +48,24 @@ class NotificationCategoryManagerTest : public testing::Test {
   }
 
   API_AVAILABLE(macos(10.14))
-  base::scoped_nsobject<FakeUNNotification> CreateNotification(
-      NSString* identifier,
-      UNNotificationCategory* category) {
-    base::scoped_nsobject<UNMutableNotificationContent> content(
-        [[UNMutableNotificationContent alloc] init]);
-    content.get().categoryIdentifier = [category identifier];
+  FakeUNNotification* CreateNotification(NSString* identifier,
+                                         UNNotificationCategory* category) {
+    UNMutableNotificationContent* content =
+        [[UNMutableNotificationContent alloc] init];
+    content.categoryIdentifier = category.identifier;
 
     UNNotificationRequest* request =
         [UNNotificationRequest requestWithIdentifier:identifier
-                                             content:content.get()
+                                             content:content
                                              trigger:nil];
 
-    base::scoped_nsobject<FakeUNNotification> notification(
-        [[FakeUNNotification alloc] init]);
-    [notification setRequest:request];
+    FakeUNNotification* notification = [[FakeUNNotification alloc] init];
+    notification.request = request;
     return notification;
   }
 
   API_AVAILABLE(macos(10.14))
-  base::scoped_nsobject<FakeUNUserNotificationCenter> fake_notification_center_;
+  FakeUNUserNotificationCenter* __strong fake_notification_center_;
   API_AVAILABLE(macos(10.14))
   std::unique_ptr<NotificationCategoryManager> manager_;
 };
@@ -74,7 +74,7 @@ TEST_F(NotificationCategoryManagerTest, TestNotificationNoButtons) {
   if (@available(macOS 10.14, *)) {
     NSString* category_id = manager_->GetOrCreateCategory(
         "notification_id", /*buttons=*/{}, /*settings_button=*/true);
-    ASSERT_EQ(1u, [[fake_notification_center_ categories] count]);
+    ASSERT_EQ(1u, fake_notification_center_.categories.count);
     UNNotificationCategory* category =
         [[fake_notification_center_ categories] anyObject];
     EXPECT_NSEQ(category_id, [category identifier]);
@@ -439,14 +439,13 @@ TEST_F(NotificationCategoryManagerTest, InitializeExistingCategories) {
         {{{u"Action", u"Reply"}}, /*settings_button=*/true});
     UNNotificationCategory* category_ns =
         NotificationCategoryManager::CreateCategory(category_key);
-    base::scoped_nsobject<FakeUNNotification> notfication =
+    FakeUNNotification* notification =
         CreateNotification(@"identifier1", category_ns);
-    auto* notification_ns = static_cast<UNNotification*>(notfication.get());
+    auto* notification_ns = static_cast<UNNotification*>(notification);
 
-    base::scoped_nsobject<NSArray<UNNotification*>> notifications(
-        [[NSArray alloc] initWithArray:@[ notification_ns ]]);
-    base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories(
-        [[NSSet alloc] initWithArray:@[ category_ns ]]);
+    NSArray<UNNotification*>* notifications = @[ notification_ns ];
+    NSSet<UNNotificationCategory*>* categories =
+        [NSSet setWithArray:@[ category_ns ]];
 
     manager_->InitializeExistingCategories(std::move(notifications),
                                            std::move(categories));

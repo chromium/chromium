@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -20,6 +19,10 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class AlertUNNotificationCenterDelegate;
 @class UNUserNotificationCenter;
@@ -62,8 +65,8 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
   void InitializeDeliveredNotifications(base::OnceClosure callback);
   void DoInitializeDeliveredNotifications(
       base::OnceClosure callback,
-      base::scoped_nsobject<NSArray<UNNotification*>> notifications,
-      base::scoped_nsobject<NSSet<UNNotificationCategory*>> categories);
+      NSArray<UNNotification*>* notifications,
+      NSSet<UNNotificationCategory*>* categories);
 
   // Called regularly while we think that notifications are on screen to detect
   // when they get closed.
@@ -79,8 +82,8 @@ class API_AVAILABLE(macos(10.14)) MacNotificationServiceUN
 
   mojo::Receiver<mojom::MacNotificationService> binding_;
   mojo::Remote<mojom::MacNotificationActionHandler> action_handler_;
-  base::scoped_nsobject<AlertUNNotificationCenterDelegate> delegate_;
-  base::scoped_nsobject<UNUserNotificationCenter> notification_center_;
+  AlertUNNotificationCenterDelegate* __strong delegate_;
+  UNUserNotificationCenter* __strong notification_center_;
 
   // Category manager for action buttons.
   NotificationCategoryManager category_manager_;

@@ -4,12 +4,12 @@
 
 #import "chrome/services/mac_notifications/notification_test_utils_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation FakeUNNotification
 @synthesize request = _request;
-- (void)dealloc {
-  [_request release];
-  [super dealloc];
-}
 @end
 
 @implementation FakeUNNotificationSettings
@@ -18,17 +18,17 @@
 @end
 
 @implementation FakeUNUserNotificationCenter {
-  base::scoped_nsobject<FakeUNNotificationSettings> _settings;
-  base::scoped_nsobject<NSMutableDictionary> _notifications;
-  base::scoped_nsobject<NSSet<UNNotificationCategory*>> _categories;
-  id<UNUserNotificationCenterDelegate> _delegate;
+  FakeUNNotificationSettings* __strong _settings;
+  NSMutableDictionary* __strong _notifications;
+  NSSet<UNNotificationCategory*>* __strong _categories;
+  id<UNUserNotificationCenterDelegate> __weak _delegate;
 }
 
 - (instancetype)init {
   if ((self = [super init])) {
-    _settings.reset([[FakeUNNotificationSettings alloc] init]);
-    _notifications.reset([[NSMutableDictionary alloc] init]);
-    _categories.reset([[NSSet alloc] init]);
+    _settings = [[FakeUNNotificationSettings alloc] init];
+    _notifications = [[NSMutableDictionary alloc] init];
+    _categories = [[NSSet alloc] init];
     _delegate = nil;
   }
   return self;
@@ -43,7 +43,7 @@
 }
 
 - (void)setNotificationCategories:(NSSet<UNNotificationCategory*>*)categories {
-  _categories.reset([categories copy]);
+  _categories = [categories copy];
 }
 
 - (void)replaceContentForRequestWithIdentifier:(NSString*)requestIdentifier
@@ -56,19 +56,17 @@
       [UNNotificationRequest requestWithIdentifier:requestIdentifier
                                            content:content
                                            trigger:nil];
-  base::scoped_nsobject<FakeUNNotification> notification(
-      [[FakeUNNotification alloc] init]);
-  [notification setRequest:request];
-  [_notifications setObject:notification forKey:[request identifier]];
+  FakeUNNotification* notification = [[FakeUNNotification alloc] init];
+  notification.request = request;
+  [_notifications setObject:notification forKey:request.identifier];
   notificationDelivered(/*error=*/nil);
 }
 
 - (void)addNotificationRequest:(UNNotificationRequest*)request
          withCompletionHandler:(void (^)(NSError* error))completionHandler {
-  base::scoped_nsobject<FakeUNNotification> notification(
-      [[FakeUNNotification alloc] init]);
+  FakeUNNotification* notification = [[FakeUNNotification alloc] init];
   [notification setRequest:request];
-  [_notifications setObject:notification forKey:[request identifier]];
+  [_notifications setObject:notification forKey:request.identifier];
   completionHandler(/*error=*/nil);
 }
 
@@ -79,7 +77,7 @@
 
 - (void)getNotificationCategoriesWithCompletionHandler:
     (void (^)(NSSet<UNNotificationCategory*>* categories))completionHandler {
-  completionHandler([[_categories copy] autorelease]);
+  completionHandler([_categories copy]);
 }
 
 - (void)requestAuthorizationWithOptions:(UNAuthorizationOptions)options
@@ -95,19 +93,19 @@
 
 - (void)getNotificationSettingsWithCompletionHandler:
     (void (^)(UNNotificationSettings* settings))completionHandler {
-  completionHandler(static_cast<UNNotificationSettings*>(_settings.get()));
+  completionHandler(static_cast<UNNotificationSettings*>(_settings));
 }
 
 - (FakeUNNotificationSettings*)settings {
-  return _settings.get();
+  return _settings;
 }
 
 - (NSArray<UNNotification*>* _Nonnull)notifications {
-  return [_notifications allValues];
+  return _notifications.allValues;
 }
 
 - (NSSet<UNNotificationCategory*>* _Nonnull)categories {
-  return _categories.get();
+  return _categories;
 }
 
 - (id<UNUserNotificationCenterDelegate> _Nullable)delegate {
