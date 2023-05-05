@@ -575,6 +575,16 @@ absl::optional<gfx::RectF> OptimizeToSingleTileDraw(
   return visible_src_rect;
 }
 
+PhysicalRect GetSubsetDestRectForImage(const BackgroundImageGeometry& geometry,
+                                       const Image& image) {
+  // Use the snapped size if the image does not have any intrinsic dimensions,
+  // since in that case the image will have been sized according to tile size.
+  const PhysicalRect& rect = image.HasIntrinsicSize()
+                                 ? geometry.UnsnappedDestRect()
+                                 : geometry.SnappedDestRect();
+  return {geometry.SnappedDestRect().offset, rect.size};
+}
+
 // The unsnapped_subset_size should be the target painting area implied by the
 //   content, without any snapping applied. It is necessary to correctly
 //   compute the subset of the source image to paint into the destination.
@@ -809,10 +819,8 @@ inline bool PaintFastBottomLayer(const Document* document,
       // If the destination is not a rounded fill, then use the same rectangle
       // as in DrawTiledBackground() to get consistent results.
       const PhysicalRect dest_rect =
-          info.is_rounded_fill
-              ? PhysicalRect::FastAndLossyFromRectF(image_rect)
-              : PhysicalRect(geometry.SnappedDestRect().offset,
-                             geometry.UnsnappedDestRect().size);
+          info.is_rounded_fill ? PhysicalRect::FastAndLossyFromRectF(image_rect)
+                               : GetSubsetDestRectForImage(geometry, *image);
 
       absl::optional<gfx::RectF> single_tile_src = OptimizeToSingleTileDraw(
           geometry, dest_rect, *image, info.respect_image_orientation);
