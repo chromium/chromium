@@ -26,6 +26,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -121,14 +122,20 @@ class AppApiTest : public extensions::ExtensionApiTest {
     EXPECT_FALSE(browser()->tab_strip_model()->GetWebContentsAt(2)->GetWebUI());
 
     // We should have opened 2 new extension tabs. Including the original blank
-    // tab, we now have 3 tabs. The two app tabs should not be in the same
-    // process, since they do not have the background permission.  (Thus, we
-    // want to separate them to improve responsiveness.)
+    // tab, we now have 3 tabs.
     ASSERT_EQ(3, browser()->tab_strip_model()->count());
+    // The two app tabs don't have the background permission. To improve
+    // responsiveness, they should not be in the same process unless the
+    // kProcessPerSiteUpToMainFrameThreshold feature is enabled. The assumption
+    // of the kProcessPerSiteUpToMainFrameThreshold is that sharing a process
+    // with a threshold doesn't hurt responsiveness.
     WebContents* tab1 = browser()->tab_strip_model()->GetWebContentsAt(1);
     WebContents* tab2 = browser()->tab_strip_model()->GetWebContentsAt(2);
-    EXPECT_NE(tab1->GetPrimaryMainFrame()->GetProcess(),
-              tab2->GetPrimaryMainFrame()->GetProcess());
+    if (!base::FeatureList::IsEnabled(
+            features::kProcessPerSiteUpToMainFrameThreshold)) {
+      EXPECT_NE(tab1->GetPrimaryMainFrame()->GetProcess(),
+                tab2->GetPrimaryMainFrame()->GetProcess());
+    }
 
     // Opening tabs with window.open should keep the page in the opener's
     // process.
