@@ -107,12 +107,6 @@ class SavedTabGroupModel {
                           const base::Uuid& tab_id,
                           bool update_tab_positions = false);
 
-  // Replaces a saved tab `tab_id` in the specified group denoted by
-  // `group_id` if it exists with `new_tab`.
-  void ReplaceTabInGroupAt(const base::Uuid& group_id,
-                           const base::Uuid& tab_id,
-                           SavedTabGroupTab new_tab);
-
   // Moves a saved tab from its current position to `index` in the specified
   // group denoted by `group_id` if it exists.
   void MoveTabInGroupTo(const base::Uuid& group_id,

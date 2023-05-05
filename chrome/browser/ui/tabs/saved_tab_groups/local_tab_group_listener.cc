@@ -33,8 +33,7 @@ LocalTabGroupListener::LocalTabGroupListener(
 
     SavedTabGroupTab tab(*saved_group()->GetTab(saved_tab_guid));
     tab.SetLocalTabID(local_tab_id);
-    model_->ReplaceTabInGroupAt(saved_group()->saved_guid(), saved_tab_guid,
-                                std::move(tab));
+    model_->UpdateTabInGroup(saved_group()->saved_guid(), std::move(tab));
   }
 }
 

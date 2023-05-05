@@ -428,37 +428,18 @@ TEST_F(SavedTabGroupModelTest, RemoveLastTabFromGroup) {
   EXPECT_FALSE(saved_tab_group_model_->Contains(id_1_));
 }
 
-// Tests that the correct tabs are replaced in group 1.
-TEST_F(SavedTabGroupModelTest, ReplaceTabInGroup) {
-  SavedTabGroupTab tab1 =
-      CreateSavedTabGroupTab("first", u"First Tab", id_1_, 0);
-  SavedTabGroupTab tab2 =
-      CreateSavedTabGroupTab("second", u"Second Tab", id_1_, 2);
-  SavedTabGroupTab tab3 =
-      CreateSavedTabGroupTab("third", u"Third Tab", id_1_, absl::nullopt);
-
+// Tests updating a tab in a saved group.
+TEST_F(SavedTabGroupModelTest, UpdateTabInGroup) {
   const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
   ASSERT_EQ(group->saved_tabs().size(), size_t(1));
 
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab1,
-                                        /*update_tab_positions=*/true);
-  saved_tab_group_model_->AddTabToGroup(group->saved_guid(), tab2,
-                                        /*update_tab_positions=*/true);
-  EXPECT_EQ(group->saved_tabs().size(), size_t(3));
+  // Update the tab by changing the title.
+  SavedTabGroupTab tab1 = group->saved_tabs()[0];
+  tab1.SetTitle(u"Updated Title");
+  saved_tab_group_model_->UpdateTabInGroup(id_1_, tab1);
 
-  saved_tab_group_model_->ReplaceTabInGroupAt(group->saved_guid(),
-                                              tab1.saved_tab_guid(), tab3);
-  CompareSavedTabGroupTabs(group->saved_tabs(),
-                           {tab3, group->saved_tabs()[1], tab2});
-
-  saved_tab_group_model_->ReplaceTabInGroupAt(group->saved_guid(),
-                                              tab2.saved_tab_guid(), tab1);
-  CompareSavedTabGroupTabs(group->saved_tabs(),
-                           {tab3, group->saved_tabs()[1], tab1});
-
-  saved_tab_group_model_->ReplaceTabInGroupAt(
-      group->saved_guid(), group->saved_tabs()[1].saved_tab_guid(), tab2);
-  CompareSavedTabGroupTabs(group->saved_tabs(), {tab3, tab2, tab1});
+  // The group should contain the updated tab.
+  CompareSavedTabGroupTabs(group->saved_tabs(), {tab1});
 }
 
 // Tests that the correct tabs are moved in group 1.

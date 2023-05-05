@@ -284,24 +284,6 @@ void SavedTabGroupModel::RemoveTabFromGroup(const base::Uuid& group_id,
   }
 }
 
-void SavedTabGroupModel::ReplaceTabInGroupAt(const base::Uuid& group_id,
-                                             const base::Uuid& tab_id,
-                                             SavedTabGroupTab new_tab) {
-  if (!Contains(group_id))
-    return;
-
-  // Copy `tab_id` to prevent uaf when ungrouping a saved tab: crbug/1401965.
-  const base::Uuid copy_tab_id = tab_id;
-  const base::Uuid guid = new_tab.saved_tab_guid();
-  absl::optional<int> index = GetIndexOf(group_id);
-  saved_tab_groups_[index.value()].ReplaceTabAt(tab_id, new_tab);
-
-  for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(group_id, copy_tab_id);
-    observer.SavedTabGroupUpdatedLocally(group_id, guid);
-  }
-}
-
 void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
                                           const base::Uuid& tab_id,
                                           int new_index) {

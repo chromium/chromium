@@ -689,20 +689,20 @@ TEST_F(SavedTabGroupSyncBridgeTest, UpdateTabLocally) {
                          group.saved_guid());
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid());
-  SavedTabGroupTab tab_3(GURL("https://youtube.com"), u"Youtube",
-                         group.saved_guid());
   group.AddTab(tab_1).AddTab(tab_2);
+
+  SavedTabGroupTab updated_tab_1(group.saved_tabs()[0]);
+  updated_tab_1.SetURL(GURL("https://youtube.com"));
+  updated_tab_1.SetTitle(u"Youtube");
 
   base::Uuid group_guid = group.saved_guid();
   base::Uuid tab_1_guid = tab_1.saved_tab_guid();
   base::Uuid tab_2_guid = tab_2.saved_tab_guid();
-  base::Uuid tab_3_guid = tab_3.saved_tab_guid();
   saved_tab_group_model_.Add(std::move(group));
 
-  EXPECT_CALL(processor_, Delete(tab_1_guid.AsLowercaseString(), _));
-  EXPECT_CALL(processor_, Put(tab_3_guid.AsLowercaseString(), _, _));
+  EXPECT_CALL(processor_, Put(tab_1_guid.AsLowercaseString(), _, _));
   EXPECT_CALL(processor_, Put(tab_2_guid.AsLowercaseString(), _, _)).Times(0);
   EXPECT_CALL(processor_, Put(group_guid.AsLowercaseString(), _, _)).Times(0);
 
-  saved_tab_group_model_.ReplaceTabInGroupAt(group_guid, tab_1_guid, tab_3);
+  saved_tab_group_model_.UpdateTabInGroup(group_guid, updated_tab_1);
 }
