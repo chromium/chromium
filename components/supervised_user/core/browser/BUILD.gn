@@ -6,14 +6,31 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-static_library("browser") {
+static_library("fetcher") {
   sources = [
     "kids_access_token_fetcher.cc",
     "kids_access_token_fetcher.h",
-    "kids_chrome_management_client.cc",
-    "kids_chrome_management_client.h",
     "kids_external_fetcher.cc",
     "kids_external_fetcher.h",
+    "kids_external_fetcher_config.cc",
+    "kids_external_fetcher_config.h",
+    "kids_external_fetcher_requests.h",
+  ]
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser/proto",
+    "//components/supervised_user/core/common",
+    "//google_apis",
+    "//net/traffic_annotation",
+    "//url",
+  ]
+}
+
+static_library("browser") {
+  sources = [
+    "kids_chrome_management_client.cc",
+    "kids_chrome_management_client.h",
     "kids_management_url_checker_client.cc",
     "kids_management_url_checker_client.h",
     "parental_control_metrics.cc",
@@ -50,6 +67,7 @@ static_library("browser") {
   ]
 
   deps = [
+    ":fetcher",
     "//base",
     "//components/feed/core/shared_prefs:feed_shared_prefs",
     "//components/google/core/common",
@@ -66,6 +84,20 @@ static_library("browser") {
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fetcher_config_test_utils.cc",
+    "fetcher_config_test_utils.h",
+  ]
+  deps = [
+    ":fetcher",
+    "//base",
+    "//net/traffic_annotation",
     "//url",
   ]
 }
@@ -88,6 +120,8 @@ source_set("unit_tests") {
 
   deps = [
     ":browser",
+    ":fetcher",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",

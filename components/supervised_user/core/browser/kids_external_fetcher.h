@@ -12,9 +12,11 @@
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/gurl.h"
 
 // -----------------------------------------------------------------------------
 // Usage documentation
@@ -27,18 +29,14 @@
 // * serializing the request and parsing the response,
 // * submitting metrics.
 //
-// If you want to create new fetcher factory method, then some implementation
+// If you want to create new fetcher factory method, then some
 // details must be provided in order to enable fetching for said <Request,
 // Response> pair. The new fetcher factory should have at least the following
-// arguments: signin::IdentityManager, network::SharedURLLoaderFactory, url of
-// the endpoint and consuming callback provided.
+// arguments: signin::IdentityManager, network::SharedURLLoaderFactory,
+// consuming callback and must reference a static configuration.
 //
-// In the corresponding cc file, there should be:
-// * a traffic annotation tag for the request, assuming that one Request
-// represents one API endpoint, in the implementation cc file (example:
-// GetDefaultNetworkTrafficAnnotationTag),
-// * a request path method for the request (example: GetPathForRequest),
-// * a metrics key constructing method (example: CreateMetricKey).
+// The static configuration should be placed in the
+// kids_external_fetcher_config.h module.
 
 // Holds the status of the fetch. The callback's response will be set iff the
 // status is ok.
@@ -97,6 +95,10 @@ class KidsExternalFetcherStatus {
   // Returns a message describing the status.
   std::string ToString() const;
 
+  // Translate the status to metric enum label as defined in
+  // tools/metrics/histograms/enums.xml.
+  std::string ToMetricEnumLabel() const;
+
   State state() const;
   NetOrHttpErrorType net_or_http_error_code() const;
   const class GoogleServiceAuthError& google_service_auth_error() const;
@@ -138,9 +140,10 @@ std::unique_ptr<
 FetchListFamilyMembers(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::StringPiece url,
     KidsExternalFetcher<
         kids_chrome_management::ListFamilyMembersRequest,
-        kids_chrome_management::ListFamilyMembersResponse>::Callback callback);
+        kids_chrome_management::ListFamilyMembersResponse>::Callback callback,
+    const supervised_user::FetcherConfig& config =
+        supervised_user::kListFamilyMembersConfig);
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_KIDS_EXTERNAL_FETCHER_H_

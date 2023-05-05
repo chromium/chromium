@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_management_service.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -200,7 +199,7 @@ void EduAccountLoginHandler::FetchFamilyMembers() {
 
   list_family_members_fetcher_ = FetchListFamilyMembers(
       *IdentityManagerFactory::GetForProfile(profile),
-      profile->GetURLLoaderFactory(), KidsManagementService::GetEndpointUrl(),
+      profile->GetURLLoaderFactory(),
       base::BindOnce(
           &EduAccountLoginHandler::OnListFamilyMembersResponse,
           base::Unretained(this)));  // Unretained(.) is safe because `this`

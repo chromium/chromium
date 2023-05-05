@@ -3390,6 +3390,7 @@ static_library("browser") {
       "//components/signin/internal/identity_manager",  # cf android/signin/DEPS
       "//components/signin/public/android:jni_headers",
       "//components/subresource_filter/android",
+      "//components/supervised_user/core/browser:fetcher",
       "//components/thin_webview/internal",
       "//components/translate/content/android",
       "//components/translate/core/language_detection",
@@ -7502,6 +7503,7 @@ static_library("browser") {
     deps += [
       "//chrome/common:supervised_user_commands_mojom",
       "//components/supervised_user/core/browser",
+      "//components/supervised_user/core/browser:fetcher",
       "//components/supervised_user/core/browser/proto",
       "//components/supervised_user/core/common",
     ]

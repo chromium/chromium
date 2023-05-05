@@ -80,8 +80,6 @@ class KidsManagementService : public KeyedService,
     return family_members_;
   }
 
-  static const std::string& GetEndpointUrl();
-
   // Responds whether at least one request for child status was successful.
   // And we got answer whether the profile belongs to a child account or not.
   bool IsChildAccountStatusKnown() const;

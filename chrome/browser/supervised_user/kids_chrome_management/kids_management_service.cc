@@ -237,7 +237,7 @@ void KidsManagementService::SetIsChildAccount(bool is_child_account) {
 
 void KidsManagementService::StartFetchFamilyMembers() {
   list_family_members_fetcher_ = FetchListFamilyMembers(
-      *identity_manager_, url_loader_factory_, GetEndpointUrl(),
+      *identity_manager_, url_loader_factory_,
       BindOnce(&KidsManagementService::ConsumeListFamilyMembers,
                Unretained(this)));
 }
@@ -285,12 +285,6 @@ void KidsManagementService::ConsumeListFamilyMembers(
 
 bool KidsManagementService::IsPendingNextFetchFamilyMembers() const {
   return list_family_members_timer_.IsRunning();
-}
-
-const std::string& KidsManagementService::GetEndpointUrl() {
-  static const NoDestructor<std::string> nonce(
-      "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/");
-  return *nonce;
 }
 
 KidsManagementServiceFactory::KidsManagementServiceFactory()

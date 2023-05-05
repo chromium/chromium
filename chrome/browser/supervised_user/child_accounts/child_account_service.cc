@@ -20,7 +20,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_management_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
@@ -349,7 +348,6 @@ void ChildAccountService::OnFailure(KidsExternalFetcherStatus error) {
 void ChildAccountService::StartFetchingFamilyInfo() {
   list_family_members_fetcher_ = FetchListFamilyMembers(
       *identity_manager_, profile_->GetURLLoaderFactory(),
-      KidsManagementService::GetEndpointUrl(),
       base::BindOnce(&ChildAccountService::OnResponse, base::Unretained(this)));
 }
 

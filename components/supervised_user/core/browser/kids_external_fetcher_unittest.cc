@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/supervised_user/core/browser/fetcher_config_test_utils.h"
+#include "components/supervised_user/core/browser/kids_external_fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -31,11 +33,18 @@ using ::network::GetUploadData;
 using ::network::TestURLLoaderFactory;
 using ::signin::ConsentLevel;
 using ::signin::IdentityTestEnvironment;
+using ::supervised_user::FetcherConfig;
+using ::supervised_user::FetcherTestConfigBuilder;
 using ::testing::Test;
 
 // Tests the Kids External API fetchers functionality.
 class KidsExternalFetcherTest : public Test {
  protected:
+  FetcherConfig test_fetcher_config_ =
+      FetcherTestConfigBuilder::FromConfig(
+          supervised_user::kListFamilyMembersConfig)
+          .WithServiceEndpoint("http://example.com")
+          .Build();
   network::TestURLLoaderFactory test_url_loader_factory_;
   base::test::TaskEnvironment task_environment_;
   IdentityTestEnvironment identity_test_env_;
@@ -70,10 +79,11 @@ TEST_F(KidsExternalFetcherTest, AcceptsRequests) {
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), "http://example.com",
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       BindOnce(&Receiver<ListFamilyMembersRequest,
                          ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)));
+               base::Unretained(&receiver)),
+      test_fetcher_config_);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", Time::Max());
 
@@ -96,10 +106,11 @@ TEST_F(KidsExternalFetcherTest, NoAccessToken) {
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), "http://example.com/",
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       BindOnce(&Receiver<ListFamilyMembersRequest,
                          ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)));
+               base::Unretained(&receiver)),
+      test_fetcher_config_);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError(
           GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
@@ -118,10 +129,11 @@ TEST_F(KidsExternalFetcherTest, HandlesMalformedResponse) {
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), "http://example.com/",
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       BindOnce(&Receiver<ListFamilyMembersRequest,
                          ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)));
+               base::Unretained(&receiver)),
+      test_fetcher_config_);
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", Time::Max());
 
@@ -147,10 +159,11 @@ TEST_F(KidsExternalFetcherTest, HandlesServerError) {
 
   auto fetcher = FetchListFamilyMembers(
       *identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), "http://example.com/",
+      test_url_loader_factory_.GetSafeWeakWrapper(),
       BindOnce(&Receiver<ListFamilyMembersRequest,
                          ListFamilyMembersResponse>::Receive,
-               base::Unretained(&receiver)));
+               base::Unretained(&receiver)),
+      test_fetcher_config_);
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", Time::Max());

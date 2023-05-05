@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/kids_chrome_management/kids_management_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "content/public/browser/storage_partition.h"
@@ -70,9 +69,10 @@ FamilyInfoFeedbackSource::~FamilyInfoFeedbackSource() = default;
 void FamilyInfoFeedbackSource::GetFamilyMembers() {
   list_family_members_fetcher_ = FetchListFamilyMembers(
       *identity_manager_, url_loader_factory_,
-      KidsManagementService::GetEndpointUrl(),
-      base::BindOnce(&FamilyInfoFeedbackSource::OnResponse,
-                     base::Unretained(this)));
+      base::BindOnce(
+          &FamilyInfoFeedbackSource::OnResponse,
+          base::Unretained(this)));  // Unretained(.) is safe because `this`
+                                     // owns `list_family_members_fetcher_`.
 }
 
 void FamilyInfoFeedbackSource::OnResponse(
