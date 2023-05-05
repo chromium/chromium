@@ -16,14 +16,17 @@ namespace enterprise_connectors {
 
 namespace {
 
-const base::Value::List* GetPolicyUrlPatterns(PrefService* prefs) {
-  if (!prefs->IsManagedPreference(kContextAwareAccessSignalsAllowlistPref))
+const base::Value::List* GetPolicyUrlPatterns(PrefService* prefs,
+                                              const std::string& pref) {
+  if (!prefs->IsManagedPreference(pref)) {
     return nullptr;
-  return &prefs->GetList(kContextAwareAccessSignalsAllowlistPref);
+  }
+  return &prefs->GetList(pref);
 }
 
-bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
-  const auto* list = GetPolicyUrlPatterns(profile_prefs);
+bool ConnectorPolicyHasValues(PrefService* profile_prefs,
+                              const std::string& pref) {
+  const auto* list = GetPolicyUrlPatterns(profile_prefs, pref);
   return list && !list->empty();
 }
 
@@ -38,39 +41,75 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
     return;
   }
 
-  if (!pref_observer_.IsEmpty()) {
-    return;
-  }
-
   pref_observer_.Init(profile_prefs_);
-  pref_observer_.Add(
-      kContextAwareAccessSignalsAllowlistPref,
-      base::BindRepeating(&DeviceTrustConnectorService::OnPolicyUpdated,
-                          weak_factory_.GetWeakPtr()));
+  if (IsUserInlineFlowFeatureEnabled()) {
+    policy_details_map_.emplace(
+        DTCPolicyLevel::kUser,
+        DTCPolicyDetails(kUserContextAwareAccessSignalsAllowlistPref));
+    policy_details_map_.emplace(
+        DTCPolicyLevel::kBrowser,
+        DTCPolicyDetails(kBrowserContextAwareAccessSignalsAllowlistPref));
 
-  // Call once to initialize the watcher with the current pref's values.
-  OnPolicyUpdated();
+    for (auto const& policy_details : policy_details_map_) {
+      pref_observer_.Add(
+          policy_details.second.pref,
+          base::BindRepeating(&DeviceTrustConnectorService::OnPolicyUpdated,
+                              weak_factory_.GetWeakPtr(),
+                              /*DTCPolicyLevel = */ policy_details.first,
+                              /*pref = */ policy_details.second.pref));
+
+      // Call once to initialize the watcher with the current pref's values.
+      OnPolicyUpdated(/*DTCPolicyLevel = */ policy_details.first,
+                      /*pref = */ policy_details.second.pref);
+    }
+  } else {
+    pref_observer_.Add(
+        kContextAwareAccessSignalsAllowlistPref,
+        base::BindRepeating(
+            &DeviceTrustConnectorService::OnOriginalPolicyUpdated,
+            weak_factory_.GetWeakPtr()));
+
+    // Call once to initialize the watcher with the current pref's values.
+    OnOriginalPolicyUpdated();
+  }
 }
-
 DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
 
 bool DeviceTrustConnectorService::IsConnectorEnabled() const {
   if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_) {
     return false;
   }
-  return ConnectorPolicyHasValues(profile_prefs_);
+
+  if (IsUserInlineFlowFeatureEnabled()) {
+    for (auto const& policy_details : policy_details_map_) {
+      if (ConnectorPolicyHasValues(profile_prefs_,
+                                   policy_details.second.pref)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  return ConnectorPolicyHasValues(profile_prefs_,
+                                  kContextAwareAccessSignalsAllowlistPref);
 }
 
 const std::set<DTCPolicyLevel> DeviceTrustConnectorService::Watches(
     const GURL& url) const {
   std::set<DTCPolicyLevel> levels;
 
-  if (matcher_ && !matcher_->MatchURL(url).empty()) {
-    // TODO(b/279063343): This is temporary, later this service should insert
-    // the correct policy levels based on the scope of the policy matchers(i.e
-    // browser, user).
-    levels.insert(DTCPolicyLevel::kBrowser);
-    levels.insert(DTCPolicyLevel::kUser);
+  if (IsUserInlineFlowFeatureEnabled()) {
+    for (auto const& policy_details : policy_details_map_) {
+      if (policy_details.second.matcher &&
+          !policy_details.second.matcher->MatchURL(url).empty()) {
+        levels.insert(policy_details.first);
+      }
+    }
+  } else {
+    if (matcher_ && !matcher_->MatchURL(url).empty()) {
+      levels.insert(DTCPolicyLevel::kBrowser);
+      levels.insert(DTCPolicyLevel::kUser);
+    }
   }
 
   return levels;
@@ -80,16 +119,61 @@ void DeviceTrustConnectorService::AddObserver(
     std::unique_ptr<PolicyObserver> observer) {
   observers_.push_back(std::move(observer));
 
-  // TODO(b/277902094): Ideally the matchers should not be reinitialized when
-  // adding an observer, the current state (or prefs having values) should be
-  // used to trigger enabled/disabled updates.
-  OnPolicyUpdated();
+  if (IsUserInlineFlowFeatureEnabled()) {
+    for (auto const& policy_details : policy_details_map_) {
+      if (policy_details.second.enabled) {
+        OnInlinePolicyEnabled(/*DTCPolicyLevel = */ policy_details.first);
+      } else {
+        OnInlinePolicyDisabled(/*DTCPolicyLevel = */ policy_details.first);
+      }
+    }
+  } else {
+    OnOriginalPolicyUpdated();
+  }
 }
 
-void DeviceTrustConnectorService::OnPolicyUpdated() {
+DeviceTrustConnectorService::DTCPolicyDetails::DTCPolicyDetails(
+    const std::string& pref)
+    : enabled(false),
+      pref(pref),
+      matcher(std::make_unique<url_matcher::URLMatcher>()) {}
+
+DeviceTrustConnectorService::DTCPolicyDetails::DTCPolicyDetails(
+    DTCPolicyDetails&& other) = default;
+
+DeviceTrustConnectorService::DTCPolicyDetails&
+
+DeviceTrustConnectorService::DTCPolicyDetails::operator=(
+    DeviceTrustConnectorService::DTCPolicyDetails&& other) = default;
+
+DeviceTrustConnectorService::DTCPolicyDetails::~DTCPolicyDetails() = default;
+
+void DeviceTrustConnectorService::OnPolicyUpdated(const DTCPolicyLevel& level,
+                                                  const std::string& pref) {
+  CHECK(IsUserInlineFlowFeatureEnabled());
+
+  const base::Value::List* url_patterns =
+      GetPolicyUrlPatterns(profile_prefs_, pref);
+  auto& policy_details = policy_details_map_.at(level);
+  // Reset the matcher and update the policy details.
+  policy_details.matcher = std::make_unique<url_matcher::URLMatcher>();
+  policy_details.enabled = url_patterns && !url_patterns->empty();
+
+  if (policy_details.enabled) {
+    // Add the new endpoints to the conditions.
+    url_matcher::util::AddAllowFilters(policy_details.matcher.get(),
+                                       *url_patterns);
+    OnInlinePolicyEnabled(level);
+  } else {
+    OnInlinePolicyDisabled(level);
+  }
+}
+
+void DeviceTrustConnectorService::OnOriginalPolicyUpdated() {
   DCHECK(IsDeviceTrustConnectorFeatureEnabled());
 
-  const base::Value::List* url_patterns = GetPolicyUrlPatterns(profile_prefs_);
+  const base::Value::List* url_patterns = GetPolicyUrlPatterns(
+      profile_prefs_, kContextAwareAccessSignalsAllowlistPref);
 
   if (!matcher_ || !matcher_->IsEmpty()) {
     // Reset the matcher.
