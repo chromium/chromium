@@ -350,10 +350,61 @@ TEST_F(TwentyEightDayActiveUseCaseImplTest,
   std::vector<FresnelImportData> import_data =
       twenty_eight_day_active_use_case_impl_->GetImportData();
 
-  // Client should only import for the new day 20220108.
   EXPECT_EQ(import_data.size(), 1u);
-
   std::vector<std::string> expected_window_ids = {"20220129"};
+
+  for (auto& v : import_data) {
+    EXPECT_TRUE(std::find(expected_window_ids.begin(),
+                          expected_window_ids.end(),
+                          v.window_identifier()) != expected_window_ids.end());
+  }
+}
+
+TEST_F(TwentyEightDayActiveUseCaseImplTest,
+       CheckInPartialRollingWindowOnDeviceThatReportedTwoDaysAgo) {
+  base::Time ts;
+  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 00:00:00 GMT", &ts));
+  twenty_eight_day_active_use_case_impl_->SetLastKnownPingTimestamp(ts);
+
+  // Update current ts to 20220103
+  EXPECT_TRUE(base::Time::FromString("03 Jan 2022 00:00:00 GMT", &ts));
+  EXPECT_TRUE(twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(ts));
+
+  std::vector<FresnelImportData> import_data =
+      twenty_eight_day_active_use_case_impl_->GetImportData();
+
+  EXPECT_EQ(import_data.size(), 2u);
+
+  std::vector<std::string> expected_window_ids = {"20220129", "20220130"};
+
+  for (auto& v : import_data) {
+    EXPECT_TRUE(std::find(expected_window_ids.begin(),
+                          expected_window_ids.end(),
+                          v.window_identifier()) != expected_window_ids.end());
+  }
+}
+
+TEST_F(TwentyEightDayActiveUseCaseImplTest,
+       CheckInPartialRollingWindowOnDeviceThatReportedTwentyEightDaysAgo) {
+  base::Time ts;
+  EXPECT_TRUE(base::Time::FromString("01 Jan 2022 00:00:00 GMT", &ts));
+  twenty_eight_day_active_use_case_impl_->SetLastKnownPingTimestamp(ts);
+
+  // Update current ts to 20220127
+  EXPECT_TRUE(base::Time::FromString("28 Jan 2022 00:00:00 GMT", &ts));
+  EXPECT_TRUE(twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(ts));
+
+  std::vector<FresnelImportData> import_data =
+      twenty_eight_day_active_use_case_impl_->GetImportData();
+
+  EXPECT_EQ(import_data.size(), 27u);
+
+  std::vector<std::string> expected_window_ids = {
+      "20220129", "20220130", "20220131", "20220201", "20220202", "20220203",
+      "20220204", "20220205", "20220206", "20220207", "20220208", "20220209",
+      "20220210", "20220211", "20220212", "20220213", "20220214", "20220215",
+      "20220216", "20220217", "20220218", "20220219", "20220220", "20220221",
+      "20220222", "20220223", "20220224"};
 
   for (auto& v : import_data) {
     EXPECT_TRUE(std::find(expected_window_ids.begin(),
@@ -379,6 +430,81 @@ TEST_F(TwentyEightDayActiveUseCaseImplTest,
 
   // Client should not import any data.
   EXPECT_EQ(import_data.size(), 0u);
+}
+
+TEST_F(TwentyEightDayActiveUseCaseImplTest, CheckInSingleDayInMiddleOfYear) {
+  base::Time ts;
+  EXPECT_TRUE(base::Time::FromString("04 May 2023 00:04:22.962 GMT", &ts));
+  twenty_eight_day_active_use_case_impl_->SetLastKnownPingTimestamp(ts);
+
+  EXPECT_TRUE(base::Time::FromString("05 May 2023 00:00:20.924 GMT", &ts));
+  EXPECT_TRUE(twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(ts));
+
+  std::vector<FresnelImportData> import_data =
+      twenty_eight_day_active_use_case_impl_->GetImportData();
+
+  EXPECT_EQ(import_data.size(), 1u);
+  std::vector<std::string> expected_window_ids = {"20230601"};
+
+  for (auto& v : import_data) {
+    EXPECT_TRUE(std::find(expected_window_ids.begin(),
+                          expected_window_ids.end(),
+                          v.window_identifier()) != expected_window_ids.end());
+  }
+}
+
+TEST_F(TwentyEightDayActiveUseCaseImplTest, CheckInSingleDayWithVaryingHours) {
+  base::Time ts;
+  EXPECT_TRUE(base::Time::FromString("04 May 2023 00:00:22.962 GMT", &ts));
+  twenty_eight_day_active_use_case_impl_->SetLastKnownPingTimestamp(ts);
+
+  // Test when last known ping ts hour is smaller than current ts hour.
+  EXPECT_TRUE(base::Time::FromString("05 May 2023 00:04:20.924 GMT", &ts));
+  EXPECT_TRUE(twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(ts));
+
+  std::vector<FresnelImportData> import_data =
+      twenty_eight_day_active_use_case_impl_->GetImportData();
+
+  EXPECT_EQ(import_data.size(), 1u);
+  std::vector<std::string> expected_window_ids = {"20230601"};
+
+  for (auto& v : import_data) {
+    EXPECT_TRUE(std::find(expected_window_ids.begin(),
+                          expected_window_ids.end(),
+                          v.window_identifier()) != expected_window_ids.end());
+  }
+
+  // Test when last known ping ts hour is equal to current ts hour.
+  EXPECT_TRUE(base::Time::FromString("05 May 2023 00:00:22.962 GMT", &ts));
+  EXPECT_TRUE(twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(ts));
+
+  std::vector<FresnelImportData> import_data_2 =
+      twenty_eight_day_active_use_case_impl_->GetImportData();
+
+  EXPECT_EQ(import_data_2.size(), 1u);
+  std::vector<std::string> expected_window_ids_2 = {"20230601"};
+
+  for (auto& v : import_data_2) {
+    EXPECT_TRUE(std::find(expected_window_ids_2.begin(),
+                          expected_window_ids_2.end(),
+                          v.window_identifier()) != expected_window_ids.end());
+  }
+
+  // Test when last known ping ts hour is greater than current ts hour.
+  EXPECT_TRUE(base::Time::FromString("05 May 2023 23:59:59.000 GMT", &ts));
+  EXPECT_TRUE(twenty_eight_day_active_use_case_impl_->SetWindowIdentifier(ts));
+
+  std::vector<FresnelImportData> import_data_3 =
+      twenty_eight_day_active_use_case_impl_->GetImportData();
+
+  EXPECT_EQ(import_data_3.size(), 1u);
+  std::vector<std::string> expected_window_ids_3 = {"20230601"};
+
+  for (auto& v : import_data_3) {
+    EXPECT_TRUE(std::find(expected_window_ids_3.begin(),
+                          expected_window_ids_3.end(),
+                          v.window_identifier()) != expected_window_ids.end());
+  }
 }
 
 }  // namespace ash::device_activity
