@@ -1,4 +1,12 @@
 <style include="diagnostics-shared">
+  :host-context(body.jelly-enabled) #chart-legend {
+    font: var(--cros-annotation-1-font);
+  }
+
+  :host-context(body.jelly-enabled) g.tick text {
+    font: var(--cros-annotation-1-font);
+  }
+
   g.tick line {
     shape-rendering: crispEdges;
     stroke: var(--cros-separator-color);
@@ -91,11 +99,11 @@
   }
 
   #legend-bar.user {
-    background-color: var(--user-line-color);
+    background-color: var(--chart-user-line-color);
   }
 
   #legend-bar.system {
-    background-color: var(--system-line-color);
+    background-color: var(--chart-system-line-color);
   }
 </style>
 <svg id="chart" width$="[[width_]]" height$="[[height_]]" aria-hidden="true">

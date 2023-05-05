@@ -35,6 +35,27 @@
     color: var( --cros-text-color-primary);
   }
 
+  :host-context(body.jelly-enabled) [slot='title'] {
+    font: var(--cros-title-1-font);
+  }
+
+  :host-context(body.jelly-enabled) #description {
+    font: var(--cros-body-1-font);
+  }
+
+  :host-context(body.jelly-enabled) #help {
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context(body.jelly-enabled) #shortcutInstruction {
+    font: var(--cros-body-1-font);
+  }
+
+  :host-context(body.jelly-enabled) #shortcutKeyAlt,
+  :host-context(body.jelly-enabled) #shortcutKeyEsc {
+    font: var(--cros-body-2-font);
+  }
+
   [slot='title'] {
     font-family: var(--diagnostics-google-sans-font-family);
     font-size: 16px;
