@@ -30,8 +30,6 @@ component("service") {
     "gpu_config.h",
     "gpu_init.cc",
     "gpu_init.h",
-    "gpu_memory_ablation_experiment.cc",
-    "gpu_memory_ablation_experiment.h",
     "gpu_memory_buffer_factory.cc",
     "gpu_memory_buffer_factory.h",
     "gpu_watchdog_thread.cc",
