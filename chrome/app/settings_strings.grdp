@@ -2920,8 +2920,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_REMOVE_GRANT_LABEL" desc="A label that represents removing a site's permission to access a file or folder, previously granted access from the File System Access API.">
     Remove grant
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_REMOVE_GRANTS" desc="A menu option that represents removing all of a site's permissions to access a files or folders, previously granted access from the File System Access API.">
+    Remove
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_VIEW_HEADER" desc="The header name for a list of files that the user has granted view permissions from the File System Access API.">
     View
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_SITE_LIST_VIEW_SITE_DETAILS" desc="A menu option that navigates to the site details page for the selected site.">
+    View site details
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SITE_ENTRY_PARTITIONED_LABEL" desc="The label which is applied to site entries which are partitioned. These entries represent data whose access scope is limited to the site the labeled entry appears under">
     Partitioned

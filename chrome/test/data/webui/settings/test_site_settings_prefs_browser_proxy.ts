@@ -79,6 +79,7 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
       'getExtensionName',
       'getFileSystemGrants',
       'revokeFileSystemGrant',
+      'revokeFileSystemGrants',
     ]);
 
 
@@ -672,5 +673,9 @@ export class TestSiteSettingsPrefsBrowserProxy extends TestBrowserProxy
 
   revokeFileSystemGrant(origin: string, filePath: string): void {
     this.methodCalled('revokeFileSystemGrant', [origin, filePath]);
+  }
+
+  revokeFileSystemGrants(origin: string): void {
+    this.methodCalled('revokeFileSystemGrants', origin);
   }
 }

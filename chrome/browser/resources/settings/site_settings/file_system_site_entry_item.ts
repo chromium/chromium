@@ -52,9 +52,7 @@ export class FileSystemSiteEntryItemElement extends
   }
 
   private onRemoveGrantClick_() {
-    this.fire(
-        'revoke-grant',
-        {origin: this.grant.origin, filePath: this.grant.filePath});
+    this.fire('revoke-grant', this.grant);
   }
 }
 

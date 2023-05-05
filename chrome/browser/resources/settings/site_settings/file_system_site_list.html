@@ -1,4 +1,21 @@
 <template is="dom-repeat" items="[[allowedGrants_]]" as="grantsPerOrigin">
   <file-system-site-entry grants-per-origin="[[grantsPerOrigin]]"
-      on-revoke-grant="onRevokeGrant_"></file-system-site-entry>
+      on-revoke-grant="onRevokeGrant_"
+      on-options-icon-click="onOpenOptionsMenu_">
+  </file-system-site-entry>
 </template>
+<!-- Options Menu -->
+<cr-lazy-render id="menu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="removeGrants" class="dropdown-item"
+          on-click="onRemoveGrantsClick_">
+        $i18n{siteSettingsFileSystemSiteListRemoveGrants}
+      </button>
+      <button id="viewSiteDetails" class="dropdown-item"
+          on-click="onViewSiteDetailsClick_">
+        $i18n{siteSettingsFileSystemSiteListViewSiteDetails}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>

@@ -46,6 +46,12 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
       isWritable: false,
       isDirectory: true,
     };
+    const TEST_FILE_SYSTEM_FILE_READ_GRANT: RawFileSystemGrant = {
+      origin: origin1,
+      filePath: filePath1,
+      isWritable: true,
+      isDirectory: false,
+    };
     const TEST_FILE_SYSTEM_FILE_WRITE_GRANT: RawFileSystemGrant = {
       origin: origin2,
       filePath: filePath1,
@@ -58,7 +64,7 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
         origin: origin1,
         directoryReadGrants: [TEST_FILE_SYSTEM_DIRECTORY_READ_GRANT],
         directoryWriteGrants: [],
-        fileReadGrants: [],
+        fileReadGrants: [TEST_FILE_SYSTEM_FILE_READ_GRANT],
         fileWriteGrants: [],
       },
       {
@@ -79,18 +85,51 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
         testElement.shadowRoot!.querySelectorAll('file-system-site-entry');
     assertEquals(2, fileSystemSiteEntries.length);
 
-    // Removing the last remaining grant for a given origin results in the
-    // corresponding `file-system-site-entry` element's removal from the UI.
+    // Remove an individual permission grant for a given origin and filepath.
     const removeGrantButton =
         fileSystemSiteEntries[0]!.shadowRoot!
             .querySelectorAll('file-system-site-entry-item')[0]!.shadowRoot!
             .querySelector<HTMLElement>('#removeGrant');
     assertTrue(!!removeGrantButton);
     removeGrantButton.click();
-    const [origin, filePath] =
+    const [testOrigin, filePath] =
         await browserProxy.whenCalled('revokeFileSystemGrant');
-    assertEquals(origin1, origin);
-    assertEquals(directoryFilePath1, filePath);
+    assertEquals(origin1, testOrigin);
+    assertEquals(filePath1, filePath);
     assertEquals(1, browserProxy.getCallCount('revokeFileSystemGrant'));
+
+    const optionsMenuButtonOrigin1 =
+        fileSystemSiteEntries[0]!.shadowRoot!.querySelector<HTMLElement>(
+            '.icon-more-vert');
+    assertTrue(!!optionsMenuButtonOrigin1);
+
+    const optionsMenuButtonOrigin2 =
+        fileSystemSiteEntries[1]!.shadowRoot!.querySelector<HTMLElement>(
+            '.icon-more-vert');
+    assertTrue(!!optionsMenuButtonOrigin2);
+
+    // Navigate to the site details page for a given origin.
+    optionsMenuButtonOrigin2.click();
+    const menu = testElement.$.menu.get();
+    const viewSiteDetailsButton =
+        menu!.querySelector<HTMLElement>('#viewSiteDetails');
+    assertTrue(!!viewSiteDetailsButton);
+    viewSiteDetailsButton.click();
+    assertEquals(
+        routes.SITE_SETTINGS_SITE_DETAILS.path,
+        Router.getInstance().getCurrentRoute().path);
+    assertEquals(
+        origin2, Router.getInstance().getQueryParameters().get('site'));
+
+    // Remove all of an origin's granted permissions.
+    optionsMenuButtonOrigin1.click();
+    const updatedMenu = testElement.$.menu.get();
+    const removeGrantsButton =
+        updatedMenu.querySelector<HTMLElement>('#removeGrants');
+    assertTrue(!!removeGrantsButton);
+    removeGrantsButton.click();
+    const testOrigin1 = await browserProxy.whenCalled('revokeFileSystemGrants');
+    assertEquals(origin1, testOrigin1);
+    assertEquals(1, browserProxy.getCallCount('revokeFileSystemGrants'));
   });
 });

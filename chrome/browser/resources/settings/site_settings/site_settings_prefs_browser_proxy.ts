@@ -269,6 +269,8 @@ export interface SiteSettingsPrefsBrowserProxy {
 
   revokeFileSystemGrant(origin: string, filePath: string): void;
 
+  revokeFileSystemGrants(origin: string): void;
+
   /**
    * Gets a list of category permissions for a given origin. Note that this
    * may be different to the results retrieved by getExceptionList(), since it
@@ -556,6 +558,10 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
 
   revokeFileSystemGrant(origin: string, filePath: string) {
     chrome.send('revokeFileSystemGrant', [origin, filePath]);
+  }
+
+  revokeFileSystemGrants(origin: string) {
+    chrome.send('revokeFileSystemGrants', [origin]);
   }
 
   getOriginPermissions(origin: string, contentTypes: ContentSettingsTypes[]) {
