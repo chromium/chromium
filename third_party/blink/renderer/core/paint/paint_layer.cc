@@ -1045,16 +1045,8 @@ void PaintLayer::AppendSingleFragmentForHitTesting(
 
 const LayoutBox* PaintLayer::GetLayoutBoxWithBlockFragments() const {
   const LayoutBox* layout_box = GetLayoutBox();
-  if (!layout_box)
-    return nullptr;
-  if (!layout_box->CanTraversePhysicalFragments())
-    return nullptr;
-  if (!layout_box->PhysicalFragmentCount()) {
-    // TODO(crbug.com/1273068): The box has no fragments. This is
-    // unexpected, and we must have failed a bunch of DCHECKs (if enabled)
-    // on our way here. If the LayoutBox has never been laid out, it will
-    // have no fragments. But then we shouldn't really be here. Fall back to
-    // legacy LayoutObject tree traversal for this layer.
+  if (!layout_box || !layout_box->CanTraversePhysicalFragments() ||
+      layout_box->IsFragmentLessBox()) {
     return nullptr;
   }
   return layout_box;
@@ -1369,12 +1361,8 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
-  if (const auto* box = GetLayoutBox()) {
-    // A child layer of a <frameset> might have no physical fragments. We can
-    // skip such layer. See ClearNeedsLayoutOnHiddenFrames().
-    if (box->PhysicalFragmentCount() == 0) {
-      return nullptr;
-    }
+  if (layout_object.IsFragmentLessBox()) {
+    return nullptr;
   }
 
   if (!IsSelfPaintingLayer() && !HasSelfPaintingLayerDescendant())

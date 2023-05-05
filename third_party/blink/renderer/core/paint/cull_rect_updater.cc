@@ -201,6 +201,9 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
   const auto& object = starting_layer_.GetLayoutObject();
   if (object.GetFrameView()->ShouldThrottleRendering())
     return;
+  if (object.IsFragmentLessBox()) {
+    return;
+  }
 
   object.GetFrameView()->SetCullRectNeedsUpdateForFrames(disable_expansion_);
 
@@ -247,6 +250,10 @@ void CullRectUpdater::UpdateRecursively(const Context& parent_context,
     return;
 
   const auto& object = layer.GetLayoutObject();
+  if (object.IsFragmentLessBox()) {
+    return;
+  }
+
   Context context = parent_context;
   if (object.IsAbsolutePositioned())
     context.current = context.absolute;

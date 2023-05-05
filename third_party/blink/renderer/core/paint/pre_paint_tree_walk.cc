@@ -496,6 +496,8 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
         GetOrCreateFragmentData(object, context, *pre_paint_info);
     if (!pre_paint_info->fragment_data)
       return;
+  } else if (object.IsFragmentLessBox()) {
+    return;
   }
 
   absl::optional<PaintPropertyTreeBuilder> property_tree_builder;

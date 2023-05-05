@@ -2083,6 +2083,21 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return true;
   }
 
+  // Return true if this is a LayoutBox without physical fragments.
+  //
+  // This may happen for certain object types in certain circumstaces [*]. Code
+  // that attempts to enter fragment traversal from a LayoutObject needs to
+  // check if the box actually has fragments before proceeding.
+  //
+  // [*] Sometimes a LayoutView is fragment-less, e.g. if the root element has
+  // display:none. Frameset children may also be fragment-less, if there are
+  // more children than defined in the frameset's grid. Table columns
+  // (LayoutNGTableColumn) never creates fragments.
+  virtual bool IsFragmentLessBox() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
   // Return true if |this| produces one or more inline fragments, including
   // whitespace-only text fragments.
   virtual bool HasInlineFragments() const {

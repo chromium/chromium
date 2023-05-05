@@ -1120,6 +1120,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     return layout_results_.size();
   }
 
+  bool IsFragmentLessBox() const final {
+    NOT_DESTROYED();
+    return !PhysicalFragmentCount();
+  }
+
   void SetSpannerPlaceholder(LayoutMultiColumnSpannerPlaceholder&);
   void ClearSpannerPlaceholder();
   LayoutMultiColumnSpannerPlaceholder* SpannerPlaceholder() const final {
