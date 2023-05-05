@@ -315,7 +315,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       // TODO(crbug.com/1412485): Remove this line so that real hardware
       // capabilities can be checked.
       command_line->AppendSwitchASCII(
-          switches::kOverrideHardwareSecureCodecsForTesting, "avc1");
+          switches::kOverrideHardwareSecureCodecsForTesting, "avc1,mp4a");
     }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -1061,17 +1061,30 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
-                       Playback_EncryptedAudioCbcs_MediaTypeUnsupported) {
+                       Playback_EncryptedCencAudio_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP();
+  }
+
+  TestLicenseExchange("bear-640x360-a_frag-cenc.mp4");  // MP4 AAC audio only
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_EncryptedVp9CencAudio_MediaTypeUnsupported) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP();
   }
 
   // MediaFoundation Clear Key Key System supports only H.264 videos
-  // (codecs=avc1.64001E). See AddMediaFoundationClearKey() in
+  // (codecs="avc1.64001E") and MP4 audios (codecs="mp4a.40.2"). See
+  // AddMediaFoundationClearKey() in
   // components/cdm/renderer/key_system_support_update.cc
-  RunEncryptedMediaTest(
-      kDefaultEmePlayer, "bear-640x360-a_frag-cbcs.mp4" /*codecs=mp4a.40.2*/,
-      media::kMediaFoundationClearKeyKeySystem, SrcType::MSE, kNoSessionToLoad,
-      false, PlayCount::ONCE, kEmeNotSupportedError);
+  RunEncryptedMediaTest(kDefaultEmePlayer,
+                        "bear-320x240-v_frag-vp9-cenc.mp4"
+                        /*codecs="vp09.00.10.08.01.02.02.02.00"*/
+                        ,
+                        media::kMediaFoundationClearKeyKeySystem, SrcType::MSE,
+                        kNoSessionToLoad, false, PlayCount::ONCE,
+                        kEmeNotSupportedError);
 }
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
