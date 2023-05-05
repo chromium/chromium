@@ -274,7 +274,7 @@ class NaClBrowserTestPnaclDebug : public NaClBrowserTestPnacl {
                        int debug_stub_port) {
     // We call a python script that speaks to the debug stub, and
     // lets the app continue, so that the load progress event completes.
-    base::CommandLine cmd(base::FilePath(FILE_PATH_LITERAL("python")));
+    base::CommandLine cmd(base::FilePath(FILE_PATH_LITERAL("python3")));
     base::FilePath script;
     base::PathService::Get(chrome::DIR_TEST_DATA, &script);
     script = script.AppendASCII("nacl/debug_stub_browser_tests.py");
