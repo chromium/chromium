@@ -18,5 +18,6 @@ include_rules = [
   "+ui/accessibility/ax_tree_source.h",
   "+ui/accessibility/ax_tree_update.h",
   "+ui/accessibility/test_ax_tree_update_json_reader.h",
+  "+ui/base/l10n/l10n_util.h",
   "+ui/gfx/geometry",
 ]

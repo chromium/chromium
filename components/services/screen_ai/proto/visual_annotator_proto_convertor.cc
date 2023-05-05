@@ -16,11 +16,13 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/ranges.h"
 #include "components/services/screen_ai/public/mojom/screen_ai_service.mojom.h"
+#include "components/strings/grit/components_strings.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
@@ -451,8 +453,11 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   size_t rootnodes_count = 0u;
   if (!visual_annotation.ui_component().empty())
     ++rootnodes_count;
-  if (!visual_annotation.lines().empty())
+  if (!visual_annotation.lines().empty()) {
     ++rootnodes_count;
+    // Need two more nodes that convey the disclaimer message.
+    formatting_context_count += 2;
+  }
 
   std::vector<ui::AXNodeData> nodes(
       rootnodes_count + visual_annotation.ui_component().size() +
@@ -478,6 +483,18 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     page_node.AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                                true);
     page_node.relative_bounds.bounds = gfx::RectF(image_rect);
+    // Add a disclaimer node informing of the beginning of extracted text.
+    // TODO(crbug.com/1442928): Check if screen readers on windows, linux, and
+    // macOS treat the status node as live region. If so, update the role.
+    ui::AXNodeData& begin_node = nodes[index++];
+    begin_node.role = ax::mojom::Role::kStatus;
+    begin_node.id = GetNextNegativeNodeID();
+    begin_node.SetNameChecked(
+        l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_BEGIN));
+    begin_node.relative_bounds.bounds =
+        gfx::RectF(image_rect.x(), image_rect.y(), 1, 1);
+    page_node.child_ids.push_back(begin_node.id);
+
     for (const auto& block_to_lines_pair : blocks_to_lines_map) {
       for (const auto& line_sequence_number_to_index_pair :
            block_to_lines_pair.second) {
@@ -490,6 +507,15 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
         index += SerializeLineBox(line_box, index, page_node, nodes);
       }
     }
+
+    // Add a disclaimer node informing of the end of extracted text.
+    ui::AXNodeData& end_node = nodes[index++];
+    end_node.role = ax::mojom::Role::kStatus;
+    end_node.id = GetNextNegativeNodeID();
+    end_node.SetNameChecked(l10n_util::GetStringUTF8(IDS_PDF_OCR_RESULT_END));
+    end_node.relative_bounds.bounds =
+        gfx::RectF(image_rect.width(), image_rect.height(), 1, 1);
+    page_node.child_ids.push_back(end_node.id);
   }
 
   // Filter out invalid / unrecognized / unused nodes from the update.
