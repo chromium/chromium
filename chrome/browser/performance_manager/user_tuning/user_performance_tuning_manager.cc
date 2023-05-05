@@ -27,6 +27,10 @@
 #include "content/public/browser/frame_rate_throttling.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/power/power_manager_client.h"
+#endif
+
 using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
 using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
 
@@ -337,6 +341,72 @@ class DesktopBatterySaverProvider
   raw_ptr<UserPerformanceTuningManager> manager_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ChromeOSBatterySaverProvider
+    : public UserPerformanceTuningManager::BatterySaverProvider,
+      public chromeos::PowerManagerClient::Observer {
+ public:
+  explicit ChromeOSBatterySaverProvider(UserPerformanceTuningManager* manager)
+      : manager_(manager) {
+    CHECK(manager_);
+
+    chromeos::PowerManagerClient* client = chromeos::PowerManagerClient::Get();
+    CHECK(client);
+
+    power_manager_client_observer_.Observe(client);
+    client->GetBatterySaverModeState(base::BindOnce(
+        &ChromeOSBatterySaverProvider::OnInitialBatterySaverModeObtained,
+        weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  ~ChromeOSBatterySaverProvider() override = default;
+
+  void OnInitialBatterySaverModeObtained(
+      absl::optional<power_manager::BatterySaverModeState> state) {
+    if (state) {
+      BatterySaverModeStateChanged(*state);
+    }
+  }
+
+  // chromeos::PowerManagerClient::Observer:
+  void BatterySaverModeStateChanged(
+      const power_manager::BatterySaverModeState& state) override {
+    if (!state.has_enabled() || enabled_ == state.enabled()) {
+      return;
+    }
+
+    enabled_ = state.enabled();
+
+    manager_->NotifyOnBatterySaverModeChanged(enabled_);
+  }
+
+  // BatterySaverProvider:
+  bool DeviceHasBattery() const override { return false; }
+  bool IsBatterySaverActive() const override { return enabled_; }
+  bool IsUsingBatteryPower() const override { return false; }
+  base::Time GetLastBatteryUsageTimestamp() const override {
+    return base::Time();
+  }
+  int SampledBatteryPercentage() const override { return -1; }
+  void SetTemporaryBatterySaverDisabledForSession(bool disabled) override {
+    NOTREACHED();
+    // No-op when BSM is controlled by the OS
+  }
+  bool IsBatterySaverModeDisabledForSession() const override { return false; }
+
+ private:
+  bool enabled_ = false;
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observer_{this};
+
+  raw_ptr<UserPerformanceTuningManager> manager_;
+
+  base::WeakPtrFactory<ChromeOSBatterySaverProvider> weak_ptr_factory_{this};
+};
+#endif
+
 const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
 
 const char UserPerformanceTuningManager::kTimeBeforeDiscardInMinutesSwitch[] =
@@ -592,8 +662,18 @@ void UserPerformanceTuningManager::Start() {
   // Make sure the initial state of the pref is passed on to the policy.
   OnHighEfficiencyModePrefChanged();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (base::FeatureList::IsEnabled(features::kUseDeviceBatterySaverChromeOS)) {
+    battery_saver_provider_ =
+        std::make_unique<ChromeOSBatterySaverProvider>(this);
+  } else {
+    battery_saver_provider_ = std::make_unique<DesktopBatterySaverProvider>(
+        this, pref_change_registrar_.prefs());
+  }
+#else
   battery_saver_provider_ = std::make_unique<DesktopBatterySaverProvider>(
       this, pref_change_registrar_.prefs());
+#endif
 }
 
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {

@@ -293,7 +293,18 @@ void FakePowerManagerClient::GetBatterySaverModeState(
 
 void FakePowerManagerClient::SetBatterySaverModeState(
     const power_manager::SetBatterySaverModeStateRequest& request) {
+  bool changed = battery_saver_mode_enabled_ != request.enabled();
+  if (!changed) {
+    return;
+  }
+
   battery_saver_mode_enabled_ = request.enabled();
+
+  power_manager::BatterySaverModeState state;
+  state.set_enabled(battery_saver_mode_enabled_);
+  for (auto& observer : observers_) {
+    observer.BatterySaverModeStateChanged(state);
+  }
 }
 
 void FakePowerManagerClient::GetSwitchStates(

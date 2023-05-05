@@ -199,6 +199,7 @@ class UserPerformanceTuningManager {
   friend class ::PerformanceManagerMetricsProviderTest;
   friend class UserPerformanceTuningManagerTest;
   friend class TestUserPerformanceTuningManagerEnvironment;
+  friend class ChromeOSBatterySaverProvider;
   friend class DesktopBatterySaverProvider;
 
   // An implementation of UserPerformanceTuningNotifier::Receiver that

@@ -119,6 +119,10 @@ const base::FeatureParam<int> kDiscardedTabTreatmentOption{
     &kDiscardedTabTreatment, "discard_tab_treatment_option",
     static_cast<int>(DiscardTabTreatmentOptions::kFadeFullsizedFavicon)};
 
+BASE_FEATURE(kUseDeviceBatterySaverChromeOS,
+             "UseDeviceBatterySaverChromeOS",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif
 
 BASE_FEATURE(kBFCachePerformanceManagerPolicy,

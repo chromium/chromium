@@ -139,6 +139,8 @@ extern const base::FeatureParam<double> kDiscardedTabTreatmentOpacity;
 // The version of the tab discard treatment on the favicon should be shown
 extern const base::FeatureParam<int> kDiscardedTabTreatmentOption;
 
+BASE_DECLARE_FEATURE(kUseDeviceBatterySaverChromeOS);
+
 enum class DiscardTabTreatmentOptions {
   kNone = 0,
   kFadeFullsizedFavicon = 1,

@@ -21,6 +21,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "dbus/mock_bus.h"
+#include "dbus/mock_object_proxy.h"
+#include "dbus/object_path.h"
+#endif
+
 namespace performance_manager::user_tuning {
 namespace {
 
@@ -79,6 +86,19 @@ base::BatteryLevelProvider::BatteryState CreateBatteryState(
       .capture_time = base::TimeTicks::Now()};
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class ScopedFakePowerManagerClientLifetime {
+ public:
+  ScopedFakePowerManagerClientLifetime() {
+    chromeos::PowerManagerClient::InitializeFake();
+  }
+
+  ~ScopedFakePowerManagerClientLifetime() {
+    chromeos::PowerManagerClient::Shutdown();
+  }
+};
+#endif
+
 }  // namespace
 
 class UserPerformanceTuningManagerTest : public testing::Test {
@@ -132,6 +152,9 @@ class UserPerformanceTuningManagerTest : public testing::Test {
   raw_ptr<FakeHighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
   std::unique_ptr<base::BatteryStateSampler> battery_sampler_;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ScopedFakePowerManagerClientLifetime fake_power_manager_client_lifetime_;
+#endif
   raw_ptr<FakePowerMonitorSource> power_monitor_source_;
   bool throttling_enabled_ = false;
   std::unique_ptr<UserPerformanceTuningManager> manager_;
@@ -487,5 +510,60 @@ TEST_F(UserPerformanceTuningManagerTest,
   sampling_source_->SimulateEvent();
   EXPECT_EQ(100, manager()->SampledBatteryPercentage());
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(UserPerformanceTuningManagerTest, ManagedFromPowerManager) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      performance_manager::features::kUseDeviceBatterySaverChromeOS);
+
+  StartManager();
+  EXPECT_FALSE(manager()->IsBatterySaverActive());
+  EXPECT_FALSE(throttling_enabled());
+
+  base::RunLoop run_loop;
+  std::unique_ptr<QuitRunLoopOnBSMChangeObserver> observer =
+      std::make_unique<QuitRunLoopOnBSMChangeObserver>(run_loop.QuitClosure());
+  manager()->AddObserver(observer.get());
+
+  // Request to enable PowerManager's BSM
+  power_manager::SetBatterySaverModeStateRequest proto;
+  proto.set_enabled(true);
+  chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(proto);
+
+  run_loop.Run();
+  manager()->RemoveObserver(observer.get());
+
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+}
+
+TEST_F(UserPerformanceTuningManagerTest,
+       StartsEnabledIfAlreadyEnabledInPowerManager) {
+  base::test::ScopedFeatureList feature_list_;
+  feature_list_.InitAndEnableFeature(
+      performance_manager::features::kUseDeviceBatterySaverChromeOS);
+
+  // Request to enable PowerManager's BSM
+  power_manager::SetBatterySaverModeStateRequest proto;
+  proto.set_enabled(true);
+  chromeos::PowerManagerClient::Get()->SetBatterySaverModeState(proto);
+
+  StartManager();
+
+  // It's fine to install the observer after the manager is created, as long as
+  // it's done before the runloop runs
+  base::RunLoop run_loop;
+  std::unique_ptr<QuitRunLoopOnBSMChangeObserver> observer =
+      std::make_unique<QuitRunLoopOnBSMChangeObserver>(run_loop.QuitClosure());
+  manager()->AddObserver(observer.get());
+
+  run_loop.Run();
+  manager()->RemoveObserver(observer.get());
+
+  EXPECT_TRUE(manager()->IsBatterySaverActive());
+  EXPECT_TRUE(throttling_enabled());
+}
+#endif
 
 }  // namespace performance_manager::user_tuning
