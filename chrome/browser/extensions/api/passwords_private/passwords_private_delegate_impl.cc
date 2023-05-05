@@ -947,7 +947,8 @@ void PasswordsPrivateDelegateImpl::ExecuteFunction(base::OnceClosure callback) {
   pre_initialization_callbacks_.emplace_back(std::move(callback));
 }
 
-void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged() {
+void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   SetCredentials(saved_passwords_presenter_.GetSavedCredentials());
 }
 

@@ -164,7 +164,8 @@ void PasswordCheckManager::PasswordCheckProgress::OnProcessed(
   remaining_in_queue_ -= num_matching;
 }
 
-void PasswordCheckManager::OnSavedPasswordsChanged() {
+void PasswordCheckManager::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   size_t passwords_count =
       saved_passwords_presenter_.GetSavedPasswords().size();
 

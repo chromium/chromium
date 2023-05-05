@@ -50,7 +50,10 @@ using ::testing::UnorderedElementsAre;
 
 struct MockSavedPasswordsPresenterObserver : SavedPasswordsPresenter::Observer {
   MOCK_METHOD(void, OnEdited, (const CredentialUIEntry&), (override));
-  MOCK_METHOD(void, OnSavedPasswordsChanged, (), (override));
+  MOCK_METHOD(void,
+              OnSavedPasswordsChanged,
+              (const PasswordStoreChangeList& changes),
+              (override));
 };
 
 using StrictMockSavedPasswordsPresenterObserver =

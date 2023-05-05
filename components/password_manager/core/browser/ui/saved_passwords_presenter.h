@@ -60,7 +60,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
     // the underlying password store happens. This might be due to a call to
     // EditPassword(), but can also happen if passwords are added or removed due
     // to other reasons.
-    virtual void OnSavedPasswordsChanged() {}
+    virtual void OnSavedPasswordsChanged(
+        const PasswordStoreChangeList& changes) {}
   };
 
   // Result of EditSavedCredentials.
@@ -207,7 +208,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Notify observers about changes in the compromised credentials.
   void NotifyEdited(const CredentialUIEntry& password);
-  void NotifySavedPasswordsChanged();
+  void NotifySavedPasswordsChanged(const PasswordStoreChangeList& changes);
 
   void RemoveObservers();
 
@@ -227,7 +228,8 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
 
   // Helper functions to update local cache of PasswordForms.
   void RemoveForms(const std::vector<PasswordForm>& forms);
-  void AddForms(const std::vector<PasswordForm>& forms);
+  void AddForms(const std::vector<PasswordForm>& forms,
+                base::OnceClosure completion);
 
   // The password stores containing the saved passwords.
   scoped_refptr<PasswordStoreInterface> profile_store_;

@@ -97,7 +97,8 @@ void PasswordStoreBridge::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void PasswordStoreBridge::OnSavedPasswordsChanged() {
+void PasswordStoreBridge::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   JNIEnv* env = base::android::AttachCurrentThread();
   // Notifies java counter side that a new set of credentials is available.
   Java_PasswordStoreBridge_passwordListAvailable(

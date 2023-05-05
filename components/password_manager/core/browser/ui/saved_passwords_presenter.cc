@@ -83,6 +83,15 @@ password_manager::PasswordForm GenerateFormFromCredential(
   return form;
 }
 
+password_manager::PasswordStoreChangeList GetChangesForAddedForms(
+    const std::vector<password_manager::PasswordForm>& forms) {
+  password_manager::PasswordStoreChangeList changes;
+  for (const auto& form : forms) {
+    changes.emplace_back(password_manager::PasswordStoreChange::ADD, form);
+  }
+  return changes;
+}
+
 }  // namespace
 
 namespace password_manager {
@@ -462,13 +471,14 @@ void SavedPasswordsPresenter::NotifyEdited(
     observer.OnEdited(credential);
 }
 
-void SavedPasswordsPresenter::NotifySavedPasswordsChanged() {
+void SavedPasswordsPresenter::NotifySavedPasswordsChanged(
+    const PasswordStoreChangeList& changes) {
   // Notify observers when there are no pending password store updates.
   if (pending_store_updates_ > 0) {
     return;
   }
   for (auto& observer : observers_)
-    observer.OnSavedPasswordsChanged();
+    observer.OnSavedPasswordsChanged(changes);
 }
 
 void SavedPasswordsPresenter::OnLoginsChanged(
@@ -493,7 +503,9 @@ void SavedPasswordsPresenter::OnLoginsChanged(
 
   RemoveForms(forms_to_remove);
   // TODO(crbug.com/1381203): Inject branding info for these credentials.
-  AddForms(forms_to_add);
+  AddForms(forms_to_add,
+           base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                          weak_ptr_factory_.GetWeakPtr(), changes));
 }
 
 void SavedPasswordsPresenter::OnLoginsRetained(
@@ -510,7 +522,10 @@ void SavedPasswordsPresenter::OnLoginsRetained(
                 });
 
   // TODO(crbug.com/1381203): Inject branding info for these credentials.
-  AddForms(retained_passwords);
+  AddForms(retained_passwords,
+           base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          PasswordStoreChangeList()));
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResults(
@@ -518,7 +533,7 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResults(
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
@@ -531,7 +546,10 @@ void SavedPasswordsPresenter::OnGetPasswordStoreResultsFrom(
   for (auto& form : results) {
     forms.push_back(std::move(*form));
   }
-  AddForms(forms);
+  AddForms(forms,
+           base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          GetChangesForAddedForms(forms)));
 }
 
 PasswordStoreInterface& SavedPasswordsPresenter::GetStoreFor(
@@ -556,7 +574,8 @@ void SavedPasswordsPresenter::RemoveForms(
   }
 }
 
-void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
+void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms,
+                                       base::OnceClosure completion) {
   for (const auto& form : forms) {
     // TODO(crbug.com/1359392): Consider replacing |sort_key_to_password_forms_|
     // when grouping is launched.
@@ -566,7 +585,7 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
 
   if (!base::FeatureList::IsEnabled(
           password_manager::features::kPasswordsGrouping)) {
-    NotifySavedPasswordsChanged();
+    std::move(completion).Run();
     return;
   }
 
@@ -584,10 +603,8 @@ void SavedPasswordsPresenter::AddForms(const std::vector<PasswordForm>& forms) {
   // Notify observers after grouping is complete.
   passwords_grouper_->GroupPasswords(
       std::move(all_forms),
-      metrics_util::TimeCallback(
-          base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
-                         weak_ptr_factory_.GetWeakPtr()),
-          "PasswordManager.PasswordsGrouping.Time"));
+      metrics_util::TimeCallback(std::move(completion),
+                                 "PasswordManager.PasswordsGrouping.Time"));
 }
 
 }  // namespace password_manager

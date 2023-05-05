@@ -25,7 +25,8 @@ class SavedPasswordsPresenterObserverBridge
       password_manager::SavedPasswordsPresenter* presenter);
   ~SavedPasswordsPresenterObserverBridge() override;
 
-  void OnSavedPasswordsChanged() override;
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override;
 
  private:
   __weak id<SavedPasswordsPresenterObserver> delegate_ = nil;

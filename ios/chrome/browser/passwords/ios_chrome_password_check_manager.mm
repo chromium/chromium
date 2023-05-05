@@ -171,7 +171,8 @@ IOSChromePasswordCheckManager::GetInsecureCredentials() const {
   return insecure_credentials_manager_.GetInsecureCredentialEntries();
 }
 
-void IOSChromePasswordCheckManager::OnSavedPasswordsChanged() {
+void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   // Observing saved passwords to update possible kNoPasswords state.
   NotifyPasswordCheckStatusChanged();
   if (!std::exchange(is_initialized_, true) && start_check_on_init_) {

@@ -244,7 +244,8 @@ void InsecureCredentialsManager::OnEdited(const CredentialUIEntry& credential) {
 
 // Re-computes the list of insecure credentials with passwords after obtaining a
 // new list of saved passwords.
-void InsecureCredentialsManager::OnSavedPasswordsChanged() {
+void InsecureCredentialsManager::OnSavedPasswordsChanged(
+    const PasswordStoreChangeList& changes) {
   NotifyInsecureCredentialsChanged();
 }
 

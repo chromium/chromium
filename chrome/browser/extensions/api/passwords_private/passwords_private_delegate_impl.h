@@ -151,7 +151,8 @@ class PasswordsPrivateDelegateImpl
   ~PasswordsPrivateDelegateImpl() override;
 
   // password_manager::SavedPasswordsPresenter::Observer implementation.
-  void OnSavedPasswordsChanged() override;
+  void OnSavedPasswordsChanged(
+      const password_manager::PasswordStoreChangeList& changes) override;
 
   // web_app::WebAppInstallManagerObserver implementation.
   void OnWebAppInstalledWithOsHooks(const web_app::AppId& app_id) override;

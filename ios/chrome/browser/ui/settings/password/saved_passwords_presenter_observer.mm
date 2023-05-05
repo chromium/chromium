@@ -19,6 +19,7 @@ SavedPasswordsPresenterObserverBridge::SavedPasswordsPresenterObserverBridge(
 SavedPasswordsPresenterObserverBridge::
     ~SavedPasswordsPresenterObserverBridge() = default;
 
-void SavedPasswordsPresenterObserverBridge::OnSavedPasswordsChanged() {
+void SavedPasswordsPresenterObserverBridge::OnSavedPasswordsChanged(
+    const password_manager::PasswordStoreChangeList& changes) {
   [delegate_ savedPasswordsDidChange];
 }
