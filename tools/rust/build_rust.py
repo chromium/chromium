@@ -86,6 +86,9 @@ EXCLUDED_TESTS = [
 EXCLUDED_TESTS_WINDOWS = [
     # https://github.com/rust-lang/rust/issues/96464
     os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
+    # TODO(crbug.com/1442943): Re-enable when fixed.
+    os.path.join('tests', 'ui', 'native-library-link-flags',
+                 'msvc-non-utf8-output.rs'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(THIS_DIR, '..', 'clang', 'scripts')
