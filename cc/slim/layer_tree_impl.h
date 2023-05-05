@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -78,6 +77,9 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   void SetRoot(scoped_refptr<Layer> root) override;
   void SetFrameSink(std::unique_ptr<FrameSink> sink) override;
   void ReleaseLayerTreeFrameSink() override;
+  std::unique_ptr<ScopedKeepSurfaceAlive> CreateScopedKeepSurfaceAlive(
+      const viz::SurfaceId& surface_id) override;
+  const SurfaceRangesAndCounts& GetSurfaceRangesForTesting() const override;
 
   // FrameSinkImplClient.
   bool BeginFrame(const viz::BeginFrameArgs& args,
@@ -210,7 +212,7 @@ class COMPONENT_EXPORT(CC_SLIM) LayerTreeImpl : public LayerTree,
   float device_scale_factor_ = 1.0f;
   SkColor4f background_color_ = SkColors::kWhite;
   absl::optional<float> top_controls_visible_height_;
-  base::flat_set<viz::SurfaceRange> referenced_surfaces_;
+  SurfaceRangesAndCounts referenced_surfaces_;
   viz::FrameTokenGenerator next_frame_token_;
   gfx::OverlayTransform display_transform_hint_ = gfx::OVERLAY_TRANSFORM_NONE;
 

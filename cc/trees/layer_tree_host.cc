@@ -1654,8 +1654,10 @@ bool LayerTreeHost::PaintContent(const LayerList& update_layer_list) {
 }
 
 void LayerTreeHost::AddSurfaceRange(const viz::SurfaceRange& surface_range) {
-  if (++pending_commit_state()->surface_ranges[surface_range] == 1)
+  if (++pending_commit_state()->surface_ranges[surface_range] == 1) {
     pending_commit_state()->needs_surface_ranges_sync = true;
+    SetNeedsCommit();
+  }
 }
 
 void LayerTreeHost::RemoveSurfaceRange(const viz::SurfaceRange& surface_range) {
@@ -1666,6 +1668,7 @@ void LayerTreeHost::RemoveSurfaceRange(const viz::SurfaceRange& surface_range) {
   if (--iter->second <= 0) {
     pending_commit_state()->surface_ranges.erase(iter);
     pending_commit_state()->needs_surface_ranges_sync = true;
+    SetNeedsCommit();
   }
 }
 
