@@ -60,6 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkSmsHandler
   class ModemManagerNetworkSmsDeviceHandler;
   class ModemManager1NetworkSmsDeviceHandler;
 
+  // Timeout for waiting to fetch SMS details.
+  static const base::TimeDelta kFetchSmsDetailsTimeout;
+
   NetworkSmsHandler();
 
   // Requests the devices from the network manager, sets up observers, and

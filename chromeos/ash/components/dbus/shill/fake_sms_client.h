@@ -7,11 +7,13 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "chromeos/ash/components/dbus/shill/sms_client.h"
+#include "dbus/object_path.h"
 
 namespace ash {
 
-class FakeSMSClient : public SMSClient {
+class COMPONENT_EXPORT(SHILL_CLIENT) FakeSMSClient : public SMSClient {
  public:
   FakeSMSClient();
 
@@ -20,10 +22,18 @@ class FakeSMSClient : public SMSClient {
 
   ~FakeSMSClient() override;
 
+  // Completes the pending GetAll() callback. Simulates GetAll() being
+  // asynchronous.
+  void CompleteGetAll();
+
   // SMSClient overrides.
   void GetAll(const std::string& service_name,
               const dbus::ObjectPath& object_path,
               GetAllCallback callback) override;
+
+ private:
+  GetAllCallback pending_get_all_callback_;
+  dbus::ObjectPath pending_get_all_object_path_;
 };
 
 }  // namespace ash
