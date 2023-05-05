@@ -753,3 +753,8 @@ try_.builder(
         experiment_percentage = 5,
     ),
 )
+
+try_.builder(
+    name = "linux-cr23-rel",
+    mirrors = ["ci/linux-cr23-rel"],
+)

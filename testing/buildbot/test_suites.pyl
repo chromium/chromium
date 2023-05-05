@@ -1759,6 +1759,30 @@
       },
     },
 
+    'cr23_gtests': {
+      'browser_tests': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+      },
+      'interactive_ui_tests': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+        ],
+        'swarming': {
+          'shards': 10,
+        },
+      },
+      'views_unittests': {
+        'args': [
+          '--enable-features=ChromeRefresh2023',
+        ],
+      },
+    },
+
     'cronet_gtests': {
       'cronet_sample_test_apk': {},
       'cronet_smoketests_missing_native_library_instrumentation_apk': {},

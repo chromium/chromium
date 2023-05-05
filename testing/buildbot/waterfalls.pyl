@@ -3545,6 +3545,16 @@
           'scripts': 'test_traffic_annotation_auditor_script'
         },
       },
+      'linux-cr23-rel': {
+        'mixins': [
+          'linux-bionic',
+          'x86-64',
+        ],
+        'test_suites': {
+          'gtest_tests': 'cr23_gtests'
+        },
+        'os_type': 'linux',
+      },
       'linux-fieldtrial-rel': {
         'mixins': [
           'linux-bionic',
@@ -3718,6 +3728,15 @@
           '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
       },
+      'mac-cr23-rel': {
+        'test_suites': {
+          'gtest_tests': 'cr23_gtests',
+        },
+        'mixins': [
+          'mac_x64',
+        ],
+        'os_type': 'mac',
+      },
       'mac-fieldtrial-tester': {
         'mixins': [
           'finch-chromium-swarming-pool',
@@ -3847,6 +3866,16 @@
         'gtest_args': [
           '--enable-features=PartitionAllocBackupRefPtr:enabled-processes/non-renderer',
         ],
+      },
+      'win-cr23-rel': {
+        'test_suites': {
+          'gtest_tests': 'cr23_gtests',
+        },
+        'mixins': [
+          'win10-any',
+          'x86-64',
+        ],
+        'os_type': 'win',
       },
       'win-fieldtrial-rel': {
         'mixins': [

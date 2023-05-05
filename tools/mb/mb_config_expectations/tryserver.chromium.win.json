@@ -138,6 +138,15 @@
       "use_remoteexec": true
     }
   },
+  "win-cr23-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 0,
+      "use_remoteexec": true
+    }
+  },
   "win-fieldtrial-rel": {
     "gn_args": {
       "dcheck_always_on": false,
