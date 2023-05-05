@@ -104,18 +104,14 @@ bool IsBottom(TapLabelPosition position) {
 
 class ActionLabelTap : public ActionLabel {
  public:
-  ActionLabelTap(int radius,
-                 MouseAction mouse_action,
-                 TapLabelPosition label_position)
-      : ActionLabel(radius, mouse_action), label_position_(label_position) {
+  ActionLabelTap(MouseAction mouse_action, TapLabelPosition label_position)
+      : ActionLabel(mouse_action), label_position_(label_position) {
     DCHECK(mouse_action == MouseAction::PRIMARY_CLICK ||
            mouse_action == MouseAction::SECONDARY_CLICK);
   }
 
-  ActionLabelTap(int radius,
-                 const std::string& text,
-                 TapLabelPosition label_position)
-      : ActionLabel(radius, text), label_position_(label_position) {}
+  ActionLabelTap(const std::string& text, TapLabelPosition label_position)
+      : ActionLabel(text), label_position_(label_position) {}
 
   ~ActionLabelTap() override = default;
 
@@ -213,9 +209,9 @@ class ActionLabelTap : public ActionLabel {
 
 class ActionLabelMove : public ActionLabel {
  public:
-  ActionLabelMove(int radius, const std::string& text, int index)
-      : ActionLabel(radius, text, index) {}
-  ActionLabelMove(int radius, MouseAction mouse) : ActionLabel(radius, mouse) {}
+  ActionLabelMove(const std::string& text, int index)
+      : ActionLabel(text, index) {}
+  explicit ActionLabelMove(MouseAction mouse) : ActionLabel(mouse) {}
 
   ~ActionLabelMove() override = default;
 
@@ -318,7 +314,6 @@ std::string GetDisplayText(const ui::DomCode code) {
 std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
                                             ActionType action_type,
                                             const InputElement& input_element,
-                                            int radius,
                                             TapLabelPosition label_position) {
   std::vector<ActionLabel*> labels;
   gfx::Size touch_point_size;
@@ -329,16 +324,14 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
         DCHECK_EQ(1u, input_element.keys().size());
         labels.emplace_back(
             parent->AddChildView(std::make_unique<ActionLabelTap>(
-                radius, GetDisplayText(input_element.keys()[0]),
-                label_position)));
+                GetDisplayText(input_element.keys()[0]), label_position)));
       } else if (IsMouseBound(input_element)) {
         labels.emplace_back(
             parent->AddChildView(std::make_unique<ActionLabelTap>(
-                radius, input_element.mouse_action(), label_position)));
+                input_element.mouse_action(), label_position)));
       } else {
-        labels.emplace_back(
-            parent->AddChildView(std::make_unique<ActionLabelTap>(
-                radius, kUnknownBind, label_position)));
+        labels.emplace_back(parent->AddChildView(
+            std::make_unique<ActionLabelTap>(kUnknownBind, label_position)));
       }
       touch_point_size = TouchPoint::GetSize(ActionType::TAP);
       break;
@@ -347,18 +340,17 @@ std::vector<ActionLabel*> ActionLabel::Show(views::View* parent,
       if (IsKeyboardBound(input_element)) {
         const auto& keys = input_element.keys();
         for (size_t i = 0; i < kActionMoveKeysSize; i++) {
-          labels.emplace_back(
-              parent->AddChildView(std::make_unique<ActionLabelMove>(
-                  radius, GetDisplayText(keys[i]), i)));
+          labels.emplace_back(parent->AddChildView(
+              std::make_unique<ActionLabelMove>(GetDisplayText(keys[i]), i)));
         }
       } else if (IsMouseBound(input_element)) {
         labels.emplace_back(parent->AddChildView(
-            std::make_unique<ActionLabelMove>(radius, kMouseCursorLock, 0)));
+            std::make_unique<ActionLabelMove>(kMouseCursorLock, 0)));
         NOTIMPLEMENTED();
       } else {
         for (size_t i = 0; i < kActionMoveKeysSize; i++) {
           labels.emplace_back(parent->AddChildView(
-              std::make_unique<ActionLabelMove>(radius, kUnknownBind, i)));
+              std::make_unique<ActionLabelMove>(kUnknownBind, i)));
         }
       }
       touch_point_size = TouchPoint::GetSize(ActionType::MOVE);
@@ -385,18 +377,16 @@ void ActionLabel::Init() {
                              CalculateAccessibleName());
 }
 
-ActionLabel::ActionLabel(int radius, MouseAction mouse_action)
-    : radius_(radius), mouse_action_(mouse_action) {}
+ActionLabel::ActionLabel(MouseAction mouse_action)
+    : mouse_action_(mouse_action) {}
 
-ActionLabel::ActionLabel(int radius, const std::string& text)
+ActionLabel::ActionLabel(const std::string& text)
+    : views::LabelButton(views::Button::PressedCallback(),
+                         base::UTF8ToUTF16(text)) {}
+
+ActionLabel::ActionLabel(const std::string& text, int index)
     : views::LabelButton(views::Button::PressedCallback(),
                          base::UTF8ToUTF16(text)),
-      radius_(radius) {}
-
-ActionLabel::ActionLabel(int radius, const std::string& text, int index)
-    : views::LabelButton(views::Button::PressedCallback(),
-                         base::UTF8ToUTF16(text)),
-      radius_(radius),
       index_(index) {
   DCHECK(index_ >= 0 && index_ < kActionMoveKeysSize);
 }

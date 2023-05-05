@@ -65,8 +65,7 @@ class ActionMove::ActionMoveMouseView : public ActionView {
       return;
     }
 
-    int radius = std::max(kActionMoveMinRadius, action_->GetUIRadius());
-    labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius);
+    labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding);
   }
 
   // TODO(b/241966781): rewrite for Beta once design is ready.
@@ -117,8 +116,7 @@ class ActionMove::ActionMoveKeyView : public ActionView {
 
     const auto& keys = input_binding->keys();
     if (labels_.empty()) {
-      labels_ =
-          ActionLabel::Show(this, ActionType::MOVE, *input_binding, radius);
+      labels_ = ActionLabel::Show(this, ActionType::MOVE, *input_binding);
     } else {
       DCHECK(labels_.size() == keys.size());
       for (size_t i = 0; i < keys.size(); i++) {

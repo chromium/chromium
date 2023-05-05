@@ -66,9 +66,8 @@ class ActionTap::ActionTapView : public ActionView {
 
     if (labels_.empty()) {
       // Create new action label when initializing.
-      labels_ =
-          ActionLabel::Show(this, ActionType::TAP, *input_binding,
-                            action_->GetUIRadius(), TapLabelPosition::kNone);
+      labels_ = ActionLabel::Show(this, ActionType::TAP, *input_binding,
+                                  TapLabelPosition::kNone);
     } else if (!IsInputBound(*input_binding)) {
       // Action label exists but without any bindings.
       labels_[0]->SetTextActionLabel(

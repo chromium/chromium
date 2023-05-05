@@ -29,12 +29,11 @@ class ActionLabel : public views::LabelButton {
       views::View* parent,
       ActionType action_type,
       const InputElement& input_element,
-      int radius,
       TapLabelPosition label_position = TapLabelPosition::kTopLeft);
 
-  ActionLabel(int radius, MouseAction mouse_action);
-  ActionLabel(int radius, const std::string& text);
-  ActionLabel(int radius, const std::string& text, int index);
+  explicit ActionLabel(MouseAction mouse_action);
+  explicit ActionLabel(const std::string& text);
+  ActionLabel(const std::string& text, int index);
 
   ActionLabel(const ActionLabel&) = delete;
   ActionLabel& operator=(const ActionLabel&) = delete;
