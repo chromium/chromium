@@ -364,7 +364,7 @@
 <translation id="1319983966058170660"><ph name="SUBPAGE_TITLE" /> సబ్‌పేజీ 'వెనుకకు' బటన్</translation>
 <translation id="1322046419516468189">మీ <ph name="SAVED_PASSWORDS_STORE" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి మరియు నిర్వహించండి</translation>
 <translation id="1324106254079708331">లక్షిత ఇంటర్నెట్ దాడులకు గురయ్యే అవకాశం ఉన్న ఎవరి వ్యక్తిగత Google ఖాతాలనైనా రక్షిస్తుంది</translation>
-<translation id="1327272175893960498">Kerberos టిక్కెట్‌లు</translation>
+<translation id="1327272175893960498">Kerberos టికెట్‌లు</translation>
 <translation id="1327495825214193325">ADB డీబగ్గింగ్‌ను ఎనేబుల్ చేయడానికి, ఈ <ph name="DEVICE_TYPE" />ను తప్పనిసరిగా రీస్టార్ట్ చేయాలి. దీనిని డిజేబుల్ చేయాలంటే, ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేయడం అవసరం అవుతుంది.</translation>
 <translation id="1327527584824210101">మీ పాస్-కీని ఉపయోగించండి</translation>
 <translation id="1327794256477341646">ఏ ఫీచర్‌లకు మీ లొకేషన్ అవసరం అవుతుందో అవి పని చేయవు</translation>
@@ -4222,7 +4222,7 @@
 <translation id="4736292055110123391">మీ బుక్‌మార్క్‌లు, పాస్‌వర్డ్‌‌లు, హిస్టరీ మరియు మరిన్నింటిని మీ అన్ని పరికరాల్లోనూ సింక్ చేయండి</translation>
 <translation id="473775607612524610">అప్‌డేట్‌</translation>
 <translation id="473936925429402449"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్ ఎంచుకోబడింది</translation>
-<translation id="4739639199548674512">టిక్కెట్‌లు</translation>
+<translation id="4739639199548674512">టికెట్‌లు</translation>
 <translation id="4742334355511750246">ఇమేజ్‌లను చూపడానికి అనుమతించబడలేదు</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />అప్లికేషన్‌లను ఎలా అప్‌డేట్ చేయాలో తెలుసుకోండి<ph name="END_LINK" /></translation>

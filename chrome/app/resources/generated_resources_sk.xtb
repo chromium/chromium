@@ -1634,7 +1634,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2408955596600435184">Zadajte kód PIN</translation>
 <translation id="2409268599591722235">Poďme na to</translation>
 <translation id="2409709393952490731">Použiť telefón alebo tablet</translation>
-<translation id="2410079346590497630">podrobnosti o zostave</translation>
+<translation id="2410079346590497630">Podrobnosti o zostave</translation>
 <translation id="2410298923485357543">Keď je zariadenie online, používajte prirodzený hlas</translation>
 <translation id="2410754283952462441">Výber účtu</translation>
 <translation id="241082044617551207">Neznámy doplnok</translation>
@@ -5941,7 +5941,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="6349101878882523185">Inštalovať aplikáciu <ph name="APP_NAME" /></translation>
 <translation id="6354918092619878358">Eliptická krivka SECG secp256r1 (známa tiež ako ANSI X9.62 prime256v1, NIST P-256)</translation>
 <translation id="635609604405270300">Ponechajte zariadenie zapnuté</translation>
-<translation id="63566973648609420">Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak zabudnete prístupovú frázu alebo budete chcieť zmeniť toto nastavenie zmeniť, musíte <ph name="BEGIN_LINK" />resetovať synchronizáciu<ph name="END_LINK" />.</translation>
+<translation id="63566973648609420">Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak zabudnete prístupovú frázu alebo budete chcieť toto nastavenie zmeniť, musíte <ph name="BEGIN_LINK" />resetovať synchronizáciu<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Niektoré podporované odkazy sa budú stále otvárať v aplikácii <ph name="APP_NAME" /> alebo <ph name="APP_NAME_2" />.</translation>
 <translation id="6357794994761110294">Web <ph name="SITE_NAME" /> nemajú povolené čítať ani meniť žiadne rozšírenia</translation>
 <translation id="6358884629796491903">Drak</translation>
@@ -8483,7 +8483,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8655972064210167941">Prihlásenie zlyhalo, pretože sa heslo nepodarilo overiť. Kontaktujte svojho správcu alebo to skúste znova.</translation>
 <translation id="8657393004602556571">Chcete spätnú väzbu zahodiť?</translation>
 <translation id="8661290697478713397">Otvoriť odkaz v okne inko&amp;gnito</translation>
-<translation id="8662671328352114214">Pridanie sa k sieti <ph name="TYPE" /></translation>
+<translation id="8662671328352114214">Pripojenie k sieti <ph name="TYPE" /></translation>
 <translation id="8662733268723715832">Trvá to dlhšie, ako sa očakávalo. Môžete preskočiť alebo čakať na dokončenie.</translation>
 <translation id="8662795692588422978">Osoby</translation>
 <translation id="8662811608048051533">Odhlási vás z väčšiny webov.</translation>
@@ -8514,7 +8514,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8676770494376880701">Pripojila sa nabíjačka s nízkym výkonom</translation>
 <translation id="8677212948402625567">Zbaliť všetky...</translation>
 <translation id="8678378565142776698">Reštartovať a dostávať automatické aktualizácie</translation>
-<translation id="8678538439778360739">Údaje boli o <ph name="TIME" /> šifrované pomocou vašej prístupovej frázy synchronizácie. Nezahŕňa to spôsoby platby ani adresy zo služby Google Pay.</translation>
+<translation id="8678538439778360739">Údaje boli <ph name="TIME" /> šifrované pomocou vašej prístupovej frázy synchronizácie. Nezahŕňa to spôsoby platby ani adresy zo služby Google Pay.</translation>
 <translation id="8678582529642151449">Karty sa nezmenšia</translation>
 <translation id="8678933587484842200">Ako sa má táto aplikácia spúšťať?</translation>
 <translation id="8680251145628383637">Prihláste sa a používajte svoje záložky, históriu, heslá a ďalšie nastavenia vo všetkých svojich zariadeniach. Navyše sa tak automaticky prihlásite do služieb Googlu.</translation>

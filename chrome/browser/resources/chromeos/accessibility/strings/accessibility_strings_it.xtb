@@ -360,12 +360,12 @@
 <translation id="3273791280096244679">Salva etichetta</translation>
 <translation id="3283583562490372694">deselezionato</translation>
 <translation id="3286372614333682499">verticale</translation>
-<translation id="3286390186030710347">Dispositivo di scorrimento</translation>
+<translation id="3286390186030710347">Cursore</translation>
 <translation id="3300733168898541351">annulla</translation>
 <translation id="3307886118343381874">Vai alla fine della tabella</translation>
 <translation id="3312997241656799641">Link visitato successivo</translation>
 <translation id="3313245066383501820">Tasto di modifica di ChromeVox</translation>
-<translation id="3317212938060708859">Un dispositivo di scorrimento</translation>
+<translation id="3317212938060708859">Un cursore</translation>
 <translation id="3321460131042519426">Attiva ritorno a capo automatico</translation>
 <translation id="3322936298410871309">Intestazione livello 1 precedente</translation>
 <translation id="3323447499041942178">Casella di testo</translation>
@@ -760,7 +760,7 @@
 <translation id="6037602951055904232">Panoramica avanti</translation>
 <translation id="604240746417122825">Errore grammaticale</translation>
 <translation id="6082768461603900813">Navigazione di base</translation>
-<translation id="609281021724813947">Nessun dispositivo di scorrimento precedente</translation>
+<translation id="609281021724813947">Nessun cursore precedente</translation>
 <translation id="6100239002225743044">Sposta in alto di una riga</translation>
 <translation id="611827076493383239">vtd</translation>
 <translation id="6119846243427417423">attiva</translation>
@@ -901,7 +901,7 @@
 <translation id="7167657087543110">eco caratteri</translation>
 <translation id="7173102181852295013">Blu notte</translation>
 <translation id="7203150201908454328">Espanso</translation>
-<translation id="7209751026933045237">Nessun dispositivo di scorrimento successivo</translation>
+<translation id="7209751026933045237">Nessun cursore successivo</translation>
 <translation id="7218782500591078391">Ocra dorato</translation>
 <translation id="7226216518520804442">lst</translation>
 <translation id="7229749224609077523">Seleziona una tabella braille a sei punti:</translation>
