@@ -228,21 +228,26 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Generate the table view data when the current currently displayed node is the
 // outermost root.
 - (void)generateTableViewDataForRootNode {
-  // If all the permanent nodes are empty, do not create items for any of them.
-  if (![self hasBookmarksOrFolders]) {
-    return;
+  BOOL showProfileSection =
+      [self hasBookmarksOrFoldersInModel:_profileBookmarkModel.get()];
+  BOOL showAccountSection =
+      bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService) &&
+      [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()];
+  if (showProfileSection) {
+    [self generateTableViewDataForModel:_profileBookmarkModel.get()
+                              inSection:
+                                  BookmarksHomeSectionIdentifierRootProfile];
   }
-  [self
-      generateTableViewDataForModel:_profileBookmarkModel.get()
-                          inSection:BookmarksHomeSectionIdentifierRootProfile];
-  if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(self.syncService)) {
-    return;
+  if (showAccountSection) {
+    [self generateTableViewDataForModel:_accountBookmarkModel.get()
+                              inSection:
+                                  BookmarksHomeSectionIdentifierRootAccount];
   }
-  [self updateHeaderForProfileRootNode];
-  [self
-      generateTableViewDataForModel:_accountBookmarkModel.get()
-                          inSection:BookmarksHomeSectionIdentifierRootAccount];
-  [self updateHeaderForAccountRootNode];
+  if (showProfileSection && showAccountSection) {
+    // Headers are only shown if both sections are visible.
+    [self updateHeaderForProfileRootNode];
+    [self updateHeaderForAccountRootNode];
+  }
 }
 
 - (void)generateTableViewDataForModel:(bookmarks::BookmarkModel*)model
@@ -670,17 +675,26 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 - (BOOL)hasBookmarksOrFolders {
   if (self.consumer.isDisplayingBookmarkRoot) {
-    // The root node always has its permanent nodes. If all the permanent nodes
-    // are empty, we treat it as if the root itself is empty.
-    const auto& childrenOfRootNode = self.displayedNode->children();
-    for (const auto& child : childrenOfRootNode) {
-      if (!child->children().empty()) {
-        return YES;
-      }
+    if ([self hasBookmarksOrFoldersInModel:_profileBookmarkModel.get()]) {
+      return YES;
     }
-    return NO;
+    return bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(_syncService) &&
+           [self hasBookmarksOrFoldersInModel:_accountBookmarkModel.get()];
   }
   return self.displayedNode && !self.displayedNode->children().empty();
+}
+
+// Returns whether there are bookmark nodes in `model` that are added by users.
+- (BOOL)hasBookmarksOrFoldersInModel:(bookmarks::BookmarkModel*)model {
+  // The root node always has its permanent nodes. If all the permanent nodes
+  // are empty, we treat it as if the root itself is empty.
+  const auto& childrenOfRootNode = model->root_node()->children();
+  for (const auto& child : childrenOfRootNode) {
+    if (!child->children().empty()) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 // Ensure all sections exists and are empty.
