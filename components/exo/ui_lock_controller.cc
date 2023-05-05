@@ -217,6 +217,14 @@ class ExitNotifier : public ui::EventHandler,
     }
   }
 
+  // Notify again but this only notifies again the fullscreen notifier.
+  void NotifyAgainForFullscreen() {
+    ash::WindowState* window_state = ash::WindowState::Get(window_);
+    if (window_state->IsFullscreen()) {
+      OnFullscreen();
+    }
+  }
+
   void OnWindowDestroying(aura::Window* window) override {
     window_observation_.Reset();
     window_state_observation_.Reset();
@@ -578,11 +586,17 @@ void UILockController::OnLockStateChanged(bool locked) {
 void UILockController::OnSurfaceFocused(Surface* gained_focus,
                                         Surface* lost_focus,
                                         bool has_focused_surface) {
-  if (gained_focus != focused_surface_to_unlock_)
+  if (gained_focus != focused_surface_to_unlock_) {
     StopTimer();
+  }
 
-  if (gained_focus)
-    GetExitNotifier(this, gained_focus->window(), true);
+  if (gained_focus) {
+    ExitNotifier* exit_notifier =
+        GetExitNotifier(this, gained_focus->window(), true);
+    if (exit_notifier) {
+      exit_notifier->NotifyAgainForFullscreen();
+    }
+  }
 }
 
 void UILockController::OnPointerCaptureEnabled(Pointer* pointer,

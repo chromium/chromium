@@ -17,8 +17,10 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/check.h"
+#include "base/strings/string_util.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/fullscreen/keep_fullscreen_for_url_checker.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -96,6 +98,20 @@ void FullscreenController::MaybeExitFullscreenBeforeLock(
   // Nothing to do if the active window is not in full screen mode.
   WindowState* active_window_state = WindowState::ForActiveWindow();
   if (!active_window_state || !active_window_state->IsFullscreen()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  // Do not exit fullscreen for a Borealis window. We do additional checks here
+  // to avoid entering a screen lock with a window which has a not-allowed
+  // property combination. We use CHECKs as those combination should never
+  // happen.
+  if (active_window_state->window()->GetProperty(
+          chromeos::kNoExitFullscreenOnLock)) {
+    CHECK(active_window_state->window()->GetProperty(
+        chromeos::kUseOverviewToExitFullscreen))
+        << "Property combination not allowed. kUseOverviewToExitFullscreen "
+           "must be true if kNoExitFullscreenOnLock is true.";
     std::move(callback).Run();
     return;
   }
