@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_metrics_helper.h"
 
-#include "base/cpu_reduction_experiment.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -163,25 +162,6 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
     queueing_delay_histograms_[static_cast<size_t>(queue->GetQueuePriority())]
         .CountMicroseconds(elapsed);
   }
-
-  // Don't log the metrics to evaluate impact of CPU reduction.
-  // This code is deemed not useful anymore (crbug.com/1181870).
-  // TODO(crbug.com/1295441: Fully remove the code once the experiment is over.
-  if (base::IsRunningCpuReductionExperiment()) {
-    return;
-  }
-
-  // WARNING: All code below must be compatible with down-sampling.
-  constexpr double kSamplingProbability = .01;
-  if (!metrics_subsampler_.ShouldSample(kSamplingProbability)) {
-    return;
-  }
-
-  base::TimeDelta duration = task_timing.wall_duration();
-  UMA_HISTOGRAM_CUSTOM_COUNTS("RendererScheduler.TaskTime2",
-                              base::saturated_cast<base::HistogramBase::Sample>(
-                                  duration.InMicroseconds()),
-                              1, 1000 * 1000, 50);
 }
 
 void MainThreadMetricsHelper::RecordMainThreadTaskLoad(base::TimeTicks time,
