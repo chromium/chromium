@@ -454,13 +454,13 @@ void PrintSettings::SetPrinterPrintableArea(
 void PrintSettings::UpdatePrinterPrintableArea(
     const gfx::Rect& printable_area_um) {
   // Scale the page size and printable area to device units.
-  float x_scale = static_cast<float>(device_units_per_inch_size().width()) /
-                  kMicronsPerInch;
-  float y_scale = static_cast<float>(device_units_per_inch_size().height()) /
-                  kMicronsPerInch;
-
+  // Blink doesn't support different dpi settings in X and Y axis. Because of
+  // this, printers with non-square DPIs still scale page size and printable
+  // area using device_units_per_inch() instead of their respective dimensions
+  // in device_units_per_inch_size().
+  float scale = static_cast<float>(device_units_per_inch()) / kMicronsPerInch;
   gfx::Rect printable_area_device_units =
-      gfx::ScaleToRoundedRect(printable_area_um, x_scale, y_scale);
+      gfx::ScaleToRoundedRect(printable_area_um, scale);
 
   // Protect against misbehaving drivers.  We have observed some drivers return
   // incorrect values compared to page size.  E.g., HP Business Inkjet 2300 PS.
