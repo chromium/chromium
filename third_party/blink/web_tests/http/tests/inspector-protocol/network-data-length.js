@@ -85,6 +85,8 @@
   sendRequest('/inspector-protocol/resources/data-xfer-resource.php?' +
               'redirect=1');
   sendRequest('/inspector-protocol/resources/data-xfer-resource.php?' +
+              'cached=1');
+  sendRequest('/inspector-protocol/resources/data-xfer-resource.php?' +
               'size=4&' +
               'flush_header_with_x_bytes=1&' +
               'wait_after_headers_packet=25&' +
