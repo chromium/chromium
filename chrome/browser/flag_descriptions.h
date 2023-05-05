@@ -2550,6 +2550,9 @@ extern const char kHeuristicMemorySaverDescription[];
 extern const char kHighEfficiencyModeTimeBeforeDiscardName[];
 extern const char kHighEfficiencyModeTimeBeforeDiscardDescription[];
 
+extern const char kHighEfficiencyDiscardedTabTreatmentName[];
+extern const char kHighEfficiencyDiscardedTabTreatmentDescription[];
+
 extern const char kHighEfficiencySavingsReportingImprovementsName[];
 extern const char kHighEfficiencySavingsReportingImprovementsDescription[];
 

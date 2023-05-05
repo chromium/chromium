@@ -58970,6 +58970,7 @@ from previous Chrome versions.
       label="AccessibilityChromeVoxPageMigration:disabled"/>
   <int value="-1821491797"
       label="AutofillEnableRankingFormulaCreditCards:enabled"/>
+  <int value="-1821336389" label="DiscardedTabTreatment:enabled"/>
   <int value="-1821058653" label="enable-delay-agnostic-aec"/>
   <int value="-1819497481" label="TouchTextEditingRedesign:disabled"/>
   <int value="-1818994562" label="ScanningAppJelly:enabled"/>
@@ -61758,6 +61759,7 @@ from previous Chrome versions.
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
+  <int value="-324239279" label="DiscardedTabTreatment:disabled"/>
   <int value="-324099334" label="HatsUseNewHistograms:disabled"/>
   <int value="-323913169" label="PasswordNotesWithBackup:enabled"/>
   <int value="-323831744" label="token-binding:enabled"/>
