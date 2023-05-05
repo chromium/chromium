@@ -18,7 +18,6 @@ import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.UrlUtils;
 import org.chromium.net.X509Util;
 import org.chromium.net.test.util.CertTestUtil;
 
@@ -524,23 +523,6 @@ public class EmbeddedTestServer {
             }
         } catch (RemoteException e) {
             throw new EmbeddedTestServerFailure("Failed to get root cert's path", e);
-        }
-    }
-
-    /**
-     * Initialize the test certs for the Certificate Verifiers.
-     */
-    public static void initTestCerts() {
-        try {
-            // Use the same PEM file as net/test/embedded_test_server/embedded_test_server.cc.
-            String rootCertPemPath =
-                    UrlUtils.getIsolatedTestFilePath("net/data/ssl/certificates/root_ca_cert.pem");
-            byte[] rootCertBytesDer = CertTestUtil.pemToDer(rootCertPemPath);
-            X509Util.addTestRootCertificate(rootCertBytesDer);
-            X509Util.setTestRootCertificateForBuiltin(rootCertBytesDer);
-        } catch (Exception e) {
-            throw new EmbeddedTestServer.EmbeddedTestServerFailure(
-                    "Failed to install root certificate.", e);
         }
     }
 }
