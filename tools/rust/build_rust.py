@@ -39,6 +39,7 @@ import hashlib
 import json
 import platform
 import os
+import re
 import shutil
 import string
 import subprocess
@@ -97,6 +98,8 @@ RUST_GIT_URL = ('https://chromium.googlesource.com/external/' +
                 'github.com/rust-lang/rust')
 
 RUST_SRC_DIR = os.path.join(THIRD_PARTY_DIR, 'rust_src', 'src')
+RUST_BOOTSTRAP_DIST_RS = os.path.join(RUST_SRC_DIR, 'src', 'bootstrap',
+                                      'dist.rs')
 STAGE0_JSON_PATH = os.path.join(RUST_SRC_DIR, 'src', 'stage0.json')
 # Download crates.io dependencies to rust-src subdir (rather than $HOME/.cargo)
 CARGO_HOME_DIR = os.path.join(RUST_SRC_DIR, 'cargo-home')
@@ -256,6 +259,42 @@ def InstallBetaPackage(package_dir, install_dir):
 
 def CargoVendor(cargo_bin):
     '''Runs `cargo vendor` to pull down dependencies.'''
+    # From https://github.com/rust-lang/rust/blob/4a18324a4df6bc98bec0b54d35908d7a9cdc7c32/src/bootstrap/dist.rs#L1008-L1015:
+    # The additional `--sync` Cargo.toml files are not part of the top level
+    # workspace.
+    SYNC_TARGETS = [
+        './src/tools/cargo/Cargo.toml',
+        './src/tools/rust-analyzer/Cargo.toml',
+        './compiler/rustc_codegen_cranelift/Cargo.toml',
+        './src/bootstrap/Cargo.toml',
+    ]
+
+    # Try to verify our sync targets match the upstream nightly tarball
+    # builder's.
+    BUILDER_REGEX = (r'(?:'
+                     r'\s*\.arg\("--sync"\)'
+                     r'\s*\.arg\(builder.src.join\("(?P<target>[^"]+)"\)\)'
+                     r')')
+    content = ''
+    with open(RUST_BOOTSTRAP_DIST_RS) as f:
+        content = ''.join([line.strip() for line in f])
+    upstream_sync_targets = re.compile(BUILDER_REGEX).findall(content)
+    error = False
+    for s in SYNC_TARGETS:
+        if not s in upstream_sync_targets:
+            print(f'Upstream bootstrap/dist.rs removed "--sync {s}", '
+                  'so it should be removed from SYNC_TARGETS in '
+                  '//tools/rust/build_rust.py.')
+            error = True
+    for s in upstream_sync_targets:
+        if not s in SYNC_TARGETS:
+            print(f'Upstream bootstrap/dist.rs added "--sync {s}", '
+                  'so it should be added to SYNC_TARGETS in '
+                  '//tools/rust/build_rust.py.')
+            error = True
+    if error:
+        sys.exit(1)
+
     os.chdir(RUST_SRC_DIR)
 
     for i in range(0, 3):
@@ -273,23 +312,14 @@ def CargoVendor(cargo_bin):
         else:
             sys.exit(1)
 
-        # From https://github.com/rust-lang/rust/blob/master/src/bootstrap/dist.rs#L1003-L1013:
-        # The additional `--sync` Cargo.toml files are not part of the top level
-        # workspace.
         vendor_cmd = [
             cargo_bin,
             'vendor',
             '--locked',
             '--versioned-dirs',
-            '--sync',
-            'src/tools/cargo/Cargo.toml',
-            '--sync',
-            'src/tools/rust-analyzer/Cargo.toml',
-            '--sync',
-            'compiler/rustc_codegen_cranelift/Cargo.toml',
-            '--sync',
-            'src/bootstrap/Cargo.toml',
         ]
+        for s in SYNC_TARGETS:
+            vendor_cmd.extend(['--sync', s])
         if RunCommand(vendor_cmd, fail_hard=False):
             break  # Success, break out of the retry loop.
         elif i < 2:

@@ -192,7 +192,6 @@ def main():
         shutil.rmtree(RUST_TOOLCHAIN_OUT_DIR)
 
     try:
-        platform_prefix = GetPlatformUrlPrefix(GetDefaultHostOs())
         DownloadAndUnpack(url, THIRD_PARTY_DIR)
     except urllib.error.HTTPError as e:
         print(f'error: Failed to download Rust package')
