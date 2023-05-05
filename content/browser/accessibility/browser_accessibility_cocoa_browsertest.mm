@@ -26,10 +26,6 @@
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "url/gurl.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 namespace content {
 
 class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
@@ -51,7 +47,7 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
   }
 
   // Trigger a context menu for the provided element without showing it. Returns
-  // the coordinates where the context menu was invoked (calculated based on
+  // the coordinates where the  context menu was invoked (calculated based on
   // the provided element). These coordinates are relative to the RenderView
   // origin.
   gfx::Point TriggerContextMenuAndGetMenuLocation(
@@ -122,8 +118,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   SimulateKeyPress(shell()->web_contents(), ui::DomKey::FromCharacter('B'),
                    ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
 
-  BrowserAccessibilityCocoa* cocoa_text_field =
-      text_field->GetNativeViewAccessible();
+  base::scoped_nsobject<BrowserAccessibilityCocoa> cocoa_text_field(
+      [text_field->GetNativeViewAccessible() retain]);
   AccessibilityNotificationWaiter value_waiter(shell()->web_contents(),
                                                ui::kAXModeComplete,
                                                ax::mojom::Event::kValueChanged);
@@ -170,21 +166,22 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   BrowserAccessibility* table = FindNode(ax::mojom::Role::kTable);
   ASSERT_NE(nullptr, table);
-  BrowserAccessibilityCocoa* cocoa_table = table->GetNativeViewAccessible();
+  base::scoped_nsobject<BrowserAccessibilityCocoa> cocoa_table(
+      [table->GetNativeViewAccessible() retain]);
 
   // Test AXCellForColumnAndRow for four coordinates
   for (unsigned col = 0; col < 2; col++) {
     for (unsigned row = 0; row < 2; row++) {
-      BrowserAccessibilityCocoa* cell =
-          [cocoa_table accessibilityCellForColumn:col row:row];
+      base::scoped_nsobject<BrowserAccessibilityCocoa> cell(
+          [[cocoa_table accessibilityCellForColumn:col row:row] retain]);
 
       // It should be a cell.
-      EXPECT_NSEQ(@"AXCell", cell.accessibilityRole);
+      EXPECT_NSEQ(@"AXCell", [cell accessibilityRole]);
 
       // The column index and row index of the cell should match what we asked
       // for.
-      EXPECT_NSEQ(NSMakeRange(col, 1), cell.accessibilityColumnIndexRange);
-      EXPECT_NSEQ(NSMakeRange(row, 1), cell.accessibilityRowIndexRange);
+      EXPECT_NSEQ(NSMakeRange(col, 1), [cell accessibilityColumnIndexRange]);
+      EXPECT_NSEQ(NSMakeRange(row, 1), [cell accessibilityRowIndexRange]);
     }
   }
 }
@@ -208,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   BrowserAccessibilityCocoa* cocoa_text = text->GetNativeViewAccessible();
   ASSERT_NE(nil, cocoa_text);
 
-  NSPoint position = cocoa_text.position.pointValue;
+  NSPoint position = [[cocoa_text position] pointValue];
 
   NSSize size = cocoa_text.accessibilityFrame.size;
   NSRect frame = NSMakeRect(position.x, position.y, size.width, size.height);
@@ -267,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   content_size.Enlarge(0, dh);
   shell()->ResizeWebContentForTests(content_size);
 
-  NSPoint p0_after = cocoa_text.position.pointValue;
+  NSPoint p0_after = [[cocoa_text position] pointValue];
   NSRect r0_after = [cocoa_text frameForRange:NSMakeRange(0, 5)];
 
   ASSERT_EQ(p0_before.y + dh, p0_after.y);
@@ -405,10 +402,11 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   for (int child_index = 0; child_index < child_count; child_index++) {
     BrowserAccessibility* child =
         manager->GetBrowserAccessibilityRoot()->PlatformGetChild(child_index);
-    BrowserAccessibilityCocoa* child_obj = child->GetNativeViewAccessible();
+    base::scoped_nsobject<BrowserAccessibilityCocoa> child_obj(
+        [child->GetNativeViewAccessible() retain]);
 
     EXPECT_NSEQ(base::SysUTF8ToNSString(expected_descriptions[child_index]),
-                child_obj.accessibilityLabel);
+                [child_obj accessibilityLabel]);
   }
 }
 
@@ -492,10 +490,11 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   BrowserAccessibility* table =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
-  BrowserAccessibilityCocoa* table_obj = table->GetNativeViewAccessible();
-  NSArray* row_nodes = table_obj.accessibilityRows;
+  base::scoped_nsobject<BrowserAccessibilityCocoa> table_obj(
+      [table->GetNativeViewAccessible() retain]);
+  NSArray* row_nodes = [table_obj accessibilityRows];
 
-  EXPECT_EQ(3U, row_nodes.count);
+  EXPECT_EQ(3U, [row_nodes count]);
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
   EXPECT_NSEQ(@"row1", [row_nodes[0] accessibilityLabel]);
 
@@ -542,11 +541,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   BrowserAccessibility* column =
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0);
-  BrowserAccessibilityCocoa* col_obj = column->GetNativeViewAccessible();
-  EXPECT_NSEQ(@"AXColumn", col_obj.role);
-  EXPECT_NSEQ(@"column1", col_obj.accessibilityLabel);
+  base::scoped_nsobject<BrowserAccessibilityCocoa> col_obj(
+      [column->GetNativeViewAccessible() retain]);
+  EXPECT_NSEQ(@"AXColumn", [col_obj role]);
+  EXPECT_NSEQ(@"column1", [col_obj accessibilityLabel]);
 
-  NSArray* row_nodes = col_obj.accessibilityRows;
+  NSArray* row_nodes = [col_obj accessibilityRows];
   EXPECT_NSEQ(@"AXRow", [row_nodes[0] role]);
   EXPECT_NSEQ(@"row1", [row_nodes[0] accessibilityLabel]);
 
@@ -586,14 +586,16 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibility* table = FindNode(ax::mojom::Role::kTable);
-  BrowserAccessibilityCocoa* table_obj = table->GetNativeViewAccessible();
+  base::scoped_nsobject<BrowserAccessibilityCocoa> table_obj(
+      [table->GetNativeViewAccessible() retain]);
 
-  EXPECT_NSEQ(@"AXTable", table_obj.role);
-  EXPECT_NSEQ(@"Population per country", table_obj.accessibilityLabel);
-  BrowserAccessibilityCocoa* table_header = table_obj.header;
+  EXPECT_NSEQ(@"AXTable", [table_obj role]);
+  EXPECT_NSEQ(@"Population per country", [table_obj accessibilityLabel]);
+  base::scoped_nsobject<BrowserAccessibilityCocoa> table_header(
+      [[table_obj header] retain]);
 
-  NSArray* children = table_header.children;
-  EXPECT_EQ(2U, children.count);
+  NSArray* children = [table_header children];
+  EXPECT_EQ(2U, [children count]);
 
   EXPECT_NSEQ(@"AXCell", [children[0] role]);
   EXPECT_NSEQ(@"Country", [children[0] accessibilityLabel]);
@@ -618,9 +620,10 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   BrowserAccessibility* tree = FindNode(ax::mojom::Role::kTree);
-  BrowserAccessibilityCocoa* cocoa_tree = tree->GetNativeViewAccessible();
+  base::scoped_nsobject<BrowserAccessibilityCocoa> cocoa_tree(
+      [tree->GetNativeViewAccessible() retain]);
 
-  NSArray* tree_children = cocoa_tree.children;
+  NSArray* tree_children = [cocoa_tree children];
   ASSERT_NSEQ(@"AXRow", [tree_children[0] role]);
   ASSERT_NSEQ(@"AXRow", [tree_children[1] role]);
 
@@ -689,11 +692,11 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   };
 
   for (auto& test : tests) {
-    BrowserAccessibilityCocoa* parent =
-        FindNode(test.first)->GetNativeViewAccessible();
-    BrowserAccessibilityCocoa* child = parent.children[1];
+    base::scoped_nsobject<BrowserAccessibilityCocoa> parent(
+        [FindNode(test.first)->GetNativeViewAccessible() retain]);
+    BrowserAccessibilityCocoa* child = [parent children][1];
 
-    EXPECT_NE(nullptr, parent);
+    EXPECT_NE(nullptr, parent.get());
     EXPECT_EQ([child owner], [child actionTarget]);
     EXPECT_EQ([parent owner], [parent actionTarget]);
 
@@ -742,12 +745,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   };
 
   for (auto& test : tests) {
-    BrowserAccessibilityCocoa* parent =
-        FindNode(test.first)->GetNativeViewAccessible();
-    BrowserAccessibilityCocoa* first_child = parent.children[0];
-    BrowserAccessibilityCocoa* second_child = parent.children[1];
+    base::scoped_nsobject<BrowserAccessibilityCocoa> parent(
+        [FindNode(test.first)->GetNativeViewAccessible() retain]);
+    BrowserAccessibilityCocoa* first_child = [parent children][0];
+    BrowserAccessibilityCocoa* second_child = [parent children][1];
 
-    EXPECT_NE(nullptr, parent);
+    EXPECT_NE(nullptr, parent.get());
     EXPECT_EQ([second_child owner], [second_child actionTarget]);
     EXPECT_EQ(test.second, [second_child owner] == [parent actionTarget]);
 
@@ -776,12 +779,12 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(waiter.WaitForNotification());
 
-  BrowserAccessibilityCocoa* content_editable =
-      GetManager()
-          ->GetBrowserAccessibilityRoot()
-          ->PlatformGetChild(0)
-          ->GetNativeViewAccessible();
-  EXPECT_EQ(content_editable.children.count, 5ul);
+  base::scoped_nsobject<BrowserAccessibilityCocoa> content_editable(
+      [GetManager()
+              ->GetBrowserAccessibilityRoot()
+              ->PlatformGetChild(0)
+              ->GetNativeViewAccessible() retain]);
+  EXPECT_EQ([[content_editable children] count], 5ul);
 
   WebContents* web_contents = shell()->web_contents();
   auto run_script_and_wait_for_selection_change =

@@ -4,10 +4,6 @@
 
 #include "content/browser/form_controls_browsertest_mac.h"
 
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
-
 bool MacOSVersionSupportsDarkMode() {
   if (@available(macOS 10.14, *))
     return true;
