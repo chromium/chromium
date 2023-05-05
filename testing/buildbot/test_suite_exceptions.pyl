@@ -4555,6 +4555,12 @@
           '--use-persistent-shell',
         ],
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1412588): Move the remainder to Jammy.
+              'os': 'Ubuntu-22.04',
+            },
+          ],
           'shards': 27,
         },
       },
@@ -4581,6 +4587,12 @@
           '--use-persistent-shell',
         ],
         'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1412588): Move the remainder to Jammy.
+              'os': 'Ubuntu-22.04',
+            },
+          ],
           'shards': 27,
         },
       },
