@@ -67,16 +67,11 @@ void BackgroundFetchServiceImpl::CreateForWorker(
     return;
   }
 
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<BackgroundFetchServiceImpl>(
-          std::move(context), info.storage_key,
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RequestType::kOther,
-              url::Origin::Create(info.storage_key.top_level_site().GetURL()),
-              info.storage_key.origin(), info.storage_key.ToNetSiteForCookies(),
-              /*party_context=*/absl::nullopt, info.storage_key.nonce()),
-          render_process_host, /*rfh=*/nullptr),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<BackgroundFetchServiceImpl>(
+                                  std::move(context), info.storage_key,
+                                  info.storage_key.ToPartialNetIsolationInfo(),
+                                  render_process_host, /*rfh=*/nullptr),
+                              std::move(receiver));
 }
 
 // static
