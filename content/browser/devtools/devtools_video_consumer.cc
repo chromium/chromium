@@ -191,8 +191,7 @@ void DevToolsVideoConsumer::OnFrameCaptured(
              callbacks) {},
       std::move(data), std::move(mapping), std::move(callbacks)));
   frame->set_metadata(info->metadata);
-  if (info->color_space.has_value())
-    frame->set_color_space(info->color_space.value());
+  frame->set_color_space(info->color_space);
 
   callback_.Run(std::move(frame));
 }

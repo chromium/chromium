@@ -297,8 +297,7 @@ void VideoCaptureClient::OnBufferReady(
   }
 
   frame->set_metadata(buffer->info->metadata);
-  if (buffer->info->color_space)
-    frame->set_color_space(*buffer->info->color_space);
+  frame->set_color_space(buffer->info->color_space);
 
   frame->set_timestamp(frame->timestamp() + accumulated_time_);
   last_timestamp_ = frame->timestamp();

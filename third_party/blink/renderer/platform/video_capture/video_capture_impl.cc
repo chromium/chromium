@@ -555,13 +555,13 @@ bool VideoCaptureImpl::VideoFrameBufferPreparer::BindVideoFrameOnMediaThread(
           create_multiplanar_image
               ? sii->CreateSharedImage(
                     viz::MultiPlaneFormat::kNV12, gpu_memory_buffer_->GetSize(),
-                    *(frame_info_->color_space), kTopLeft_GrSurfaceOrigin,
+                    frame_info_->color_space, kTopLeft_GrSurfaceOrigin,
                     kPremul_SkAlphaType, usage, "VideoCaptureFrameBuffer",
                     gpu_memory_buffer_->CloneHandle())
               : sii->CreateSharedImage(
                     gpu_memory_buffer_.get(),
                     buffer_context_->gpu_factories()->GpuMemoryBufferManager(),
-                    planes[plane], *(frame_info_->color_space),
+                    planes[plane], frame_info_->color_space,
                     kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
                     "VideoCaptureFrameBuffer");
     } else {
@@ -629,9 +629,8 @@ void VideoCaptureImpl::VideoFrameBufferPreparer::Finalize() {
                          &VideoCaptureImpl::OnAllClientsFinishedConsumingFrame,
                          video_capture_impl_.weak_factory_.GetWeakPtr(),
                          buffer_id_, buffer_context_))));
-  if (frame_info_->color_space.has_value() &&
-      frame_info_->color_space->IsValid()) {
-    frame_->set_color_space(frame_info_->color_space.value());
+  if (frame_info_->color_space.IsValid()) {
+    frame_->set_color_space(frame_info_->color_space);
   }
   frame_->metadata().MergeMetadataFrom(frame_info_->metadata);
 }

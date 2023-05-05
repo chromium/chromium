@@ -374,11 +374,6 @@ void RecordingService::OnFrameCaptured(
     return;
   }
 
-  if (!info->color_space) {
-    DLOG(ERROR) << "Missing mandatory color space info.";
-    return;
-  }
-
   DCHECK(current_video_capture_params_);
   const gfx::Rect& visible_rect =
       current_video_capture_params_->GetVideoFrameVisibleRect(
@@ -400,7 +395,7 @@ void RecordingService::OnFrameCaptured(
              callbacks) {},
       std::move(mapping), std::move(callbacks)));
   frame->set_metadata(info->metadata);
-  frame->set_color_space(info->color_space.value());
+  frame->set_color_space(info->color_space);
 
   if (video_thumbnail_.isNull())
     video_thumbnail_ = ExtractImageFromVideoFrame(*frame);

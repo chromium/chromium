@@ -159,9 +159,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     CHECK(video_frame);
 
     video_frame->set_metadata(frame.frame_info->metadata);
-    if (frame.frame_info->color_space.has_value()) {
-      video_frame->set_color_space(frame.frame_info->color_space.value());
-    }
+    video_frame->set_color_space(frame.frame_info->color_space);
 
     // This destruction observer will unmap the shared memory when the
     // VideoFrame goes out-of-scope.
@@ -204,9 +202,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     CHECK(video_frame);
 
     video_frame->set_metadata(frame.frame_info->metadata);
-    if (frame.frame_info->color_space.has_value()) {
-      video_frame->set_color_space(frame.frame_info->color_space.value());
-    }
+    video_frame->set_color_space(frame.frame_info->color_space);
 
     auto mapped_frame = media::ConvertToMemoryMappedFrame(video_frame);
     CHECK(mapped_frame);

@@ -13,7 +13,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
 
-struct VideoFrameInfo{
+struct VideoFrameInfo {
   mojo_base.mojom.TimeDelta timestamp;
   VideoFrameMetadata metadata;
   VideoCapturePixelFormat pixel_format;
@@ -24,11 +24,8 @@ struct VideoFrameInfo{
   // with a GMB handle, and this flag here is passed to notify the consumer
   // that the region has valid data.
   bool is_premapped;
-  // This field is only optional to work around the issue of native enums
-  // not being usable for non-Chromium Mojo clients.
-  // TODO(chfremer): Make this non-optional once gfx.mojom.ColorSpace has been
-  // migrated to a full Mojo struct. See https://crbug.com/893203.
-  gfx.mojom.ColorSpace? color_space;
+  // Describes the color space in use for this video frame.
+  gfx.mojom.ColorSpace color_space;
   // Optionally, stride information can be provided.
   // If not provided, it is assumed that frame data is tightly packed.
   PlaneStrides? strides;

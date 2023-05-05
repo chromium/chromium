@@ -495,7 +495,6 @@ void FakeCameraDevice::OnNextFrame() {
     info->coded_size = current_settings_->requested_format.frame_size;
     info->visible_rect = gfx::Rect(info->coded_size);
     info->is_premapped = false;
-    info->color_space = gfx::ColorSpace();
 
     subscription->OnFrameReadyInBuffer(
         video_capture::mojom::ReadyFrameInBuffer::New(buffer->buffer_id(),

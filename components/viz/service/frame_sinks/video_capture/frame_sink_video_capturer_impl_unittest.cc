@@ -193,8 +193,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
             mapping.size(), info->timestamp);
     ASSERT_TRUE(frame);
     frame->set_metadata(info->metadata);
-    if (info->color_space.has_value())
-      frame->set_color_space(info->color_space.value());
+    frame->set_color_space(info->color_space);
 
     frame->AddDestructionObserver(base::BindOnce(
         [](base::ReadOnlySharedMemoryMapping mapping) {}, std::move(mapping)));

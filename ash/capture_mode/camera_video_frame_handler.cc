@@ -348,9 +348,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
       mailboxes_[plane] = shared_image_interface->CreateSharedImage(
           gmb.get(), gmb_manager, buffer_planes_[plane],
-          frame_info->color_space.value_or(gfx::ColorSpace()),
-          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
-          "CameraVideoFrame");
+          frame_info->color_space, kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType, kSharedImageUsage, "CameraVideoFrame");
     }
 
     // Since this is the first time we create the shared images in `mailboxes_`,
@@ -401,9 +400,8 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
       return frame;
     }
 
-    if (frame_info->color_space.has_value() &&
-        frame_info->color_space->IsValid()) {
-      frame->set_color_space(frame_info->color_space.value());
+    if (frame_info->color_space.IsValid()) {
+      frame->set_color_space(frame_info->color_space);
     }
     frame->metadata().allow_overlay = true;
     frame->metadata().read_lock_fences_enabled = true;
