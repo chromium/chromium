@@ -1772,9 +1772,24 @@ absl::optional<gfx::Transform> NGBlockNode::GetTransformForChildFragment(
   if (!child_layout_object->ShouldUseTransformFromContainer(box_))
     return absl::nullopt;
 
+  absl::optional<gfx::Transform> fragment_transform;
+  if (!child_fragment.IsOnlyForNode()) {
+    // If we're fragmented, there's no correct transform stored for
+    // us. Calculate it now.
+    fragment_transform.emplace();
+    fragment_transform->MakeIdentity();
+    child_fragment.Style().ApplyTransform(
+        *fragment_transform, box_, child_fragment.Size(),
+        ComputedStyle::kIncludeTransformOperations,
+        ComputedStyle::kIncludeTransformOrigin,
+        ComputedStyle::kIncludeMotionPath,
+        ComputedStyle::kIncludeIndependentTransformProperties);
+  }
+
   gfx::Transform transform;
-  child_layout_object->GetTransformFromContainer(box_, PhysicalOffset(),
-                                                 transform, &size);
+  child_layout_object->GetTransformFromContainer(
+      box_, PhysicalOffset(), transform, &size,
+      base::OptionalToPtr(fragment_transform));
 
   return transform;
 }

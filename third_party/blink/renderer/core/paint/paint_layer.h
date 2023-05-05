@@ -312,7 +312,12 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return position;
   }
 
-  // Note that this transform has the transform-origin baked in.
+  // Note that this transform has the transform-origin baked in. Due to this
+  // fact, this transform is pretty useless if we're fragmented, since each
+  // fragment has its own origin. Avoid calling this method if a box is
+  // fragmented. Ideally, we should have a DCHECK for being non-fragmented here,
+  // but that's going to fail currently. LayoutBox::MapVisualRectToContainer()
+  // calls this function without any checks, for instance.
   gfx::Transform* Transform() const { return transform_.get(); }
 
   // Returns *Transform(), or identity matrix if Transform() is nullptr.

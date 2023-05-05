@@ -2881,11 +2881,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   bool ShouldUseTransformFromContainer(const LayoutObject* container) const;
 
   // The optional |size| parameter is used if the size of the object isn't
-  // correct yet.
-  void GetTransformFromContainer(const LayoutObject* container,
-                                 const PhysicalOffset& offset_in_container,
-                                 gfx::Transform&,
-                                 const PhysicalSize* size = nullptr) const;
+  // correct yet. If |fragment_transform| is provided, we'll use that instead of
+  // using the transform stored in the PaintLayer (which is useless if a box is
+  // fragmented).
+  void GetTransformFromContainer(
+      const LayoutObject* container,
+      const PhysicalOffset& offset_in_container,
+      gfx::Transform&,
+      const PhysicalSize* size = nullptr,
+      const gfx::Transform* fragment_transform = nullptr) const;
 
   bool CreatesGroup() const {
     NOT_DESTROYED();

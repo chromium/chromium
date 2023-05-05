@@ -3370,13 +3370,19 @@ void LayoutObject::GetTransformFromContainer(
     const LayoutObject* container_object,
     const PhysicalOffset& offset_in_container,
     gfx::Transform& transform,
-    const PhysicalSize* size) const {
+    const PhysicalSize* size,
+    const gfx::Transform* fragment_transform) const {
   NOT_DESTROYED();
   transform.MakeIdentity();
-  PaintLayer* layer =
-      HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
-  if (layer && layer->Transform())
-    transform.PreConcat(layer->CurrentTransform());
+  if (fragment_transform) {
+    transform.PreConcat(*fragment_transform);
+  } else {
+    PaintLayer* layer =
+        HasLayer() ? To<LayoutBoxModelObject>(this)->Layer() : nullptr;
+    if (layer && layer->Transform()) {
+      transform.PreConcat(layer->CurrentTransform());
+    }
+  }
 
   transform.PostTranslate(offset_in_container.left.ToFloat(),
                           offset_in_container.top.ToFloat());
