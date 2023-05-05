@@ -161,6 +161,12 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       SizingConstraint sizing_constraint,
       bool* opt_needs_additional_pass = nullptr) const;
 
+  // Helper which iterates over the sizing tree, and instantiates a subgrid
+  // algorithm to invoke the callback with.
+  template <typename CallbackFunc>
+  void ForEachSubgrid(const NGGridSizingSubtree& sizing_subtree,
+                      const CallbackFunc& callback_func) const;
+
   LayoutUnit ComputeSubgridContributionSize(
       const NGGridSizingSubtree& sizing_subtree,
       GridTrackSizingDirection track_direction,
