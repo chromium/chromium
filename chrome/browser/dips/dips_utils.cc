@@ -64,24 +64,25 @@ std::ostream& operator<<(std::ostream& os, TimestampRange range) {
   return os << "[" << range->first << ", " << range->second << "]";
 }
 
-// CookieAccessType:
-base::StringPiece CookieAccessTypeToString(CookieAccessType type) {
+// SiteDataAccessType:
+
+base::StringPiece SiteDataAccessTypeToString(SiteDataAccessType type) {
   switch (type) {
-    case CookieAccessType::kUnknown:
+    case SiteDataAccessType::kUnknown:
       return "Unknown";
-    case CookieAccessType::kNone:
+    case SiteDataAccessType::kNone:
       return "None";
-    case CookieAccessType::kRead:
+    case SiteDataAccessType::kRead:
       return "Read";
-    case CookieAccessType::kWrite:
+    case SiteDataAccessType::kWrite:
       return "Write";
-    case CookieAccessType::kReadWrite:
+    case SiteDataAccessType::kReadWrite:
       return "ReadWrite";
   }
 }
 
-std::ostream& operator<<(std::ostream& os, CookieAccessType access_type) {
-  return os << CookieAccessTypeToString(access_type);
+std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type) {
+  return os << SiteDataAccessTypeToString(access_type);
 }
 
 // DIPSCookieMode:

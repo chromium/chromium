@@ -58,7 +58,7 @@ void AppendRedirect(std::vector<std::string>* redirects,
   redirects->push_back(base::StringPrintf(
       "[%d/%d] %s -> %s (%s) -> %s", redirect.index + 1, chain.length,
       FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
-      CookieAccessTypeToString(redirect.access_type).data(),
+      SiteDataAccessTypeToString(redirect.access_type).data(),
       FormatURL(chain.final_url).c_str()));
 }
 
@@ -80,7 +80,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     chain->cookie_mode = DIPSCookieMode::kStandard;
     for (auto& redirect : redirects) {
       redirect->has_interaction = GetSiteHasInteraction(redirect->url);
-      DCHECK(redirect->access_type != CookieAccessType::kUnknown);
+      DCHECK(redirect->access_type != SiteDataAccessType::kUnknown);
       AppendRedirect(&redirects_, *redirect, *chain);
 
       DIPSService::HandleRedirectForTesting(
@@ -962,7 +962,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   EXPECT_THAT(
       ukm_entries[0].metrics,
       ElementsAre(Pair("ClientBounceDelay", 2),
-                  Pair("CookieAccessType", (int)CookieAccessType::kRead),
+                  Pair("CookieAccessType", (int)SiteDataAccessType::kRead),
                   Pair("HasStickyActivation", false),
                   Pair("InitialAndFinalSitesSame", false),
                   Pair("RedirectAndFinalSiteSame", false),
@@ -976,7 +976,7 @@ TEST_F(DIPSBounceDetectorTest, Histograms_UKM) {
   EXPECT_THAT(
       ukm_entries[1].metrics,
       ElementsAre(Pair("ClientBounceDelay", 0),
-                  Pair("CookieAccessType", (int)CookieAccessType::kWrite),
+                  Pair("CookieAccessType", (int)SiteDataAccessType::kWrite),
                   Pair("HasStickyActivation", false),
                   Pair("InitialAndFinalSitesSame", false),
                   Pair("RedirectAndFinalSiteSame", false),
@@ -998,7 +998,7 @@ void AppendChainPair(std::vector<ChainPair>& vec,
 std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
     size_t offset,
     std::vector<std::string> urls,
-    CookieAccessType access_type = CookieAccessType::kReadWrite) {
+    SiteDataAccessType access_type = SiteDataAccessType::kReadWrite) {
   std::vector<DIPSRedirectInfoPtr> redirects;
   for (size_t i = 0; i < urls.size(); i++) {
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(
@@ -1015,7 +1015,7 @@ std::vector<DIPSRedirectInfoPtr> MakeServerRedirects(
 DIPSRedirectInfoPtr MakeClientRedirect(
     size_t offset,
     std::string url,
-    CookieAccessType access_type = CookieAccessType::kReadWrite) {
+    SiteDataAccessType access_type = SiteDataAccessType::kReadWrite) {
   return std::make_unique<DIPSRedirectInfo>(
       /*url=*/GURL(url),
       /*redirect_type=*/DIPSRedirectType::kClient,
@@ -1039,9 +1039,9 @@ MATCHER_P(HasRedirectType, redirect_type, "") {
                             result_listener);
 }
 
-MATCHER_P(HasCookieAccessType, access_type, "") {
+MATCHER_P(HasSiteDataAccessType, access_type, "") {
   *result_listener << "whose access_type is "
-                   << CookieAccessTypeToString(arg->access_type);
+                   << SiteDataAccessTypeToString(arg->access_type);
   return ExplainMatchResult(Eq(access_type), arg->access_type, result_listener);
 }
 
@@ -1301,7 +1301,7 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
       GURL("http://a.test/"),
       MakeServerRedirects(
           0, {"http://b.test/", "http://c.test/", "http://d.test/"},
-          CookieAccessType::kNone),
+          SiteDataAccessType::kNone),
       GURL("http://e.test/"));
 
   EXPECT_TRUE(context.AddLateCookieAccess(GURL("http://b.test/"),
@@ -1320,9 +1320,9 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
                                            CookieOperation::kRead));
 
   context.AppendCommitted(
-      MakeClientRedirect(3, "http://e.test/", CookieAccessType::kNone),
+      MakeClientRedirect(3, "http://e.test/", SiteDataAccessType::kNone),
       MakeServerRedirects(4, {"http://f.test/", "http://g.test/"},
-                          CookieAccessType::kRead),
+                          SiteDataAccessType::kRead),
       GURL("http://h.test/"));
 
   // This late "write" will be merged with the "read" already recorded.
@@ -1330,8 +1330,8 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
                                           CookieOperation::kChange));
 
   context.AppendCommitted(
-      MakeClientRedirect(6, "http://h.test/", CookieAccessType::kNone),
-      MakeServerRedirects(7, {"http://i.test/"}, CookieAccessType::kRead),
+      MakeClientRedirect(6, "http://h.test/", SiteDataAccessType::kNone),
+      MakeServerRedirects(7, {"http://i.test/"}, SiteDataAccessType::kRead),
       GURL("http://j.test/"));
 
   // Can't modify h.test since i.test already has a known cookie access.
@@ -1347,19 +1347,19 @@ TEST(DIPSRedirectContextTest, AddLateCookieAccess) {
   EXPECT_THAT(
       chains[0].second,
       ElementsAre(AllOf(HasUrl("http://b.test/"),
-                        HasCookieAccessType(CookieAccessType::kWrite)),
+                        HasSiteDataAccessType(SiteDataAccessType::kWrite)),
                   AllOf(HasUrl("http://c.test/"),
-                        HasCookieAccessType(CookieAccessType::kNone)),
+                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
                   AllOf(HasUrl("http://d.test/"),
-                        HasCookieAccessType(CookieAccessType::kReadWrite)),
+                        HasSiteDataAccessType(SiteDataAccessType::kReadWrite)),
                   AllOf(HasUrl("http://e.test/"),
-                        HasCookieAccessType(CookieAccessType::kNone)),
+                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
                   AllOf(HasUrl("http://f.test/"),
-                        HasCookieAccessType(CookieAccessType::kRead)),
+                        HasSiteDataAccessType(SiteDataAccessType::kRead)),
                   AllOf(HasUrl("http://g.test/"),
-                        HasCookieAccessType(CookieAccessType::kReadWrite)),
+                        HasSiteDataAccessType(SiteDataAccessType::kReadWrite)),
                   AllOf(HasUrl("http://h.test/"),
-                        HasCookieAccessType(CookieAccessType::kNone)),
+                        HasSiteDataAccessType(SiteDataAccessType::kNone)),
                   AllOf(HasUrl("http://i.test/"),
-                        HasCookieAccessType(CookieAccessType::kRead))));
+                        HasSiteDataAccessType(SiteDataAccessType::kRead))));
 }

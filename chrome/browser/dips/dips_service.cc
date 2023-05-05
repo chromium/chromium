@@ -67,22 +67,22 @@ std::vector<std::string> GetEngagedSitesInBackground(
   return std::vector(unique_sites.begin(), unique_sites.end());
 }
 
-RedirectCategory ClassifyRedirect(CookieAccessType access,
+RedirectCategory ClassifyRedirect(SiteDataAccessType access,
                                   bool has_interaction) {
   switch (access) {
-    case CookieAccessType::kUnknown:
+    case SiteDataAccessType::kUnknown:
       return has_interaction ? RedirectCategory::kUnknownCookies_HasEngagement
                              : RedirectCategory::kUnknownCookies_NoEngagement;
-    case CookieAccessType::kNone:
+    case SiteDataAccessType::kNone:
       return has_interaction ? RedirectCategory::kNoCookies_HasEngagement
                              : RedirectCategory::kNoCookies_NoEngagement;
-    case CookieAccessType::kRead:
+    case SiteDataAccessType::kRead:
       return has_interaction ? RedirectCategory::kReadCookies_HasEngagement
                              : RedirectCategory::kReadCookies_NoEngagement;
-    case CookieAccessType::kWrite:
+    case SiteDataAccessType::kWrite:
       return has_interaction ? RedirectCategory::kWriteCookies_HasEngagement
                              : RedirectCategory::kWriteCookies_NoEngagement;
-    case CookieAccessType::kReadWrite:
+    case SiteDataAccessType::kReadWrite:
       return has_interaction ? RedirectCategory::kReadWriteCookies_HasEngagement
                              : RedirectCategory::kReadWriteCookies_NoEngagement;
   }
@@ -384,10 +384,10 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
   }
 
   // Record this bounce in the DIPS database.
-  if (redirect.access_type != CookieAccessType::kUnknown) {
+  if (redirect.access_type != SiteDataAccessType::kUnknown) {
     record_bounce.Run(
         redirect.url, redirect.time,
-        /*stateful=*/redirect.access_type > CookieAccessType::kRead);
+        /*stateful=*/redirect.access_type > SiteDataAccessType::kRead);
   }
 
   RedirectCategory category =

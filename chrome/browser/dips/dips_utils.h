@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -25,9 +26,17 @@ class BrowserContext;
 }
 
 // A single cookie-accessing operation (either read or write). Not to be
-// confused with CookieAccessType, which can also represent no access or both
+// confused with SiteDataAccessType, which can also represent no access or both
 // read+write.
 using CookieOperation = network::mojom::CookieAccessDetails::Type;
+inline CookieOperation ToCookieOperation(content_settings::AccessType type) {
+  switch (type) {
+    case content_settings::AccessType::kRead:
+    case content_settings::AccessType::kWrite:
+    case content_settings::AccessType::kUnknown:
+      return CookieOperation::kChange;
+  }
+}
 
 // The filename for the DIPS database.
 const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
@@ -43,29 +52,27 @@ base::FilePath GetDIPSFilePath(content::BrowserContext* context);
 // created, if `dips::kFeature` is NOT enabled.
 ProfileSelections GetHumanProfileSelections();
 
-// CookieAccessType:
+// SiteDataAccessType:
 // NOTE: We use this type as a bitfield, and will soon be logging it. Don't
 // change the values or add additional members.
-enum class CookieAccessType {
+enum class SiteDataAccessType {
   kUnknown = -1,
   kNone = 0,
   kRead = 1,
   kWrite = 2,
   kReadWrite = 3
 };
-
-inline CookieAccessType ToCookieAccessType(CookieOperation op) {
-  return (op == CookieOperation::kChange ? CookieAccessType::kWrite
-                                         : CookieAccessType::kRead);
+inline SiteDataAccessType ToSiteDataAccessType(CookieOperation op) {
+  return (op == CookieOperation::kChange ? SiteDataAccessType::kWrite
+                                         : SiteDataAccessType::kRead);
 }
+base::StringPiece SiteDataAccessTypeToString(SiteDataAccessType type);
+std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type);
 
-base::StringPiece CookieAccessTypeToString(CookieAccessType type);
-std::ostream& operator<<(std::ostream& os, CookieAccessType access_type);
-
-constexpr CookieAccessType operator|(CookieAccessType lhs,
-                                     CookieAccessType rhs) {
-  return static_cast<CookieAccessType>(static_cast<int>(lhs) |
-                                       static_cast<int>(rhs));
+constexpr SiteDataAccessType operator|(SiteDataAccessType lhs,
+                                       SiteDataAccessType rhs) {
+  return static_cast<SiteDataAccessType>(static_cast<int>(lhs) |
+                                         static_cast<int>(rhs));
 }
 
 // DIPSCookieMode:
@@ -161,7 +168,7 @@ enum class DIPSRecordedEvent {
   kInteraction,
 };
 
-// RedirectCategory is basically the cross-product of CookieAccessType and a
+// RedirectCategory is basically the cross-product of SiteDataAccessType and a
 // boolean value indicating site engagement. It's used in UMA enum histograms.
 //
 // These values are persisted to logs. Entries should not be renumbered and

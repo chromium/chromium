@@ -19,6 +19,7 @@
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"
@@ -55,7 +56,7 @@ class ClientBounceDetectionState {
   base::TimeTicks page_load_time;
   absl::optional<base::Time> last_activation_time;
   absl::optional<base::Time> last_storage_time;
-  CookieAccessType cookie_access_type = CookieAccessType::kUnknown;
+  SiteDataAccessType site_data_access_type = SiteDataAccessType::kUnknown;
 };
 
 // Either the URL navigated away from (starting a new chain), or the client-side
@@ -202,6 +203,7 @@ class DIPSBounceDetector {
   void SetClockForTesting(base::Clock* clock) { clock_ = clock; }
   // The following methods are based on WebContentsObserver, simplified.
   void DidStartNavigation(DIPSNavigationHandle* navigation_handle);
+  void OnClientSiteDataAccessed(const GURL& url, CookieOperation op);
   void OnClientCookiesAccessed(const GURL& url, CookieOperation op);
   void OnServerCookiesAccessed(DIPSNavigationHandle* navigation_handle,
                                const GURL& url,
@@ -297,12 +299,31 @@ class DIPSWebContentsObserver
       content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
+  class DIPSSiteDataObserver
+      : public content_settings::PageSpecificContentSettings::SiteDataObserver {
+   public:
+    DIPSSiteDataObserver(content::WebContents* web_contents,
+                         DIPSWebContentsObserver* dips_web_contents_observer);
+
+    DIPSSiteDataObserver(const DIPSSiteDataObserver&) = delete;
+    DIPSSiteDataObserver& operator=(const DIPSSiteDataObserver&) = delete;
+
+   private:
+    // Start SiteDataObserver overrides:
+    void OnSiteDataAccessed(
+        const content_settings::AccessDetails& access_details) override;
+    // End SiteDataObserver overrides.
+
+    raw_ptr<DIPSWebContentsObserver> dips_web_contents_observer_;
+  };
+
   // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
   // with the BrowserContext/Profile which will outlive the WebContents that
   // DIPSWebContentsObserver is observing.
   raw_ptr<DIPSService> dips_service_;
   DIPSBounceDetector detector_;
   DIPSIssueReportingCallback issue_reporting_callback_;
+  std::unique_ptr<DIPSSiteDataObserver> dips_site_data_observer_;
 
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 

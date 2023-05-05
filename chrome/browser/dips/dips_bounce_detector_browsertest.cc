@@ -2,14 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/bind.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
+
+#include <memory>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
@@ -19,6 +23,8 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -32,6 +38,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -51,6 +58,89 @@ using testing::Pair;
 using ukm::builders::DIPS_Redirect;
 
 namespace {
+constexpr char kStorageAccessScript[] = R"(
+    async function accessDatabase() {
+      var my_db = openDatabase('my_db', '1.0', 'description', 1024);
+      var num_rows;
+      await new Promise((resolve, reject) => {
+        my_db.transaction((tx) => {
+          tx.executeSql('CREATE TABLE IF NOT EXISTS tbl (id unique, data)');
+          tx.executeSql('INSERT INTO tbl (id, data) VALUES (1, "foo")');
+          tx.executeSql('SELECT * FROM tbl', [], (tx, results) => {
+            num_rows = results.rows.length;
+          });
+        }, reject, resolve);
+      });
+      if(num_rows <= 0) {throw new Error('Failed to access!')}
+    }
+
+    function accessLocalStorage() {
+      localStorage.setItem('foo', 'bar');
+      return localStorage.getItem('foo');
+    }
+
+    function accessSessionStorage() {
+      sessionStorage.setItem('foo', 'bar');
+      return sessionStorage.getItem('foo') == 'bar';
+    }
+
+    async function accessFileSystem() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(TEMPORARY, 1024, resolve, reject);
+      });
+      return new Promise((resolve, reject) => {
+        fs.root.getFile('foo.txt', {create: true, exclusive: true}, resolve,
+          reject);
+      });
+    }
+
+    function accessIndexedDB() {
+      var request = indexedDB.open('my_db', 2);
+
+      request.onupgradeneeded = () => {
+        request.result.createObjectStore('store');
+      }
+      return new Promise((resolve) => {
+        request.onsuccess = () => {
+          request.result.close();
+          resolve(true);
+        }
+        request.onerror = () => {throw new Error('Failed to access!')}
+      });
+    }
+
+    function accessCache() {
+      return caches.open("cache")
+      .then((cache) => cache.put("/foo", new Response("bar")))
+      .then(() => true)
+      .catch(() => {throw new Error('Failed to access!')});
+    }
+
+    // Placeholder for execution statement.
+    access%s();
+  )";
+
+using StorageType =
+    content_settings::mojom::ContentSettingsManager::StorageType;
+
+inline const std::string StorageTypeTestName(const StorageType& type) {
+  switch (type) {
+    case StorageType::DATABASE:
+      return "Database";
+    case StorageType::LOCAL_STORAGE:
+      return "LocalStorage";
+    case StorageType::SESSION_STORAGE:
+      return "SessionStorage";
+    case StorageType::FILE_SYSTEM:
+      return "FileSystem";
+    case StorageType::INDEXED_DB:
+      return "IndexedDB";
+    case StorageType::CACHE:
+      return "Cache";
+    case StorageType::WEB_LOCKS:
+      return "WebLocks";
+  }
+}
 
 // Returns a simplified URL representation for ease of comparison in tests.
 // Just host+path.
@@ -64,7 +154,7 @@ void AppendRedirect(std::vector<std::string>* redirects,
   redirects->push_back(base::StringPrintf(
       "[%d/%d] %s -> %s (%s) -> %s", redirect.index + 1, chain.length,
       FormatURL(chain.initial_url).c_str(), FormatURL(redirect.url).c_str(),
-      CookieAccessTypeToString(redirect.access_type).data(),
+      SiteDataAccessTypeToString(redirect.access_type).data(),
       FormatURL(chain.final_url).c_str()));
 }
 
@@ -100,21 +190,46 @@ class WCOCallbackLogger
   // So WebContentsUserData::CreateForWebContents() can call the constructor.
   friend class content::WebContentsUserData<WCOCallbackLogger>;
 
+  // Start WebContentsObserver overrides:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void OnCookiesAccessed(content::RenderFrameHost* render_frame_host,
                          const content::CookieAccessDetails& details) override;
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void WebContentsDestroyed() override;
+  // End WebContentsObserver overrides.
+
+  class DIPSSiteDataObserver
+      : public content_settings::PageSpecificContentSettings::SiteDataObserver {
+   public:
+    DIPSSiteDataObserver(content::WebContents* web_contents,
+                         WCOCallbackLogger* dips_web_contents_observer);
+
+    DIPSSiteDataObserver(const DIPSSiteDataObserver&) = delete;
+    DIPSSiteDataObserver& operator=(const DIPSSiteDataObserver&) = delete;
+
+   private:
+    // Start SiteDataObserver overrides:
+    void OnSiteDataAccessed(
+        const content_settings::AccessDetails& access_details) override;
+    // End SiteDataObserver overrides.
+
+    raw_ptr<WCOCallbackLogger> wco_callback_logger_;
+  };
 
   std::vector<std::string> log_;
+  std::unique_ptr<DIPSSiteDataObserver> dips_site_data_observer_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 WCOCallbackLogger::WCOCallbackLogger(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {}
+      content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {
+  dips_site_data_observer_ =
+      std::make_unique<DIPSSiteDataObserver>(web_contents, this);
+}
 
 void WCOCallbackLogger::DidStartNavigation(
     NavigationHandle* navigation_handle) {
@@ -158,6 +273,67 @@ void WCOCallbackLogger::DidFinishNavigation(
   log_.push_back(
       base::StringPrintf("DidFinishNavigation(%s)",
                          FormatURL(navigation_handle->GetURL()).c_str()));
+}
+
+void WCOCallbackLogger::WebContentsDestroyed() {
+  dips_site_data_observer_.reset();
+}
+
+WCOCallbackLogger::DIPSSiteDataObserver::DIPSSiteDataObserver(
+    content::WebContents* web_contents,
+    WCOCallbackLogger* wco_callback_logger)
+    : content_settings::PageSpecificContentSettings::SiteDataObserver(
+          web_contents),
+      wco_callback_logger_(wco_callback_logger) {}
+
+inline std::string SiteDataTypeToString(
+    const content_settings::SiteDataType& type) {
+  switch (type) {
+    case content_settings::SiteDataType::kUnknown:
+      return "Unknown";
+    case content_settings::SiteDataType::kStorage:
+      return "Storage";
+    case content_settings::SiteDataType::kCookies:
+      return "Cookies";
+    case content_settings::SiteDataType::kServiceWorker:
+      return "ServiceWorker";
+    case content_settings::SiteDataType::kSharedWorker:
+      return "SharedWorker";
+    case content_settings::SiteDataType::kInterestGroup:
+      return "InterestGroup";
+    case content_settings::SiteDataType::kTopic:
+      return "Topics";
+    case content_settings::SiteDataType::kTrustToken:
+      return "TrustToken";
+  }
+}
+
+inline std::string AccessTypeToString(content_settings::AccessType type) {
+  switch (type) {
+    case content_settings::AccessType::kUnknown:
+      return "Unknown";
+    case content_settings::AccessType::kRead:
+      return "Read";
+    case content_settings::AccessType::kWrite:
+      return "Write";
+  }
+}
+
+void WCOCallbackLogger::DIPSSiteDataObserver::OnSiteDataAccessed(
+    const content_settings::AccessDetails& access_details) {
+  // Avoids logging notification from the PSCS that are due to cookie accesses,
+  // in order not to impact the other cookie access notification logs from the
+  // `WebContentsObserver`.
+  if (access_details.site_data_type ==
+      content_settings::SiteDataType::kCookies) {
+    return;
+  }
+
+  wco_callback_logger_->log_.push_back(base::StringPrintf(
+      "OnSiteDataAccessed(AccessDetails, %s: %s: %s)",
+      SiteDataTypeToString(access_details.site_data_type).c_str(),
+      AccessTypeToString(access_details.access_type).c_str(),
+      FormatURL(access_details.url).c_str()));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WCOCallbackLogger);
@@ -277,12 +453,114 @@ class DIPSBounceDetectorBrowserTest : public PlatformBrowserTest {
         embedded_test_server()->GetURL("a.test", "/title1.html")));
   }
 
+  [[nodiscard]] bool AccessStorage(content::RenderFrameHost* frame,
+                                   const StorageType& type) {
+    return content::ExecJs(
+        frame,
+        base::StringPrintf(kStorageAccessScript,
+                           StorageTypeTestName(type).c_str()),
+        content::EXECUTE_SCRIPT_NO_USER_GESTURE,
+        /*world_id=*/1);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
   raw_ptr<DIPSWebContentsObserver, DanglingUntriaged> web_contents_observer_ =
       nullptr;
 };
+
+class DIPSSiteDataAccessDetectorTest
+    : public DIPSBounceDetectorBrowserTest,
+      public testing::WithParamInterface<StorageType> {
+ public:
+  DIPSSiteDataAccessDetectorTest(const DIPSSiteDataAccessDetectorTest&) =
+      delete;
+  DIPSSiteDataAccessDetectorTest& operator=(
+      const DIPSSiteDataAccessDetectorTest&) = delete;
+
+  DIPSSiteDataAccessDetectorTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    base::FilePath path;
+    base::PathService::Get(content::DIR_TEST_DATA, &path);
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.ServeFilesFromDirectory(path);
+    https_server_.AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("chrome/test/data")));
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+  auto* TestServer() { return &https_server_; }
+
+ private:
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(DIPSSiteDataAccessDetectorTest,
+                       DetectSiteDataAccess_Storages) {
+  // Start logging `WebContentsObserver` callbacks.
+  WCOCallbackLogger::CreateForWebContents(GetActiveWebContents());
+  auto* logger = WCOCallbackLogger::FromWebContents(GetActiveWebContents());
+
+  EXPECT_TRUE(content::NavigateToURLFromRenderer(
+      GetActiveWebContents()->GetPrimaryMainFrame(),
+      TestServer()->GetURL("a.test", "/title1.html")));
+
+  EXPECT_TRUE(
+      AccessStorage(GetActiveWebContents()->GetPrimaryMainFrame(), GetParam()));
+
+  EXPECT_THAT(
+      logger->log(),
+      testing::ContainerEq(std::vector<std::string>({
+          "DidStartNavigation(a.test/title1.html)",
+          "DidFinishNavigation(a.test/title1.html)",
+          "OnSiteDataAccessed(AccessDetails, Storage: Unknown: a.test/)",
+      })));
+}
+
+// WeLocks accesses aren't monitored by the `PageSpecificContentSettings` as
+// there are not persistent.
+INSTANTIATE_TEST_SUITE_P(All,
+                         DIPSSiteDataAccessDetectorTest,
+                         ::testing::Values(StorageType::DATABASE,
+                                           StorageType::LOCAL_STORAGE,
+                                           StorageType::SESSION_STORAGE,
+                                           StorageType::CACHE,
+                                           StorageType::FILE_SYSTEM,
+                                           StorageType::INDEXED_DB));
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       DetectStatefulBounce_ClientRedirect_SiteDataAccess) {
+  std::vector<std::string> redirects;
+  StartAppendingRedirectsTo(&redirects);
+
+  // Navigate to the initial page, a.test.
+  ASSERT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("a.test", "/title1.html")));
+
+  // Navigate with a click (not considered to be redirect) to b.test.
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("b.test", "/title1.html")));
+
+  EXPECT_TRUE(AccessStorage(GetActiveWebContents()->GetPrimaryMainFrame(),
+                            StorageType::LOCAL_STORAGE));
+
+  // Navigate without a click (considered a client-redirect) to c.test.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      GetActiveWebContents(),
+      embedded_test_server()->GetURL("c.test", "/title1.html")));
+
+  EndRedirectChain();
+
+  EXPECT_THAT(redirects,
+              ElementsAre(("[1/1] a.test/title1.html -> b.test/title1.html "
+                           "(Write) -> c.test/title1.html")));
+}
 
 // The timing of WCO::OnCookiesAccessed() execution is unpredictable for
 // redirects. Sometimes it's called before WCO::DidRedirectNavigation(), and

@@ -86,9 +86,41 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
                 base::DefaultClock::GetInstance()) {
   issue_reporting_callback_ = base::BindRepeating(
       &DIPSWebContentsObserver::EmitDIPSIssue, weak_factory_.GetWeakPtr());
+  dips_site_data_observer_ =
+      std::make_unique<DIPSSiteDataObserver>(web_contents, this);
 }
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
+
+DIPSWebContentsObserver::DIPSSiteDataObserver::DIPSSiteDataObserver(
+    content::WebContents* web_contents,
+    DIPSWebContentsObserver* dips_web_contents_observer)
+    : content_settings::PageSpecificContentSettings::SiteDataObserver(
+          web_contents),
+      dips_web_contents_observer_(dips_web_contents_observer) {}
+
+void DIPSWebContentsObserver::DIPSSiteDataObserver::OnSiteDataAccessed(
+    const content_settings::AccessDetails& access_details) {
+  // NOTE: The current implementation is only acting on all site data types
+  // collapsed under `content_settings::SiteDataType::kStorage` with the
+  // exception of WebLocks (not monitored by the
+  // `content_settings::PageSpecificContentSettings`) as it's not persistent.
+  if (access_details.site_data_type !=
+      content_settings::SiteDataType::kStorage) {
+    return;
+  }
+
+  DCHECK(access_details.render_frame_host);
+
+  // TODO(crbug.com/1434764): handle same-site iframes.
+  if (!access_details.render_frame_host->IsInPrimaryMainFrame() ||
+      access_details.blocked_by_policy) {
+    return;
+  }
+
+  dips_web_contents_observer_->detector_.OnClientSiteDataAccessed(
+      access_details.url, ToCookieOperation(access_details.access_type));
+}
 
 const base::TimeDelta DIPSBounceDetector::kTimestampUpdateInterval =
     base::Minutes(1);
@@ -140,10 +172,10 @@ DIPSRedirectContext::~DIPSRedirectContext() = default;
 void DIPSRedirectContext::AppendClientRedirect(
     DIPSRedirectInfoPtr client_redirect) {
   DCHECK_EQ(client_redirect->redirect_type, DIPSRedirectType::kClient);
-  if (client_redirect->access_type > CookieAccessType::kNone) {
+  if (client_redirect->access_type > SiteDataAccessType::kNone) {
     update_offset_ = redirects_.size();
   }
-  if (client_redirect->access_type > CookieAccessType::kRead) {
+  if (client_redirect->access_type > SiteDataAccessType::kRead) {
     redirectors_.insert(GetSiteForDIPS(client_redirect->url));
   }
   redirects_.push_back(std::move(client_redirect));
@@ -153,10 +185,10 @@ void DIPSRedirectContext::AppendServerRedirects(
     std::vector<DIPSRedirectInfoPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, DIPSRedirectType::kServer);
-    if (redirect->access_type > CookieAccessType::kNone) {
+    if (redirect->access_type > SiteDataAccessType::kNone) {
       update_offset_ = redirects_.size();
     }
-    if (redirect->access_type > CookieAccessType::kRead) {
+    if (redirect->access_type > SiteDataAccessType::kRead) {
       redirectors_.insert(GetSiteForDIPS(redirect->url));
     }
     redirects_.push_back(std::move(redirect));
@@ -261,7 +293,7 @@ bool DIPSRedirectContext::AddLateCookieAccess(GURL url, CookieOperation op) {
   while (update_offset_ < redirects_.size()) {
     if (redirects_[update_offset_]->url == url) {
       redirects_[update_offset_]->access_type =
-          redirects_[update_offset_]->access_type | ToCookieAccessType(op);
+          redirects_[update_offset_]->access_type | ToSiteDataAccessType(op);
 
       // This cookie access might indicate a stateful bounce and ideally we'd
       // report an issue to notify the user, but the navigation already
@@ -295,8 +327,9 @@ void DIPSWebContentsObserver::EmitDIPSIssue(
   details->bounce_tracking_issue_details =
       std::move(bounce_tracking_issue_details);
 
-  web_contents()->GetPrimaryMainFrame()->ReportInspectorIssue(
-      blink::mojom::InspectorIssueInfo::New(
+  WebContentsObserver::web_contents()
+      ->GetPrimaryMainFrame()
+      ->ReportInspectorIssue(blink::mojom::InspectorIssueInfo::New(
           blink::mojom::InspectorIssueCode::kBounceTrackingIssue,
           std::move(details)));
 }
@@ -333,11 +366,13 @@ void DIPSWebContentsObserver::RecordEvent(DIPSRecordedEvent event,
 }
 
 const GURL& DIPSWebContentsObserver::GetLastCommittedURL() const {
-  return web_contents()->GetLastCommittedURL();
+  return WebContentsObserver::web_contents()->GetLastCommittedURL();
 }
 
 ukm::SourceId DIPSWebContentsObserver::GetPageUkmSourceId() const {
-  return web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  return WebContentsObserver::web_contents()
+      ->GetPrimaryMainFrame()
+      ->GetPageUkmSourceId();
 }
 
 void DIPSWebContentsObserver::HandleRedirectChain(
@@ -409,7 +444,8 @@ void DIPSBounceDetector::DidStartNavigation(
       now - client_detection_state_->page_load_time;
   // The delay between the previous navigation commit and the current
   // client-redirect is only tracked for stateful bounces.
-  if (client_detection_state_->cookie_access_type > CookieAccessType::kNone) {
+  if (client_detection_state_->site_data_access_type >
+      SiteDataAccessType::kNone) {
     UmaHistogramTimeToBounce(client_bounce_delay);
   }
 
@@ -420,7 +456,7 @@ void DIPSBounceDetector::DidStartNavigation(
       std::make_unique<DIPSRedirectInfo>(
           /*url=*/delegate_->GetLastCommittedURL(),
           /*redirect_type=*/DIPSRedirectType::kClient,
-          /*access_type=*/client_detection_state_->cookie_access_type,
+          /*access_type=*/client_detection_state_->site_data_access_type,
           /*index=*/redirect_context_.size(),
           /*source_id=*/
           delegate_->GetPageUkmSourceId(),
@@ -430,9 +466,34 @@ void DIPSBounceDetector::DidStartNavigation(
           client_detection_state_->last_activation_time.has_value());
 }
 
+void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
+                                                  CookieOperation op) {
+  auto now = clock_->Now();
+
+  if (client_detection_state_ &&
+      GetSiteForDIPS(url) == client_detection_state_->current_site) {
+    client_detection_state_->site_data_access_type =
+        client_detection_state_->site_data_access_type |
+        ToSiteDataAccessType(op);
+
+    // To decrease the number of writes made to the database, after a site
+    // storage event (cookie write) on the page, new storage events will not
+    // be recorded for the next |kTimestampUpdateInterval|.
+    if (op == CookieOperation::kChange &&
+        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
+                              now)) {
+      client_detection_state_->last_storage_time = now;
+      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
+    }
+  } else if (op == CookieOperation::kChange) {
+    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
+  }
+}
+
 void DIPSWebContentsObserver::OnCookiesAccessed(
     content::RenderFrameHost* render_frame_host,
     const content::CookieAccessDetails& details) {
+  // TODO(crbug.com/1434764): handle same-site iframes.
   if (!render_frame_host->IsInPrimaryMainFrame() || details.blocked_by_policy ||
       !net::SiteForCookies::FromUrl(details.first_party_url)
            .IsFirstParty(details.url)) {
@@ -459,23 +520,7 @@ void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,
     return;
   }
 
-  if (client_detection_state_ &&
-      GetSiteForDIPS(url) == client_detection_state_->current_site) {
-    client_detection_state_->cookie_access_type =
-        client_detection_state_->cookie_access_type | ToCookieAccessType(op);
-
-    // To decrease the number of writes made to the database, after a site
-    // storage event (cookie write) on the page, new storage events will not
-    // be recorded for the next |kTimestampUpdateInterval|.
-    if (op == CookieOperation::kChange &&
-        ShouldUpdateTimestamp(client_detection_state_->last_storage_time,
-                              now)) {
-      client_detection_state_->last_storage_time = now;
-      delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-    }
-  } else if (op == CookieOperation::kChange) {
-    delegate_->RecordEvent(DIPSRecordedEvent::kStorage, url, now);
-  }
+  OnClientSiteDataAccessed(url, op);
 }
 
 void DIPSWebContentsObserver::OnCookiesAccessed(
@@ -540,7 +585,7 @@ void DIPSBounceDetector::DidFinishNavigation(
   }
 
   std::vector<DIPSRedirectInfoPtr> redirects;
-  std::vector<CookieAccessType> access_types;
+  std::vector<SiteDataAccessType> access_types;
   server_state->filter.Filter(navigation_handle->GetRedirectChain(),
                               &access_types);
 
@@ -572,7 +617,7 @@ void DIPSBounceDetector::DidFinishNavigation(
     // The last entry in navigation_handle->GetRedirectChain() is actually the
     // page being committed (i.e., not a redirect). If its HTTP request or
     // response accessed cookies, record this in our client detection state.
-    client_detection_state_->cookie_access_type = access_types.back();
+    client_detection_state_->site_data_access_type = access_types.back();
   }
 }
 
@@ -618,6 +663,7 @@ bool DIPSBounceDetector::ShouldUpdateTimestamp(
 }
 
 void DIPSWebContentsObserver::WebContentsDestroyed() {
+  dips_site_data_observer_.reset();
   detector_.BeforeDestruction();
 }
 

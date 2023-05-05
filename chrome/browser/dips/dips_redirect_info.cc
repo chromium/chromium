@@ -18,7 +18,7 @@ DIPSRedirectChainInfo::~DIPSRedirectChainInfo() = default;
 
 DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    DIPSRedirectType redirect_type,
-                                   CookieAccessType access_type,
+                                   SiteDataAccessType access_type,
                                    int index,
                                    ukm::SourceId source_id,
                                    base::Time time)
@@ -37,7 +37,7 @@ DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
 
 DIPSRedirectInfo::DIPSRedirectInfo(const GURL& url,
                                    DIPSRedirectType redirect_type,
-                                   CookieAccessType access_type,
+                                   SiteDataAccessType access_type,
                                    int index,
                                    ukm::SourceId source_id,
                                    base::Time time,

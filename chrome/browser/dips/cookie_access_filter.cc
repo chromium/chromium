@@ -5,12 +5,13 @@
 #include "chrome/browser/dips/cookie_access_filter.h"
 
 #include "base/strings/string_piece.h"
+#include "chrome/browser/dips/dips_utils.h"
 
 CookieAccessFilter::CookieAccessFilter() = default;
 CookieAccessFilter::~CookieAccessFilter() = default;
 
 void CookieAccessFilter::AddAccess(const GURL& url, CookieOperation op) {
-  CookieAccessType t = ToCookieAccessType(op);
+  SiteDataAccessType t = ToSiteDataAccessType(op);
   if (!accesses_.empty() && accesses_.back().url == url) {
     // Coalesce accesses for the same URL. They may have come from separate
     // visits, but we can't distinguish them from redundant calls, which are
@@ -34,11 +35,11 @@ void CookieAccessFilter::AddAccess(const GURL& url, CookieOperation op) {
 // multiple times, even consecutively, in a single redirect chain.
 //
 // To handle that corner case (imperfectly), if the same URL appears multiple
-// times in a row, it will get the same CookieAccessType for all of them.
+// times in a row, it will get the same SiteDataAccessType for all of them.
 bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
-                                std::vector<CookieAccessType>* result) const {
+                                std::vector<SiteDataAccessType>* result) const {
   result->clear();
-  result->resize(urls.size(), CookieAccessType::kNone);
+  result->resize(urls.size(), SiteDataAccessType::kNone);
 
   size_t url_idx = 0;
   size_t access_idx = 0;
@@ -82,6 +83,6 @@ bool CookieAccessFilter::Filter(const std::vector<GURL>& urls,
   }
 
   // Otherwise, fill the entire result vector with kUnknown and return false.
-  std::fill(result->begin(), result->end(), CookieAccessType::kUnknown);
+  std::fill(result->begin(), result->end(), SiteDataAccessType::kUnknown);
   return false;
 }
