@@ -279,7 +279,7 @@ def convert_raw_coverage_to_istanbul(raw_coverage_dirs, source_dir,
   Raises:
     RuntimeError: If the underlying node command fails.
   """
-    return node.RunNode([
+    stdout = node.RunNode([
         os.path.join(_HERE_PATH, 'convert_to_istanbul.js'),
         '--source-dir',
         source_dir,
@@ -288,6 +288,7 @@ def convert_raw_coverage_to_istanbul(raw_coverage_dirs, source_dir,
         '--raw-coverage-dirs',
         *raw_coverage_dirs,
     ])
+    logging.info(stdout)
 
 
 def merge_istanbul_reports(istanbul_coverage_dir, source_dir, output_file):
