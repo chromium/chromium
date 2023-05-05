@@ -736,7 +736,7 @@ void ConsumerHost::OnTraceStats(bool success,
   }
 }
 
-void ConsumerHost::OnSessionCloned(bool, const std::string&) {
+void ConsumerHost::OnSessionCloned(const OnSessionClonedArgs&) {
   NOTREACHED();
 }
 
