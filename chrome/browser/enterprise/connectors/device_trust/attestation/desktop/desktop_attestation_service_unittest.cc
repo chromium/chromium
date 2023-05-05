@@ -22,6 +22,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/scoped_key_persistence_delegate_factory.h"
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
+#include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -71,6 +72,7 @@ constexpr char kFakeDeviceId[] = "fake_device_id";
 constexpr char kDisplayName[] = "display-name";
 constexpr char kDmToken[] = "fake-dm-token";
 constexpr char kInvalidDmToken[] = "INVALID_DM_TOKEN";
+constexpr char kFakeCustomerId[] = "fake_obfuscated_customer_id";
 
 std::string GetSerializedSignedChallenge(bool use_dev = false) {
   std::string serialized_signed_challenge;
@@ -123,7 +125,15 @@ class DesktopAttestationServiceTest : public testing::Test {
     mock_key_manager_ = std::make_unique<test::MockDeviceTrustKeyManager>();
 
     attestation_service_ = std::make_unique<DesktopAttestationService>(
-        &fake_dm_token_storage_, mock_key_manager_.get());
+        &fake_dm_token_storage_, mock_key_manager_.get(),
+        &mock_browser_cloud_policy_store_);
+  }
+
+  void SetFakeBrowserPolicyData() {
+    auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+    policy_data->set_obfuscated_customer_id(kFakeCustomerId);
+    mock_browser_cloud_policy_store_.set_policy_data_for_testing(
+        std::move(policy_data));
   }
 
   void SetupPubkeyExport(bool can_export_pubkey = true) {
@@ -186,12 +196,14 @@ class DesktopAttestationServiceTest : public testing::Test {
   test::ScopedKeyPersistenceDelegateFactory persistence_delegate_factory_;
   std::unique_ptr<test::MockDeviceTrustKeyManager> mock_key_manager_;
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
+  policy::MockCloudPolicyStore mock_browser_cloud_policy_store_;
 };
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kUseVaDevKeys, "");
 
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport();
   SetupSignature();
 
@@ -204,11 +216,10 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseDev_Success) {
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponseProd_Success) {
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport();
   SetupSignature();
 
-  // TODO(crbug.com/1208881): Add signals and validate they effectively get
-  // added to the signed data.
   base::test::TestFuture<const AttestationResponse&> future;
   attestation_service_->BuildChallengeResponseForVAChallenge(
       GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
@@ -253,6 +264,7 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_EmptyDmToken) {
 
 TEST_F(DesktopAttestationServiceTest,
        BuildChallengeResponse_FailedPublicKeyExport) {
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport(/*can_export_pubkey=*/false);
   SetupSignature();
 
@@ -297,6 +309,7 @@ TEST_F(DesktopAttestationServiceTest,
 }
 
 TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_NoSignature) {
+  SetFakeBrowserPolicyData();
   SetupPubkeyExport();
   SetupSignature(/*can_sign=*/false);
 
@@ -306,6 +319,19 @@ TEST_F(DesktopAttestationServiceTest, BuildChallengeResponse_NoSignature) {
       std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
 
   VerifyAttestationResponse(future.Get(), /*has_signature=*/false);
+}
+
+TEST_F(DesktopAttestationServiceTest,
+       BuildChallengeResponse_NoBrowserCustomerId) {
+  SetupPubkeyExport();
+  SetupSignature();
+
+  base::test::TestFuture<const AttestationResponse&> future;
+  attestation_service_->BuildChallengeResponseForVAChallenge(
+      GetSerializedSignedChallenge(/* use_dev= */ false), CreateSignals(),
+      std::set<enterprise_connectors::DTCPolicyLevel>(), future.GetCallback());
+
+  VerifyAttestationResponse(future.Get());
 }
 
 }  // namespace enterprise_connectors

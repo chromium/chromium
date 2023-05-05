@@ -23,6 +23,7 @@
 #include "components/device_signals/core/common/signals_constants.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "crypto/random.h"
 #include "crypto/unexportable_key.h"
 
@@ -30,6 +31,7 @@ namespace enterprise_connectors {
 
 namespace {
 using policy::BrowserDMTokenStorage;
+using policy::CloudPolicyStore;
 
 // Size of nonce for challenge response.
 const size_t kChallengeResponseNonceBytesSize = 32;
@@ -97,9 +99,11 @@ absl::optional<std::string> CreateChallengeResponseString(
 
 DesktopAttestationService::DesktopAttestationService(
     BrowserDMTokenStorage* dm_token_storage,
-    DeviceTrustKeyManager* key_manager)
+    DeviceTrustKeyManager* key_manager,
+    CloudPolicyStore* browser_cloud_policy_store)
     : dm_token_storage_(dm_token_storage),
       key_manager_(key_manager),
+      browser_cloud_policy_store_(browser_cloud_policy_store),
       background_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})) {
@@ -185,6 +189,12 @@ void DesktopAttestationService::OnChallengeValidated(
   // the device. device_id is necessary to validate the dm_token.
   key_info.set_dm_token(dm_token.value());
   key_info.set_device_id(dm_token_storage_->RetrieveClientId());
+
+  if (browser_cloud_policy_store_ &&
+      browser_cloud_policy_store_->has_policy()) {
+    const auto* policy = browser_cloud_policy_store_->policy();
+    key_info.set_customer_id(policy->obfuscated_customer_id());
+  }
 
   if (exported_public_key) {
     key_info.set_browser_instance_public_key(exported_public_key.value());
