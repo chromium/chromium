@@ -5,7 +5,6 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
 #include "base/memory/raw_ptr.h"
-#include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/run_loop.h"
