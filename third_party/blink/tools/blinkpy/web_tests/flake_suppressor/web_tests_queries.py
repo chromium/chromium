@@ -30,29 +30,27 @@ WITH
           SELECT value
           FROM tr.tags
           WHERE key = "raw_typ_expectation") as typ_expectations,
-    ARRAY(
-          SELECT value
-          FROM tr.tags
-          WHERE key = "step_name") as step_name
+    (SELECT value FROM tr.tags
+     WHERE key = "step_name") as step_name,
 
   FROM `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
   WHERE
     status = "FAIL" AND
     exported.realm = "chromium:ci" AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                          INTERVAL @sample_period DAY)
+                                   INTERVAL @sample_period DAY)
 )
 SELECT *
 FROM failed_tests ft
 WHERE
-  ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" AND
-  (STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_wpt_tests') OR
-   STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_web_tests'))
+   (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
+    ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
+   (STARTS_WITH(step_name, 'blink_wpt_tests') OR
+    STARTS_WITH(step_name, 'blink_web_tests'))
 """
 
 # Gets all failures from the past |sample_period| days from the input builders
 # that did not already have an associated test suppression when the test ran.
-# TODO(crbug.com/1358735): Change all step_names to single value.
 CI_FAILED_TEST_FROM_BUILDERS_QUERY = """\
 WITH
   failed_tests AS (
@@ -78,7 +76,7 @@ WITH
     status = "FAIL" AND
     exported.realm = "chromium:ci" AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                          INTERVAL @sample_period DAY)
+                                   INTERVAL @sample_period DAY)
 )
 SELECT *
 FROM failed_tests ft
@@ -110,14 +108,10 @@ WITH
           SELECT value
           FROM tr.tags
           WHERE key = "raw_typ_expectation") as typ_expectations,
-    ARRAY(
-          SELECT value
-          FROM tr.tags
-          WHERE key = "step_name") as step_name,
-    ARRAY(
-          SELECT value
-          FROM tr.variant
-          WHERE key = "builder") as builder
+    (SELECT value FROM tr.tags
+     WHERE key = "step_name") as step_name,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder
   FROM
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
     sheriff_rotations_ci_builds srcb
@@ -126,7 +120,7 @@ WITH
     exported.realm = "chromium:ci" AND
     builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                          INTERVAL @sample_period DAY)
+                                   INTERVAL @sample_period DAY)
   ),
   passed_tests AS (
   SELECT
@@ -140,14 +134,10 @@ WITH
           SELECT value
           FROM tr.tags
           WHERE key = "raw_typ_expectation") as typ_expectations,
-    ARRAY(
-          SELECT value
-          FROM tr.tags
-          WHERE key = "step_name") as step_name,
-    ARRAY(
-          SELECT value
-          FROM tr.variant
-          WHERE key = "builder") as builder
+    (SELECT value FROM tr.tags
+     WHERE key = "step_name") as step_name,
+    (SELECT value FROM tr.variant
+     WHERE key = "builder") as builder
   FROM
     `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr,
     sheriff_rotations_ci_builds srcb
@@ -156,7 +146,7 @@ WITH
     exported.realm = "chromium:ci" AND
     builder = srcb.builder AND
     partition_time > TIMESTAMP_SUB(CURRENT_TIMESTAMP(),
-                                          INTERVAL @sample_period DAY)
+                                   INTERVAL @sample_period DAY)
   )
 SELECT
   ft.name,
@@ -168,10 +158,11 @@ SELECT
 FROM failed_tests ft
 LEFT JOIN passed_tests pt ON (ft.name = pt.name AND ft.id = pt.id)
 WHERE
-  ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" AND
+  (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
+   ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
   pt.name IS NULL AND
-  (STARTS_WITH(ARRAY_TO_STRING(ft.step_name, ''), 'blink_wpt_tests') OR
-   STARTS_WITH(ARRAY_TO_STRING(ft.step_name, ''), 'blink_web_tests'))
+  (STARTS_WITH(step_name, 'blink_wpt_tests') OR
+   STARTS_WITH(step_name, 'blink_web_tests'))
 """.format(
     sheriff_rotations_ci_builds_subquery=SHERIFF_ROTATIONS_CI_BUILDS_SUBQUERY)
 
@@ -193,10 +184,8 @@ WITH
         SELECT value
         FROM tr.tags
         WHERE key = "raw_typ_expectation") as typ_expectations,
-    ARRAY(
-          SELECT value
-          FROM tr.tags
-          WHERE key = "step_name") as step_name
+    (SELECT value FROM tr.tags
+     WHERE key = "step_name") as step_name,
     FROM
       `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr,
       submitted_builds sb
@@ -210,9 +199,10 @@ WITH
 SELECT *
 FROM failed_tests ft
 WHERE
-  ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" AND
-  (STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_wpt_tests') OR
-   STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_web_tests'))
+  (ARRAY_TO_STRING(ft.typ_expectations, '') = "Pass" OR
+   ARRAY_TO_STRING(ft.typ_expectations, '') = "PassSlow") AND
+  (STARTS_WITH(step_name, 'blink_wpt_tests') OR
+   STARTS_WITH(step_name, 'blink_web_tests'))
 """.format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
 
 # Gets the count of all results in the past |sample_period| days for distinct
@@ -227,10 +217,8 @@ WITH
         SELECT value
         FROM tr.tags
         WHERE key = "typ_tag") as typ_tags,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name
+      (SELECT value FROM tr.tags
+       WHERE key = "step_name") as step_name,
 
     FROM
       `chrome-luci-data.chromium.blink_web_tests_ci_test_results` tr
@@ -244,8 +232,8 @@ SELECT
   ANY_VALUE(gr.name) as test_name,
   ANY_VALUE(gr.typ_tags) as typ_tags
 FROM grouped_results gr
-WHERE (STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_wpt_tests') OR
-   STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_web_tests'))
+WHERE (STARTS_WITH(step_name, 'blink_wpt_tests') OR
+   STARTS_WITH(step_name, 'blink_web_tests'))
 GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
 """
 
@@ -263,10 +251,8 @@ WITH
         SELECT value
         FROM tr.tags
         WHERE key = "typ_tag") as typ_tags,
-      ARRAY(
-        SELECT value
-        FROM tr.tags
-        WHERE key = "step_name") as step_name
+      (SELECT value FROM tr.tags
+       WHERE key = "step_name") as step_name,
 
     FROM
       `chrome-luci-data.chromium.blink_web_tests_try_test_results` tr
@@ -280,8 +266,8 @@ SELECT
   ANY_VALUE(gr.name) as test_name,
   ANY_VALUE(gr.typ_tags) as typ_tags
 FROM grouped_results gr
-WHERE (STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_wpt_tests') OR
-   STARTS_WITH(ARRAY_TO_STRING(step_name, ''), 'blink_web_tests'))
+WHERE (STARTS_WITH(step_name, 'blink_wpt_tests') OR
+   STARTS_WITH(step_name, 'blink_web_tests'))
 GROUP BY gr.name, ARRAY_TO_STRING(gr.typ_tags, '')
 """.format(submitted_builds_subquery=SUBMITTED_BUILDS_SUBQUERY)
 
