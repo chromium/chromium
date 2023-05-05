@@ -4844,7 +4844,7 @@
   {
     "name": "launcher-keyword-extraction-scoring",
     "owners": ["rbeccahsu", "celiahe", "wrong", "amandadeacon"],
-    "expiry_milestone": 115
+    "expiry_milestone": 120
   },
   {
     "name": "launcher-local-image-search",
