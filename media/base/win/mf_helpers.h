@@ -111,6 +111,10 @@ MEDIA_EXPORT ChannelLayout ChannelConfigToChannelLayout(ChannelConfig config);
 // Converts a GUID (little endian) to a bytes array (big endian).
 MEDIA_EXPORT std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid);
 
+// Returns a GUID from a binary serialization of a GUID string in network byte
+// order format.
+MEDIA_EXPORT GUID GetGUIDFromString(const std::string& guid_string);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MF_HELPERS_H_

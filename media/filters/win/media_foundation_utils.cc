@@ -98,6 +98,86 @@ bool IsUncompressedAudio(AudioCodec codec) {
   }
 }
 
+bool AreLowIVBytesZero(const std::string& iv) {
+  if (iv.length() != 16) {
+    return false;
+  }
+
+  for (size_t i = 8; i < iv.length(); i++) {
+    if (iv[i] != '\0') {
+      return false;
+    }
+  }
+  return true;
+}
+
+// Add encryption related attributes to |mf_sample| and update |last_key_id|.
+HRESULT AddEncryptAttributes(const DecryptConfig& decrypt_config,
+                             IMFSample* mf_sample,
+                             GUID* last_key_id) {
+  DVLOG(3) << __func__;
+
+  MFSampleEncryptionProtectionScheme mf_protection_scheme;
+  if (decrypt_config.encryption_scheme() == EncryptionScheme::kCenc) {
+    mf_protection_scheme = MFSampleEncryptionProtectionScheme::
+        MF_SAMPLE_ENCRYPTION_PROTECTION_SCHEME_AES_CTR;
+  } else if (decrypt_config.encryption_scheme() == EncryptionScheme::kCbcs) {
+    mf_protection_scheme = MFSampleEncryptionProtectionScheme::
+        MF_SAMPLE_ENCRYPTION_PROTECTION_SCHEME_AES_CBC;
+  } else {
+    NOTREACHED() << "Unexpected encryption scheme";
+    return MF_E_UNEXPECTED;
+  }
+  RETURN_IF_FAILED(mf_sample->SetUINT32(
+      MFSampleExtension_Encryption_ProtectionScheme, mf_protection_scheme));
+
+  // KID
+  // https://matroska.org/technical/specs/index.html#ContentEncKeyID
+  // For WebM case, key ID size is not specified.
+  if (decrypt_config.key_id().length() != sizeof(GUID)) {
+    DLOG(ERROR) << __func__ << ": Unsupported key ID size";
+    return MF_E_UNEXPECTED;
+  }
+  GUID key_id = GetGUIDFromString(decrypt_config.key_id());
+  RETURN_IF_FAILED(mf_sample->SetGUID(MFSampleExtension_Content_KeyID, key_id));
+  *last_key_id = key_id;
+
+  // IV
+  size_t iv_length = decrypt_config.iv().length();
+  DCHECK(iv_length == 16);
+  // For cases where a 16-byte IV is specified, but the low 8-bytes are all
+  // 0, ensure that a 8-byte IV is set (this allows HWDRM to work on
+  // hardware / drivers which don't support CTR decryption with 16-byte IVs)
+  if (AreLowIVBytesZero(decrypt_config.iv())) {
+    iv_length = 8;
+  }
+  RETURN_IF_FAILED(mf_sample->SetBlob(
+      MFSampleExtension_Encryption_SampleID,
+      reinterpret_cast<const uint8_t*>(decrypt_config.iv().c_str()),
+      iv_length));
+
+  // Handle subsample entries.
+  const auto& subsample_entries = decrypt_config.subsamples();
+  if (subsample_entries.empty()) {
+    return S_OK;
+  }
+
+  std::vector<MediaFoundationSubsampleEntry> mf_subsample_entries(
+      subsample_entries.size());
+  for (size_t i = 0; i < subsample_entries.size(); i++) {
+    mf_subsample_entries[i] =
+        MediaFoundationSubsampleEntry(subsample_entries[i]);
+  }
+  const uint32_t mf_sample_entries_size =
+      sizeof(MediaFoundationSubsampleEntry) * mf_subsample_entries.size();
+  RETURN_IF_FAILED(mf_sample->SetBlob(
+      MFSampleExtension_Encryption_SubSample_Mapping,
+      reinterpret_cast<const uint8_t*>(mf_subsample_entries.data()),
+      mf_sample_entries_size));
+
+  return S_OK;
+}
+
 }  // namespace
 
 // Given an AudioDecoderConfig, get its corresponding IMFMediaType format.
@@ -248,6 +328,54 @@ GUID VideoCodecToMFSubtype(VideoCodec codec, VideoCodecProfile profile) {
     default:
       return GUID_NULL;
   }
+}
+
+HRESULT GenerateSampleFromDecoderBuffer(scoped_refptr<DecoderBuffer> buffer,
+                                        IMFSample** sample_out,
+                                        GUID* last_key_id,
+                                        TransformSampleCB transform_sample_cb) {
+  DVLOG(3) << __func__;
+
+  ComPtr<IMFSample> mf_sample;
+  RETURN_IF_FAILED(MFCreateSample(&mf_sample));
+
+  if (buffer->is_key_frame()) {
+    RETURN_IF_FAILED(mf_sample->SetUINT32(MFSampleExtension_CleanPoint, 1));
+  }
+
+  DVLOG(3) << __func__ << "buffer->duration()=" << buffer->duration()
+           << ", buffer->timestamp()=" << buffer->timestamp();
+  MFTIME sample_duration = TimeDeltaToMfTime(buffer->duration());
+  RETURN_IF_FAILED(mf_sample->SetSampleDuration(sample_duration));
+
+  MFTIME sample_time = TimeDeltaToMfTime(buffer->timestamp());
+  RETURN_IF_FAILED(mf_sample->SetSampleTime(sample_time));
+
+  ComPtr<IMFMediaBuffer> mf_buffer;
+  size_t data_size = buffer->data_size();
+  RETURN_IF_FAILED(MFCreateMemoryBuffer(buffer->data_size(), &mf_buffer));
+
+  BYTE* mf_buffer_data = nullptr;
+  DWORD max_length = 0;
+  RETURN_IF_FAILED(mf_buffer->Lock(&mf_buffer_data, &max_length, 0));
+  memcpy(mf_buffer_data, buffer->data(), data_size);
+  RETURN_IF_FAILED(mf_buffer->SetCurrentLength(data_size));
+  RETURN_IF_FAILED(mf_buffer->Unlock());
+
+  RETURN_IF_FAILED(mf_sample->AddBuffer(mf_buffer.Get()));
+
+  if (buffer->decrypt_config()) {
+    RETURN_IF_FAILED(AddEncryptAttributes(*(buffer->decrypt_config()),
+                                          mf_sample.Get(), last_key_id));
+  }
+
+  if (transform_sample_cb) {
+    RETURN_IF_FAILED(std::move(transform_sample_cb).Run(mf_sample));
+  }
+
+  *sample_out = mf_sample.Detach();
+
+  return S_OK;
 }
 
 }  // namespace media

@@ -120,8 +120,6 @@ class MediaFoundationStreamWrapper
 
  protected:
   HRESULT GenerateStreamDescriptor();
-  HRESULT GenerateSampleFromDecoderBuffer(DecoderBuffer* buffer,
-                                          IMFSample** sample_out);
   HRESULT ServiceSampleRequest(IUnknown* token, DecoderBuffer* buffer)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   // Returns true when a sample request has been serviced.

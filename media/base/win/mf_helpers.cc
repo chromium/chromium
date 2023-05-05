@@ -136,4 +136,16 @@ std::vector<uint8_t> ByteArrayFromGUID(REFGUID guid) {
   return byte_array;
 }
 
+// |guid_string| is a binary serialization of a GUID in network byte order
+// format.
+GUID GetGUIDFromString(const std::string& guid_string) {
+  DCHECK_EQ(guid_string.length(), sizeof(GUID));
+
+  GUID guid = *(reinterpret_cast<UNALIGNED const GUID*>(guid_string.c_str()));
+  guid.Data1 = _byteswap_ulong(guid.Data1);
+  guid.Data2 = _byteswap_ushort(guid.Data2);
+  guid.Data3 = _byteswap_ushort(guid.Data3);
+  return guid;
+}
+
 }  // namespace media
