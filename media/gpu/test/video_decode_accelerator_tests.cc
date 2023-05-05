@@ -436,7 +436,7 @@ TEST_F(VideoDecoderTest, ResetEndOfStream) {
   tvp->Reset();
   EXPECT_TRUE(tvp->WaitForResetDone());
   tvp->Play();
-  EXPECT_TRUE(tvp->WaitForFlushDone());
+  ASSERT_TRUE(tvp->WaitForFlushDone());
 
   EXPECT_EQ(tvp->GetResetDoneCount(), 1u);
   EXPECT_EQ(tvp->GetFlushDoneCount(), 2u);
@@ -700,6 +700,9 @@ int main(int argc, char** argv) {
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
   if (feature_list->IsFeatureOverridden("V4L2FlatStatelessVideoDecoder")) {
     enabled_features.push_back(media::kV4L2FlatStatelessVideoDecoder);
+  }
+  if (feature_list->IsFeatureOverridden("V4L2FlatStatefulVideoDecoder")) {
+    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
   }
 #endif
 

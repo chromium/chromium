@@ -35,6 +35,7 @@
 #include <drm_fourcc.h>
 #include "media/gpu/vaapi/vaapi_video_decoder.h"
 #elif BUILDFLAG(USE_V4L2_CODEC)
+#include "media/gpu/v4l2/v4l2_stateful_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_stateless_video_decoder.h"
 #include "media/gpu/v4l2/v4l2_video_decoder.h"
 #else
@@ -212,11 +213,13 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
   } else {
 #if BUILDFLAG(USE_VAAPI)
     create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
-#elif BUILDFLAG(USE_V4L2_CODEC) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH))
+#elif BUILDFLAG(USE_V4L2_CODEC)
     if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
       create_decoder_function_cb =
           base::BindOnce(&V4L2StatelessVideoDecoder::Create);
+    } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+      create_decoder_function_cb =
+          base::BindOnce(&V4L2StatefulVideoDecoder::Create);
     } else {
       create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
     }
@@ -241,11 +244,14 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::CreateForTesting(
     bool ignore_resolution_changes_to_smaller_for_testing) {
   CreateDecoderFunctionCB create_decoder_function_cb;
 #if BUILDFLAG(USE_VAAPI)
-      create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
+  create_decoder_function_cb = base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
   if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
     create_decoder_function_cb =
         base::BindOnce(&V4L2StatelessVideoDecoder::Create);
+  } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+    create_decoder_function_cb =
+        base::BindOnce(&V4L2StatefulVideoDecoder::Create);
   } else {
     create_decoder_function_cb = base::BindOnce(&V4L2VideoDecoder::Create);
   }
@@ -309,6 +315,8 @@ VideoDecoderPipeline::GetSupportedConfigs(
     case VideoDecoderType::kV4L2:
       if (base::FeatureList::IsEnabled(kV4L2FlatStatelessVideoDecoder)) {
         configs = V4L2StatelessVideoDecoder::GetSupportedConfigs();
+      } else if (base::FeatureList::IsEnabled(kV4L2FlatStatefulVideoDecoder)) {
+        configs = V4L2StatefulVideoDecoder::GetSupportedConfigs();
       } else {
         configs = V4L2VideoDecoder::GetSupportedConfigs();
       }

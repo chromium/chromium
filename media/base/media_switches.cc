@@ -807,6 +807,11 @@ BASE_FEATURE(kVaapiVp9kSVCHWEncoding,
 BASE_FEATURE(kV4L2FlatStatelessVideoDecoder,
              "V4L2FlatStatelessVideoDecoder",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the new V4L2StatefulVideoDecoder instead of V4L2VideoDecoder.
+BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
+             "V4L2FlatStatefulVideoDecoder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Inform video blitter of video color space.
