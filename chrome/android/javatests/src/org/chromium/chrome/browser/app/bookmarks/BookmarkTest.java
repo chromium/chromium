@@ -23,11 +23,11 @@ import static org.chromium.components.browser_ui.widget.highlight.ViewHighlighte
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.text.TextUtils;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -427,12 +427,10 @@ public class BookmarkTest {
         assertEquals("Wrong number of items after searching for non-existent item.", 0,
                 mAdapter.getItemCount());
 
-        runOnUiThreadBlocking(
-                () -> mBookmarkManagerCoordinator.getToolbarForTesting().hideSearchView());
+        runOnUiThreadBlocking(() -> mToolbar.hideSearchView());
         assertEquals("Wrong number of items after closing search UI.", 3, mAdapter.getItemCount());
         assertEquals(BookmarkUiMode.FOLDER, mDelegate.getCurrentUiMode());
-        assertEquals(
-                TEST_FOLDER_TITLE, mBookmarkManagerCoordinator.getToolbarForTesting().getTitle());
+        assertEquals(TEST_FOLDER_TITLE, mToolbar.getTitle());
     }
 
     @Test
@@ -522,9 +520,7 @@ public class BookmarkTest {
         openFolder(testFolder);
 
         View search_view = mToolbar.findViewById(R.id.search_view);
-
-        runOnUiThreadBlocking(
-                () -> mToolbar.onMenuItemClick(mToolbar.getMenu().findItem(R.id.search_menu_id)));
+        clickToolbarMenuItem(R.id.search_menu_id);
 
         // Despite being in search mode, this is the initial query state, and the previous 1
         // bookmark inside of testFolder should be shown.
@@ -540,10 +536,7 @@ public class BookmarkTest {
         // that operate on the selected rows.
         assertNotEquals(search_view.getVisibility(), View.VISIBLE);
 
-        runOnUiThreadBlocking(() -> {
-            mToolbar.onMenuItemClick(
-                    mToolbar.getMenu().findItem(R.id.selection_mode_delete_menu_id));
-        });
+        clickToolbarMenuItem(R.id.selection_mode_delete_menu_id);
 
         // Should now be kicked back into an empty search string query, not the initial query. This
         // is why 3 items should now be visible, the two folders and the other url bookmark.
@@ -580,12 +573,7 @@ public class BookmarkTest {
         // right now is the empty string. This will return all bookmarks (3).
         toggleSelectionAndEndAnimation(testFolder2,
                 (BookmarkRow) mItemsContainer.findViewHolderForLayoutPosition(2).itemView);
-        runOnUiThreadBlocking(
-                ()
-                        -> mBookmarkManagerCoordinator.getToolbarForTesting().onMenuItemClick(
-                                mBookmarkManagerCoordinator.getToolbarForTesting()
-                                        .getMenu()
-                                        .findItem(R.id.selection_mode_delete_menu_id)));
+        clickToolbarMenuItem(R.id.selection_mode_delete_menu_id);
 
         // Should still be searching with the folder gone.
         assertEquals("Wrong number of items.", 3, mAdapter.getItemCount());
@@ -683,8 +671,7 @@ public class BookmarkTest {
 
         openBookmarkManager();
 
-        runOnUiThreadBlocking(
-                () -> mToolbar.onMenuItemClick(mToolbar.getMenu().findItem(R.id.close_menu_id)));
+        clickToolbarMenuItem(R.id.close_menu_id);
 
         ApplicationTestUtils.waitForActivityState(mBookmarkActivity, Stage.DESTROYED);
 
@@ -731,8 +718,7 @@ public class BookmarkTest {
         CriteriaHelper.pollUiThread(test::isChecked, "Expected item \"test\" to become selected");
 
         assertEquals("Expected bookmark toolbar to be selection mode",
-                mBookmarkManagerCoordinator.getToolbarForTesting().getCurrentViewType(),
-                ViewType.SELECTION_VIEW);
+                mToolbar.getCurrentViewType(), ViewType.SELECTION_VIEW);
         assertEquals("Expected more button of selected item to be gone when drag is active.",
                 View.GONE, testMoreButton.getVisibility());
         assertEquals("Expected drag handle of selected item to be visible when drag is active.",
@@ -759,8 +745,6 @@ public class BookmarkTest {
         openBookmarkManager();
         BookmarkTestUtil.openMobileBookmarks(mItemsContainer, mDelegate, mBookmarkModel);
 
-        MenuItem searchMenuItem = mToolbar.getMenu().findItem(R.id.search_menu_id);
-
         BookmarkRow test =
                 (BookmarkRow) mItemsContainer.findViewHolderForAdapterPosition(2).itemView;
         View testMoreButton = test.findViewById(R.id.more);
@@ -770,13 +754,10 @@ public class BookmarkTest {
         View aMoreButton = a.findViewById(R.id.more);
         View aDragHandle = a.getDragHandleViewForTesting();
 
-        runOnUiThreadBlocking(() -> mToolbar.onMenuItemClick(searchMenuItem));
+        clickToolbarMenuItem(R.id.search_menu_id);
 
         // Callback occurs when Item "test" is selected.
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mBookmarkManagerCoordinator.getToolbarForTesting().isSearching(),
-                "Expected to enter search mode");
+        CriteriaHelper.pollUiThread(() -> mToolbar.isSearching(), "Expected to enter search mode");
 
         toggleSelectionAndEndAnimation(testId, test);
 
@@ -1194,14 +1175,10 @@ public class BookmarkTest {
         addFolder(TEST_FOLDER_TITLE);
         openBookmarkManager();
 
-        MenuItem searchMenuItem = mToolbar.getMenu().findItem(R.id.search_menu_id);
-        runOnUiThreadBlocking(() -> mToolbar.onMenuItemClick(searchMenuItem));
+        clickToolbarMenuItem(R.id.search_menu_id);
 
         // Callback occurs when Item "test" is selected.
-        CriteriaHelper.pollUiThread(
-                ()
-                        -> mBookmarkManagerCoordinator.getToolbarForTesting().isSearching(),
-                "Expected to enter search mode");
+        CriteriaHelper.pollUiThread(() -> mToolbar.isSearching(), "Expected to enter search mode");
 
         View testFolder = mItemsContainer.findViewHolderForAdapterPosition(0).itemView;
         assertEquals("Wrong bookmark item selected.", TEST_FOLDER_TITLE,
@@ -1492,8 +1469,7 @@ public class BookmarkTest {
             assertFalse("Item is not deleted", isItemPresentInBookmarkList(TEST_PAGE_TITLE_GOOGLE));
             assertEquals(2, mAdapter.getItemCount());
             assertEquals("Bookmark View should be back to normal view",
-                    mBookmarkManagerCoordinator.getToolbarForTesting().getCurrentViewType(),
-                    ViewType.NORMAL_VIEW);
+                    mToolbar.getCurrentViewType(), ViewType.NORMAL_VIEW);
         });
     }
 
@@ -1534,8 +1510,7 @@ public class BookmarkTest {
             assertEquals(2, mAdapter.getItemCount());
             assertTrue("Item selected should not be cleared", aRow.isItemSelected());
             assertEquals("Should stay in selection mode because there is one selected",
-                    mBookmarkManagerCoordinator.getToolbarForTesting().getCurrentViewType(),
-                    ViewType.SELECTION_VIEW);
+                    mToolbar.getCurrentViewType(), ViewType.SELECTION_VIEW);
         });
     }
 
@@ -1865,12 +1840,9 @@ public class BookmarkTest {
     }
 
     private void enterSearch() throws Exception {
-        MenuItem searchMenuItem = mToolbar.getMenu().findItem(R.id.search_menu_id);
-        runOnUiThreadBlocking(() -> mToolbar.onMenuItemClick(searchMenuItem));
+        clickToolbarMenuItem(R.id.search_menu_id);
         CriteriaHelper.pollUiThread(
-                ()
-                        -> mBookmarkManagerCoordinator.getToolbarForTesting().isSearching(),
-                "Expected to enter search mode");
+                () -> { return mToolbar.isSearching(); }, "Expected to enter search mode");
     }
 
     private void clickMoreButtonOnFirstItem(String expectedBookmarkItemTitle) throws Exception {
@@ -1913,7 +1885,7 @@ public class BookmarkTest {
         runOnUiThreadBlocking(() -> {
             mDelegate.getSelectionDelegate().toggleSelectionForItem(id);
             view.endAnimationsForTests();
-            mBookmarkManagerCoordinator.getToolbarForTesting().endAnimationsForTesting();
+            mToolbar.endAnimationsForTesting();
         });
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
     }
@@ -1956,5 +1928,9 @@ public class BookmarkTest {
     private void openFolder(BookmarkId folder) {
         runOnUiThreadBlocking(() -> mDelegate.openFolder(folder));
         RecyclerViewTestUtils.waitForStableRecyclerView(mItemsContainer);
+    }
+
+    private void clickToolbarMenuItem(@IdRes int menuId) throws ExecutionException {
+        runOnUiThreadBlocking(() -> mToolbar.onMenuItemClick(mToolbar.getMenu().findItem(menuId)));
     }
 }
