@@ -64,15 +64,20 @@ export class CustomizeModulesElement extends I18nMixin
 
       modules_: Array,
 
-      // Discount toggle is a workaround for crbug.com/1199465 and will be
-      // removed after module customization is better defined. Please avoid
-      // using similar pattern for other features.
-      discountToggle_: {
+      // Cart and Discount option toggles are workarounds for crbug.com/1199465
+      // and will be removed after module customization is better defined.
+      // Please avoid using similar pattern for other features.
+      cartOptionToggle_: {
         type: Object,
         value: {enabled: false, initiallyEnabled: false},
       },
 
-      discountToggleEligible_: {
+      discountOptionToggle_: {
+        type: Object,
+        value: {enabled: false, initiallyEnabled: false},
+      },
+
+      discountOptionToggleEligible_: {
         type: Boolean,
         value: false,
       },
@@ -82,8 +87,9 @@ export class CustomizeModulesElement extends I18nMixin
   private show_: boolean;
   private showManagedByPolicy_: boolean;
   private modules_: ModuleSetting[];
-  private discountToggle_: {enabled: boolean, initiallyEnabled: boolean};
-  private discountToggleEligible_: boolean;
+  private cartOptionToggle_: {enabled: boolean, initiallyEnabled: boolean};
+  private discountOptionToggle_: {enabled: boolean, initiallyEnabled: boolean};
+  private discountOptionToggleEligible_: boolean;
   private setDisabledModulesListenerId_: number|null = null;
 
   override connectedCallback() {
@@ -114,13 +120,31 @@ export class CustomizeModulesElement extends I18nMixin
       if (this.modules_.some(module => module.id === 'chrome_cart')) {
         ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
             ({toggleVisible}) => {
-              this.set('discountToggleEligible_', toggleVisible);
+              this.set('discountOptionToggleEligible_', toggleVisible);
             });
 
         ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
-          this.set('discountToggle_.enabled', enabled);
-          this.discountToggle_.initiallyEnabled = enabled;
+          this.set('discountOptionToggle_.enabled', enabled);
+          this.discountOptionToggle_.initiallyEnabled = enabled;
         });
+      } else if (
+          this.modules_.some(module => module.id === 'history_clusters') &&
+          loadTimeData.getBoolean('showCartInQuestModuleSetting')) {
+        ChromeCartProxy.getHandler().getDiscountToggleVisible().then(
+            ({toggleVisible}) => {
+              this.set('discountOptionToggleEligible_', toggleVisible);
+            });
+
+        ChromeCartProxy.getHandler().getDiscountEnabled().then(({enabled}) => {
+          this.set('discountOptionToggle_.enabled', enabled);
+          this.discountOptionToggle_.initiallyEnabled = enabled;
+        });
+
+        ChromeCartProxy.getHandler().getCartFeatureEnabled().then(
+            ({enabled}) => {
+              this.set('cartOptionToggle_.enabled', enabled);
+              this.cartOptionToggle_.initiallyEnabled = enabled;
+            });
       }
     });
   }
@@ -162,14 +186,18 @@ export class CustomizeModulesElement extends I18nMixin
     // Discount toggle is a workaround for crbug.com/1199465 and will be
     // removed after module customization is better defined. Please avoid
     // using similar pattern for other features.
-    if (this.discountToggleEligible_ &&
-        this.discountToggle_.enabled !==
-            this.discountToggle_.initiallyEnabled) {
+    if (this.discountOptionToggleEligible_ &&
+        this.discountOptionToggle_.enabled !==
+            this.discountOptionToggle_.initiallyEnabled) {
       ChromeCartProxy.getHandler().setDiscountEnabled(
-          this.discountToggle_.enabled);
+          this.discountOptionToggle_.enabled);
       chrome.metricsPrivate.recordUserAction(`NewTabPage.Carts.${
-          this.discountToggle_.enabled ? 'EnableDiscount' :
-                                         'DisableDiscount'}`);
+          this.discountOptionToggle_.enabled ? 'EnableDiscount' :
+                                               'DisableDiscount'}`);
+    }
+    if (this.cartOptionToggle_.enabled !==
+        this.cartOptionToggle_.initiallyEnabled) {
+      handler.setModuleDisabled('chrome_cart', !this.cartOptionToggle_.enabled);
     }
   }
 
@@ -190,9 +218,20 @@ export class CustomizeModulesElement extends I18nMixin
     return this.showManagedByPolicy_ || !this.show_;
   }
 
-  private showDiscountToggle_(
-      id: string, checked: boolean, eligible: boolean): boolean {
-    return id === 'chrome_cart' && checked && eligible;
+  private showCartOptionToggle_(id: string, checked: boolean): boolean {
+    return id === 'history_clusters' && checked &&
+        loadTimeData.getBoolean('showCartInQuestModuleSetting');
+  }
+
+  private showDiscountOptionToggle_(
+      id: string, checked: boolean, eligible: boolean,
+      cartOptionChecked: boolean): boolean {
+    if (id === 'chrome_cart') {
+      return checked && eligible;
+    } else if (id === 'history_clusters') {
+      return checked && eligible && cartOptionChecked;
+    }
+    return false;
   }
 }
 
