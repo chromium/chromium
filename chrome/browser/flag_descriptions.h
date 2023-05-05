@@ -189,9 +189,6 @@ extern const char kWebFilterInterstitialRefreshDescription[];
 extern const char kUpcomingFollowFeaturesName[];
 extern const char kUpcomingFollowFeaturesDescription[];
 
-extern const char kUpcomingSharingFeaturesName[];
-extern const char kUpcomingSharingFeaturesDescription[];
-
 extern const char kUseStorkSmdsServerAddressName[];
 extern const char kUseStorkSmdsServerAddressDescription[];
 

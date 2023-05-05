@@ -520,7 +520,6 @@ public abstract class ChromeFeatureList {
             "UnifiedPasswordManagerAndroidBranding";
     public static final String UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES =
             "UnifiedPasswordManagerErrorMessages";
-    public static final String UPCOMING_SHARING_FEATURES = "UpcomingSharingFeatures";
     public static final String USE_CHIME_ANDROID_SDK = "UseChimeAndroidSdk";
     public static final String USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID =
             "UseLibunwindstackNativeUnwinderAndroid";

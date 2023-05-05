@@ -107,8 +107,7 @@ void AndroidNotificationHandler::DisplayNewEntries(
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
     const std::vector<const SendTabToSelfEntry>& new_entries) {
   for (const SendTabToSelfEntry& entry : new_entries) {
-    if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
-        share::AreUpcomingSharingFeaturesEnabled()) {
+    if (base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2)) {
       if (profile_ != nullptr &&
           GetWebContentsForProfile(profile_) != nullptr) {
         web_contents_ = GetWebContentsForProfile(profile_)->GetWeakPtr();

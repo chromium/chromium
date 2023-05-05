@@ -8848,11 +8848,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kUpcomingFollowFeaturesDescription, kOsAll,
      FEATURE_VALUE_TYPE(follow::kUpcomingFollowFeatures)},
 
-    {"upcoming-sharing-features",
-     flag_descriptions::kUpcomingSharingFeaturesName,
-     flag_descriptions::kUpcomingSharingFeaturesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(share::kUpcomingSharingFeatures)},
-
 #if defined(TOOLKIT_VIEWS)
     {"revamped-password-management-bubble",
      flag_descriptions::kRevampedPasswordManagementBubbleName,

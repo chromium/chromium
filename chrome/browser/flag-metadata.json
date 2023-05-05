@@ -7302,11 +7302,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "upcoming-sharing-features",
-    "owners": [ "ellyjones", "chrome-with-friends-robots@google.com" ],
-    "expiry_milestone": 110
-  },
-  {
     "name": "update-menu-item-custom-summary",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which
