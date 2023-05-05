@@ -196,11 +196,10 @@ static void DrawLocators(SkCanvas* canvas,
   // No locator on bottom-right.
 }
 
-void QRCodeGeneratorServiceImpl::RenderBitmap(
+SkBitmap QRCodeGeneratorServiceImpl::RenderBitmap(
     base::span<const uint8_t> data,
     const gfx::Size data_size,
-    const mojom::GenerateQRCodeRequestPtr& request,
-    mojom::GenerateQRCodeResponsePtr* response) {
+    const mojom::GenerateQRCodeRequest& request) {
   // Setup: create colors and clear canvas.
   SkBitmap bitmap;
   bitmap.allocN32Pixels(data_size.width() * kModuleSizePixels,
@@ -228,7 +227,7 @@ void QRCodeGeneratorServiceImpl::RenderBitmap(
           continue;
         }
 
-        if (request->render_module_style == mojom::ModuleStyle::CIRCLES) {
+        if (request.render_module_style == mojom::ModuleStyle::CIRCLES) {
           float xc = (x + 0.5) * kModuleSizePixels;
           float yc = (y + 0.5) * kModuleSizePixels;
           SkScalar radius = kModuleSizePixels / 2 - 1;
@@ -244,12 +243,12 @@ void QRCodeGeneratorServiceImpl::RenderBitmap(
   }
 
   DrawLocators(&canvas, data_size, paint_black, paint_white,
-               request->render_locator_style);
+               request.render_locator_style);
 
   SkRect bitmap_bounds;
   bitmap.getBounds(&bitmap_bounds);
 
-  switch (request->center_image) {
+  switch (request.center_image) {
     case mojom::CenterImage::DEFAULT_NONE:
       break;
     case mojom::CenterImage::CHROME_DINO:
@@ -261,7 +260,7 @@ void QRCodeGeneratorServiceImpl::RenderBitmap(
       break;
   }
 
-  (*response)->bitmap = bitmap;
+  return bitmap;
 }
 
 void QRCodeGeneratorServiceImpl::GenerateQRCode(
@@ -318,8 +317,8 @@ void QRCodeGeneratorServiceImpl::GenerateQRCode(
 
   {
     base::TimeTicks start_time = base::TimeTicks::Now();
-    RenderBitmap(base::make_span(qr_data->data), response->data_size, request,
-                 &response);
+    response->bitmap = RenderBitmap(base::make_span(qr_data->data),
+                                    response->data_size, *request);
     base::UmaHistogramTimes(
         "Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage",
         base::TimeTicks::Now() - start_time);
