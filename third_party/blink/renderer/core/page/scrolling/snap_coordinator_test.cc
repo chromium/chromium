@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 
 #include <gtest/gtest.h>
+
 #include <memory>
 
 #include "cc/input/scroll_snap_data.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -31,7 +33,7 @@ class SnapCoordinatorTest : public testing::Test,
  protected:
   void SetUp() override {
     page_holder_ = std::make_unique<DummyPageHolder>(
-        gfx::Size(), nullptr, nullptr, base::BindOnce([](Settings& settings) {
+        gfx::Size(), nullptr, nullptr, WTF::BindOnce([](Settings& settings) {
           settings.SetAcceleratedCompositingEnabled(true);
         }));
 

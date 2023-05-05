@@ -12,6 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink::user_level_memory_pressure_signal_generator_test {
 
@@ -109,9 +110,9 @@ class UserLevelMemoryPressureSignalGeneratorTest : public testing::Test {
     // to initialize it.
     memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
         FROM_HERE,
-        base::BindRepeating(
+        WTF::BindRepeating(
             [](base::MemoryPressureListener::MemoryPressureLevel) {}),
-        base::BindRepeating(
+        WTF::BindRepeating(
             &UserLevelMemoryPressureSignalGeneratorTest::OnSyncMemoryPressure,
             base::Unretained(this)));
     base::MemoryPressureListener::SetNotificationsSuppressed(false);
@@ -473,7 +474,7 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
 
   test_task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(
+      WTF::BindOnce(
           &UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal,
           WTF::UnretainedWrapper(generator.get())),
       kInertInterval);
