@@ -84,11 +84,3 @@ function_registration("api_registration") {
     deps += [ "//chrome/browser/chromeos/extensions:constants" ]
   }
 }
-
-if (is_win) {
-  executable("native_messaging_test_echo_host") {
-    testonly = true
-    sources = [ "messaging/native_messaging_test_echo_host.cc" ]
-    deps = [ "//base" ]
-  }
-}
