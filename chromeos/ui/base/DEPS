@@ -4,4 +4,6 @@ include_rules = [
   "+ui/chromeos/styles",
   "+ui/display",
   "+ui/gfx",
+  "+ui/color",
+  "+ui/native_theme",
 ]
