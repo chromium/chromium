@@ -77,7 +77,9 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, ListDesksTest) {
 }
 
 // Tests launch and close a desk.
-IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, LaunchAndCloseDeskTest) {
+// Disable due to flakiness (crbug.com/1442077)
+IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
+                       DISABLED_LaunchAndCloseDeskTest) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>()) {
     GTEST_SKIP() << "Unsupported ash version.";
@@ -135,7 +137,9 @@ IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
 }
 
 // Tests switch to different desk show trigger animation.
-IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest, SwitchToDifferentDeskTest) {
+// Disable due to flakiness (crbug.com/1442077)
+IN_PROC_BROWSER_TEST_F(DesksExtensionApiLacrosTest,
+                       DISABLED_SwitchToDifferentDeskTest) {
   auto* lacros_service = chromeos::LacrosService::Get();
 
   if (!lacros_service->IsAvailable<crosapi::mojom::Desk>() ||
