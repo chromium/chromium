@@ -198,7 +198,8 @@ class InMenuButtonBackground : public views::Background {
                       const gfx::Rect& bounds,
                       views::Button::ButtonState state) const {
     if (state == views::Button::STATE_HOVERED ||
-        state == views::Button::STATE_PRESSED) {
+        state == views::Button::STATE_PRESSED ||
+        state == views::Button::STATE_NORMAL) {
       gfx::Rect bounds_rect = bounds;
       ui::NativeTheme::ExtraParams params;
       if (type_ == ButtonType::kRoundedButton) {
@@ -211,10 +212,19 @@ class InMenuButtonBackground : public views::Background {
             gfx::Size(kCircularButtonSize, kCircularButtonSize));
         params.menu_item.corner_radius = kCircularButtonSize / 2;
       }
-      view->GetNativeTheme()->Paint(
-          canvas->sk_canvas(), view->GetColorProvider(),
-          ui::NativeTheme::kMenuItemBackground, ui::NativeTheme::kHovered,
-          bounds_rect, params);
+      auto* provider = view->GetColorProvider();
+      if (features::IsChromeRefresh2023() &&
+          views::IsViewClass<views::Button>(view)) {
+        cc::PaintFlags flags;
+        flags.setColor(provider->GetColor(ui::kColorMenuButtonBackground));
+        canvas->DrawRoundRect(gfx::RectF(bounds_rect),
+                              params.menu_item.corner_radius, flags);
+      }
+      if (state != views::Button::STATE_NORMAL) {
+        view->GetNativeTheme()->Paint(
+            canvas->sk_canvas(), provider, ui::NativeTheme::kMenuItemBackground,
+            ui::NativeTheme::kHovered, bounds_rect, params);
+      }
     }
   }
 

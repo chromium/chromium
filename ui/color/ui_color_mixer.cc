@@ -126,6 +126,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorLiveCaptionBubbleLink] = {kColorLiveCaptionBubbleCheckbox};
   mixer[kColorMenuBackground] = {kColorPrimaryBackground};
   mixer[kColorMenuBorder] = {kColorMidground};
+  mixer[kColorMenuButtonBackground] = {kColorMenuBackground};
   mixer[kColorMenuDropmarker] = {kColorPrimaryForeground};
   mixer[kColorMenuIcon] = {kColorIcon};
   mixer[kColorMenuItemBackgroundAlertedInitial] =

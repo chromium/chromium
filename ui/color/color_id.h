@@ -305,6 +305,7 @@
   E_CPONLY(kColorLiveCaptionBubbleLink) \
   E_CPONLY(kColorMenuBackground) \
   E_CPONLY(kColorMenuBorder) \
+  E_CPONLY(kColorMenuButtonBackground) \
   E_CPONLY(kColorMenuDropmarker) \
   E_CPONLY(kColorMenuIcon) \
   E_CPONLY(kColorMenuItemBackgroundAlertedInitial) \
