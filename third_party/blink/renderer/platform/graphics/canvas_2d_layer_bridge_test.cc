@@ -1078,8 +1078,8 @@ TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
   EXPECT_TRUE(bridge->IsValid());
   bridge->SetIsBeingDisplayed(true);
   EXPECT_FALSE(bridge->HasRateLimiterForTesting());
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
   EXPECT_TRUE(bridge->HasRateLimiterForTesting());
 }
 
@@ -1088,13 +1088,13 @@ TEST_F(Canvas2DLayerBridgeTest, NonDisplayedCanvasIsNotRateLimited) {
       MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   bridge->SetIsBeingDisplayed(true);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
   EXPECT_TRUE(bridge->HasRateLimiterForTesting());
   bridge->SetIsBeingDisplayed(false);
   EXPECT_FALSE(bridge->HasRateLimiterForTesting());
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
-  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kTesting);
+  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
+  bridge->FinalizeFrame(CanvasResourceProvider::FlushReason::kCanvasPushFrame);
   EXPECT_FALSE(bridge->HasRateLimiterForTesting());
 }
 
