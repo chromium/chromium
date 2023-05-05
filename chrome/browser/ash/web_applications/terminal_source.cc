@@ -66,7 +66,8 @@ class TerminalFileSystemProvider
   bool RequestMount(
       Profile* profile,
       ash::file_system_provider::RequestMountCallback callback) override {
-    guest_os::LaunchTerminalHome(profile, display::kInvalidDisplayId);
+    guest_os::LaunchTerminalHome(profile, display::kInvalidDisplayId,
+                                 /*restore_id=*/0);
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), base::File::FILE_OK));
     return true;

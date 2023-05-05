@@ -131,10 +131,11 @@ void LaunchTerminal(Profile* profile,
                     const std::string& cwd = "",
                     const std::vector<std::string>& terminal_args = {});
 
-void LaunchTerminalHome(Profile* profile, int64_t display_id);
+void LaunchTerminalHome(Profile* profile, int64_t display_id, int restore_id);
 
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
+                           int restore_id,
                            const GURL& url);
 
 void LaunchTerminalWithIntent(

@@ -1013,7 +1013,8 @@ void WebAppPublisherHelper::LaunchAppWithParams(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Terminal SWA has custom launch code and manages its own restore data.
   if (params.app_id == guest_os::kTerminalSystemAppId) {
-    guest_os::LaunchTerminalHome(profile_, params.display_id);
+    guest_os::LaunchTerminalHome(profile_, params.display_id,
+                                 params.restore_id);
     std::move(on_complete).Run(nullptr);
     return;
   }

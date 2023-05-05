@@ -192,15 +192,17 @@ void LaunchTerminal(Profile* profile,
                     const std::vector<std::string>& terminal_args) {
   GURL url = GenerateTerminalURL(profile, /*settings_profile=*/std::string(),
                                  container_id, cwd, terminal_args);
-  LaunchTerminalWithUrl(profile, display_id, url);
+  LaunchTerminalWithUrl(profile, display_id, /*restore_id=*/0, url);
 }
 
-void LaunchTerminalHome(Profile* profile, int64_t display_id) {
-  LaunchTerminalWithUrl(profile, display_id, GURL(GetTerminalHomeUrl()));
+void LaunchTerminalHome(Profile* profile, int64_t display_id, int restore_id) {
+  LaunchTerminalWithUrl(profile, display_id, restore_id,
+                        GURL(GetTerminalHomeUrl()));
 }
 
 void LaunchTerminalWithUrl(Profile* profile,
                            int64_t display_id,
+                           int restore_id,
                            const GURL& url) {
   if (url.DeprecatedGetOriginAsURL() != chrome::kChromeUIUntrustedTerminalURL) {
     LOG(ERROR) << "Trying to launch terminal with an invalid url: " << url;
@@ -218,6 +220,8 @@ void LaunchTerminalWithUrl(Profile* profile,
 
   // Terminal Home page will be restored by app service.
   params->omit_from_session_restore = true;
+
+  params->restore_id = restore_id;
 
   // Always launch asynchronously to avoid disturbing the caller. See
   // https://crbug.com/1262890#c12 for more details.
@@ -293,7 +297,7 @@ void LaunchTerminalWithIntent(
 
   GURL url = GenerateTerminalURL(profile, settings_profile, guest_id, cwd,
                                  /*terminal_args=*/{});
-  LaunchTerminalWithUrl(profile, display_id, url);
+  LaunchTerminalWithUrl(profile, display_id, /*restore_id=*/0, url);
   std::move(callback).Run(true, "");
 }
 
@@ -603,7 +607,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
           {"?", kSettingsProfileUrlParam, "=", escape(*settings_profile)});
     }
     LaunchTerminalWithUrl(
-        profile, display_id,
+        profile, display_id, /*restore_id=*/0,
         GURL(base::StrCat({chrome::kChromeUIUntrustedTerminalURL,
                            "html/terminal_ssh.html", settings_profile_param,
                            "#profile-id:", escape(*profileId)})));
