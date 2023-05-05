@@ -419,7 +419,8 @@ class BottomSheet extends FrameLayout
         mBrowserControlsHiddenRatio = ratio;
 
         if (getSheetState() == SheetState.HIDDEN) return;
-        if (getCurrentOffsetPx() > getSheetHeightForState(SheetState.HALF)) return;
+        int state = isHalfStateEnabled() ? SheetState.HALF : SheetState.PEEK;
+        if (getCurrentOffsetPx() > getSheetHeightForState(state)) return;
 
         // Updating the offset will automatically account for the browser controls.
         setSheetOffsetFromBottom(getCurrentOffsetPx(), StateChangeReason.SWIPE);
