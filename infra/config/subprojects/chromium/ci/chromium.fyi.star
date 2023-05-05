@@ -2736,6 +2736,7 @@ ci.builder(
             target_bits = 64,
         ),
     ),
+    builderless = True,
     os = os.WINDOWS_10,
     console_view_entry = consoles.console_view_entry(
         category = "cr23",
