@@ -15,7 +15,7 @@
 TEST(FastCheckoutUIViewAndroidUtils, CreateFastCheckoutAutofillProfile) {
   autofill::CountryNames::SetLocaleString("en-US");
   JNIEnv* env = base::android::AttachCurrentThread();
-  autofill::AutofillProfile profile = autofill::test::GetVerifiedProfile();
+  autofill::AutofillProfile profile = autofill::test::GetFullProfile();
 
   base::android::ScopedJavaLocalRef<jobject> scoped_profile =
       CreateFastCheckoutAutofillProfile(env, profile, "en-US");

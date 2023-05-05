@@ -501,12 +501,6 @@ AutofillProfile GetIncompleteProfile2() {
   return profile;
 }
 
-AutofillProfile GetVerifiedProfile() {
-  AutofillProfile profile(GetFullProfile());
-  profile.set_origin(kSettingsOrigin);
-  return profile;
-}
-
 AutofillProfile GetServerProfile() {
   AutofillProfile profile(AutofillProfile::SERVER_PROFILE, "id1");
   // Note: server profiles don't have email addresses and only have full names.

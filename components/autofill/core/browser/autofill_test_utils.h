@@ -290,9 +290,6 @@ AutofillProfile GetIncompleteProfile1();
 // Returns an incomplete profile of dummy info, different to the above.
 AutofillProfile GetIncompleteProfile2();
 
-// Returns a verified profile full of dummy info.
-AutofillProfile GetVerifiedProfile();
-
 // Returns a server profile full of dummy info.
 AutofillProfile GetServerProfile();
 
