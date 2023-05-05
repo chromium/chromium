@@ -82,16 +82,17 @@ source_set("ui") {
 }
 
 source_set("web_controller_header") {
-  deps = [
-    ":crw_web_view_navigation_proxy",
-    "//base",
-    "//ios/web/public/deprecated",
-  ]
-
   sources = [
     "crw_touch_tracking_recognizer.h",
     "crw_web_controller.h",
   ]
+
+  deps = [
+    ":crw_web_view_navigation_proxy",
+    "//ios/web/public/deprecated",
+  ]
+
+  public_deps = [ "//base" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
