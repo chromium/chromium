@@ -124,7 +124,7 @@ if (enable_nocompile_tests) {
           "/W4",
           "-Wno-unused-parameter",
           "-I" + rebase_path("$libcxx_prefix/include", root_build_dir),
-          "/std:c++17",
+          "/std:c++20",
 
           # TODO(crbug.com/1442625): Uncomment this, then filter and process the
           # output appropriately to track dependencies.
@@ -141,7 +141,7 @@ if (enable_nocompile_tests) {
           "-nostdinc++",
           "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
           "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
-          "-std=c++17",
+          "-std=c++20",
           "-MMD",
           "-MF",
           rebased_result_path + ".d",
