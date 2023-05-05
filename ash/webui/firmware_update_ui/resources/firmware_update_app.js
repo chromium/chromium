@@ -44,8 +44,13 @@ export class FirmwareUpdateAppElement extends FirmwareUpdateAppElementBase {
     if (loadTimeData.getBoolean('isJellyEnabledForFirmwareUpdate')) {
       // TODO(b/276493795): After the Jelly experiment is launched, replace
       // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+      // Also add `theme/typography.css` to `index.html`.
       document.querySelector('link[href*=\'cros_styles.css\']')
           ?.setAttribute('href', 'chrome://theme/colors.css?sets=legacy,sys');
+      const typographyLink = document.createElement('link');
+      typographyLink.href = 'chrome://theme/typography.css';
+      typographyLink.rel = 'stylesheet';
+      document.head.appendChild(typographyLink);
       document.body.classList.add('jelly-enabled');
       startColorChangeUpdater();
     }
