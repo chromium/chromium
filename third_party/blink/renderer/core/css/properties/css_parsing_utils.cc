@@ -2069,7 +2069,8 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
     return nullptr;
   }
 
-  CSSParserTokenRange args = ConsumeFunction(range);
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange args = ConsumeFunction(range_copy);
   // First argument is the colorspace
   Color::ColorSpace color_space;
   Color::HueInterpolationMethod hue_interpolation_method =
@@ -2130,6 +2131,8 @@ static CSSValue* ConsumeColorMixFunction(CSSParserTokenRange& range,
   if (!args.AtEnd()) {
     return nullptr;
   }
+
+  range = range_copy;
 
   cssvalue::CSSColorMixValue* result =
       MakeGarbageCollected<cssvalue::CSSColorMixValue>(
@@ -2334,7 +2337,9 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
                                const CSSParserContext& context,
                                bool accept_quirky_colors) {
   DCHECK_EQ(range.Peek().FunctionId(), CSSValueID::kColorContrast);
-  CSSParserTokenRange args = ConsumeFunction(range);
+
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange args = ConsumeFunction(range_copy);
 
   CSSValue* background_color =
       ConsumeColor(args, context, accept_quirky_colors);
@@ -2406,6 +2411,8 @@ CSSValue* ConsumeColorContrast(CSSParserTokenRange& range,
       highest_contrast_index = i;
     }
   }
+
+  range = range_copy;
 
   if (highest_contrast_index < 0) {
     // If an explicit target contrast was set and no provided colors have enough

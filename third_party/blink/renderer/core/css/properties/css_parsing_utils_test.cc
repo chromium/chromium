@@ -293,5 +293,22 @@ TEST(CSSParsingUtilsTest, InternalColorsOnlyAllowedInUaMode) {
   }
 }
 
+// Verify that the state of CSSParserTokenRange is preserved
+// for failing <color> values.
+TEST(CSSParsingUtilsTest, ConsumeColorRangePreservation) {
+  const char* tests[] = {
+      "color-mix(42deg)",
+      "color-contrast(42deg)",
+  };
+  for (const char*& test : tests) {
+    String input(test);
+    SCOPED_TRACE(input);
+    Vector<CSSParserToken, 32> tokens = CSSTokenizer(input).TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    EXPECT_EQ(nullptr, css_parsing_utils::ConsumeColor(range, *MakeContext()));
+    EXPECT_EQ(test, range.Serialize());
+  }
+}
+
 }  // namespace
 }  // namespace blink
