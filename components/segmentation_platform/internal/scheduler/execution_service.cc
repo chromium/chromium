@@ -46,7 +46,7 @@ void ExecutionService::Initialize(
     std::vector<ModelExecutionScheduler::Observer*>&& observers,
     const PlatformOptions& platform_options,
     std::unique_ptr<processing::InputDelegateHolder> input_delegate_holder,
-    std::vector<std::unique_ptr<Config>>* configs,
+    const std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs) {
   storage_service_ = storage_service;
 

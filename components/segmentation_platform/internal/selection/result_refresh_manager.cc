@@ -33,10 +33,10 @@ void CollectTrainingData(Config* config, ExecutionService* execution_service) {
 
 ResultRefreshManager::ResultRefreshManager(
     const std::vector<std::unique_ptr<Config>>& configs,
-    std::unique_ptr<CachedResultWriter> cached_result_writer,
+    CachedResultWriter* cached_result_writer,
     const PlatformOptions& platform_options)
     : configs_(configs),
-      cached_result_writer_(std::move(cached_result_writer)),
+      cached_result_writer_(cached_result_writer),
       platform_options_(platform_options) {}
 
 ResultRefreshManager::~ResultRefreshManager() = default;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/selection/client_result_prefs.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"

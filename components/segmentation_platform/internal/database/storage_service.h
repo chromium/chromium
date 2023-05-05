@@ -12,6 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/leveldb_proto/public/proto_database.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
+#include "components/segmentation_platform/internal/database/cached_result_writer.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -67,7 +70,7 @@ class StorageService {
                  scoped_refptr<base::SequencedTaskRunner> task_runner,
                  base::Clock* clock,
                  UkmDataManager* ukm_data_manager,
-                 const base::flat_set<proto::SegmentId>& all_segment_ids,
+                 std::vector<std::unique_ptr<Config>> configs,
                  ModelProviderFactory* model_provider_factory,
                  PrefService* profile_prefs);
 
@@ -81,7 +84,7 @@ class StorageService {
           signal_storage_config_db,
       base::Clock* clock,
       UkmDataManager* ukm_data_manager,
-      const base::flat_set<proto::SegmentId>& all_segment_ids,
+      std::vector<std::unique_ptr<Config>> configs,
       ModelProviderFactory* model_provider_factory,
       PrefService* profile_prefs);
 
@@ -109,6 +112,16 @@ class StorageService {
   // Executes all database maintenance tasks.
   void ExecuteDatabaseMaintenanceTasks(bool is_startup);
 
+  const ConfigHolder& config_holder() const { return *config_holder_; }
+
+  CachedResultProvider* cached_result_provider() {
+    return cached_result_provider_.get();
+  }
+
+  CachedResultWriter* cached_result_writer() {
+    return cached_result_writer_.get();
+  }
+
   DefaultModelManager* default_model_manager() {
     DCHECK(default_model_manager_);
     return default_model_manager_.get();
@@ -132,6 +145,15 @@ class StorageService {
   void OnSignalStorageConfigInitialized(bool success);
   bool IsInitializationFinished() const;
   void MaybeFinishInitialization();
+
+  // All client Configs.
+  std::unique_ptr<ConfigHolder> config_holder_;
+
+  // Result cache.
+  std::unique_ptr<CachedResultProvider> cached_result_provider_;
+
+  // Writes to result cache.
+  std::unique_ptr<CachedResultWriter> cached_result_writer_;
 
   // Default models.
   std::unique_ptr<DefaultModelManager> default_model_manager_;

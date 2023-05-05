@@ -9,8 +9,8 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "components/segmentation_platform/internal/database/cached_result_writer.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
-#include "components/segmentation_platform/internal/selection/cached_result_writer.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/public/result.h"
 
@@ -27,7 +27,7 @@ class SegmentResultProvider;
 class ResultRefreshManager {
  public:
   ResultRefreshManager(const std::vector<std::unique_ptr<Config>>& configs,
-                       std::unique_ptr<CachedResultWriter> cached_result_writer,
+                       CachedResultWriter* cached_result_writer,
                        const PlatformOptions& platform_options);
 
   ~ResultRefreshManager();
@@ -74,7 +74,7 @@ class ResultRefreshManager {
 
   // Delegate to write results for all clients to prefs if previous results are
   // not present or invalid.
-  std::unique_ptr<CachedResultWriter> cached_result_writer_;
+  const raw_ptr<CachedResultWriter> cached_result_writer_;
 
   // Platform options indicating whether to force refresh results or not.
   const PlatformOptions platform_options_;

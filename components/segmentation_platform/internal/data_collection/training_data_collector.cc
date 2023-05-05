@@ -16,7 +16,7 @@ std::unique_ptr<TrainingDataCollector> TrainingDataCollector::Create(
     HistogramSignalHandler* histogram_signal_handler,
     UserActionSignalHandler* user_action_signal_handler,
     StorageService* storage_service,
-    std::vector<std::unique_ptr<Config>>* configs,
+    const std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
     base::Clock* clock) {
   return std::make_unique<TrainingDataCollectorImpl>(

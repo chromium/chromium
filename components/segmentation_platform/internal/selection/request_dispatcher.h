@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "components/segmentation_platform/internal/selection/cached_result_provider.h"
+#include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/result.h"

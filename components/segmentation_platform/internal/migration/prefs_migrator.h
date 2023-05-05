@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
-#include "components/segmentation_platform/internal/selection/client_result_prefs.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/result.h"

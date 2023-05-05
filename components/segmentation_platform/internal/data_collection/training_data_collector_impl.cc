@@ -61,8 +61,9 @@ std::map<uint64_t, int> ParseUmaOutputs(
 }
 
 // Find the segmentation key from the configs that contains the segment ID.
-std::string GetSegmentationKey(std::vector<std::unique_ptr<Config>>* configs,
-                               SegmentId segment_id) {
+std::string GetSegmentationKey(
+    const std::vector<std::unique_ptr<Config>>* configs,
+    SegmentId segment_id) {
   if (!configs)
     return std::string();
 
@@ -103,7 +104,7 @@ TrainingDataCollectorImpl::TrainingDataCollectorImpl(
     HistogramSignalHandler* histogram_signal_handler,
     UserActionSignalHandler* user_action_signal_handler,
     StorageService* storage_service,
-    std::vector<std::unique_ptr<Config>>* configs,
+    const std::vector<std::unique_ptr<Config>>* configs,
     PrefService* profile_prefs,
     base::Clock* clock)
     : segment_info_database_(storage_service->segment_info_database()),

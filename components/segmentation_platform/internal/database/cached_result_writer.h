@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_CACHED_RESULT_WRITER_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_CACHED_RESULT_WRITER_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_WRITER_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_WRITER_H_
 
 #include <string>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/platform_options.h"
-#include "components/segmentation_platform/internal/selection/client_result_prefs.h"
 #include "components/segmentation_platform/public/result.h"
 namespace segmentation_platform {
 struct Config;
@@ -60,4 +60,4 @@ class CachedResultWriter {
 
 }  // namespace segmentation_platform
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_CACHED_RESULT_WRITER_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_CACHED_RESULT_WRITER_H_

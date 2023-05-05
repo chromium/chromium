@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/segmentation_platform/internal/selection/cached_result_writer.h"
+#include "components/segmentation_platform/internal/database/cached_result_writer.h"
 
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
