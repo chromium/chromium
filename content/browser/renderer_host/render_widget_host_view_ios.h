@@ -96,6 +96,7 @@ class CONTENT_EXPORT RenderWidgetHostViewIOS
   void RenderProcessGone() override;
   void ShowWithVisibility(PageVisibilityState page_visibility) override;
   gfx::Rect GetBoundsInRootWindow() override;
+  gfx::Size GetRequestedRendererSize() override;
   absl::optional<DisplayFeature> GetDisplayFeature() override;
   void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) override;
