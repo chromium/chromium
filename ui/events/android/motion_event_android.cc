@@ -542,6 +542,11 @@ float MotionEventAndroid::GetHistoricalY(size_t pointer_index,
       AttachCurrentThread(), event_, pointer_index, historical_index));
 }
 
+int MotionEventAndroid::GetSourceDeviceId(size_t pointer_index) const {
+  // Source device id is not supported.
+  return -1;
+}
+
 ui::MotionEvent::ToolType MotionEventAndroid::GetToolType(
     size_t pointer_index) const {
   DCHECK_LT(pointer_index, cached_pointer_count_);
