@@ -252,11 +252,7 @@ TEST_F(FileSearchProviderTest, ResultsNotReturnedAfterClearingSearch) {
 
 class FileSearchProviderTrashTest : public FileSearchProviderTest {
  public:
-  FileSearchProviderTrashTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(ash::features::kFilesTrash);
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  FileSearchProviderTrashTest() = default;
 
   FileSearchProviderTrashTest(const FileSearchProviderTrashTest&) = delete;
   FileSearchProviderTrashTest& operator=(const FileSearchProviderTrashTest&) =
@@ -279,9 +275,6 @@ class FileSearchProviderTrashTest : public FileSearchProviderTest {
     profile_->GetPrefs()->SetBoolean(ash::prefs::kFilesAppTrashEnabled,
                                      enabled);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(FileSearchProviderTrashTest, FilesInTrashAreIgnored) {

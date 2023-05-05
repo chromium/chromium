@@ -425,7 +425,7 @@ testcase.trashDeleteFromTrash = async () => {
  */
 testcase.trashDeleteFromTrashOriginallyFromDrive = async () => {
   const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.hello]);
 
   // Select hello.txt.
   await remoteCall.waitAndClickElement(

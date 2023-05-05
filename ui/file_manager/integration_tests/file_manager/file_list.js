@@ -367,14 +367,8 @@ testcase.fileListDeleteMultipleFiles = async () => {
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="hello.txt"]', {shift: true});
 
-  // Delete item and confirm delete.
-  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
-    await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
-  } else {
-    await remoteCall.waitAndClickElement(appId, '#delete-button');
-    await remoteCall.waitAndClickElement(
-        appId, '.files-confirm-dialog .cr-dialog-ok');
-  }
+  // Press move to trash button.
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(
@@ -393,16 +387,10 @@ testcase.fileListDeleteMultipleFiles = async () => {
   // Check: selected state of last item.
   chrome.test.assertTrue('selected' in item.attributes);
 
-  // Select and delete first item.
+  // Select and move the first item to trash.
   await remoteCall.waitAndClickElement(
       appId, '#file-list [file-name="photos"]');
-  if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
-    await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
-  } else {
-    await remoteCall.waitAndClickElement(appId, '#delete-button');
-    await remoteCall.waitAndClickElement(
-        appId, '.files-confirm-dialog .cr-dialog-ok');
-  }
+  await remoteCall.waitAndClickElement(appId, '#move-to-trash-button');
 
   // Wait for file deletion.
   await remoteCall.waitForElementLost(appId, '#file-list [file-name="photos"]');

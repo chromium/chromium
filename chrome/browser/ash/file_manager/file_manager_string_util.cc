@@ -1218,8 +1218,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->Set("ARC_VM_ENABLED", arc::IsArcVmEnabled());
   dict->Set("FILES_SEARCH_V2",
             base::FeatureList::IsEnabled(ash::features::kFilesSearchV2));
-  dict->Set("FILES_TRASH_ENABLED",
-            base::FeatureList::IsEnabled(ash::features::kFilesTrash));
   dict->Set("FILES_TRASH_DRIVE_ENABLED",
             base::FeatureList::IsEnabled(ash::features::kFilesTrashDrive));
   dict->Set(

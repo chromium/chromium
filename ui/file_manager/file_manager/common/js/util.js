@@ -1170,15 +1170,6 @@ util.isSinglePartitionFormatEnabled = () => {
 };
 
 /**
- * Returns true if FilesTrash feature flag is enabled.
- * @returns {boolean}
- */
-util.isTrashEnabled = () => {
-  return loadTimeData.valueExists('FILES_TRASH_ENABLED') &&
-      loadTimeData.getBoolean('FILES_TRASH_ENABLED');
-};
-
-/**
  * Returns true if InlineSyncStatus feature flag is enabled.
  * @returns {boolean}
  */

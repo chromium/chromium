@@ -153,13 +153,13 @@ struct TestCase {
     return *this;
   }
 
-  TestCase& EnableTrash() {
-    options.enable_trash = true;
+  TestCase& EnableDlp() {
+    options.enable_dlp_files_restriction = true;
     return *this;
   }
 
-  TestCase& EnableDlp() {
-    options.enable_dlp_files_restriction = true;
+  TestCase& EnableDriveTrash() {
+    options.enable_drive_trash = true;
     return *this;
   }
 
@@ -267,8 +267,8 @@ struct TestCase {
       full_name += "_SinglePartitionFormat";
     }
 
-    if (options.enable_trash) {
-      full_name += "_Trash";
+    if (options.enable_drive_trash) {
+      full_name += "_DriveTrash";
     }
 
     if (options.enable_mirrorsync) {
@@ -1215,41 +1215,34 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     KeyboardOperations, /* keyboard_operations.js */
     FilesAppBrowserTest,
-    ::testing::Values(
-        TestCase("keyboardDeleteDownloads").InGuestMode(),
-        TestCase("keyboardDeleteDownloads"),
-        TestCase("keyboardDeleteDownloads").EnableTrash(),
-        TestCase("keyboardDeleteDrive"),
-        TestCase("keyboardDeleteDrive").EnableTrash(),
-        TestCase("keyboardDeleteFolderDownloads").InGuestMode(),
-        TestCase("keyboardDeleteFolderDownloads"),
-        TestCase("keyboardDeleteFolderDownloads").EnableTrash(),
-        TestCase("keyboardDeleteFolderDrive"),
-        TestCase("keyboardCopyDownloads").InGuestMode(),
-        TestCase("keyboardCopyDownloads"),
-        TestCase("keyboardCopyDownloads").EnableTrash(),
-        TestCase("keyboardCopyDownloads").EnableConflictDialog(),
-        TestCase("keyboardCopyDrive"),
-        TestCase("keyboardCopyDrive").EnableConflictDialog(),
+    ::testing::Values(TestCase("keyboardDeleteDownloads").InGuestMode(),
+                      TestCase("keyboardDeleteDownloads"),
+                      TestCase("keyboardDeleteDrive"),
+                      TestCase("keyboardDeleteFolderDownloads").InGuestMode(),
+                      TestCase("keyboardDeleteFolderDownloads"),
+                      TestCase("keyboardDeleteFolderDrive"),
+                      TestCase("keyboardCopyDownloads").InGuestMode(),
+                      TestCase("keyboardCopyDownloads"),
+                      TestCase("keyboardCopyDownloads").EnableConflictDialog(),
+                      TestCase("keyboardCopyDrive"),
+                      TestCase("keyboardCopyDrive").EnableConflictDialog(),
 // TODO(crbug.com/1236842): Remove flakiness and enable this test.
 #if !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
-        TestCase("keyboardFocusOutlineVisible"),
-        TestCase("keyboardFocusOutlineVisible").EnableTrash(),
-        TestCase("keyboardFocusOutlineVisibleMouse"),
-        TestCase("keyboardFocusOutlineVisibleMouse").EnableTrash(),
+                      TestCase("keyboardFocusOutlineVisible"),
+                      TestCase("keyboardFocusOutlineVisibleMouse"),
 #endif
-        TestCase("keyboardSelectDriveDirectoryTree"),
-        TestCase("keyboardDisableCopyWhenDialogDisplayed"),
-        TestCase("keyboardOpenNewWindow"),
-        TestCase("keyboardOpenNewWindow").InGuestMode(),
-        TestCase("noPointerActiveOnTouch"),
-        TestCase("pointerActiveRemovedByTouch"),
-        TestCase("renameFileDownloads"),
-        TestCase("renameFileDownloads").InGuestMode(),
-        TestCase("renameFileDrive"),
-        TestCase("renameNewFolderDownloads"),
-        TestCase("renameNewFolderDownloads").InGuestMode(),
-        TestCase("renameRemovableWithKeyboardOnFileList")));
+                      TestCase("keyboardSelectDriveDirectoryTree"),
+                      TestCase("keyboardDisableCopyWhenDialogDisplayed"),
+                      TestCase("keyboardOpenNewWindow"),
+                      TestCase("keyboardOpenNewWindow").InGuestMode(),
+                      TestCase("noPointerActiveOnTouch"),
+                      TestCase("pointerActiveRemovedByTouch"),
+                      TestCase("renameFileDownloads"),
+                      TestCase("renameFileDownloads").InGuestMode(),
+                      TestCase("renameFileDrive"),
+                      TestCase("renameNewFolderDownloads"),
+                      TestCase("renameNewFolderDownloads").InGuestMode(),
+                      TestCase("renameRemovableWithKeyboardOnFileList")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ContextMenu, /* context_menu.js for file list */
@@ -1320,7 +1313,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarDeleteButtonKeepFocus"),
         TestCase("toolbarDeleteEntry"),
         TestCase("toolbarDeleteEntry").InGuestMode(),
-        TestCase("toolbarDeleteEntry").EnableTrash(),
         TestCase("toolbarMultiMenuFollowsButton"),
         TestCase("toolbarRefreshButtonHiddenInRecents"),
         TestCase("toolbarRefreshButtonHiddenForWatchableVolume"),
@@ -1398,9 +1390,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewLastModifiedMetaData")
             .EnableGenericDocumentsProvider(),
         TestCase("openQuickViewUsb"),
-        TestCase("openQuickViewRemovablePartitions").EnableTrash(),
+        TestCase("openQuickViewRemovablePartitions"),
         TestCase("openQuickViewTrash")
-            .EnableTrash()
             .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
         TestCase("openQuickViewMtp"),
         TestCase("openQuickViewTabIndexImage"),
@@ -1409,9 +1400,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewTabIndexAudio"),
         TestCase("openQuickViewTabIndexVideo"),
         TestCase("openQuickViewTabIndexDeleteDialog")
-            .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
-        TestCase("openQuickViewTabIndexDeleteDialog")
-            .EnableTrash()
             .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
         TestCase("openQuickViewToggleInfoButtonKeyboard"),
         TestCase("openQuickViewToggleInfoButtonClick"),
@@ -1423,23 +1411,11 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewFromDirectoryTree"),
         TestCase("openQuickViewAndDeleteSingleSelection")
             .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
-        TestCase("openQuickViewAndDeleteSingleSelection")
-            .EnableTrash()
-            .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
         TestCase("openQuickViewAndDeleteCheckSelection")
-            .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
-        TestCase("openQuickViewAndDeleteCheckSelection")
-            .EnableTrash()
             .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
         TestCase("openQuickViewDeleteEntireCheckSelection")
             .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
-        TestCase("openQuickViewDeleteEntireCheckSelection")
-            .EnableTrash()
-            .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
         TestCase("openQuickViewClickDeleteButton")
-            .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
-        TestCase("openQuickViewClickDeleteButton")
-            .EnableTrash()
             .FeatureIds({"screenplay-42720cab-fbc3-4ca2-bcc9-35d74c084bdc"}),
         TestCase("openQuickViewDeleteButtonNotShown"),
         TestCase("openQuickViewUmaViaContextMenu"),
@@ -1515,9 +1491,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuZipEject"),
         TestCase("dirContextMenuRecent"),
         TestCase("dirContextMenuMyFiles"),
-        TestCase("dirContextMenuMyFiles").EnableTrash(),
         TestCase("dirContextMenuMyFilesWithPaste"),
-        TestCase("dirContextMenuMyFilesWithPaste").EnableTrash(),
         TestCase("dirContextMenuCrostini"),
         TestCase("dirContextMenuPlayFiles"),
         TestCase("dirContextMenuUsbs"),
@@ -1533,7 +1507,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirContextMenuSharedWithMe"),
         TestCase("dirContextMenuOffline"),
         TestCase("dirContextMenuComputers"),
-        TestCase("dirContextMenuTrash").EnableTrash(),
+        TestCase("dirContextMenuTrash"),
         TestCase("dirContextMenuShortcut"),
         TestCase("dirContextMenuFocus"),
         TestCase("dirContextMenuKeyboardNavigation")));
@@ -1661,9 +1635,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("transferFromDownloadsToDownloads")
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
         TestCase("transferDeletedFile")
-            .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
-        TestCase("transferDeletedFile")
-            .EnableTrash()
             .FeatureIds({"screenplay-9e3628b5-86db-481f-8623-f13eac08d61a"}),
         // TODO(b/189173190): Enable
         // TestCase("transferInfoIsRemembered"),
@@ -2060,7 +2031,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileListMouseSelectionA11y")
             .FeatureIds({"screenplay-af443ca0-6d9f-4cb3-af8f-0939c37833db"}),
         TestCase("fileListDeleteMultipleFiles"),
-        TestCase("fileListDeleteMultipleFiles").EnableTrash(),
         TestCase("fileListRenameSelectedItem"),
         TestCase("fileListRenameFromSelectAll")));
 
@@ -2083,7 +2053,6 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("directoryTreeRefresh")
             .FeatureIds({"screenplay-02521fe6-a9c5-4cd1-ac9b-cc46df33c1a0"}),
         TestCase("showMyFiles"),
-        TestCase("showMyFiles").EnableTrash(),
         TestCase("myFilesDisplaysAndOpensEntries"),
         TestCase("myFilesDisplaysAndOpensEntries").FilesExperimental(),
         TestCase("myFilesFolderRename"),
@@ -2191,7 +2160,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchFromMyFiles").EnableSearchV2(),
         TestCase("selectionPath").EnableSearchV2(),
         TestCase("searchHierarchy").EnableSearchV2(),
-        TestCase("hideSearchInTrash").EnableTrash().EnableSearchV2(),
+        TestCase("hideSearchInTrash").EnableSearchV2(),
         TestCase("matchDriveFilesByName").EnableSearchV2()
         // TODO(b/189173190): Enable
         // TestCase("searchQueryLaunchParam")
@@ -2250,61 +2219,45 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("trashMoveToTrash")
-            .EnableTrash()
             .FeatureIds({"screenplay-a06f961a-17f5-4fbd-8285-49abb000dee1"}),
-        TestCase("trashPermanentlyDelete").EnableTrash(),
-        TestCase("trashRestoreFromToast").EnableTrash(),
-        TestCase("trashRestoreFromTrash").EnableTrash(),
-        TestCase("trashRestoreFromTrashShortcut").EnableTrash(),
+        TestCase("trashPermanentlyDelete"),
+        TestCase("trashRestoreFromToast"),
+        TestCase("trashRestoreFromTrash"),
+        TestCase("trashRestoreFromTrashShortcut"),
         TestCase("trashEmptyTrash")
-            .EnableTrash()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashEmptyTrashShortcut")
-            .EnableTrash()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashDeleteFromTrash")
-            .EnableTrash()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashDeleteFromTrashOriginallyFromMyFiles")
-            .EnableTrash()
             .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
         TestCase("trashDeleteFromTrashOriginallyFromDrive")
-            .EnableTrash()
-            .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"}),
-        TestCase("trashNoTasksInTrashRoot").EnableTrash(),
-        TestCase("trashDoubleClickOnFileInTrashRootShowsDialog").EnableTrash(),
-        TestCase("trashDragDropRootAcceptsEntries").EnableTrash(),
-        TestCase("trashDragDropFromDisallowedRootsFails").EnableTrash(),
-        TestCase("trashDragDropNonModifiableEntriesCantBeTrashed")
-            .EnableTrash(),
-        TestCase("trashDragDropRootPerformsTrashAction").EnableTrash(),
-        TestCase("trashTraversingFolderShowsDisallowedDialog").EnableTrash(),
-        TestCase("trashDontShowTrashRootOnSelectFileDialog").EnableTrash(),
-        TestCase("trashDontShowTrashRootWhenOpeningAsAndroidFilePicker")
-            .EnableTrash(),
-        TestCase("trashEnsureOldEntriesArePeriodicallyRemoved").EnableTrash(),
-        TestCase("trashDragDropOutOfTrashPerformsRestoration").EnableTrash(),
-        TestCase("trashRestorationDialogInProgressDoesntShowUndo")
-            .EnableTrash(),
-        TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot")
-            .EnableTrash(),
-        TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree")
-            .EnableTrash(),
-        TestCase("trashCantRestoreWhenParentDoesntExist").EnableTrash(),
+            .FeatureIds({"screenplay-38573550-c60a-4009-ba92-c0af1420fde6"})
+            .EnableDriveTrash(),
+        TestCase("trashNoTasksInTrashRoot"),
+        TestCase("trashDoubleClickOnFileInTrashRootShowsDialog"),
+        TestCase("trashDragDropRootAcceptsEntries"),
+        TestCase("trashDragDropFromDisallowedRootsFails"),
+        TestCase("trashDragDropNonModifiableEntriesCantBeTrashed"),
+        TestCase("trashDragDropRootPerformsTrashAction"),
+        TestCase("trashTraversingFolderShowsDisallowedDialog"),
+        TestCase("trashDontShowTrashRootOnSelectFileDialog"),
+        TestCase("trashDontShowTrashRootWhenOpeningAsAndroidFilePicker"),
+        TestCase("trashEnsureOldEntriesArePeriodicallyRemoved"),
+        TestCase("trashDragDropOutOfTrashPerformsRestoration"),
+        TestCase("trashRestorationDialogInProgressDoesntShowUndo"),
+        TestCase("trashTogglingTrashEnabledNavigatesAwayFromTrashRoot"),
+        TestCase("trashTogglingTrashEnabledPrefUpdatesDirectoryTree"),
+        TestCase("trashCantRestoreWhenParentDoesntExist"),
         TestCase(
-            "trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton")
-            .EnableTrash(),
-        TestCase("trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot")
-            .EnableTrash(),
-        TestCase("trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot")
-            .EnableTrash(),
-        TestCase("trashExtractAllForZipHiddenAndDisabledInTrashRoot")
-            .EnableTrash(),
-        TestCase("trashAllActionsDisabledForBlankSpaceInTrashRoot")
-            .EnableTrash(),
-        TestCase("trashNudgeShownOnFirstTrashOperation").EnableTrash(),
-        TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")
-            .EnableTrash()));
+            "trashPressingEnterOnFileInTrashRootShowsDialogWithRestoreButton"),
+        TestCase("trashInfeasibleActionsForFileDisabledAndHiddenInTrashRoot"),
+        TestCase("trashInfeasibleActionsForFolderDisabledAndHiddenInTrashRoot"),
+        TestCase("trashExtractAllForZipHiddenAndDisabledInTrashRoot"),
+        TestCase("trashAllActionsDisabledForBlankSpaceInTrashRoot"),
+        TestCase("trashNudgeShownOnFirstTrashOperation"),
+        TestCase("trashStaleTrashInfoFilesAreRemovedAfterOneHour")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     AndroidPhotos, /* android_photos.js */

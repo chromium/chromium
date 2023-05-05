@@ -92,8 +92,11 @@ async function navigateToRecent(appId, type = RecentFilterType.ALL) {
  *
  * @param {string} appId Files app windowId.
  * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ * @param {boolean=} trashButton If the file system doesn't support trash,
+ *     a delete button will show instead of a trash button.
  */
-async function verifyCurrentEntries(appId, expectedEntries) {
+async function verifyCurrentEntries(
+    appId, expectedEntries, trashButton = false) {
   // Verify Recents contains the expected files - those with an mtime in the
   // future.
   const files = TestEntryInfo.getExpectedRows(expectedEntries);
@@ -107,9 +110,11 @@ async function verifyCurrentEntries(appId, expectedEntries) {
   await remoteCall.waitForElement(appId, '#file-list li[selected]');
 
   // Test that the delete button's visibility based on v2 flag.
-  const deleteButton = await remoteCall.waitForElement(appId, '#delete-button');
+  const buttonSelector =
+      (trashButton) ? '#move-to-trash-button' : '#delete-button';
+  const deleteButton = await remoteCall.waitForElement(appId, buttonSelector);
   chrome.test.assertFalse(
-      deleteButton.hidden, 'delete button should be visible');
+      deleteButton.hidden, `${buttonSelector} element should be visible`);
 }
 
 /**
@@ -119,12 +124,14 @@ async function verifyCurrentEntries(appId, expectedEntries) {
  * @param {string} appId Files app windowId.
  * @param {!Array<!TestEntryInfo>=} expectedEntries Expected file
  *     entries, by default `RECENT_ENTRY_SET` is used.
+ * @param {boolean=} trashButton If the file system doesn't support trash,
+ *     a delete button will show instead of a trash button.
  */
-async function verifyRecents(appId, expectedEntries = RECENT_ENTRY_SET) {
+async function verifyRecents(
+    appId, expectedEntries = RECENT_ENTRY_SET, trashButton = false) {
   await navigateToRecent(appId);
-  await verifyCurrentEntries(appId, expectedEntries);
+  await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
-
 
 /**
  * Opens the Recent Audio folder and checks the expected entries are
@@ -132,10 +139,12 @@ async function verifyRecents(appId, expectedEntries = RECENT_ENTRY_SET) {
  *
  * @param {string} appId Files app windowId.
  * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ * @param {boolean=} trashButton If the file system doesn't support trash,
+ *     a delete button will show instead of a trash button.
  */
-async function verifyRecentAudio(appId, expectedEntries) {
+async function verifyRecentAudio(appId, expectedEntries, trashButton = false) {
   await navigateToRecent(appId, RecentFilterType.AUDIO);
-  await verifyCurrentEntries(appId, expectedEntries);
+  await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
@@ -144,10 +153,12 @@ async function verifyRecentAudio(appId, expectedEntries) {
  *
  * @param {string} appId Files app windowId.
  * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ * @param {boolean=} trashButton If the file system doesn't support trash,
+ *     a delete button will show instead of a trash button.
  */
-async function verifyRecentImages(appId, expectedEntries) {
+async function verifyRecentImages(appId, expectedEntries, trashButton = false) {
   await navigateToRecent(appId, RecentFilterType.IMAGE);
-  await verifyCurrentEntries(appId, expectedEntries);
+  await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
@@ -156,10 +167,12 @@ async function verifyRecentImages(appId, expectedEntries) {
  *
  * @param {string} appId Files app windowId.
  * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ * @param {boolean=} trashButton If the file system doesn't support trash,
+ *     a delete button will show instead of a trash button.
  */
-async function verifyRecentVideos(appId, expectedEntries) {
+async function verifyRecentVideos(appId, expectedEntries, trashButton = false) {
   await navigateToRecent(appId, RecentFilterType.VIDEO);
-  await verifyCurrentEntries(appId, expectedEntries);
+  await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
@@ -168,10 +181,13 @@ async function verifyRecentVideos(appId, expectedEntries) {
  *
  * @param {string} appId Files app windowId.
  * @param {!Array<!TestEntryInfo>} expectedEntries Expected file entries.
+ * @param {boolean=} trashButton If the file system doesn't support trash,
+ *     a delete button will show instead of a trash button.
  */
-async function verifyRecentDocuments(appId, expectedEntries) {
+async function verifyRecentDocuments(
+    appId, expectedEntries, trashButton = false) {
   await navigateToRecent(appId, RecentFilterType.DOCUMENT);
-  await verifyCurrentEntries(appId, expectedEntries);
+  await verifyCurrentEntries(appId, expectedEntries, trashButton);
 }
 
 /**
@@ -221,12 +237,17 @@ async function goToFileLocation(appId, fileName) {
  *
  * @param {string} appId Files app windowId.
  * @param {string} fileName Name of the file to delete.
+ * @param {boolean=} confirmDeletion If the file system doesn't support trash,
+ *     need to confirm the deletion.
  */
-async function deleteFile(appId, fileName) {
-  await rightClickContextMenu(appId, fileName, 'delete');
-  // Click "Delete" on the Delete confirm dialog.
-  await remoteCall.waitAndClickElement(
-      appId, '.files-confirm-dialog button.cr-dialog-ok');
+async function deleteFile(appId, fileName, confirmDeletion = false) {
+  const command = (confirmDeletion) ? 'delete' : 'move-to-trash';
+  await rightClickContextMenu(appId, fileName, command);
+  if (confirmDeletion) {
+    // Click "Delete" on the Delete confirm dialog.
+    await remoteCall.waitAndClickElement(
+        appId, '.files-confirm-dialog button.cr-dialog-ok');
+  }
 }
 
 /**
@@ -327,7 +348,8 @@ testcase.recentsDownloads = async () => {
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Verifies file list in Recents.
-  await verifyRecents(appId);
+  await verifyRecents(
+      appId, /*expectedEntries=*/ undefined, /*trashButton=*/ true);
 
   // Tests that selecting "Go to file location" for a file navigates to
   // Downloads since the file in Recents is from Downloads.
@@ -387,7 +409,7 @@ testcase.recentsCrostiniNotMounted = async () => {
 
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.photos], []);
-  await verifyRecents(appId, [ENTRIES.beautiful]);
+  await verifyRecents(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
 };
 
 /**
@@ -456,7 +478,8 @@ testcase.recentsNested = async () => {
       NESTED_ENTRY_SET.concat([ENTRIES.deeplyBurriedSmallJpeg]), []);
 
   // Verifies file list in Recents.
-  await verifyRecents(appId, [ENTRIES.deeplyBurriedSmallJpeg]);
+  await verifyRecents(
+      appId, [ENTRIES.deeplyBurriedSmallJpeg], /*trashButton=*/ true);
 
   // Tests that selecting "Go to file location" for a file navigates to
   // Downloads/A/B/C since the file in Recents is from Downloads/A/B/C.
@@ -481,7 +504,7 @@ testcase.recentAudioDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.beautiful is recently-modified and has .ogg file extension.
-  await verifyRecentAudio(appId, [ENTRIES.beautiful]);
+  await verifyRecentAudio(appId, [ENTRIES.beautiful], /*trashButton=*/ true);
 };
 
 /**
@@ -532,7 +555,7 @@ testcase.recentImagesDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
   // ENTRIES.desktop is recently-modified and has .png file extension.
-  await verifyRecentImages(appId, [ENTRIES.desktop]);
+  await verifyRecentImages(appId, [ENTRIES.desktop], /*trashButton=*/ true);
 };
 
 /**
@@ -581,7 +604,8 @@ testcase.recentVideosDownloads = async () => {
           [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO]),
       []);
   await verifyRecentVideos(
-      appId, [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO]);
+      appId, [RECENTLY_MODIFIED_VIDEO, RECENTLY_MODIFIED_MOV_VIDEO],
+      /*trashButton=*/ true);
 };
 
 /**
@@ -635,7 +659,8 @@ testcase.recentVideosDownloadsAndDriveAndPlayFiles = async () => {
 testcase.recentDocumentsDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [RECENTLY_MODIFIED_DOCUMENT], []);
-  await verifyRecentDocuments(appId, [RECENTLY_MODIFIED_DOCUMENT]);
+  await verifyRecentDocuments(
+      appId, [RECENTLY_MODIFIED_DOCUMENT], /*trashButton=*/ true);
 };
 
 /**
@@ -687,7 +712,7 @@ testcase.recentsFilterResetToAll = async () => {
   const focusedElement =
       await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
   chrome.test.assertEq('all', focusedElement.attributes['file-type-filter']);
-  await verifyCurrentEntries(appId, RECENT_ENTRY_SET);
+  await verifyCurrentEntries(appId, RECENT_ENTRY_SET, /*trashButton=*/ true);
 };
 
 /**
@@ -767,7 +792,7 @@ testcase.recentsAllowDeletion = async () => {
   await remoteCall.waitForFiles(appId, files1);
 
   // Delete a file originated from Drive.
-  await deleteFile(appId, ENTRIES.desktop.nameText);
+  await deleteFile(appId, ENTRIES.desktop.nameText, /*confirmDeletion=*/ true);
   const files2 = TestEntryInfo.getExpectedRows([
     RECENT_MODIFIED_ANDROID_DOCUMENT,
     RECENT_MODIFIED_ANDROID_IMAGE,
@@ -776,7 +801,8 @@ testcase.recentsAllowDeletion = async () => {
   await remoteCall.waitForFiles(appId, files2);
 
   // Delete a file originated from Play Files.
-  await deleteFile(appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText);
+  await deleteFile(
+      appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText, /*confirmDeletion=*/ true);
   const files3 = TestEntryInfo.getExpectedRows(
       [RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_VIDEO]);
   await remoteCall.waitForFiles(appId, files3);

@@ -562,13 +562,8 @@ testcase.fileDisplayWithoutVolumesThenMountDownloads = async () => {
 
   // Downloads should appear in My files in the directory tree.
   await remoteCall.waitForElement(appId, '[volume-type-icon="downloads"]');
-  const downloadsRow = ['Downloads', '--', 'Folder'];
-  const crostiniRow = ['Linux files', '--', 'Folder'];
-  const trashRow = ['Trash', '--', 'Folder'];
-  const expectedRows = [downloadsRow, crostiniRow, trashRow];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
+  const expectedRows =
+      [['Downloads', '--', 'Folder'], ['Linux files', '--', 'Folder']];
   await remoteCall.waitForFiles(
       appId, expectedRows,
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
@@ -796,11 +791,7 @@ testcase.fileDisplayUnmountDriveWithSharedWithMeSelected = async () => {
     ['Play files', '--', 'Folder'],
     ['Downloads', '--', 'Folder'],
     ['Linux files', '--', 'Folder'],
-    ['Trash', '--', 'Folder'],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
   await remoteCall.waitForFiles(
       appId, expectedRows, {ignoreLastModifiedTime: true});
 };
@@ -861,11 +852,7 @@ async function unmountRemovableVolume(removableDirectory) {
     ['Play files', '--', 'Folder'],
     ['Downloads', '--', 'Folder'],
     ['Linux files', '--', 'Folder'],
-    ['Trash', '--', 'Folder'],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    expectedRows.pop();
-  }
   await remoteCall.waitForFiles(
       appId, expectedRows, {ignoreLastModifiedTime: true});
 }

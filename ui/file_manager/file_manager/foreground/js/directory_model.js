@@ -1537,8 +1537,7 @@ export class DirectoryModel extends EventTarget {
         return new ContentScanner();
       };
     }
-    if (util.isTrashEnabled() &&
-        entry.rootType == VolumeManagerCommon.RootType.TRASH) {
+    if (entry.rootType == VolumeManagerCommon.RootType.TRASH) {
       return () => {
         return new TrashContentScanner(this.volumeManager_);
       };

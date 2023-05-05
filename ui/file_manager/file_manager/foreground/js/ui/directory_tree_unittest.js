@@ -71,7 +71,6 @@ let mockChrome;
 // Set up test components.
 export function setUp() {
   loadTimeData.overrideValues({
-    FILES_TRASH_ENABLED: false,
     UNIFIED_MEDIA_VIEW_ENABLED: false,
     GUEST_OS: false,
   });

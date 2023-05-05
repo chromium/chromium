@@ -936,7 +936,6 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     ['#paste-into-folder', true],
     ['#share-with-linux', true],
     ['#move-to-trash', false],
-    ['#delete', false],
     ['#new-folder', true],
   ];
   const photosTwoMenus = [
@@ -946,16 +945,8 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     ['#share-with-linux', true],
     ['#rename', true],
     ['#move-to-trash', true],
-    ['#delete', true],
     ['#new-folder', true],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    downloadsMenus.splice(4, 1);
-    photosTwoMenus.splice(5, 1);
-  } else {
-    downloadsMenus.splice(5, 1);
-    photosTwoMenus.splice(6, 1);
-  }
 
   const photosTwo = new TestEntryInfo({
     type: EntryType.DIRECTORY,
@@ -998,14 +989,9 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
       ['#share-with-linux', true],
       ['#rename', true],
       ['#move-to-trash', true],
-      ['#delete', true],
       ['#new-folder', true],
     ];
-    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-      photosMenus.splice(5, 1);
-    } else {
-      photosMenus.splice(6, 1);
-    }
+
     // Check the context menu is on desired state for MyFiles.
     await checkContextMenu(
         appId, '/My files', myFilesMenus, false /* rootMenu */);
@@ -1043,14 +1029,8 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
       ['#share-with-linux', true],
       ['#rename', true],
       ['#move-to-trash', true],
-      ['#delete', true],
       ['#new-folder', true],
     ];
-    if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-      photosMenus.splice(5, 1);
-    } else {
-      photosMenus.splice(6, 1);
-    }
 
     // Check the context menu is on desired state for MyFiles.
     await checkContextMenu(
@@ -1085,7 +1065,6 @@ testcase.dirContextMenuMyFiles = async () => {
     ['#paste-into-folder', false],
     ['#share-with-linux', true],
     ['#move-to-trash', false],
-    ['#delete', false],
     ['#new-folder', true],
   ];
   const photosMenus = [
@@ -1095,16 +1074,8 @@ testcase.dirContextMenuMyFiles = async () => {
     ['#share-with-linux', true],
     ['#rename', true],
     ['#move-to-trash', true],
-    ['#delete', true],
     ['#new-folder', true],
   ];
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    downloadsMenus.splice(4, 1);
-    photosMenus.splice(5, 1);
-  } else {
-    downloadsMenus.splice(5, 1);
-    photosMenus.splice(6, 1);
-  }
 
   // Open Files app on local Downloads.
   const appId = await setupAndWaitUntilReady(

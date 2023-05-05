@@ -1550,8 +1550,7 @@ FileManagerPrivateInternalStartIOTaskFunction::Run() {
   // Check if Trash is enabled, this pref is mainly used by enterprise policy to
   // disable trash on a per profile basis.
   bool is_trash_enabled = false;
-  if (base::FeatureList::IsEnabled(ash::features::kFilesTrash) && profile &&
-      profile->GetPrefs()) {
+  if (profile && profile->GetPrefs()) {
     is_trash_enabled =
         profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
   }

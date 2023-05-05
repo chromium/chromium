@@ -2035,11 +2035,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
     enabled_features.push_back(ash::features::kFilesSinglePartitionFormat);
   }
 
-  if (options.enable_trash) {
-    enabled_features.push_back(ash::features::kFilesTrash);
+  if (options.enable_drive_trash) {
     enabled_features.push_back(ash::features::kFilesTrashDrive);
   } else {
-    disabled_features.push_back(ash::features::kFilesTrash);
     disabled_features.push_back(ash::features::kFilesTrashDrive);
   }
 
@@ -3263,11 +3261,6 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isSmbEnabled") {
     *output = options.native_smb ? "true" : "false";
-    return;
-  }
-
-  if (name == "isTrashEnabled") {
-    *output = options.enable_trash ? "true" : "false";
     return;
   }
 

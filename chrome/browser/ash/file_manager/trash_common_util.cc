@@ -44,8 +44,7 @@ bool IsTrashEnabledForProfile(Profile* profile) {
   if (!profile || !profile->GetPrefs()) {
     return false;
   }
-  return base::FeatureList::IsEnabled(ash::features::kFilesTrash) &&
-         profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
+  return profile->GetPrefs()->GetBoolean(ash::prefs::kFilesAppTrashEnabled);
 }
 
 const base::FilePath GenerateTrashPath(const base::FilePath& trash_path,

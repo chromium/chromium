@@ -325,14 +325,6 @@ const TRANSFER_LOCATIONS = {
         sizeText: '--',
         typeText: 'Folder',
       }),
-      new TestEntryInfo({
-        type: EntryType.DIRECTORY,
-        targetPath: 'Trash',
-        nameText: 'Trash',
-        lastModifiedTime: '...',
-        sizeText: '--',
-        typeText: 'Folder',
-      }),
     ],
   }),
 };
@@ -364,10 +356,6 @@ testcase.transferOfficeFileFromDriveToDownloads = () => {
  * Tests moving files from MyFiles/Downloads to MyFiles crbug.com/925175.
  */
 testcase.transferFromDownloadsToMyFilesMove = async () => {
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    TRANSFER_LOCATIONS.my_files.initialEntries.pop();
-  }
-
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -380,10 +368,6 @@ testcase.transferFromDownloadsToMyFilesMove = async () => {
  * Tests copying files from MyFiles/Downloads to MyFiles crbug.com/925175.
  */
 testcase.transferFromDownloadsToMyFiles = async () => {
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    TRANSFER_LOCATIONS.my_files.initialEntries.pop();
-  }
-
   return transferBetweenVolumes(new TransferInfo({
     fileToTransfer: ENTRIES.hello,
     source: TRANSFER_LOCATIONS.downloads,
@@ -1051,11 +1035,6 @@ testcase.transferDeletedFile = async () => {
   // Delete the file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'deleteFile', appId, [entry.nameText]));
-
-  // Confirm deletion.
-  if (await sendTestMessage({name: 'isTrashEnabled'}) !== 'true') {
-    await waitAndAcceptDialog(appId);
-  }
 
   // Wait for completion of file deletion.
   await remoteCall.waitForElementLost(

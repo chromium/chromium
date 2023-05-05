@@ -133,6 +133,9 @@ class FileManagerBrowserTestBase
     // Whether test should enable trash.
     bool enable_trash = false;
 
+    // Whether test should enable Drive trash.
+    bool enable_drive_trash = false;
+
     // Whether test should run Files app UI as JS modules.
     bool enable_js_modules = true;
 

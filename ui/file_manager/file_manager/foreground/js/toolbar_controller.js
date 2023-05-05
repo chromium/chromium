@@ -386,7 +386,7 @@ export class ToolbarController {
     // Trash should be shown.
     this.moveToTrashButton_.hidden = true;
     this.moveToTrashCommand.disabled = true;
-    if (!this.deleteButton_.hidden && util.isTrashEnabled()) {
+    if (!this.deleteButton_.hidden) {
       this.moveToTrashCommand.canExecuteChange(this.listContainer_.currentList);
     }
 

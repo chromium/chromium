@@ -1551,7 +1551,7 @@ export class FileTransferController {
    * @private
    */
   canTrashSelection_(destinationEntry, clipboardData) {
-    if (!util.isTrashEnabled() || !destinationEntry) {
+    if (!destinationEntry) {
       return false;
     }
     if (destinationEntry.rootType !== VolumeManagerCommon.RootType.TRASH) {

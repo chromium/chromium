@@ -154,11 +154,7 @@ TEST_F(LocalFileSuggestionProviderTest, OldFilesNotReturned) {
 class LocalFileSuggestionProviderTrashTest
     : public LocalFileSuggestionProviderTest {
  public:
-  LocalFileSuggestionProviderTrashTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    enabled_features.push_back(ash::features::kFilesTrash);
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  LocalFileSuggestionProviderTrashTest() = default;
 
   LocalFileSuggestionProviderTrashTest(
       const LocalFileSuggestionProviderTrashTest&) = delete;
@@ -191,7 +187,6 @@ class LocalFileSuggestionProviderTrashTest
 
  private:
   base::FilePath trash_folder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(LocalFileSuggestionProviderTrashTest,
