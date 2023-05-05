@@ -11,12 +11,15 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/search/search.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
@@ -252,14 +255,54 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
 
   // kIPHDesktopCustomizeChromeFeature:
-  registry.RegisterFeature(
-      std::move(FeaturePromoSpecification::CreateForTutorialPromo(
-                    feature_engagement::kIPHDesktopCustomizeChromeFeature,
-                    kTopContainerElementId,
-                    IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
-                    kSidePanelCustomizeChromeTutorialId)
-                    .SetBubbleArrow(HelpBubbleArrow::kNone)
-                    .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)));
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHDesktopCustomizeChromeFeature,
+          kTopContainerElementId,
+          IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
+          IDS_PROMO_SHOW_TUTORIAL_BUTTON,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                if (!search::DefaultSearchProviderIsGoogle(
+                        browser->profile())) {
+                  return;
+                }
+                auto* service = UserEducationServiceFactory::GetForProfile(
+                    browser->profile());
+                user_education::TutorialService* tutorial_service =
+                    service ? &service->tutorial_service() : nullptr;
+                if (!tutorial_service) {
+                  return;
+                }
+                TabStripModel* tab_strip_model = browser->tab_strip_model();
+                if (tab_strip_model) {
+                  content::WebContents* web_contents =
+                      tab_strip_model->GetActiveWebContents();
+                  if (web_contents &&
+                      web_contents->GetURL() != browser->GetNewTabURL()) {
+                    NavigateParams params(browser->profile(),
+                                          GURL(chrome::kChromeUINewTabPageURL),
+                                          ui::PAGE_TRANSITION_LINK);
+                    params.disposition =
+                        WindowOpenDisposition::NEW_FOREGROUND_TAB;
+                    Navigate(&params);
+                  }
+                }
+                user_education::TutorialIdentifier tutorial_id =
+                    kSidePanelCustomizeChromeTutorialId;
+
+                tutorial_service->StartTutorial(tutorial_id, ctx);
+                tutorial_service->LogIPHLinkClicked(tutorial_id, true);
+              }))
+          .SetBubbleArrow(HelpBubbleArrow::kNone)
+          .SetBubbleIcon(&vector_icons::kLightbulbOutlineIcon)
+          .SetCustomActionIsDefault(true)
+          .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)));
 
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
