@@ -44,7 +44,9 @@ const char kInspectorNoSuchFrameError[] =
     "Frame with the given id was not found.";
 const char kNoTargetWithGivenIdError[] = "No target with given id found";
 const char kUniqueContextIdNotFoundError[] = "uniqueContextId not found";
-const char kNoNodeForBackendNodeId[] = "No node found for given backend id";
+const char kNoNodeForBackendNodeIdError[] =
+    "No node found for given backend id";
+const char kNoNodeWithGivenIdFoundError[] = "No node with given id found";
 
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
@@ -1394,7 +1396,8 @@ Status ParseInspectorError(const std::string& error_json) {
       // Runtime.evaluate and Runtime.callFunctionOn if the provided
       // context does no longer exist.
       return Status(kNoSuchExecutionContext, error_message);
-    } else if (error_message == kNoNodeForBackendNodeId) {
+    } else if (error_message == kNoNodeForBackendNodeIdError ||
+               error_message == kNoNodeWithGivenIdFoundError) {
       // The error message that arises during DOM.resolveNode code.
       // This means that the node with given BackendNodeId is not found.
       return Status{kNoSuchElement, error_message};

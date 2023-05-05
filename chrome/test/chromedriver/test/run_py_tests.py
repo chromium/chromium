@@ -853,7 +853,7 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     result = self._driver.ExecuteScript(script)
     self.assertEqual(result['toJSON'], 'text')
 
-  def testExecuteScriptStaleElement(self):
+  def testExecuteScriptStaleElement1(self):
     # Test the standard compliance of error handling
     div = self._driver.ExecuteScript(
         'document.body.innerHTML = "<div>old</div>";'
@@ -862,6 +862,32 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     with self.assertRaises(chromedriver.StaleElementReference):
       self._driver.ExecuteScript("return arguments[0];", div)
     with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript("return true;", div)
+
+  def testExecuteScriptStaleElement2(self):
+    # Test the standard compliance of error handling
+    div1 = self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'return document.getElementsByTagName("div")[0];')
+    self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>new</div>";')
+    with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript("return arguments[0];", div1)
+    with self.assertRaises(chromedriver.StaleElementReference):
+      self._driver.ExecuteScript("return true;", div1)
+
+  def testExecuteScriptNoSuchBackendNodeId(self):
+    # Test the standard compliance of error handling
+    div = self._driver.ExecuteScript(
+        'document.body.innerHTML = "<div>old</div>";'
+        'return document.getElementsByTagName("div")[0];')
+    components = div._id.split('_')
+    self.assertEqual(3, len(components))
+    components[2] = "1000000001" # very large backend_id
+    div._id = '_'.join(components)
+    with self.assertRaises(chromedriver.NoSuchElement):
+      self._driver.ExecuteScript("return arguments[0];", div)
+    with self.assertRaises(chromedriver.NoSuchElement):
       self._driver.ExecuteScript("return true;", div)
 
   def testExecuteScriptDetachedShadowRoot(self):

@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
@@ -35,6 +36,7 @@ namespace {
 const char kElementKey[] = "ELEMENT";
 const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
 const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
+const int kNonExistingBackendNodeId = 1000'000'001;
 
 using testing::Eq;
 using testing::Pointee;
@@ -164,10 +166,13 @@ class FakeDevToolsClient : public StubDevToolsClient {
     } else if (method == "DOM.resolveNode") {
       absl::optional<int> maybe_backend_node_id =
           params.FindInt("backendNodeId");
-      if (!maybe_backend_node_id) {
+      if (!maybe_backend_node_id.has_value()) {
         return Status{
             kUnknownError,
             "backend node id is missing in DOM.resolveNode parameters"};
+      }
+      if (maybe_backend_node_id.value() == kNonExistingBackendNodeId) {
+        return Status{kNoSuchElement, "element with such id not found"};
       }
       result->SetByDottedPath("object.objectId",
                               base::NumberToString(*maybe_backend_node_id));
@@ -876,6 +881,19 @@ TEST_P(CallUserSyncScriptArgs, NoSuchLoader) {
                                  : kStaleElementReference;
   EXPECT_EQ(expected_error,
             view->CallUserSyncScript("root", "some_code", std::move(args),
+                                     base::TimeDelta::Max(), &result)
+                .code());
+}
+
+TEST_P(CallUserSyncScriptArgs, NoSuchBackendNodeId) {
+  base::Value::List args;
+  base::Value::Dict ref;
+  ref.Set(ElementKey(), base::StringPrintf("good_loader_element_%d",
+                                           kNonExistingBackendNodeId));
+  args.Append(std::move(ref));
+  std::unique_ptr<base::Value> result;
+  EXPECT_EQ(kNoSuchElement,
+            view->CallUserSyncScript("good", "some_code", std::move(args),
                                      base::TimeDelta::Max(), &result)
                 .code());
 }
