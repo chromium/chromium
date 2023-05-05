@@ -389,7 +389,12 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
  ['MultideviceFeatureToggle', 'multidevice_feature_toggle_tests.js'],
+
  ['MultidevicePage', 'multidevice_page/multidevice_page_tests.js'],
+ [
+   'MultidevicePageMultideviceFeatureItem',
+   'multidevice_page/multidevice_feature_item_test.js'
+ ],
  [
    'MultidevicePageMultideviceNotificationAccessSetupDialog',
    'multidevice_page/multidevice_notification_access_setup_dialog_tests.js',

@@ -115,6 +115,8 @@ export {SettingsGuestOsSharedUsbDevicesElement} from './guest_os/guest_os_shared
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsMultideviceCombinedSetupItemElement} from './multidevice_page/multidevice_combined_setup_item.js';
+export {SettingsMultideviceFeatureItemElement} from './multidevice_page/multidevice_feature_item.js';
+export {SettingsMultideviceFeatureToggleElement} from './multidevice_page/multidevice_feature_toggle.js';
 export {SettingsMultideviceSmartlockItemElement} from './multidevice_page/multidevice_smartlock_item.js';
 export {SettingsMultideviceTaskContinuationDisabledLinkElement} from './multidevice_page/multidevice_task_continuation_disabled_link.js';
 export {SettingsMultideviceTaskContinuationItemElement} from './multidevice_page/multidevice_task_continuation_item.js';
