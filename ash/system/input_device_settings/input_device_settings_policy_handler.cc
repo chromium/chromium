@@ -51,7 +51,6 @@ InputDeviceSettingsPolicyHandler::~InputDeviceSettingsPolicyHandler() = default;
 
 void InputDeviceSettingsPolicyHandler::Initialize(PrefService* local_state,
                                                   PrefService* pref_service) {
-  CHECK(local_state);
   if (pref_service) {
     initialized_with_local_state_prefs_ = false;
     pref_change_registrar_.Init(pref_service);
@@ -66,6 +65,7 @@ void InputDeviceSettingsPolicyHandler::Initialize(PrefService* local_state,
             &InputDeviceSettingsPolicyHandler::OnKeyboardPoliciesChanged,
             base::Unretained(this)));
   } else {
+    CHECK(local_state);
     initialized_with_local_state_prefs_ = true;
     pref_change_registrar_.Init(local_state);
     pref_change_registrar_.Add(
