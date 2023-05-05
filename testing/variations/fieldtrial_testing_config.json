@@ -4322,6 +4322,27 @@
             ]
         }
     ],
+    "DisableCanvasOverdrawOptimization": [
+        {
+            "platforms": [
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows",
+                "chromeos",
+                "chromeos_lacros",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DisableCanvasOverdrawOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "DisableGles2ForOopR": [
         {
             "platforms": [
