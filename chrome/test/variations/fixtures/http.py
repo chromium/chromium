@@ -8,13 +8,15 @@ import logging
 import os
 import threading
 
+import pytest
+
+from chrome.test.variations.test_utils import SRC_DIR
 from http.server import SimpleHTTPRequestHandler
-from .defines import SRC_DIR
 
 HTTP_DATA_BASEDIR = os.path.join(
     SRC_DIR, 'chrome', 'test', 'data', 'variations', 'http_server')
 
-def start_http_server(
+def _start_http_server(
     port: int = 0,
     directory: str = HTTP_DATA_BASEDIR
     ) -> http.server.HTTPServer:
@@ -25,3 +27,10 @@ def start_http_server(
                http_server.server_name, http_server.server_port)
   threading.Thread(target=http_server.serve_forever).start()
   return http_server
+
+@pytest.fixture
+def local_http_server():
+  """Starts and returns a http server."""
+  http_server = _start_http_server()
+  yield http_server
+  http_server.shutdown()

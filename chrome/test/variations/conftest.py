@@ -17,8 +17,9 @@ from selenium.webdriver.chrome.service import Service
 from typing import Optional
 
 pytest_plugins = [
-  'chrome.test.variations.fixtures.skia_gold',
+  'chrome.test.variations.fixtures.http',
   'chrome.test.variations.fixtures.seed_locator',
+  'chrome.test.variations.fixtures.skia_gold',
 ]
 
 def pytest_addoption(parser):
@@ -36,16 +37,14 @@ def pytest_addoption(parser):
                    choices=['dev', 'canary', 'beta', 'stable', 'extended'],
                    help='The channel of Chrome to download.')
 
+  # parser.addoption('--dcheck',
+  #                  action='store_true',
+  #                  help='Whether to download DCHECK build. '
+  #                  'Note this is only available in dev or canary.')
+
   parser.addoption('--chromedriver',
                    help='The path to the existing chromedriver. '
                    'This will ignore --channel and skip downloading.')
-
-@pytest.fixture
-def local_http_server():
-  """Starts and returns a http server."""
-  http_server = test_utils.start_http_server()
-  yield http_server
-  http_server.shutdown()
 
 # pylint: disable=redefined-outer-name
 @pytest.fixture(scope="session")
@@ -59,6 +58,7 @@ def chromedriver_path(pytestconfig) -> str:
 
   platform = pytestconfig.getoption('target_platform')
   channel = pytestconfig.getoption('channel')
+  # dcheck = pytestconfig.getoption('dcheck')
 
   # https://developer.chrome.com/docs/versionhistory/reference/#platform-identifiers
   downloaded_dir = None
@@ -90,13 +90,15 @@ def driver_factory(pytestconfig,
     os.environ['BREAKPAD_DUMP_LOCATION'] = str(crash_dump_dir)
 
     chrome_options = chrome_options or ChromeOptions()
+    chrome_options.add_argument('disable-field-trial-config')
+
     if seed_file:
       assert os.path.exists(seed_file)
       chrome_options.add_argument(f'variations-test-seed-path={seed_file}')
       chrome_options.add_argument(
         f'fake-variations-channel={pytestconfig.getoption("channel")}')
     chrome_options.add_experimental_option('excludeSwitches',
-                                          ['disable-background-networking'])
+                                           ['disable-background-networking'])
     driver = None
     try:
       logging.info('Launching Chrome w/ caps: %s',

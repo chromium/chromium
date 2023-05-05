@@ -14,11 +14,11 @@ import shutil
 import subprocess
 import sys
 
+from chrome.test.variations.test_utils import helper
+from chrome.test.variations.test_utils import SRC_DIR
 from pkg_resources import packaging
 from typing import List
 from urllib.request import urlopen
-from . import helper
-from .defines import SRC_DIR
 
 GSUTIL_PATH = os.path.join(
     SRC_DIR, 'third_party', 'catapult', 'third_party', 'gsutil', 'gsutil')
