@@ -12,9 +12,8 @@ For more info, see:
   http://dev.chromium.org/developers/testing/no-compile-tests
 """
 
-from __future__ import print_function
-
 import ast
+import concurrent.futures
 import io
 import os
 import re
@@ -70,10 +69,8 @@ GUNIT_TEMPLATE = """
 TEST(%s, %s) { }
 """
 
-# Timeout constants.
+# How long a nocompile test should be able to run for before timing out.
 NCTEST_TERMINATE_TIMEOUT_SEC = 120
-NCTEST_KILL_TIMEOUT_SEC = NCTEST_TERMINATE_TIMEOUT_SEC + 2
-BUSY_LOOP_MAX_TIME_SEC = NCTEST_KILL_TIMEOUT_SEC * 2
 
 
 def ValidateInput(compiler, parallelism, sourcefile_path, cflags,
@@ -177,10 +174,11 @@ def ExtractTestConfigs(sourcefile_path, suite_name):
   return test_configs
 
 
-def StartTest(compiler, tempfile_dir, cflags, config):
-  """Start one negative compile test.
+def RunTest(compiler, tempfile_dir, cflags, config):
+  """Runs one negative compile test.
 
   Args:
+    compiler: The path to the compiler.
     tempfile_dir: A directory to store temporary data from tests.
     cflags: An array of strings with all the CFLAGS to give to gcc.
     config: A dictionary describing the test.  See ExtractTestConfigs
@@ -189,15 +187,11 @@ def StartTest(compiler, tempfile_dir, cflags, config):
   Returns:
     A dictionary containing all the information about the started test. The
     fields in the dictionary are as follows:
-      { 'proc': A subprocess object representing the compiler run.
+      {
         'cmdline': The executed command line.
         'name': The name of the test.
         'suite_name': The suite name to use when generating the gunit test
                       result.
-        'terminate_timeout': The timestamp in seconds since the epoch after
-                             which the test should be terminated.
-        'kill_timeout': The timestamp in seconds since the epoch after which
-                        the test should be given a hard kill signal.
         'started_at': A timestamp in seconds since the epoch for when this test
                       was started.
         'aborted_at': A timestamp in seconds since the epoch for when this test
@@ -205,10 +199,11 @@ def StartTest(compiler, tempfile_dir, cflags, config):
                       this value is 0.
         'finished_at': A timestamp in seconds since the epoch for when this
                        test was successfully complete.  If the test is aborted,
-                       or running, this value is 0.
+                       this value is 0.
         'expectations': A dictionary with the test expectations. See
                         ParseExpectation() for the structure.
-        }
+        'return_code': The return code of the test process, if not aborted.
+      }
   """
   cmdline = [compiler]
   cmdline.extend(cflags)
@@ -223,32 +218,42 @@ def StartTest(compiler, tempfile_dir, cflags, config):
                                        mode='w+',
                                        encoding='utf-8')
 
-  process = subprocess.Popen(cmdline, stdout=test_stdout, stderr=test_stderr)
-  now = time.time()
+  # Note: this could use pipes, but having temp files might make for somewhat
+  # better debuggability.
+  try:
+    started_at = time.time()
+    returncode = subprocess.run(cmdline,
+                                stdout=test_stdout,
+                                stderr=test_stderr,
+                                timeout=NCTEST_TERMINATE_TIMEOUT_SEC).returncode
+    aborted_at = 0
+    finished_at = time.time()
+  except subprocess.CalledProcessError:
+    returncode = -1
+    aborted_at = time.time()
+    finished_at = 0
   return {
-      'proc': process,
       'cmdline': ' '.join(cmdline),
       'stdout': test_stdout,
       'stderr': test_stderr,
       'name': name,
       'suite_name': config['suite_name'],
-      'terminate_timeout': now + NCTEST_TERMINATE_TIMEOUT_SEC,
-      'kill_timeout': now + NCTEST_KILL_TIMEOUT_SEC,
-      'started_at': now,
-      'aborted_at': 0,
-      'finished_at': 0,
-      'expectations': expectations
+      'started_at': started_at,
+      'aborted_at': aborted_at,
+      'finished_at': finished_at,
+      'expectations': expectations,
+      'returncode': returncode,
   }
 
 
 def PassTest(resultfile, resultlog, test):
-  """Logs the result of a test started by StartTest(), or a disabled test
+  """Logs the result of a test run with RunTest(), or a disabled test
   configuration.
 
   Args:
     resultfile: File object for .cc file that results are written to.
     resultlog: File object for the log file.
-    test: An instance of the dictionary returned by StartTest(), a
+    test: An instance of the dictionary returned by RunTest(), a
           configuration from ExtractTestConfigs().
   """
   resultfile.write(GUNIT_TEMPLATE % (test['suite_name'], test['name']))
@@ -262,7 +267,7 @@ def PassTest(resultfile, resultlog, test):
 
 
 def FailTest(resultfile, test, error, stdout=None, stderr=None):
-  """Logs the result of a test started by StartTest()
+  """Logs the result of a test run with by RunTest()
 
   Args:
     resultfile: File object for .cc file that results are written to.
@@ -320,15 +325,13 @@ def ExtractTestOutputAndCleanup(test):
 
 
 def ProcessTestResult(resultfile, resultlog, test):
-  """Interprets and logs the result of a test started by StartTest()
+  """Interprets and logs the result of a test run by RunTest()
 
   Args:
     resultfile: File object for .cc file that results are written to.
     resultlog: File object for the log file.
-    test: The dictionary from StartTest() to process.
+    test: The dictionary from RunTest() to process.
   """
-  proc = test['proc']
-  proc.wait()
   (stdout, stderr) = ExtractTestOutputAndCleanup(test)
 
   if test['aborted_at'] != 0:
@@ -337,7 +340,7 @@ def ProcessTestResult(resultfile, resultlog, test):
         (test['started_at'], test['aborted_at']))
     return
 
-  if proc.poll() == 0:
+  if test['returncode'] == 0:
     # Handle failure due to successful compile.
     FailTest(resultfile, test, 'Unexpected successful compilation.', stdout,
              stderr)
@@ -361,51 +364,6 @@ def ProcessTestResult(resultfile, resultlog, test):
              'Expectations [%s] did not match output.' % expectation_str,
              stdout, stderr)
     return
-
-
-def CompleteAtLeastOneTest(executing_tests):
-  """Blocks until at least one task is removed from executing_tests.
-
-  This function removes completed tests from executing_tests, logging failures
-  and output.  If no tests can be removed, it will enter a poll-loop until one
-  test finishes or times out.  On a timeout, this function is responsible for
-  terminating the process in the appropriate fashion.
-
-  Args:
-    executing_tests: A dict mapping a string containing the test name to the
-                     test dict return from StartTest().
-
-  Returns:
-    A list of tests that have finished.
-  """
-  finished_tests = []
-  busy_loop_timeout = time.time() + BUSY_LOOP_MAX_TIME_SEC
-  while len(finished_tests) == 0:
-    # If we don't make progress for too long, assume the code is just dead.
-    assert busy_loop_timeout > time.time()
-
-    # Attempt to process results.
-    now = time.time()
-    for test in executing_tests.values():
-      proc = test['proc']
-      if proc.poll() is not None:
-        test['finished_at'] = now
-        finished_tests.append(test)
-      elif test['terminate_timeout'] < now:
-        proc.terminate()
-        test['aborted_at'] = now
-      elif test['kill_timeout'] < now:
-        proc.kill()
-        test['aborted_at'] = now
-
-    if len(finished_tests) == 0:
-      # To avoid busy looping while waiting for a process to finish, insert a
-      # 100 ms delay here.
-      time.sleep(0.1)
-
-  for test in finished_tests:
-    del executing_tests[test['name']]
-  return finished_tests
 
 
 def main():
@@ -444,46 +402,39 @@ def main():
   # Run the no-compile tests, but ensure we do not run more than |parallelism|
   # tests at once.
   timings['header_written'] = time.time()
-  executing_tests = {}
   finished_tests = []
 
-  test = StartTest(
-      compiler,
-      os.path.dirname(resultfile_path),
-      cflags,
-      { 'name': 'NCTEST_SANITY',
-        'suite_name': suite_name,
-        'expectations': None,
-      })
-  executing_tests[test['name']] = test
+  with concurrent.futures.ThreadPoolExecutor(
+      max_workers=parallelism) as executor:
+    executing_tests = {}
+    # Test that a basic compiler invocation actually works, i.e. the nocompile
+    # tests aren't all unexpectedly passing by failing in an incorrect way, e.g.
+    # a compiler crash or syntax error.
+    executing_tests[executor.submit(
+        RunTest, compiler, os.path.dirname(resultfile_path), cflags, {
+            'name': 'NCTEST_SANITY',
+            'suite_name': suite_name,
+            'expectations': None,
+        })] = 'NCTEST_SANITY'
 
-  for config in test_configs:
-    # CompleteAtLeastOneTest blocks until at least one test finishes. Thus, this
-    # acts as a semaphore.  We cannot use threads + a real semaphore because
-    # subprocess forks, which can cause all sorts of hilarity with threads.
-    if len(executing_tests) >= parallelism:
-      finished_tests.extend(CompleteAtLeastOneTest(executing_tests))
+    for config in test_configs:
+      if config['name'].startswith('DISABLED_'):
+        PassTest(resultfile, resultlog, config)
+      else:
+        executing_tests[executor.submit(RunTest, compiler,
+                                        os.path.dirname(resultfile_path),
+                                        cflags, config)] = config['name']
 
-    if config['name'].startswith('DISABLED_'):
-      PassTest(resultfile, resultlog, config)
-    else:
-      test = StartTest(compiler, os.path.dirname(resultfile_path), cflags,
-                       config)
-      assert test['name'] not in executing_tests
-      executing_tests[test['name']] = test
+    for future in concurrent.futures.as_completed(executing_tests):
+      finished_tests.append(future.result())
 
-  # If there are no more test to start, we still need to drain the running
-  # ones.
-  while len(executing_tests) > 0:
-    finished_tests.extend(CompleteAtLeastOneTest(executing_tests))
   timings['compile_done'] = time.time()
 
   finished_tests = sorted(finished_tests, key=lambda test: test['name'])
   for test in finished_tests:
     if test['name'] == 'NCTEST_SANITY':
-      test['proc'].wait()
       (stdout, stderr) = ExtractTestOutputAndCleanup(test)
-      return_code = test['proc'].returncode
+      return_code = test['returncode']
       if return_code != 0:
         sys.stdout.write(stdout)
         sys.stderr.write(stderr)
