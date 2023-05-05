@@ -14,10 +14,14 @@
 namespace policy {
 namespace features {
 
+// Enable detection/upload Crowdstrike Agent signals with security
+// events.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kCrowdstrikeSignalReporting);
+
 // Enable the UserCloudSigninRestrictionPolicyFetcher to get the
 // ManagedAccountsSigninRestriction policy for a dasher account.
-POLICY_EXPORT BASE_DECLARE_FEATURE(
-    kEnableUserCloudSigninRestrictionPolicyFetcher);
+POLICY_EXPORT
+BASE_DECLARE_FEATURE(kEnableUserCloudSigninRestrictionPolicyFetcher);
 
 #if BUILDFLAG(IS_ANDROID)
 // Enable comma-separated strings for list policies on Android.
