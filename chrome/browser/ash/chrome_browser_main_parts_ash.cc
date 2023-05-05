@@ -242,7 +242,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/quirks/quirks_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/services/screen_ai/public/cpp/screen_ai_chromeos_installer.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/command_line_switches.h"
 #include "components/user_manager/known_user.h"
@@ -1263,9 +1262,6 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
 
     login_screen_extensions_storage_cleaner_ =
         std::make_unique<LoginScreenExtensionsStorageCleaner>();
-
-    screen_ai::chrome_os_installer::ManageInstallation(
-        g_browser_process->local_state());
 
     ash::ShillManagerClient::Get()->SetProperty(
         shill::kEnableRFC8925Property,

@@ -55,6 +55,7 @@
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "components/live_caption/caption_util.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/screen_ai/public/cpp/screen_ai_chromeos_installer.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -260,6 +261,9 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
   // Ensure that the `CalendarKeyedService` for `profile` is created. It is
   // created one per user in a multiprofile session.
   CalendarKeyedServiceFactory::GetInstance()->GetService(profile);
+
+  screen_ai::chrome_os_installer::ManageInstallation(
+      g_browser_process->local_state());
 
   if (is_primary_user) {
     DCHECK_EQ(primary_profile_, profile);
