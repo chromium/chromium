@@ -302,6 +302,18 @@ class FragmentPaintPropertyTreeBuilder {
            full_context_.force_subtree_update_reasons;
   }
 
+  const NGPhysicalBoxFragment& BoxFragment() const {
+    DCHECK(object_.IsBox());
+    if (pre_paint_info_) {
+      return pre_paint_info_->box_fragment;
+    }
+    // We only get here if we're not inside block fragmentation, so there should
+    // only be one fragment.
+    const auto& box = To<LayoutBox>(object_);
+    DCHECK_EQ(box.PhysicalFragmentCount(), 1u);
+    return *box.GetPhysicalFragment(0);
+  }
+
   bool IsInNGFragmentTraversal() const { return pre_paint_info_; }
 
   void SwitchToOOFContext(
@@ -1136,8 +1148,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
         auto& box = To<LayoutBox>(object_);
         // Each individual fragment should have its own transform origin, based
         // on the fragment size.
-        PhysicalSize size(pre_paint_info_ ? pre_paint_info_->box_fragment.Size()
-                                          : PhysicalSize(box.Size()));
+        PhysicalSize size(BoxFragment().Size());
         // If we are running transform animation on compositor, we should
         // disable 2d translation optimization to ensure that the compositor
         // gets the correct origin (which might be omitted by the optimization)
@@ -2073,9 +2084,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateBackgroundClip() {
   }
   if (NeedsBackgroundClip(object_)) {
     DCHECK(!object_.StyleRef().BackgroundLayers().Next());
-    const auto& fragment = pre_paint_info_
-                               ? pre_paint_info_->box_fragment
-                               : *To<LayoutBox>(object_).GetPhysicalFragment(0);
+    const auto& fragment = BoxFragment();
     PhysicalRect clip_rect(context_.current.paint_offset, fragment.Size());
     auto clip = object_.StyleRef().BackgroundLayers().Clip();
     if (clip == EFillBox::kContent || clip == EFillBox::kPadding) {
@@ -2141,12 +2150,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
                                                                 box_rect);
 
-      if (pre_paint_info_) {
-        gfx::Vector2dF offset(
-            -OffsetInStitchedFragments(pre_paint_info_->box_fragment));
-        layout_clip_rect.Offset(offset);
-        paint_clip_rect.Move(offset);
-      }
+      gfx::Vector2dF offset(-OffsetInStitchedFragments(BoxFragment()));
+      layout_clip_rect.Offset(offset);
+      paint_clip_rect.Move(offset);
 
       AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
                                              paint_clip_rect);
@@ -2205,15 +2211,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         // the first parameter?
         state.SetClipRect(clip_rect.Rect(), clip_rect);
       } else if (object_.IsBox()) {
-        PhysicalRect clip_rect;
-        if (pre_paint_info_) {
-          clip_rect = pre_paint_info_->box_fragment.OverflowClipRect(
-              context_.current.paint_offset,
-              FindPreviousBreakToken(pre_paint_info_->box_fragment));
-        } else {
-          clip_rect = To<LayoutBox>(object_).OverflowClipRect(
-              context_.current.paint_offset);
-        }
+        const NGPhysicalBoxFragment& box_fragment = BoxFragment();
+        PhysicalRect clip_rect =
+            box_fragment.OverflowClipRect(context_.current.paint_offset,
+                                          FindPreviousBreakToken(box_fragment));
 
         if (object_.IsLayoutReplaced()) {
           // TODO(crbug.com/1248598): Should we use non-snapped clip rect for
@@ -2740,7 +2741,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
       // descendants need special treatment inside block fragmentation.
       context_.current.is_in_block_fragmentation =
           pre_paint_info_->fragmentainer_is_oof_containing_block &&
-          !pre_paint_info_->box_fragment.IsMonolithic();
+          !BoxFragment().IsMonolithic();
     } else {
       // TODO(pdr): Several calls in this function walk back up the tree to
       // calculate containers (e.g., physicalLocation,
