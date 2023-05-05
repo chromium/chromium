@@ -93,8 +93,8 @@ import './os_printing_page/printer_status.js';
 import './os_reset_page/os_powerwash_dialog.js';
 import './os_reset_page/os_powerwash_dialog_esim_item.js';
 import './os_files_page/smb_shares_page.js';
-import '../privacy_page/secure_dns.js';
-import '../privacy_page/secure_dns_input.js';
+import '/shared/settings/privacy_page/secure_dns.js';
+import '/shared/settings/privacy_page/secure_dns_input.js';
 
 /**
  * With the optimize_webui() build step, the generated JS files are bundled

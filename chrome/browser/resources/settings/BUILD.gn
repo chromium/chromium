@@ -148,8 +148,6 @@ build_webui("build") {
     "privacy_page/privacy_sandbox/privacy_sandbox_interest_item.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_page.ts",
     "privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.ts",
-    "privacy_page/secure_dns.ts",
-    "privacy_page/secure_dns_input.ts",
     "privacy_page/security_keys_bio_enroll_dialog.ts",
     "privacy_page/security_keys_credential_management_dialog.ts",
     "privacy_page/security_keys_pin_field.ts",

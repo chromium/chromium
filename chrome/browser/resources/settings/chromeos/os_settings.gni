@@ -255,8 +255,6 @@ web_component_files = [
   # Files below are from Browser Settings and shared with ChromeOS Settings
   "a11y_page/captions_subpage.ts",
   "a11y_page/live_caption_section.ts",
-  "privacy_page/secure_dns.ts",
-  "privacy_page/secure_dns_input.ts",
 ]
 
 # HTML files that are passed as input to html_to_wrapper().

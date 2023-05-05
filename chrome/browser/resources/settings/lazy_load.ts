@@ -91,6 +91,8 @@ export {FontsBrowserProxy, FontsBrowserProxyImpl, FontsData} from '/shared/setti
 export {ControlledButtonElement} from '/shared/settings/controls/controlled_button.js';
 export {SettingsRadioGroupElement} from '/shared/settings/controls/settings_radio_group.js';
 export {SettingsSliderElement} from '/shared/settings/controls/settings_slider.js';
+export {SettingsSecureDnsElement} from '/shared/settings/privacy_page/secure_dns.js';
+export {SecureDnsInputElement} from '/shared/settings/privacy_page/secure_dns_input.js';
 export {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 export {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 export {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -195,8 +197,6 @@ export {SettingsPrivacySandboxFledgeSubpageElement} from './privacy_page/privacy
 export {PrivacySandboxInterestItemElement} from './privacy_page/privacy_sandbox/privacy_sandbox_interest_item.js';
 export {SettingsPrivacySandboxPageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_page.js';
 export {SettingsPrivacySandboxTopicsSubpageElement} from './privacy_page/privacy_sandbox/privacy_sandbox_topics_subpage.js';
-export {SettingsSecureDnsElement} from './privacy_page/secure_dns.js';
-export {SecureDnsInputElement} from './privacy_page/secure_dns_input.js';
 export {BioEnrollDialogPage, SettingsSecurityKeysBioEnrollDialogElement} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxy, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxy, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPhone, SecurityKeysPhonesBrowserProxy, SecurityKeysPhonesBrowserProxyImpl, SecurityKeysPhonesList, SecurityKeysPinBrowserProxy, SecurityKeysPinBrowserProxyImpl, SecurityKeysResetBrowserProxy, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage, SettingsSecurityKeysCredentialManagementDialogElement} from './privacy_page/security_keys_credential_management_dialog.js';

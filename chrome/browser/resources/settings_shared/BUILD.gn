@@ -18,6 +18,8 @@ build_webui("build") {
     "controls/settings_radio_group.ts",
     "controls/settings_slider.ts",
     "controls/settings_toggle_button.ts",
+    "privacy_page/secure_dns.ts",
+    "privacy_page/secure_dns_input.ts",
   ]
 
   if (is_chromeos) {
