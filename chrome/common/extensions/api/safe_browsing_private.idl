@@ -36,7 +36,12 @@ namespace safeBrowsingPrivate {
     // Renderer initiated navigations involve interactions with the content
     // area, such as link clicks or JS.
     RENDERER_INITIATED_WITHOUT_USER_GESTURE,
-    RENDERER_INITIATED_WITH_USER_GESTURE
+    RENDERER_INITIATED_WITH_USER_GESTURE,
+
+    // Navigation is initiated by the browser process and it is believed the
+    // navigation is the result of the user copy and paste the address from the
+    // browser into the address bar.
+    COPY_PASTE_USER_INITIATED
   };
 
   dictionary PolicySpecifiedPasswordReuse {

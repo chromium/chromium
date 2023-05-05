@@ -826,6 +826,8 @@ base::Value::Dict SerializeReferrer(const ReferrerChainEntry& referrer) {
     case ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE:
       navigation_initiation = "RENDERER_INITIATED_WITH_USER_GESTURE";
       break;
+    case ReferrerChainEntry::COPY_PASTE_USER_INITIATED:
+      navigation_initiation = "COPY_PASTE_USER_INITIATED";
   }
   referrer_dict.Set("navigation_initiation", navigation_initiation);
 
