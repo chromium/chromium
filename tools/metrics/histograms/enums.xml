@@ -48940,6 +48940,22 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="3" label="Got different aspect ratio JPEG thumbnail"/>
 </enum>
 
+<enum name="GroupId">
+  <summary>
+    Suggestion group IDs toggled visible or hidden in the omnibox result list.
+    Reflects the omnibox::GroupId enum values for the Polaris zero-prefix
+    suggestions in //third_party/omnibox_proto/groups.proto.
+  </summary>
+  <int value="0" label="UNKNOWN (uncategorized)"/>
+  <int value="1" label="INVALID (unexpected)"/>
+  <int value="2" label="GROUP_PREVIOUS_SEARCH_RELATED"/>
+  <int value="3" label="GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS"/>
+  <int value="4" label="GROUP_TRENDS"/>
+  <int value="5" label="GROUP_TRENDS_ENTITY_CHIPS"/>
+  <int value="6" label="GROUP_RELATED_QUERIES"/>
+  <int value="7" label="GROUP_VISITED_DOC_RELATED"/>
+</enum>
+
 <enum name="GroupNotificationType">
   <int value="0" label="Group Parent"/>
   <int value="1" label="Group Child"/>
