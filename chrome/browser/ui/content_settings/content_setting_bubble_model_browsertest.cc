@@ -23,7 +23,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/test/content_settings_mock_provider.h"
+#include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/network_session_configurator/common/network_switches.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -91,6 +94,21 @@ class ContentSettingBubbleModelMediaStreamTest : public InProcessBrowserTest {
     ASSERT_TRUE(https_server_->Start());
   }
 
+  void BlockMediaStreamPermissionWithSupervision(
+      const std::vector<ContentSettingsType>& types) {
+    auto provider = std::make_unique<content_settings::MockProvider>();
+    for (ContentSettingsType type : types) {
+      provider->SetWebsiteSetting(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::Wildcard(), type,
+          base::Value(ContentSetting::CONTENT_SETTING_BLOCK));
+    }
+    HostContentSettingsMap* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    content_settings::TestUtils::OverrideProvider(
+        map, std::move(provider), HostContentSettingsMap::SUPERVISED_PROVIDER);
+  }
+
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
 };
 
@@ -119,6 +137,76 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
   ManageMediaStreamSettings(PageSpecificContentSettings::CAMERA_ACCESSED);
   EXPECT_EQ(GURL("chrome://settings/contentExceptions#media-stream-camera"),
             GetActiveTab()->GetLastCommittedURL());
+}
+
+// Tests that media bubble content matches the expect layout when the
+// microphone is blocked by a custodian.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
+                       BubbleContentForSupervisedBlockedMic) {
+  BlockMediaStreamPermissionWithSupervision(
+      {ContentSettingsType::MEDIASTREAM_MIC});
+
+  OpenTab();
+
+  std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
+      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
+                 PageSpecificContentSettings::CAMERA_ACCESSED);
+  EXPECT_TRUE(mic_and_camera_bubble->bubble_content().is_user_modifiable);
+
+  std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
+      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+  EXPECT_FALSE(mic_bubble->bubble_content().is_user_modifiable);
+
+  std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
+      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+  EXPECT_TRUE(camera_bubble->bubble_content().is_user_modifiable);
+}
+
+// Tests that media bubble content matches the expect layout when the
+// camera is blocked by a custodian.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
+                       BubbleContentForSupervisedBlockedCamera) {
+  BlockMediaStreamPermissionWithSupervision(
+      {ContentSettingsType::MEDIASTREAM_CAMERA});
+
+  OpenTab();
+
+  std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
+      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
+                 PageSpecificContentSettings::CAMERA_ACCESSED);
+  EXPECT_TRUE(mic_and_camera_bubble->bubble_content().is_user_modifiable);
+
+  std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
+      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+  EXPECT_TRUE(mic_bubble->bubble_content().is_user_modifiable);
+
+  std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
+      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+  EXPECT_FALSE(camera_bubble->bubble_content().is_user_modifiable);
+}
+
+// Tests that media bubble content matches the expect layout when the
+// mic and camera are blocked by a custodian.
+IN_PROC_BROWSER_TEST_F(ContentSettingBubbleModelMediaStreamTest,
+                       BubbleContentForSupervisedBlockedMicAndCamera) {
+  BlockMediaStreamPermissionWithSupervision(
+      {ContentSettingsType::MEDIASTREAM_CAMERA,
+       ContentSettingsType::MEDIASTREAM_MIC});
+
+  OpenTab();
+
+  std::unique_ptr<ContentSettingBubbleModel> mic_and_camera_bubble =
+      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED |
+                 PageSpecificContentSettings::CAMERA_ACCESSED);
+  EXPECT_FALSE(mic_and_camera_bubble->bubble_content().is_user_modifiable);
+
+  std::unique_ptr<ContentSettingBubbleModel> mic_bubble =
+      ShowBubble(PageSpecificContentSettings::MICROPHONE_ACCESSED);
+  EXPECT_FALSE(mic_bubble->bubble_content().is_user_modifiable);
+
+  std::unique_ptr<ContentSettingBubbleModel> camera_bubble =
+      ShowBubble(PageSpecificContentSettings::CAMERA_ACCESSED);
+  EXPECT_FALSE(camera_bubble->bubble_content().is_user_modifiable);
 }
 
 // Tests that media bubble content includes camera PTZ when the permission has
