@@ -133,7 +133,11 @@ extern const base::FeatureParam<int> kHighEfficiencyChartPmf25PercentileBytes;
 extern const base::FeatureParam<int> kHighEfficiencyChartPmf50PercentileBytes;
 extern const base::FeatureParam<int> kHighEfficiencyChartPmf75PercentileBytes;
 
-extern const base::FeatureParam<int> kDiscardedTabTreatmenOption;
+// Final opacity of the favicon after the discard animation completes
+extern const base::FeatureParam<double> kDiscardedTabTreatmentOpacity;
+
+// The version of the tab discard treatment on the favicon should be shown
+extern const base::FeatureParam<int> kDiscardedTabTreatmentOption;
 
 enum class DiscardTabTreatmentOptions {
   kNone = 0,

@@ -34,7 +34,7 @@ FirstRunDialogTest.*
 FirstRunIntroPixelTest.*
 GlobalErrorBubbleTest.*
 HatsBubbleTest.*
-HighEfficiencyFaviconTreatmentTest.*
+*HighEfficiencyFaviconTreatmentTest.*
 HomeButtonUiTest.*
 HungRendererDialogViewBrowserTest.*
 ImportLockDialogViewBrowserTest.*

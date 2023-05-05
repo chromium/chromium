@@ -42,13 +42,51 @@ namespace {
 
 constexpr int kAttentionIndicatorRadius = 3;
 constexpr int kLoadingAnimationStrokeWidthDp = 2;
-constexpr double kDiscardedFaviconFinalOpacity = 0.3;
+constexpr float kDiscardRingStrokeWidthDp = 1.5;
+
+// Discard Ring Segments
+constexpr int kNumSmallSegments = 4;
+constexpr int kNumSpacingSegments = kNumSmallSegments + 1;
+constexpr int kLargeSegmentSweepAngle = 160;
+
+// Split the remaining space in half so that half is allocated for the small
+// segmant of the ring and the other half is for the spacing between segments
+constexpr int kAllocatedSpace = (360 - kLargeSegmentSweepAngle) / 2;
+constexpr int kSpacingSweepAngle = kAllocatedSpace / kNumSpacingSegments;
+constexpr int kSmallSegmentSweepAngle = kAllocatedSpace / kNumSmallSegments;
 
 bool NetworkStateIsAnimated(TabNetworkState network_state) {
   return network_state != TabNetworkState::kNone &&
          network_state != TabNetworkState::kError;
 }
 
+// Paints arc starting at `start_angle` with a `sweep` in degrees.
+// A starting angle of 0 means that the arc starts on the right side of `bounds`
+// and continues drawing the arc in a clockwise direction for `sweep` degrees
+void PaintArc(gfx::Canvas* canvas,
+              const gfx::Rect& bounds,
+              SkColor color,
+              SkScalar start_angle,
+              SkScalar sweep,
+              float opacity) {
+  gfx::RectF oval(bounds);
+  // Inset by half the stroke width to make sure the whole arc is inside
+  // the visible rect.
+  const double inset = kDiscardRingStrokeWidthDp / 2.0;
+  oval.Inset(inset);
+
+  SkPath path;
+  path.arcTo(RectFToSkRect(oval), start_angle, sweep, true);
+
+  cc::PaintFlags flags;
+  flags.setColor(color);
+  flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
+  flags.setStrokeWidth(kDiscardRingStrokeWidthDp);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setAntiAlias(true);
+  flags.setAlphaf(opacity);
+  canvas->DrawPath(path, flags);
+}
 }  // namespace
 
 // Helper class that manages the favicon crash animation.
@@ -101,7 +139,10 @@ TabIcon::TabIcon()
           performance_manager::features::kDiscardedTabTreatment)) {
     discard_tab_treatment_option_ =
         static_cast<performance_manager::features::DiscardTabTreatmentOptions>(
-            performance_manager::features::kDiscardedTabTreatmenOption.Get());
+            performance_manager::features::kDiscardedTabTreatmentOption.Get());
+
+    discard_tab_icon_final_opacity_ =
+        performance_manager::features::kDiscardedTabTreatmentOpacity.Get();
   }
 
   if (!gfx::Animation::ShouldRenderRichAnimation()) {
@@ -118,7 +159,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   SetIcon(data.favicon, data.should_themify_favicon);
   SetNetworkState(data.network_state);
   SetCrashed(data.IsCrashed());
-  SetDiscarded(data.is_tab_discarded, data.should_show_discard_status);
+  SetDiscarded(data.should_show_discard_status);
   has_tab_renderer_data_ = true;
 
   const bool showing_load = GetShowingLoadingAnimation();
@@ -175,6 +216,10 @@ void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
     SchedulePaint();
 }
 
+gfx::LinearAnimation* TabIcon::GetTabDiscardAnimationForTesting() {
+  return &tab_discard_animation_;
+}
+
 void TabIcon::OnPaint(gfx::Canvas* canvas) {
   // Compute the bounds adjusted for the hiding fraction.
   gfx::Rect contents_bounds = GetContentsBounds();
@@ -193,6 +238,11 @@ void TabIcon::OnPaint(gfx::Canvas* canvas) {
   if (!GetShowingLoadingAnimation() && GetShowingAttentionIndicator() &&
       !should_display_crashed_favicon_) {
     PaintAttentionIndicatorAndIcon(canvas, GetIconToPaint(), icon_bounds);
+  } else if (discard_tab_treatment_option_ ==
+                 performance_manager::features::DiscardTabTreatmentOptions::
+                     kFadeSmallFaviconWithRing &&
+             was_discard_indicator_shown_) {
+    PaintDiscardRingAndIcon(canvas, GetIconToPaint(), icon_bounds);
   } else {
     MaybePaintFavicon(canvas, GetIconToPaint(), icon_bounds);
   }
@@ -209,17 +259,6 @@ void TabIcon::OnThemeChanged() {
 }
 
 void TabIcon::AnimationProgressed(const gfx::Animation* animation) {
-  if (animation == &tab_discard_animation_ &&
-      discard_tab_treatment_option_ ==
-          performance_manager::features::DiscardTabTreatmentOptions::
-              kFadeFullsizedFavicon) {
-    const double opacity = gfx::Tween::DoubleValueBetween(
-        animation->GetCurrentValue(), 1.0, kDiscardedFaviconFinalOpacity);
-    gfx::ImageSkia favicon =
-        !themed_favicon_.isNull() ? themed_favicon_ : favicon_;
-    translucent_icon_ =
-        gfx::ImageSkiaOperations::CreateTransparentImage(favicon, opacity);
-  }
   SchedulePaint();
 }
 
@@ -262,6 +301,42 @@ void TabIcon::PaintAttentionIndicatorAndIcon(gfx::Canvas* canvas,
   canvas->DrawCircle(circle_center, kAttentionIndicatorRadius, indicator_flags);
 }
 
+void TabIcon::PaintDiscardRingAndIcon(gfx::Canvas* canvas,
+                                      const gfx::ImageSkia& icon,
+                                      const gfx::Rect& bounds) {
+  double discard_animation_value = tab_discard_animation_.GetCurrentValue();
+
+  // Fades out the full sized favicon when animating
+  if (tab_discard_animation_.is_animating()) {
+    cc::PaintFlags opacity_flag;
+    opacity_flag.setAlphaf(
+        gfx::Tween::FloatValueBetween(discard_animation_value, 1.0, 0));
+    canvas->DrawImageInt(icon, 0, 0, bounds.width(), bounds.height(),
+                         bounds.x(), bounds.y(), bounds.width(),
+                         bounds.height(), false, opacity_flag);
+  }
+
+  // Fades in the discard ring and smaller favicon
+  MaybePaintFavicon(canvas, icon, bounds);
+
+  // Painting Discard Ring
+  // Draw the large segment centered on the left side.
+  const int large_segment_start_angle = 180 - kLargeSegmentSweepAngle / 2;
+  PaintArc(canvas, bounds, SK_ColorGRAY, large_segment_start_angle,
+           kLargeSegmentSweepAngle, discard_animation_value);
+
+  // Draw the small segments evenly spaced around the rest of the ring.
+  const int small_segments_start_angle =
+      180 + (kLargeSegmentSweepAngle / 2) + kSpacingSweepAngle;
+  for (int i = 0; i < kNumSmallSegments; i++) {
+    const int start_angle =
+        small_segments_start_angle +
+        (i * (kSmallSegmentSweepAngle + kSpacingSweepAngle));
+    PaintArc(canvas, bounds, SK_ColorGRAY, start_angle % 360,
+             kSmallSegmentSweepAngle, discard_animation_value);
+  }
+}
+
 void TabIcon::PaintLoadingAnimation(gfx::Canvas* canvas, gfx::Rect bounds) {
   TRACE_EVENT0("views", "TabIcon::PaintLoadingAnimation");
 
@@ -297,12 +372,6 @@ const gfx::ImageSkia& TabIcon::GetIconToPaint() {
     return crashed_icon_;
   }
 
-  if (!translucent_icon_.isNull() &&
-      discard_tab_treatment_option_ !=
-          performance_manager::features::DiscardTabTreatmentOptions::kNone) {
-    return translucent_icon_;
-  }
-
   return themed_favicon_.isNull() ? favicon_ : themed_favicon_;
 }
 
@@ -325,9 +394,15 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
 
   std::unique_ptr<gfx::ScopedCanvas> scoped_canvas;
   bool use_scale_filter = false;
+  bool show_discard_ring_treatment =
+      was_discard_indicator_shown_ &&
+      discard_tab_treatment_option_ ==
+          performance_manager::features::DiscardTabTreatmentOptions::
+              kFadeSmallFaviconWithRing;
 
   if (GetShowingLoadingAnimation() ||
-      favicon_fade_in_animation_.is_animating()) {
+      favicon_fade_in_animation_.is_animating() ||
+      show_discard_ring_treatment) {
     scoped_canvas = std::make_unique<gfx::ScopedCanvas>(canvas);
     use_scale_filter = true;
     // The favicon is initially inset with the width of the loading-animation
@@ -367,9 +442,23 @@ void TabIcon::MaybePaintFavicon(gfx::Canvas* canvas,
     canvas->Translate(gfx::Vector2d(-bounds.x(), -bounds.y()));
   }
 
+  cc::PaintFlags opacity_flag;
+  if (show_discard_ring_treatment) {
+    opacity_flag.setAlphaf(
+        gfx::Tween::FloatValueBetween(tab_discard_animation_.GetCurrentValue(),
+                                      0, discard_tab_icon_final_opacity_));
+  } else if (was_discard_indicator_shown_ &&
+             discard_tab_treatment_option_ ==
+                 performance_manager::features::DiscardTabTreatmentOptions::
+                     kFadeFullsizedFavicon) {
+    opacity_flag.setAlphaf(
+        gfx::Tween::FloatValueBetween(tab_discard_animation_.GetCurrentValue(),
+                                      1.0, discard_tab_icon_final_opacity_));
+  }
+
   canvas->DrawImageInt(icon, 0, 0, bounds.width(), bounds.height(), bounds.x(),
                        bounds.y(), bounds.width(), bounds.height(),
-                       use_scale_filter);
+                       use_scale_filter, opacity_flag);
 }
 
 bool TabIcon::GetNonDefaultFavicon() const {
@@ -394,18 +483,15 @@ void TabIcon::SetIcon(const gfx::ImageSkia& icon, bool should_themify_favicon) {
   SchedulePaint();
 }
 
-void TabIcon::SetDiscarded(bool is_tab_discarded, bool show_discard_status) {
-  if (was_tab_discarded_ != is_tab_discarded) {
-    if (discard_tab_treatment_option_ ==
-        performance_manager::features::DiscardTabTreatmentOptions::
-            kFadeFullsizedFavicon) {
-      was_tab_discarded_ = is_tab_discarded;
-      if (show_discard_status) {
-        tab_discard_animation_.Start();
-      } else {
-        translucent_icon_ = gfx::ImageSkia();
-        tab_discard_animation_.Stop();
-      }
+void TabIcon::SetDiscarded(bool should_show_discard_status) {
+  if (was_discard_indicator_shown_ != should_show_discard_status &&
+      discard_tab_treatment_option_ !=
+          performance_manager::features::DiscardTabTreatmentOptions::kNone) {
+    was_discard_indicator_shown_ = should_show_discard_status;
+    if (should_show_discard_status) {
+      tab_discard_animation_.Start();
+    } else {
+      tab_discard_animation_.Stop();
     }
   }
 }

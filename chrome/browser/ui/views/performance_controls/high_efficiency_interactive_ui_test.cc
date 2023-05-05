@@ -670,9 +670,15 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyChipInteractiveTest,
           views::Button::ButtonState::STATE_DISABLED));
 }
 
-// Tests Discarding on pages with various types of content
+struct FaviconScreenShotTestConfig {
+  performance_manager::features::DiscardTabTreatmentOptions treatment_option;
+  std::string screenshot_name;
+  std::string cl_number;
+};
+
 class HighEfficiencyFaviconTreatmentTest
-    : public HighEfficiencyInteractiveTest {
+    : public HighEfficiencyInteractiveTest,
+      public testing::WithParamInterface<FaviconScreenShotTestConfig> {
  public:
   HighEfficiencyFaviconTreatmentTest() = default;
   ~HighEfficiencyFaviconTreatmentTest() override = default;
@@ -680,10 +686,8 @@ class HighEfficiencyFaviconTreatmentTest
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         performance_manager::features::kDiscardedTabTreatment,
-        {{"discard_tab_treatment_option",
-          base::NumberToString(static_cast<int>(
-              performance_manager::features::DiscardTabTreatmentOptions::
-                  kFadeFullsizedFavicon))}});
+        {{"discard_tab_treatment_option", base::NumberToString(static_cast<int>(
+                                              GetParam().treatment_option))}});
 
     animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
         gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
@@ -705,16 +709,8 @@ class HighEfficiencyFaviconTreatmentTest
       animation_mode_reset_;
 };
 
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DimFaviconOnDiscard DISABLED_DimFaviconOnDiscard
-#else
-#define MAYBE_DimFaviconOnDiscard DimFaviconOnDiscard
-#endif
-
-// A tab's favicon should should be dimmed when it is discarded due to high
-// efficiency mode
-IN_PROC_BROWSER_TEST_F(HighEfficiencyFaviconTreatmentTest,
-                       MAYBE_DimFaviconOnDiscard) {
+IN_PROC_BROWSER_TEST_P(HighEfficiencyFaviconTreatmentTest,
+                       FaviconTreatmentOnDiscard) {
   constexpr char kFirstTabFavicon[] = "first_tab_favicon";
 
   RunTestSequence(
@@ -729,5 +725,29 @@ IN_PROC_BROWSER_TEST_F(HighEfficiencyFaviconTreatmentTest,
       NameView(kFirstTabFavicon, base::BindLambdaForTesting([&]() {
                  return views::AsViewClass<views::View>(GetTabIcon(0));
                })),
-      Screenshot(kFirstTabFavicon, "TabIcon", "4447439"));
+      Check(base::BindLambdaForTesting([&]() {
+        return GetTabIcon(0)
+            ->GetTabDiscardAnimationForTesting()
+            ->is_animating();
+      })),
+      Do(base::BindLambdaForTesting([&]() {
+        // Force animation to end as it may not have finished progressing
+        // before taking a screenshot
+        GetTabIcon(0)->GetTabDiscardAnimationForTesting()->End();
+      })),
+      Screenshot(kFirstTabFavicon, GetParam().screenshot_name,
+                 GetParam().cl_number));
 }
+
+std::vector<FaviconScreenShotTestConfig> HighEfficiencyTestConfig() {
+  return {{performance_manager::features::DiscardTabTreatmentOptions::
+               kFadeFullsizedFavicon,
+           "FadeFullSizedFaviconOnDiscard", "4492205"},
+          {performance_manager::features::DiscardTabTreatmentOptions::
+               kFadeSmallFaviconWithRing,
+           "FadeSmallFaviconOnDiscard", "4492205"}};
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HighEfficiencyFaviconTreatmentTest,
+                         testing::ValuesIn(HighEfficiencyTestConfig()));
