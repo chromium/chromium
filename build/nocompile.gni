@@ -81,7 +81,7 @@ if (enable_nocompile_tests) {
 
     action_foreach(nocompile_target) {
       testonly = true
-      script = "//tools/nocompile_driver.py"
+      script = "//tools/nocompile/driver.py"
       sources = invoker.sources
       deps = invoker.deps
       if (defined(invoker.public_deps)) {

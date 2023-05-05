@@ -2,7 +2,6 @@
 # Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Implements a simple "negative compile" test for C++ on linux.
 
 Sometimes a C++ API needs to ensure that various usages cannot compile. To
@@ -24,7 +23,6 @@ import sys
 import tempfile
 import time
 
-
 # Matches lines that start with #if and have the substring TEST in the
 # conditional. Also extracts the comment.  This allows us to search for
 # lines like the following:
@@ -38,7 +36,6 @@ import time
 # inside the unittest file.
 NCTEST_CONFIG_RE = re.compile(r'^#(?:el)?if.*\s+(\S*NCTEST\S*)\s*(//.*)?')
 
-
 # Matches and removes the defined() preprocesor predicate. This is useful
 # for test cases that use the preprocessor if-statement form:
 #
@@ -47,13 +44,11 @@ NCTEST_CONFIG_RE = re.compile(r'^#(?:el)?if.*\s+(\S*NCTEST\S*)\s*(//.*)?')
 # Should be used to post-process the results found by NCTEST_CONFIG_RE.
 STRIP_DEFINED_RE = re.compile(r'defined\((.*)\)')
 
-
 # Used to grab the expectation from comment at the end of an #ifdef.  See
 # NCTEST_CONFIG_RE's comment for examples of what the format should look like.
 #
 # The extracted substring should be a python array of regular expressions.
 EXTRACT_EXPECTATION_RE = re.compile(r'//\s*(\[.*\])')
-
 
 # The header for the result file so that it can be compiled.
 RESULT_FILE_HEADER = """
@@ -65,7 +60,6 @@ RESULT_FILE_HEADER = """
 
 """
 
-
 # The log message on a test completion.
 LOG_TEMPLATE = """
 TEST(%s, %s) took %f secs. Started at %f, ended at %f.
@@ -75,7 +69,6 @@ TEST(%s, %s) took %f secs. Started at %f, ended at %f.
 GUNIT_TEMPLATE = """
 TEST(%s, %s) { }
 """
-
 
 # Timeout constants.
 NCTEST_TERMINATE_TIMEOUT_SEC = 120
@@ -175,9 +168,11 @@ def ExtractTestConfigs(sourcefile_path, suite_name):
       name = strip_result.group(1)
 
     # Read expectations if there are any.
-    test_configs.append({'name': name,
-                         'suite_name': suite_name,
-                         'expectations': ParseExpectation(groups[1])})
+    test_configs.append({
+        'name': name,
+        'suite_name': suite_name,
+        'expectations': ParseExpectation(groups[1])
+    })
   sourcefile.close()
   return test_configs
 
@@ -230,18 +225,20 @@ def StartTest(compiler, tempfile_dir, cflags, config):
 
   process = subprocess.Popen(cmdline, stdout=test_stdout, stderr=test_stderr)
   now = time.time()
-  return {'proc': process,
-          'cmdline': ' '.join(cmdline),
-          'stdout': test_stdout,
-          'stderr': test_stderr,
-          'name': name,
-          'suite_name': config['suite_name'],
-          'terminate_timeout': now + NCTEST_TERMINATE_TIMEOUT_SEC,
-          'kill_timeout': now + NCTEST_KILL_TIMEOUT_SEC,
-          'started_at': now,
-          'aborted_at': 0,
-          'finished_at': 0,
-          'expectations': expectations}
+  return {
+      'proc': process,
+      'cmdline': ' '.join(cmdline),
+      'stdout': test_stdout,
+      'stderr': test_stderr,
+      'name': name,
+      'suite_name': config['suite_name'],
+      'terminate_timeout': now + NCTEST_TERMINATE_TIMEOUT_SEC,
+      'kill_timeout': now + NCTEST_KILL_TIMEOUT_SEC,
+      'started_at': now,
+      'aborted_at': 0,
+      'finished_at': 0,
+      'expectations': expectations
+  }
 
 
 def PassTest(resultfile, resultlog, test):
@@ -254,15 +251,14 @@ def PassTest(resultfile, resultlog, test):
     test: An instance of the dictionary returned by StartTest(), a
           configuration from ExtractTestConfigs().
   """
-  resultfile.write(GUNIT_TEMPLATE % (
-      test['suite_name'], test['name']))
+  resultfile.write(GUNIT_TEMPLATE % (test['suite_name'], test['name']))
 
   # The 'started_at' key is only added if a test has been started.
   if 'started_at' in test:
-    resultlog.write(LOG_TEMPLATE % (
-        test['suite_name'], test['name'],
-        test['finished_at'] - test['started_at'],
-        test['started_at'], test['finished_at']))
+    resultlog.write(
+        LOG_TEMPLATE %
+        (test['suite_name'], test['name'], test['finished_at'] -
+         test['started_at'], test['started_at'], test['finished_at']))
 
 
 def FailTest(resultfile, test, error, stdout=None, stderr=None):
@@ -304,9 +300,10 @@ TEST(%s): Started %f, Ended %f, Total %fs, Extract %fs, Compile %fs, Process %fs
   extract_secs = timings['extract_done'] - timings['started']
   compile_secs = timings['compile_done'] - timings['extract_done']
   process_secs = timings['results_processed'] - timings['compile_done']
-  resultlog.write(stats_template % (
-      suite_name, timings['started'], timings['results_processed'], total_secs,
-      extract_secs, compile_secs, process_secs))
+  resultlog.write(stats_template %
+                  (suite_name, timings['started'], timings['results_processed'],
+                   total_secs, extract_secs, compile_secs, process_secs))
+
 
 def ExtractTestOutputAndCleanup(test):
   """Test output is in temp files. Read those and delete them.
@@ -321,6 +318,7 @@ def ExtractTestOutputAndCleanup(test):
 
   return outputs
 
+
 def ProcessTestResult(resultfile, resultlog, test):
   """Interprets and logs the result of a test started by StartTest()
 
@@ -334,15 +332,15 @@ def ProcessTestResult(resultfile, resultlog, test):
   (stdout, stderr) = ExtractTestOutputAndCleanup(test)
 
   if test['aborted_at'] != 0:
-    FailTest(resultfile, test, "Compile timed out. Started %f ended %f." %
-             (test['started_at'], test['aborted_at']))
+    FailTest(
+        resultfile, test, "Compile timed out. Started %f ended %f." %
+        (test['started_at'], test['aborted_at']))
     return
 
   if proc.poll() == 0:
     # Handle failure due to successful compile.
-    FailTest(resultfile, test,
-             'Unexpected successful compilation.',
-             stdout, stderr)
+    FailTest(resultfile, test, 'Unexpected successful compilation.', stdout,
+             stderr)
     return
   else:
     # Check the output has the right expectations.  If there are no
@@ -353,8 +351,8 @@ def ProcessTestResult(resultfile, resultlog, test):
 
     # Otherwise test against all expectations.
     for regexp in test['expectations']:
-      if (regexp.search(stdout) is not None or
-          regexp.search(stderr) is not None):
+      if (regexp.search(stdout) is not None
+          or regexp.search(stderr) is not None):
         PassTest(resultfile, resultlog, test)
         return
     expectation_str = ', '.join(

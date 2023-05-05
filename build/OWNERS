@@ -32,3 +32,5 @@ per-file whitespace_file.txt=*
 per-file OWNERS.status=*
 per-file OWNERS.setnoparent=set noparent
 per-file OWNERS.setnoparent=file://ATL_OWNERS
+
+per-file nocompile.gni=file://tools/nocompile/OWNERS
