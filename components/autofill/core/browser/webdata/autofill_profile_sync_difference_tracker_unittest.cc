@@ -164,49 +164,6 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 }
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
-       IncorporateRemoteProfileShouldOverwriteUnverifiedProfileByVerified) {
-  AutofillProfile local(kSmallerGuid);
-  local.SetRawInfo(NAME_FIRST, u"John");
-  local.FinalizeAfterImport();
-  AddAutofillProfilesToTable({local});
-
-  // The remote profile has the same key but it is not verified.
-  AutofillProfile remote(kSmallerGuid);
-  remote.set_origin(kSettingsOrigin);
-  remote.SetRawInfo(NAME_FIRST, u"Tom");
-  remote.FinalizeAfterImport();
-
-  IncorporateRemoteProfile(remote);
-
-  // Nothing gets uploaded to sync and the local profile wins.
-  UpdatesToSync updates = FlushToSync();
-  EXPECT_THAT(updates.profiles_to_upload_to_sync, IsEmpty());
-  EXPECT_THAT(updates.profiles_to_delete_from_sync, IsEmpty());
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(remote));
-}
-
-TEST_F(AutofillProfileSyncDifferenceTrackerTest,
-       IncorporateRemoteProfileShouldNotOverwriteVerifiedProfileByUnverified) {
-  AutofillProfile local(kSmallerGuid);
-  local.set_origin(kSettingsOrigin);
-  local.SetRawInfo(NAME_FIRST, u"John");
-  local.FinalizeAfterImport();
-  AddAutofillProfilesToTable({local});
-
-  // The remote profile has the same key but it is not verified.
-  AutofillProfile remote(kSmallerGuid);
-  remote.SetRawInfo(NAME_FIRST, u"Tom");
-  remote.FinalizeAfterImport();
-  IncorporateRemoteProfile(remote);
-
-  // Nothing gets uploaded to sync and the local profile wins.
-  UpdatesToSync updates = FlushToSync();
-  EXPECT_THAT(updates.profiles_to_upload_to_sync, IsEmpty());
-  EXPECT_THAT(updates.profiles_to_delete_from_sync, IsEmpty());
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
-}
-
-TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        IncorporateRemoteProfileShouldNotOverwriteFullNameByEmptyString) {
   AutofillProfile local(kSmallerGuid);
   local.SetRawInfo(NAME_FULL, u"John");
@@ -259,7 +216,6 @@ TEST_F(
     AutofillProfileSyncDifferenceTrackerTest,
     IncorporateRemoteProfileShouldKeepRemoteKeyAndLocalOriginWhenMergingDuplicateProfileWithBiggerKey) {
   AutofillProfile local(kSmallerGuid);
-  local.set_origin(kSettingsOrigin);
   local.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                          VerificationStatus::kObserved);
   local.SetRawInfoWithVerificationStatus(
@@ -275,18 +231,15 @@ TEST_F(
       ADDRESS_HOME_STREET_ADDRESS, u"1 1st st", VerificationStatus::kObserved);
   remote.FinalizeAfterImport();
 
-  AutofillProfile merged(remote);
-  merged.set_origin(kSettingsOrigin);
-
   IncorporateRemoteProfile(remote);
 
   // Nothing gets uploaded to sync and the remote profile wins except for the
   // full name.
   UpdatesToSync updates = FlushToSync();
-  EXPECT_THAT(updates.profiles_to_upload_to_sync, ElementsAre(merged));
+  EXPECT_TRUE(updates.profiles_to_upload_to_sync.empty());
   EXPECT_THAT(updates.profiles_to_delete_from_sync,
               ElementsAre(std::string(kSmallerGuid)));
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(merged));
+  EXPECT_THAT(GetAllLocalData(), ElementsAre(remote));
 }
 
 TEST_F(
@@ -328,7 +281,6 @@ TEST_F(
 
   // The remote profile has the same key.
   AutofillProfile remote(kSmallerGuid);
-  remote.set_origin(kSettingsOrigin);
   remote.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
                                           VerificationStatus::kUserVerified);
   remote.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STREET_ADDRESS,
@@ -336,17 +288,15 @@ TEST_F(
                                           VerificationStatus::kUserVerified);
   remote.FinalizeAfterImport();
 
-  AutofillProfile merged(local);
-  merged.set_origin(kSettingsOrigin);
   IncorporateRemoteProfile(remote);
 
   // Nothing gets uploaded to sync and the remote profile wins except for the
   // full name.
   UpdatesToSync updates = FlushToSync();
-  EXPECT_THAT(updates.profiles_to_upload_to_sync, ElementsAre(merged));
+  EXPECT_TRUE(updates.profiles_to_upload_to_sync.empty());
   EXPECT_THAT(updates.profiles_to_delete_from_sync,
               ElementsAre(std::string(kSmallerGuid)));
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(merged));
+  EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
 }
 
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
@@ -361,7 +311,6 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileDeleted) {
   AutofillProfile local(kSmallerGuid);
-  local.set_origin(kSettingsOrigin);
   AddAutofillProfilesToTable({local});
 
   EXPECT_EQ(absl::nullopt, tracker()->IncorporateRemoteDelete(kSmallerGuid));
@@ -378,7 +327,6 @@ TEST_F(AutofillProfileSyncDifferenceTrackerTest,
 TEST_F(AutofillProfileSyncDifferenceTrackerTest,
        FlushToLocalShouldCallbackWhenProfileAdded) {
   AutofillProfile remote(kSmallerGuid);
-  remote.set_origin(kSettingsOrigin);
   IncorporateRemoteProfile(remote);
 
   MockCallback<base::OnceClosure> autofill_changes_callback;
@@ -500,56 +448,6 @@ TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
   // The remote profile has a different street address.
   AutofillProfile remote(kBiggerGuid);
   remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2st st");
-  remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
-  remote.FinalizeAfterImport();
-  IncorporateRemoteProfile(remote);
-  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
-
-  // The local profile gets uploaded (due to initial sync) and the remote
-  // profile gets stored locally.
-  UpdatesToSync updates = FlushToSync();
-  EXPECT_THAT(updates.profiles_to_upload_to_sync, ElementsAre(local));
-  EXPECT_THAT(updates.profiles_to_delete_from_sync, IsEmpty());
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(local, remote));
-}
-
-TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
-       MergeSimilarEntriesForInitialSyncDoesNotMatchLocalVerifiedEntry) {
-  // The local entry is verified, should not get merged.
-  AutofillProfile local(kSmallerGuid);
-  local.set_origin(kSettingsOrigin);
-  local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.FinalizeAfterImport();
-  AddAutofillProfilesToTable({local});
-
-  // The remote profile is similar to the local one.
-  AutofillProfile remote(kBiggerGuid);
-  remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
-  remote.FinalizeAfterImport();
-  IncorporateRemoteProfile(remote);
-  EXPECT_EQ(absl::nullopt, MergeSimilarEntriesForInitialSync());
-
-  // The local profile gets uploaded (due to initial sync) and the remote
-  // profile gets stored locally.
-  UpdatesToSync updates = FlushToSync();
-  EXPECT_THAT(updates.profiles_to_upload_to_sync, ElementsAre(local));
-  EXPECT_THAT(updates.profiles_to_delete_from_sync, IsEmpty());
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(local, remote));
-}
-
-TEST_F(AutofillProfileInitialSyncDifferenceTrackerTest,
-       MergeSimilarEntriesForInitialSyncDoesNotMatchRemoteVerifiedEntry) {
-  AutofillProfile local(kSmallerGuid);
-  local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local.FinalizeAfterImport();
-  AddAutofillProfilesToTable({local});
-
-  // The remote profile is similar to the local one but is verified and thus it
-  // should not get merged.
-  AutofillProfile remote(kBiggerGuid);
-  remote.set_origin(kSettingsOrigin);
-  remote.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   remote.FinalizeAfterImport();
   IncorporateRemoteProfile(remote);

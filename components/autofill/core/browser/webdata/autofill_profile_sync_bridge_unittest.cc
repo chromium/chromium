@@ -584,12 +584,10 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData) {
   remote1.FinalizeAfterImport();
 
   AutofillProfile remote2(kGuidD);
-  remote2.set_origin(kSettingsOrigin);
   remote2.SetRawInfo(NAME_FIRST, u"Harry");
   remote2.FinalizeAfterImport();
 
   AutofillProfile remote3(kGuidB);
-  remote3.set_origin(kSettingsOrigin);
   remote3.SetRawInfo(NAME_FIRST, u"Tom Doe");
   remote3.FinalizeAfterImport();
 
@@ -690,7 +688,6 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_IdenticalProfiles) {
   local1.FinalizeAfterImport();
 
   AutofillProfile local2(kGuidB);
-  local2.set_origin(kSettingsOrigin);
   local2.SetRawInfoWithVerificationStatus(NAME_FIRST, u"Tom",
                                           VerificationStatus::kObserved);
   local2.SetRawInfoWithVerificationStatus(
@@ -719,18 +716,13 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_IdenticalProfiles) {
   AutofillProfileSpecifics remote2_specifics =
       CreateAutofillProfileSpecifics(remote2);
 
-  // Both remote profiles win, only the verified origin is taken over for the
-  // second profile.
-  AutofillProfileSpecifics merged2(remote2_specifics);
-  merged2.set_origin(kSettingsOrigin);
-  EXPECT_CALL(mock_processor(), Put(kGuidD, HasSpecifics(merged2), _));
   EXPECT_CALL(*backend(), CommitChanges());
 
   StartSyncing({remote1_specifics, remote2_specifics});
 
   EXPECT_THAT(GetAllLocalData(),
               UnorderedElementsAre(CreateAutofillProfile(remote1_specifics),
-                                   CreateAutofillProfile(merged2)));
+                                   CreateAutofillProfile(remote2_specifics)));
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
@@ -768,73 +760,47 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
-  AutofillProfile local1(kGuidA);
-  local1.SetRawInfo(NAME_FIRST, u"John");
-  local1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  local1.FinalizeAfterImport();
-  local1.set_use_count(27);
-
-  AutofillProfile local2(kGuidB);
-  local2.set_origin(kSettingsOrigin);
-  local2.SetRawInfo(NAME_FIRST, u"Tom");
-  local2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st");
-  local2.FinalizeAfterImport();
-  AddAutofillProfilesToTable({local1, local2});
+  AutofillProfile local(kGuidA);
+  local.SetRawInfo(NAME_FIRST, u"John");
+  local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
+  local.FinalizeAfterImport();
+  local.set_use_count(27);
+  AddAutofillProfilesToTable({local});
 
   // The synced profiles are identical to the local ones, except that the guids
   // and use_count values are different. Remote ones have additional company
   // name which makes them not be identical.
-  AutofillProfile remote1(kGuidC);
-  remote1.SetRawInfo(NAME_FIRST, u"John");
-  remote1.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
-  remote1.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
+  AutofillProfile remote = local;
+  remote.set_guid(kGuidB);
+  remote.set_use_count(13);
+  remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Note, this populates the full name for structured profiles.
-  remote1.FinalizeAfterImport();
-  remote1.set_use_count(13);
+  remote.FinalizeAfterImport();
 
-  AutofillProfile remote2(kGuidD);
-  remote2.SetRawInfo(NAME_FIRST, u"Tom");
-  remote2.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"2 2nd st");
-  remote2.SetRawInfo(COMPANY_NAME, u"Fizzbang, LLC.");
-  remote2.FinalizeAfterImport();
-  remote2.set_use_count(4);
+  AutofillProfileSpecifics remote_specifics =
+      CreateAutofillProfileSpecifics(remote);
 
-  AutofillProfileSpecifics remote1_specifics =
-      CreateAutofillProfileSpecifics(remote1);
-  AutofillProfileSpecifics remote2_specifics =
-      CreateAutofillProfileSpecifics(remote2);
-
-  // The first profile should have its origin updated.
-  // The second profile should remain as-is, because an unverified profile
-  // should never overwrite a verified one.
-  AutofillProfileSpecifics merged1(remote1_specifics);
-  ASSERT_GT(merged1.name_full_size(), 0);
-  ASSERT_EQ(merged1.name_full(0), "John");
-
+  AutofillProfileSpecifics merged(remote_specifics);
   // Merging two profile takes their max use count.
-  merged1.set_use_count(27);
+  merged.set_use_count(27);
 
   // Expect updating the first (merged) profile and adding the second local one.
-  EXPECT_CALL(mock_processor(), Put(kGuidC, HasSpecifics(merged1), _));
-  EXPECT_CALL(
-      mock_processor(),
-      Put(kGuidB, HasSpecifics(CreateAutofillProfileSpecifics(local2)), _));
+  EXPECT_CALL(mock_processor(), Put(kGuidB, HasSpecifics(merged), _));
   EXPECT_CALL(mock_processor(), Delete).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
 
-  StartSyncing({remote1_specifics, remote2_specifics});
+  StartSyncing({remote_specifics});
 
-  EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(
-                  WithUsageStats(CreateAutofillProfile(merged1)), local2,
-                  WithUsageStats(CreateAutofillProfile(remote2_specifics))));
+  EXPECT_THAT(
+      GetAllLocalData(),
+      UnorderedElementsAre(WithUsageStats(CreateAutofillProfile(merged))));
 }
 
 // Tests that MergeSimilarProfiles keeps the most recent use date of the two
 // profiles being merged.
 TEST_F(AutofillProfileSyncBridgeTest,
        MergeFullSyncData_SimilarProfiles_OlderUseDate) {
-  // Different guids, same origin, difference in the phone number.
+  // Different guids, difference in the phone number.
   AutofillProfile local(kGuidA);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
   local.set_use_date(base::Time::FromTimeT(30));
@@ -858,7 +824,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // profiles being merged.
 TEST_F(AutofillProfileSyncBridgeTest,
        MergeFullSyncData_SimilarProfiles_NewerUseDate) {
-  // Different guids, same origin, difference in the phone number.
+  // Different guids, difference in the phone number.
   AutofillProfile local(kGuidA);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
   local.set_use_date(base::Time::FromTimeT(30));
@@ -881,7 +847,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
 // profiles in |remote|.
 TEST_F(AutofillProfileSyncBridgeTest,
        MergeFullSyncData_SimilarProfiles_NonZeroUseCounts) {
-  // Different guids, same origin, difference in the phone number.
+  // Different guids, difference in the phone number.
   AutofillProfile local(kGuidA);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
   local.set_use_count(12);

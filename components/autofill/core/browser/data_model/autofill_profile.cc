@@ -562,8 +562,6 @@ bool AutofillProfile::IsStrictSupersetOf(
 }
 
 void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
-  // Verified profiles should never be overwritten with unverified data.
-  DCHECK(!IsVerified() || profile.IsVerified());
   DCHECK_EQ(guid(), profile.guid());
 
   // Some fields should not got overwritten by empty values; back-up the

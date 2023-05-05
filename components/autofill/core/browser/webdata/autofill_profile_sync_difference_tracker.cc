@@ -29,7 +29,8 @@ AutofillProfileSyncDifferenceTracker::AutofillProfileSyncDifferenceTracker(
     AutofillTable* table)
     : table_(table) {}
 
-AutofillProfileSyncDifferenceTracker::~AutofillProfileSyncDifferenceTracker() {}
+AutofillProfileSyncDifferenceTracker::~AutofillProfileSyncDifferenceTracker() =
+    default;
 
 optional<ModelError>
 AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
@@ -49,11 +50,6 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
     // the local entry with remote data.
     std::unique_ptr<AutofillProfile> updated =
         std::make_unique<AutofillProfile>(local_with_same_storage_key.value());
-    // We ignore remote updates to a verified profile because we want to keep
-    // the exact version that the user edited by hand.
-    if (local_with_same_storage_key->IsVerified() && !remote->IsVerified()) {
-      return absl::nullopt;
-    }
     updated->OverwriteDataFrom(*remote);
     // TODO(crbug.com/1117022l): if |updated| deviates from |remote|, we should
     // sync it back up. The only way |updated| can differ is having some extra
@@ -104,13 +100,6 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
           << std::min(remote_storage_key, local_storage_key);
       if (remote_storage_key > local_storage_key) {
         // We keep the remote entity and delete the local one.
-        // Ensure that a verified profile can never revert back to an unverified
-        // one. In such a case, take over the old origin for the new entry.
-        if (local->IsVerified() && !remote->IsVerified()) {
-          remote->set_origin(local->origin());
-          // Save a copy of the remote profile also* to sync.
-          save_to_sync_.push_back(std::make_unique<AutofillProfile>(*remote));
-        }
         add_to_local_.push_back(std::move(remote));
         // Deleting from sync is a no-op if it is local-only so far.
         // There are a few ways how a synced local entry A could theoretically
@@ -139,22 +128,6 @@ AutofillProfileSyncDifferenceTracker::IncorporateRemoteProfile(
         RETURN_IF_ERROR(DeleteFromLocal(local_storage_key));
       } else {
         // We keep the local entity and delete the remote one.
-        // Ensure that a verified profile can never revert back to an unverified
-        // one. In such a case, modify the origin and re-upload. Otherwise,
-        // there's no need to upload it: either is was already uploaded before
-        // (if this is incremental sync) or we'll upload it with all the
-        // remaining data in GetLocalOnlyEntries (if this is an initial sync).
-        if (remote->IsVerified() && !local->IsVerified()) {
-          auto modified_local = std::make_unique<AutofillProfile>(*local);
-          modified_local->set_origin(remote->origin());
-          update_to_local_.push_back(
-              std::make_unique<AutofillProfile>(*modified_local));
-          save_to_sync_.push_back(std::move(modified_local));
-          // The local entity is already marked for upload so it is not local
-          // only anymore (we do not want to upload it once again while flushing
-          // if this is initial sync).
-          GetLocalOnlyEntries()->erase(local_storage_key);
-        }
         delete_from_sync_.insert(remote_storage_key);
       }
       return absl::nullopt;
@@ -351,17 +324,8 @@ AutofillProfileInitialSyncDifferenceTracker::FindMergeableLocalEntry(
     const AutofillProfile& remote,
     const AutofillProfileComparator& comparator) {
   DCHECK(GetLocalOnlyEntries());
-
-  // Both the remote and the local entry need to be non-verified to be
-  // mergeable.
-  if (remote.IsVerified()) {
-    return absl::nullopt;
-  }
-
-  // Check if there is a mergeable local profile.
   for (const auto& [storage_key, local_candidate] : *GetLocalOnlyEntries()) {
-    if (!local_candidate->IsVerified() &&
-        comparator.AreMergeable(*local_candidate, remote)) {
+    if (comparator.AreMergeable(*local_candidate, remote)) {
       return *local_candidate;
     }
   }
