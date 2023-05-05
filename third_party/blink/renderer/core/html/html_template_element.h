@@ -114,6 +114,8 @@ class CORE_EXPORT HTMLTemplateElement final : public HTMLElement {
   DeclarativeShadowRootType declarative_shadow_root_type_;
 };
 
+// TODO(crbug.com/1396384) Remove this entire function when the older version
+// of declarative shadow DOM is removed.
 ALWAYS_INLINE bool HTMLTemplateElement::IsNonStreamingDeclarativeShadowRoot()
     const {
   switch (declarative_shadow_root_type_) {

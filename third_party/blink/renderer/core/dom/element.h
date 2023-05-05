@@ -662,10 +662,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   ShadowRoot* attachShadow(const ShadowRootInit*, ExceptionState&);
 
   // Returns true if the attachment was successful.
-  bool AttachDeclarativeShadowRoot(HTMLTemplateElement*,
-                                   ShadowRootType,
-                                   FocusDelegation,
-                                   SlotAssignmentMode);
+  bool AttachStreamingDeclarativeShadowRoot(HTMLTemplateElement&,
+                                            ShadowRootType,
+                                            FocusDelegation,
+                                            SlotAssignmentMode);
+  // TODO(crbug.com/1396384) Remove this entire function when the older version
+  // of declarative shadow DOM is removed.
+  bool AttachDeprecatedNonStreamingDeclarativeShadowRoot(HTMLTemplateElement&,
+                                                         ShadowRootType,
+                                                         FocusDelegation,
+                                                         SlotAssignmentMode);
 
   ShadowRoot& CreateUserAgentShadowRoot();
   ShadowRoot& AttachShadowRootInternal(

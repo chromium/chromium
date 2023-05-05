@@ -1085,13 +1085,14 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
           // TODO(crbug.com/1063157): Add an attribute for imperative slot
           // assignment.
           auto slot_assignment_mode = SlotAssignmentMode::kNamed;
-          shadow_host_stack_item->GetElement()->AttachDeclarativeShadowRoot(
-              template_element,
-              template_element->GetDeclarativeShadowRootType() ==
-                      DeclarativeShadowRootType::kOpen
-                  ? ShadowRootType::kOpen
-                  : ShadowRootType::kClosed,
-              focus_delegation, slot_assignment_mode);
+          shadow_host_stack_item->GetElement()
+              ->AttachDeprecatedNonStreamingDeclarativeShadowRoot(
+                  *template_element,
+                  template_element->GetDeclarativeShadowRootType() ==
+                          DeclarativeShadowRootType::kOpen
+                      ? ShadowRootType::kOpen
+                      : ShadowRootType::kClosed,
+                  focus_delegation, slot_assignment_mode);
         }
       }
     }

@@ -833,12 +833,13 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     auto slot_assignment_mode = SlotAssignmentMode::kNamed;
     HTMLStackItem* shadow_host_stack_item = open_elements_.TopStackItem();
     Element* host = shadow_host_stack_item->GetElement();
+
     ShadowRootType type = declarative_shadow_root_type ==
                                   DeclarativeShadowRootType::kStreamingOpen
                               ? ShadowRootType::kOpen
                               : ShadowRootType::kClosed;
-    bool success = host->AttachDeclarativeShadowRoot(
-        template_element, type, focus_delegation, slot_assignment_mode);
+    bool success = host->AttachStreamingDeclarativeShadowRoot(
+        *template_element, type, focus_delegation, slot_assignment_mode);
     if (success) {
       DCHECK(host->AuthorShadowRoot());
       UseCounter::Count(host->GetDocument(),
