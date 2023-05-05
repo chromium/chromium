@@ -5,8 +5,7 @@
 #ifndef MEDIA_BASE_AMPLITUDE_PEAK_DETECTOR_H_
 #define MEDIA_BASE_AMPLITUDE_PEAK_DETECTOR_H_
 
-#include "base/strings/string_piece.h"
-#include "base/threading/thread_checker.h"
+#include "base/synchronization/lock.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
@@ -26,8 +25,10 @@ namespace media {
 //
 // Note: does nothing if the "audio.latency" tracing category is disabled.
 //
-// Note: AmplitudePeakDetector can be created on any thread, but all calls to
-// `FindPeak()` must be made on the same thread.
+// Note: AmplitudePeakDetector expects only one thread to be calling FindPeak().
+// It's ok for that thread to change occasionnaly, since a platform's realtime
+// audio threads can sometimes change (e.g. when there is a device change).
+// Multiple threads calling FindPeak() simultaneously would be a product bug.
 class MEDIA_EXPORT AmplitudePeakDetector {
  public:
   using PeakDetectedCB = base::RepeatingClosure;
@@ -53,11 +54,10 @@ class MEDIA_EXPORT AmplitudePeakDetector {
 
   const PeakDetectedCB peak_detected_cb_;
 
-  bool in_a_peak_ GUARDED_BY_CONTEXT(thread_checker_) = false;
+  base::Lock lock_;
+  bool in_a_peak_ GUARDED_BY(lock_) = false;
 
   bool is_tracing_enabled_;
-
-  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace media
