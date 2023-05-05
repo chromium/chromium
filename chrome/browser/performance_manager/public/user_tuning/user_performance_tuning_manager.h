@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_PERFORMANCE_TUNING_MANAGER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_USER_PERFORMANCE_TUNING_MANAGER_H_
 
+#include <memory>
+
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/power_monitor/battery_state_sampler.h"
-#include "base/power_monitor/power_observer.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/user_tuning/user_performance_tuning_notifier.h"
@@ -33,9 +33,7 @@ namespace performance_manager::user_tuning {
 // - Starts to manage the modes when Start() is called in PreMainMessageLoopRun.
 //
 // This object lives on the main thread and should be used from it exclusively.
-class UserPerformanceTuningManager
-    : public base::PowerStateObserver,
-      public base::BatteryStateSampler::Observer {
+class UserPerformanceTuningManager {
  public:
   // The percentage of battery that is considered "low". For instance, this
   // would be `20` for 20%.
@@ -140,23 +138,10 @@ class UserPerformanceTuningManager
   static bool HasInstance();
   static UserPerformanceTuningManager* GetInstance();
 
-  ~UserPerformanceTuningManager() override;
+  ~UserPerformanceTuningManager();
 
   void AddObserver(Observer* o);
   void RemoveObserver(Observer* o);
-
-  // Returns true if the device is a portable device that can run on battery
-  // power, false otherwise.
-  // This is determined asynchronously, so it may indicate false for an
-  // undetermined amount of time at startup, until the battery state is sampled
-  // for the first time.
-  bool DeviceHasBattery() const;
-
-  // If called with `disabled = true`, will disable battery saver mode until the
-  // device is plugged in or the user configures the battery saver mode state
-  // preference.
-  void SetTemporaryBatterySaverDisabledForSession(bool disabled);
-  bool IsBatterySaverModeDisabledForSession() const;
 
   // Returns true if High Efficiency mode is currently enabled.
   bool IsHighEfficiencyModeActive();
@@ -171,6 +156,21 @@ class UserPerformanceTuningManager
 
   // Enables high efficiency mode and sets the relevant prefs accordingly.
   void SetHighEfficiencyModeEnabled(bool enabled);
+
+  // Sets the default value of the discard time pref using the command line
+  // switch, if the pref is in the default state.
+  static void SetDefaultTimeBeforeDiscardFromSwitch(PrefService* local_state);
+
+  // Discards the given WebContents with the same mechanism as one that is
+  // discarded through a natural timeout
+  void DiscardPageForTesting(content::WebContents* web_contents);
+
+  // Returns true if the device is a portable device that can run on battery
+  // power, false otherwise.
+  // This is determined asynchronously, so it may indicate false for an
+  // undetermined amount of time at startup, until the battery state is
+  // sampled for the first time.
+  bool DeviceHasBattery() const;
 
   // Returns true if Battery Saver Mode interventions are active. If any state
   // transitions cause an observer notification, this is guaranteed to reflect
@@ -188,19 +188,18 @@ class UserPerformanceTuningManager
   // indicates that the battery state has not been sampled yet.
   int SampledBatteryPercentage() const;
 
-  // Sets the default value of the discard time pref using the command line
-  // switch, if the pref is in the default state.
-  static void SetDefaultTimeBeforeDiscardFromSwitch(PrefService* local_state);
-
-  // Discards the given WebContents with the same mechanism as one that is
-  // discarded through a natural timeout
-  void DiscardPageForTesting(content::WebContents* web_contents);
+  // If called with `disabled = true`, will disable battery saver mode until
+  // the device is plugged in or the user configures the battery saver mode
+  // state preference.
+  void SetTemporaryBatterySaverDisabledForSession(bool disabled);
+  bool IsBatterySaverModeDisabledForSession() const;
 
  private:
   friend class ::ChromeBrowserMainExtraPartsPerformanceManager;
   friend class ::PerformanceManagerMetricsProviderTest;
   friend class UserPerformanceTuningManagerTest;
   friend class TestUserPerformanceTuningManagerEnvironment;
+  friend class DesktopBatterySaverProvider;
 
   // An implementation of UserPerformanceTuningNotifier::Receiver that
   // forwards the notifications to the UserPerformanceTuningManager on the Main
@@ -223,41 +222,40 @@ class UserPerformanceTuningManager
       std::unique_ptr<HighEfficiencyModeDelegate>
           high_efficiency_mode_delegate = nullptr);
 
+  class BatterySaverProvider {
+   public:
+    virtual ~BatterySaverProvider() = default;
+
+    virtual bool DeviceHasBattery() const = 0;
+    virtual bool IsBatterySaverActive() const = 0;
+    virtual bool IsUsingBatteryPower() const = 0;
+    virtual base::Time GetLastBatteryUsageTimestamp() const = 0;
+    virtual int SampledBatteryPercentage() const = 0;
+    virtual void SetTemporaryBatterySaverDisabledForSession(bool disabled) = 0;
+    virtual bool IsBatterySaverModeDisabledForSession() const = 0;
+  };
+
   void Start();
 
   void OnHighEfficiencyModePrefChanged();
   void OnHighEfficiencyModeTimeBeforeDiscardChanged();
-  void OnBatterySaverModePrefChanged();
-
-  void UpdateBatterySaverModeState();
 
   void NotifyTabCountThresholdReached();
   void NotifyMemoryThresholdReached();
   void NotifyMemoryMetricsRefreshed();
 
-  // base::PowerStateObserver:
-  void OnPowerStateChange(bool on_battery_power) override;
+  // Called from the installed BatterySaverProvider to signify a change in
+  // battery saver mode related state.
+  void NotifyOnBatterySaverModeChanged(bool battery_saver_mode_enabled);
+  void NotifyOnExternalPowerConnectedChanged(bool on_battery_power);
+  void NotifyOnDeviceHasBatteryChanged(bool has_battery);
+  void NotifyOnBatteryThresholdReached();
 
-  // base::BatteryStateSampler::Observer:
-  void OnBatteryStateSampled(
-      const absl::optional<base::BatteryLevelProvider::BatteryState>&
-          battery_state) override;
-
-  bool was_started_ = false;
-  bool battery_saver_mode_enabled_ = false;
-  bool battery_saver_mode_disabled_for_session_ = false;
   std::unique_ptr<FrameThrottlingDelegate> frame_throttling_delegate_;
   std::unique_ptr<HighEfficiencyModeDelegate> high_efficiency_mode_delegate_;
 
-  bool has_battery_ = false;
-  bool force_has_battery_ = false;
-  bool on_battery_power_ = false;
-  bool is_below_low_battery_threshold_ = false;
-  int battery_percentage_ = -1;
+  std::unique_ptr<BatterySaverProvider> battery_saver_provider_;
 
-  base::ScopedObservation<base::BatteryStateSampler,
-                          base::BatteryStateSampler::Observer>
-      battery_state_sampler_obs_{this};
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
 

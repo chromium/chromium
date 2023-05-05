@@ -4,9 +4,13 @@
 
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_observer.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/performance_manager/metrics/page_timeline_monitor.h"
@@ -21,6 +25,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/frame_rate_throttling.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using performance_manager::user_tuning::prefs::HighEfficiencyModeState;
 using performance_manager::user_tuning::prefs::kHighEfficiencyModeState;
@@ -128,6 +133,210 @@ class HighEfficiencyModeDelegateImpl
 
 }  // namespace
 
+class DesktopBatterySaverProvider
+    : public UserPerformanceTuningManager::BatterySaverProvider,
+      public base::PowerStateObserver,
+      public base::BatteryStateSampler::Observer {
+ public:
+  DesktopBatterySaverProvider(UserPerformanceTuningManager* manager,
+                              PrefService* local_state)
+      : manager_(manager) {
+    CHECK(manager_);
+
+    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+    if (command_line->HasSwitch(
+            UserPerformanceTuningManager::kForceDeviceHasBatterySwitch)) {
+      force_has_battery_ = true;
+      has_battery_ = true;
+    }
+
+    pref_change_registrar_.Init(local_state);
+
+    pref_change_registrar_.Add(
+        performance_manager::user_tuning::prefs::kBatterySaverModeState,
+        base::BindRepeating(
+            &DesktopBatterySaverProvider::OnBatterySaverModePrefChanged,
+            base::Unretained(this)));
+
+    on_battery_power_ =
+        base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+
+    base::BatteryStateSampler* battery_state_sampler =
+        base::BatteryStateSampler::Get();
+    // Some platforms don't have a battery sampler, treat them as if they had no
+    // battery at all.
+    if (battery_state_sampler) {
+      battery_state_sampler_obs_.Observe(battery_state_sampler);
+    }
+
+    OnBatterySaverModePrefChanged();
+  }
+
+  ~DesktopBatterySaverProvider() override {
+    base::PowerMonitor::RemovePowerStateObserver(this);
+  }
+
+  // BatterySaverProvider:
+  bool DeviceHasBattery() const override { return has_battery_; }
+  bool IsBatterySaverActive() const override {
+    return battery_saver_mode_enabled_;
+  }
+  bool IsUsingBatteryPower() const override { return on_battery_power_; }
+  base::Time GetLastBatteryUsageTimestamp() const override {
+    return pref_change_registrar_.prefs()->GetTime(
+        performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp);
+  }
+  int SampledBatteryPercentage() const override { return battery_percentage_; }
+  void SetTemporaryBatterySaverDisabledForSession(bool disabled) override {
+    // Setting the temporary mode to its current state is a no-op.
+    if (battery_saver_mode_disabled_for_session_ == disabled) {
+      return;
+    }
+
+    battery_saver_mode_disabled_for_session_ = disabled;
+    UpdateBatterySaverModeState();
+  }
+
+  bool IsBatterySaverModeDisabledForSession() const override {
+    return battery_saver_mode_disabled_for_session_;
+  }
+
+ private:
+  void OnBatterySaverModePrefChanged() {
+    battery_saver_mode_disabled_for_session_ = false;
+    UpdateBatterySaverModeState();
+  }
+
+  void UpdateBatterySaverModeState() {
+    using BatterySaverModeState =
+        performance_manager::user_tuning::prefs::BatterySaverModeState;
+    BatterySaverModeState state = performance_manager::user_tuning::prefs::
+        GetCurrentBatterySaverModeState(pref_change_registrar_.prefs());
+
+    bool previously_enabled = battery_saver_mode_enabled_;
+
+    battery_saver_mode_enabled_ = false;
+
+    if (!battery_saver_mode_disabled_for_session_) {
+      switch (state) {
+        case BatterySaverModeState::kEnabled:
+          battery_saver_mode_enabled_ = true;
+          break;
+        case BatterySaverModeState::kEnabledOnBattery:
+          battery_saver_mode_enabled_ = on_battery_power_;
+          break;
+        case BatterySaverModeState::kEnabledBelowThreshold:
+          battery_saver_mode_enabled_ =
+              on_battery_power_ && is_below_low_battery_threshold_;
+          break;
+        default:
+          battery_saver_mode_enabled_ = false;
+          break;
+      }
+    }
+
+    // Don't change throttling or notify observers if the mode didn't change.
+    if (previously_enabled == battery_saver_mode_enabled_) {
+      return;
+    }
+
+    manager_->NotifyOnBatterySaverModeChanged(battery_saver_mode_enabled_);
+  }
+
+  // base::PowerStateObserver:
+  void OnPowerStateChange(bool on_battery_power) override {
+    on_battery_power_ = on_battery_power;
+
+    // Plugging in the device unsets the temporary disable BSM flag
+    if (!on_battery_power) {
+      battery_saver_mode_disabled_for_session_ = false;
+    }
+
+    manager_->NotifyOnExternalPowerConnectedChanged(on_battery_power);
+
+    UpdateBatterySaverModeState();
+  }
+
+  // base::BatteryStateSampler::Observer:
+  void OnBatteryStateSampled(
+      const absl::optional<base::BatteryLevelProvider::BatteryState>&
+          battery_state) override {
+    if (!battery_state) {
+      return;
+    }
+
+    bool had_battery = has_battery_;
+    has_battery_ = force_has_battery_ || battery_state->battery_count > 0;
+
+    // If the "has battery" state changed, notify observers.
+    if (had_battery != has_battery_) {
+      manager_->NotifyOnDeviceHasBatteryChanged(has_battery_);
+    }
+
+    // Log the unplugged battery usage to local pref if the previous value is
+    // more than a day old.
+    if (has_battery_ && !battery_state->is_external_power_connected &&
+        (base::Time::Now() - GetLastBatteryUsageTimestamp() >
+         kBatteryUsageWriteFrequency)) {
+      pref_change_registrar_.prefs()->SetTime(
+          performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp,
+          base::Time::Now());
+    }
+
+    if (!battery_state->current_capacity ||
+        !battery_state->full_charged_capacity) {
+      // This should only happen if there are no batteries connected, or
+      // multiple batteries connected (in which case their units may not match
+      // so they don't report a charge). We're not under the threshold for any
+      // battery.
+      DCHECK_NE(1, battery_state->battery_count);
+
+      is_below_low_battery_threshold_ = false;
+      return;
+    }
+
+    battery_percentage_ = *(battery_state->full_charged_capacity) > 0
+                              ? *(battery_state->current_capacity) * 100 /
+                                    *(battery_state->full_charged_capacity)
+                              : 100;
+
+    bool was_below_threshold = is_below_low_battery_threshold_;
+
+    // A battery is below the threshold if it's under 20% charge. On some
+    // platforms, we adjust the threshold by a value specified in Finch to
+    // account for the displayed battery level being artificially lower than the
+    // actual level. See
+    // `power_manager::BatteryPercentageConverter::ConvertActualToDisplay`.
+    uint64_t adjusted_low_battery_threshold =
+        UserPerformanceTuningManager::kLowBatteryThresholdPercent +
+        kBatterySaverModeThresholdAdjustmentForDisplayLevel;
+    is_below_low_battery_threshold_ =
+        battery_percentage_ < static_cast<int>(adjusted_low_battery_threshold);
+
+    if (is_below_low_battery_threshold_ && !was_below_threshold) {
+      manager_->NotifyOnBatteryThresholdReached();
+    }
+
+    UpdateBatterySaverModeState();
+  }
+
+  bool battery_saver_mode_enabled_ = false;
+  bool battery_saver_mode_disabled_for_session_ = false;
+
+  bool has_battery_ = false;
+  bool force_has_battery_ = false;
+  bool on_battery_power_ = false;
+  bool is_below_low_battery_threshold_ = false;
+  int battery_percentage_ = -1;
+
+  base::ScopedObservation<base::BatteryStateSampler,
+                          base::BatteryStateSampler::Observer>
+      battery_state_sampler_obs_{this};
+  PrefChangeRegistrar pref_change_registrar_;
+
+  raw_ptr<UserPerformanceTuningManager> manager_;
+};
+
 const uint64_t UserPerformanceTuningManager::kLowBatteryThresholdPercent = 20;
 
 const char UserPerformanceTuningManager::kTimeBeforeDiscardInMinutesSwitch[] =
@@ -165,8 +374,6 @@ UserPerformanceTuningManager* UserPerformanceTuningManager::GetInstance() {
 UserPerformanceTuningManager::~UserPerformanceTuningManager() {
   DCHECK_EQ(this, g_user_performance_tuning_manager);
   g_user_performance_tuning_manager = nullptr;
-
-  base::PowerMonitor::RemovePowerStateObserver(this);
 }
 
 void UserPerformanceTuningManager::AddObserver(Observer* o) {
@@ -178,22 +385,19 @@ void UserPerformanceTuningManager::RemoveObserver(Observer* o) {
 }
 
 bool UserPerformanceTuningManager::DeviceHasBattery() const {
-  return has_battery_;
+  return battery_saver_provider_ && battery_saver_provider_->DeviceHasBattery();
 }
 
 void UserPerformanceTuningManager::SetTemporaryBatterySaverDisabledForSession(
     bool disabled) {
-  // Setting the temporary mode to its current state is a no-op.
-  if (battery_saver_mode_disabled_for_session_ == disabled)
-    return;
-
-  battery_saver_mode_disabled_for_session_ = disabled;
-  UpdateBatterySaverModeState();
+  CHECK(battery_saver_provider_);
+  battery_saver_provider_->SetTemporaryBatterySaverDisabledForSession(disabled);
 }
 
 bool UserPerformanceTuningManager::IsBatterySaverModeDisabledForSession()
     const {
-  return battery_saver_mode_disabled_for_session_;
+  return battery_saver_provider_ &&
+         battery_saver_provider_->IsBatterySaverModeDisabledForSession();
 }
 
 bool UserPerformanceTuningManager::IsHighEfficiencyModeActive() {
@@ -223,20 +427,25 @@ void UserPerformanceTuningManager::SetHighEfficiencyModeEnabled(bool enabled) {
 }
 
 bool UserPerformanceTuningManager::IsBatterySaverActive() const {
-  return battery_saver_mode_enabled_;
+  return battery_saver_provider_ &&
+         battery_saver_provider_->IsBatterySaverActive();
 }
 
 bool UserPerformanceTuningManager::IsUsingBatteryPower() const {
-  return on_battery_power_;
+  return battery_saver_provider_ &&
+         battery_saver_provider_->IsUsingBatteryPower();
 }
 
 base::Time UserPerformanceTuningManager::GetLastBatteryUsageTimestamp() const {
-  return pref_change_registrar_.prefs()->GetTime(
-      performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp);
+  return battery_saver_provider_
+             ? battery_saver_provider_->GetLastBatteryUsageTimestamp()
+             : base::Time();
 }
 
 int UserPerformanceTuningManager::SampledBatteryPercentage() const {
-  return battery_percentage_;
+  return battery_saver_provider_
+             ? battery_saver_provider_->SampledBatteryPercentage()
+             : -1;
 }
 
 // static
@@ -302,6 +511,37 @@ void UserPerformanceTuningManager::UserPerformanceTuningReceiverImpl::
       }));
 }
 
+void UserPerformanceTuningManager::NotifyOnBatterySaverModeChanged(
+    bool battery_saver_mode_enabled) {
+  if (battery_saver_mode_enabled) {
+    frame_throttling_delegate_->StartThrottlingAllFrameSinks();
+  } else {
+    frame_throttling_delegate_->StopThrottlingAllFrameSinks();
+  }
+
+  for (auto& obs : observers_) {
+    obs.OnBatterySaverModeChanged(battery_saver_mode_enabled);
+  }
+}
+void UserPerformanceTuningManager::NotifyOnExternalPowerConnectedChanged(
+    bool on_battery_power) {
+  for (auto& obs : observers_) {
+    obs.OnExternalPowerConnectedChanged(on_battery_power);
+  }
+}
+
+void UserPerformanceTuningManager::NotifyOnDeviceHasBatteryChanged(
+    bool has_battery) {
+  for (auto& obs : observers_) {
+    obs.OnDeviceHasBatteryChanged(has_battery);
+  }
+}
+void UserPerformanceTuningManager::NotifyOnBatteryThresholdReached() {
+  for (auto& obs : observers_) {
+    obs.OnBatteryThresholdReached();
+  }
+}
+
 UserPerformanceTuningManager::UserPerformanceTuningManager(
     PrefService* local_state,
     std::unique_ptr<UserPerformanceTuningNotifier> notifier,
@@ -332,8 +572,6 @@ UserPerformanceTuningManager::UserPerformanceTuningManager(
 }
 
 void UserPerformanceTuningManager::Start() {
-  was_started_ = true;
-
   pref_change_registrar_.Add(
       performance_manager::user_tuning::prefs::
           kHighEfficiencyModeTimeBeforeDiscardInMinutes,
@@ -354,30 +592,8 @@ void UserPerformanceTuningManager::Start() {
   // Make sure the initial state of the pref is passed on to the policy.
   OnHighEfficiencyModePrefChanged();
 
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kForceDeviceHasBatterySwitch)) {
-    force_has_battery_ = true;
-    has_battery_ = true;
-  }
-
-  pref_change_registrar_.Add(
-      performance_manager::user_tuning::prefs::kBatterySaverModeState,
-      base::BindRepeating(
-          &UserPerformanceTuningManager::OnBatterySaverModePrefChanged,
-          base::Unretained(this)));
-
-  on_battery_power_ =
-      base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
-
-  base::BatteryStateSampler* battery_state_sampler =
-      base::BatteryStateSampler::Get();
-  // Some platforms don't have a battery sampler, treat them as if they had no
-  // battery at all.
-  if (battery_state_sampler) {
-    battery_state_sampler_obs_.Observe(battery_state_sampler);
-  }
-
-  OnBatterySaverModePrefChanged();
+  battery_saver_provider_ = std::make_unique<DesktopBatterySaverProvider>(
+      this, pref_change_registrar_.prefs());
 }
 
 void UserPerformanceTuningManager::OnHighEfficiencyModePrefChanged() {
@@ -397,57 +613,6 @@ void UserPerformanceTuningManager::
   high_efficiency_mode_delegate_->SetTimeBeforeDiscard(time_before_discard);
 }
 
-void UserPerformanceTuningManager::OnBatterySaverModePrefChanged() {
-  battery_saver_mode_disabled_for_session_ = false;
-  UpdateBatterySaverModeState();
-}
-
-void UserPerformanceTuningManager::UpdateBatterySaverModeState() {
-  DCHECK(was_started_);
-
-  using BatterySaverModeState =
-      performance_manager::user_tuning::prefs::BatterySaverModeState;
-  performance_manager::user_tuning::prefs::BatterySaverModeState state =
-      performance_manager::user_tuning::prefs::GetCurrentBatterySaverModeState(
-          pref_change_registrar_.prefs());
-
-  bool previously_enabled = battery_saver_mode_enabled_;
-
-  battery_saver_mode_enabled_ = false;
-
-  if (!battery_saver_mode_disabled_for_session_) {
-    switch (state) {
-      case BatterySaverModeState::kEnabled:
-        battery_saver_mode_enabled_ = true;
-        break;
-      case BatterySaverModeState::kEnabledOnBattery:
-        battery_saver_mode_enabled_ = on_battery_power_;
-        break;
-      case BatterySaverModeState::kEnabledBelowThreshold:
-        battery_saver_mode_enabled_ =
-            on_battery_power_ && is_below_low_battery_threshold_;
-        break;
-      default:
-        battery_saver_mode_enabled_ = false;
-        break;
-    }
-  }
-
-  // Don't change throttling or notify observers if the mode didn't change.
-  if (previously_enabled == battery_saver_mode_enabled_)
-    return;
-
-  if (battery_saver_mode_enabled_) {
-    frame_throttling_delegate_->StartThrottlingAllFrameSinks();
-  } else {
-    frame_throttling_delegate_->StopThrottlingAllFrameSinks();
-  }
-
-  for (auto& obs : observers_) {
-    obs.OnBatterySaverModeChanged(battery_saver_mode_enabled_);
-  }
-}
-
 void UserPerformanceTuningManager::NotifyTabCountThresholdReached() {
   for (auto& obs : observers_) {
     obs.OnTabCountThresholdReached();
@@ -464,85 +629,6 @@ void UserPerformanceTuningManager::NotifyMemoryMetricsRefreshed() {
   for (auto& obs : observers_) {
     obs.OnMemoryMetricsRefreshed();
   }
-}
-
-void UserPerformanceTuningManager::OnPowerStateChange(bool on_battery_power) {
-  on_battery_power_ = on_battery_power;
-
-  // Plugging in the device unsets the temporary disable BSM flag
-  if (!on_battery_power) {
-    battery_saver_mode_disabled_for_session_ = false;
-  }
-
-  for (auto& obs : observers_) {
-    obs.OnExternalPowerConnectedChanged(on_battery_power);
-  }
-
-  UpdateBatterySaverModeState();
-}
-
-void UserPerformanceTuningManager::OnBatteryStateSampled(
-    const absl::optional<base::BatteryLevelProvider::BatteryState>&
-        battery_state) {
-  if (!battery_state)
-    return;
-
-  bool had_battery = has_battery_;
-  has_battery_ = force_has_battery_ || battery_state->battery_count > 0;
-
-  // If the "has battery" state changed, notify observers.
-  if (had_battery != has_battery_) {
-    for (auto& obs : observers_) {
-      obs.OnDeviceHasBatteryChanged(has_battery_);
-    }
-  }
-
-  // Log the unplugged battery usage to local pref if the previous value is more
-  // than a day old.
-  if (has_battery_ && !battery_state->is_external_power_connected &&
-      (base::Time::Now() - GetLastBatteryUsageTimestamp() >
-       kBatteryUsageWriteFrequency)) {
-    pref_change_registrar_.prefs()->SetTime(
-        performance_manager::user_tuning::prefs::kLastBatteryUseTimestamp,
-        base::Time::Now());
-  }
-
-  if (!battery_state->current_capacity ||
-      !battery_state->full_charged_capacity) {
-    // This should only happen if there are no batteries connected, or multiple
-    // batteries connected (in which case their units may not match so they
-    // don't report a charge). We're not under the threshold for any battery.
-    DCHECK_NE(1, battery_state->battery_count);
-
-    is_below_low_battery_threshold_ = false;
-    return;
-  }
-
-  battery_percentage_ = *(battery_state->full_charged_capacity) > 0
-                            ? *(battery_state->current_capacity) * 100 /
-                                  *(battery_state->full_charged_capacity)
-                            : 100;
-
-  bool was_below_threshold = is_below_low_battery_threshold_;
-
-  // A battery is below the threshold if it's under 20% charge. On some
-  // platforms, we adjust the threshold by a value specified in Finch to account
-  // for the displayed battery level being artificially lower than the actual
-  // level. See
-  // `power_manager::BatteryPercentageConverter::ConvertActualToDisplay`.
-  uint64_t adjusted_low_battery_threshold =
-      kLowBatteryThresholdPercent +
-      kBatterySaverModeThresholdAdjustmentForDisplayLevel;
-  is_below_low_battery_threshold_ =
-      battery_percentage_ < static_cast<int>(adjusted_low_battery_threshold);
-
-  if (is_below_low_battery_threshold_ && !was_below_threshold) {
-    for (auto& obs : observers_) {
-      obs.OnBatteryThresholdReached();
-    }
-  }
-
-  UpdateBatterySaverModeState();
 }
 
 void UserPerformanceTuningManager::DiscardPageForTesting(
