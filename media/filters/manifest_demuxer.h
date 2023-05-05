@@ -130,6 +130,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   // Allow unit tests to grab the chunk demuxer.
   ChunkDemuxer* GetChunkDemuxerForTesting();
   bool has_pending_seek_for_testing() const { return !pending_seek_.is_null(); }
+  base::TimeDelta get_media_time_for_testing() const { return media_time_; }
   bool has_pending_event_for_testing() const { return has_pending_event_; }
   bool has_next_task_for_testing() const {
     return !cancelable_next_event_.IsCancelled();
@@ -174,7 +175,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
   void SeekInternal();
   void OnChunkDemuxerSeeked(PipelineStatus seek_status);
   void OnEngineSeekComplete(base::TimeDelta delay_time);
-  void CompletePendingSeek();
+  void TryCompletePendingSeek();
 
   // Allows for both the chunk demuxer and the engine to be required for
   // initialization.
@@ -221,6 +222,7 @@ class MEDIA_EXPORT ManifestDemuxer : public Demuxer, ManifestDemuxerEngineHost {
 
   // Flag for the two-cb wait for finishing a seek.
   bool seek_waiting_on_engine_ = false;
+  bool seek_waiting_on_demuxer_ = false;
 
   // Pending an event. Don't trigger a new event chain while one is in
   // progress.
