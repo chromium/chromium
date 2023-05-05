@@ -312,6 +312,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
       certificate_manager_(NearbyShareCertificateManagerImpl::Factory::Create(
           local_device_data_manager_.get(),
           contact_manager_.get(),
+          profile_info_provider_.get(),
           prefs,
           profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider(),
           profile->GetPath(),

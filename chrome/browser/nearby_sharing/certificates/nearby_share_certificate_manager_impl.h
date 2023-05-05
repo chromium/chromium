@@ -29,6 +29,7 @@
 class NearbyShareClient;
 class NearbyShareClientFactory;
 class NearbyShareLocalDeviceDataManager;
+class NearbyShareProfileInfoProvider;
 class PrefService;
 
 namespace device {
@@ -68,6 +69,7 @@ class NearbyShareCertificateManagerImpl
     static std::unique_ptr<NearbyShareCertificateManager> Create(
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
+        NearbyShareProfileInfoProvider* profile_info_provider,
         PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
@@ -80,6 +82,7 @@ class NearbyShareCertificateManagerImpl
     virtual std::unique_ptr<NearbyShareCertificateManager> CreateInstance(
         NearbyShareLocalDeviceDataManager* local_device_data_manager,
         NearbyShareContactManager* contact_manager,
+        NearbyShareProfileInfoProvider* profile_info_provider,
         PrefService* pref_service,
         leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
         const base::FilePath& profile_path,
@@ -96,6 +99,7 @@ class NearbyShareCertificateManagerImpl
   NearbyShareCertificateManagerImpl(
       NearbyShareLocalDeviceDataManager* local_device_data_manager,
       NearbyShareContactManager* contact_manager,
+      NearbyShareProfileInfoProvider* profile_info_provider,
       PrefService* pref_service,
       leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
       const base::FilePath& profile_path,
@@ -194,6 +198,8 @@ class NearbyShareCertificateManagerImpl
       local_device_data_manager_ = nullptr;
   raw_ptr<NearbyShareContactManager, ExperimentalAsh> contact_manager_ =
       nullptr;
+  raw_ptr<NearbyShareProfileInfoProvider, ExperimentalAsh>
+      profile_info_provider_ = nullptr;
   raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
   raw_ptr<NearbyShareClientFactory, ExperimentalAsh> client_factory_ = nullptr;
   raw_ptr<const base::Clock, ExperimentalAsh> clock_;

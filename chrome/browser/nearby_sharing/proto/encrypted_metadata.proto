@@ -4,7 +4,7 @@
 
 // Keep in sync with
 // http://google3/location/nearby/sharing/proto/contact_certificates.proto.
-// Messages not used in Chrome have been omitted. Last copied at cl/310853364.
+// Messages not used in Chrome have been omitted. Last copied at cl/424750446.
 
 syntax = "proto2";
 
@@ -27,4 +27,7 @@ message EncryptedMetadata {
 
   // The obfuscated Gaia ID of the account which created the certificate.
   optional string obfuscated_gaia_id = 5;
+
+  // The name of the account which created the certificate.
+  optional string account_name = 6;
 }
