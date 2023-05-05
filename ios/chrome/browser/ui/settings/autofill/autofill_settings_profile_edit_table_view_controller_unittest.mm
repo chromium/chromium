@@ -14,6 +14,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_multi_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
@@ -173,10 +174,64 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
 
   void CreateAccountProfile() {
     [autofill_profile_edit_table_view_controller_ setAccountProfile:YES];
+
+    // Reload the model so that the changes are propogated.
+    [controller() loadModel];
+  }
+
+  // Tests the data in the address section.
+  void TestViewData(int number_of_sections) {
+    TableViewModel* model = [controller() tableViewModel];
+
+    autofill::AutofillProfile profile = autofill::test::GetFullProfile2();
+    std::vector<std::pair<autofill::ServerFieldType, std::u16string>>
+        expected_values;
+    for (size_t i = 0; i < std::size(kProfileFieldsToDisplay); ++i) {
+      const AutofillProfileFieldDisplayInfo& field = kProfileFieldsToDisplay[i];
+      if (field.autofillType == autofill::NAME_HONORIFIC_PREFIX &&
+          !base::FeatureList::IsEnabled(
+              autofill::features::kAutofillEnableSupportForHonorificPrefixes)) {
+        continue;
+      }
+
+      expected_values.push_back(
+          {field.autofillType, profile.GetRawInfo(field.autofillType)});
+    }
+
+    EXPECT_EQ(number_of_sections, [model numberOfSections]);
+    EXPECT_EQ(expected_values.size(), (size_t)[model numberOfItemsInSection:0]);
+
+    for (size_t row = 0; row < expected_values.size(); row++) {
+      if (expected_values[row].first == autofill::ADDRESS_HOME_COUNTRY) {
+        TableViewMultiDetailTextItem* countryCell =
+            static_cast<TableViewMultiDetailTextItem*>(
+                GetTableViewItem(0, row));
+        EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                    countryCell.trailingDetailText);
+        continue;
+      }
+      TableViewTextEditItem* cell =
+          static_cast<TableViewTextEditItem*>(GetTableViewItem(0, row));
+      EXPECT_NSEQ(base::SysUTF16ToNSString(expected_values[row].second),
+                  cell.textFieldValue);
+    }
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Adding an account address results in an address section.
+TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
+       TestAccountProfileView) {
+  CreateAccountProfile();
+  TestViewData(2);
+}
+
+// Adding an address results in an address section.
+TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
+       TestProfileView) {
+  TestViewData(1);
+}
 
 // Tests the footer text of the view controller for the address profiles with
 // source kAccount when
@@ -184,10 +239,6 @@ class AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled
 TEST_F(AutofillSettingsProfileEditTableViewControllerTestWithUnionViewEnabled,
        TestFooterTextWithEmail) {
   CreateAccountProfile();
-
-  // Reload the model so that the changes are propogated.
-  [controller() loadModel];
-
   TableViewModel* model = [controller() tableViewModel];
 
   NSString* expected_footer_text = l10n_util::GetNSStringF(
