@@ -8,16 +8,9 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/glanceables/glanceables_controller.h"
-#include "ash/glanceables/glanceables_util.h"
 #include "ash/shell.h"
-#include "base/base_paths.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_path_override.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -36,9 +29,6 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/codec/png_codec.h"
 
 namespace {
 
@@ -120,51 +110,3 @@ IN_PROC_BROWSER_TEST_F(GlanceablesBrowserTest, ShowsAndHide) {
   // Glanceables should close because a window opened.
   EXPECT_FALSE(glanceables_controller()->IsShowing());
 }
-
-class GlanceablesScreenshotDeletionBrowserTest
-    : public GlanceablesBrowserTest,
-      public testing::WithParamInterface<bool> {
- public:
-  bool SetUpUserDataDirectory() override {
-    if (!temp_dir_.CreateUniqueTempDir()) {
-      return false;
-    }
-    home_dir_override_ = std::make_unique<base::ScopedPathOverride>(
-        base::DIR_HOME, temp_dir_.GetPath());
-
-    if (!GetParam()) {
-      return true;
-    }
-
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(400, 300);
-    bitmap.eraseColor(SK_ColorYELLOW);
-    std::vector<unsigned char> png_data;
-    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &png_data);
-    return base::WriteFile(ash::glanceables_util::GetSignoutScreenshotPath(),
-                           png_data);
-  }
-
- private:
-  base::ScopedTempDir temp_dir_;
-  std::unique_ptr<base::ScopedPathOverride> home_dir_override_;
-};
-
-IN_PROC_BROWSER_TEST_P(GlanceablesScreenshotDeletionBrowserTest,
-                       DeletesScreenshotAfterLogin) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  CreateAndStartUserSession();
-  signin::MakePrimaryAccountAvailable(identity_manager(), kTestUserName,
-                                      signin::ConsentLevel::kSignin);
-
-  base::ThreadPoolInstance::Get()->FlushForTesting();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(
-      base::PathExists(ash::glanceables_util::GetSignoutScreenshotPath()));
-}
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         GlanceablesScreenshotDeletionBrowserTest,
-                         testing::Bool());

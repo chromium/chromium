@@ -607,8 +607,6 @@ component("ash") {
     "glanceables/glanceables_up_next_event_item_view.h",
     "glanceables/glanceables_up_next_view.cc",
     "glanceables/glanceables_up_next_view.h",
-    "glanceables/glanceables_util.cc",
-    "glanceables/glanceables_util.h",
     "glanceables/glanceables_v2_controller.cc",
     "glanceables/glanceables_v2_controller.h",
     "glanceables/glanceables_view.cc",
