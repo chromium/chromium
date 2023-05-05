@@ -280,11 +280,8 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
 
     // TODO(crbug.com/921655): Add support for User Agent Client hints on
     // WebView.
-    if (cl->HasSwitch(switches::kWebViewEnableUserAgentClientHints)) {
-      features.EnableIfNotSet(blink::features::kUserAgentClientHint);
-    } else {
-      features.DisableIfNotSet(blink::features::kUserAgentClientHint);
-    }
+    features.DisableIfNotSet(blink::features::kUserAgentClientHint);
+
     // Disable Reducing User Agent minor version on WebView.
     features.DisableIfNotSet(blink::features::kReduceUserAgentMinorVersion);
 
