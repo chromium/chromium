@@ -91,7 +91,8 @@ WPT_RUN_ARGS+=(
   "$@"
 )
 
-(cd "$(dirname "$0")/" && ./wpt/wpt run "${WPT_RUN_ARGS[@]}")
+(cd "$(dirname "$0")/" && ./wpt/wpt run --skip-implementation-status=backlog "${WPT_RUN_ARGS[@]}")
+status="$?"
 
 if [[ "$UPDATE_EXPECTATIONS" == "true" ]]; then
   log "Updating WPT expectations..."
@@ -102,6 +103,9 @@ if [[ "$UPDATE_EXPECTATIONS" == "true" ]]; then
     --metadata "$WPT_METADATA" \
     "$WPT_REPORT"
 fi
+
+# Script status should match "wpt run" for CI.
+exit "$status"
 
 # Alternate usage:
 #
