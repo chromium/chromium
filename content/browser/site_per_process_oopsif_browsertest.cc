@@ -4,6 +4,7 @@
 
 #include "content/browser/site_per_process_browsertest.h"
 
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_switches.h"
@@ -15,6 +16,7 @@
 #include "content/test/render_document_feature.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace content {
@@ -39,6 +41,108 @@ class BaseUrlInheritanceBehaviorIframeTest : public ContentBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };  // class NewBaseUrlInheritanceBehaviorIframeTest
+
+// Test class that runs with the legacy base url behavior.
+class BaseUrlLegacyBehaviorIframeTest : public ContentBrowserTest {
+ public:
+  BaseUrlLegacyBehaviorIframeTest() {
+    feature_list_.InitAndDisableFeature(
+        blink::features::kNewBaseUrlInheritanceBehavior);
+  }
+
+  void SetUpOnMainThread() override {
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+  void StartEmbeddedServer() {
+    SetupCrossSiteRedirector(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};  // class NewBaseUrlLegacyBehaviorIframeTest
+
+// A test to make sure that restoring a session history entry that was saved
+// while the new behavior was enabled doesn't hit any CHECKs if it's restored
+// while using the legacy behavior.
+IN_PROC_BROWSER_TEST_F(BaseUrlLegacyBehaviorIframeTest,
+                       RestoreNonEmptyBaseURLFromSessionHistory) {
+  StartEmbeddedServer();
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  ASSERT_EQ(1U, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+  // Navigate child to about:blank.
+  {
+    TestNavigationObserver iframe_observer(shell()->web_contents());
+    EXPECT_TRUE(ExecJs(child, "location.href = 'about:blank';"));
+    iframe_observer.Wait();
+  }
+  GURL child_frame_url = child->current_frame_host()->GetLastCommittedURL();
+
+  // Save the page state.
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
+  blink::PageState page_state = entry->GetPageState();
+
+  // Simulate the case that the PageState was stored from a session with the new
+  // base URL inheritance behavior enabled, by defining the
+  // initiator_base_url_string. This approach is necessary because it is
+  // difficult to change the feature state at runtime during the test.
+  {
+    blink::ExplodedPageState exploded_page_state;
+    ASSERT_TRUE(blink::DecodePageState(page_state.ToEncodedData(),
+                                       &exploded_page_state));
+    EXPECT_EQ(1U, exploded_page_state.top.children.size());
+    // Add a non-null base url which shouldn't be there if the feature is turned
+    // off.
+    exploded_page_state.top.children[0].initiator_base_url_string =
+        base::UTF8ToUTF16(main_url.spec());
+    std::string encoded_data;
+    blink::EncodePageState(exploded_page_state, &encoded_data);
+    page_state = blink::PageState::CreateFromEncodedData(encoded_data);
+  }
+
+  // Restore the altered entry in a new tab and verify the frame loads without
+  // hitting any CHECKs.
+  Shell* new_shell = Shell::CreateNewWindow(
+      controller.GetBrowserContext(), GURL::EmptyGURL(), nullptr, gfx::Size());
+  FrameTreeNode* new_root =
+      static_cast<WebContentsImpl*>(new_shell->web_contents())
+          ->GetPrimaryFrameTree()
+          .root();
+  NavigationControllerImpl& new_controller =
+      static_cast<NavigationControllerImpl&>(
+          new_shell->web_contents()->GetController());
+  // Create the restored entry.
+  std::unique_ptr<NavigationEntryImpl> restored_entry = entry->Clone();
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  restored_entry->SetPageState(page_state, context.get());
+  EXPECT_EQ(main_url, restored_entry->root_node()->frame_entry->url());
+  ASSERT_EQ(1U, restored_entry->root_node()->children.size());
+  EXPECT_EQ(child_frame_url,
+            restored_entry->root_node()->children[0]->frame_entry->url());
+
+  std::vector<std::unique_ptr<NavigationEntry>> entries;
+  entries.push_back(std::move(restored_entry));
+  new_controller.Restore(entries.size() - 1, RestoreType::kRestored, &entries);
+  ASSERT_EQ(0u, entries.size());
+  {
+    TestNavigationObserver restore_observer(new_shell->web_contents());
+    new_controller.LoadIfNecessary();
+    restore_observer.Wait();
+  }
+  ASSERT_EQ(1U, new_root->child_count());
+  EXPECT_EQ(main_url, new_root->current_url());
+  EXPECT_EQ(GURL("about:blank"), new_root->child_at(0)->current_url());
+}
 
 // Test class to allow testing srcdoc functionality both with and without
 // `kIsolateSandboxedIframes` enabled. The tests verify the correct operation of

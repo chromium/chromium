@@ -13078,20 +13078,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
   //    otherwise).
   MaybeSendFencedFrameReportingBeacon(*navigation_request);
 
-  // TODO(crbug.com/1430232): Remove this once we know the cause of the
-  // associated CHECK failure.
-  if (common_params->initiator_base_url &&
-      (!blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() ||
-       (!common_params->url.IsAboutBlank() &&
-        !common_params->url.IsAboutSrcdoc()))) {
-    SCOPED_CRASH_KEY_BOOL(
-        "new_base_url", "new_base_url_enabled",
-        blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
-    SCOPED_CRASH_KEY_BOOL("new_base_url", "url_is_empty",
-                          common_params->initiator_base_url->is_empty());
-    base::debug::DumpWithoutCrashing();
-  }
-
   commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),

@@ -523,20 +523,12 @@ void FillNavigationParamsRequest(
   // Note: It's possible for initiator_base_url to be empty if this is an
   // error srcdoc page. See test
   // NavigationRequestBrowserTest.OriginForSrcdocErrorPageInSubframe.
-  if (blink::features::IsNewBaseUrlInheritanceBehaviorEnabled() &&
-      common_params.initiator_base_url) {
-    if (!common_params.url.IsAboutSrcdoc() &&
-        !common_params.url.IsAboutBlank()) {
-      // TODO(crbug.com/1430232): Remove this once we know the cause of the
-      // associated CHECK failure.
-      SCOPED_CRASH_KEY_BOOL("new_base_url", "rfi_base_url_is_empty",
-                            common_params.initiator_base_url->is_empty());
-      base::debug::DumpWithoutCrashing();
-      navigation_params->fallback_base_url = WebURL();
-    } else {
-      navigation_params->fallback_base_url =
-          common_params.initiator_base_url.value();
-    }
+  if (common_params.initiator_base_url) {
+    CHECK(blink::features::IsNewBaseUrlInheritanceBehaviorEnabled());
+    CHECK(common_params.url.IsAboutSrcdoc() ||
+          common_params.url.IsAboutBlank());
+    navigation_params->fallback_base_url =
+        common_params.initiator_base_url.value();
   } else {
     navigation_params->fallback_base_url = WebURL();
   }
