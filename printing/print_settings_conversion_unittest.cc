@@ -92,6 +92,35 @@ const char kPrinterSettingsWithImageableArea[] = R"({
   "dpiVertical": 300,
 })";
 
+#if !BUILDFLAG(IS_MAC)
+const char kPrinterSettingsWithNonSquareDpi[] = R"({
+  "headerFooterEnabled": false,
+  "title": "Test Doc",
+  "url": "http://localhost/",
+  "shouldPrintBackgrounds": false,
+  "shouldPrintSelectionOnly": false,
+  "mediaSize": {
+    "height_microns": 297000,
+    "imageable_area_bottom_microns": 1000,
+    "imageable_area_left_microns": 0,
+    "imageable_area_right_microns": 180000,
+    "imageable_area_top_microns": 297000,
+    "width_microns": 210000
+  },
+  "collate": false,
+  "copies": 1,
+  "color": 2,
+  "duplex": 0,
+  "landscape": false,
+  "deviceName": "printer",
+  "scaleFactor": 100,
+  "rasterizePDF": false,
+  "pagesPerSheet": 1,
+  "dpiHorizontal": 800,
+  "dpiVertical": 50,
+})";
+#endif  // !BUILDFLAG(IS_MAC)
+
 const char kCustomMargins[] = R"({
   "marginBottom": 10,
   "marginLeft": 30,
@@ -242,6 +271,25 @@ TEST(PrintSettingsConversionTest, WithCustomMarginsAndImageableArea) {
   EXPECT_EQ(page_setup.printable_area(), kExpectedPrintableArea);
   EXPECT_EQ(page_setup.effective_margins(), kExpectedPageMargins);
 }
+
+#if !BUILDFLAG(IS_MAC)
+TEST(PrintSettingsConversionTest, WithNonSquareDpi) {
+  // Check that physical size and printable area are scaled by the max DPI
+  // value. Not needed for macOS, which always has a square DPI.
+  static constexpr gfx::Size kExpectedSize{6614, 9354};
+  static constexpr gfx::Rect kExpectedPrintableArea{0, 0, 5669, 9323};
+
+  base::Value::Dict dict =
+      base::test::ParseJsonDict(kPrinterSettingsWithNonSquareDpi);
+  std::unique_ptr<PrintSettings> settings = PrintSettingsFromJobSettings(dict);
+  ASSERT_TRUE(settings);
+  EXPECT_EQ(settings->dpi_horizontal(), 800);
+  EXPECT_EQ(settings->dpi_vertical(), 50);
+  EXPECT_EQ(settings->page_setup_device_units().physical_size(), kExpectedSize);
+  EXPECT_EQ(settings->page_setup_device_units().printable_area(),
+            kExpectedPrintableArea);
+}
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST(PrintSettingsConversionTest, MissingDeviceName) {
   base::Value::Dict dict = base::test::ParseJsonDict(kPrinterSettings);
