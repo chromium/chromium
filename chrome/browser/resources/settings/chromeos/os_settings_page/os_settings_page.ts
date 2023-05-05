@@ -39,7 +39,7 @@ import {castExists} from '../assert_extras.js';
 import {MainPageMixin} from '../main_page_mixin.js';
 import {AboutPageBrowserProxyImpl} from '../os_about_page/about_page_browser_proxy.js';
 import {AndroidAppsBrowserProxyImpl, AndroidAppsInfo} from '../os_apps_page/android_apps_browser_proxy.js';
-import {OsPageVisibility} from '../os_page_visibility.js';
+import {OsPageAvailability} from '../os_page_availability.js';
 import {routes} from '../os_settings_routes.js';
 import {Route, Router} from '../router.js';
 
@@ -96,9 +96,9 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
       },
 
       /**
-       * Dictionary defining page visibility.
+       * Dictionary defining page availability.
        */
-      pageVisibility: {
+      pageAvailability: {
         type: Object,
         value() {
           return {};
@@ -155,7 +155,7 @@ export class OsSettingsPageElement extends OsSettingsPageElementBase {
   }
 
   androidAppsInfo?: AndroidAppsInfo;
-  pageVisibility: OsPageVisibility;
+  pageAvailability: OsPageAvailability;
   advancedToggleExpanded: boolean;
   showKerberosSection: boolean;
   private allowCrostini_: boolean;

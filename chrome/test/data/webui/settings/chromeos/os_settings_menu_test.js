@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {osPageVisibility, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {osPageAvailability, Route, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /** @fileoverview Runs tests for the OS settings menu. */
@@ -32,7 +32,7 @@ suite('OsSettingsMenu', function() {
     setupRouter();
     PolymerTest.clearBody();
     settingsMenu = document.createElement('os-settings-menu');
-    settingsMenu.pageVisibility = osPageVisibility;
+    settingsMenu.pageAvailability = osPageAvailability;
     document.body.appendChild(settingsMenu);
   });
 

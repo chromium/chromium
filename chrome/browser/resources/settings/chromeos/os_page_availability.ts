@@ -2,12 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/**
+ * @fileoverview
+ * This is the single source of truth for top-level page availability in
+ * ChromeOS Settings. An available page is one reachable to the user via some
+ * UI action. A page can be (un)available based on guest mode and/or enabled
+ * features.
+ *
+ * NOTE: This is separate from page visibility, which deals with what pages are
+ * visible to the user. For example, after removing infinite scroll b/272139876
+ * the bluetooth page can be available/accessible, but might not be the active
+ * visible page.
+ */
+
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-/**
- * Specifies page visibility based on incognito status and ChromeOS guest mode.
- */
-export interface OsPageVisibility {
+export interface OsPageAvailability {
   a11y: boolean;
   advancedSettings: boolean;
   appearance: {
@@ -49,19 +59,16 @@ export interface OsPageVisibility {
   reset: boolean;
 }
 
+const isGuestMode = loadTimeData.getBoolean('isGuest');
 const isAccountManagerEnabled =
     loadTimeData.valueExists('isAccountManagerEnabled') &&
     loadTimeData.getBoolean('isAccountManagerEnabled');
 const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
     loadTimeData.getBoolean('isKerberosEnabled');
-const isGuestMode = loadTimeData.getBoolean('isGuest');
 
-/**
- * Dictionary defining page visibility.
- */
-let osPageVisibility: OsPageVisibility;
+let osPageAvailability: OsPageAvailability;
 if (isGuestMode) {
-  osPageVisibility = {
+  osPageAvailability = {
     a11y: true,
     advancedSettings: true,
     appearance: {
@@ -99,7 +106,7 @@ if (isGuestMode) {
     reset: false,
   };
 } else {
-  osPageVisibility = {
+  osPageAvailability = {
     a11y: true,
     advancedSettings: true,
     appearance: {
@@ -142,4 +149,4 @@ if (isGuestMode) {
   };
 }
 
-export {osPageVisibility};
+export {osPageAvailability};

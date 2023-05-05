@@ -21,7 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists} from '../assert_extras.js';
-import {OsPageVisibility} from '../os_page_visibility.js';
+import {OsPageAvailability} from '../os_page_availability.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -90,9 +90,9 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
       },
 
       /**
-       * Dictionary defining page visibility.
+       * Dictionary defining page availability.
        */
-      pageVisibility: Object,
+      pageAvailability: Object,
 
       showAndroidApps: Boolean,
 
@@ -113,7 +113,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   prefs: Object;
   advancedToggleExpanded: boolean;
   toolbarSpinnerActive: boolean;
-  pageVisibility: OsPageVisibility;
+  pageAvailability: OsPageAvailability;
   showAndroidApps: boolean;
   showArcvmManageUsb: boolean;
   showCrostini: boolean;

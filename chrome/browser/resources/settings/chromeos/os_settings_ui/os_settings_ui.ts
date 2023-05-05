@@ -36,7 +36,7 @@ import {castExists} from '../assert_extras.js';
 import {setGlobalScrollTarget} from '../common/global_scroll_target_mixin.js';
 import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSettingChange} from '../metrics_recorder.js';
 import {convertPrefToSettingMetric} from '../metrics_utils.js';
-import {OsPageVisibility, osPageVisibility} from '../os_page_visibility.js';
+import {OsPageAvailability, osPageAvailability} from '../os_page_availability.js';
 import {OsToolbarElement} from '../os_toolbar/os_toolbar.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -128,7 +128,15 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
         observer: 'onNarrowChanged_',
       },
 
-      pageVisibility_: {type: Object, value: osPageVisibility},
+      /**
+       * Used to determine which pages and menu items are available (not to be
+       * confused with page visibility) to the user.
+       * See os_page_availability.ts for more details.
+       */
+      pageAvailability_: {
+        type: Object,
+        value: osPageAvailability,
+      },
 
       havePlayStoreApp_: Boolean,
 
@@ -166,7 +174,7 @@ export class OsSettingsUiElement extends OsSettingsUiElementBase {
   private advancedOpenedInMain_: boolean;
   private advancedOpenedInMenu_: boolean;
   private toolbarSpinnerActive_: boolean;
-  private pageVisibility_: OsPageVisibility;
+  private pageAvailability_: OsPageAvailability;
   private havePlayStoreApp_: boolean;
   private showAndroidApps_: boolean;
   private showArcvmManageUsb_: boolean;

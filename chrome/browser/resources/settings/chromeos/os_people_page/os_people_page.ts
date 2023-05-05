@@ -29,7 +29,7 @@ import {afterNextRender, flush, PolymerElement} from 'chrome://resources/polymer
 import {DeepLinkingMixin} from '../deep_linking_mixin.js';
 import {LockStateMixin} from '../lock_state_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {OsPageVisibility} from '../os_page_visibility.js';
+import {OsPageAvailability} from '../os_page_availability.js';
 import {routes} from '../os_settings_routes.js';
 import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router} from '../router.js';
@@ -62,9 +62,9 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
       syncStatus: Object,
 
       /**
-       * Dictionary defining page visibility.
+       * Dictionary defining page availability.
        */
-      pageVisibility: Object,
+      pageAvailability: Object,
 
       authToken_: {
         type: Object,
@@ -172,7 +172,7 @@ class OsSettingsPeoplePageElement extends OsSettingsPeoplePageElementBase {
   }
 
   syncStatus: SyncStatus;
-  pageVisibility: OsPageVisibility;
+  pageAvailability: OsPageAvailability;
   private authToken_: chrome.quickUnlockPrivate.TokenInfo|undefined;
   private profileIconUrl_: string;
   private profileName_: string;
