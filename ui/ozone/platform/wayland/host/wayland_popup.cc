@@ -112,7 +112,7 @@ void WaylandPopup::UpdateDecoration() {
   // Decorate the surface using the newer protocol. Relies on Ash >= M105.
   if (shell_popup_->SupportsDecoration()) {
     decorated_via_aura_popup_ = true;
-    shell_popup_->Decorate();
+    shell_popup_->Decorate(shadow_type_);
     return;
   }
 }

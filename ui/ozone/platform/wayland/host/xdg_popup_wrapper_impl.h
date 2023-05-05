@@ -36,7 +36,7 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   void SetWindowGeometry(const gfx::Rect& bounds) override;
   void Grab(uint32_t serial) override;
   bool SupportsDecoration() override;
-  void Decorate() override;
+  void Decorate(ui::PlatformWindowShadowType shadow_type) override;
   void SetScaleFactor(float scale_factor) override;
   XDGPopupWrapperImpl* AsXDGPopupWrapper() override;
 
