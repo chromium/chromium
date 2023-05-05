@@ -90,8 +90,25 @@ const char kIosBookmarkCachedFolderId[] = "ios.bookmark.cached_folder_id";
 // Caches the scroll position of Bookmarks.
 const char kIosBookmarkCachedTopMostRow[] = "ios.bookmark.cached_top_most_row";
 
-// Preference that keep information about where to create a new bookmark.
-const char kIosBookmarkFolderDefault[] = "ios.bookmark.default_folder";
+// Preference that keep information about the ID of the node of the last folder
+// in which user saved or moved bookmarks. Its value is
+// `kLastUsedBookmarkFolderNone` if no folder is explicitly set. The name does
+// not reflect the preference key. This is because this preference we used to
+// consider this folder to be the "default folder for bookmark". Today, we
+// instead consider the "default folder" to be the one selected when this
+// preference is set to `kLastUsedBookmarkFolderNone`. Related to
+// kIosBookmarkLastUsedStorageReceivingBookmarks.
+const char kIosBookmarkLastUsedFolderReceivingBookmarks[] =
+    "ios.bookmark.default_folder";
+
+// Preference that keep information about the storage type for
+// kIosBookmarkLastUsedFolderReceivingBookmarks. The value is based on
+// bookmarks::StorageType enum. This value should be ignored if the value of
+// `kIosBookmarkLastUsedFolderReceivingBookmarks` preference is
+// `kLastUsedBookmarkFolderNone`. Related to
+// `kIosBookmarkLastUsedFolderReceivingBookmarks`.
+const char kIosBookmarkLastUsedStorageReceivingBookmarks[] =
+    "ios.bookmark.bookmark_last_storage_receiving_bookmarks";
 
 // Preference that hold a boolean indicating if the user has already dismissed
 // the sign-in promo in bookmark view.

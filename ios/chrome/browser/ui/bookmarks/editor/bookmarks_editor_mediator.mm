@@ -12,6 +12,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/url_fixer.h"
 #import "ios/chrome/browser/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/bookmarks/bookmarks_utils.h"
 #import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
@@ -114,8 +115,11 @@
   DCHECK(folder);
   DCHECK(folder->is_folder());
   [self setFolder:folder];
-  // TODO:(crbug.com/1411901): update kIosBookmarkFolderDefault on save only.
-  _prefs->SetInt64(prefs::kIosBookmarkFolderDefault, folder->id());
+  bookmarks::StorageType type = bookmark_utils_ios::GetBookmarkModelType(
+      folder, _profileBookmarkModel.get(), _accountBookmarkModel.get());
+  // TODO:(crbug.com/1411901): Update the last used default folder on save only.
+  SetLastUsedBookmarkFolder(_prefs, folder, type);
+
   [self.consumer updateFolderLabel];
 }
 

@@ -26,8 +26,6 @@ class SyncService;
 // Mediator for the bookmark editor
 @interface BookmarksEditorMediator : NSObject <BookmarksEditorMutator>
 
-// Reference to the bookmark model.
-@property(nonatomic, assign, readonly) bookmarks::BookmarkModel* bookmarkModel;
 // BookmarkNode to edit.
 @property(nonatomic, assign) const bookmarks::BookmarkNode* bookmark;
 // Parent of `_bookmark` if the user tap on "save".

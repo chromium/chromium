@@ -68,6 +68,7 @@ class BookmarkMediatorUnitTest : public BookmarkIOSUnitTestSupport {
                     accountBookmarkModel:nullptr
                                    prefs:chrome_browser_state_->GetPrefs()
                    authenticationService:authentication_service_
+                             syncService:sync_service_
                         syncSetupService:sync_setup_service_.get()];
   }
 

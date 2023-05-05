@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_mediator.h"
@@ -164,6 +165,8 @@ enum class PresentedState {
                    authenticationService:AuthenticationServiceFactory::
                                              GetForBrowserState(
                                                  _browserState.get())
+                             syncService:SyncServiceFactory::GetForBrowserState(
+                                             _browserState.get())
                         syncSetupService:SyncSetupServiceFactory::
                                              GetForBrowserState(
                                                  _browserState.get())];

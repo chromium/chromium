@@ -19,6 +19,10 @@ class BookmarkNode;
 class BookmarkModel;
 }  // namespace bookmarks
 
+namespace syncer {
+class SyncService;
+}
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
@@ -27,15 +31,16 @@ class PrefRegistrySyncable;
 @interface BookmarkMediator : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithWithProfileBookmarkModel:
-                    (bookmarks::BookmarkModel*)profileBookmarkModel
-                            accountBookmarkModel:
-                                (bookmarks::BookmarkModel*)accountBookmarkModel
-                                           prefs:(PrefService*)prefs
-                           authenticationService:
-                               (AuthenticationService*)authenticationService
-                                syncSetupService:
-                                    (SyncSetupService*)syncSetupService
+- (instancetype)
+    initWithWithProfileBookmarkModel:
+        (bookmarks::BookmarkModel*)profileBookmarkModel
+                accountBookmarkModel:
+                    (bookmarks::BookmarkModel*)accountBookmarkModel
+                               prefs:(PrefService*)prefs
+               authenticationService:
+                   (AuthenticationService*)authenticationService
+                         syncService:(syncer::SyncService*)syncService
+                    syncSetupService:(SyncSetupService*)syncSetupService
     NS_DESIGNATED_INITIALIZER;
 
 // Registers the feature preferences.
