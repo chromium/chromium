@@ -99,7 +99,12 @@ class AnnotatorFuzzerTest {
     scoped_feature_list_.InitAndDisableFeature(
         optimization_guide::features::kPreventLongRunningPredictionModels);
   }
-  ~AnnotatorFuzzerTest() { task_environment_.RunUntilIdle(); }
+  ~AnnotatorFuzzerTest() {
+    annotator_.reset();
+    // To prevent ASAN issues, ensure the ModelExecutor gets destroyed since
+    // that is done using a DeleteSoon PostTask.
+    task_environment_.RunUntilIdle();
+  }
 
   browsing_topics::Annotator* annotator() { return annotator_.get(); }
 
