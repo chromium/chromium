@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//third_party/cpuinfo/cpuinfo.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/tflite/features.gni")
 
@@ -408,6 +409,12 @@ source_set("tflite_kernels") {
     "//third_party/pthreadpool",
     "//third_party/ruy",
   ]
+
+  if (use_cpuinfo) {
+    defines = ["TFLITE_HAVE_CPUINFO"]
+    deps += ["//third_party/cpuinfo"]
+    include_dirs = [ "//third_party/cpuinfo/src" ]
+  }
 
   configs += [
     ":tflite_config",
