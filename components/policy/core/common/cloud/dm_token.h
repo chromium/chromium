@@ -29,11 +29,6 @@ class POLICY_EXPORT DMToken {
   static DMToken CreateInvalidToken();
   static DMToken CreateEmptyToken();
 
-  // Deprecated, use the non-testing factory functions instead.
-  static DMToken CreateValidTokenForTesting(const std::string& value);
-  static DMToken CreateInvalidTokenForTesting();
-  static DMToken CreateEmptyTokenForTesting();
-
   DMToken(const DMToken& other) = default;
   DMToken(DMToken&& other) = default;
 

@@ -23,21 +23,6 @@ DMToken DMToken::CreateEmptyToken() {
   return DMToken(Status::kEmpty, "");
 }
 
-// static
-DMToken DMToken::CreateValidTokenForTesting(const std::string& value) {
-  return CreateValidToken(value);
-}
-
-// static
-DMToken DMToken::CreateInvalidTokenForTesting() {
-  return CreateInvalidToken();
-}
-
-// static
-DMToken DMToken::CreateEmptyTokenForTesting() {
-  return CreateEmptyToken();
-}
-
 DMToken::DMToken(Status status, const base::StringPiece value)
     : status_(status), value_(value) {}
 
