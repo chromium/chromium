@@ -63,6 +63,14 @@ function getRouter() {
   return document.querySelector('personalization-router');
 }
 
+/** Returns an array of three numbers, representing the RGB values. */
+function getBodyColorChannels() {
+  return getComputedStyle(document.body)
+      .backgroundColor.match(/rgb\((\d+), (\d+), (\d+)\)/)
+      .slice(1, 4)
+      .map(x => parseInt(x, 10));
+}
+
 class PersonalizationAppBrowserTest extends testing.Test {
   /** @override */
   get browsePreload() {
@@ -127,13 +135,45 @@ TEST_F(PersonalizationAppBrowserTest.name, 'All', async () => {
       const theme = getRouter()
                         .shadowRoot.querySelector('personalization-main')
                         .shadowRoot.querySelector('personalization-theme');
+
       const lightButton = await waitUntil(
           () => theme.shadowRoot.getElementById('lightMode'),
           'failed to find light button');
-      assertEquals('true', lightButton.getAttribute('aria-pressed'));
+      assertEquals('false', lightButton.getAttribute('aria-pressed'));
       const darkButton = theme.shadowRoot.getElementById('darkMode');
       assertTrue(!!darkButton);
-      assertEquals(darkButton.getAttribute('aria-pressed'), 'false');
+      assertEquals('false', darkButton.getAttribute('aria-pressed'));
+      const autoButton = theme.shadowRoot.getElementById('autoMode');
+      assertTrue(!!autoButton);
+      assertEquals('true', autoButton.getAttribute('aria-pressed'));
+    });
+
+    test('selects dark mode', async () => {
+      const theme = getRouter()
+                        .shadowRoot.querySelector('personalization-main')
+                        .shadowRoot.querySelector('personalization-theme');
+      const darkButton = theme.shadowRoot.getElementById('darkMode');
+
+      darkButton.click();
+
+      assertEquals('true', darkButton.getAttribute('aria-pressed'));
+      await waitUntil(
+          () => getBodyColorChannels().every(channel => channel < 50),
+          'failed to switch to dark mode');
+    });
+
+    test('selects light mode', async () => {
+      const theme = getRouter()
+                        .shadowRoot.querySelector('personalization-main')
+                        .shadowRoot.querySelector('personalization-theme');
+      const lightButton = theme.shadowRoot.getElementById('lightMode');
+
+      lightButton.click();
+
+      assertEquals('true', lightButton.getAttribute('aria-pressed'));
+      await waitUntil(
+          () => getBodyColorChannels().every(channel => channel > 200),
+          'failed to switch to light mode');
     });
 
     test('shows user info', async () => {

@@ -53,8 +53,6 @@ source_set("test_support") {
     "test/fake_personalization_app_ambient_provider.h",
     "test/fake_personalization_app_keyboard_backlight_provider.cc",
     "test/fake_personalization_app_keyboard_backlight_provider.h",
-    "test/fake_personalization_app_theme_provider.cc",
-    "test/fake_personalization_app_theme_provider.h",
     "test/fake_personalization_app_user_provider.cc",
     "test/fake_personalization_app_user_provider.h",
     "test/personalization_app_mojom_banned_browsertest_fixture.cc",
