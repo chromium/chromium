@@ -348,7 +348,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that history.pushState triggers a new detection.
-- (void)testLanguageDetectionWithPushState {
+// TODO(crbug.com/1442963): This test is flaky.
+- (void)FLAKY_testLanguageDetectionWithPushState {
   const GURL URL = web::test::HttpServer::MakeUrl(
       "http://scenarioLanguageDetectionPushState");
   std::map<GURL, std::string> responses;
