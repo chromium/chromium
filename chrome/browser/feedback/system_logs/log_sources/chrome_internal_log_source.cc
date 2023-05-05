@@ -104,7 +104,7 @@ constexpr char kDemoModeConfigKey[] = "demo_mode_config";
 constexpr char kOnboardingTime[] = "ONBOARDING_TIME";
 constexpr char kFreeDiskSpace[] = "FREE_DISK_SPACE";
 constexpr char kTotalDiskSpace[] = "TOTAL_DISK_SPACE";
-constexpr char kChronosHomeDirectory[] = "/home/user/chronos";
+constexpr char kChronosHomeDirectory[] = "/home/chronos/user";
 constexpr char kFailedKnowledgeFactorAttempts[] =
     "FAILED_KNOWLEDGE_FACTOR_ATTEMPTS";
 #else
