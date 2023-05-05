@@ -43,9 +43,9 @@ constexpr char kExtensionProviderId[] = "extension_provider_id";
 constexpr char kExtensionProviderName[] = "extension_provider_name";
 
 // Pixel test for the VPN list that is shown in the quick settings VPN sub-page.
-class VPNListViewPixelTest : public AshTestBase {
+class VpnDetailedViewPixelTest : public AshTestBase {
  public:
-  VPNListViewPixelTest() {
+  VpnDetailedViewPixelTest() {
     feature_list_.InitWithFeatures(
         {features::kQsRevamp, chromeos::features::kJelly}, {});
   }
@@ -68,8 +68,8 @@ class VPNListViewPixelTest : public AshTestBase {
     ASSERT_FALSE(detailed_view_container->children().empty());
     views::View* detailed_view = detailed_view_container->children()[0];
     ASSERT_TRUE(detailed_view);
-    ASSERT_TRUE(views::IsViewClass<VPNListView>(detailed_view));
-    vpn_list_view_ = static_cast<VPNListView*>(detailed_view);
+    ASSERT_TRUE(views::IsViewClass<VpnDetailedView>(detailed_view));
+    vpn_detailed_view_ = static_cast<VpnDetailedView*>(detailed_view);
   }
 
   absl::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -80,8 +80,8 @@ class VPNListViewPixelTest : public AshTestBase {
   void AddBuiltInProvider() {
     // Updating the list of third-party providers adds the built-in provider,
     // even if that list is empty.
-    vpn_list_view_->model()->vpn_list()->SetVpnProvidersForTest({});
-    vpn_list_view_->OnGetNetworkStateList({});
+    vpn_detailed_view_->model()->vpn_list()->SetVpnProvidersForTest({});
+    vpn_detailed_view_->OnGetNetworkStateList({});
   }
 
   void AddMultipleProvidersAndNetwork() {
@@ -100,7 +100,7 @@ class VPNListViewPixelTest : public AshTestBase {
     provider->provider_id = kArcProviderId;
     provider->app_id = kArcProviderAppId;
     providers.push_back(std::move(provider));
-    vpn_list_view_->model()->vpn_list()->SetVpnProvidersForTest(
+    vpn_detailed_view_->model()->vpn_list()->SetVpnProvidersForTest(
         std::move(providers));
 
     // Add a network just for the extension provider.
@@ -116,29 +116,29 @@ class VPNListViewPixelTest : public AshTestBase {
     network->type_state = NetworkTypeStateProperties::NewVpn(std::move(vpn));
     std::vector<NetworkStatePropertiesPtr> networks;
     networks.push_back(std::move(network));
-    vpn_list_view_->OnGetNetworkStateList(std::move(networks));
+    vpn_detailed_view_->OnGetNetworkStateList(std::move(networks));
   }
 
   base::test::ScopedFeatureList feature_list_;
-  raw_ptr<VPNListView, ExperimentalAsh> vpn_list_view_ = nullptr;
+  raw_ptr<VpnDetailedView, ExperimentalAsh> vpn_detailed_view_ = nullptr;
 };
 
-TEST_F(VPNListViewPixelTest, OnlyBuiltInVpn) {
+TEST_F(VpnDetailedViewPixelTest, OnlyBuiltInVpn) {
   AddBuiltInProvider();
 
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/1, vpn_list_view_));
+      /*revision_number=*/1, vpn_detailed_view_));
 }
 
-TEST_F(VPNListViewPixelTest, MultipleVpns) {
+TEST_F(VpnDetailedViewPixelTest, MultipleVpns) {
   AddMultipleProvidersAndNetwork();
 
   // Compare pixels.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_view",
-      /*revision_number=*/1, vpn_list_view_));
+      /*revision_number=*/1, vpn_detailed_view_));
 }
 
 }  // namespace ash

@@ -135,7 +135,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   UnifiedSystemTrayController::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
   UsbPeripheralNotificationController::RegisterProfilePrefs(registry);
-  VPNListView::RegisterProfilePrefs(registry);
+  VpnDetailedView::RegisterProfilePrefs(registry);
   WallpaperPrefManager::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
 

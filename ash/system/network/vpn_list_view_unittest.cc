@@ -38,10 +38,10 @@ constexpr char kExtensionProviderId[] = "extension_provider_id";
 constexpr char kExtensionProviderName[] = "extension_provider_name";
 
 // Tests are parameterized by QsRevamp.
-class VPNListViewTest : public AshTestBase,
-                        public testing::WithParamInterface<bool> {
+class VpnDetailedViewTest : public AshTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
-  VPNListViewTest() {
+  VpnDetailedViewTest() {
     if (IsQsRevampEnabled()) {
       feature_list_.InitAndEnableFeature(features::kQsRevamp);
     } else {
@@ -58,15 +58,15 @@ class VPNListViewTest : public AshTestBase,
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     delegate_ = std::make_unique<FakeDetailedViewDelegate>();
-    vpn_list_view_ = widget_->SetContentsView(
-        std::make_unique<VPNListView>(delegate_.get(), LoginStatus::USER));
-    vpn_list_view_->Init();
-    vpn_list_view_->OnGetNetworkStateList({});
+    vpn_detailed_view_ = widget_->SetContentsView(
+        std::make_unique<VpnDetailedView>(delegate_.get(), LoginStatus::USER));
+    vpn_detailed_view_->Init();
+    vpn_detailed_view_->OnGetNetworkStateList({});
   }
 
   void TearDown() override {
     widget_.reset();
-    vpn_list_view_ = nullptr;
+    vpn_detailed_view_ = nullptr;
     delegate_.reset();
     AshTestBase::TearDown();
   }
@@ -87,7 +87,7 @@ class VPNListViewTest : public AshTestBase,
     provider->provider_id = kArcProviderId;
     provider->app_id = kArcProviderAppId;
     providers.push_back(std::move(provider));
-    vpn_list_view_->model()->vpn_list()->SetVpnProvidersForTest(
+    vpn_detailed_view_->model()->vpn_list()->SetVpnProvidersForTest(
         std::move(providers));
 
     // Add a network just for the extension provider.
@@ -103,20 +103,20 @@ class VPNListViewTest : public AshTestBase,
     network->type_state = NetworkTypeStateProperties::NewVpn(std::move(vpn));
     std::vector<NetworkStatePropertiesPtr> networks;
     networks.push_back(std::move(network));
-    vpn_list_view_->OnGetNetworkStateList(std::move(networks));
+    vpn_detailed_view_->OnGetNetworkStateList(std::move(networks));
   }
 
   size_t GetProviderViewCount() {
-    return vpn_list_view_->provider_view_map_.size();
+    return vpn_detailed_view_->provider_view_map_.size();
   }
 
   size_t GetNetworkViewCount() {
-    return vpn_list_view_->network_view_guid_map_.size();
+    return vpn_detailed_view_->network_view_guid_map_.size();
   }
 
   std::vector<const views::View*> GetProviderViews() {
     std::vector<const views::View*> views;
-    for (const auto& it : vpn_list_view_->provider_view_map_) {
+    for (const auto& it : vpn_detailed_view_->provider_view_map_) {
       views.push_back(it.first);
     }
     return views;
@@ -124,14 +124,14 @@ class VPNListViewTest : public AshTestBase,
 
   std::vector<const views::View*> GetNetworkViews() {
     std::vector<const views::View*> views;
-    for (const auto& it : vpn_list_view_->network_view_guid_map_) {
+    for (const auto& it : vpn_detailed_view_->network_view_guid_map_) {
       views.push_back(it.first);
     }
     return views;
   }
 
   const views::View* GetBuiltInProviderView() {
-    for (const auto& it : vpn_list_view_->provider_view_map_) {
+    for (const auto& it : vpn_detailed_view_->provider_view_map_) {
       if (it.second->type == VpnType::kOpenVPN) {
         return it.first;
       }
@@ -140,7 +140,7 @@ class VPNListViewTest : public AshTestBase,
   }
 
   const views::View* GetExtensionProviderView() {
-    for (const auto& it : vpn_list_view_->provider_view_map_) {
+    for (const auto& it : vpn_detailed_view_->provider_view_map_) {
       if (it.second->type == VpnType::kExtension) {
         return it.first;
       }
@@ -149,7 +149,7 @@ class VPNListViewTest : public AshTestBase,
   }
 
   const views::View* GetArcProviderView() {
-    for (const auto& it : vpn_list_view_->provider_view_map_) {
+    for (const auto& it : vpn_detailed_view_->provider_view_map_) {
       if (it.second->type == VpnType::kArc) {
         return it.first;
       }
@@ -160,12 +160,12 @@ class VPNListViewTest : public AshTestBase,
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<FakeDetailedViewDelegate> delegate_;
-  raw_ptr<VPNListView, ExperimentalAsh> vpn_list_view_ = nullptr;
+  raw_ptr<VpnDetailedView, ExperimentalAsh> vpn_detailed_view_ = nullptr;
 };
 
-INSTANTIATE_TEST_SUITE_P(QsRevamp, VPNListViewTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(QsRevamp, VpnDetailedViewTest, testing::Bool());
 
-TEST_P(VPNListViewTest, Basics) {
+TEST_P(VpnDetailedViewTest, Basics) {
   // By default there is 1 provider (for built-in OpenVPN) and no networks.
   EXPECT_EQ(GetProviderViewCount(), 1u);
   EXPECT_EQ(GetNetworkViewCount(), 0u);
@@ -176,7 +176,7 @@ TEST_P(VPNListViewTest, Basics) {
   EXPECT_EQ(GetNetworkViewCount(), 1u);
 }
 
-TEST_P(VPNListViewTest, ParentContainerConfiguration) {
+TEST_P(VpnDetailedViewTest, ParentContainerConfiguration) {
   AddVpnProvidersAndNetwork();
   for (const views::View* view : GetProviderViews()) {
     const views::View* parent = view->parent();
@@ -196,7 +196,7 @@ TEST_P(VPNListViewTest, ParentContainerConfiguration) {
   }
 }
 
-TEST_P(VPNListViewTest, ClickOnBuiltInProviderRowToAddNetwork) {
+TEST_P(VpnDetailedViewTest, ClickOnBuiltInProviderRowToAddNetwork) {
   AddVpnProvidersAndNetwork();
 
   const views::View* built_in_provider = GetBuiltInProviderView();

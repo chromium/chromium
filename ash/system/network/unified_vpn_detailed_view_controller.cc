@@ -25,7 +25,7 @@ UnifiedVPNDetailedViewController::~UnifiedVPNDetailedViewController() = default;
 
 std::unique_ptr<views::View> UnifiedVPNDetailedViewController::CreateView() {
   DCHECK(!view_);
-  auto view = std::make_unique<VPNListView>(
+  auto view = std::make_unique<VpnDetailedView>(
       detailed_view_delegate_.get(),
       Shell::Get()->session_controller()->login_status());
   view_ = view.get();

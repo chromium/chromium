@@ -36,19 +36,19 @@ namespace ash {
 // attempt. Clicking on the currently connected or connecting network shows its
 // configuration dialog. Clicking on a provider shows the provider's "add
 // network" dialog.
-class ASH_EXPORT VPNListView : public NetworkStateListDetailedView,
-                               public VpnList::Observer {
+class ASH_EXPORT VpnDetailedView : public NetworkStateListDetailedView,
+                                   public VpnList::Observer {
  public:
-  METADATA_HEADER(VPNListView);
+  METADATA_HEADER(VpnDetailedView);
 
   using VpnProviderPtr = chromeos::network_config::mojom::VpnProviderPtr;
 
-  VPNListView(DetailedViewDelegate* delegate, LoginStatus login);
+  VpnDetailedView(DetailedViewDelegate* delegate, LoginStatus login);
 
-  VPNListView(const VPNListView&) = delete;
-  VPNListView& operator=(const VPNListView&) = delete;
+  VpnDetailedView(const VpnDetailedView&) = delete;
+  VpnDetailedView& operator=(const VpnDetailedView&) = delete;
 
-  ~VPNListView() override;
+  ~VpnDetailedView() override;
 
   // NetworkStateListDetailedView:
   void UpdateNetworkList() override;
@@ -61,8 +61,8 @@ class ASH_EXPORT VPNListView : public NetworkStateListDetailedView,
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
  private:
-  friend class VPNListViewPixelTest;
-  friend class VPNListViewTest;
+  friend class VpnDetailedViewPixelTest;
+  friend class VpnDetailedViewTest;
 
   using NetworkStateList =
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>;
@@ -107,7 +107,7 @@ class ASH_EXPORT VPNListView : public NetworkStateListDetailedView,
   // the topmost entry).
   bool list_empty_ = true;
 
-  base::WeakPtrFactory<VPNListView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<VpnDetailedView> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

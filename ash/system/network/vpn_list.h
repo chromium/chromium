@@ -18,8 +18,8 @@ namespace ash {
 
 class TrayNetworkStateModel;
 
-// This delegate provides UI code in ash, e.g. |VPNListView|, with access to the
-// list of VPN providers enabled in the primary user's profile. The delegate
+// This delegate provides UI code in ash, e.g. `VpnDetailedView`, with access to
+// the list of VPN providers enabled in the primary user's profile. The delegate
 // furthermore allows the UI code to request that a VPN provider show its "add
 // network" dialog and allows UI code to request to launch Arc VPN provider.
 class ASH_EXPORT VpnList : public TrayNetworkStateObserver {

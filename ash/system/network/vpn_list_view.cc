@@ -330,7 +330,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
  public:
   METADATA_HEADER(VPNListNetworkEntry);
 
-  VPNListNetworkEntry(VPNListView* vpn_list_view,
+  VPNListNetworkEntry(VpnDetailedView* vpn_detailed_view,
                       TrayNetworkStateModel* model,
                       const NetworkStateProperties* network);
 
@@ -355,7 +355,7 @@ class VPNListNetworkEntry : public HoverHighlightView,
 BEGIN_METADATA(VPNListNetworkEntry, HoverHighlightView)
 END_METADATA
 
-VPNListNetworkEntry::VPNListNetworkEntry(VPNListView* owner,
+VPNListNetworkEntry::VPNListNetworkEntry(VpnDetailedView* owner,
                                          TrayNetworkStateModel* model,
                                          const NetworkStateProperties* network)
     : HoverHighlightView(owner), model_(model), guid_(network->guid) {
@@ -434,24 +434,25 @@ void VPNListNetworkEntry::UpdateFromNetworkState(
 
 }  // namespace
 
-VPNListView::VPNListView(DetailedViewDelegate* delegate, LoginStatus login)
+VpnDetailedView::VpnDetailedView(DetailedViewDelegate* delegate,
+                                 LoginStatus login)
     : NetworkStateListDetailedView(delegate, LIST_TYPE_VPN, login) {
   model()->vpn_list()->AddObserver(this);
 }
 
-VPNListView::~VPNListView() {
+VpnDetailedView::~VpnDetailedView() {
   model()->vpn_list()->RemoveObserver(this);
 }
 
-void VPNListView::UpdateNetworkList() {
+void VpnDetailedView::UpdateNetworkList() {
   model()->cros_network_config()->GetNetworkStateList(
       NetworkFilter::New(FilterType::kVisible, NetworkType::kVPN,
                          chromeos::network_config::mojom::kNoLimit),
-      base::BindOnce(&VPNListView::OnGetNetworkStateList,
+      base::BindOnce(&VpnDetailedView::OnGetNetworkStateList,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void VPNListView::OnGetNetworkStateList(NetworkStateList networks) {
+void VpnDetailedView::OnGetNetworkStateList(NetworkStateList networks) {
   // Before updating the list, determine whether the user was hovering over one
   // of the VPN provider or network entries.
   VpnProviderPtr hovered_provider;
@@ -516,7 +517,8 @@ void VPNListView::OnGetNetworkStateList(NetworkStateList networks) {
   }
 }
 
-bool VPNListView::IsNetworkEntry(views::View* view, std::string* guid) const {
+bool VpnDetailedView::IsNetworkEntry(views::View* view,
+                                     std::string* guid) const {
   const auto& entry = network_view_guid_map_.find(view);
   if (entry == network_view_guid_map_.end())
     return false;
@@ -524,23 +526,24 @@ bool VPNListView::IsNetworkEntry(views::View* view, std::string* guid) const {
   return true;
 }
 
-void VPNListView::OnVpnProvidersChanged() {
+void VpnDetailedView::OnVpnProvidersChanged() {
   UpdateNetworkList();
 }
 
-void VPNListView::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+void VpnDetailedView::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kVpnConfigAllowed, true);
 }
 
-void VPNListView::AddNetwork(const NetworkStateProperties* network,
-                             views::View* container) {
+void VpnDetailedView::AddNetwork(const NetworkStateProperties* network,
+                                 views::View* container) {
   views::View* entry(new VPNListNetworkEntry(this, model(), network));
   container->AddChildView(entry);
   network_view_guid_map_[entry] = network->guid;
   list_empty_ = false;
 }
 
-void VPNListView::AddUnnestedNetwork(const NetworkStateProperties* network) {
+void VpnDetailedView::AddUnnestedNetwork(
+    const NetworkStateProperties* network) {
   views::View* container;
   if (features::IsQsRevampEnabled()) {
     container =
@@ -552,8 +555,8 @@ void VPNListView::AddUnnestedNetwork(const NetworkStateProperties* network) {
   AddNetwork(network, container);
 }
 
-void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
-                                         const NetworkStateList& networks) {
+void VpnDetailedView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
+                                             const NetworkStateList& networks) {
   // Add a visual separator, unless this is the topmost entry in the list.
   // QsRevamp does not use separators.
   if (!list_empty_ && !features::IsQsRevampEnabled()) {
@@ -633,7 +636,7 @@ void VPNListView::AddProviderAndNetworks(VpnProviderPtr vpn_provider,
   }
 }
 
-bool VPNListView::ProcessProviderForNetwork(
+bool VpnDetailedView::ProcessProviderForNetwork(
     const NetworkStateProperties* network,
     const NetworkStateList& networks,
     std::vector<VpnProviderPtr>* providers) {
@@ -648,7 +651,8 @@ bool VPNListView::ProcessProviderForNetwork(
   return false;
 }
 
-void VPNListView::AddProvidersAndNetworks(const NetworkStateList& networks) {
+void VpnDetailedView::AddProvidersAndNetworks(
+    const NetworkStateList& networks) {
   // Copy the list of Extension VPN providers enabled in the primary user's
   // profile.
   std::vector<VpnProviderPtr> extension_providers;
@@ -698,7 +702,7 @@ void VPNListView::AddProvidersAndNetworks(const NetworkStateList& networks) {
   }
 }
 
-BEGIN_METADATA(VPNListView, NetworkStateListDetailedView)
+BEGIN_METADATA(VpnDetailedView, NetworkStateListDetailedView)
 END_METADATA
 
 }  // namespace ash
