@@ -802,31 +802,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TrustedWebActivity.QualityEnforcementViolation"
-    enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="2023-09-03">
-  <owner>eirage@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    When Trusted Web Activity launches or navigates to a site that violate the
-    quality criteria, records the violation type.
-  </summary>
-</histogram>
-
-<histogram name="TrustedWebActivity.QualityEnforcementViolation.Crashed"
-    enum="TrustedWebActivityQualityEnforcementViolationType"
-    expires_after="M104">
-  <owner>eirage@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    When Trusted Web Activity launches or navigates to a site that violate the
-    quality criteria, and the CCT will be closed, records the violation type.
-
-    This is similar to TrustedWebActivity.QualityEnforcementViolation but only
-    records when the violation will close the CCT.
-  </summary>
-</histogram>
-
 <histogram name="TrustedWebActivity.ShareTargetRequest"
     enum="WebShareTargetMethod" expires_after="M114">
   <owner>peconn@chromium.org</owner>

@@ -23332,6 +23332,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="TrustedWebActivity.QualityEnforcementViolation" singular="True">
+  <obsolete>
+    Deprecated 05/2023.
+  </obsolete>
   <owner>eirage@chromium.org</owner>
   <owner>peconn@chromium.org</owner>
   <summary>
