@@ -137,7 +137,7 @@ export class Realm {
     if (result.type === 'node') {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        bidiValue.sharedId = `${this.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
+        result.sharedId = `${this.navigableId}${SHARED_ID_DIVIDER}${bidiValue.backendNodeId}`;
         delete bidiValue['backendNodeId'];
       }
       if (Object.hasOwn(bidiValue, 'children')) {

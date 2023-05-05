@@ -35,7 +35,7 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id,
             }
         })
 
-    shared_id = result["result"]["value"]["sharedId"]
+    shared_id = result["result"]["sharedId"]
     assert "UNKNOWN" not in shared_id
 
     result = await execute_command(
@@ -57,7 +57,7 @@ async def test_sharedId_in_same_realm_same_navigable(websocket, context_id,
         })
 
     assert result["type"] == "success"
-    assert result["result"]["value"]["sharedId"] == shared_id
+    assert result["result"]["sharedId"] == shared_id
 
 
 @pytest.mark.asyncio
@@ -76,7 +76,7 @@ async def test_sharedId_without_navigation(websocket, context_id):
             }
         })
 
-    shared_id = result["result"]["value"]["sharedId"]
+    shared_id = result["result"]["sharedId"]
     assert "UNKNOWN" not in shared_id
 
     result = await execute_command(
@@ -98,7 +98,7 @@ async def test_sharedId_without_navigation(websocket, context_id):
         })
 
     assert result["type"] == "success"
-    assert result["result"]["value"]["sharedId"] == shared_id
+    assert result["result"]["sharedId"] == shared_id
 
 
 @pytest.mark.asyncio
@@ -120,7 +120,7 @@ async def test_sharedId_in_different_realm_same_navigable(
         })
 
     realm_1 = result["realm"]
-    shared_id = result["result"]["value"]["sharedId"]
+    shared_id = result["result"]["sharedId"]
 
     result = await execute_command(
         websocket, {
@@ -143,7 +143,7 @@ async def test_sharedId_in_different_realm_same_navigable(
 
     assert result["realm"] != realm_1
     assert result["type"] == "success"
-    assert result["result"]["value"]["sharedId"] == shared_id
+    assert result["result"]["sharedId"] == shared_id
 
 
 @pytest.mark.asyncio
@@ -162,7 +162,7 @@ async def test_sharedId_in_different_navigable(websocket, context_id, html):
             }
         })
 
-    shared_id = result["result"]["value"]["sharedId"]
+    shared_id = result["result"]["sharedId"]
 
     await goto_url(websocket, context_id, html("some other page"))
 
@@ -207,7 +207,7 @@ async def test_sharedId_not_found(websocket, context_id, html):
             }
         })
 
-    shared_id = result["result"]["value"]["sharedId"] + "9999"
+    shared_id = result["result"]["sharedId"] + "9999"
 
     with pytest.raises(Exception) as exception_info:
         await execute_command(
