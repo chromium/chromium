@@ -213,15 +213,6 @@ void DlpFilesPolicyServiceProvider::RespondWithRestrictedFilesTransfer(
   dlp::IsFilesTransferRestrictedResponse response_proto;
 
   for (const auto& [file, level] : requested_files) {
-    // Daemon still uses the old logic to rely on these fields.
-    // TODO(b/259182892): Remove when it's not used.
-    if (level == ::dlp::RestrictionLevel::LEVEL_BLOCK ||
-        level == ::dlp::RestrictionLevel::LEVEL_WARN_CANCEL) {
-      dlp::FileMetadata* file_metadata = response_proto.add_restricted_files();
-      file_metadata->set_inode(file.inode);
-      file_metadata->set_path(file.path.value());
-      file_metadata->set_source_url(file.source_url.spec());
-    }
     dlp::FileRestriction* files_restriction =
         response_proto.add_files_restrictions();
     files_restriction->mutable_file_metadata()->set_inode(file.inode);
