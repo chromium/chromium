@@ -4,7 +4,7 @@
 
 // OSSettingsAccessibilityV3Test fixture.
 GEN_INCLUDE([
-  'os_settings_accessibility_v3_test.js',
+  'os_settings_accessibility_test.js',
 ]);
 
 GEN('#include "build/branding_buildflags.h"');
@@ -80,52 +80,52 @@ const crostiniSubpageConfig = {
 
 [[
   'Basic',
-  'basic_a11y_v3_test.js',
+  'basic_a11y_test.js',
   {options: axeOptionsExcludeLinkInTextBlock},
 ],
  [
    'GoogleAssistant',
-   'google_assistant_a11y_v3_test.js',
+   'google_assistant_a11y_test.js',
    {options: axeOptionsDocumentTitle},
  ],
  [
    'ManageAccessibility',
-   'manage_accessibility_a11y_v3_test.js',
+   'manage_accessibility_a11y_test.js',
    {options: axeOptionsDocumentTitle},
  ],
  [
    'Multidevice',
-   'multidevice_a11y_v3_test.js',
+   'multidevice_a11y_test.js',
    {options: axeOptionsDocumentTitle},
  ],
  [
    'CrostiniDetails',
-   'crostini_settings_details_a11y_v3_test.js',
+   'crostini_settings_details_a11y_test.js',
    crostiniConfig,
  ],
  [
    'CrostiniExportImport',
-   'crostini_settings_export_import_a11y_v3_test.js',
+   'crostini_settings_export_import_a11y_test.js',
    crostiniConfig,
  ],
  [
    'CrostiniSharedPaths',
-   'crostini_settings_shared_paths_a11y_v3_test.js',
+   'crostini_settings_shared_paths_a11y_test.js',
    crostiniConfig,
  ],
  [
    'CrostiniSharedUsbDevices',
-   'crostini_settings_shared_usb_devices_a11y_v3_test.js',
+   'crostini_settings_shared_usb_devices_a11y_test.js',
    crostiniConfig,
  ],
  [
    'CrostiniSubpage',
-   'crostini_settings_subpage_a11y_v3_test.js',
+   'crostini_settings_subpage_a11y_test.js',
    crostiniSubpageConfig,
  ],
  [
    'MultideviceFeatures',
-   'multidevice_features_a11y_v3_test.js',
+   'multidevice_features_a11y_test.js',
    {
      filter: multideviceFeatureViolationFilter,
      options: axeOptionsDocumentTitle,
@@ -133,7 +133,7 @@ const crostiniSubpageConfig = {
  ],
  [
    'Tts',
-   'tts_subpage_a11y_v3_test.js',
+   'tts_subpage_a11y_test.js',
    {
      switches: ['enable-experimental-a11y-features'],
      options: axeOptionsDocumentTitle,

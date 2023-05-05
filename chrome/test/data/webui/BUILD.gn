@@ -143,7 +143,7 @@ if (include_js_tests) {
 
     if (is_chromeos_ash) {
       gen_include_files +=
-          [ "settings/chromeos/a11y/os_settings_accessibility_v3_test.js" ]
+          [ "settings/chromeos/a11y/os_settings_accessibility_test.js" ]
     }
 
     if (is_chromeos_ash || is_win || is_mac) {
@@ -175,8 +175,8 @@ if (include_js_tests) {
         "chromeos/sys_internals/sys_internals_browsertest.js",
         "cr_components/chromeos/cr_components_chromeos_v3_browsertest.js",
         "js/i18n_process_test.js",
-        "settings/chromeos/a11y/v3_os_a11y_browsertest.js",
-        "settings/chromeos/os_settings_v3_browsertest.js",
+        "settings/chromeos/a11y/os_a11y_browsertest.js",
+        "settings/chromeos/os_settings_browsertest.js",
       ]
     } else {
       sources += [
