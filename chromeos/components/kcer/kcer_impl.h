@@ -90,8 +90,24 @@ class KcerImpl : public Kcer {
  private:
   base::WeakPtr<KcerToken>& GetToken(Token token);
 
-  // Tast runner for the tokens. Can be nullptr if no tokens are available to
-  // the current Kcer instance.
+  // Finds the token where the `key` is stored. If `allow_guessing` is true, it
+  // can return a token where the key *might* be (and no other token can
+  // possibly have it), this is good enough for most methods that would just
+  // fail if the key is not on the returned token either. If `allow_guessing` is
+  // false, the result is precise and reliable. Returns a token on success, an
+  // nullopt if the key was not found, an error on failure.
+  void FindKeyToken(
+      bool allow_guessing,
+      PrivateKeyHandle key,
+      base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
+          callback);
+
+  void DoesPrivateKeyExistWithKeyToken(
+      DoesKeyExistCallback callback,
+      base::expected<absl::optional<Token>, Error> find_key_result);
+
+  // Task runner for the tokens. Can be nullptr if no tokens are available
+  // to the current Kcer instance.
   scoped_refptr<base::TaskRunner> token_task_runner_;
   // Pointers to kcer tokens. Can contain nullptr-s if a token is not available
   // to the current instance of Kcer. All requests to the tokens must be posted

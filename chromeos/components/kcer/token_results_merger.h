@@ -11,7 +11,9 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chromeos/components/kcer/kcer.h"
 
@@ -95,7 +97,8 @@ scoped_refptr<TokenResultsMerger<T>> TokenResultsMerger<T>::Create(
 template <typename T>
 base::OnceCallback<void(base::expected<std::vector<T>, Error>)>
 TokenResultsMerger<T>::GetCallback(Token token) {
-  CHECK_GE(--this->callbacks_to_create_, 0);
+  this->callbacks_to_create_--;
+  CHECK_GE(this->callbacks_to_create_, 0);
   return base::BindOnce(&TokenResultsMerger<T>::HandleOneResult,
                         base::RetainedRef(this), token);
 }

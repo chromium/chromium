@@ -69,6 +69,49 @@ void CleanUpAndDestroyKeys(crypto::ScopedSECKEYPublicKey public_key,
   PK11_DeleteTokenPublicKey(/*pubKey=*/public_key.release());
 }
 
+// Returns ScopedSECKEYPrivateKey if the key was found.
+// Returns Error::kKeyNotFound if the key was not found.
+// Returns some other error in case of other problems.
+base::expected<crypto::ScopedSECKEYPrivateKey, Error> GetSECKEYPrivateKey(
+    const crypto::ScopedPK11Slot& slot,
+    const PrivateKeyHandle& key) {
+  std::vector<uint8_t> pkcs11_id = key.GetPkcs11IdInternal().value();
+  if (pkcs11_id.empty()) {
+    CHECK(!key.GetSpkiInternal()->empty());
+    pkcs11_id = SECItemToBytes(crypto::MakeNssIdFromSpki(
+        base::make_span(key.GetSpkiInternal().value())));
+  }
+  if (pkcs11_id.empty()) {
+    return base::unexpected(Error::kFailedToGetKeyId);
+  }
+
+  SECItem sec_key_id;
+  sec_key_id.data = pkcs11_id.data();
+  sec_key_id.len = pkcs11_id.size();
+
+  crypto::ScopedSECKEYPrivateKey private_key(
+      PK11_FindKeyByKeyID(slot.get(), &sec_key_id, /*wincx=*/nullptr));
+  if (!private_key) {
+    return base::unexpected(Error::kKeyNotFound);
+  }
+  return private_key;
+}
+
+void DoesPrivateKeyExistOnWorkerThread(crypto::ScopedPK11Slot slot,
+                                       PrivateKeyHandle key,
+                                       Kcer::DoesKeyExistCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (private_key.has_value()) {
+    return std::move(callback).Run(true);
+  }
+  if ((private_key.error() == Error::kKeyNotFound) ||
+      (private_key.error() == Error::kTokenIsNotAvailable)) {
+    return std::move(callback).Run(false);
+  }
+  return std::move(callback).Run(base::unexpected(private_key.error()));
+}
+
 void GenerateRsaKeyOnWorkerThread(Token token,
                                   crypto::ScopedPK11Slot slot,
                                   uint32_t modulus_length_bits,
@@ -477,7 +520,24 @@ void KcerTokenImplNss::DoesPrivateKeyExist(
     PrivateKeyHandle key,
     Kcer::DoesKeyExistCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::DoesPrivateKeyExist, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&DoesPrivateKeyExistOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::Sign(PrivateKeyHandle key,

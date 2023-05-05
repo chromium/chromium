@@ -285,8 +285,11 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
                          base::flat_map<Token, Error>>
       list_certs_waiter;
   kcer->ListCerts({Token::kUser}, list_certs_waiter.GetCallback());
-  // Close the list with one more GenerateRsaKey, so all methods are tested with
-  // other methods before and after them.
+  base::test::TestFuture<base::expected<bool, Error>> does_key_exist_waiter;
+  kcer->DoesPrivateKeyExist(PrivateKeyHandle(PublicKeySpki()),
+                            does_key_exist_waiter.GetCallback());
+  // Close the list with one more GenerateRsaKey, so all methods are tested
+  // with other methods before and after them.
   base::test::TestFuture<base::expected<PublicKey, Error>>
       generate_rsa_waiter_2;
   kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
@@ -316,9 +319,89 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(list_certs_waiter.Get<1>().empty());
   EXPECT_EQ(list_certs_waiter.Get<1>().at(Token::kUser),
             Error::kTokenInitializationFailed);
+  ASSERT_FALSE(does_key_exist_waiter.Get().has_value());
+  EXPECT_EQ(does_key_exist_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
             Error::kTokenInitializationFailed);
+}
+
+// Test different ways to call DoesPrivateKeyExist() method and that it returns
+// correct results when Kcer has access to one token.
+TEST_F(KcerNssTest, DoesPrivateKeyExistOneToken) {
+  TokenHolder device_token(Token::kDevice);
+  device_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), /*user_token=*/nullptr, device_token.GetWeakPtr());
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
+  kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
+                      /*hardware_backed=*/true, generate_waiter.GetCallback());
+  ASSERT_TRUE(generate_waiter.Get().has_value());
+  const PublicKey& public_key = generate_waiter.Get().value();
+
+  // The private key should be found by the PublicKey.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
+                              does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // The private key should be found by the SPKI.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
+                              does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // The private key should be found on the specified token by the SPKI.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(Token::kDevice, public_key.GetSpki()),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // Looking for a key on a non-existing token should return an error.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(Token::kUser, public_key.GetSpki()),
+        does_exist_waiter.GetCallback());
+    ASSERT_FALSE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().error(), Error::kTokenIsNotAvailable);
+  }
+
+  // Looking for a key by an invalid SPKI should return an error.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(PublicKeySpki(std::vector<uint8_t>{1, 2, 3})),
+        does_exist_waiter.GetCallback());
+    ASSERT_FALSE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().error(), Error::kFailedToGetKeyId);
+  }
+
+  // Looking for a non-existing key should return a negative result.
+  {
+    std::vector<uint8_t> non_existing_key =
+        base::Base64Decode(kPublicKeyBase64).value();
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(PublicKeySpki(std::move(non_existing_key))),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value())
+        << does_exist_waiter.Get().error();
+    EXPECT_EQ(does_exist_waiter.Get().value(), false);
+  }
 }
 
 class KcerNssAllKeyTypesTest : public KcerNssTest,
@@ -326,6 +409,96 @@ class KcerNssAllKeyTypesTest : public KcerNssTest,
  protected:
   KeyType GetKeyType() { return GetParam(); }
 };
+
+// Test different ways to call DoesPrivateKeyExist() method and that it returns
+// correct results when Kcer has access to two tokens.
+TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
+  TokenHolder device_token(Token::kDevice);
+  device_token.Initialize();
+  TokenHolder user_token(Token::kUser);
+  user_token.Initialize();
+
+  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
+      IOTaskRunner(), user_token.GetWeakPtr(), device_token.GetWeakPtr());
+
+  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
+  switch (GetKeyType()) {
+    case KeyType::kRsa:
+      kcer->GenerateRsaKey(Token::kDevice, /*modulus_length_bits=*/2048,
+                           /*hardware_backed=*/true,
+                           generate_waiter.GetCallback());
+      break;
+    case KeyType::kEc:
+      kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
+                          /*hardware_backed=*/true,
+                          generate_waiter.GetCallback());
+      break;
+  }
+  ASSERT_TRUE(generate_waiter.Get().has_value());
+  const PublicKey& public_key = generate_waiter.Get().value();
+
+  // The private key should be found by the PublicKey.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key),
+                              does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // The private key should be found by the SPKI.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(PrivateKeyHandle(public_key.GetSpki()),
+                              does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // The private key should be found on the specified token by the SPKI.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(Token::kDevice, public_key.GetSpki()),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), true);
+  }
+
+  // Looking for a key on another (existing) token should return a negative
+  // result.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(Token::kUser, public_key.GetSpki()),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().value(), false);
+  }
+
+  // Looking for a key by an incorrect SPKI should return an error.
+  {
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(PublicKeySpki(std::vector<uint8_t>{1, 2, 3})),
+        does_exist_waiter.GetCallback());
+    ASSERT_FALSE(does_exist_waiter.Get().has_value());
+    EXPECT_EQ(does_exist_waiter.Get().error(), Error::kFailedToGetKeyId);
+  }
+
+  // Looking for a non-existing key should return a negative result.
+  {
+    std::vector<uint8_t> non_existing_key =
+        base::Base64Decode(kPublicKeyBase64).value();
+    base::test::TestFuture<base::expected<bool, Error>> does_exist_waiter;
+    kcer->DoesPrivateKeyExist(
+        PrivateKeyHandle(PublicKeySpki(std::move(non_existing_key))),
+        does_exist_waiter.GetCallback());
+    ASSERT_TRUE(does_exist_waiter.Get().has_value())
+        << does_exist_waiter.Get().error();
+    EXPECT_EQ(does_exist_waiter.Get().value(), false);
+  }
+}
 
 // Test that all methods work together as expected. Simulate a potential
 // lifecycle of a key and related objects.
