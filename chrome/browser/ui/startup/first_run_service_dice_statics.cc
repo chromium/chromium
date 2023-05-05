@@ -30,8 +30,8 @@ namespace {
 const char kTrialName[] = "ForYouFreStudy";
 
 // Group names for the trial.
-const char kEnabledGroup[] = "ClientSideEnabled";
-const char kDisabledGroup[] = "ClientSideDisabled";
+const char kEnabledGroup[] = "ClientSideEnabled-2";
+const char kDisabledGroup[] = "ClientSideDisabled-2";
 const char kDefaultGroup[] = "Default";
 
 // Probabilities for all field trial groups add up to kTotalProbability.
