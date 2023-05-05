@@ -470,7 +470,6 @@ bool AutofillProfile::EqualsForSyncPurposes(
 bool AutofillProfile::EqualsForUpdatePurposes(
     const AutofillProfile& new_profile) const {
   return use_count() == new_profile.use_count() &&
-         (origin() == new_profile.origin() || !new_profile.IsVerified()) &&
          UseDateEqualsInSeconds(&new_profile) &&
          language_code() == new_profile.language_code() &&
          Compare(new_profile) == 0;
@@ -1028,8 +1027,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
 }
 
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
-  return origin() == profile.origin() &&
-         disallow_settings_visible_updates() ==
+  return disallow_settings_visible_updates() ==
              profile.disallow_settings_visible_updates() &&
          language_code() == profile.language_code() &&
          profile_label() == profile.profile_label() &&

@@ -1359,75 +1359,35 @@ TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
 }
 #endif
 
-TEST_F(PersonalDataManagerTest, UpdateUnverifiedProfilesAndCreditCards) {
+TEST_F(PersonalDataManagerTest, UpdateUnverifiedCreditCards) {
   // Start with unverified data.
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  EXPECT_FALSE(profile.IsVerified());
-
-  CreditCard credit_card(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                         "https://www.example.com/");
-  test::SetCreditCardInfo(&credit_card, "John Dillinger",
-                          "4234567890123456" /* Visa */, "01", "2999", "1");
+  CreditCard credit_card = test::GetCreditCard();
   EXPECT_FALSE(credit_card.IsVerified());
 
   // Add the data to the database.
-  AddProfileToPersonalDataManager(profile);
   personal_data_->AddCreditCard(credit_card);
-
   WaitForOnPersonalDataChanged();
 
-  const std::vector<AutofillProfile*>& profiles1 =
-      personal_data_->GetProfiles();
-  const std::vector<CreditCard*>& cards1 = personal_data_->GetCreditCards();
-  ASSERT_EQ(1U, profiles1.size());
-  ASSERT_EQ(1U, cards1.size());
-  EXPECT_EQ(0, profile.Compare(*profiles1[0]));
-  EXPECT_EQ(0, credit_card.Compare(*cards1[0]));
+  EXPECT_THAT(personal_data_->GetCreditCards(),
+              testing::UnorderedElementsAre(Pointee(credit_card)));
 
   // Try to update with just the origin changed.
-  AutofillProfile original_profile(profile);
-  ASSERT_FALSE(original_profile.IsVerified());
   CreditCard original_credit_card(credit_card);
-  profile.set_origin(kSettingsOrigin);
   credit_card.set_origin(kSettingsOrigin);
-
-  EXPECT_TRUE(profile.IsVerified());
   EXPECT_TRUE(credit_card.IsVerified());
-  UpdateProfileOnPersonalDataManager(profile);
   personal_data_->UpdateCreditCard(credit_card);
 
   // Credit Card origin should not be overwritten.
-  const std::vector<AutofillProfile*>& profiles2 =
-      personal_data_->GetProfiles();
-  const std::vector<CreditCard*>& cards2 = personal_data_->GetCreditCards();
-  ASSERT_EQ(1U, profiles2.size());
-  ASSERT_EQ(1U, cards2.size());
-  EXPECT_EQ(profile.origin(), profiles2[0]->origin());
-  EXPECT_NE(credit_card.origin(), cards2[0]->origin());
-  EXPECT_NE(original_profile.origin(), profiles2[0]->origin());
-  EXPECT_EQ(original_credit_card.origin(), cards2[0]->origin());
+  EXPECT_THAT(personal_data_->GetCreditCards(),
+              testing::UnorderedElementsAre(Pointee(original_credit_card)));
 
   // Try to update with data changed as well.
-  profile.SetRawInfo(NAME_FIRST, u"John");
   credit_card.SetRawInfo(CREDIT_CARD_NAME_FULL, u"Joe");
-
-  UpdateProfileOnPersonalDataManager(profile);
   personal_data_->UpdateCreditCard(credit_card);
-
   WaitForOnPersonalDataChanged();
 
-  const std::vector<AutofillProfile*>& profiles3 =
-      personal_data_->GetProfiles();
-  const std::vector<CreditCard*>& cards3 = personal_data_->GetCreditCards();
-  ASSERT_EQ(1U, profiles3.size());
-  ASSERT_EQ(1U, cards3.size());
-  EXPECT_EQ(0, profile.Compare(*profiles3[0]));
-  EXPECT_EQ(0, credit_card.Compare(*cards3[0]));
-  EXPECT_EQ(profile.origin(), profiles3[0]->origin());
-  EXPECT_EQ(credit_card.origin(), cards3[0]->origin());
+  EXPECT_THAT(personal_data_->GetCreditCards(),
+              testing::UnorderedElementsAre(Pointee(credit_card)));
 }
 
 // Test that updating a verified profile with another profile whose only
