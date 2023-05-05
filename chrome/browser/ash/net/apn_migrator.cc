@@ -34,17 +34,28 @@ void OnSetShillCustomApnListFailure(const std::string& guid,
                  << guid << ": [" << error_name << ']';
 }
 
-absl::optional<ApnPropertiesPtr> GetApnFromDict(
+absl::optional<ApnPropertiesPtr> GetPreRevampApnFromDict(
     const base::Value::Dict* cellular_dict,
-    const char* key,
-    bool is_apn_revamp_enabled) {
+    const char* key) {
   const base::Value::Dict* apn_dict =
       chromeos::network_config::GetDictionary(cellular_dict, key);
-  if (!apn_dict || !apn_dict->Find(::onc::cellular_apn::kAccessPointName)) {
+  if (!apn_dict) {
     return absl::nullopt;
   }
-  return chromeos::network_config::GetApnProperties(*apn_dict,
-                                                    is_apn_revamp_enabled);
+
+  // Pre-revamp APNs with empty kAccessPointName will be ignored as they
+  // indicate shill tried to send a NULL APN to modemmanager. If shill
+  // uses a custom APN or modem DB APN, the kAccessPointName will be
+  // non-empty.
+  const std::string* access_point_name =
+      apn_dict->FindString(::onc::cellular_apn::kAccessPointName);
+  if (!access_point_name || access_point_name->empty()) {
+    return absl::nullopt;
+  }
+
+  return chromeos::network_config::GetApnProperties(
+      *apn_dict,
+      /*is_apn_revamp_enabled=*/false);
 }
 
 bool ContainsMatchingApn(const base::Value::Dict* cellular_dict,
@@ -266,19 +277,17 @@ void ApnMigrator::OnGetManagedProperties(
       SetShillCustomApnListForNetwork(*network, &empty_apn_list);
     }
   } else {
-    absl::optional<ApnPropertiesPtr> last_connected_attach_apn = GetApnFromDict(
-        cellular_dict, ::onc::cellular::kLastConnectedAttachApnProperty,
-        /*is_apn_revamp_enabled=*/false);
+    absl::optional<ApnPropertiesPtr> last_connected_attach_apn =
+        GetPreRevampApnFromDict(
+            cellular_dict, ::onc::cellular::kLastConnectedAttachApnProperty);
 
     absl::optional<ApnPropertiesPtr> last_connected_default_apn =
-        GetApnFromDict(cellular_dict,
-                       ::onc::cellular::kLastConnectedDefaultApnProperty,
-                       /*is_apn_revamp_enabled=*/false);
+        GetPreRevampApnFromDict(
+            cellular_dict, ::onc::cellular::kLastConnectedDefaultApnProperty);
 
     if (!last_connected_attach_apn && !last_connected_default_apn) {
       absl::optional<ApnPropertiesPtr> last_good_apn =
-          GetApnFromDict(cellular_dict, ::onc::cellular::kLastGoodAPN,
-                         /*is_apn_revamp_enabled=*/false);
+          GetPreRevampApnFromDict(cellular_dict, ::onc::cellular::kLastGoodAPN);
 
       if (last_good_apn && pre_revamp_custom_apn->access_point_name ==
                                (*last_good_apn)->access_point_name) {
