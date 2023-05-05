@@ -16,8 +16,6 @@
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -97,7 +95,6 @@ class FamilyUserAppMetricsTest
 
     EXPECT_EQ(IsFamilyLink(), profile()->IsChild());
 
-    supervised_user_service()->Init();
     supervised_user_extensions_delegate_ =
         std::make_unique<extensions::SupervisedUserExtensionsDelegateImpl>(
             profile());
@@ -208,10 +205,6 @@ class FamilyUserAppMetricsTest
   extensions::SupervisedUserExtensionsDelegate*
   supervised_user_extensions_delegate() {
     return supervised_user_extensions_delegate_.get();
-  }
-
-  SupervisedUserService* supervised_user_service() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
   bool IsFamilyLink() const { return GetParam(); }

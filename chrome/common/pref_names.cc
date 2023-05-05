@@ -155,13 +155,6 @@ const char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[] =
     "profile.managed.serial_allow_usb_devices_for_urls";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-// DictionaryValue that maps extension ids to the approved version of this
-// extension for a supervised user. Missing extensions are not approved.
-const char kSupervisedUserApprovedExtensions[] =
-    "profile.managed.approved_extensions";
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-
 #if BUILDFLAG(ENABLE_RLZ)
 // Integer. RLZ ping delay in seconds.
 const char kRlzPingDelaySeconds[] = "rlz_ping_delay";

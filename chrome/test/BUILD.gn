@@ -9233,6 +9233,7 @@ test("unit_tests") {
       sources += [
         "../browser/supervised_user/extension_icon_loader_unittest.cc",
         "../browser/supervised_user/supervised_user_extension_unittest.cc",
+        "../browser/supervised_user/supervised_user_extensions_manager_unittest.cc",
         "../browser/supervised_user/supervised_user_url_filter_extensions_unittest.cc",
       ]
       if (is_chromeos_ash) {

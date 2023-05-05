@@ -31,10 +31,17 @@ class ParentAccessExtensionApprovalsManager {
       const ParentAccessExtensionApprovalsManager&) = delete;
   ~ParentAccessExtensionApprovalsManager();
 
+  // Models the user's permission to install extension,
+  enum ExtensionInstallMode {
+    kInstallationPermitted = 0,
+    kInstallationDenied = 1
+  };
+
   void ShowParentAccessDialog(
       const Extension& extension,
       content::BrowserContext* context,
       const gfx::ImageSkia& icon,
+      ExtensionInstallMode extension_install_mode,
       SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback callback);
 
   // For testing
@@ -42,7 +49,6 @@ class ParentAccessExtensionApprovalsManager {
       std::unique_ptr<ash::ParentAccessDialogProvider> provider);
 
  private:
-  bool CanInstallExtensions(content::BrowserContext* context) const;
   void OnParentAccessDialogClosed(
       std::unique_ptr<ash::ParentAccessDialog::Result> result);
 

@@ -589,6 +589,8 @@ source_set("browser_sources") {
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//components/sessions",
+    "//components/supervised_user/core/common",
+    "//components/supervised_user/core/common:buildflags",
     "//components/sync",
     "//components/ukm/content",
     "//components/update_client",

@@ -54,9 +54,6 @@ extern const char kSessionExitType[];
 extern const char kManagedProfileSerialAllowAllPortsForUrlsDeprecated[];
 extern const char kManagedProfileSerialAllowUsbDevicesForUrlsDeprecated[];
 #endif  // !BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
-extern const char kSupervisedUserApprovedExtensions[];
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 extern const char kURLsToRestoreOnStartup[];
 extern const char kUserFeedbackAllowed[];

@@ -47,6 +47,7 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
     const Extension& extension,
     content::BrowserContext* context,
     const gfx::ImageSkia& icon,
+    ExtensionInstallMode extension_install_mode,
     SupervisedUserExtensionsDelegate::ExtensionApprovalDoneCallback callback) {
   // Load permission strings.
   InstallPromptPermissions prompt_permissions;
@@ -77,7 +78,8 @@ void ParentAccessExtensionApprovalsManager::ShowParentAccessDialog(
               parent_access_ui::mojom::ExtensionApprovalsParams::New(
                   base::UTF8ToUTF16(extension.name()), icon_bitmap,
                   GetActiveUserFirstName(), std::move(permissions))),
-          /* is_disabled= */ !CanInstallExtensions(context));
+          /* is_disabled= */ extension_install_mode ==
+              ExtensionInstallMode::kInstallationDenied);
 
   ash::ParentAccessDialogProvider::ShowError show_error =
       GetParentAccessDialogProvider()->Show(
@@ -102,13 +104,6 @@ ParentAccessExtensionApprovalsManager::SetDialogProviderForTest(
     std::unique_ptr<ash::ParentAccessDialogProvider> provider) {
   dialog_provider_ = std::move(provider);
   return dialog_provider_.get();
-}
-
-bool ParentAccessExtensionApprovalsManager::CanInstallExtensions(
-    content::BrowserContext* context) const {
-  SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForBrowserContext(context);
-  return supervised_user_service->CanInstallExtensions();
 }
 
 void ParentAccessExtensionApprovalsManager::OnParentAccessDialogClosed(

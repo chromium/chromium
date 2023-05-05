@@ -13,12 +13,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -57,8 +56,6 @@ class SupervisedUserExtensionTest : public ExtensionServiceTestWithInstall,
     ExtensionServiceInitParams params;
     params.profile_is_supervised = profile_is_supervised;
     InitializeExtensionService(params);
-
-    supervised_user_service()->Init();
     supervised_user_extensions_delegate_ =
         std::make_unique<SupervisedUserExtensionsDelegateImpl>(profile());
   }
@@ -161,10 +158,6 @@ class SupervisedUserExtensionTest : public ExtensionServiceTestWithInstall,
     EXPECT_TRUE(extension_prefs->HasDisableReason(
         extension_id, disable_reason::DISABLE_PERMISSIONS_INCREASE));
     return registry()->disabled_extensions().GetByID(extension_id);
-  }
-
-  SupervisedUserService* supervised_user_service() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
   SupervisedUserExtensionsDelegate* supervised_user_extensions_delegate() {

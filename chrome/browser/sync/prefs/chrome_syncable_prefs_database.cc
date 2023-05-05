@@ -28,6 +28,9 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/pref_names.h"
 #endif
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "components/supervised_user/core/common/pref_names.h"
+#endif
 
 namespace browser_sync {
 namespace {

@@ -100,6 +100,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_set.h"
@@ -1497,6 +1498,15 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   // initializing the supervised flag if necessary).
   ChildAccountServiceFactory::GetForProfile(profile)->Init();
   SupervisedUserServiceFactory::GetForProfile(profile)->Init();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // After the ManagementPolicy has been set, update it for the Supervised User
+  // Extension Delegate, which has been created before the profile
+  // initialization and needs to obtain the new policies.
+  extensions::ManagementAPI::GetFactoryInstance()
+      ->Get(profile)
+      ->GetSupervisedUserExtensionsDelegate()
+      ->UpdateManagementPolicyRegistration();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif
 
   // Ensure NavigationPredictorKeyedService is started.

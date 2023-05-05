@@ -33,6 +33,9 @@ class SupervisedUserExtensionsDelegate {
 
   virtual ~SupervisedUserExtensionsDelegate() = default;
 
+  // Updates registration of management policy provider for supervised users.
+  virtual void UpdateManagementPolicyRegistration() = 0;
+
   // Returns true if the primary account is a supervised child.
   virtual bool IsChild() const = 0;
 

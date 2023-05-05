@@ -1119,6 +1119,9 @@ ManagementAPI::~ManagementAPI() {
 }
 
 void ManagementAPI::Shutdown() {
+  // Ensure that SupervisedUserExtensionsDelegate is released prior to
+  // destruction to release the raw pointer to browser_context_.
+  supervised_user_extensions_delegate_.reset();
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

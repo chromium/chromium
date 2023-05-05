@@ -111,11 +111,6 @@ class ParentAccessExtensionApprovalsManagerTest : public ::testing::Test {
                         /*locale=*/std::string()));
   }
 
-  void SetSupervisedUserMayRequestPermissionsPref(bool enable) {
-    supervised_user_test_util::
-        SetSupervisedUserExtensionsMayRequestPermissionsPref(profile_, enable);
-  }
-
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<extensions::ParentAccessExtensionApprovalsManager>
       approvals_manager_;
@@ -126,11 +121,12 @@ class ParentAccessExtensionApprovalsManagerTest : public ::testing::Test {
 };
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest, GetExtensionApprovalParams) {
-  SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::DoNothing());
   parent_access_ui::mojom::ParentAccessParamsPtr params =
       dialog_provider_->GetLastParamsReceived();
@@ -161,11 +157,12 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest, GetExtensionApprovalParams) {
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetExtensionApprovalParamsForExtensionDisabled) {
-  SetSupervisedUserMayRequestPermissionsPref(false);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationDenied,
       base::DoNothing());
   parent_access_ui::mojom::ParentAccessParamsPtr params =
       dialog_provider_->GetLastParamsReceived();
@@ -180,12 +177,13 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetParentAccessApproval_Approved) {
-  SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              extensions::SupervisedUserExtensionsDelegate::
@@ -204,12 +202,13 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetParentAccessApproval_Declined) {
-  SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              extensions::SupervisedUserExtensionsDelegate::
@@ -228,12 +227,13 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetParentAccessApproval_Canceled) {
-  SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              extensions::SupervisedUserExtensionsDelegate::
@@ -252,12 +252,13 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetParentAccessApproval_Disabled) {
-  SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              extensions::SupervisedUserExtensionsDelegate::
@@ -276,12 +277,13 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
 
 TEST_F(ParentAccessExtensionApprovalsManagerTest,
        GetParentAccessApproval_Error) {
-  SetSupervisedUserMayRequestPermissionsPref(true);
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder(kTestExtensionName).Build();
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              extensions::SupervisedUserExtensionsDelegate::
@@ -307,6 +309,8 @@ TEST_F(ParentAccessExtensionApprovalsManagerTest,
   base::RunLoop run_loop;
   approvals_manager_->ShowParentAccessDialog(
       *extension, profile_, extensions::util::GetDefaultExtensionIcon(),
+      extensions::ParentAccessExtensionApprovalsManager::ExtensionInstallMode::
+          kInstallationPermitted,
       base::BindOnce(
           [](base::OnceClosure quit_closure,
              extensions::SupervisedUserExtensionsDelegate::

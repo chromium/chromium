@@ -64,6 +64,13 @@ const char kSupervisedUserSecondCustodianProfileURL[] =
 const char kSupervisedUserExtensionsMayRequestPermissions[] =
     "profile.managed.extensions_may_request_permissions";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// DictionaryValue that maps extension ids to the approved version of this
+// extension for a supervised user. Missing extensions are not approved.
+const char kSupervisedUserApprovedExtensions[] =
+    "profile.managed.approved_extensions";
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 // The supervised user ID.
 const char kSupervisedUserId[] = "profile.managed_user_id";
 

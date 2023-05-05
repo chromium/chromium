@@ -7515,6 +7515,8 @@ static_library("browser") {
       "supervised_user/extension_icon_loader.h",
       "supervised_user/supervised_user_extensions_delegate_impl.cc",
       "supervised_user/supervised_user_extensions_delegate_impl.h",
+      "supervised_user/supervised_user_extensions_manager.cc",
+      "supervised_user/supervised_user_extensions_manager.h",
       "supervised_user/supervised_user_extensions_metrics_recorder.cc",
       "supervised_user/supervised_user_extensions_metrics_recorder.h",
     ]

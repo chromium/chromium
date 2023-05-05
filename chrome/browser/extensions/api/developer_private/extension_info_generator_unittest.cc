@@ -51,10 +51,9 @@
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
-#include "chrome/browser/supervised_user/supervised_user_service.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "components/supervised_user/core/common/features.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 namespace extensions {
@@ -952,10 +951,6 @@ class ExtensionInfoGeneratorUnitTestSupervised
   ExtensionInfoGeneratorUnitTestSupervised() = default;
   ~ExtensionInfoGeneratorUnitTestSupervised() override = default;
 
-  SupervisedUserService* GetSupervisedUserService() {
-    return SupervisedUserServiceFactory::GetForProfile(profile());
-  }
-
   SupervisedUserExtensionsDelegate* GetSupervisedUserExtensionsDelegate() {
     return supervised_user_extensions_delegate_.get();
   }
@@ -974,7 +969,6 @@ class ExtensionInfoGeneratorUnitTestSupervised
     // Set up custodians (parents) for the child.
     supervised_user_test_util::AddCustodians(profile());
 
-    GetSupervisedUserService()->Init();
     // Set the pref to allow the child to request extension install.
     supervised_user_test_util::
         SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
