@@ -148,7 +148,7 @@ class CookieStore final : public EventTargetWithInlineData,
   const net::SiteForCookies default_site_for_cookies_;
 
   // The context in which cookies are accessed.
-  const scoped_refptr<SecurityOrigin> default_top_frame_origin_;
+  const scoped_refptr<const SecurityOrigin> default_top_frame_origin_;
 };
 
 }  // namespace blink

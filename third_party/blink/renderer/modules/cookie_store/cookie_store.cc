@@ -238,7 +238,7 @@ net::SiteForCookies DefaultSiteForCookies(ExecutionContext* execution_context) {
   return net::SiteForCookies();
 }
 
-scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
+const scoped_refptr<const SecurityOrigin> DefaultTopFrameOrigin(
     ExecutionContext* execution_context) {
   DCHECK(execution_context);
 
@@ -248,9 +248,13 @@ scoped_refptr<SecurityOrigin> DefaultTopFrameOrigin(
     return window->document()->TopFrameOrigin()->IsolatedCopy();
   }
 
-  auto* scope = To<ServiceWorkerGlobalScope>(execution_context);
-  return SecurityOrigin::CreateFromUrlOrigin(url::Origin::Create(
-      net::SchemefulSite(scope->storage_key().GetTopLevelSite()).GetURL()));
+  const BlinkStorageKey& key =
+      To<ServiceWorkerGlobalScope>(execution_context)->storage_key();
+  if (key.IsFirstPartyContext()) {
+    return key.GetSecurityOrigin();
+  }
+  return SecurityOrigin::CreateFromUrlOrigin(
+      url::Origin::Create(net::SchemefulSite(key.GetTopLevelSite()).GetURL()));
 }
 
 }  // namespace

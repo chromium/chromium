@@ -2051,11 +2051,7 @@ void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
   // overrides for a service worker.
   storage_partition_impl_->CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole::SCRIPT, storage_key.origin(),
-      net::IsolationInfo::Create(
-          net::IsolationInfo::RequestType::kOther,
-          url::Origin::Create(storage_key.top_level_site().GetURL()),
-          storage_key.origin(), storage_key.ToNetSiteForCookies(),
-          /*party_context=*/absl::nullopt, storage_key.nonce()),
+      storage_key.ToPartialNetIsolationInfo(),
       /*is_service_worker=*/true, GetID(), MSG_ROUTING_NONE,
       net::CookieSettingOverrides(), std::move(receiver),
       storage_partition_impl_->CreateCookieAccessObserverForServiceWorker());
@@ -2162,11 +2158,7 @@ void RenderProcessHostImpl::CreateWebSocketConnector(
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<WebSocketConnectorImpl>(
           GetID(), MSG_ROUTING_NONE, storage_key.origin(),
-          net::IsolationInfo::Create(
-              net::IsolationInfo::RequestType::kOther,
-              url::Origin::Create(storage_key.top_level_site().GetURL()),
-              storage_key.origin(), storage_key.ToNetSiteForCookies(),
-              /*party_context=*/absl::nullopt, storage_key.nonce())),
+          storage_key.ToPartialNetIsolationInfo()),
       std::move(receiver));
 }
 
