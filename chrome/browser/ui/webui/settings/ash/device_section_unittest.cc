@@ -128,7 +128,7 @@ TEST_F(DeviceSectionTest, SearchResultChangeToSettingsSplitWithFlag) {
 // Verify registry updated with regular settings search tags when flag is
 // disabled.
 TEST_F(DeviceSectionTest, SearchResultChangeBackWithoutFlag) {
-  feature_list_.Reset();
+  feature_list_.InitAndDisableFeature(features::kInputDeviceSettingsSplit);
   device_section_ = std::make_unique<DeviceSection>(
       profile(), search_tag_registry(), pref_service());
 
