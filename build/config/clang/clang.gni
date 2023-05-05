@@ -19,4 +19,12 @@ declare_args() {
       ((is_linux && !is_castos) || (is_android && !is_cast_android))
 
   clang_base_path = default_clang_base_path
+
+  # Specifies whether or not bitcode should be embedded during compilation.
+  # This is used for creating a MLGO corpus from Chromium in the non-ThinLTO case.
+  clang_embed_bitcode = false
+
+  # Set to true to enable output of ThinLTO index and import files used for
+  # creating a Chromium MLGO corpus in the ThinLTO case.
+  lld_emit_indexes_and_imports = false
 }
