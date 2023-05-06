@@ -98,6 +98,18 @@ class PopoverData final : public GarbageCollected<PopoverData>,
     bool was_set_;
   };
 
+  HeapHashMap<WeakMember<const HTMLFormControlElement>, TaskHandle>&
+  hoverShowTasks() {
+    return hover_show_tasks_;
+  }
+
+  void setHoverHideTask(TaskHandle&& task) {
+    if (hover_hide_task_.IsActive()) {
+      hover_hide_task_.Cancel();
+    }
+    hover_hide_task_ = std::move(task);
+  }
+
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
     return owner_select_menu_element_;
   }
@@ -108,6 +120,7 @@ class PopoverData final : public GarbageCollected<PopoverData>,
   void Trace(Visitor* visitor) const override {
     visitor->Trace(invoker_);
     visitor->Trace(previously_focused_element_);
+    visitor->Trace(hover_show_tasks_);
     visitor->Trace(owner_select_menu_element_);
     ElementRareDataField::Trace(visitor);
   }
@@ -125,6 +138,14 @@ class PopoverData final : public GarbageCollected<PopoverData>,
 
   // True when we're in the middle of trying to hide/show this popover.
   bool hiding_or_showing_this_popover_;
+
+  // Map from elements with the 'popovertarget' attribute and
+  // `popovertargetaction=hover` to a task that will show the popover after a
+  // delay.
+  HeapHashMap<WeakMember<const HTMLFormControlElement>, TaskHandle>
+      hover_show_tasks_;
+  // A task that hides the popover after a delay.
+  TaskHandle hover_hide_task_;
 
   WeakMember<HTMLSelectMenuElement> owner_select_menu_element_;
 };

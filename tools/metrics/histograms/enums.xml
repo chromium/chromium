@@ -67903,8 +67903,8 @@ Called by update_use_counter_css.py.-->
   <int value="719" label="anchor-name"/>
   <int value="720" label="position-fallback"/>
   <int value="721" label="anchor-scroll"/>
-  <int value="722" label="pop-up-show-delay"/>
-  <int value="723" label="pop-up-hide-delay"/>
+  <int value="722" label="popover-show-delay"/>
+  <int value="723" label="popover-hide-delay"/>
   <int value="724" label="hyphenate-character"/>
   <int value="725" label="scroll-timeline"/>
   <int value="726" label="scroll-timeline-name"/>

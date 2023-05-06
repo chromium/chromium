@@ -442,6 +442,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GridTemplateRows() == b.GridTemplateRows();
     case CSSPropertyID::kHeight:
       return a.Height() == b.Height();
+    case CSSPropertyID::kPopoverShowDelay:
+      return a.PopoverShowDelay() == b.PopoverShowDelay();
+    case CSSPropertyID::kPopoverHideDelay:
+      return a.PopoverHideDelay() == b.PopoverHideDelay();
     case CSSPropertyID::kHyphenateCharacter:
       return a.HyphenationString() == b.HyphenationString();
     case CSSPropertyID::kHyphenateLimitChars:

@@ -75,6 +75,7 @@ enum class PopoverTriggerAction {
   kToggle,
   kShow,
   kHide,
+  kHover,
 };
 
 enum class HidePopoverFocusBehavior {
@@ -272,6 +273,10 @@ class CORE_EXPORT HTMLElement : public Element {
                                    HidePopoverFocusBehavior,
                                    HidePopoverTransitionBehavior,
                                    HidePopoverIndependence);
+  // Popover hover triggering behavior.
+  bool IsNodePopoverDescendant(const Node& node) const;
+  void MaybeQueuePopoverHideEvent();
+  static void HoveredElementChanged(Element* old_element, Element* new_element);
 
   void SetOwnerSelectMenuElement(HTMLSelectMenuElement* element);
   HTMLSelectMenuElement* ownerSelectMenuElement() const;

@@ -109,6 +109,9 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   void DefaultEventHandler(Event&) override;
 
+  void SetHovered(bool hovered) override;
+  void HandlePopoverInvokerHovered(bool hovered);
+
   // Getter and setter for the PII type of the element derived from the autofill
   // field semantic prediction.
   virtual FormElementPiiType GetFormElementPiiType() const {

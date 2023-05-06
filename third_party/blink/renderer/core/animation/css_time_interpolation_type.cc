@@ -47,7 +47,10 @@ absl::optional<double> CSSTimeInterpolationType::GetSeconds(
     const CSSPropertyID& property,
     const ComputedStyle& style) {
   switch (property) {
-    // No properties currently use CSSTimeInterpolationType.
+    case CSSPropertyID::kPopoverShowDelay:
+      return style.PopoverShowDelay();
+    case CSSPropertyID::kPopoverHideDelay:
+      return style.PopoverHideDelay();
     default:
       NOTREACHED();
       return absl::optional<double>();
@@ -66,7 +69,9 @@ absl::optional<double> CSSTimeInterpolationType::GetSeconds(
 double CSSTimeInterpolationType::ClampTime(const CSSPropertyID& property,
                                            double value) const {
   switch (property) {
-    // No properties currently use CSSTimeInterpolationType.
+    case CSSPropertyID::kPopoverShowDelay:
+    case CSSPropertyID::kPopoverHideDelay:
+      return ClampTo<float>(value, 0);
     default:
       NOTREACHED();
       return 0;
@@ -85,9 +90,17 @@ void CSSTimeInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*,
     StyleResolverState& state) const {
+  ComputedStyleBuilder& builder = state.StyleBuilder();
   auto property = CssProperty().PropertyID();
+  double clamped_seconds =
+      ClampTime(property, To<InterpolableNumber>(interpolable_value).Value());
   switch (property) {
-    // No properties currently use CSSTimeInterpolationType.
+    case CSSPropertyID::kPopoverShowDelay:
+      builder.SetPopoverShowDelay(clamped_seconds);
+      break;
+    case CSSPropertyID::kPopoverHideDelay:
+      builder.SetPopoverHideDelay(clamped_seconds);
+      break;
     default:
       NOTREACHED();
       break;

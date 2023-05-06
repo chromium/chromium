@@ -4119,6 +4119,38 @@ const CSSValue* Height::CSSValueFromComputedStyleInternal(
                                                              style);
 }
 
+const CSSValue* PopoverShowDelay::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ConsumeTime(
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
+const CSSValue* PopoverShowDelay::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return CSSNumericLiteralValue::Create(style.PopoverShowDelay(),
+                                        CSSPrimitiveValue::UnitType::kSeconds);
+}
+
+const CSSValue* PopoverHideDelay::ParseSingleValue(
+    CSSParserTokenRange& range,
+    const CSSParserContext& context,
+    const CSSParserLocalContext& local_context) const {
+  return css_parsing_utils::ConsumeTime(
+      range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
+const CSSValue* PopoverHideDelay::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return CSSNumericLiteralValue::Create(style.PopoverHideDelay(),
+                                        CSSPrimitiveValue::UnitType::kSeconds);
+}
+
 const CSSValue* HyphenateLimitChars::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,

@@ -4939,6 +4939,7 @@ void Document::DynamicViewportUnitsChanged() {
 }
 
 void Document::SetHoverElement(Element* new_hover_element) {
+  HTMLElement::HoveredElementChanged(hover_element_, new_hover_element);
   hover_element_ = new_hover_element;
 }
 
@@ -8762,6 +8763,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(popover_hint_showing_);
   visitor->Trace(popover_pointerdown_target_);
   visitor->Trace(popovers_waiting_to_hide_);
+  visitor->Trace(all_open_popovers_);
   visitor->Trace(elements_with_css_toggles_);
   visitor->Trace(elements_needing_style_recalc_for_toggle_);
   visitor->Trace(css_toggle_inference_);

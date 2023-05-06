@@ -346,6 +346,8 @@ placeContent
 placeItems
 placeSelf
 pointerEvents
+popoverHideDelay
+popoverShowDelay
 position
 positionFallback
 prefix

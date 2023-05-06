@@ -1549,6 +1549,9 @@ class CORE_EXPORT Document : public ContainerNode,
     return popover_stack_;
   }
   bool PopoverAutoShowing() const { return !popover_stack_.empty(); }
+  HeapHashSet<Member<HTMLElement>>& AllOpenPopovers() {
+    return all_open_popovers_;
+  }
   HTMLElement* TopmostPopoverOrHint() const;
   HeapHashSet<Member<HTMLElement>>& PopoversWaitingToHide() {
     return popovers_waiting_to_hide_;
@@ -2452,6 +2455,8 @@ class CORE_EXPORT Document : public ContainerNode,
   // A set of popovers for which hidePopover() has been called, but animations
   // are still running.
   HeapHashSet<Member<HTMLElement>> popovers_waiting_to_hide_;
+  // A set of all open popovers, of all types.
+  HeapHashSet<Member<HTMLElement>> all_open_popovers_;
 
   // Elements that have CSS Toggles.
   HeapHashSet<WeakMember<Element>> elements_with_css_toggles_;
