@@ -32,6 +32,7 @@
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
 #include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
+#include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
@@ -244,6 +245,8 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<ash::reporting::EnterpriseReportingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<ash::multidevice::ProximityAuthUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::RemoteMaintenanceCurtainUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<ash::ScanningUIConfig, ash::ScanningUI,

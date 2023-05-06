@@ -203,7 +203,6 @@
 #include "ash/webui/help_app_ui/url_constants.h"
 #include "ash/webui/media_app_ui/media_app_ui.h"
 #include "ash/webui/media_app_ui/url_constants.h"
-#include "ash/webui/multidevice_debug/proximity_auth_ui.h"
 #include "ash/webui/multidevice_debug/url_constants.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
@@ -220,13 +219,11 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
@@ -284,7 +281,6 @@
 #include "chrome/browser/ui/webui/nearby_internals/nearby_internals_ui.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share_dialog_ui.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_ui.h"
-#include "chromeos/ash/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"  // nogncheck
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"  // nogncheck
@@ -598,30 +594,6 @@ WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
       base::BindRepeating(&BindEcheConnectionStatusHandler, manager));
 }
 
-void BindMultiDeviceSetup(
-    Profile* profile,
-    mojo::PendingReceiver<ash::multidevice_setup::mojom::MultiDeviceSetup>
-        receiver) {
-  ash::multidevice_setup::MultiDeviceSetupService* service =
-      ash::multidevice_setup::MultiDeviceSetupServiceFactory::GetForProfile(
-          profile);
-  if (service)
-    service->BindMultiDeviceSetup(std::move(receiver));
-}
-
-// Special case for chrome://proximity_auth.
-template <>
-WebUIController* NewWebUI<ash::multidevice::ProximityAuthUI>(WebUI* web_ui,
-                                                             const GURL& url) {
-  content::BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  return new ash::multidevice::ProximityAuthUI(
-      web_ui,
-      ash::device_sync::DeviceSyncClientFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context)),
-      base::BindRepeating(&BindMultiDeviceSetup, Profile::FromWebUI(web_ui)));
-}
-
 template <>
 WebUIController* NewWebUI<ash::personalization_app::PersonalizationAppUI>(
     WebUI* web_ui,
@@ -919,10 +891,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
-  if (url.host_piece() == ash::multidevice::kChromeUIProximityAuthHost &&
-      !profile->IsOffTheRecord()) {
-    return &NewWebUI<ash::multidevice::ProximityAuthUI>;
-  }
   if (url.host_piece() == ash::kChromeUIProjectorAppHost &&
       IsProjectorAppEnabled(profile)) {
     return &NewWebUI<ash::TrustedProjectorUI>;
