@@ -486,7 +486,12 @@ void TestRunnerBindings::Install(TestRunner* test_runner,
                 mutations.forEach(function(mutation) {
                   if (!target.classList.contains('reftest-wait') &&
                       !target.classList.contains('test-wait')) {
-                    window.testRunner.notifyDone();
+                    // This is the same as https://github.com/web-platform-tests/wpt/blob/master/tools/wptrunner/wptrunner/executors/test-wait.js
+                    requestAnimationFrame(() => {
+                      requestAnimationFrame(() => {
+                        window.testRunner.notifyDone();
+                      });
+                    });
                   }
                 });
               });
