@@ -662,6 +662,17 @@ struct MLConfig {
   // Equivalent to OmniboxFieldTrial::kMlUrlScoringIncreaseNumCandidates.
   bool ml_url_scoring_increase_num_candidates{false};
 
+  // If true, the ML model only re-scores and re-ranks the final set of matches
+  // that would be shown in the legacy scoring system. The full legacy system
+  // including the final call to `SortAndCull()` is completed before the ML
+  // model is invoked.
+  bool ml_url_scoring_rerank_final_matches_only{false};
+
+  // If true, the would-be default match from the legacy system is determined
+  // before ML scoring is invoked, and preserved even after re-scoring and
+  // re-ranking with the new scores.
+  bool ml_url_scoring_preserve_default{false};
+
   // If true, creates Omnibox autocompete URL scoring model.
   // Equivalent to omnibox::kUrlScoringModel.
   bool url_scoring_model{false};

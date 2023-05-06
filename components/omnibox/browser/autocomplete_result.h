@@ -110,11 +110,11 @@ class AutocompleteResult {
   //
   // On desktop, it filters the matches to be either all tail suggestions
   // (except for the first match) or no tail suggestions.
-  void SortAndCull(
-      const AutocompleteInput& input,
-      TemplateURLService* template_url_service,
-      OmniboxTriggeredFeatureService* triggered_feature_service,
-      const AutocompleteMatch* default_match_to_preserve = nullptr);
+  void SortAndCull(const AutocompleteInput& input,
+                   TemplateURLService* template_url_service,
+                   OmniboxTriggeredFeatureService* triggered_feature_service,
+                   absl::optional<AutocompleteMatch> default_match_to_preserve =
+                       absl::nullopt);
 
   // Ensures that matches belonging to suggestion groups, i.e., those with a
   // suggestion_group_id value and a corresponding suggestion group info, are

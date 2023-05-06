@@ -306,7 +306,7 @@ class AutocompleteController : public AutocompleteProviderListener,
       const absl::optional<AutocompleteMatch>& last_default_match,
       const std::u16string& last_default_associated_keyword,
       bool force_notify_default_match_changed,
-      const AutocompleteMatch* default_match_to_preserve = nullptr);
+      absl::optional<AutocompleteMatch> default_match_to_preserve);
 
   // Updates `result` to populate each match's `associated_keyword` if that
   // match can show a keyword hint. `result` should be sorted by relevance

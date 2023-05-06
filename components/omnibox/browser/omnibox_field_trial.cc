@@ -1111,6 +1111,24 @@ const base::FeatureParam<bool> kMlUrlScoringIncreaseNumCandidates(
     "MlUrlScoringIncreaseNumCandidates",
     false);
 
+// If true, the ML model only re-scores and re-ranks the final set of matches
+// that would be shown in the legacy scoring system. The full legacy system
+// including the final call to `SortAndCull()` is completed before the ML model
+// is invoked.
+const base::FeatureParam<bool> kMlUrlscoringRerankFinalMatchesOnly(
+    &omnibox::kMlUrlScoring,
+    "MlUrlScoringRerankFinalMatchesOnly",
+    false);
+
+// If true, the would-be default match from the legacy system is determined
+// before ML scoring is invoked, and preserved even after re-scoring and
+// re-ranking with the new scores. This also means only the final set of matches
+// from the legacy system will be re-scored and re-ranked.
+const base::FeatureParam<bool> kMlUrlScoringPreserveDefault(
+    &omnibox::kMlUrlScoring,
+    "MlUrlScoringPreserveDefault",
+    false);
+
 MLConfig::MLConfig() {
   log_url_scoring_signals =
       base::FeatureList::IsEnabled(omnibox::kLogUrlScoringSignals);
@@ -1119,6 +1137,9 @@ MLConfig::MLConfig() {
   ml_url_scoring_counterfactual = kMlUrlScoringCounterfactual.Get();
   ml_url_scoring_increase_num_candidates =
       kMlUrlScoringIncreaseNumCandidates.Get();
+  ml_url_scoring_preserve_default = kMlUrlScoringPreserveDefault.Get();
+  ml_url_scoring_rerank_final_matches_only =
+      kMlUrlscoringRerankFinalMatchesOnly.Get();
   url_scoring_model = base::FeatureList::IsEnabled(omnibox::kUrlScoringModel);
 }
 

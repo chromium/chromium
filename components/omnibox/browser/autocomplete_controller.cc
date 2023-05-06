@@ -994,9 +994,9 @@ void AutocompleteController::UpdateResult(
   }
 
   // Conditionally preserve the default match.
-  const AutocompleteMatch* default_match_to_preserve = nullptr;
+  absl::optional<AutocompleteMatch> default_match_to_preserve;
   if (last_default_match && ShouldPreserveDefault(sync_pass_done_, input_)) {
-    default_match_to_preserve = &last_default_match.value();
+    default_match_to_preserve = last_default_match;
   }
 
   if (!done_) {
@@ -1017,7 +1017,7 @@ void AutocompleteController::UpdateResult(
             .Get();
 
     if (!preserve_default_after_transfer) {
-      default_match_to_preserve = nullptr;
+      default_match_to_preserve.reset();
     }
 
   } else if (OmniboxFieldTrial::IsMlUrlScoringEnabled()) {
@@ -1025,10 +1025,24 @@ void AutocompleteController::UpdateResult(
     // a WeakPtr since the model is not owned and `this` may no longer be alive.
     // `SortCullAndAnnotateResult()` is called when the model is done.
     // TODO(crbug.com/1405555): Deduplicate the matches before running the
-    //  model in order to combine the signals. Optionally also trim the matches
-    //  prior to running the model.
-    // TODO(crbug.com/1405555): Investigate preserving the would-be default
-    //  match from the legacy system when reranking the matches using the model.
+    //  model in order to combine the signals.
+
+    // When the preserve default feature param is enabled, the default match
+    // that would have been shown before ML scoring is preserved. In this case,
+    // call `SortAndCull()` before the ML model is invoked to determine what
+    // this default match would've been. This also limits the potential
+    // suggestions to only what would've been shown in the legacy system.
+    if (OmniboxFieldTrial::GetMLConfig()
+            .ml_url_scoring_rerank_final_matches_only) {
+      result_.SortAndCull(input_, template_url_service_,
+                          triggered_feature_service_,
+                          default_match_to_preserve);
+      if (result_.default_match() &&
+          OmniboxFieldTrial::GetMLConfig().ml_url_scoring_preserve_default) {
+        default_match_to_preserve = *result_.default_match();
+      }
+    }
+
     RunUrlScoringModel(base::BindOnce(
         &AutocompleteController::SortCullAndAnnotateResult,
         weak_ptr_factory_.GetWeakPtr(), last_default_match,
@@ -1050,7 +1064,7 @@ void AutocompleteController::SortCullAndAnnotateResult(
     const absl::optional<AutocompleteMatch>& last_default_match,
     const std::u16string& last_default_associated_keyword,
     bool force_notify_default_match_changed,
-    const AutocompleteMatch* default_match_to_preserve) {
+    absl::optional<AutocompleteMatch> default_match_to_preserve) {
   result_.SortAndCull(input_, template_url_service_, triggered_feature_service_,
                       default_match_to_preserve);
 
