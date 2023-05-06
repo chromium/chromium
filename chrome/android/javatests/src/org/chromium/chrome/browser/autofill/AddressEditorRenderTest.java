@@ -1,0 +1,272 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.autofill;
+
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
+
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
+import static org.chromium.ui.test.util.UiRestriction.RESTRICTION_TYPE_PHONE;
+
+import android.view.View;
+
+import androidx.test.filters.MediumTest;
+
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
+import org.chromium.chrome.browser.autofill.settings.AddressEditor;
+import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
+import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
+import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
+import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridgeJni;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.payments.AutofillAddress;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.RenderTestRule;
+import org.chromium.ui.test.util.RenderTestRule.Component;
+
+import java.util.HashSet;
+import java.util.List;
+
+/**
+ * These tests render screenshots of the {@link AddressEditor} and compare them to a gold standard.
+ */
+@DoNotBatch(reason = "The tests can't be batched because they run for different set-ups.")
+@RunWith(ParameterizedRunner.class)
+@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HONORIFIC_PREFIXES,
+        ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT})
+@Restriction({RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
+    private static final String USER_EMAIL = "example@gmail.com";
+    private static final List<AddressUiComponent> SUPPORTED_ADDRESS_FIELDS = List.of(
+            new AddressUiComponent(AddressField.RECIPIENT, "Name", true, true),
+            new AddressUiComponent(AddressField.ORGANIZATION, "Company", false, true),
+            new AddressUiComponent(AddressField.STREET_ADDRESS, "Street address", true, true),
+            new AddressUiComponent(AddressField.LOCALITY, "City", true, true),
+            new AddressUiComponent(AddressField.ADMIN_AREA, "State", true, false),
+            new AddressUiComponent(AddressField.POSTAL_CODE, "ZIP", true, false));
+
+    private static final AutofillProfile sLocalProfile = new AutofillProfile("", true,
+            Source.LOCAL_OR_SYNCABLE, /*honorific prefix=*/"", "Seb Doe", "Google", "111 First St",
+            "CA", "Los Angeles", "", "90291", "", "US", "650-253-0000", "first@gmail.com", "en-US");
+    private static final AutofillProfile sAccountProfile = new AutofillProfile("", true,
+            Source.ACCOUNT, /*honorific prefix=*/"", "Seb Doe", "Google", "111 First St", "CA",
+            "Los Angeles", "", "90291", "", "US", "650-253-0000", "first@gmail.com", "en-US");
+
+    @ParameterAnnotations.ClassParameter
+    private static List<ParameterSet> sClassParams =
+            new NightModeTestUtils.NightModeParams().getParameters();
+
+    @Rule
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setRevision(0)
+                    .setBugComponent(Component.UI_BROWSER_AUTOFILL)
+                    .build();
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
+    @Mock
+    private PhoneNumberUtil.Natives mPhoneNumberUtilJni;
+    @Mock
+    private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock
+    private IdentityManager mIdentityManager;
+    @Mock
+    private SyncService mSyncService;
+    @Mock
+    private PersonalDataManager mPersonalDataManager;
+    @Mock
+    private Profile mProfile;
+
+    private final CoreAccountInfo mAccountInfo =
+            CoreAccountInfo.createFromEmailAndGaiaId(USER_EMAIL, "gaia_id");
+
+    public AddressEditorRenderTest(boolean nightModeEnabled) {
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
+        mRenderTestRule.setNightModeEnabled(nightModeEnabled);
+    }
+
+    @Before
+    @Override
+    public void setUpTest() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
+        mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
+        mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
+        doAnswer(invocation -> {
+            List<Integer> requiredFields = (List<Integer>) invocation.getArguments()[1];
+            requiredFields.addAll(List.of(AddressField.RECIPIENT, AddressField.LOCALITY,
+                    AddressField.DEPENDENT_LOCALITY, AddressField.POSTAL_CODE));
+            return null;
+        })
+                .when(mAutofillProfileBridgeJni)
+                .getRequiredFields(anyString(), anyList());
+
+        runOnUiThreadBlocking(() -> {
+            when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
+            when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
+            SyncService.overrideForTests(mSyncService);
+
+            when(mPersonalDataManager.isCountryEligibleForAccountStorage(anyString()))
+                    .thenReturn(true);
+            PersonalDataManager.setInstanceForTesting(mPersonalDataManager);
+
+            Profile.setLastUsedProfileForTesting(mProfile);
+            IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+            when(mIdentityServicesProvider.getIdentityManager(mProfile))
+                    .thenReturn(mIdentityManager);
+            when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
+        });
+
+        doAnswer(invocation -> { return (String) invocation.getArguments()[0]; })
+                .when(mPhoneNumberUtilJni)
+                .formatForDisplay(anyString(), anyString());
+        doAnswer(invocation -> { return (String) invocation.getArguments()[0]; })
+                .when(mPhoneNumberUtilJni)
+                .formatForResponse(anyString());
+        when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
+
+        setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
+        super.setUpTest();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        runOnUiThreadBlocking(NightModeTestUtils::tearDownNightModeForBlankUiTestActivity);
+    }
+
+    private void setUpAddressUiComponents(List<AddressUiComponent> addressUiComponents) {
+        doAnswer(invocation -> {
+            List<Integer> componentIds = (List<Integer>) invocation.getArguments()[3];
+            List<String> componentNames = (List<String>) invocation.getArguments()[4];
+            List<Integer> componentRequired = (List<Integer>) invocation.getArguments()[5];
+            List<Integer> componentLength = (List<Integer>) invocation.getArguments()[6];
+
+            for (AddressUiComponent component : addressUiComponents) {
+                componentIds.add(component.id);
+                componentNames.add(component.label);
+                componentRequired.add(component.isRequired ? 1 : 0);
+                componentLength.add(component.isFullLine ? 1 : 0);
+            }
+            return "EN";
+        })
+                .when(mAutofillProfileBridgeJni)
+                .getAddressUiComponents(anyString(), anyString(), anyInt(), anyList(), anyList(),
+                        anyList(), anyList());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void editNewAddressProfile() throws Exception {
+        View editor = runOnUiThreadBlocking(() -> {
+            EditorDialog dialog =
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+            AddressEditor addressEditor = new AddressEditor(dialog, /*saveToDisk=*/false,
+                    /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+            addressEditor.edit(null, (unused) -> {});
+            return dialog.getDataViewForTest();
+        });
+        mRenderTestRule.render(editor, "edit_new_address_profile");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void editNewAccountAddressProfile() throws Exception {
+        View editor = runOnUiThreadBlocking(() -> {
+            when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+            EditorDialog dialog =
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+            AddressEditor addressEditor = new AddressEditor(dialog, /*saveToDisk=*/false,
+                    /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+            addressEditor.edit(null, (unused) -> {});
+            return dialog.getDataViewForTest();
+        });
+        mRenderTestRule.render(editor, "edit_new_account_address_profile");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void editLocalOrSyncableAddressProfile() throws Exception {
+        View editor = runOnUiThreadBlocking(() -> {
+            when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+            EditorDialog dialog =
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+            AddressEditor addressEditor = new AddressEditor(dialog, /*saveToDisk=*/false,
+                    /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+            addressEditor.edit(new AutofillAddress(getActivity(), sLocalProfile), (unused) -> {});
+            return dialog.getDataViewForTest();
+        });
+        mRenderTestRule.render(editor, "edit_local_or_syncable_address_profile");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void editAccountAddressProfile() throws Exception {
+        View editor = runOnUiThreadBlocking(() -> {
+            when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+            EditorDialog dialog =
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+            AddressEditor addressEditor = new AddressEditor(dialog, /*saveToDisk=*/false,
+                    /*isUpdate=*/false, /*isMigrationToAccount=*/false);
+            addressEditor.edit(new AutofillAddress(getActivity(), sAccountProfile), (unused) -> {});
+            return dialog.getDataViewForTest();
+        });
+        mRenderTestRule.render(editor, "edit_account_address_profile");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void migrateLocalOrSyncableAddressProfile() throws Exception {
+        View editor = runOnUiThreadBlocking(() -> {
+            when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
+            EditorDialog dialog =
+                    new EditorDialog(getActivity(), /*deleteRunnable=*/null, mProfile);
+            AddressEditor addressEditor = new AddressEditor(dialog, /*saveToDisk=*/false,
+                    /*isUpdate=*/false, /*isMigrationToAccount=*/true);
+            addressEditor.edit(new AutofillAddress(getActivity(), sLocalProfile), (unused) -> {});
+            return dialog.getDataViewForTest();
+        });
+        mRenderTestRule.render(editor, "migrate_local_or_syncable_address_profile");
+    }
+}

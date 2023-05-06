@@ -753,6 +753,12 @@ public class EditorDialog
         return invalidViews;
     }
 
+    /** @return The View with all fields of this editor. */
+    @VisibleForTesting
+    public View getDataViewForTest() {
+        return mDataView;
+    }
+
     /** @return All editable text fields in the editor. Used only for tests. */
     @VisibleForTesting
     public List<EditText> getEditableTextFieldsForTest() {
