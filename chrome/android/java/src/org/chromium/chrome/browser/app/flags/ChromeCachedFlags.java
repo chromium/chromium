@@ -92,6 +92,7 @@ public class ChromeCachedFlags {
                 ChromeFeatureList.sCloseTabSaveTabList,
                 ChromeFeatureList.sCommandLineOnNonRooted,
                 ChromeFeatureList.sCriticalPersistedTabData,
+                ChromeFeatureList.sDelayTempStripRemoval,
                 ChromeFeatureList.sDiscoverMultiColumn,
                 ChromeFeatureList.sTabStripRedesign,
                 ChromeFeatureList.sEarlyLibraryLoad,

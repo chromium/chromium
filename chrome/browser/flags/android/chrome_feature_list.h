@@ -92,6 +92,7 @@ BASE_DECLARE_FEATURE(kContextualSearchSuppressShortView);
 BASE_DECLARE_FEATURE(kContextualSearchThinWebViewImplementation);
 BASE_DECLARE_FEATURE(kDeferKeepScreenOnDuringGesture);
 BASE_DECLARE_FEATURE(kDeferNotifyInMotion);
+BASE_DECLARE_FEATURE(kDelayTempStripRemoval);
 BASE_DECLARE_FEATURE(kDelayTransitionsForAnimation);
 BASE_DECLARE_FEATURE(kDontPrefetchLibraries);
 BASE_DECLARE_FEATURE(kDownloadAutoResumptionThrottling);

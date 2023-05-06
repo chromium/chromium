@@ -8,8 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -33,6 +35,8 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -41,21 +45,23 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.toolbar.ControlContainer;
+import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
+import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
+import org.chromium.ui.resources.ResourceManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -87,11 +93,9 @@ public class CompositorViewHolderUnitTest {
     @Mock
     private Activity mActivity;
     @Mock
-    private ControlContainer mControlContainer;
+    private ToolbarControlContainer mControlContainer;
     @Mock
     private View mContainerView;
-    @Mock
-    private TabModelSelector mTabModelSelector;
     @Mock
     private ActivityTabProvider mActivityTabProvider;
     @Mock
@@ -105,9 +109,14 @@ public class CompositorViewHolderUnitTest {
     @Mock
     private CompositorView mCompositorView;
     @Mock
+    private ResourceManager mResourceManager;
+    @Mock
+    private LayoutManagerImpl mLayoutManager;
+    @Mock
     private KeyboardVisibilityDelegate mMockKeyboard;
 
     private Context mContext;
+    private MockTabModelSelector mTabModelSelector;
     private CompositorViewHolder mCompositorViewHolder;
     private BrowserControlsManager mBrowserControlsManager;
     private ApplicationViewportInsetSupplier mViewportInsets;
@@ -129,6 +138,9 @@ public class CompositorViewHolderUnitTest {
         mKeyboardAccessoryInsetSupplier = new ObservableSupplierImpl<>();
         mViewportInsets.setKeyboardAccessoryInsetSupplier(mKeyboardAccessoryInsetSupplier);
 
+        // Setup the TabModelSelector.
+        mTabModelSelector = new MockTabModelSelector(0, 0, null);
+
         // Setup for BrowserControlsManager which initiates content/control offset changes
         // for CompositorViewHolder.
         when(mActivity.getResources()).thenReturn(mResources);
@@ -147,10 +159,15 @@ public class CompositorViewHolderUnitTest {
         mContext = new ContextThemeWrapper(
                 ApplicationProvider.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
+        when(mCompositorView.getResourceManager()).thenReturn(mResourceManager);
+
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext));
+        mCompositorViewHolder.setLayoutManager(mLayoutManager);
+        mCompositorViewHolder.setControlContainer(mControlContainer);
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
+        mCompositorViewHolder.onFinishNativeInitialization(mTabModelSelector, null);
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getContentView()).thenReturn(mContentView);
@@ -556,5 +573,109 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.dispatchTouchEvent(MOTION_EVENT_DOWN);
         assertEquals(Arrays.asList(EventSource.TOUCH_EVENT_OBSERVER, EventSource.IN_MOTION),
                 eventSequence);
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @DisableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
+    public void testSetBackgroundRunnable_NoDelay() {
+        int pendingFrameCount = 0;
+        int framesUntilHideBackground = 1;
+        boolean swappedCurrentSize = true;
+
+        // Mark that a frame has swapped, and the buffer has swapped once (still waiting on one).
+        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
+        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        verifyBackgroundNotRemoved();
+
+        // Mark that the buffer has swapped a second time (and we're no longer waiting on one).
+        framesUntilHideBackground = 0;
+        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        verifyBackgroundRemoved();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
+    public void testSetBackgroundRunnable_Delay_TabStateInitialized() {
+        int pendingFrameCount = 0;
+        int framesUntilHideBackground = 0;
+        boolean swappedCurrentSize = true;
+
+        // Mark a tab has restored, a frame has swapped, and the buffer has swapped enough times.
+        notifyTabRestored();
+        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
+        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        verifyBackgroundNotRemoved();
+
+        // Mark the tab state as initialized and verify that the temp background is now removed.
+        mTabModelSelector.markTabStateInitialized();
+        verifyBackgroundRemoved();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
+    public void testSetBackgroundRunnable_Delay_TimedOut() {
+        int pendingFrameCount = 0;
+        int framesUntilHideBackground = 0;
+        boolean swappedCurrentSize = true;
+
+        // Mark a tab has restored, a frame has swapped, and the buffer has swapped enough times.
+        notifyTabRestored();
+        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
+        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        verifyBackgroundNotRemoved();
+
+        // Fake the timeout and verify that the temp background is now removed.
+        timeoutRunnable();
+        verifyBackgroundRemoved();
+    }
+
+    @Test
+    @Config(qualifiers = "sw600dp")
+    @EnableFeatures(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL)
+    public void testSetBackgroundRunnable_Delay_CompositorNotReady() {
+        int pendingFrameCount = 0;
+        int framesUntilHideBackground = 1;
+        boolean swappedCurrentSize = true;
+
+        // Mark the tab state as initialized and one frame has been swapped.
+        notifyTabRestored();
+        mTabModelSelector.markTabStateInitialized();
+        mCompositorViewHolder.didSwapFrame(pendingFrameCount);
+        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        timeoutRunnable();
+        verifyBackgroundNotRemoved();
+
+        // Mark the buffer has swapped enough times and verify the temp background is now removed.
+        framesUntilHideBackground = 0;
+        mCompositorViewHolder.didSwapBuffers(swappedCurrentSize, framesUntilHideBackground);
+        verifyBackgroundRemoved();
+    }
+
+    private void notifyTabRestored() {
+        // To avoid some complexities, we don't actually add a tab to the MockTabModel(Selector) and
+        // instead use the method called whenever the CompositorViewHolder is notified of a new tab.
+        mCompositorViewHolder.maybeInitializeSetBackgroundRunnableTimeout();
+    }
+
+    private static void runCurrentTasks() {
+        ShadowLooper.runUiThreadTasks();
+    }
+
+    private static void timeoutRunnable() {
+        // The timeout is implemented as a delayed task.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+    }
+
+    private void verifyBackgroundNotRemoved() {
+        runCurrentTasks();
+        verify(mCompositorView, never()).setBackgroundResource(anyInt());
+    }
+
+    private void verifyBackgroundRemoved() {
+        runCurrentTasks();
+        verify(mCompositorView, times(1)).setBackgroundResource(anyInt());
     }
 }

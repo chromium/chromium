@@ -63220,6 +63220,7 @@ from previous Chrome versions.
   <int value="535131384" label="OmniboxTailSuggestions:enabled"/>
   <int value="535194142" label="TemporaryHoldingSpacePreviews:enabled"/>
   <int value="535976218" label="enable-plugin-power-saver"/>
+  <int value="536655643" label="DelayTempStripRemoval:enabled"/>
   <int value="536948426" label="COLRV1Fonts:enabled"/>
   <int value="537857256" label="PipRoundedCorners:enabled"/>
   <int value="538468149" label="OfflinePagesCT:enabled"/>
@@ -64435,6 +64436,7 @@ from previous Chrome versions.
   <int value="1203633646" label="AutofillEnableVirtualCardMetadata:disabled"/>
   <int value="1203795051" label="PassiveMixedContentWarning:enabled"/>
   <int value="1203821857" label="Vulkan:disabled"/>
+  <int value="1204828623" label="DelayTempStripRemoval:disabled"/>
   <int value="1205596770"
       label="ExperimentalAccessibilityDictationWithPumpkin:disabled"/>
   <int value="1205849612" label="enable-sync-synced-notifications"/>
