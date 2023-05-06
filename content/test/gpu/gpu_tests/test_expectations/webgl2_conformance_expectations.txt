@@ -578,7 +578,7 @@ crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/r
 crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1130119 [ mac apple-apple-m1 passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
-crbug.com/1240443 [ mac apple-apple-m1 angle-opengl passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1240443 [ angle-opengl apple-apple-m1 monterey passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 # Newly added tests on NVIDIA passthrough
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/webgl-multi-draw.html [ Failure ]
