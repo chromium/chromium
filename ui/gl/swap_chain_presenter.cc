@@ -641,6 +641,24 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
   return copy_texture_;
 }
 
+gfx::Size SwapChainPresenter::GetMonitorSize() const {
+  if (GetDirectCompositionNumMonitors() == 1) {
+    // Only one monitor. Return the size of this monitor.
+    return GetDirectCompositionPrimaryMonitorSize();
+  } else {
+    gfx::Size monitor_size;
+    // Get the monitor on which the overlay is displayed.
+    MONITORINFO monitor_info;
+    monitor_info.cbSize = sizeof(monitor_info);
+    if (GetMonitorInfo(MonitorFromWindow(window_, MONITOR_DEFAULTTONEAREST),
+                       &monitor_info)) {
+      monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
+    }
+
+    return monitor_size;
+  }
+}
+
 void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
     const DCLayerOverlayParams& params,
     const gfx::Rect& overlay_onscreen_rect,
@@ -652,7 +670,7 @@ void SwapChainPresenter::AdjustTargetToOptimalSizeIfNeeded(
   // First try to adjust the full screen overlay that can fit the whole
   // screen. If it cannot fit the whole screen and we know it's in
   // letterboxing mode, try to center the overlay and adjust only x or only y.
-  gfx::Size monitor_size = GetMonitorSize(window_);
+  gfx::Size monitor_size = GetMonitorSize();
   bool size_adjusted = AdjustTargetToFullScreenSizeIfNeeded(
       monitor_size, params, overlay_onscreen_rect, swap_chain_size,
       visual_transform, visual_clip_rect);
@@ -1534,7 +1552,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
             visual_transform->rc(1, 3) * visual_transform->rc(1, 1));
 
     // Expand the clip rect for swap chain to the whole screen.
-    *visual_clip_rect = gfx::Rect(GetMonitorSize(window_));
+    *visual_clip_rect = gfx::Rect(GetMonitorSize());
   }
 
   last_overlay_image_ = std::move(params.overlay_image);

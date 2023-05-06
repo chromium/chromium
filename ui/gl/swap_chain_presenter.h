@@ -126,13 +126,17 @@ class SwapChainPresenter : public base::PowerStateObserver {
       bool content_is_hdr,
       absl::optional<DXGI_HDR_METADATA_HDR10> stream_hdr_metadata);
 
+  // Get the size of the monitor on which the window handle is displayed.
+  gfx::Size GetMonitorSize() const;
+
   // Takes in input DC layer params and the video overlay quad. The swap chain
   // backbuffer size will be rounded to the monitor size if it is within a close
   // margin. The visual_transform will be calculated by what scaling factor is
   // needed to scale the swap chain backbuffer to the monitor size.
   // The visual_clip_rect will be adjusted to the monitor size for full screen
   // mode, and to the video overlay quad for letterboxing mode.
-  // Returns true if the full screen is ready for further operations.
+  // The returned optional |dest_size| and |target_rect| have the same meaning
+  // as in AdjustTargetForFullScreenLetterboxing.
   void AdjustTargetToOptimalSizeIfNeeded(
       const DCLayerOverlayParams& params,
       const gfx::Rect& overlay_onscreen_rect,
@@ -153,10 +157,14 @@ class SwapChainPresenter : public base::PowerStateObserver {
       gfx::Transform* visual_transform,
       gfx::Rect* visual_clip_rect) const;
 
-  // Returns true if this is a good overlay for full screen letterboxing after
-  // some necessary adjustment. Otherwise, returns false which means no size
-  // adjustment, and it's either not a letterboxing video or not a case for
-  // further optimizations for full screen letterboxing.
+  // If the returned optional |dest_size| and |target_rect| contain valid
+  // values, it means this is a good overlay for full screen letterboxing after
+  // some necessary adjustment or no size adjustment required. Otherwise, it's
+  // either not a letterboxing video or not a case for further optimizations for
+  // full screen letterboxing. |swap_chain_| will then run SetDestSize to
+  // |dest_size| and SetTargetRect to |target_rect| in order to make sure
+  // Desktop Window Manager(DWM) take over the letterboxing/positioning job, and
+  // turn off the topmost desktop plane at the same time.
   void AdjustTargetForFullScreenLetterboxing(
       const gfx::Size& monitor_size,
       const DCLayerOverlayParams& params,

@@ -565,27 +565,6 @@ int GetDirectCompositionNumMonitors() {
   return g_num_monitors;
 }
 
-gfx::Size GetMonitorSize(HWND window) {
-  if (GetDirectCompositionNumMonitors() == 1) {
-    // Only one monitor. Return the size of this monitor.
-    return GetDirectCompositionPrimaryMonitorSize();
-  } else {
-    gfx::Size monitor_size;
-    // Get the monitor on which the window handle of interest is displayed.
-    HMONITOR monitor =
-        window ? MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST) : nullptr;
-    if (monitor) {
-      MONITORINFO monitor_info;
-      monitor_info.cbSize = sizeof(monitor_info);
-      if (GetMonitorInfo(monitor, &monitor_info)) {
-        monitor_size = gfx::Rect(monitor_info.rcMonitor).size();
-      }
-    }
-
-    return monitor_size;
-  }
-}
-
 bool DirectCompositionSystemHDREnabled() {
   if (g_num_monitors == 0)
     UpdateMonitorInfo();

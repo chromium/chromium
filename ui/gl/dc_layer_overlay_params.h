@@ -57,6 +57,8 @@ struct GL_EXPORT DCLayerOverlayParams {
 
   // Indication of the overlay to be detected as possible full screen
   // letterboxing.
+  // Go to viz::OverlayCandidate::possible_video_fullscreen_letterboxing for the
+  // details.
   bool possible_video_fullscreen_letterboxing = false;
 };
 

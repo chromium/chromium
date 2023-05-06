@@ -116,9 +116,6 @@ GL_EXPORT gfx::Size GetDirectCompositionPrimaryMonitorSize();
 // Get the current number of all visible display monitors on the desktop.
 GL_EXPORT int GetDirectCompositionNumMonitors();
 
-// Get the size of the monitor on which the window handle is displayed.
-GL_EXPORT gfx::Size GetMonitorSize(HWND window);
-
 // Testing helpers.
 GL_EXPORT void SetDirectCompositionScaledOverlaysSupportedForTesting(
     bool value);
