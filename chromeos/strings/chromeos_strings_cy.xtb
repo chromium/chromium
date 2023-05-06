@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Methu â datrys DNS</translation>
 <translation id="1018656279737460067">Canslwyd</translation>
 <translation id="1022433422498218992">Rheolyddion Cyffredinol</translation>
+<translation id="1022628058306505708">Llif y Ddaear</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> o drywyddau, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">Mae nodwedd newydd ar gael, defnyddiwch y fysell saeth I Fyny i ddysgu rhagor.</translation>
 <translation id="1059913517121127803">Methu â dechrau sganio</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Rhagor o gamau gweithredu</translation>
 <translation id="2926057806159140518">Rhowch eich enw defnyddiwr a'ch cyfrinair neu sganiwch eich Cod QR</translation>
 <translation id="2940811910881150316">Methu â phrofi'r ddyfais. Ailagorwch y caead i brofi.</translation>
+<translation id="2981143481017883351">Asedau sy'n unigryw i Chromebook ar gael nawr</translation>
 <translation id="3008341117444806826">AIL-LWYTHO</translation>
 <translation id="3009958530611748826">Dewiswch ffolder i gadw iddi</translation>
 <translation id="3017079585324758401">Cefndir</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Wedi cysylltu</translation>
 <translation id="3369013195428705271">Ydych chi'n siŵr eich bod am glirio holl hanes argraffu? Ni fydd y tasgau argraffu sy'n mynd rhagddynt yn cael eu clirio.</translation>
+<translation id="3386675685417744672">Unigryw i Chromebook</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">RHYBUDD</translation>
 <translation id="4054683689023980771">Wrthi'n lawrlwytho llun</translation>
 <translation id="4060260348856573701">APN newydd</translation>
+<translation id="4079743696465895866">Dewiswch waith celf sy'n unigryw i Chromebook</translation>
 <translation id="4093865285251893588">Llun proffil</translation>
 <translation id="409427325554347132">Cadw manylion y prawf</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Mae capasiti y batri yn gostwng gyda defnydd</translation>
 <translation id="6191293864534840972">Mae enwau gweinyddion wedi'u camffurfio</translation>
+<translation id="6205145102504628069">Llif Cwmwl</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Gadael llawn</translation>
 <translation id="6223752125779001553">Nid oes unrhyw sganwyr ar gael</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Personoleiddio</translation>
 <translation id="6500818810472529210">Gweld canlyniad yn Google Search</translation>
 <translation id="650266656685499220">I greu albymau, ewch i Google Photos</translation>
+<translation id="6505750420152840539">Gwawr i dywyllwch</translation>
 <translation id="6516990319416533844">I brofi cyfradd gwefru'r batri, gadewch i'ch batri ddadwefru am gyfnod byr</translation>
 <translation id="6517239166834772319">Archwilio</translation>
 <translation id="6526200165918397681">Paru'r papur wal</translation>

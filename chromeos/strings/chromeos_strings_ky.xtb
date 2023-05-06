@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS чечилбей жатат</translation>
 <translation id="1018656279737460067">Жокко чыгарылды</translation>
 <translation id="1022433422498218992">Жалпы башкаруу элементтери</translation>
+<translation id="1022628058306505708">Жер</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> топтом, <ph name="CPU_MAX_CLOCK_SPEED" />ГГц)</translation>
 <translation id="1047773237499189053">Жаңы функциялар бар. Кеңири маалымат алуу үчүн Өйдө жебе баскычын басыңыз.</translation>
 <translation id="1059913517121127803">Скандалып башталган жок</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Көбүрөөк аракеттер</translation>
 <translation id="2926057806159140518">Колдонуучу атыңызды жана сырсөзүңүздү киргизип же QR кодуңузду скандаңыз</translation>
 <translation id="2940811910881150316">Түзмөктү сыноого болбойт. Сынап көрүү үчүн капкагын кайра ачыңыз.</translation>
+<translation id="2981143481017883351">Эксклюзивдүү Chromebook объекттери эми жеткиликтүү</translation>
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
 <translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Терезелер</translation>
 <translation id="3368922792935385530">Туташты</translation>
 <translation id="3369013195428705271">Басып чыгаруу тарыхын өчүрөсүзбү? Учурда басылып жаткан документтериңиз өчүрүлбөйт.</translation>
+<translation id="3386675685417744672">Chromebook үчүн жасалган</translation>
 <translation id="3404249063913988450">Көшөгөнү иштетүү</translation>
 <translation id="3413935475507503304">Жаңыртуу үчүн "Кийинки" баскычын басыңыз.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">ЭСКЕРТҮҮ</translation>
 <translation id="4054683689023980771">Сүрөт жүктөлүүдө</translation>
 <translation id="4060260348856573701">Жаңы APN</translation>
+<translation id="4079743696465895866">Chromebook үчүн эксклюзивдүү сүрөттү тандоо</translation>
 <translation id="4093865285251893588">Профиль сүрөтү</translation>
 <translation id="409427325554347132">Сыноонун чоо-жайын сактоо</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
+<translation id="6205145102504628069">Булут</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Толук экрандан чыгуу</translation>
 <translation id="6223752125779001553">Жеткиликтүү сканерлер жок</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Ыңгайлаштыруу</translation>
 <translation id="6500818810472529210">Натыйжаны Google Издөөдө көрүү</translation>
 <translation id="650266656685499220">Альбомдорду түзүү үчүн Google Фотого өтүңүз</translation>
+<translation id="6505750420152840539">Таңдан баштап караңгыга чейин</translation>
 <translation id="6516990319416533844">Батареянын кубаттануу ылдамдыгын текшерүү үчүн анын кубатын кыска убакыттын ичинде сарптаңыз</translation>
 <translation id="6517239166834772319">Изилдөө</translation>
 <translation id="6526200165918397681">Тушкагазды дал келтирүү</translation>

@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Razrješavanje DNS-a nije uspjelo</translation>
 <translation id="1018656279737460067">Otkazano</translation>
 <translation id="1022433422498218992">Opće kontrole</translation>
+<translation id="1022628058306505708">Protok Zemlje</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (niti: <ph name="THREAD_COUNT" />, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Dostupna je nova značajka, saznajte više pritiskom strelice prema gore.</translation>
 <translation id="1059913517121127803">Pokretanje skeniranja nije uspjelo</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Druge radnje</translation>
 <translation id="2926057806159140518">Unesite korisničko ime i zaporku ili skenirajte QR kôd</translation>
 <translation id="2940811910881150316">Testiranje uređaja nije uspjelo. Ponovo otvorite poklopac da biste testirali.</translation>
+<translation id="2981143481017883351">Sada su dostupni ekskluzivni elementi za Chromebook</translation>
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Spojeno</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite izbrisati svu povijest ispisa? Zadaci ispisa u tijeku neće se izbrisati.</translation>
+<translation id="3386675685417744672">Ekskluzivno na Chromebooku</translation>
 <translation id="3404249063913988450">Omogućivanje čuvara zaslona</translation>
 <translation id="3413935475507503304">Da biste nastavili s ažuriranjem, kliknite Dalje.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">UPOZORENJE</translation>
 <translation id="4054683689023980771">Preuzimanje slike</translation>
 <translation id="4060260348856573701">Novi APN</translation>
+<translation id="4079743696465895866">Odaberite ekskluzivna umjetnička djela na Chromebooku</translation>
 <translation id="4093865285251893588">Profilna slika</translation>
 <translation id="409427325554347132">Spremi pojedinosti testa</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Kapacitet baterije smanjuje se zbog upotrebe</translation>
 <translation id="6191293864534840972">Pogrešni poslužitelji naziva</translation>
+<translation id="6205145102504628069">Protok oblaka</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Napusti prikaz na cijelom zaslonu</translation>
 <translation id="6223752125779001553">Nema dostupnih skenera</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">Prilagođavanje</translation>
 <translation id="6500818810472529210">Pogledajte rezultate na Google pretraživanju</translation>
 <translation id="650266656685499220">Da biste izradili albume, otvorite Google fotografije</translation>
+<translation id="6505750420152840539">Od zore do mraka</translation>
 <translation id="6516990319416533844">Da biste testirali brzinu punjenja baterije, pustite da se baterija kratko prazni</translation>
 <translation id="6517239166834772319">Istražite</translation>
 <translation id="6526200165918397681">Podudaranje s pozadinom</translation>

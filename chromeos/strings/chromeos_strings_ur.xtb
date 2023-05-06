@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">‏DNS کو حل نہیں کیا جا سکتا</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1022433422498218992">عام کنٹرولز</translation>
+<translation id="1022628058306505708">ارتھ فلو</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> تھریڈز، GHz<ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">نئی خصوصیت دستیاب ہے، مزید جاننے کے لئے اوپر تیر کے نشان کی کلید کا استعمال کریں۔</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">مزید کارروائیاں</translation>
 <translation id="2926057806159140518">‏اپنا صارف نام اور پاس ورڈ درج کریں یا اپنا QR کوڈ اسکین کریں</translation>
 <translation id="2940811910881150316">آلہ کو ٹیسٹ نہیں کیا جا سکتا۔ ٹیسٹ کرنے کے لیے پپوٹوں کو دوبارہ کھولیں۔</translation>
+<translation id="2981143481017883351">‏Chromebook کے خصوصی اثاثے دستیاب ہیں</translation>
 <translation id="3008341117444806826">ریفریش کریں</translation>
 <translation id="3009958530611748826">محفوظ کرنے کے لئے فولڈر منتخب کریں</translation>
 <translation id="3017079585324758401">پس منظر</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">ونڈوز</translation>
 <translation id="3368922792935385530">منسلک</translation>
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
+<translation id="3386675685417744672">‏Chromebook خصوصی</translation>
 <translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">وارننگ</translation>
 <translation id="4054683689023980771">تصویرڈاؤن لوڈ ہو رہی ہے</translation>
 <translation id="4060260348856573701">‏نیا APN</translation>
+<translation id="4079743696465895866">‏Chromebook کے خصوصی آرٹ ورک کو منتخب کریں</translation>
 <translation id="4093865285251893588">پروفائل تصویر</translation>
 <translation id="409427325554347132">ٹیسٹ کی تفصیلات محفوظ کریں</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">استعمال کے ساتھ بیٹری کی صلاحیت کم ہوتی ہے</translation>
 <translation id="6191293864534840972">نام سرورز غلط ہے</translation>
+<translation id="6205145102504628069">کلاؤڈ فلو</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">مکمل اسکرین سے باہر نکلیں</translation>
 <translation id="6223752125779001553">کوئی بھی اسکینر دستیاب نہیں ہے</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">حسب ضرورت بنانا</translation>
 <translation id="6500818810472529210">‏Google تلاش میں نتیجہ دیکھیں</translation>
 <translation id="650266656685499220">‏البمز تخلیق کرنے کے لیے Google تصاویر پر جائیں</translation>
+<translation id="6505750420152840539">طلوع آفتاب سے غروب آفتاب تک</translation>
 <translation id="6516990319416533844">بیٹری چارجنگ کی شرح ٹیسٹ کرنے کے لئے اپنی بیٹری کو تھوڑے وقفہ کے لئے ختم ہونے دیں</translation>
 <translation id="6517239166834772319">دریافت</translation>
 <translation id="6526200165918397681">وال پیپر مماثل کریں</translation>

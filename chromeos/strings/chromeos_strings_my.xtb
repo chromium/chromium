@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS ဖြေရှင်း၍မရပါ</translation>
 <translation id="1018656279737460067">ဖျက်သိမ်းခဲ့သည်</translation>
 <translation id="1022433422498218992">အထွေထွေ သတ်မှတ်ချက်</translation>
+<translation id="1022628058306505708">ကမ္ဘာမြေ လည်ပတ်မှု</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (အတွဲ <ph name="THREAD_COUNT" /> ခု၊ <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ဝန်ဆောင်မှုအသစ် ရနိုင်သည်၊ ပိုမိုလေ့လာရန် အပေါ်ညွှန်မြားကို အသုံးပြုပါ။</translation>
 <translation id="1059913517121127803">စကင်ဖတ်ရန် စတင်၍မရပါ</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">နောက်ထပ် လုပ်ဆောင်ချက်များ</translation>
 <translation id="2926057806159140518">သင့်အသုံးပြုသူအမည်နှင့် စကားဝှက်ကို ထည့်ပါ (သို့) QR ကုဒ်ကို စကင်ဖတ်ပါ</translation>
 <translation id="2940811910881150316">စက်ကို စမ်းသပ်၍မရပါ။ စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ။</translation>
+<translation id="2981143481017883351">Chromebook အထူးသီးသန့် ပိုင်ဆိုင်မှုများကို ယခု ရနိုင်ပြီ</translation>
 <translation id="3008341117444806826">ပြန်လည်စတင်ရန်</translation>
 <translation id="3009958530611748826">သိမ်းရန် ဖိုင်တွဲကို ရွေးပါ</translation>
 <translation id="3017079585324758401">နောက်ခံ</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3369013195428705271">ပုံနှိပ်မှတ်တမ်း အားလုံးကို ရှင်းထုတ်လိုသည်မှာ သေချာသလား။ ပုံနှိပ်ထုတ်နေသော ဖိုင်များကို ရှင်းထုတ်မည်မဟုတ်ပါ။</translation>
+<translation id="3386675685417744672">Chromebook အထူးသီးသန့်</translation>
 <translation id="3404249063913988450">စခရင်နားချိန်ပုံ ဖွင့်ရန်</translation>
 <translation id="3413935475507503304">ရှေ့ဆက်၍ အပ်ဒိတ်လုပ်ရန် ‘ရှေ့သို့’ ကို နှိပ်ပါ။</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -355,6 +358,7 @@
 <translation id="404928562651467259">သတိပေးချက်</translation>
 <translation id="4054683689023980771">ပုံကို ဒေါင်းလုဒ်လုပ်နေသည်</translation>
 <translation id="4060260348856573701">APN အသစ်</translation>
+<translation id="4079743696465895866">Chromebook အထူးသီးသန့် ပိုစတာပုံ ရွေးရန်</translation>
 <translation id="4093865285251893588">ပရိုဖိုင်ပုံ</translation>
 <translation id="409427325554347132">စာသားအသေးစိတ် သိမ်းရန်</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -621,6 +625,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">အသုံးပြုသည်နှင့်အမျှ ဘက်ထရီပမာဏ လျော့ကျသွားသည်</translation>
 <translation id="6191293864534840972">ပုံပျက်နေသော အမည်ဆာဗာများ</translation>
+<translation id="6205145102504628069">တိမ် လွင့်မျောမှု</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ဖန်သားပြင်အပြည့်မှ ထွက်ရန်</translation>
 <translation id="6223752125779001553">စကင်ဖတ်စက်များ မရနိုင်ပါ</translation>
@@ -661,6 +666,7 @@
 <translation id="6494974875566443634">စိတ်ကြိုက်ပြုလုပ်ခြင်း</translation>
 <translation id="6500818810472529210">Google Search တွင် ရလဒ်ကြည့်ပါ</translation>
 <translation id="650266656685499220">အယ်လ်ဘမ်များပြုလုပ်ရန် Google Photos သို့သွားပါ</translation>
+<translation id="6505750420152840539">အရုဏ်တက်မှ မှောင်ချိန်အထိ</translation>
 <translation id="6516990319416533844">ဘက်ထရီအားသွင်းနှုန်းကို စစ်ဆေးရန် ခဏတာမျှ သင့်ဘက်ထရီ အားကုန်အောင်လုပ်ပါ</translation>
 <translation id="6517239166834772319">စူးစမ်းလေ့လာခြင်း</translation>
 <translation id="6526200165918397681">နောက်ခံတွဲညှိရန်</translation>
