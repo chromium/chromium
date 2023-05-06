@@ -351,8 +351,9 @@ IN_PROC_BROWSER_TEST_F(RichAnswersBrowserTest,
 
   // Check that the shown result type icon on the QuickAnswersView
   // correctly corresponds to the Quick Answers result type.
-  QuickAnswersView* quick_answers_view = static_cast<QuickAnswersView*>(
-      quick_answers_view_widget->GetContentsView());
+  quick_answers::QuickAnswersView* quick_answers_view =
+      static_cast<quick_answers::QuickAnswersView*>(
+          quick_answers_view_widget->GetContentsView());
   ui::ImageModel expected_image_model = ui::ImageModel::FromVectorIcon(
       omnibox::kAnswerTranslationIcon, cros_tokens::kCrosSysSystemBaseElevated,
       /*icon_size=*/kQuickAnswersResultTypeIconSizeDip);

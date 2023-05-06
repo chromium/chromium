@@ -9,7 +9,9 @@
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
+#include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
@@ -93,7 +95,7 @@ void QuickAnswersUiController::CreateQuickAnswersView(const gfx::Rect& bounds,
   SetActiveQuery(query);
 
   // Owned by view hierarchy.
-  auto* const quick_answers_view = new QuickAnswersView(
+  auto* const quick_answers_view = new quick_answers::QuickAnswersView(
       bounds, title, is_internal, weak_factory_.GetWeakPtr());
   quick_answers_view_tracker_.SetView(quick_answers_view);
   quick_answers_view->GetWidget()->ShowInactive();
@@ -103,17 +105,42 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
+  quick_answers::RichAnswersView* rich_answers_view = nullptr;
   if (chromeos::features::IsQuickAnswersRichCardEnabled() &&
-      controller_->quick_answer() != nullptr &&
-      controller_->quick_answer()->result_type !=
-          quick_answers::ResultType::kNoResult) {
+      controller_->quick_answer() != nullptr) {
     // TODO(b/279061152): Build result type specific rich answers view with
     // reading `controller_->structured_result()`. Note that each result type
     // will be copyable, i.e. we can copy a struct to a view without worrying
     // about object-life-time management.
-    auto* const rich_answers_view = new quick_answers::RichAnswersView(
-        quick_answers_view_tracker_.view()->bounds(),
-        weak_factory_.GetWeakPtr(), *controller_->quick_answer());
+    switch (controller_->quick_answer()->result_type) {
+      case quick_answers::ResultType::kDefinitionResult: {
+        rich_answers_view = new quick_answers::RichAnswersDefinitionView(
+            quick_answers_view_tracker_.view()->bounds(),
+            weak_factory_.GetWeakPtr(), *controller_->quick_answer());
+        break;
+      }
+      case quick_answers::ResultType::kTranslationResult: {
+        rich_answers_view = new quick_answers::RichAnswersTranslationView(
+            quick_answers_view_tracker_.view()->bounds(),
+            weak_factory_.GetWeakPtr(), *controller_->quick_answer());
+        break;
+      }
+      case quick_answers::ResultType::kUnitConversionResult: {
+        rich_answers_view = new quick_answers::RichAnswersUnitConversionView(
+            quick_answers_view_tracker_.view()->bounds(),
+            weak_factory_.GetWeakPtr(), *controller_->quick_answer());
+        break;
+      }
+      case quick_answers::ResultType::kKnowledgePanelEntityResult:
+      case quick_answers::ResultType::kNoResult: {
+        // If the quick answers result type does not have a valid rich card
+        // view, default to open the query in google search.
+        OpenUrl(GURL(kGoogleSearchUrlPrefix +
+                     base::EscapeUrlEncodedData(query_, /*use_plus=*/true)));
+        controller_->OnQuickAnswerClick();
+        return;
+      }
+    }
     rich_answers_view->GetWidget()->ShowInactive();
 
     rich_answers_view_tracker_.SetView(rich_answers_view);

@@ -37,7 +37,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
   }
 
   // Currently instantiated QuickAnswersView instance.
-  QuickAnswersView* view() { return quick_answers_view_.get(); }
+  quick_answers::QuickAnswersView* view() { return quick_answers_view_.get(); }
 
   // Needed to poll the current bounds of the mock anchor.
   const gfx::Rect& GetAnchorBounds() { return anchor_bounds_; }
@@ -55,12 +55,12 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
     anchor_bounds_ = anchor_bounds;
 
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
-    quick_answers_view_ = std::make_unique<QuickAnswersView>(
+    quick_answers_view_ = std::make_unique<quick_answers::QuickAnswersView>(
         anchor_bounds_, title, /*is_internal=*/false, /*controller=*/nullptr);
   }
 
  private:
-  std::unique_ptr<QuickAnswersView> quick_answers_view_;
+  std::unique_ptr<quick_answers::QuickAnswersView> quick_answers_view_;
   gfx::Rect anchor_bounds_;
 };
 

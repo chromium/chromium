@@ -97,8 +97,9 @@ class QuickAnswersUiController {
   // showing.
   bool IsShowingRichAnswersView() const;
 
-  QuickAnswersView* quick_answers_view() {
-    return static_cast<QuickAnswersView*>(quick_answers_view_tracker_.view());
+  quick_answers::QuickAnswersView* quick_answers_view() {
+    return static_cast<quick_answers::QuickAnswersView*>(
+        quick_answers_view_tracker_.view());
   }
   quick_answers::UserConsentView* user_consent_view() {
     return static_cast<quick_answers::UserConsentView*>(

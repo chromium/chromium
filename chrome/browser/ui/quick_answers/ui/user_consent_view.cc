@@ -13,6 +13,7 @@
 #include "content/public/common/content_switches.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -155,10 +156,6 @@ UserConsentView::UserConsentView(
 }
 
 UserConsentView::~UserConsentView() = default;
-
-const char* UserConsentView::GetClassName() const {
-  return "UserConsentView";
-}
 
 gfx::Size UserConsentView::CalculatePreferredSize() const {
   // View should match width of the anchor.
@@ -360,5 +357,8 @@ void UserConsentView::UpdateWidgetBounds() {
 
   GetWidget()->SetBounds(bounds);
 }
+
+BEGIN_METADATA(UserConsentView, views::View)
+END_METADATA
 
 }  // namespace quick_answers

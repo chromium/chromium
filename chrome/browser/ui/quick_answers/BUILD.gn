@@ -16,6 +16,8 @@ source_set("quick_answers") {
     "ui/quick_answers_focus_search.h",
     "ui/quick_answers_pre_target_handler.cc",
     "ui/quick_answers_pre_target_handler.h",
+    "ui/quick_answers_text_label.cc",
+    "ui/quick_answers_text_label.h",
     "ui/quick_answers_util.cc",
     "ui/quick_answers_util.h",
     "ui/quick_answers_view.cc",

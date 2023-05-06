@@ -17,11 +17,9 @@ namespace views {
 class ExternalFocusTracker;
 }  // namespace views
 
-class QuickAnswersView;
-
 namespace quick_answers {
+class QuickAnswersView;
 class UserConsentView;
-}  // namespace quick_answers
 
 // This class handles mouse events, and update background color or
 // dismiss quick answers view.
@@ -61,5 +59,7 @@ class QuickAnswersPreTargetHandler : public ui::EventHandler {
 
   std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
 };
+
+}  // namespace quick_answers
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_

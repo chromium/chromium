@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_pre_target_handler.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
@@ -24,13 +25,15 @@ class ImageView;
 class QuickAnswersUiController;
 
 namespace quick_answers {
-
 struct QuickAnswer;
+
 class RichAnswersPreTargetHandler;
 
 // A bubble style view to show RichAnswer.
 class RichAnswersView : public views::View {
  public:
+  METADATA_HEADER(RichAnswersView);
+
   static constexpr char kWidgetName[] = "RichAnswersViewWidget";
 
   RichAnswersView(const gfx::Rect& anchor_view_bounds,
@@ -43,7 +46,6 @@ class RichAnswersView : public views::View {
   ~RichAnswersView() override;
 
   // views::View:
-  const char* GetClassName() const override;
   void OnFocus() override;
   void OnThemeChanged() override;
   views::FocusTraversable* GetPaneFocusTraversable() override;

@@ -10,6 +10,8 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
 
+namespace quick_answers {
+
 // This class manages the focus traversal order for elements inside
 // Quick-Answers related views.
 // TODO(siabhijeet): QuickAnswersView is a menu-companion, so ideally should
@@ -45,5 +47,7 @@ class QuickAnswersFocusSearch : public views::FocusSearch,
   const raw_ptr<views::View> view_;
   const GetFocusableViewsCallback get_focusable_views_callback_;
 };
+
+}  // namespace quick_answers
 
 #endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_

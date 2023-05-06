@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
@@ -19,6 +18,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -64,22 +64,6 @@ constexpr auto kResultTypeIconContainerInsets = gfx::Insets::TLBR(4, 4, 4, 4);
 
 namespace quick_answers {
 
-class RichAnswersTextLabel : public views::Label {
- public:
-  explicit RichAnswersTextLabel(
-      const std::u16string& text,
-      ui::ColorId color_id = ui::kColorLabelForeground)
-      : Label(text) {
-    SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-    SetEnabledColorId(color_id);
-  }
-
-  RichAnswersTextLabel(const RichAnswersTextLabel&) = delete;
-  RichAnswersTextLabel& operator=(const RichAnswersTextLabel&) = delete;
-
-  ~RichAnswersTextLabel() override = default;
-};
-
 // RichAnswersView -----------------------------------------------------------
 
 RichAnswersView::RichAnswersView(
@@ -104,10 +88,6 @@ RichAnswersView::RichAnswersView(
 }
 
 RichAnswersView::~RichAnswersView() = default;
-
-const char* RichAnswersView::GetClassName() const {
-  return "RichAnswersView";
-}
 
 void RichAnswersView::OnFocus() {
   View* wants_focus = focus_search_->FindNextFocusableView(
@@ -151,7 +131,6 @@ ui::ImageModel RichAnswersView::GetIconImageModelForTesting() {
 void RichAnswersView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  // Base view Layout.
   base_view_ = AddChildView(std::make_unique<View>());
   auto* base_layout =
       base_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
@@ -164,27 +143,6 @@ void RichAnswersView::InitLayout() {
           .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
           .SetInteriorMargin(kMainViewInsets)
           .Build());
-
-  switch (result_.result_type) {
-    case quick_answers::ResultType::kDefinitionResult: {
-      content_view_ = main_view_->AddChildView(
-          std::make_unique<RichAnswersDefinitionView>(result_));
-      break;
-    }
-    case quick_answers::ResultType::kTranslationResult: {
-      content_view_ = main_view_->AddChildView(
-          std::make_unique<RichAnswersTranslationView>(result_));
-      break;
-    }
-    case quick_answers::ResultType::kUnitConversionResult: {
-      content_view_ = main_view_->AddChildView(
-          std::make_unique<RichAnswersUnitConversionView>(result_));
-      break;
-    }
-    default: {
-      break;
-    }
-  }
 
   // Add icon that corresponds to the quick answer result type.
   AddResultTypeIcon();
@@ -212,7 +170,7 @@ void RichAnswersView::InitWidget() {
 void RichAnswersView::AddResultTypeIcon() {
   // Add the icon representing the quick answers result type as well as
   // a circle background behind the icon.
-  raw_ptr<views::FlexLayoutView> vector_icon_container =
+  auto* vector_icon_container =
       main_view_->AddChildView(std::make_unique<views::FlexLayoutView>());
   vector_icon_container->SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysPrimary, kResultTypeIconContainerRadius));
@@ -276,5 +234,8 @@ std::vector<views::View*> RichAnswersView::GetFocusableViews() {
 
   return focusable_views;
 }
+
+BEGIN_METADATA(RichAnswersView, views::View)
+END_METADATA
 
 }  // namespace quick_answers
