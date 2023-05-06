@@ -27,13 +27,13 @@ constexpr unsigned kMinimumFrameInterval = 500;
 // content/renderer/render_widget.cc.
 constexpr float kHighDPIDeviceScaleFactorThreshold = 1.5f;
 constexpr char kMetricNameLCDTextKPixelsHighDPI[] =
-    "Compositing.Renderer.LCDTextDisallowedReasonKPixels.HighDPI";
+    "Compositing.Renderer.LCDTextDisallowedReasonKPixels2.HighDPI";
 constexpr char kMetricNameLCDTextKPixelsLowDPI[] =
-    "Compositing.Renderer.LCDTextDisallowedReasonKPixels.LowDPI";
+    "Compositing.Renderer.LCDTextDisallowedReasonKPixels2.LowDPI";
 constexpr char kMetricNameLCDTextLayersHighDPI[] =
-    "Compositing.Renderer.LCDTextDisallowedReasonLayers.HighDPI";
+    "Compositing.Renderer.LCDTextDisallowedReasonLayers2.HighDPI";
 constexpr char kMetricNameLCDTextLayersLowDPI[] =
-    "Compositing.Renderer.LCDTextDisallowedReasonLayers.LowDPI";
+    "Compositing.Renderer.LCDTextDisallowedReasonLayers2.LowDPI";
 
 void Report(const LayerTreeImpl* layer_tree,
             base::FunctionRef<void(int64_t text_pixels,
