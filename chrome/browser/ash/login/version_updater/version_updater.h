@@ -191,8 +191,11 @@ class VersionUpdater : public UpdateEngineClient::Observer,
   // reboot device manually.
   base::TimeDelta wait_for_reboot_time_;
 
-  // Ignore fist IDLE status that is sent before VersionUpdater initiated check.
-  bool ignore_idle_status_ = true;
+  // True once we have received a non-IDLE status. If we first receive an IDLE
+  // status, then we are getting a signal from a previous request which may have
+  // been in-progress when our update was sent, and we should resend the update.
+  // Once we have received a non-IDLE, then IDLE means we can exit.
+  bool non_idle_status_received_ = false;
 
   // Stores information about current downloading process, update progress and
   // state. It is sent to Delegate on each UpdateInfoChanged call, and also can

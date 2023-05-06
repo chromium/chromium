@@ -184,9 +184,9 @@ void VersionUpdater::UpdateStatusChanged(
           update_engine::Operation::REPORTING_ERROR_EVENT) {
     update_info_.is_checking_for_update = false;
   }
-  if (ignore_idle_status_ &&
+  if (!non_idle_status_received_ &&
       status.current_operation() > update_engine::Operation::IDLE) {
-    ignore_idle_status_ = false;
+    non_idle_status_received_ = true;
   }
 
   time_estimator_.Update(status);
@@ -245,10 +245,14 @@ void VersionUpdater::UpdateStatusChanged(
       break;
     case update_engine::Operation::IDLE:
       // Exit update only if update engine was in non-idle status before.
-      // Otherwise, it's possible that the update request has not yet been
-      // started.
-      if (!ignore_idle_status_)
+      // Otherwise resend the update which may have been ignored due to busy.
+      if (non_idle_status_received_) {
         exit_update = true;
+      } else {
+        UpdateEngineClient::Get()->RequestUpdateCheck(
+            base::BindOnce(&VersionUpdater::OnUpdateCheckStarted,
+                           weak_ptr_factory_.GetWeakPtr()));
+      }
       break;
     case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
     case update_engine::Operation::DISABLED:
