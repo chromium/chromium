@@ -134,19 +134,6 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
   quirks_style_sheet_ = ParseUASheet(quirks_rules);
 
   InitializeDefaultStyles();
-
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  default_html_style_->CompactRulesIfNeeded();
-  default_mathml_style_->CompactRulesIfNeeded();
-  default_svg_style_->CompactRulesIfNeeded();
-  default_html_quirks_style_->CompactRulesIfNeeded();
-  default_print_style_->CompactRulesIfNeeded();
-  DCHECK(default_html_style_->UniversalRules().empty());
-  DCHECK(default_mathml_style_->UniversalRules().empty());
-  DCHECK(default_svg_style_->UniversalRules().empty());
-  DCHECK(default_html_quirks_style_->UniversalRules().empty());
-  DCHECK(default_print_style_->UniversalRules().empty());
-#endif
 }
 
 void CSSDefaultStyleSheets::PrepareForLeakDetection() {
@@ -172,6 +159,46 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   default_view_source_style_.Clear();
 }
 
+void CSSDefaultStyleSheets::VerifyUniversalRuleCount() {
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  // Universal bucket rules need to be checked against every single element,
+  // thus we want avoid them in UA stylesheets.
+  default_html_style_->CompactRulesIfNeeded();
+  DCHECK(default_html_style_->UniversalRules().empty());
+  default_html_quirks_style_->CompactRulesIfNeeded();
+  DCHECK(default_html_quirks_style_->UniversalRules().empty());
+
+  // The RuleSets below currently contain universal bucket rules.
+  // Ideally these should also be empty, DCHECK the current size to only
+  // consciously add more universal bucket rules.
+  if (mathml_style_sheet_) {
+    default_mathml_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_mathml_style_->UniversalRules().size(),
+              RuntimeEnabledFeatures::MathMLCoreEnabled() ? 24u : 0u);
+  }
+
+  if (svg_style_sheet_) {
+    default_svg_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_svg_style_->UniversalRules().size(), 1u);
+  }
+
+  if (media_controls_style_sheet_) {
+    default_media_controls_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_media_controls_style_->UniversalRules().size(), 4u);
+  }
+
+  if (fullscreen_style_sheet_) {
+    default_fullscreen_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_fullscreen_style_->UniversalRules().size(), 7u);
+  }
+
+  if (marker_style_sheet_) {
+    default_pseudo_element_style_->CompactRulesIfNeeded();
+    DCHECK_EQ(default_pseudo_element_style_->UniversalRules().size(), 1u);
+  }
+#endif
+}
+
 void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   // This must be called only from constructor / PrepareForLeakDetection.
   default_html_style_ = MakeGarbageCollected<RuleSet>();
@@ -188,6 +215,8 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_html_quirks_style_->AddRulesFromSheet(QuirksStyleSheet(),
                                                 ScreenEval());
   default_print_style_->AddRulesFromSheet(DefaultStyleSheet(), PrintEval());
+
+  VerifyUniversalRuleCount();
 }
 
 RuleSet* CSSDefaultStyleSheets::DefaultViewSourceStyle() {
@@ -236,6 +265,7 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
   if (default_forced_color_style_) {
     default_forced_color_style_->AddRulesFromSheet(rules, ForcedColorsEval());
   }
+  VerifyUniversalRuleCount();
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(

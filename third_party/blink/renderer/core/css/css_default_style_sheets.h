@@ -123,6 +123,7 @@ class CSSDefaultStyleSheets final
 
  private:
   void InitializeDefaultStyles();
+  void VerifyUniversalRuleCount();
 
   enum class NamespaceType {
     kHTML,
@@ -144,6 +145,10 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_pseudo_element_style_;
   Member<RuleSet> default_media_controls_style_;
   Member<RuleSet> default_fullscreen_style_;
+  // If new RuleSets are added, make sure to add a new check in
+  // VerifyUniversalRuleCount() as universal rule buckets are performance
+  // sensitive. At least if the added UA styles are matched against all elements
+  // of a given namespace.
 
   Member<StyleSheetContents> default_style_sheet_;
   Member<StyleSheetContents> quirks_style_sheet_;
