@@ -152,11 +152,11 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokePermission) {
       device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "123ABC");
   UsbChooserContext* store = GetChooserContext(profile());
 
-  base::Value object(base::Value::Type::DICT);
-  object.SetStringKey(kDeviceNameKey, "Gizmo");
-  object.SetIntKey(kVendorIdKey, 0);
-  object.SetIntKey(kProductIdKey, 0);
-  object.SetStringKey(kSerialNumberKey, "123ABC");
+  auto object = base::Value(base::Value::Dict()
+                                .Set(kDeviceNameKey, "Gizmo")
+                                .Set(kVendorIdKey, 0)
+                                .Set(kProductIdKey, 0)
+                                .Set(kSerialNumberKey, "123ABC"));
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
   EXPECT_CALL(*mock_permission_observers_[profile()],
@@ -205,11 +205,12 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokeEphemeralPermission) {
 
   UsbChooserContext* store = GetChooserContext(profile());
 
-  base::Value object(base::Value::Type::DICT);
-  object.SetStringKey(kDeviceNameKey, "Gizmo");
-  object.SetStringKey(kGuidKey, device_info->guid);
-  object.SetIntKey(kVendorIdKey, device_info->vendor_id);
-  object.SetIntKey(kProductIdKey, device_info->product_id);
+  auto object = base::Value(
+      base::Value::Dict()
+          .Set(kDeviceNameKey, "Gizmo")
+          .Set(kGuidKey, device_info->guid)
+          .Set(kVendorIdKey, static_cast<int>(device_info->vendor_id))
+          .Set(kProductIdKey, static_cast<int>(device_info->product_id)));
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
   EXPECT_CALL(*mock_permission_observers_[profile()],
@@ -726,7 +727,7 @@ class DeviceLoginScreenWebUsbChooserContextTest : public UsbChooserContextTest {
     builder.SetPath(base::FilePath(FILE_PATH_LITERAL(chrome::kInitialProfile)));
     signin_profile_ = builder.Build();
   }
-  ~DeviceLoginScreenWebUsbChooserContextTest() override {}
+  ~DeviceLoginScreenWebUsbChooserContextTest() override = default;
 
  protected:
   Profile* GetSigninProfile() { return signin_profile_.get(); }

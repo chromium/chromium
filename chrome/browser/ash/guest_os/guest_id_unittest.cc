@@ -33,20 +33,31 @@ TEST_F(GuestIdTest, GuestIdEquality) {
 }
 
 TEST_F(GuestIdTest, GuestIdFromDictValue) {
-  base::Value dict(base::Value::Type::DICT);
-  dict.SetStringKey(prefs::kVmNameKey, "foo");
-  dict.SetStringKey(prefs::kContainerNameKey, "bar");
-  EXPECT_TRUE(GuestId(dict) == GuestId(VmType::TERMINA, "foo", "bar"));
+  {
+    auto dict = base::Value::Dict()
+                    .Set(prefs::kVmNameKey, "foo")
+                    .Set(prefs::kContainerNameKey, "bar");
+    EXPECT_TRUE(GuestId(base::Value(std::move(dict))) ==
+                GuestId(VmType::TERMINA, "foo", "bar"));
+  }
 
-  dict.SetIntKey(prefs::kVmTypeKey, 0);
-  dict.SetStringKey(prefs::kVmNameKey, "foo");
-  dict.SetStringKey(prefs::kContainerNameKey, "bar");
-  EXPECT_TRUE(GuestId(dict) == GuestId(VmType::TERMINA, "foo", "bar"));
+  {
+    auto dict = base::Value::Dict()
+                    .Set(prefs::kVmTypeKey, 0)
+                    .Set(prefs::kVmNameKey, "foo")
+                    .Set(prefs::kContainerNameKey, "bar");
+    EXPECT_TRUE(GuestId(base::Value(std::move(dict))) ==
+                GuestId(VmType::TERMINA, "foo", "bar"));
+  }
 
-  dict.SetIntKey(prefs::kVmTypeKey, 1);
-  dict.SetStringKey(prefs::kVmNameKey, "foo");
-  dict.SetStringKey(prefs::kContainerNameKey, "bar");
-  EXPECT_TRUE(GuestId(dict) == GuestId(VmType::PLUGIN_VM, "foo", "bar"));
+  {
+    auto dict = base::Value::Dict()
+                    .Set(prefs::kVmTypeKey, 1)
+                    .Set(prefs::kVmNameKey, "foo")
+                    .Set(prefs::kContainerNameKey, "bar");
+    EXPECT_TRUE(GuestId(base::Value(std::move(dict))) ==
+                GuestId(VmType::PLUGIN_VM, "foo", "bar"));
+  }
 }
 
 TEST_F(GuestIdTest, GuestIdFromNonDictValue) {

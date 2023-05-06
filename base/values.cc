@@ -1173,10 +1173,6 @@ Value* Value::SetKey(StringPiece key, Value&& value) {
   return GetDict().Set(key, std::move(value));
 }
 
-Value* Value::SetIntKey(StringPiece key, int value) {
-  return GetDict().Set(key, value);
-}
-
 Value* Value::SetStringKey(StringPiece key, StringPiece value) {
   return GetDict().Set(key, value);
 }

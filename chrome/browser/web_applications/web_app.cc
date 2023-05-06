@@ -637,7 +637,7 @@ base::Value WebApp::ClientData::AsDebugValue() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   root.Set("system_web_app_data", system_web_app_data
                                       ? system_web_app_data->AsDebugValue()
-                                      : base::Value());
+                                      : base::Value::Dict());
 #endif
   return base::Value(std::move(root));
 }

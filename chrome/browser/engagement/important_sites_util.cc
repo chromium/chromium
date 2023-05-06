@@ -487,12 +487,12 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   // We clear our ignore counter for sites that the user chose.
   for (const std::string& excluded_site : excluded_sites) {
     GURL origin("http://" + excluded_site);
-    base::Value dict(base::Value::Type::DICT);
-    dict.SetIntKey(kNumTimesIgnoredName, 0);
-    dict.RemoveKey(kTimeLastIgnored);
+    base::Value::Dict dict;
+    dict.Set(kNumTimesIgnoredName, 0);
+    dict.Remove(kTimeLastIgnored);
     map->SetWebsiteSettingDefaultScope(origin, origin,
                                        ContentSettingsType::IMPORTANT_SITE_INFO,
-                                       std::move(dict));
+                                       base::Value(std::move(dict)));
   }
 
   // Finally, record our old crossed-stats.

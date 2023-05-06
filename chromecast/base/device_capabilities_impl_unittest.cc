@@ -603,7 +603,7 @@ TEST_F(DeviceCapabilitiesImplTest, MergeDictionary) {
 
   // Now just update one of the fields. Make sure the updated value is changed
   // in DeviceCapabilities and the other field remains untouched.
-  deserialized_value->SetIntKey("dummy_field_int", 100);
+  deserialized_value->GetDict().Set("dummy_field_int", 100);
   ASSERT_TRUE(deserialized_value->RemoveKey("dummy_field_bool"));
 
   capabilities()->MergeDictionary(*deserialized_value);

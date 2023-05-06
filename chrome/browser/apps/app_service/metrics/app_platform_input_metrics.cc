@@ -89,16 +89,16 @@ std::string GetInputEventSourceKey(InputEventSource event_source) {
   }
 }
 
-base::Value ConvertEventCountsToValue(
+base::Value::Dict ConvertEventCountsToValue(
     const AppPlatformInputMetrics::EventSourceToCounts& event_counts) {
-  base::Value event_counts_dict(base::Value::Type::DICT);
+  base::Value::Dict event_counts_dict;
   for (const auto& counts : event_counts) {
-    base::Value count_dict(base::Value::Type::DICT);
+    base::Value::Dict count_dict;
     for (const auto& it : counts.second) {
-      count_dict.SetIntKey(GetAppTypeHistogramName(it.first), it.second);
+      count_dict.Set(GetAppTypeHistogramName(it.first), it.second);
     }
-    event_counts_dict.SetKey(GetInputEventSourceKey(counts.first),
-                             std::move(count_dict));
+    event_counts_dict.Set(GetInputEventSourceKey(counts.first),
+                          std::move(count_dict));
   }
   return event_counts_dict;
 }

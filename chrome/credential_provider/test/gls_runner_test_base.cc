@@ -98,19 +98,19 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
     expected_gaia_id = gaia_id_override;
   }
 
-  base::Value dict(base::Value::Type::DICT);
+  base::Value::Dict dict;
   if (!gaia_id_override.empty() && gaia_id_override != expected_gaia_id) {
-    dict.SetIntKey(kKeyExitCode, kUiecEMailMissmatch);
+    dict.Set(kKeyExitCode, kUiecEMailMissmatch);
   } else {
-    dict.SetIntKey(kKeyExitCode, static_cast<UiExitCodes>(default_exit_code));
-    dict.SetStringKey(kKeyEmail, expected_email);
-    dict.SetStringKey(kKeyFullname, full_name);
-    dict.SetStringKey(kKeyId, expected_gaia_id);
-    dict.SetStringKey(kKeyAccessToken, "at-123456");
-    dict.SetStringKey(kKeyMdmIdToken, "idt-123456");
-    dict.SetStringKey(kKeyPassword, gaia_password);
-    dict.SetStringKey(kKeyRefreshToken, "rt-123456");
-    dict.SetStringKey(kKeyTokenHandle, "th-123456");
+    dict.Set(kKeyExitCode, static_cast<UiExitCodes>(default_exit_code));
+    dict.Set(kKeyEmail, expected_email);
+    dict.Set(kKeyFullname, full_name);
+    dict.Set(kKeyId, expected_gaia_id);
+    dict.Set(kKeyAccessToken, "at-123456");
+    dict.Set(kKeyMdmIdToken, "idt-123456");
+    dict.Set(kKeyPassword, gaia_password);
+    dict.Set(kKeyRefreshToken, "rt-123456");
+    dict.Set(kKeyTokenHandle, "th-123456");
   }
 
   std::string json;

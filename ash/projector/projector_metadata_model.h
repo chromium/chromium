@@ -11,11 +11,8 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
-#include "media/mojo/mojom/speech_recognition.mojom.h"
-
-namespace base {
-class Value;
-}  // namespace base
+#include "base/values.h"
+#include "media/mojo/mojom/speech_recognition_result.h"
 
 namespace ash {
 
@@ -46,7 +43,7 @@ class MetadataItem {
   base::TimeDelta& end_time() { return end_time_; }
 
   // Return the serialized metadata item. This is used for storage.
-  virtual base::Value ToJson() = 0;
+  virtual base::Value::Dict ToJson() = 0;
 
  protected:
   // The start time of the metadata item from the start of the recording
@@ -68,7 +65,7 @@ class ASH_EXPORT ProjectorKeyIdea : public MetadataItem {
   ProjectorKeyIdea& operator=(const ProjectorKeyIdea&) = delete;
   ~ProjectorKeyIdea() override;
 
-  base::Value ToJson() override;
+  base::Value::Dict ToJson() override;
 };
 
 // Class to describe a transcription.
@@ -83,7 +80,7 @@ class ASH_EXPORT ProjectorTranscript : public MetadataItem {
   ProjectorTranscript& operator=(const ProjectorTranscript&) = delete;
   ~ProjectorTranscript() override;
 
-  base::Value ToJson() override;
+  base::Value::Dict ToJson() override;
 
  private:
   std::vector<media::HypothesisParts> hypothesis_parts_;
@@ -114,7 +111,7 @@ class ASH_EXPORT ProjectorMetadata {
   size_t GetTranscriptsCount() const { return transcripts_.size(); }
 
  private:
-  base::Value ToJson();
+  base::Value::Dict ToJson();
 
   std::vector<std::unique_ptr<ProjectorTranscript>> transcripts_;
   std::vector<std::unique_ptr<ProjectorKeyIdea>> key_ideas_;

@@ -55,7 +55,7 @@ Also consider the maximum size of any string parameters:
 NetLog parameters are specified as a JSON serializable `base::Value` which does
 not support 64-bit integers.
 
-Be careful when using `base::Value::SetIntKey()` as it will truncate 64-bit
+Be careful when using `base::Value::Dict::Set()` as it will truncate 64-bit
 values to 32-bits.
 
 Instead use `NetLogNumberValue()`.

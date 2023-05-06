@@ -111,14 +111,15 @@ bool PadSecret(const std::string& secret, std::string* out) {
   std::memcpy(&padded_secret[padded_length - secret.size()], secret.data(),
               secret.size());
 
-  base::Value pwd_padding_dict(base::Value::Type::DICT);
-  pwd_padding_dict.SetStringKey(kPaddedPassword, padded_secret);
-  pwd_padding_dict.SetIntKey(kPasswordLength, secret.size());
+  auto pwd_padding_dict =
+      base::Value::Dict()
+          .Set(kPaddedPassword, padded_secret)
+          .Set(kPasswordLength, static_cast<int>(secret.size()));
   SecurelyClearString(padded_secret);
 
   auto result = base::JSONWriter::Write(pwd_padding_dict, out);
   const std::string* password_value =
-      pwd_padding_dict.FindStringKey(kPaddedPassword);
+      pwd_padding_dict.FindString(kPaddedPassword);
   if (password_value)
     SecurelyClearString(*const_cast<std::string*>(password_value));
 
