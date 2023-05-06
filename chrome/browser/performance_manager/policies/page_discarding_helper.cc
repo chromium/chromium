@@ -476,8 +476,10 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
   if (it != last_change_to_non_audible_time_.end()) {
     ret.Set("non_audible_change_time", TimeDeltaFromNowToValue(it->second));
   }
-  ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
-                                                  node->GetMainFrameUrl()));
+  if (!node->GetMainFrameUrl().is_empty()) {
+    ret.Set("opted_out", IsPageOptedOutOfDiscarding(node->GetBrowserContextID(),
+                                                    node->GetMainFrameUrl()));
+  }
   return ret;
 }
 
