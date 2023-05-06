@@ -171,8 +171,11 @@ def get_ssh_prefix(host_port_pair: str) -> List[str]:
     """Get the prefix of a barebone ssh command."""
 
     ssh_addr, ssh_port = parse_host_port(host_port_pair)
-    ssh_config = os.path.expanduser('~/.fuchsia/sshconfig')
+    ssh_config_dir = os.path.expanduser('~/.fuchsia')
+    ssh_config = os.path.join(ssh_config_dir, 'sshconfig')
     if not os.path.isfile(ssh_config):
+        if not os.path.isdir(ssh_config_dir):
+            os.makedirs(ssh_config_dir)
         with open(ssh_config, "w") as f:
             f.write(_SSH_CONFIG)
     return ['ssh', '-F', ssh_config, ssh_addr, '-p', str(ssh_port)]
