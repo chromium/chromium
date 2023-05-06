@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/autocomplete_scoring_signals_annotator.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
@@ -1183,7 +1184,8 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
   RecordAdditionalInfoFromUrlRow(info, &match);
 
   // Populate scoring signals for machine learning model training and scoring.
-  if (populate_scoring_signals) {
+  if (populate_scoring_signals &&
+      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
     match.scoring_signals = absl::make_optional<ScoringSignals>();
     match.scoring_signals->set_typed_count(info.typed_count());
     match.scoring_signals->set_visit_count(info.visit_count());

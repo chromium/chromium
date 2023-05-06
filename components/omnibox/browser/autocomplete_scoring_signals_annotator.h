@@ -20,7 +20,7 @@ class AutocompleteScoringSignalsAnnotator {
 
   // Whether the autocomplete match is eligible to be annotated.
   // Currently, includes only history and bookmark URLs.
-  bool IsEligibleMatch(const AutocompleteMatch& match) {
+  static bool IsEligibleMatch(const AutocompleteMatch& match) {
     return match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
            match.type == AutocompleteMatchType::HISTORY_URL ||
            match.type == AutocompleteMatchType::HISTORY_TITLE ||
