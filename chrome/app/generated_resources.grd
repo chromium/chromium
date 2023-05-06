@@ -12660,6 +12660,17 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Unnamed media source
       </message>
 
+      <message name="IDS_SHARE_THIS_TAB_DIALOG_TITLE" desc="Title for the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
+        Allow <ph name="APP_NAME">$1</ph> to see this tab?
+      </message>
+      <message name="IDS_SHARE_THIS_TAB_DIALOG_TEXT" desc="Text for the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
+        The site will be able to see the contents of this tab
+      </message>
+      <message name="IDS_SHARE_THIS_TAB_DIALOG_ALLOW" desc="Used for the allow button on the tab-sharing dialog shown when a getDisplayMedia capture is constrained to share only the current tab.">
+        Allow
+      </message>
+
+
       <message name="IDS_TAB_CAPTURE_TERMINATED_BY_POLICY_TITLE" desc="Title for a confirmation dialog shown on the captured tab when capture of that tab is terminated due to enterprise policy.">
         Screen sharing has ended
       </message>

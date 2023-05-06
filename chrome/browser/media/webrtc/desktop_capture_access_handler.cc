@@ -486,7 +486,8 @@ void DesktopCaptureAccessHandler::ProcessChangeSourceRequest(
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 
   if (pending_request->request.requested_video_device_id.empty()) {
-    pending_request->picker = picker_factory_->CreatePicker();
+    // Passing nullptr selects the default picker (DesktopMediaPickerViews).
+    pending_request->picker = picker_factory_->CreatePicker(nullptr);
     if (!pending_request->picker) {
       std::move(pending_request->callback)
           .Run(blink::mojom::StreamDevicesSet(),

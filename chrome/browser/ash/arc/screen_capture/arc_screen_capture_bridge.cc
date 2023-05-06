@@ -89,7 +89,8 @@ void ArcScreenCaptureBridge::RequestPermission(
     const std::string& package_name,
     RequestPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<DesktopMediaPicker> picker = DesktopMediaPicker::Create();
+  std::unique_ptr<DesktopMediaPicker> picker =
+      DesktopMediaPicker::Create(nullptr);
   std::vector<std::unique_ptr<DesktopMediaList>> source_lists;
   source_lists.emplace_back(
       std::make_unique<DesktopMediaListAsh>(DesktopMediaList::Type::kScreen));

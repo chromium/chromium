@@ -315,6 +315,12 @@ BASE_FEATURE(kFFmpegDecodeOpaqueVP8,
              "FFmpegDecodeOpaqueVP8",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable an updated dialog UI for the getDisplayMedia picker dialog under the
+// preferCurrentTab constraint.
+BASE_FEATURE(kShareThisTabDialog,
+             "ShareThisTabDialog",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Only used for disabling overlay fullscreen (aka SurfaceView) in Clank.
 BASE_FEATURE(kOverlayFullscreenVideo,
              "overlay-fullscreen-video",

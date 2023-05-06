@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
+#include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -37,6 +38,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -881,7 +883,8 @@ void DesktopMediaPickerDialogView::AcceptSource() {
   AcceptDialog();
 }
 
-void DesktopMediaPickerDialogView::AcceptSpecificSource(DesktopMediaID source) {
+void DesktopMediaPickerDialogView::AcceptSpecificSource(
+    const DesktopMediaID& source) {
   accepted_source_ = absl::optional<DesktopMediaID>(source);
   AcceptSource();
 }
@@ -976,7 +979,7 @@ void DesktopMediaPickerViews::Show(
       new DesktopMediaPickerDialogView(params, this, std::move(source_lists));
 }
 
-void DesktopMediaPickerViews::NotifyDialogResult(DesktopMediaID source) {
+void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
   // Once this method is called the |dialog_| will close and destroy itself.
   dialog_->DetachParent();
   dialog_ = nullptr;
@@ -995,5 +998,11 @@ void DesktopMediaPickerViews::NotifyDialogResult(DesktopMediaID source) {
 // static
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
     const content::MediaStreamRequest* request) {
-  return std::make_unique<DesktopMediaPickerViews>();
+  if (base::FeatureList::IsEnabled(media::kShareThisTabDialog) &&
+      request->video_type ==
+          blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
+    return std::make_unique<ShareThisTabDialogViews>();
+  } else {
+    return std::make_unique<DesktopMediaPickerViews>();
+  }
 }
