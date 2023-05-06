@@ -32,6 +32,7 @@ class MockCartService : public CartService {
   explicit MockCartService(Profile* profile) : CartService(profile) {}
 
   MOCK_METHOD1(LoadAllActiveCarts, void(CartDB::LoadCallback callback));
+  MOCK_METHOD0(IsCartEnabled, bool());
 };
 }  // namespace
 
@@ -86,6 +87,9 @@ TEST_F(CartProcessorTest, TestFindCartForCluster) {
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
             std::move(callback).Run(true, carts);
           })));
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
 
   // Capture the cart mojom that is finally returned.
   ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
@@ -124,6 +128,9 @@ TEST_F(CartProcessorTest, TestNoCartForCluster) {
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
             std::move(callback).Run(true, carts);
           })));
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
 
   // Capture the cart mojom that is finally returned.
   ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
@@ -160,6 +167,9 @@ TEST_F(CartProcessorTest, TestNoCartForFailedLoad) {
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
             std::move(callback).Run(false, carts);
           })));
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
 
   // Capture the cart mojom that is finally returned.
   ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
@@ -203,6 +213,9 @@ TEST_F(CartProcessorTest, TestCartToMojom) {
           testing::Invoke([&carts](CartDB::LoadCallback callback) -> void {
             std::move(callback).Run(true, carts);
           })));
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
 
   // Capture the cart mojom that is finally returned.
   ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
@@ -249,9 +262,43 @@ TEST_F(CartProcessorTest, TestFakeCart) {
           [&cart_mojom](ntp::history_clusters::cart::mojom::CartPtr cart) {
             cart_mojom = std::move(cart);
           }));
+  EXPECT_CALL(mock_cart_service(), IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(true));
 
   cart_processor().GetCartForCluster(std::move(cluster_mojom), callback.Get());
 
   ASSERT_TRUE(cart_mojom);
   ASSERT_EQ(cart_mojom->product_image_urls.size(), 6u);
+}
+
+TEST_F(CartProcessorTest, TestNoCartWhenFeatureDisabled) {
+  // Create a fake cluster with one visit.
+  auto cluster_mojom = history_clusters::mojom::Cluster::New();
+  auto visit_mojom = history_clusters::mojom::URLVisit::New();
+  visit_mojom->normalized_url = GURL(kMockMerchantPageURL);
+  cluster_mojom->visits.push_back(std::move(visit_mojom));
+
+  // Mock that the cart feature has been turned off.
+  MockCartService& cart_service = mock_cart_service();
+  EXPECT_CALL(cart_service, IsCartEnabled())
+      .Times(1)
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(cart_service, LoadAllActiveCarts(testing::_)).Times(0);
+
+  // Capture the cart mojom that is finally returned.
+  ntp::history_clusters::cart::mojom::CartPtr cart_mojom;
+  base::MockCallback<
+      ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce(testing::Invoke(
+          [&cart_mojom](ntp::history_clusters::cart::mojom::CartPtr cart) {
+            cart_mojom = std::move(cart);
+          }));
+
+  cart_processor().GetCartForCluster(std::move(cluster_mojom), callback.Get());
+
+  ASSERT_FALSE(cart_mojom);
 }

@@ -63,6 +63,10 @@ void CartProcessor::GetCartForCluster(
     history_clusters::mojom::ClusterPtr cluster,
     ntp::history_clusters::mojom::PageHandler::GetCartForClusterCallback
         callback) {
+  if (!cart_service_->IsCartEnabled()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
   const std::string fake_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpChromeCartInHistoryClusterModule,
       ntp_features::kNtpChromeCartInHistoryClustersModuleDataParam);
