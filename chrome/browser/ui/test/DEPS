@@ -1,3 +1,9 @@
 include_rules = [
   "!ash",
 ]
+
+specific_include_rules = {
+  "popup_multiscreen_interactive_uitest\.cc": [
+    "+ash/shell.h",
+  ],
+}
