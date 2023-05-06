@@ -102,6 +102,32 @@ class ProjectorBehavior : public CaptureModeBehavior {
   base::WeakPtrFactory<ProjectorBehavior> weak_ptr_factory_{this};
 };
 
+// -----------------------------------------------------------------------------
+// GameDashboardBehavior:
+// Implements the `CaptureModeBehavior` interface with behaviors defined by the
+// game dashboard capture mode.
+class GameDashboardBehavior : public CaptureModeBehavior {
+ public:
+  GameDashboardBehavior()
+      : CaptureModeBehavior({CaptureModeType::kVideo,
+                             CaptureModeSource::kWindow, RecordingType::kWebM,
+                             /*audio_on=*/true,
+                             /*demo_tools_enabled=*/false}) {}
+
+  GameDashboardBehavior(const GameDashboardBehavior&) = delete;
+  GameDashboardBehavior operator=(const GameDashboardBehavior&) = delete;
+  ~GameDashboardBehavior() override = default;
+
+  // CaptureModeBehavior:
+  bool ShouldImageCaptureTypeBeAllowed() const override { return false; }
+  bool ShouldFulscreenCaptureSourceBeAllowed() const override { return false; }
+  bool ShouldRegionCaptureSourceBeAllowed() const override { return false; }
+  bool ShouldDemoToolsSettingsBeIncluded() const override { return false; }
+  bool ShouldGifBeSupported() const override { return false; }
+  bool ShouldShowUserNudge() const override { return false; }
+  bool ShouldAutoSelectFirstCamera() const override { return true; }
+};
+
 }  // namespace
 
 // -----------------------------------------------------------------------------
@@ -117,6 +143,8 @@ std::unique_ptr<CaptureModeBehavior> CaptureModeBehavior::Create(
   switch (behavior_type) {
     case BehaviorType::kProjector:
       return std::make_unique<ProjectorBehavior>();
+    case BehaviorType::kGameDashboard:
+      return std::make_unique<GameDashboardBehavior>();
     case BehaviorType::kDefault:
       return std::make_unique<DefaultBehavior>();
   }

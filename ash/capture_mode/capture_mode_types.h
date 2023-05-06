@@ -83,6 +83,7 @@ enum class AudioRecordingMode {
 enum class BehaviorType {
   kDefault,
   kProjector,
+  kGameDashboard,
 };
 
 // Converts the enum class `RecordingType` to its integer value.

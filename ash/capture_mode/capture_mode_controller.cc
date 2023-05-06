@@ -29,6 +29,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/message_center/message_view_factory.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -1871,6 +1872,31 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     enable_demo_tools_ = true;
     SetType(CaptureModeType::kVideo);
     SetSource(CaptureModeSource::kFullscreen);
+    SetRecordingType(RecordingType::kWebM);
+  } else if (entry_type == CaptureModeEntryType::kGameDashboard) {
+    DCHECK(features::IsGameDashboardEnabled());
+    // TODO(minch): Get the window from game dashboard and make sure the window
+    // exists before starting the game capture session.
+    auto windows =
+        Shell::Get()->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+    if (windows.empty()) {
+      LOG(ERROR)
+          << "Please make sure there is a window selected for game capture.";
+      return;
+    }
+
+    behavior_type = BehaviorType::kGameDashboard;
+
+    // TODO(b/278638265): Remember the configs for each session, no matters it
+    // is a normal session, projector or game dashboard session.
+    cached_normal_session_configs_ =
+        CaptureSessionConfigs{type_, source_, recording_type_,
+                              audio_recording_mode_, enable_demo_tools_};
+
+    audio_recording_mode_ = AudioRecordingMode::kMicrophone;
+    enable_demo_tools_ = false;
+    SetType(CaptureModeType::kVideo);
+    SetSource(CaptureModeSource::kWindow);
     SetRecordingType(RecordingType::kWebM);
   }
 

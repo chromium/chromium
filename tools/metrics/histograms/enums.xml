@@ -14595,6 +14595,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="5" label="Snip Key"/>
   <int value="6" label="Full Screenshot Accelerator"/>
   <int value="7" label="Projector app"/>
+  <int value="8" label="Capture given window"/>
+  <int value="9" label="Game dashboard"/>
 </enum>
 
 <enum name="CaptureModeSaveToLocation">

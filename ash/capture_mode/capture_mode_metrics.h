@@ -81,7 +81,8 @@ enum class CaptureModeEntryType {
   kCaptureAllDisplays,
   kProjector,
   kCaptureGivenWindow,
-  kMaxValue = kCaptureGivenWindow,
+  kGameDashboard,
+  kMaxValue = kGameDashboard,
 };
 
 // Enumeration of quick actions on screenshot notification. Note that these

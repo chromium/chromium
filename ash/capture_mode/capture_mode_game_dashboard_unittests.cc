@@ -1,0 +1,80 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_metrics.h"
+#include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
+#include "base/system/sys_info.h"
+#include "base/test/scoped_feature_list.h"
+
+namespace ash {
+
+class GameDashboardTest : public AshTestBase {
+ public:
+  GameDashboardTest() : scoped_feature_list_(features::kGameDashboard) {}
+  GameDashboardTest(const GameDashboardTest&) = delete;
+  GameDashboardTest& operator=(const GameDashboardTest&) = delete;
+  ~GameDashboardTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    base::SysInfo::SetChromeOSVersionInfoForTest(
+        "CHROMEOS_RELEASE_TRACK=testimage-channel",
+        base::SysInfo::GetLsbReleaseTime());
+    AshTestBase::SetUp();
+    EXPECT_TRUE(features::IsGameDashboardEnabled());
+
+    window_ = CreateTestWindow();
+  }
+
+  void TearDown() override {
+    window_.reset();
+    AshTestBase::TearDown();
+    base::SysInfo::ResetChromeOSVersionInfoForTest();
+  }
+
+  CaptureModeController* StartGameCaptureSession() {
+    auto* controller = CaptureModeController::Get();
+    controller->Start(CaptureModeEntryType::kGameDashboard);
+    DCHECK(controller->IsActive());
+    return controller;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<aura::Window> window_;
+};
+
+TEST_F(GameDashboardTest, GameDashboardBehavior) {
+  CaptureModeController* controller = StartGameCaptureSession();
+  CaptureModeSession* session = controller->capture_mode_session();
+  CaptureModeBehavior* active_behavior = session->active_behavior();
+  ASSERT_TRUE(active_behavior);
+
+  EXPECT_FALSE(active_behavior->ShouldImageCaptureTypeBeAllowed());
+  EXPECT_TRUE(active_behavior->ShouldVideoCaptureTypeBeAllowed());
+  EXPECT_FALSE(active_behavior->ShouldFulscreenCaptureSourceBeAllowed());
+  EXPECT_FALSE(active_behavior->ShouldRegionCaptureSourceBeAllowed());
+  EXPECT_TRUE(active_behavior->ShouldWindowCaptureSourceBeAllowed());
+  EXPECT_TRUE(
+      active_behavior->SupportsAudioRecordingMode(AudioRecordingMode::kOff));
+  EXPECT_TRUE(active_behavior->SupportsAudioRecordingMode(
+      AudioRecordingMode::kMicrophone));
+  EXPECT_TRUE(active_behavior->ShouldCameraSelectionSettingsBeIncluded());
+  EXPECT_FALSE(active_behavior->ShouldDemoToolsSettingsBeIncluded());
+  EXPECT_TRUE(active_behavior->ShouldSaveToSettingsBeIncluded());
+  EXPECT_FALSE(active_behavior->ShouldGifBeSupported());
+  EXPECT_TRUE(active_behavior->ShouldShowPreviewNotification());
+  EXPECT_FALSE(active_behavior->ShouldSkipVideoRecordingCountDown());
+  EXPECT_FALSE(active_behavior->ShouldCreateRecordingOverlayController());
+  EXPECT_FALSE(active_behavior->ShouldShowUserNudge());
+  EXPECT_TRUE(active_behavior->ShouldAutoSelectFirstCamera());
+}
+
+}  // namespace ash
