@@ -56,6 +56,7 @@
 <translation id="121097972571826261">لفظ سے آگے جائیں</translation>
 <translation id="1217633719248931900">ایپ پر جائیں</translation>
 <translation id="1218444235442067213">‏<ph name="APP_NAME" />، Play اسٹور ایپ</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> پر واپس جائیں۔</translation>
 <translation id="1225748608451425081">‏کسی معلوم مسئلے کی وجہ سے آپ کا Chromebook مقفل ہو گیا ہے۔ اس کے بعد آپ سائن ان کر پائیں گے: <ph name="TIME_LEFT" />۔</translation>
 <translation id="1229194443904279055">منتخب کرنا روکیں</translation>
 <translation id="1235458158152011030">معلوم نیٹ ورکس</translation>
@@ -221,6 +222,7 @@
 <translation id="1961239773406905488">کیمرا کا پیش منظر پوشیدہ ہے</translation>
 <translation id="1961832440516943645"><ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="1962969542251276847">مقفل اسکرین</translation>
+<translation id="1962972976741217487">1 آلہ آپ کے <ph name="DEVICE_NAME" /> کے ہاٹ اسپاٹ سے منسلک ہے</translation>
 <translation id="1967970931040389207">ہاٹ سپاٹ آن کریں</translation>
 <translation id="1969011864782743497">‎<ph name="DEVICE_NAME" /> (USB)‎</translation>
 <translation id="1972950159383891558">ہائے، <ph name="USERNAME" /></translation>
@@ -930,6 +932,7 @@
 <translation id="5297704307811127955">آف</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5303783651764314393">آپ کے <ph name="DEVICE_NAME" /> کے ہاٹ اسپاٹ سے <ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
 <translation id="5313326810920013265">بلوٹوتھ کی ترتیبات</translation>
 <translation id="5314219114274263156">اسکرین ریکارڈنگ کی گئی</translation>
@@ -1057,6 +1060,7 @@
 <translation id="5881540930187678962">بعد میں فون ہب سیٹ اپ کریں</translation>
 <translation id="5881663018261910378">آف ہے</translation>
 <translation id="5887954372087850114">ونڈو <ph name="WINDOW_TITLE" /> کو <ph name="DESK_TITLE" /> کو تفویض کیا گیا اور دیگر تمام ڈیسک سے غیر تفویض کیا گیا</translation>
+<translation id="588817334757907802">‏Chrome براؤزر میں فائل کھولیں</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>
 <translation id="589817443623831496">پوائنٹ اسکیننگ</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1336,6 +1340,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> میں پرانی ریزولیوشن پر لوٹایا جا رہا ہے</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
+<translation id="7187711731540696127">آپ کے <ph name="DEVICE_NAME" /> کا ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے</translation>
 <translation id="7188494361780961876">مینیو کو اسکرین کے اوپر بائیں کونے میں منتقل کر دیا گیا۔</translation>
 <translation id="7189412385142492784">‏Venus کتنا دور ہے</translation>
 <translation id="7198435252016571249">کیمرا نیچے دائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
@@ -1585,6 +1590,7 @@
 <translation id="8349964124165471584">لنک نئے ونڈو میں کھولیں</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
 <translation id="8364673525741149932">شیلف پارٹی کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152">زیر استعمال <ph name="CAPTURE_MEDIUM" />۔</translation>
 <translation id="8369166482916924789">محفوظ کردہ ڈیسک، <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ایک حرف آگے جائیں</translation>
 <translation id="8371991222807690464">پیریفرل کی کارکردگی مہمان وضع میں محدود ہو سکتی ہے</translation>

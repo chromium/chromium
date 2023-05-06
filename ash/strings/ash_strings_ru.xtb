@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">Предварительный просмотр для камеры выключен</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Блокировать экран</translation>
+<translation id="1962972976741217487">К точке доступа вашего устройства <ph name="DEVICE_NAME" /> подключено 1 устройство</translation>
 <translation id="1967970931040389207">Включить точку доступа</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Здравствуйте, <ph name="USERNAME" />!</translation>
@@ -930,6 +931,7 @@
 <translation id="5297704307811127955">Отключено</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5302048478445481009">Язык</translation>
+<translation id="5303783651764314393">Сколько устройств подключено к точке доступа вашего устройства <ph name="DEVICE_NAME" />: <ph name="DEVICECOUNT" /></translation>
 <translation id="5308380583665731573">Подключение</translation>
 <translation id="5313326810920013265">Настройки Bluetooth</translation>
 <translation id="5314219114274263156">Видео с экрана записано</translation>
@@ -1337,6 +1339,7 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Обновить</translation>
+<translation id="7187711731540696127">Точка доступа вашего устройства <ph name="DEVICE_NAME" /> сейчас работает. К ней не подключено ни одно устройство.</translation>
 <translation id="7188494361780961876">Меню перемещено в левый верхний угол экрана.</translation>
 <translation id="7189412385142492784">Расстояние до Венеры</translation>
 <translation id="7198435252016571249">Окно предварительного просмотра камеры привязано к правому нижнему углу, так как перекрывало элементы системного интерфейса</translation>

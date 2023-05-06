@@ -1031,6 +1031,7 @@
 <translation id="3531780078352352885">कार्य पानाहरू</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> तपाईंको माइक्रोफोन प्रयोग गर्न चाहन्छ</translation>
 <translation id="3533328374079021623">मेलबक्स ५</translation>
+<translation id="3536227077203206203">अहिले अनुमति दिइएको छ</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">कार्डको फोटो</translation>
 <translation id="3542768452570884558">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>
@@ -2450,6 +2451,7 @@
 <translation id="7030436163253143341">प्रमाणपत्र वैध छैन</translation>
 <translation id="7031646650991750659">तपाईंले स्थापना गर्नुभएका Google Play एपहरू</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, तपाईं आफ्नो Google खाताका गोपनीयतासम्बन्धी सेटिङ मिलाउन चाहनुहुन्छ भने ट्याब थिच्नुहोस् अनि इन्टर थिच्नुहोस्</translation>
+<translation id="7044081119134178347">अहिले क्यामेरा प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">तपाईं <ph name="DOMAIN" /> मा पुग्न प्रयास गर्नुभयो, तर सर्भरले एउटा प्रमाणपत्र प्रस्तुत गर्दछ जसको वैधानिकता अवधि भरोसा योग्य हुन निकै लामो छ।</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{यो कार्ड अहिले सुरक्षित गर्न सकिँदैन}other{यी कार्डहरू अहिले सुरक्षित गर्न सकिँदैन}}</translation>
@@ -3042,6 +3044,7 @@
 <translation id="8416694386774425977">नेटवर्कको कन्फिगुरेसन अमान्य छ र आयात गर्न सकिएन।
 थप विवरणहरू:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">अहिले माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">५०० x ७५० मिलिमिटर</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
@@ -3097,6 +3100,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{अनुमति रिसेट गर्नुहोस्}other{अनुमति रिसेट गर्नुहोस्}}</translation>
 <translation id="8555010941760982128">चेक आउट गर्दा यो कोड प्रयोग गर्नुहोस्</translation>
 <translation id="8557066899867184262">उक्त CVC तपाईंको कार्डको पछाडितिर छ।</translation>
+<translation id="8558347880669160417">अहिले क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एउटा निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको यन्त्रको मिति र समय <ph name="DATE_AND_TIME" /> गलत छन्।</translation>
 <translation id="8564182942834072828">छुट्टा छुट्टै कागजातहरू/क्रमबद्ध नगरिएका प्रतिहरू</translation>
 <translation id="8564985650692024650">तपाईंले आफ्नो <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> को पासवर्ड अन्य साइटहरूमा पुनः प्रयोग गर्नुभएका खण्डमा Chromium ले तपाईंलाई उक्त पासवर्ड रिसेट गर्न सिफारिस गर्दछ।</translation>
@@ -3366,6 +3370,7 @@
 <translation id="949314938206378263">तपाईंले यो साइटमा जाने अनुमति माग्नुभएको छ। तपाईंका अभिभावक Family Link मार्फत अनुमति दिन वा नदिन सक्छन्।</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
+<translation id="961930410699694996">अहिले लोकेसन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="962484866189421427">यो सामग्रीले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक अनुप्रयोगहरूको स्थापना गर्न वा तपाईंलाई ट्र्याक गर्ने कार्यमा प्रयोग गर्न सकिने डेटाको सङ्कलन गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">सबै प्रयोगकर्ताहरू</translation>
 <translation id="964050462028070434">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्…</translation>

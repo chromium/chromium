@@ -186,6 +186,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2242467532204595597">Utilisez Chrome chaque fois que vous touchez sur des liens dans des messages, des documents et d'autres applications.</translation>
 <translation id="22508856139286506">Avertissements ignorés (<ph name="COUNT" />)</translation>
 <translation id="2251686759395008410">Menu → Historique</translation>
+<translation id="2252674110805316998">Recherche Web</translation>
 <translation id="2256933947031277845">Votre organisation vous autorise à vous connecter à certains comptes seulement.</translation>
 <translation id="225943865679747347">Code d'erreur : <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Ajouter un compte</translation>
@@ -488,6 +489,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4272631900155121838">Pour numériser un code QR, activez la caméra dans les paramètres</translation>
 <translation id="4277990410970811858">Navigation sécurisée</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
+<translation id="4293080268407233932">Rechercher</translation>
 <translation id="4304713468139749426">Gestionnaire de mots de passe</translation>
 <translation id="430793432425771671">Tout synchroniser</translation>
 <translation id="4309403553630140242">Touchez l'écran deux fois pour en savoir plus.</translation>
@@ -745,6 +747,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5951816930277761335">Partager le lien</translation>
 <translation id="5955891643922670672">Affichage de la version hors ligne</translation>
 <translation id="5957613098218939406">Autres options</translation>
+<translation id="595769230373966252">Rechercher avec <ph name="SEARCH_PROVIDER" /></translation>
 <translation id="5963939892571022323">Impossible de créer un lien vers l'élément en surbrillance.</translation>
 <translation id="5965679971710331625">Vous êtes connecté</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>

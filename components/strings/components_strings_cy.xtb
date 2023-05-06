@@ -1034,6 +1034,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3531780078352352885">Dalenni swyddi</translation>
 <translation id="3532844647053365774">Mae <ph name="HOST" /> eisiau defnyddio'ch meicroffon</translation>
 <translation id="3533328374079021623">Blwch negeseuon 5</translation>
+<translation id="3536227077203206203">Caniateir y tro hwn</translation>
 <translation id="3537165859691846083">Llythyr Plws</translation>
 <translation id="3542628208405253498">Delwedd cerdyn</translation>
 <translation id="3542768452570884558">Agor Dolen mewn Ffenest Newydd</translation>
@@ -2453,6 +2454,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="7030436163253143341">Nid yw'r dystysgrif yn ddilys</translation>
 <translation id="7031646650991750659">Pa apiau Google Play rydych wedi'u gosod</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i reoli gosodiadau preifatrwydd eich Cyfrif Google.</translation>
+<translation id="7044081119134178347">Caniateir y camera y tro hwn</translation>
 <translation id="7048095965575426564">Ffanffold Ewropeaidd</translation>
 <translation id="7050187094878475250">Gwnaethoch geisio cyrraedd <ph name="DOMAIN" />, ond cyflwynodd y gweinydd dystysgrif y mae ei chyfnod dilysrwydd yn rhy hir i fod yn ddibynadwy.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ni ellir cadw'r cerdyn hwn ar hyn o bryd}zero{Ni ellir cadw'r cardiau hyn ar hyn o bryd}two{Ni ellir cadw'r cardiau hyn ar hyn o bryd}few{Ni ellir cadw'r cardiau hyn ar hyn o bryd}many{Ni ellir cadw'r cardiau hyn ar hyn o bryd}other{Ni ellir cadw'r cardiau hyn ar hyn o bryd}}</translation>
@@ -3045,6 +3047,7 @@ Manylion ychwanegol:
 <translation id="8416694386774425977">Mae ffurfweddiad y rhwydwaith yn annilys ac ni ellid ei fewnforio.
 Manylion ychwanegol:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Caniateir y meicroffon y tro hwn</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Gosodiadau</translation>
@@ -3100,6 +3103,7 @@ Manylion ychwanegol:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Ailosod caniatâd}zero{Ailosod caniatadau}two{Ailosod caniatadau}few{Ailosod caniatadau}many{Ailosod caniatadau}other{Ailosod caniatadau}}</translation>
 <translation id="8555010941760982128">Defnyddiwch y cod hwn wrth dalu</translation>
 <translation id="8557066899867184262">Byddwch yn gweld y CVC ar gefn eich cerdyn.</translation>
+<translation id="8558347880669160417">Caniateir y camera a'r meicroffon y tro hwn</translation>
 <translation id="8559762987265718583">Ni ellir sefydlu cysylltiad preifat â <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> oherwydd bod dyddiad ac amser eich dyfais (<ph name="DATE_AND_TIME" />) yn anghywir.</translation>
 <translation id="8564182942834072828">Dogfennau ar wahân/Copïau heb eu coladu</translation>
 <translation id="8564985650692024650">Mae Chromium yn argymell ailosod eich cyfrinair ar gyfer <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> os gwnaethoch ei ailddefnyddio ar wefannau eraill.</translation>
@@ -3370,6 +3374,7 @@ Manylion ychwanegol:
 <translation id="949314938206378263">Gofynnaist i ymweld â'r wefan hon. Gall dy riant ateb yn Family Link.</translation>
 <translation id="950736567201356821">Tri thwll ar y brig</translation>
 <translation id="961663415146723894">Rhwymo ar y gwaelod</translation>
+<translation id="961930410699694996">Caniateir y lleoliad y tro hwn</translation>
 <translation id="962484866189421427">Gallai'r cynnwys hwn geisio gosod apiau twyllodrus sy'n esgus bod yn rhywbeth arall neu gasglu data y gallent eu defnyddio i'ch olrhain. <ph name="BEGIN_LINK" />Dangos beth bynnag<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Pob defnyddiwr</translation>
 <translation id="964050462028070434">Rheoli Cyfrineiriau a Chodau Pas…</translation>

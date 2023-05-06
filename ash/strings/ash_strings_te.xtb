@@ -56,6 +56,7 @@
 <translation id="121097972571826261">ఒక పదం ముందుకు</translation>
 <translation id="1217633719248931900">యాప్‌నకు వెళ్లండి</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store యాప్</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" />‌కు తిరిగి వెళ్లండి.</translation>
 <translation id="1225748608451425081">తెలిసిన సమస్య కారణంగా మీ Chromebook లాక్ చేయబడింది. మీరు ఈ సమయం తర్వాత సైన్ ఇన్ చేయగలరు: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ఎంచుకోవడం ఆపివేయండి</translation>
 <translation id="1235458158152011030">తెలిసిన నెట్‌వర్క్‌లు</translation>
@@ -1060,6 +1061,7 @@
 <translation id="5881540930187678962">ఫోన్ హబ్‌ను తర్వాత సెటప్ చేయండి</translation>
 <translation id="5881663018261910378">ఆఫ్‌లో ఉంటుంది</translation>
 <translation id="5887954372087850114">విండో <ph name="WINDOW_TITLE" />, <ph name="DESK_TITLE" />కు కేటాయించబడింది, ఇంకా ఇతర డెస్క్‌ల నుండి కేటాయింపు తీసివేయబడింది</translation>
+<translation id="588817334757907802">ఫైల్‌ను Chrome బ్రౌజర్‌లో తెరవండి</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>
 <translation id="589817443623831496">పాయింట్ స్కానింగ్</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1590,6 +1592,7 @@
 <translation id="8349964124165471584">లింక్‌ను కొత్త విండోలో తెరవండి</translation>
 <translation id="8351131234907093545">గమనికను క్రియేట్ చేయండి</translation>
 <translation id="8364673525741149932">షెల్ఫ్ పార్టీ టోగుల్. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> వినియోగంలో ఉంది.</translation>
 <translation id="8369166482916924789">సేవ్ చేసిన డెస్క్, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ఒక అక్షరం ముందుకు</translation>
 <translation id="8371991222807690464">గెస్ట్ మోడ్‌లో పెరిఫెరల్ పనితీరు పరిమితంగా ఉండవచ్చు</translation>

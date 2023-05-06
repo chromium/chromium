@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1022433422498218992">ಸಾಮಾನ್ಯ ಕಂಟ್ರೋಲ್‌ಗಳು</translation>
+<translation id="1022628058306505708">ಅರ್ಥ್ ಫ್ಲೋ</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ಥ್ರೆಡ್‌ಗಳು, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">ಹೊಸ ಫೀಚರ್ ಲಭ್ಯವಿದೆ, ಇನ್ನಷ್ಟು ತಿಳಿಯಲು ಅಪ್ ಆ್ಯರೋ ಕೀ ಬಳಸಿ.</translation>
 <translation id="1059913517121127803">ಸ್ಕ್ಯಾನ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">ಇನ್ನಷ್ಟು ಕ್ರಿಯೆಗಳು</translation>
 <translation id="2926057806159140518">ನಿಮ್ಮ ಬಳಕೆದಾರರ ಹೆಸರು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ ಅಥವಾ ನಿಮ್ಮ QR ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
 <translation id="2940811910881150316">ಸಾಧನವನ್ನು ಪರೀಕ್ಷಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ. ಪರೀಕ್ಷಿಸಲು ಮುಚ್ಚಳವನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</translation>
+<translation id="2981143481017883351">ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ Chromebook ಸ್ವತ್ತುಗಳು ಈಗ ಲಭ್ಯವಿದೆ</translation>
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3017079585324758401">ಹಿನ್ನೆಲೆ</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">ಕನೆಕ್ಟ್ ಆಗಿದೆ</translation>
 <translation id="3369013195428705271">ಎಲ್ಲಾ ಪ್ರಿಂಟ್ ಇತಿಹಾಸವನ್ನು ತೆರವುಗೊಳಿಸಲು ನೀವು ಬಯಸುವಿರಾ? ಪ್ರಸ್ತುತ ಚಾಲನೆಯಲ್ಲಿರುವ ನಿಮ್ಮ ಪ್ರಿಂಟ್ ಕಾರ್ಯವನ್ನು ತೆರವುಗೊಳಿಸುವುದಿಲ್ಲ.</translation>
+<translation id="3386675685417744672">Chromebook ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್</translation>
 <translation id="3404249063913988450">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3413935475507503304">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು, ಮುಂದಿನದು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">ಎಚ್ಚರಿಕೆ</translation>
 <translation id="4054683689023980771">ಚಿತ್ರವನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="4060260348856573701">ಹೊಸ APN</translation>
+<translation id="4079743696465895866">Chromebook ಎಕ್ಸ್‌ಕ್ಲೂಸಿವ್ ಆರ್ಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4093865285251893588">ಪ್ರೊಫೈಲ್ ಚಿತ್ರ</translation>
 <translation id="409427325554347132">ಪರೀಕ್ಷಾ ವಿವರಗಳನ್ನು ಉಳಿಸಿ</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">ಬಳಕೆಯಿಂದಾಗಿ ಬ್ಯಾಟರಿ ಸಾಮರ್ಥ್ಯವು ಕಡಿಮೆಯಾಗುತ್ತದೆ</translation>
 <translation id="6191293864534840972">ದೋಷಪೂರಿತ ಹೆಸರಿನ ಸರ್ವರ್‌ಗಳು</translation>
+<translation id="6205145102504628069">ಕ್ಲೌಡ್ ಫ್ಲೋ</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ಫುಲ್‌ಸ್ಕ್ರೀನ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="6223752125779001553">ಯಾವುದೇ ಸ್ಕ್ಯಾನರ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">ಕಸ್ಟಮೈಸ್ ಮಾಡುವಿಕೆ</translation>
 <translation id="6500818810472529210">Google Search ನಲ್ಲಿ ಫಲಿತಾಂಶವನ್ನು ನೋಡಿ</translation>
 <translation id="650266656685499220">ಆಲ್ಬಮ್‌ಗಳನ್ನು ರಚಿಸಲು, Google Photos ಗೆ ಹೋಗಿ</translation>
+<translation id="6505750420152840539">ಮುಂಜಾನೆಯಿಂದ ಮುಸ್ಸಂಜೆ</translation>
 <translation id="6516990319416533844">ಬ್ಯಾಟರಿಯ ಚಾರ್ಜಿಂಗ್ ವೇಗವನ್ನು ಪರೀಕ್ಷಿಸಲು, ನಿಮ್ಮ ಬ್ಯಾಟರಿ ಸ್ವಲ್ಪ ಸಮಯದವರೆಗೆ ಬರಿದಾಗಲು ಬಿಡಿ</translation>
 <translation id="6517239166834772319">ಎಕ್ಸ್‌ಪ್ಲೋರ್</translation>
 <translation id="6526200165918397681">ವಾಲ್‌ಪೇಪರ್ ಅನ್ನು ಹೊಂದಿಸಿ</translation>

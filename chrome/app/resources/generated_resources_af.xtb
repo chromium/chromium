@@ -595,6 +595,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1506187449813838456">Verhoog toonhoogte</translation>
 <translation id="1507170440449692343">Hierdie bladsy word gekeer om by jou kamera in te gaan.</translation>
 <translation id="1507246803636407672">Gooi weg</translation>
+<translation id="1508931164824684991">Werwe kan JavaScript gebruik</translation>
 <translation id="1509163368529404530">&amp;Laai groep terug</translation>
 <translation id="1509281256533087115">Kry toegang tot enige <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
 <translation id="1510238584712386396">Lanseerder</translation>
@@ -858,6 +859,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1708291623166985230">Warmkol is gedeaktiveer</translation>
 <translation id="1708338024780164500">(Onaktief)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Moenie wys wanneer aflaaie klaar is nie</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (oorspronklik)</translation>
 <translation id="1709217939274742847">Kies 'n kaartjie om vir stawing te gebruik. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netwerkinstellings</translation>
@@ -1681,6 +1683,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2398546389094871088">Jou e-SIM-profiele sal nie verwyder word as jy Powerwash met jou toestel gebruik nie. Gaan na <ph name="LINK_BEGIN" />Mobiele instellings<ph name="LINK_END" /> om hierdie profiele self te verwyder.</translation>
 <translation id="2399699884460174994">Kennisgewings is aangeskakel</translation>
 <translation id="2399939490305346086">Sekuriteitsleutel se aanmelddata</translation>
+<translation id="2400323785194108001">Moet nooit hierdie werf deaktiveer nie</translation>
 <translation id="2400664245143453337">Onmiddellike opdatering word vereis</translation>
 <translation id="2402226831639195063">Tone</translation>
 <translation id="2406153734066939945">Vee hierdie profiel en sy data uit?</translation>
@@ -1996,6 +1999,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2673135533890720193">Lees jou blaaigeskiedenis</translation>
 <translation id="2674764818721168631">Af</translation>
 <translation id="2675570801872027281">Kon nie Bruschetta verwyder nie. Probeer weer.</translation>
+<translation id="2676084251379299915">Hierdie uitbreiding is deur die ondernemingbeleid gedeaktiveer omdat dit nie meer in die Chrome Webwinkel beskikbaar is nie.</translation>
 <translation id="267708982776801183">Rooi-groen-filter (rooi swak, protanomalie)</translation>
 <translation id="2678063897982469759">Heraktiveer</translation>
 <translation id="2678100101831051676">Kan nie uitsaai nie.</translation>
@@ -2092,6 +2096,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2755349111255270002">Stel hierdie <ph name="DEVICE_TYPE" /> terug</translation>
 <translation id="2755367719610958252">Bestuur toeganklikheidkenmerke</translation>
 <translation id="275662540872599901">skerm af</translation>
+<translation id="2756936198272359372">Mag nie JavaScript gebruik nie</translation>
 <translation id="2757161511365746634">Bekyk drukker</translation>
 <translation id="2757338480560142065">Maak seker dat die wagwoord wat jy stoor, ooreenstem met jou wagwoord vir <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Geen soekresultate gewys vir <ph name="SEARCH_QUERY" /> nie</translation>
@@ -2124,6 +2129,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Uitbreidings word op hierdie werf toegelaat</translation>
 <translation id="2782104745158847185">Kon nie Linux-program installeer nie</translation>
+<translation id="2783024642731649028">1 item in jou <ph name="DISCOUNT_TEXT" />-mandjie van <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> af, is <ph name="RELATIVE_TIME" /> bekyk</translation>
 <translation id="2783298271312924866">Afgelaai</translation>
 <translation id="2783321960289401138">Skep kortpad …</translation>
 <translation id="2783829359200813069">Kies enkripsiesoorte</translation>
@@ -2906,6 +2912,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3496213124478423963">Zoem uit</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (is nie gekies nie)</translation>
 <translation id="3496689104192986836">Batteryvlak <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">Werwe gebruik gewoonlik JavaScript om interaktiewe kenmerke te wys, soos videospeletjies of webvorms</translation>
 <translation id="3497501929010263034">USB-toestel van <ph name="VENDOR_NAME" /> af (produk <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Deel logoskets</translation>
 <translation id="3500417806337761827">Kan nie deling monteer nie. Te veel SMB-delings is reeds gemonteer.</translation>
@@ -2950,6 +2957,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="354060433403403521">AC-aansluitprop</translation>
 <translation id="354068948465830244">Dit kan werfdata lees en verander</translation>
 <translation id="3541823293333232175">Toegewys</translation>
+<translation id="354204985370574425">Moet nooit hierdie werf deaktiveer nie</translation>
 <translation id="3543393733900874979">Kon nie opdateer nie (fout: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA-handtekening met SHA-512</translation>
 <translation id="3544058026430919413">’n Maatskappy kan ’n groep werwe definieer wat webkoekies kan gebruik om jou aktiwiteit in die groep te deel. Dit is af in Incognito.</translation>
@@ -3844,6 +3852,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4324577459193912240">Lêer is onvolledig</translation>
 <translation id="4325237902968425115">Deïnstalleer tans <ph name="LINUX_APP_NAME" />…</translation>
 <translation id="4326146840124313313">Chrome se sterkste sekuriteit doen meer om jou teen gevaarlike webwerwe, aflaaie en uitbreidings te beskerm</translation>
+<translation id="4326484226728068206">Items in jou <ph name="DISCOUNT_TEXT" />-mandjie van <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> af, is <ph name="RELATIVE_TIME" /> bekyk</translation>
 <translation id="4330191372652740264">Yswater</translation>
 <translation id="4330387663455830245">Moet nooit <ph name="LANGUAGE" /> vertaal nie</translation>
 <translation id="4332976768901252016">Stel ouerkontroles op</translation>
@@ -4532,6 +4541,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4940448324259979830">Hierdie rekening word bestuur deur <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Reserveer skyfgrootte</translation>
 <translation id="4941074198479265146">Werwe koppel gewoonlik aan MIDI-toestelle vir kenmerke om musiek te skep en te redigeer</translation>
+<translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> items in jou <ph name="DISCOUNT_TEXT" />-mandjie van <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> af, is <ph name="RELATIVE_TIME" /> bekyk</translation>
 <translation id="4941246025622441835">Gebruik hierdie toestelrekwisisie wanneer jy 'n toestel vir ondernemingbestuur inskryf:</translation>
 <translation id="4941627891654116707">Lettergrootte</translation>
 <translation id="4941963255146903244">Bekyk jou foon se foto's, media en programme</translation>
@@ -5488,6 +5498,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5832970156002835240">Laat op alle werwe toe</translation>
 <translation id="5833397272224757657">Gebruik inhoud op werwe wat jy besoek, asook blaaieraktiwiteit en -interaksies vir personalisering</translation>
 <translation id="5833726373896279253">Hierdie instellings kan slegs deur die eienaar verander word:</translation>
+<translation id="5833899990800318936">Moenie werwe toelaat om JavaScript te gebruik nie</translation>
 <translation id="583431638776747">Werf was nie beskikbaar nie</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minute oor</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> het tans toegang tot MKT-toestelle}=2{Uitbreidings met toegang tot toestelle: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Uitbreidings met toegang tot toestelle: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + nog {3}}}</translation>
@@ -5718,6 +5729,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> – USB-toestel is gekoppel</translation>
 <translation id="6027945736510816438">Het jy bedoel <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Voeg vingerafdruk by</translation>
+<translation id="6030719887161080597">Bestuur inligting wat deur werwe gebruik word om advertensieprestasie te meet</translation>
 <translation id="6031600495088157824">Invoeropsies in nutsbalk</translation>
 <translation id="6032715498678347852">Om aan 'n uitbreiding toegang tot hierdie werf te gee, moet jy dit klik.</translation>
 <translation id="6032912588568283682">Lêerstelsel</translation>
@@ -5952,6 +5964,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="623755660902014047">Leesmodus</translation>
 <translation id="6238767809035845642">Teks gedeel van ander toestel af</translation>
 <translation id="6238923052227198598">Hou jongste nota op sluitskerm</translation>
+<translation id="6238982280403036866">Mag JavaScript gebruik</translation>
 <translation id="6239558157302047471">Herlaai raam</translation>
 <translation id="6240821072888636753">Vra elke keer</translation>
 <translation id="6241530762627360640">Verkry inligting oor Bluetooth-toestelle wat met jou stelsel saamgebind is en ontdek nabygeleë Bluetooth-toestelle.</translation>

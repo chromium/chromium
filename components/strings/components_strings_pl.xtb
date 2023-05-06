@@ -1034,6 +1034,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3531780078352352885">Arkusze zadań</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> chce korzystać z mikrofonu</translation>
 <translation id="3533328374079021623">Zestaw tac odbiorczych 5</translation>
+<translation id="3536227077203206203">Przyznano jednorazowo</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Obraz na karcie</translation>
 <translation id="3542768452570884558">Otwórz link w nowym oknie</translation>
@@ -1886,7 +1887,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5572851009514199876">Uruchom Chrome i zaloguj się w nim, by mógł sprawdzić, czy masz uprawnienia dostępu do tej strony.</translation>
 <translation id="557886905979275351">Maszynki do golenia</translation>
 <translation id="5580958916614886209">Sprawdź miesiąc ważności i spróbuj ponownie</translation>
-<translation id="558420943003240152">Zarządzaj hasłami i kluczami…</translation>
+<translation id="558420943003240152">Zarządzaj hasłami i kluczami dostępu…</translation>
 <translation id="5586446728396275693">Brak zapisanych adresów</translation>
 <translation id="5586831831248371458">Szukaj: <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5587987780934666589">Platforma – użytkownik</translation>
@@ -2453,6 +2454,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7030436163253143341">Certyfikat jest nieważny</translation>
 <translation id="7031646650991750659">Zainstalowane przez Ciebie aplikacje z Google Play</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać ustawieniami prywatności konta Google, naciśnij Tab, a potem Enter</translation>
+<translation id="7044081119134178347">Przyznano jednorazowy dostęp do aparatu</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Próbujesz połączyć się z domeną <ph name="DOMAIN" />, ale serwer przedstawił certyfikat, którego okres ważności jest za długi, by był wiarygodny.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Nie można teraz zapisać tej karty}few{Nie można teraz zapisać tych kart}many{Nie można teraz zapisać tych kart}other{Nie można teraz zapisać tych kart}}</translation>
@@ -2526,7 +2528,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="7201591969684833065">Administrator może zobaczyć:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, naciśnij Tab, a potem Enter, aby otworzyć nową kartę incognito i przeglądać prywatnie</translation>
 <translation id="7203375778433816396">Ustaw Chrome jako domyślną przeglądarkę w systemie</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Brak}=1{1 klucz}few{# klucze}many{# kluczy}other{# klucza}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Brak}=1{1 klucz dostępu}few{# klucze dostępu}many{# kluczy dostępu}other{# klucza dostępu}}</translation>
 <translation id="7210863904660874423">Serwer <ph name="HOST_NAME" /> nie spełnia norm bezpieczeństwa.</translation>
 <translation id="7210993021468939304">Wyświetlanie aktywności Linuksa w kontenerze oraz instalowanie i uruchamianie aplikacji Linuksa w kontenerze</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /> na temat tego problemu.</translation>
@@ -3045,6 +3047,7 @@ Dodatkowe informacje:
 <translation id="8416694386774425977">Konfiguracja sieci jest nieprawidłowa i nie można jej zaimportować.
 Dodatkowe informacje:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Przyznano jednorazowy dostęp do mikrofonu</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
@@ -3100,6 +3103,7 @@ Dodatkowe informacje:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Zresetuj uprawnienia}few{Zresetuj uprawnienia}many{Zresetuj uprawnienia}other{Zresetuj uprawnienia}}</translation>
 <translation id="8555010941760982128">Użyj tego kodu w momencie płatności</translation>
 <translation id="8557066899867184262">Kod CVC znajduje się na odwrocie karty.</translation>
+<translation id="8558347880669160417">Przyznano jednorazowy dostęp do aparatu i mikrofonu</translation>
 <translation id="8559762987265718583">Nie można nawiązać prywatnego połączenia z <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ data i godzina (<ph name="DATE_AND_TIME" />) ustawione na urządzeniu są nieprawidłowe.</translation>
 <translation id="8564182942834072828">Oddzielne dokumenty / Kopie niesortowane</translation>
 <translation id="8564985650692024650">Chromium zaleca zresetowanie hasła, którego używasz w: <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />, jeśli zostało użyte na innej stronie.</translation>
@@ -3216,6 +3220,7 @@ Dodatkowe informacje:
 <translation id="8870494189203302833">Ta sama kolejność, strona do drukowania skierowana w dół</translation>
 <translation id="8870700989640064057">Wydrukować poufny plik?</translation>
 <translation id="8871553383647848643">Dostosuj wygląd przeglądarki</translation>
+<translation id="8871603420762394026">Obecnie Chrome udostępnia witrynom bardzo ograniczone informacje (np. o tym, kiedy reklama się wyświetliła), aby ułatwiać im ocenę skuteczności reklam.</translation>
 <translation id="8874824191258364635">Wpisz prawidłowy numer karty</translation>
 <translation id="8876033571432926051">Gry rekreacyjne</translation>
 <translation id="8877780815363510165">Wędkarstwo</translation>
@@ -3369,9 +3374,10 @@ Dodatkowe informacje:
 <translation id="949314938206378263">Otrzymaliśmy Twoją prośbę o zgodę na odwiedzenie tej strony. Twój rodzic może odpowiedzieć w Family Link.</translation>
 <translation id="950736567201356821">Trzy otwory u góry</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
+<translation id="961930410699694996">Przyznano jednorazowy dostęp do lokalizacji</translation>
 <translation id="962484866189421427">Te treści mogą próbować zainstalować wprowadzające w błąd aplikacje, które udają, że są przeznaczone do czegoś innego niż w rzeczywistości, lub zbierają dane, na podstawie których można Cię śledzić. <ph name="BEGIN_LINK" />Pokaż mimo to<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Wszyscy użytkownicy</translation>
-<translation id="964050462028070434">Zarządzaj hasłami i kluczami…</translation>
+<translation id="964050462028070434">Zarządzaj hasłami i kluczami dostępu…</translation>
 <translation id="96680173638229310">Samochody i pojazdy</translation>
 <translation id="969892804517981540">Oficjalna wersja</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Brak}=1{1 element}few{# elementy}many{# elementów}other{# elementu}}</translation>

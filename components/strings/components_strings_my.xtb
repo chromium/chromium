@@ -1035,6 +1035,7 @@
 <translation id="3531780078352352885">အလုပ် စာမျက်နှာများ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> သည် သင်၏မိုက်ခရိုဖုန်းကို အသုံးပြုလိုသည်</translation>
 <translation id="3533328374079021623">စာတိုက်ပုံး ၅</translation>
+<translation id="3536227077203206203">ဤတစ်ကြိမ်အတွက် ခွင့်ပြုထားသည်</translation>
 <translation id="3537165859691846083">လက်တာဆိုဒ်လွန်</translation>
 <translation id="3542628208405253498">ကတ်၏ပုံ</translation>
 <translation id="3542768452570884558">လင့်ခ်ကို ဝင်ဒိုးအသစ်တွင် ဖွင့်ရန်</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">အသိအမှတ်ပြုလက်မှတ် မမှန်ကန်ပါ</translation>
 <translation id="7031646650991750659">မည်သည့် Google Play အက်ပ်များကို သင်ထည့်သွင်းထားပါသလဲ</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ တဘ်နှိပ်ပြီးနောက် Enter နှိပ်၍ သင်၏ Google Account ကိုယ်ရေးအချက်အလက်လုံခြုံမှု ဆက်တင်များကို စီမံပါ</translation>
+<translation id="7044081119134178347">ဤတစ်ကြိမ်အတွက် ကင်မရာ ခွင့်ပြုထားသည်</translation>
 <translation id="7048095965575426564">ဥရောပ ဘာဂျာခေါက်</translation>
 <translation id="7050187094878475250">သင် <ph name="DOMAIN" /> သို့ ရောက်ရန် ကြိုးပမ်းခဲ့သော်လည်း၊ ယုံကြည်နိုင်ရန်အလို့ငှာ ကာလလွန်စွာကြာမြင့်သော ခွင့်ပြုကာလပါသည့် အသိအမှတ်ပြုလက်မှတ်တစ်ခုအား ဆာဗာမှ ပြသခဲ့သည်။</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ဤကတ်ကို ယခုသိမ်း၍ မရပါ}other{ဤကတ်များကို ယခုသိမ်း၍ မရပါ}}</translation>
@@ -3047,6 +3049,7 @@
 <translation id="8416694386774425977">ကွန်ရက်စီစဉ်သတ်မှတ်မှုသည် မမှန်ကန်သောကြောင့် ထည့်သွင်း၍မရပါ။
 နောက်ထပ်အသေးစိတ်များ−
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">ဤတစ်ကြိမ်အတွက် မိုက်ခရိုဖုန်း ခွင့်ပြုထားသည်</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">၅၀၀ x ၇၅၀ မီလီမီတာ</translation>
 <translation id="8428213095426709021">ဆက်တင်များ</translation>
@@ -3102,6 +3105,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ခွင့်ပြုချက် ပြင်ဆင်သတ်မှတ်ရန်}other{ခွင့်ပြုချက်များ ပြင်ဆင်သတ်မှတ်ရန်}}</translation>
 <translation id="8555010941760982128">ငွေရှင်းသည့်အခါ ဤကုဒ်ကို သုံးပါ</translation>
 <translation id="8557066899867184262">CVC သည် သင့်ကဒ်အနောက်ဘက်ခြမ်းတွင် ရှိသည်။</translation>
+<translation id="8558347880669160417">ဤတစ်ကြိမ်အတွက် ကင်မရာနှင့် မိုက်ခရိုဖုန်း ခွင့်ပြုထားသည်</translation>
 <translation id="8559762987265718583">သင့်ကိရိယာ၏ ရက်စွဲ နှင့် အချိန် (<ph name="DATE_AND_TIME" />)မှာ မမှန်၍ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ထံသို့ ကိုယ်ရေး ချိတ်ဆက်မှုကို ထူထောင်မရနိုင်ပါ။</translation>
 <translation id="8564182942834072828">သီးခြား စာရွက်စာတမ်းများ/စုစည်းစီစဉ်မထားသော မိတ္တူများ</translation>
 <translation id="8564985650692024650">အခြားဝဘ်ဆိုက်များတွင် သင်၏ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> စကားဝှက်ကို ပြန်သုံးထားပါက ၎င်းကို ပြင်ဆင်သတ်မှတ်ရန် Chromium က အကြံပြုပါသည်။</translation>
@@ -3218,6 +3222,7 @@
 <translation id="8870494189203302833">တူညီသောအစဉ်ဖြင့် မှောက်ထားရန်</translation>
 <translation id="8870700989640064057">လျှို့ဝှက်ဖိုင်ကို ပရင့်ထုတ်မလား။</translation>
 <translation id="8871553383647848643">ဘရောင်ဇာ၏အသွင်ကို စိတ်ကြိုက်ပြင်ရန်</translation>
+<translation id="8871603420762394026">ကြော်ငြာများ၏ စွမ်းဆောင်ရည်ကို ဝဘ်ဆိုက်များက တိုင်းတာရာတွင် ကူညီရန် သင့်ထံ ကြော်ငြာပြသောအခါကဲ့သို့ ဝဘ်ဆိုက်များအကြားရှိ ကန့်သတ်အချက်အလက် အနည်းငယ်မျှကိုသာ Chrome က ယခု မျှဝေသည်။</translation>
 <translation id="8874824191258364635">မှန်ကန်သည့် ကဒ်နံပါတ်ကို ထည့်ပါ</translation>
 <translation id="8876033571432926051">ရိုးရိုး ဂိမ်းများ</translation>
 <translation id="8877780815363510165">ငါးမျှားခြင်း</translation>
@@ -3371,6 +3376,7 @@
 <translation id="949314938206378263">ဤဝဘ်ဆိုက်သို့ ဝင်ကြည့်ရန် သင်တောင်းဆိုထားသည်။ Family Link တွင် သင့်မိဘက စာပြန်နိုင်သည်။</translation>
 <translation id="950736567201356821">ထိပ်တွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="961663415146723894">အောက်ခြေတွင် တွဲချုပ်ရန်</translation>
+<translation id="961930410699694996">ဤတစ်ကြိမ်အတွက် တည်နေရာ ခွင့်ပြုထားသည်</translation>
 <translation id="962484866189421427">ဤအကြောင်းအရာသည် အယောင်ဆောင်သော သို့မဟုတ် သင့်ကိုခြေရာခံရာတွင် အသုံးပြုနိုင်သော ဒေတာများကို စုစည်းသော လိမ်လည်လှည့်ဖျားသည့် အက်ပ်များကို ထည့်သွင်းနိုင်သည်။ <ph name="BEGIN_LINK" />မည်သို့ဖြစ်စေ ပြပါ<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">အသုံးပြုသူအားလုံး</translation>
 <translation id="964050462028070434">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်…</translation>

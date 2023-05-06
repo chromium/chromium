@@ -459,6 +459,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="316086887565479535">Các ứng dụng không được hỗ trợ trong mẫu</translation>
 <translation id="3161500364292033097">Đóng không gian làm việc và cửa sổ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> đang hạ cấp hệ điều hành trên thiết bị <ph name="DEVICE_TYPE" /> của bạn. Thiết bị của bạn sẽ được đặt lại và toàn bộ dữ liệu sẽ bị xoá.</translation>
+<translation id="3171170659304083361">Chế độ cài đặt phương thức nhập</translation>
 <translation id="3181441307743005334">Quá trình khởi động có thể mất một chút thời gian</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Đã kết nối với một thiết bị}other{Đã kết nối với # thiết bị}}</translation>
 <translation id="320207200541803018">Hẹn giờ</translation>
@@ -1111,6 +1112,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6074087755403037157">Kênh thử nghiệm Beta</translation>
 <translation id="6093867385179428431">Quản trị viên đã vô hiệu hoá chế độ này</translation>
 <translation id="6095008505822982596">Tốc độ đọc</translation>
+<translation id="6095425951508823973">Thêm đường kết nối bằng <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">Chỉnh sửa tháng trước</translation>
 <translation id="6103838137565245112">hệ thống</translation>
 <translation id="6114505516289286752">Đã tải tệp mã chuyển lời nói thành văn bản <ph name="LANGUAGE" /> xuống</translation>

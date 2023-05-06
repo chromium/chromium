@@ -460,6 +460,7 @@
 <translation id="316086887565479535">ടെംപ്ലേറ്റിൽ പിന്തുണയ്ക്കാത്ത ആപ്പുകളുണ്ട്</translation>
 <translation id="3161500364292033097">ഡെസ്‌ക്കും വിൻഡോകളും അടയ്ക്കുക</translation>
 <translation id="316356270129335934">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="MANAGER" /> പുനഃസ്ഥാപിക്കുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>
+<translation id="3171170659304083361">ഇൻപുട്ട് രീതികളുടെ ക്രമീകരണം</translation>
 <translation id="3181441307743005334">റീസ്‌റ്റാർട്ട് ചെയ്യാൻ കുറച്ച് സമയമെടുത്തേക്കാം</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ഒരു ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു}other{# ഉപകരണങ്ങളിലേക്ക് കണക്റ്റ് ചെയ്‌തു}}</translation>
 <translation id="320207200541803018">ടൈമർ സജ്ജീകരിക്കുക</translation>
@@ -1112,6 +1113,7 @@
 <translation id="6074087755403037157">ബീറ്റ ചാനൽ</translation>
 <translation id="6093867385179428431">അഡ്‌മിൻ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="6095008505822982596">വായനയുടെ വേഗത</translation>
+<translation id="6095425951508823973"><ph name="PROVIDER" /> ഉപയോഗിച്ച് കണക്ഷൻ ചേർക്കുക</translation>
 <translation id="6099678161144790572">കഴിഞ്ഞ മാസം എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="6103838137565245112">സിസ്റ്റം</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>

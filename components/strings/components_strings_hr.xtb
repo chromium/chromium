@@ -1034,6 +1034,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3531780078352352885">Radni listovi</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> želi upotrijebiti vaš mikrofon</translation>
 <translation id="3533328374079021623">Izlazni spremnik s odjeljcima 5</translation>
+<translation id="3536227077203206203">Dopušteno ovaj put</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Slika kartice</translation>
 <translation id="3542768452570884558">Otvori vezu u novom prozoru</translation>
@@ -2452,6 +2453,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="7030436163253143341">Certifikat nije važeći</translation>
 <translation id="7031646650991750659">koje ste Google Play aplikacije instalirali</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali postavkama privatnosti svojeg Google računa</translation>
+<translation id="7044081119134178347">Kamera je dopuštena ovaj put</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Pokušali ste pristupiti domeni <ph name="DOMAIN" />, ali je poslužitelj pružio certifikat koji nije pouzdan zbog predugog razdoblja valjanosti.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Ta se kartica trenutačno ne može spremiti}one{Te se kartice trenutačno ne mogu spremiti}few{Te se kartice trenutačno ne mogu spremiti}other{Te se kartice trenutačno ne mogu spremiti}}</translation>
@@ -3044,6 +3046,7 @@ Dodatne pojedinosti:
 <translation id="8416694386774425977">Konfiguracija mreže nije važeća i nije se mogla uvesti.
 Dodatne pojedinosti:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon je dopušten ovaj put</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Postavke</translation>
@@ -3099,6 +3102,7 @@ Dodatne pojedinosti:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Poništi dopuštenje}one{Poništi dopuštenja}few{Poništi dopuštenja}other{Poništi dopuštenja}}</translation>
 <translation id="8555010941760982128">Ovaj kôd primijenite pri naplati</translation>
 <translation id="8557066899867184262">CVC možete pronaći na poleđini kartice.</translation>
+<translation id="8558347880669160417">Kamera i mikrofon dopušteni su ovaj put</translation>
 <translation id="8559762987265718583">Sigurnu vezu s domenom <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nije moguće uspostaviti jer datum i vrijeme (<ph name="DATE_AND_TIME" />) na vašem uređaju nisu točni.</translation>
 <translation id="8564182942834072828">Zasebni dokumenti/nerazvrstani primjerci</translation>
 <translation id="8564985650692024650">Chromium preporučuje poništavanje zaporke za organizaciju <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ako ste je upotrebljavali za druge web-lokacije.</translation>
@@ -3371,6 +3375,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="949314938206378263">Želiš posjetiti ovu web-lokaciju. Roditelj može odgovoriti u Family Linku.</translation>
 <translation id="950736567201356821">Trostruko bušenje pri vrhu</translation>
 <translation id="961663415146723894">Uvez pri dnu</translation>
+<translation id="961930410699694996">Lokacija je dopuštena ovaj put</translation>
 <translation id="962484866189421427">Ovaj sadržaj može pokušati instalirati obmanjujuće aplikacije koje se pretvaraju da su nešto drugo ili prikupljaju podatke na temelju kojih vas je moguće pratiti. <ph name="BEGIN_LINK" />Ipak prikaži<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Svi korisnici</translation>
 <translation id="964050462028070434">Upravljanje zaporkama i pristupnim ključevima...</translation>

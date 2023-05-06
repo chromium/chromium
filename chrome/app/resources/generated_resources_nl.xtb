@@ -592,6 +592,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1506187449813838456">Toonhoogte verhogen</translation>
 <translation id="1507170440449692343">Deze pagina heeft geen toegang tot je camera.</translation>
 <translation id="1507246803636407672">&amp;Annuleren</translation>
+<translation id="1508931164824684991">Sites kunnen JavaScript gebruiken</translation>
 <translation id="1509163368529404530">G&amp;roep herstellen</translation>
 <translation id="1509281256533087115">Toegang tot <ph name="DEVICE_NAME_AND_VENDOR" /> via USB</translation>
 <translation id="1510238584712386396">Launcher</translation>
@@ -847,6 +848,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1708291623166985230">Hotspot staat uit</translation>
 <translation id="1708338024780164500">(Inactief)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ID: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">Niet tonen als downloads klaar zijn</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (native)</translation>
 <translation id="1709217939274742847">Kies een ticket dat je voor verificatie wilt gebruiken. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">Netwerkinstellingen</translation>
@@ -1666,6 +1668,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2398546389094871088">Als je de Powerwash-functie op je apparaat gebruikt, worden je e-simkaartprofielen niet verwijderd. Ga naar <ph name="LINK_BEGIN" />Mobiele instellingen<ph name="LINK_END" /> om deze profielen handmatig te verwijderen.</translation>
 <translation id="2399699884460174994">Meldingen staan aan</translation>
 <translation id="2399939490305346086">Inloggegevens voor beveiligingssleutel</translation>
+<translation id="2400323785194108001">Deze site nooit deactiveren</translation>
 <translation id="2400664245143453337">Onmiddellijke update vereist</translation>
 <translation id="2402226831639195063">Tonen</translation>
 <translation id="2406153734066939945">Dit profiel en de bijbehorende gegevens verwijderen?</translation>
@@ -1981,6 +1984,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2673135533890720193">Je browsegeschiedenis lezen</translation>
 <translation id="2674764818721168631">Uit</translation>
 <translation id="2675570801872027281">Fout bij het verwijderen van Bruschetta. Probeer het opnieuw.</translation>
+<translation id="2676084251379299915">Deze extensie is uitgezet op basis van bedrijfsbeleid omdat de extensie niet meer beschikbaar is in de Chrome Web Store.</translation>
 <translation id="267708982776801183">Rood-groen filter (rood zwak, protanomalie)</translation>
 <translation id="2678063897982469759">Opnieuw aanzetten</translation>
 <translation id="2678100101831051676">Kan niet casten.</translation>
@@ -2077,6 +2081,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
 <translation id="2755367719610958252">Toegankelijkheidsfuncties beheren</translation>
 <translation id="275662540872599901">scherm uit</translation>
+<translation id="2756936198272359372">Geen toestemming om JavaScript te gebruiken</translation>
 <translation id="2757161511365746634">Printer bekijken</translation>
 <translation id="2757338480560142065">Zorg ervoor dat het wachtwoord dat je opslaat, overeenkomt met je wachtwoord voor <ph name="WEBSITE" /></translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> Geen zoekresultaten gevonden voor <ph name="SEARCH_QUERY" /></translation>
@@ -2109,6 +2114,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">Extensies zijn toegestaan op deze site</translation>
 <translation id="2782104745158847185">Fout bij het installeren van de Linux-app</translation>
+<translation id="2783024642731649028">1 artikel in je winkelwagen <ph name="DISCOUNT_TEXT" /> bij <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> bekeken</translation>
 <translation id="2783298271312924866">Gedownload</translation>
 <translation id="2783321960289401138">Snelle link maken…</translation>
 <translation id="2783829359200813069">Versleutelingstypen selecteren</translation>
@@ -2891,6 +2897,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3496213124478423963">Kleiner</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (niet geselecteerd)</translation>
 <translation id="3496689104192986836">Batterijniveau <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">Sites gebruiken JavaScript vaak om interactieve functies te tonen, zoals videogames of webformulieren</translation>
 <translation id="3497501929010263034">USB-apparaat van <ph name="VENDOR_NAME" /> (product <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">Doodle delen</translation>
 <translation id="3500417806337761827">Fout bij activeren van fileshare. Er zijn al te veel SMB-fileshares geactiveerd.</translation>
@@ -2935,6 +2942,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="354060433403403521">Netspanningsadapter</translation>
 <translation id="354068948465830244">Hiermee kun je sitegegevens lezen en wijzigen</translation>
 <translation id="3541823293333232175">Toegewezen</translation>
+<translation id="354204985370574425">Deze site nooit deactiveren</translation>
 <translation id="3543393733900874979">Update mislukt (fout: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">X9.62 ECDSA-handtekening met SHA-512</translation>
 <translation id="3544058026430919413">Een bedrijf kan een groep sites definiëren die cookies kunnen gebruiken om je activiteit in de groep te delen. Dit staat uit in de incognitomodus.</translation>
@@ -3828,6 +3836,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4324577459193912240">Bestand onvolledig</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> verwijderen...</translation>
 <translation id="4326146840124313313">De krachtigste beveiliging van Chrome doet meer om je te beschermen tegen gevaarlijke websites, downloads en extensies</translation>
+<translation id="4326484226728068206">Artikelen in je winkelwagen <ph name="DISCOUNT_TEXT" /> bij <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> bekeken</translation>
 <translation id="4330191372652740264">IJswater</translation>
 <translation id="4330387663455830245"><ph name="LANGUAGE" /> nooit vertalen</translation>
 <translation id="4332976768901252016">Ouderlijk toezicht instellen</translation>
@@ -4514,6 +4523,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4940448324259979830">Dit account wordt beheerd door <ph name="PROFILE_NAME" /></translation>
 <translation id="4940845626435830013">Schijfgrootte reserveren</translation>
 <translation id="4941074198479265146">Sites maken meestal verbinding met MIDI-apparaten voor functies zoals muziek maken en bewerken</translation>
+<translation id="4941243352516004658"><ph name="PRODUCT_ITEM_COUNT" /> artikelen in je winkelwagen <ph name="DISCOUNT_TEXT" /> bij <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> bekeken</translation>
 <translation id="4941246025622441835">Gebruik deze apparaataanvraag wanneer het apparaat wordt geactiveerd voor bedrijfsbeheer:</translation>
 <translation id="4941627891654116707">Lettergrootte</translation>
 <translation id="4941963255146903244">Foto's, media en apps van je telefoon bekijken</translation>
@@ -5467,6 +5477,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5832970156002835240">Toestaan op alle sites</translation>
 <translation id="5833397272224757657">Maakt gebruik van content op sites die je bezoekt en browseractiviteit en -interactie voor personalisatie</translation>
 <translation id="5833726373896279253">Deze instellingen kunnen alleen worden aangepast door de eigenaar:</translation>
+<translation id="5833899990800318936">Niet toestaan dat sites JavaScript gebruiken</translation>
 <translation id="583431638776747">Site was niet beschikbaar</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minuten resterend</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> heeft toegang tot HID-apparaten}=2{Extensies die toegang hebben tot apparaten: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Extensies die toegang hebben tot apparaten: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> + nog {3}}}</translation>
@@ -5696,6 +5707,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" />: USB-apparaat verbonden</translation>
 <translation id="6027945736510816438">Bedoelde je <ph name="WEBSITE" />?</translation>
 <translation id="6028117231645531007">Vingerafdruk toevoegen</translation>
+<translation id="6030719887161080597">Informatie beheren die sites gebruiken om advertentieprestaties te meten</translation>
 <translation id="6031600495088157824">Invoeropties in werkbalk</translation>
 <translation id="6032715498678347852">Klik op een extensie om de extensie toegang tot deze site te geven.</translation>
 <translation id="6032912588568283682">Bestandssysteem</translation>
@@ -5929,6 +5941,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="623755660902014047">Leesmodus</translation>
 <translation id="6238767809035845642">Tekst gedeeld vanaf ander apparaat</translation>
 <translation id="6238923052227198598">Laatste notitie op vergrendelscherm laten staan</translation>
+<translation id="6238982280403036866">Toestemming om JavaScript te gebruiken</translation>
 <translation id="6239558157302047471">&amp;Frame opnieuw laden</translation>
 <translation id="6240821072888636753">Altijd vragen</translation>
 <translation id="6241530762627360640">Toegang krijgen tot informatie over Bluetooth-apparaten die zijn gekoppeld met je systeem en Bluetooth-apparaten in de buurt detecteren.</translation>

@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">જોબ શીટ</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> તમારા માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="3533328374079021623">મેઇલબૉક્સ 5</translation>
+<translation id="3536227077203206203">આ વખતે મંજૂરી આપી છે</translation>
 <translation id="3537165859691846083">લેટર પ્લસ</translation>
 <translation id="3542628208405253498">કાર્ડ પરની છબી</translation>
 <translation id="3542768452570884558">નવી વિન્ડોમાં લિંક ખોલો</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">પ્રમાણપત્ર માન્ય નથી</translation>
 <translation id="7031646650991750659">તમે કઈ Google Play ઍપ ઇન્સ્ટૉલ કરી છે</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, તમારા Google એકાઉન્ટના પ્રાઇવસી સેટિંગ મેનેજ કરવા માટે, પહેલાં Tab પછી Enter કી દબાવો</translation>
+<translation id="7044081119134178347">આ વખતે કૅમેરાને મંજૂરી આપી છે</translation>
 <translation id="7048095965575426564">યુરોપિયન ફૅનફોલ્ડ</translation>
 <translation id="7050187094878475250">તમે <ph name="DOMAIN" /> પર પહોંચવાનો પ્રયાસ કરેલો, પરંતુ સર્વરે એવું પ્રમાણપત્ર પ્રસ્તુત કર્યું જેની માન્યતા અવધિ, વિશ્વસનીય હોવા માટે ખૂબ લાંબી છે.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{આ કાર્ડ અત્યારે સાચવી શકાતું નથી}one{આ કાર્ડ અત્યારે સાચવી શકાતાં નથી}other{આ કાર્ડ અત્યારે સાચવી શકાતાં નથી}}</translation>
@@ -3045,6 +3047,7 @@
 <translation id="8416694386774425977">નેટવર્કની ગોઠવણી અમાન્ય છે અને તેને આયાત કરી શકાઈ નથી.
 વધારાની વિગતો:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">આ વખતે માઇક્રોફોનને મંજૂરી આપી છે</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 મિમી</translation>
 <translation id="8428213095426709021">સેટિંગ</translation>
@@ -3100,6 +3103,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{પરવાનગી રીસેટ કરો}one{પરવાનગી રીસેટ કરો}other{બધી પરવાનગી રીસેટ કરો}}</translation>
 <translation id="8555010941760982128">ચેકઆઉટ વખતે આ કોડનો ઉપયોગ કરો</translation>
 <translation id="8557066899867184262">CVC તમારા કાર્ડની પાછળ હોય છે.</translation>
+<translation id="8558347880669160417">આ વખતે કૅમેરા અને માઇક્રોફોનને મંજૂરી આપી છે</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> પર ખાનગી કનેક્શન સ્થાપિત કરી શકાતું નથી કારણ કે તમારા ઉપકરણની તારીખ અને સમય (<ph name="DATE_AND_TIME" />) અયોગ્ય છે.</translation>
 <translation id="8564182942834072828">અલગ દસ્તાવેજો/ગોઠવણી વિનાની કૉપિ</translation>
 <translation id="8564985650692024650">જો તમે અન્ય સાઇટ પર <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> પાસવર્ડનો ફરી ઉપયોગ કર્યો હોય, તો Chromium તેને રીસેટ કરવાનો સુઝાવ આપે છે.</translation>
@@ -3216,6 +3220,7 @@
 <translation id="8870494189203302833">નીચે તરફ તે જ ક્રમમાં</translation>
 <translation id="8870700989640064057">શું ગોપનીય ફાઇલ પ્રિન્ટ કરીએ?</translation>
 <translation id="8871553383647848643">તમારા બ્રાઉઝરનો દેખાવ કસ્ટમાઇઝ કરો</translation>
+<translation id="8871603420762394026">Chrome હવે સાઇટ વચ્ચે માત્ર ખૂબ જ મર્યાદિત માહિતી શેર કરે છે, જેમ કે જાહેરાતના પર્ફોર્મન્સની માપણી કરવામાં સાઇટની સહાય કરવા માટે જ્યારે તમને કોઈ જાહેરાત બતાવવામાં આવી હોય.</translation>
 <translation id="8874824191258364635">એક માન્ય કાર્ડ નંબર દાખલ કરો</translation>
 <translation id="8876033571432926051">કેઝ્યુઅલ ગેમ</translation>
 <translation id="8877780815363510165">ફિશિંગ</translation>
@@ -3369,6 +3374,7 @@
 <translation id="949314938206378263">તમે આ સાઇટની મુલાકાત લેવા કહ્યું. તમારા માતાપિતા Family Linkમાં જવાબ આપી શકે છે.</translation>
 <translation id="950736567201356821">ઉપરની બાજુએ ત્રણ કાણાં પાડો</translation>
 <translation id="961663415146723894">નીચેની બાજુએ જોડો</translation>
+<translation id="961930410699694996">આ વખતે લોકેશનને મંજૂરી આપી છે</translation>
 <translation id="962484866189421427">આ કન્ટેન્ટ કદાચ ભ્રામક ઍપ ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરે છે કે જે પોતાની ખોટી ઓળખ આપે છે અથવા તમને ટ્રૅક કરવા માટે ઉપયોગમાં લઈ શકાય તેવો ડેટા મેળવે છે. <ph name="BEGIN_LINK" />તો પણ બતાવો<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">બધા વપરાશકર્તાઓ</translation>
 <translation id="964050462028070434">પાસવર્ડ અને પાસકી મેનેજ કરો…</translation>

@@ -348,6 +348,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1288300545283011870">Propriedades de voz</translation>
 <translation id="1289619947962767206">Esta opção já não é suportada. Para apresentar um separador, utilize o <ph name="GOOGLE_MEET" />.</translation>
 <translation id="1291119821938122630">Termos de Utilização de <ph name="MANAGER" /></translation>
+<translation id="1291421198328146277">Repor teclas</translation>
 <translation id="1292849930724124745">Insira o cartão inteligente para manter a sessão iniciada</translation>
 <translation id="1293264513303784526">Dispositivo USB-C (porta esquerda)</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
@@ -579,6 +580,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1493892686965953381">A aguardar <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1494349716233667318">Os sites podem solicitar a utilização de tipos de letra instalados no seu dispositivo</translation>
 <translation id="1494429729245089920">A máquina virtual "<ph name="VM_NAME" />" existe, mas não parece ser uma máquina virtual <ph name="APP_NAME" /> válida. Contacte o seu administrador.</translation>
+<translation id="1495201326198374770">Usar as teclas de função como teclas de linha superior do Chromebook</translation>
 <translation id="1495677929897281669">Voltar ao separador</translation>
 <translation id="1498498210836053409">Desativar o modo fixo ao editar o texto (modo fixo inteligente)</translation>
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
@@ -1315,6 +1317,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> oculto</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Número de telefone}other{# números de telefone}}</translation>
 <translation id="2110941575868943054">Com autorização para procurar dispositivos Bluetooth</translation>
+<translation id="2111238878637848860">Premir sem soltar a tecla do Launcher para alternar entre as teclas de função</translation>
 <translation id="211144231511833662">Limpar tipos</translation>
 <translation id="2111670510994270194">Novo separador à direita</translation>
 <translation id="2112554630428445878">Damos-lhe as boas-vindas, <ph name="USERNAME" /></translation>
@@ -2360,11 +2363,13 @@ Pretende pará-lo?</translation>
 <translation id="3000378525979847272">Permitiu <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3001144475369593262">Contas de criança</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Nenhuma tecla personalizada}=1{1 tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
 <translation id="3001835006423291524">Toque no sensor de impressões digitais no canto inferior direito do teclado. Os seus dados de impressões digitais são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003623123441819449">Cache CSS</translation>
 <translation id="3003828226041301643">Não é possível associar o dispositivo ao domínio. Verifique a sua conta para se certificar de que tem privilégios para adicionar dispositivos.</translation>
 <translation id="3003967365858406397">O <ph name="PHONE_NAME" /> cria uma ligação Wi-Fi privada.</translation>
+<translation id="3004385386820284928">Personalizar as teclas do teclado</translation>
 <translation id="3005574332301273731">Não mostrar</translation>
 <translation id="3006881078666935414">Sem dados de utilização</translation>
 <translation id="3007410324195400631">Adicione notas acerca desta página</translation>
@@ -3380,6 +3385,7 @@ Pretende pará-lo?</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3900966090527141178">Exportar palavras-passe</translation>
 <translation id="3902789559055749153">Escolha como quer criar uma token de acesso para a app <ph name="APP_NAME" /></translation>
+<translation id="3903158219409898205">Usar a tecla do Launcher para alterar o comportamento das teclas de linha superior do Chromebook</translation>
 <translation id="3903187154317825986">Teclado incorporado</translation>
 <translation id="3904326018476041253">Serviços de localização</translation>
 <translation id="3905761538810670789">Reparar aplicação</translation>
@@ -3790,6 +3796,7 @@ Pretende pará-lo?</translation>
 <translation id="4279129444466079448">Pode instalar até <ph name="PROFILE_LIMIT" /> perfis do eSIM neste dispositivo. Para adicionar outro perfil, remova primeiro um perfil existente.</translation>
 <translation id="4280325816108262082">O dispositivo desassocia-se automaticamente quando é desligado ou não está a ser utilizado</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
+<translation id="428200245206114206">As teclas F vão ter agora o comportamento das teclas de linha superior do Chromebook.</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
 <translation id="4284903252249997120">Leitor de ecrã ChromeVox e Selecionar para falar</translation>
 <translation id="4285418559658561636">Atualizar palavra-passe</translation>
@@ -4577,6 +4584,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="4991420928586866460">Tratar as teclas da linha superior como teclas de função</translation>
 <translation id="4992458225095111526">Confirmar Powerwash</translation>
 <translation id="4992473555164495036">O administrador limitou os métodos de introdução disponíveis.</translation>
+<translation id="4994426888044765950">Se mantiver uma tecla premida, o caráter da tecla vai ser repetido</translation>
 <translation id="4994754230098574403">A configurar…</translation>
 <translation id="4995293419989417004">Saber mais acerca dos tópicos de anúncios</translation>
 <translation id="4996851818599058005">{NUM_VMS,plural, =0{Nenhuma VM <ph name="VM_TYPE" /> encontrada}=1{1 VM <ph name="VM_TYPE" /> encontrada: <ph name="VM_NAME_LIST" />}other{{NUM_VMS} VMs <ph name="VM_TYPE" /> encontradas: <ph name="VM_NAME_LIST" />}}</translation>
@@ -6129,6 +6137,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6410328738210026208">Alterar canal e Powerwash</translation>
 <translation id="6410390304316730527">A Navegação segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
 <translation id="6410668567036790476">Adicionar motor de pesquisa</translation>
+<translation id="6411135999030237579">Premir sem soltar para repetir automaticamente a tecla</translation>
 <translation id="641469293210305670">Instale atualizações e apps</translation>
 <translation id="6414878884710400018">Abra as preferências do sistema</translation>
 <translation id="6415816101512323589">Ativar a recuperação dos dados locais para proteger os seus dados?</translation>
@@ -8804,6 +8813,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 
         &lt;p&gt;Porém, pode ainda configurar através da linha de comandos. Consulte &lt;code&gt;man <ph name="PRODUCT_BINARY_NAME" />&lt;/code&gt; para obter mais informações acerca de sinalizadores e variáveis do ambiente.&lt;/p&gt;</translation>
 <translation id="8755175579224030324">Executar tarefas relacionadas com a segurança para a sua entidade, como a gestão das chaves e certificados armazenados no dispositivo</translation>
+<translation id="875532100880844232">Para o dispositivo <ph name="DEVICE_NAME" />, escolha uma ação para cada tecla</translation>
 <translation id="8755376271068075440">&amp;Maior</translation>
 <translation id="8755584192133371929">Selecione um separador para partilhar</translation>
 <translation id="875604634276263540">O URL da imagem é inválido</translation>
@@ -9329,6 +9339,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9218430445555521422">Definir como predefinição</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (app não suportada)</translation>
 <translation id="9219582468404818260">Ajude-nos a criar uma Web melhor</translation>
+<translation id="9219741625496141320">Os dados de navegação foram eliminados automaticamente</translation>
 <translation id="9220525904950070496">Remover conta</translation>
 <translation id="9220723036554088545">carregue um ficheiro</translation>
 <translation id="9220820413868316583">Levante e tente novamente.</translation>

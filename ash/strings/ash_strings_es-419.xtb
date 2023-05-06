@@ -221,6 +221,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1961239773406905488">La vista previa de la cámara esta oculta</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloquear pantalla</translation>
+<translation id="1962972976741217487">Hay 1 dispositivo conectado al hotspot de tu <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activa el hotspot</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
@@ -931,6 +932,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5297704307811127955">No</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5302048478445481009">Idioma</translation>
+<translation id="5303783651764314393">Hay <ph name="DEVICECOUNT" /> dispositivos conectados al hotspot de tu <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Se registró una grabación de pantalla</translation>
@@ -1338,6 +1340,7 @@ Nueva instalación</translation>
 <translation id="7165278925115064263">Alt+mayúscula+K</translation>
 <translation id="7168224885072002358">Se revertirá a la resolución anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
+<translation id="7187711731540696127">El hotspot de tu <ph name="DEVICE_NAME" /> está activado y no hay dispositivos conectados</translation>
 <translation id="7188494361780961876">El menú se movió a la esquina superior izquierda de la pantalla.</translation>
 <translation id="7189412385142492784">A qué distancia está Venus</translation>
 <translation id="7198435252016571249">Se ajustó la cámara a la esquina inferior derecha. Entra en conflicto con la superficie del sistema.</translation>

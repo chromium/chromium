@@ -1034,6 +1034,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3531780078352352885">Arbetsordrar</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> vill använda din mikrofon</translation>
 <translation id="3533328374079021623">Postfack 5</translation>
+<translation id="3536227077203206203">Tillåts den här gången</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Kortbild</translation>
 <translation id="3542768452570884558">Öppna länk i nytt fönster</translation>
@@ -2453,6 +2454,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7030436163253143341">Certifikatet är ogiltigt</translation>
 <translation id="7031646650991750659">Vilka appar från Google Play som du har installerat</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera Google-kontots integritetsinställningar</translation>
+<translation id="7044081119134178347">Kameran tillåts den här gången</translation>
 <translation id="7048095965575426564">Europeisk Fanfold</translation>
 <translation id="7050187094878475250">Du försökte nå <ph name="DOMAIN" />, men servern svarade med ett certifikat vars giltighetstid är för lång för att det ska vara trovärdigt.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Det går inte att lägga till det här kortet just nu}other{Det går inte att lägga till de här korten just nu}}</translation>
@@ -3045,6 +3047,7 @@ Mer information.
 <translation id="8416694386774425977">Nätverkskonfigurationen är ogiltig och kunde inte importeras.
 Mer information:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Mikrofon tillåts den här gången</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Inställningar</translation>
@@ -3100,6 +3103,7 @@ Mer information:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Återställ behörighet}other{Återställ behörigheter}}</translation>
 <translation id="8555010941760982128">Använd följande kod i kassan</translation>
 <translation id="8557066899867184262">CVC-koden finns på baksidan av kortet.</translation>
+<translation id="8558347880669160417">Kamera och mikrofon tillåts den här gången</translation>
 <translation id="8559762987265718583">Det gick inte att upprätta en privat anslutning till <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> eftersom enhetens datum och tid (<ph name="DATE_AND_TIME" />) inte stämmer.</translation>
 <translation id="8564182942834072828">Separata dokument/kopior grupperade per sida</translation>
 <translation id="8564985650692024650">Du rekommenderas att återställa lösenordet för <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> om du har återanvänt det på andra webbplatser.</translation>
@@ -3371,6 +3375,7 @@ Mer information:
 <translation id="949314938206378263">Du har bett att få besöka den här webbplatsen. Din förälder kan svara via Family Link.</translation>
 <translation id="950736567201356821">Tre hål högst upp</translation>
 <translation id="961663415146723894">Bindning längst ned</translation>
+<translation id="961930410699694996">Plats tillåts den här gången</translation>
 <translation id="962484866189421427">Bedrägliga appar som inte gör vad de påstås göra eller insamling av data som används för att spåra dig skulle kunna installeras via innehållet. <ph name="BEGIN_LINK" />Visa ändå<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Alla användare</translation>
 <translation id="964050462028070434">Hantera lösenord och nycklar …</translation>

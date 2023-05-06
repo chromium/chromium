@@ -460,6 +460,7 @@
 <translation id="316086887565479535">កម្មវិធីដែលមិនអាចប្រើបាននៅក្នុងទម្រង់គំរូ</translation>
 <translation id="3161500364292033097">បិទតុ និងវិនដូ</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> កំពុងបន្ទាបកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក។ ឧបករណ៍​របស់អ្នកនឹង​កំណត់​ឡើងវិញ ហើយទិន្នន័យ​ទាំងអស់​នឹងត្រូវបានលុប។</translation>
+<translation id="3171170659304083361">ការកំណត់​វិធីបញ្ចូល</translation>
 <translation id="3181441307743005334">ការចាប់ផ្ដើម​ឡើងវិញអាច​ចំណាយ​ពេលបន្តិច</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{បាន​ភ្ជាប់​ទៅ​ឧបករណ៍មួយ}other{បាន​ភ្ជាប់​ទៅ​ឧបករណ៍ #}}</translation>
 <translation id="320207200541803018">កំណត់កម្មវិធីកំណត់ម៉ោង</translation>
@@ -1112,6 +1113,7 @@
 <translation id="6074087755403037157">បណ្ដាញបេតា</translation>
 <translation id="6093867385179428431">បានបិទដោយអ្នកគ្រប់គ្រង</translation>
 <translation id="6095008505822982596">ល្បឿននៃការនិយាយ</translation>
+<translation id="6095425951508823973">បញ្ចូលការតភ្ជាប់ជាមួយ <ph name="PROVIDER" /></translation>
 <translation id="6099678161144790572">បានកែ​កាលពីខែមុន</translation>
 <translation id="6103838137565245112">ប្រព័ន្ធ</translation>
 <translation id="6114505516289286752">បានទាញយក​ឯកសារនៃការនិយាយ​ជាភាសា<ph name="LANGUAGE" /></translation>

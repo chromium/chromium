@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">Папярэдні прагляд для камеры схаваны</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Экран блакіроўкі</translation>
+<translation id="1962972976741217487">Да хот-спота <ph name="DEVICE_NAME" /> падключана адна прылада</translation>
 <translation id="1967970931040389207">Уключыць хот-спот</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаем, <ph name="USERNAME" />!</translation>
@@ -822,6 +823,7 @@
 <translation id="4777825441726637019">Крама Play</translation>
 <translation id="4778095205580009397">Памочнік Google недаступны ў дэманстрацыйным сеансе.</translation>
 <translation id="4789348252524569426">Не ўдалося ўсталяваць файлы для распазнавання маўлення. Неабходна абнавіць прыладу. Перазапусціце яе і паўтарыце спробу.</translation>
+<translation id="478959186716341421">Ідзе трансляцыя</translation>
 <translation id="479989351350248267">пошук</translation>
 <translation id="4804818685124855865">Адключыцца</translation>
 <translation id="4814539958450445987">Экран уваходу</translation>
@@ -929,6 +931,7 @@
 <translation id="5297704307811127955">Выключана</translation>
 <translation id="5300589172476337783">Паказаць</translation>
 <translation id="5302048478445481009">Мова</translation>
+<translation id="5303783651764314393">Да хот-спота <ph name="DEVICE_NAME" /> падключаны прылады (<ph name="DEVICECOUNT" />)</translation>
 <translation id="5308380583665731573">Падключыцца</translation>
 <translation id="5313326810920013265">Налады Bluetooth</translation>
 <translation id="5314219114274263156">Запіс экрана зроблены</translation>
@@ -1336,6 +1339,7 @@
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Вяртанне да старой раздзяляльнасці праз <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Абнавіць</translation>
+<translation id="7187711731540696127">Хот-спот прылады <ph name="DEVICE_NAME" /> уключаны, няма падключаных прылад</translation>
 <translation id="7188494361780961876">Меню перамешчана ў левы верхні вугал экрана.</translation>
 <translation id="7189412385142492784">Якая адлегласць да Венеры</translation>
 <translation id="7198435252016571249">Акно перадпрагляду камеры прывязана да правага ніжняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>

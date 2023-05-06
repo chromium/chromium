@@ -56,6 +56,7 @@
 <translation id="121097972571826261">कर्सरलाई एक शब्द अगाडि लैजानुहोस्</translation>
 <translation id="1217633719248931900">एपमा जानुहोस्</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store एप</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> मा फर्कनुहोस्।</translation>
 <translation id="1225748608451425081">कुनै ज्ञात समस्याका कारण तपाईंको Chromebook लक गरिएको छ। तपाईं यति समयपछि साइन इन गर्न सक्नु हुने छ: <ph name="TIME_LEFT" />।</translation>
 <translation id="1229194443904279055">पाठ चयन गर्न छाडियोस्</translation>
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
@@ -1589,6 +1590,7 @@
 <translation id="8349964124165471584">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="8364673525741149932">सेल्फ पार्टी टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> प्रयोग भइरहेको छ।</translation>
 <translation id="8369166482916924789">सेभ गरिएको डेस्क, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">कर्सरलाई एक अक्षर अगाडि लैजानुहोस्</translation>
 <translation id="8371991222807690464">गेस्ट मोडमा भएका बेला सहायक यन्त्रले पूर्ण रूपमा काम नगर्न सक्छ</translation>

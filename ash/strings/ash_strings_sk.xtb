@@ -221,6 +221,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1961239773406905488">Ukážka kamery je skrytá</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Uzamknúť obrazovku</translation>
+<translation id="1962972976741217487">K hotspotu v zariadení <ph name="DEVICE_NAME" /> je pripojené 1 zariadenie</translation>
 <translation id="1967970931040389207">Zapnúť hotspot</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Dobrý deň, <ph name="USERNAME" /></translation>
@@ -930,6 +931,7 @@ Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="5297704307811127955">Vypnuté</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
 <translation id="5302048478445481009">Jazyk</translation>
+<translation id="5303783651764314393">K hotspotu v zariadení <ph name="DEVICE_NAME" /> sú pripojené zariadenia (<ph name="DEVICECOUNT" />)</translation>
 <translation id="5308380583665731573">Pripojiť</translation>
 <translation id="5313326810920013265">Nastavenia Bluetooth</translation>
 <translation id="5314219114274263156">Záznam obrazovky bol nahraný</translation>
@@ -1337,6 +1339,7 @@ Nová inštalácia</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Vrátenie starého rozlíšenia prebehne o <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Obnoviť</translation>
+<translation id="7187711731540696127">Hotspot v zariadení <ph name="DEVICE_NAME" /> je zapnutý, nie sú pripojené žiadne zariadenia</translation>
 <translation id="7188494361780961876">Ponuka bola presunutá do ľavého horného rohu obrazovky.</translation>
 <translation id="7189412385142492784">Ako ďaleko je Venuša</translation>
 <translation id="7198435252016571249">Kamera bola prichytená do pravého dolného rohu. Konflikt s platformou systému.</translation>

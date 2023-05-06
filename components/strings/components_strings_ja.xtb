@@ -832,7 +832,7 @@
 <translation id="3005723025932146533">保存済みのコピーを表示</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キーを押して操作オプションを参照し、Enter キーを押すと、選択した操作を実行できます。</translation>
 <translation id="3013291976881901233">MIDI デバイス</translation>
-<translation id="301521992641321250">自動ブロックされました</translation>
+<translation id="301521992641321250">自動でブロックされました</translation>
 <translation id="3016780570757425217">ユーザーの現在地の認識</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" /> です。Tab キー、Enter キーの順に押すと、候補を削除します。</translation>
 <translation id="3023165109041533893">サイトによる広告の提案は、閲覧履歴と個人情報を保護しながら、サイトで関連性の高い広告を表示できるようにする機能です。アクセスするサイトでは、ユーザーのアクティビティに基づき、関連する広告をそれ以降のブラウジング時に提案できます。設定で、これらのサイトのリストを確認したり、必要のないサイトをブロックしたりできます。</translation>
@@ -1529,7 +1529,7 @@
 <translation id="4726672564094551039">ポリシーを再読み込み</translation>
 <translation id="4728558894243024398">プラットフォーム</translation>
 <translation id="4731638775147756694">このアプリケーションは管理者によってブロックされています</translation>
-<translation id="4733082559415072992"><ph name="URL" /> から、デバイスの現在地情報の使用許可を求められています</translation>
+<translation id="4733082559415072992">デバイスの現在地情報について、<ph name="URL" /> が使用許可を求めています</translation>
 <translation id="4736491186715342415">自動車</translation>
 <translation id="4736825316280949806">Chromium を再起動する</translation>
 <translation id="4736934858538408121">仮想カード</translation>

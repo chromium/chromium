@@ -1033,6 +1033,7 @@
 <translation id="3531780078352352885">Жумуш барактары</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> микрофонуңузду колдонгону жатат</translation>
 <translation id="3533328374079021623">5-электрондук каттар кутусу</translation>
+<translation id="3536227077203206203">Бул жолу уруксат берилди</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Картадагы сүрөт</translation>
 <translation id="3542768452570884558">Шилтемени жаңы терезеде ачуу</translation>
@@ -2452,6 +2453,7 @@
 <translation id="7030436163253143341">Тастыктама жарамдуу эмес</translation>
 <translation id="7031646650991750659">Кайсы Google Play колдонмолорун орнотуп алдыңыз</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтуңуздун купуялык параметрлерин башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
+<translation id="7044081119134178347">Камераны колдонууга бул жолу уруксат берилди</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250"><ph name="DOMAIN" /> доменине кирүүгө аракет кылдыңыз, бирок сервер ишенимдүү болушу үчүн жарактуу мөөнөтү өтө узун уруксаттама берди.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Бул картаны азыр сактап коюуга болбойт}other{Бул карталарды азыр сактап коюуга болбойт}}</translation>
@@ -3044,6 +3046,7 @@
 <translation id="8416694386774425977">Тармак конфигурациясы жараксыз болгондуктан, импорттоо мүмкүн эмес.
 Кошумча маалымат:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Микрофонду колдонууга бул жолу уруксат берилди</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 мм.</translation>
 <translation id="8428213095426709021">Параметрлер</translation>
@@ -3099,6 +3102,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Уруксатты баштапкы абалга келтирүү}other{Уруксаттарды баштапкы абалга келтирүү}}</translation>
 <translation id="8555010941760982128">Бул кодду сатып алган нерселериңиздин акысын төлөп жатканда колдонуңуз</translation>
 <translation id="8557066899867184262">CVC карточкаңыздын артында жайгашкан.</translation>
+<translation id="8558347880669160417">Камера менен микрофонду колдонууга бул жолу уруксат берилди</translation>
 <translation id="8559762987265718583">Түзмөгүңүздүн күнү жана убакыты (<ph name="DATE_AND_TIME" />) туура эмес болгондуктан, <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> менен купуя туташуу мүмкүн болбой жатат.</translation>
 <translation id="8564182942834072828">Өзүнчө документ/Иреттелбеген көчүрмөлөр</translation>
 <translation id="8564985650692024650"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> сырсөзүңүздү башка сайттарда колдонгон болсоңуз, Chromium аны өзгөртүүнү сунуштайт.</translation>
@@ -3215,6 +3219,7 @@
 <translation id="8870494189203302833">Ошол эле иретте алдыңкы бетин ылдый каратып</translation>
 <translation id="8870700989640064057">Купуя файлды басып чыгарасызбы?</translation>
 <translation id="8871553383647848643">Cерепчинин көрүнүшүн ыңгайлаштыруу</translation>
+<translation id="8871603420762394026">Chrome эми сайттардын ортосунда өтө чектелген маалыматты (мисалы, сизге жарнама көрсөтүлгөн убакытты) гана бөлүшөт. Бул сайттарга жарнамалардын майнаптуулугун талдоого жардам берет.</translation>
 <translation id="8874824191258364635">Жарактуу карточканын номерин киргизиңиз</translation>
 <translation id="8876033571432926051">Жөнөкөй оюндар</translation>
 <translation id="8877780815363510165">Балык уулоо</translation>
@@ -3368,6 +3373,7 @@
 <translation id="949314938206378263">Бул сайтка кирүүгө уруксат сурадың. Ата-энең Family Link кызматында жооп бере алат.</translation>
 <translation id="950736567201356821">Жогорку жагын үч жолу тешүү</translation>
 <translation id="961663415146723894">Төмөн жагын байлоо</translation>
+<translation id="961930410699694996">Жайгашкан жерди колдонууга бул жолу уруксат берилди</translation>
 <translation id="962484866189421427">Бул мазмун башка колдонмолорго окшош жасалма колдонмолорду орнотуп коюшу же сизге көз салуу үчүн дайындарды чогултуп алышы мүмкүн. <ph name="BEGIN_LINK" />Баары бир көрүнсүн<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Бардык колдонуучулар</translation>
 <translation id="964050462028070434">Сырсөздөрдү жана мүмкүндүк алуу ачкычтарын тескөө…</translation>

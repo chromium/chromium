@@ -1034,6 +1034,7 @@
 <translation id="3531780078352352885">Foile sarcinii</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> dorește să utilizeze microfonul</translation>
 <translation id="3533328374079021623">Căsuța de e-mail 5</translation>
+<translation id="3536227077203206203">Permis de această dată</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Imaginea cardului</translation>
 <translation id="3542768452570884558">Deschide linkul într-o fereastră nouă</translation>
@@ -2453,6 +2454,7 @@
 <translation id="7030436163253143341">Certificatul nu este valid</translation>
 <translation id="7031646650991750659">aplicațiile Google Play instalate.</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a gestiona setările de confidențialitate ale Contului Google</translation>
+<translation id="7044081119134178347">Camera foto este permisă de data aceasta</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">Ai încercat să accesezi <ph name="DOMAIN" />, dar serverul a prezentat un certificat a cărui perioadă de validitate este prea lungă pentru a fi de încredere.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Momentan cardul nu poate fi salvat}few{Momentan cardurile nu pot fi salvate}other{Momentan cardurile nu pot fi salvate}}</translation>
@@ -3045,6 +3047,7 @@ Detalii suplimentare:
 <translation id="8416694386774425977">Configurația rețelei este nevalidă și nu a putut fi importată.
 Detalii suplimentare:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Microfonul este permis de această dată</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Setări</translation>
@@ -3100,6 +3103,7 @@ Detalii suplimentare:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Resetează permisiunea}few{Resetează permisiunile}other{Resetează permisiunile}}</translation>
 <translation id="8555010941760982128">Folosește codul la finalizarea achiziției</translation>
 <translation id="8557066899867184262">Codul CVC se află pe spatele cardului.</translation>
+<translation id="8558347880669160417">Camera foto și microfonul sunt permise de data aceasta</translation>
 <translation id="8559762987265718583">O conexiune privată la <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> nu poate fi stabilită, deoarece data și ora dispozitivului (<ph name="DATE_AND_TIME" />) sunt incorecte.</translation>
 <translation id="8564182942834072828">Documente separate/Copii necolaționate</translation>
 <translation id="8564985650692024650">Chromium îți recomandă să resetezi parola pentru <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> dacă ai folosit-o și pe alte site-uri.</translation>
@@ -3371,6 +3375,7 @@ Detalii suplimentare:
 <translation id="949314938206378263">Ai solicitat să accesezi acest site. Părintele tău poate să răspundă în Family Link.</translation>
 <translation id="950736567201356821">Perforare triplă în partea de sus</translation>
 <translation id="961663415146723894">Legare în partea de jos</translation>
+<translation id="961930410699694996">Locația este permisă de data aceasta</translation>
 <translation id="962484866189421427">Acest conținut poate încerca să instaleze aplicații înșelătoare care pretind a fi altceva sau colectează date care pot fi folosite pentru a te urmări. <ph name="BEGIN_LINK" />Afișează oricum<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Toți utilizatorii</translation>
 <translation id="964050462028070434">Gestionează parolele și cheile de acces…</translation>

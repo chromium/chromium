@@ -1032,6 +1032,7 @@
 <translation id="3531780078352352885">ಜಾಬ್ ಶೀಟ್‌ಗಳು</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ</translation>
 <translation id="3533328374079021623">ಮೇಲ್‌ಬಾಕ್ಸ್ 5</translation>
+<translation id="3536227077203206203">ಈ ಬಾರಿ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">ಕಾರ್ಡ್ ಚಿತ್ರ</translation>
 <translation id="3542768452570884558">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
@@ -2450,6 +2451,7 @@
 <translation id="7030436163253143341">ಪ್ರಮಾಣಪತ್ರ ಮಾನ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="7031646650991750659">ನೀವು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿರುವ Google Play ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನಿಮ್ಮ Google ಖಾತೆಯ ಗೌಪ್ಯತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
+<translation id="7044081119134178347">ಈ ಬಾರಿ ಕ್ಯಾಮರಾವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="7048095965575426564">European Fanfold</translation>
 <translation id="7050187094878475250">ನೀವು <ph name="DOMAIN" /> ಅನ್ನು ತಲುಪಲು ಪ್ರಯತ್ನಿಸಿರುವಿರಿ, ಆದರೆ ಸರ್ವರ್ ವಿಶ್ವಾಸಾರ್ಹವಾಗಿರಲು ತುಂಬ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿರುವ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಸಲ್ಲಿಸಿದೆ.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ಇದೀಗ ಈ ಕಾರ್ಡ್ ಅನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}one{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}other{ಇದೀಗ ಈ ಕಾರ್ಡ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ}}</translation>
@@ -3041,6 +3043,7 @@
 <translation id="8416694386774425977">ನೆಟ್‌ವರ್ಕ್ ಕಾನ್ಫಿಗರೇಶನ್ ಅಮಾನ್ಯವಾಗಿದೆ ಮತ್ತು ಅದನ್ನು ಆಮದು ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.
 ಹೆಚ್ಚುವರಿ ವಿವರಗಳು:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">ಈ ಸಮಯದಲ್ಲಿ ಮೈಕ್ರೋಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 ಮಿಮೀ</translation>
 <translation id="8428213095426709021">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
@@ -3096,6 +3099,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{ಅನುಮತಿಯನ್ನು ರೀಸೆಟ್ ಮಾಡಿ}one{ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ}other{ಅನುಮತಿಗಳನ್ನು ರೀಸೆಟ್ ಮಾಡಿ}}</translation>
 <translation id="8555010941760982128">ಚೆಕ್‌ಔಟ್‌ನಲ್ಲಿ ಈ ಕೋಡ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="8557066899867184262">ನಿಮ್ಮ ಕಾರ್ಡ್ ಹಿಂಬದಿಯಲ್ಲಿ CVC ಇರುತ್ತದೆ.</translation>
+<translation id="8558347880669160417">ಈ ಸಮಯದಲ್ಲಿ ಕ್ಯಾಮರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="8559762987265718583"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ಗೆ ಖಾಸಗಿ ಸಂಪರ್ಕವನ್ನು ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ ಏಕೆಂದರೆ ನಿಮ್ಮ ಸಾಧನದ ದಿನಾಂಕ ಮತ್ತು ಸಮಯ (<ph name="DATE_AND_TIME" />) ತಪ್ಪಾಗಿದೆ.</translation>
 <translation id="8564182942834072828">ಪ್ರತ್ಯೇಕ ಡಾಕ್ಯುಮೆಂಟ್‌ಗಳು/ಸಂಯೋಜಿಸದ ಪ್ರತಿಗಳು</translation>
 <translation id="8564985650692024650">ನೀವು ಇತರ ಸೈಟ್‌ಗಳಲ್ಲಿ ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಮರುಬಳಕೆ ಮಾಡಿದ್ದಲ್ಲಿ ನಿಮ್ಮ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ಪಾಸವರ್ಡ್ ಅನ್ನು ಮರುಹೊಂದಿಸಲು Chromium ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
@@ -3213,6 +3217,7 @@
 <translation id="8870494189203302833">ಒಂದೇ ಆರ್ಡರ್ ಮುಖ ಕೆಳಗೆ</translation>
 <translation id="8870700989640064057">ಗೌಪ್ಯ ಫೈಲ್ ಅನ್ನು ಪ್ರಿಂಟ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="8871553383647848643">ನಿಮ್ಮ ಬ್ರೌಸರ್ ನೋಟವನ್ನು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
+<translation id="8871603420762394026">Chrome ಈಗ ಸೈಟ್‌ಗಳ ನಡುವೆ ಬಹಳ ಸೀಮಿತ ಮಾಹಿತಿಯನ್ನು ಮಾತ್ರ ಹಂಚಿಕೊಳ್ಳುತ್ತದೆ, ಉದಾಹರಣೆಗೆ ಸೈಟ್‌ಗಳು ಆ್ಯಡ್ ಪರ್ಫಾರ್ಮೆನ್ಸ್ ಅನ್ನು ಮಾಪನ ಮಾಡುವುದಕ್ಕಾಗಿ ಸಹಾಯ ಮಾಡಲು, ನಿಮಗೆ ಯಾವಾಗ ಜಾಹೀರಾತನ್ನು ತೋರಿಸಲಾಯಿತು.</translation>
 <translation id="8874824191258364635">ಮಾನ್ಯವಾದ ಕಾರ್ಡ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="8876033571432926051">ಸಾಮಾನ್ಯ ಗೇಮ್‌ಗಳು</translation>
 <translation id="8877780815363510165">ಮೀನುಗಾರಿಕೆ</translation>
@@ -3366,6 +3371,7 @@
 <translation id="949314938206378263">ಈ ಸೈಟ್‌ಗೆ ಭೇಟಿ ನೀಡಲು ನೀವು ಅನುಮತಿಯನ್ನು ವಿನಂತಿಸಿದ್ದೀರಿ. ನಿಮ್ಮ ಪೋಷಕರು Family Link ನಲ್ಲಿ ಪ್ರತ್ಯುತ್ತರ ನೀಡಬಹುದು.</translation>
 <translation id="950736567201356821">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಮೂರು ತೂತು ಮಾಡಿ</translation>
 <translation id="961663415146723894">ಕೆಳಭಾಗದಲ್ಲಿ ಬೈಂಡ್ ಮಾಡಿ</translation>
+<translation id="961930410699694996">ಈ ಬಾರಿ ಸ್ಥಳವನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="962484866189421427">ಈ ವಿಷಯವು ವಂಚಕ ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಬಹುದು. ಈ ಆ್ಯಪ್‌ಗಳು ಬೇರೆ ಯಾವುದರಂತೆಯೋ ಸೋಗು ಹಾಕುವ ಅಥವಾ ನಿಮ್ಮನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಬಳಸಬಹುದಾದ ಡೇಟಾವನ್ನು ಸಂಗ್ರಹಿಸುವ ಸಾಧ್ಯತೆಯಿದೆ. <ph name="BEGIN_LINK" />ಹೇಗಿದ್ದರೂ ತೋರಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">ಎಲ್ಲಾ ಬಳಕೆದಾರರು</translation>
 <translation id="964050462028070434">ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ನಿರ್ವಹಿಸಿ…</translation>

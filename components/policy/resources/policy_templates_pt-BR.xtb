@@ -905,6 +905,19 @@ Esta política não vai ter efeito se a opção de manter os dados de navegaçã
 <translation id="1844972978764975668">Permitir consultas a um servidor do Google para recuperar um carimbo de data/hora preciso</translation>
 <translation id="1845405905602899692">Configurações de quiosque</translation>
 <translation id="1845429996559814839">Restringir modo de impressão com PIN</translation>
+<translation id="1845567452014584154">Controle se as extensões do Manifest v2 podem ser usadas pelo navegador.
+
+O suporte a elas será descontinuado, e todas as extensões precisarão
+ser migradas para a v3. Confira outras informações e o cronograma da
+migração em https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Se a política for definida como <ph name="DEFAULT" /> (0) ou for deixada sem definição, o carregamento das extensões da v2 será decidido pelo navegador, seguindo o cronograma acima.
+Se definida como <ph name="DISABLE" /> (1), a instalação de extensões da v2 será bloqueada, e as atuais, desativadas. A opção será tratada da mesma forma que seria se a política não fosse definida após a desativação do suporte à v2 por padrão.
+Se a política for definida como <ph name="ENABLE" /> (2), as extensões da v2 serão permitidas. A opção será tratada da mesma forma que seria se a política não fosse definida antes da desativação do suporte à v2 por padrão.
+Se a política for definida como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), as extensões da v2 instaladas serão permitidas. Isso inclui extensões listadas pela <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> com <ph name="INSTALLATION_MODE" /> "force_installed" ou "normal_installed". Todas as outras extensões da v2 serão desativadas. A opção está sempre disponível, independente do estado da migração.
+
+
+A disponibilidade das extensões ainda é controlada por outras políticas.</translation>
 <translation id="1846545322805269573">Os usuários não podem personalizar o plano de fundo da página Nova guia</translation>
 <translation id="1847960418907100918">Especifica os parâmetros usados ao fazer pesquisa instantânea com POST. Consiste em pares de nomes/valores separados por vírgula. Se um valor for um parâmetro de modelo, como {searchTerms} no exemplo acima, ele será substituído por dados de termos de pesquisa reais.
 
@@ -3411,6 +3424,19 @@ Esta política é uma solução temporária e vai ser removida em marcos futuros
 <translation id="4101282687722389021">Carimbo de data/hora UTC do último horário em que a entrada foi atualizada. Enviada como uma string, porque o carimbo de data/hora não caberia em um número inteiro.</translation>
 <translation id="4102347680024644994">Relatar eventos de detecção e resposta estendidas (XDR, na sigla em inglês)</translation>
 <translation id="4105989332710272578">Desativar a aplicação da Transparência dos certificados para uma lista de URLs</translation>
+<translation id="410740968939768919">Controle se as extensões do Manifest v2 podem ser usadas na tela de login do <ph name="PRODUCT_OS_NAME" />.
+
+O suporte a elas será descontinuado, e todas as extensões precisarão
+ser migradas para a v3. Confira outras informações e o cronograma da
+migração em https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Se a política for definida como <ph name="DEFAULT" /> (0) ou for deixada sem definição, o carregamento das extensões da v2 será decidido pelo dispositivo, seguindo o cronograma acima.
+Se definida como <ph name="DISABLE" /> (1), a instalação de extensões da v2 será bloqueada, e as atuais, desativadas. A opção será tratada da mesma forma que seria se a política não fosse definida após a desativação do suporte à v2 por padrão.
+Se a política for definida como <ph name="ENABLE" /> (2), as extensões da v2 serão permitidas. A opção será tratada da mesma forma que seria se a política não fosse definida antes da desativação do suporte à v2 por padrão.
+Se a política for definida como <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), as extensões da v2 instaladas serão permitidas. Isso inclui extensões listadas pela <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ou <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> com <ph name="INSTALLATION_MODE" /> "force_installed" ou "normal_installed". Todas as outras extensões da v2 serão desativadas. A opção está sempre disponível, independente do estado da migração.
+
+
+A disponibilidade das extensões ainda é controlada por outras políticas.</translation>
 <translation id="4110126170080699437">Por motivos de segurança, a
 API <ph name="GET_DISPLAY_MEDIA_API_NAME" /> Web exige
 que um gesto anterior do usuário ("ativação temporária") seja chamado. Caso contrário,
@@ -3805,6 +3831,33 @@ na versão 117.</translation>
 <translation id="4483649828988077221">Desativar a atualização automática</translation>
 <translation id="4484515651939984695">Especificar por quanto tempo (em segundos) um dispositivo de transmissão selecionado com um código de acesso ou QR permanece na lista aparelhos desse tipo no menu do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4485425108474077672">Configurar o URL da página "Nova guia"</translation>
+<translation id="4490420545181481759">Os certificados X.509 podem codificar restrições, como as de nome,
+em extensões do certificado. A RFC 5280 especifica que a aplicação dessas
+restrições a certificados de âncoras de confiança é opcional. Da versão 112 em diante
+do <ph name="PRODUCT_NAME" />, essas restrições
+em certificados carregados do repositório de certificados da plataforma passam a ser
+aplicadas.
+
+Esta política existe como uma desativação temporária caso uma empresa encontre
+problemas com as restrições codificadas nas raízes particulares. Nesse caso, esta
+política pode ser usada para desativar temporariamente a aplicação das restrições
+enquanto corrige os problemas de certificado.
+
+Quando esta política for deixada sem definição ou for ativada,
+o <ph name="PRODUCT_NAME" /> vai aplicar
+restrições codificadas a âncoras carregadas pelo repositório de confiança da plataforma.
+
+Quando ela for desativada,
+o <ph name="PRODUCT_NAME" /> não vai aplicar
+restrições codificadas a âncoras carregadas do repositório de confiança da plataforma.
+
+Na versão 112 do <ph name="PRODUCT_NAME" />,
+esta política não terá efeito se a
+<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />
+for desativada.
+
+Esta política será removida na
+versão 118 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4491607814095953976">Definir se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para a medição de anúncios pode ser desativada</translation>
 <translation id="4492287494009043413">Desativar captura de tela</translation>
 <translation id="4494132853995232608">DTC wilco</translation>

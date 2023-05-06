@@ -56,6 +56,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="121097972571826261">Do przodu o jedno słowo</translation>
 <translation id="1217633719248931900">Przejdź do aplikacji</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplikacja ze Sklepu Play</translation>
+<translation id="1219309685806246869">Wróć do: <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Ten Chromebook został zablokowany z powodu znanego błędu. Zalogowanie się będzie możliwe za <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Wyjdź z trybu wybierania danych</translation>
 <translation id="1235458158152011030">Znane sieci</translation>
@@ -311,7 +312,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2417486498593892439">Zaloguj się do sieci</translation>
 <translation id="2426051945783024481">Kadr kamery jest automatycznie wyśrodkowany</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
-<translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz: <ph name="PASSKEY" /></translation>
+<translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz dostępu: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="243878895369688216">Otwierane wczoraj</translation>
 <translation id="2440978926514840421">GIF został nagrany</translation>
@@ -1060,6 +1061,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="5881540930187678962">Skonfiguruj sterowanie telefonem później</translation>
 <translation id="5881663018261910378">Wyłączono</translation>
 <translation id="5887954372087850114">Okno <ph name="WINDOW_TITLE" /> zostało przypisane do biurka <ph name="DESK_TITLE" />, a jego przypisanie do innych biurek zostało anulowane</translation>
+<translation id="588817334757907802">Otwórz plik w przeglądarce Chrome</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="589817443623831496">Skanowanie punktowe</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1224,7 +1226,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6643169293433369663">Cofnij sortowanie według nazwy</translation>
 <translation id="6649641931981131786">Dostosuj kamerę tak, aby pokazywała Cię pośrodku ekranu.</translation>
 <translation id="6650072551060208490">Strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
-<translation id="6650933572246256093">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten klucz: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten klucz dostępu: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="666343722268997814">Otwórz menu prawego przycisku myszy dla zaznaczonego elementu</translation>
 <translation id="6665545700722362599">przyznawać stronom internetowym, aplikacjom i rozszerzeniom dostęp do usług lokalizacyjnych, mikrofonu bądź aparatu na urządzeniu lub do innych funkcji;</translation>
@@ -1590,6 +1592,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8349964124165471584">Otwórz link w nowym oknie</translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8364673525741149932">Przełączanie trybu Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> jest w użyciu.</translation>
 <translation id="8369166482916924789">Zapisane biurko, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>
 <translation id="8371991222807690464">W trybie gościa urządzenia peryferyjne mogą działać mniej wydajnie.</translation>

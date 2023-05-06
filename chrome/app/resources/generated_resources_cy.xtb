@@ -4218,6 +4218,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="4647090755847581616">&amp;Cau'r Tab</translation>
 <translation id="4647283074445570750">Cam <ph name="CURRENT_STEP" /> o <ph name="TOTAL_STEPS" /></translation>
 <translation id="4648491805942548247">Caniatadau Annigonol</translation>
+<translation id="4650037136970677721">Cof a arbedwyd</translation>
 <translation id="4650591383426000695">Datgysylltu'ch ffôn o'ch <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Ni ellid llwytho elfen ar-lein gydag adnoddau modd demo.</translation>
 <translation id="4651921906638302153">Methu â mewngofnodi gyda'r cyfrif hwn</translation>
@@ -4452,6 +4453,7 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4863702650881330715">Ymestyn cydnawsedd</translation>
 <translation id="4863769717153320198">Mae'n edrych fel <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Diofyn)</translation>
 <translation id="4864805589453749318">Dewiswch y rhiant sy'n rhoi caniatâd i ychwanegu at gyfrif ysgol.</translation>
+<translation id="486505726797718946">Cof a Arbedwyd</translation>
 <translation id="486635084936119914">Agorwch rai mathau o ffeiliau yn awtomatig ar ôl eu lawrlwytho</translation>
 <translation id="4868281708609571334">Dysgwch Google Assistant i adnabod llais <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Nid ydych yn ffocysu deialog hwn ar hyn o bryd Pwyswch Command-Shift-Option A i ffocysu ar y deialog hwn.</translation>
@@ -6110,6 +6112,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6378392501584240055">Agor yn rhwydweithiau Wi-Fi</translation>
 <translation id="6380143666419481200">Derbyn a pharhau</translation>
 <translation id="6382958439467370461">Dim llwybrau byr anweithredol</translation>
+<translation id="6383382161803538830">Nid yw'r modd darllen ar gael ar y dudalen hon</translation>
 <translation id="638418309848716977">Dolenni a gefnogir</translation>
 <translation id="6384275966486438344">Newid eich gosodiadau chwilio i: <ph name="SEARCH_HOST" /></translation>
 <translation id="63849924261838903">{NUM_TABS,plural, =1{Grŵp dienw - 1 tab}zero{Grŵp dienw - # tab}two{Grŵp dienw - # tab}few{Grŵp dienw - # tab}many{Grŵp dienw - # tab}other{Grŵp dienw - # tab}}</translation>
@@ -6514,6 +6517,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="6729192290958770680">Rhowch eich enw defnyddiwr</translation>
 <translation id="6731320427842222405">Gallai hyn gymryd ychydig funudau</translation>
 <translation id="6733620523445262364">Mae '<ph name="BOOKMARK_TITLE" />' wedi'i greu.</translation>
+<translation id="6734178081670810314"><ph name="EXTENSION_OR_APP_NAME" /> (Rhif adnabod: <ph name="EXTENSION_OR_APP_ID" />)</translation>
 <translation id="6735304988756581115">Dangos cwcis a data gwefan eraill…</translation>
 <translation id="6736243959894955139">Cyfeiriad</translation>
 <translation id="6737393581255281855">Clirio'r data a ddangosir?</translation>

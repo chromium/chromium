@@ -221,6 +221,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1961239773406905488">Kameras priekšskatījums ir paslēpts</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Bloķēt ekrānu</translation>
+<translation id="1962972976741217487">Ar tīklāju, ko nodrošina <ph name="DEVICE_NAME" />, ir savienota viena ierīce.</translation>
 <translation id="1967970931040389207">Ieslēgt tīklāju</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Sveiki, <ph name="USERNAME" />!</translation>
@@ -930,6 +931,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="5297704307811127955">Izslēgta</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5302048478445481009">Valoda</translation>
+<translation id="5303783651764314393">Ar tīklāju, ko nodrošina <ph name="DEVICE_NAME" />, ir savienots šāds ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="5308380583665731573">Pievienot</translation>
 <translation id="5313326810920013265">Bluetooth iestatījumi</translation>
 <translation id="5314219114274263156">Ekrāna ieraksts uzņemts</translation>
@@ -1337,6 +1339,7 @@ Jauna instalācija</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Iepriekšējā izšķirtspēja tiks atgriezta pēc <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
+<translation id="7187711731540696127">Tīklājs, ko nodrošina <ph name="DEVICE_NAME" />, ir ieslēgts, un nav pievienota neviena ierīce.</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>
 <translation id="7198435252016571249">Kamera pārnesta uz labo apakšējo stūri. Konflikts ar sistēmas virsmu.</translation>

@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNS समाधान गर्न सकिएन</translation>
 <translation id="1018656279737460067">रद्द गरियो</translation>
 <translation id="1022433422498218992">सामान्य कन्ट्रोलहरू</translation>
+<translation id="1022628058306505708">अर्थ फ्लो</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> वटा थ्रेड, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">नयाँ सुविधा उपलब्ध छ, थप जान्न अप एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="1059913517121127803">स्क्यान गर्ने प्रक्रिया सुरु गर्न सकिएन</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">थप कारबाहीहरू</translation>
 <translation id="2926057806159140518">आफ्नो युजरनेम र पासवर्ड हाल्नुहोस् वा आफ्नो QR कोड स्क्यान गर्नुहोस्</translation>
 <translation id="2940811910881150316">डिभाइसको परीक्षण गर्न सकिँदैन। परीक्षण गर्न लिड फेरि खोल्नुहोस्।</translation>
+<translation id="2981143481017883351">Chromebook का खास एसेटहरू उपलब्ध भएका छन्</translation>
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3017079585324758401">पृष्ठभूमि</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369013195428705271">आफूले गरेका प्रिन्टको सबै इतिहास मेटाउन खोज्नुभएकै हो? भइरहेका प्रिन्टिङ कार्यहरू मेटाइने छैनन्।</translation>
+<translation id="3386675685417744672">Chromebook को खास सामग्री</translation>
 <translation id="3404249063913988450">स्क्रिन सेभर सक्षम पार्नुहोस्</translation>
 <translation id="3413935475507503304">तपाईं यो अपडेट प्राप्त गर्न चाहनुहुन्छ भने अर्को नामक बटन क्लिक गर्नुहोस्।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">चेतावनी</translation>
 <translation id="4054683689023980771">फोटो डाउनलोड गरिँदै छ</translation>
 <translation id="4060260348856573701">नयाँ APN</translation>
+<translation id="4079743696465895866">Chromebook को खास कलाकृति चयन गर्नुहोस्</translation>
 <translation id="4093865285251893588">प्रोफाइल फोटो</translation>
 <translation id="409427325554347132">जाँचसम्बन्धी विवरण सेभ गर्नुहोस्</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">प्रयोग गर्दै जाँदा ब्याट्री टिक्ने दर घट्दै जान्छ</translation>
 <translation id="6191293864534840972">डोमेन नेम सर्भरहरूको ढाँचा मिलेको छैन</translation>
+<translation id="6205145102504628069">क्लाउड फ्लो</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="6223752125779001553">कुनै पनि स्क्यानर उपलब्ध छैन</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">व्यक्तिगत सेटिङ</translation>
 <translation id="6500818810472529210">Google Search मा खोज परिणाम हेर्नुहोस्</translation>
 <translation id="650266656685499220">एल्बम सिर्जना गर्न Google Photos मा जानुहोस्</translation>
+<translation id="6505750420152840539">झिसमिसेदेखि रातिसम्म</translation>
 <translation id="6516990319416533844">ब्याट्री चार्ज हुने गति जाँच्न केही समयका लागि यन्त्र चलाएर ब्याट्री खपत हुन दिनुहोस्</translation>
 <translation id="6517239166834772319">एक्स्प्लोर</translation>
 <translation id="6526200165918397681">वालपेपरको रङसँग मिल्दो बनाउनुहोस्</translation>

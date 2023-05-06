@@ -56,6 +56,7 @@
 <translation id="121097972571826261">એક શબ્દ આગળ જાઓ</translation>
 <translation id="1217633719248931900">ઍપ પર જાઓ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ઍપ</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> પર પાછા ફરો.</translation>
 <translation id="1225748608451425081">એક જાણીતી સમસ્યાને કારણે તમારું Chromebook લૉક થઈ ગયું છે. અહીં જણાવેલા સમય પછી તમે સાઇન ઇન કરી શકશો: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">પસંદ કરવાનું બંધ કરો</translation>
 <translation id="1235458158152011030">જાણીતા નેટવર્ક્સ</translation>
@@ -1059,6 +1060,7 @@
 <translation id="5881540930187678962">થોડા સમય પછી ફોન હબનું સેટઅપ કરો</translation>
 <translation id="5881663018261910378">બંધ છે</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> વિન્ડો <ph name="DESK_TITLE" />ને સોંપાઈ અને અન્ય બધી ડેસ્કમાંથી તેની સોંપણી રદ કરાઈ</translation>
+<translation id="588817334757907802">ફાઇલને Chrome બ્રાઉઝરમાં ખોલો</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
 <translation id="589817443623831496">પૉઇન્ટ સ્કૅનિંગ</translation>
 <translation id="5901316534475909376">Shift + Esc</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8349964124165471584">નવી વિન્ડોમાં લિંક ખોલો</translation>
 <translation id="8351131234907093545">નોંધ બનાવો</translation>
 <translation id="8364673525741149932">શેલ્ફ પાર્ટીનું ટૉગલ. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" />નો ઉપયોગ થઈ રહ્યો છે.</translation>
 <translation id="8369166482916924789">સાચવેલી ડેસ્ક, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">એક અક્ષર આગળ જાઓ</translation>
 <translation id="8371991222807690464">અતિથિ મોડમાં પેરિફેરલ કાર્યપ્રદર્શન કદાચ મર્યાદિત કરવામાં આવી શકે છે</translation>

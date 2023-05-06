@@ -1036,6 +1036,7 @@
 <translation id="3531780078352352885">జాబ్ షీట్‌లు</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> మీ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="3533328374079021623">మెయిల్‌బాక్స్ 5</translation>
+<translation id="3536227077203206203">ఈసారి అనుమతి ఉంది</translation>
 <translation id="3537165859691846083">లెటర్ ప్లస్</translation>
 <translation id="3542628208405253498">కార్డ్ ఇమేజ్</translation>
 <translation id="3542768452570884558">లింక్‌ను కొత్త విండోలో తెరవండి</translation>
@@ -2455,6 +2456,7 @@
 <translation id="7030436163253143341">సర్టిఫికెట్ చెల్లదు</translation>
 <translation id="7031646650991750659">ఏ Google Play యాప్‌లు మీరు ఇన్‌స్టాల్ చేశారు</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
+<translation id="7044081119134178347">ఈసారి కెమెరాకు అనుమతి ఉంది</translation>
 <translation id="7048095965575426564">యూరోపియన్ ఫ్యాన్‌ఫోల్డ్</translation>
 <translation id="7050187094878475250">మీరు <ph name="DOMAIN" />ను చేరుకోవడానికి ప్రయత్నించారు, కానీ సర్వర్ అందించిన ప్రమాణపత్రం విశ్వసించలేనంత ఎక్కువ చెల్లుబాటు వ్యవధిని కలిగి ఉంది.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ప్రస్తుతం ఈ కార్డ్‌ని సేవ్ చేయలేరు}other{ప్రస్తుతం ఈ కార్డ్‌లని సేవ్ చేయలేరు}}</translation>
@@ -3047,6 +3049,7 @@
 <translation id="8416694386774425977">నెట్‌వర్క్ కాన్ఫిగరేషన్ చెల్లదు, కాబట్టి దిగుమతి చేయడం సాధ్యం కాదు.
 అదనపు వివరాలు:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">ఈసారి మైక్రోఫోన్‌కు అనుమతి ఉంది</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 మి.మీ.</translation>
 <translation id="8428213095426709021">సెట్టింగ్‌లు</translation>
@@ -3102,6 +3105,7 @@
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{అనుమతిని రీసెట్ చేయండి}other{అనుమతులను రీసెట్ చేయండి}}</translation>
 <translation id="8555010941760982128">చెక్ అవుట్ వద్ద ఈ కోడ్‌ను ఉపయోగించండి</translation>
 <translation id="8557066899867184262">మీ కార్డు వెనుకవైపు CVC ఉంటుంది.</translation>
+<translation id="8558347880669160417">ఈసారి కెమెరాకు, అలాగే మైక్రోఫోన్‌కు అనుమతి ఉంది</translation>
 <translation id="8559762987265718583">మీ పరికరం తేదీ మరియు సమయం <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> తప్పుగా ఉన్నందున (<ph name="DATE_AND_TIME" />)కు ప్రైవేట్ కనెక్షన్ ఏర్పాటు చేయబడదు.</translation>
 <translation id="8564182942834072828">విడి డాక్యుమెంట్‌లు/విడి కాపీలు</translation>
 <translation id="8564985650692024650">మీరు మీ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> పాస్‌వర్డ్‌ని ఇతర సైట్‌లలో తిరిగి ఉపయోగించినట్లయితే దీనిని రీసెట్ చేయాల్సిందిగా Chromium సిఫార్సు చేస్తోంది.</translation>
@@ -3218,6 +3222,7 @@
 <translation id="8870494189203302833">ఒకే క్రమంలో ఉన్న ఫేస్ డౌన్</translation>
 <translation id="8870700989640064057">గోప్యమైన ఫైల్‌ను ప్రింట్ చేయాలా?</translation>
 <translation id="8871553383647848643">మీ బ్రౌజర్ రూపాన్ని అనుకూలంగా మార్చండి</translation>
+<translation id="8871603420762394026">Chrome ఇప్పుడు సైట్‌ల మధ్య చాలా పరిమిత సమాచారాన్ని మాత్రమే షేర్ చేస్తుంది, అంటే మీకు యాడ్ చూపబడినప్పుడు, యాడ్‌ల పనితీరును కొలవడానికి సైట్‌లకు సహాయం చేస్తుంది.</translation>
 <translation id="8874824191258364635">చెల్లుబాటు అయ్యే కార్డ్ నంబర్‌ను నమోదు చేయండి</translation>
 <translation id="8876033571432926051">సరదా గేమ్‌లు</translation>
 <translation id="8877780815363510165">చేపలు పట్టడం</translation>
@@ -3371,6 +3376,7 @@
 <translation id="949314938206378263">మీరు ఈ సైట్‌ను సందర్శించడానికి అనుమతి కోరారు. మీ తల్లి/తండ్రి Family Linkలో రిప్లయి ఇవ్వవచ్చు.</translation>
 <translation id="950736567201356821">ఎగువ భాగంలో మూడు రంధ్రాలు</translation>
 <translation id="961663415146723894">దిగువ భాగంలో బైండ్</translation>
+<translation id="961930410699694996">ఈసారి లొకేషన్ పొందడానికి అనుమతి ఉంది</translation>
 <translation id="962484866189421427">ఈ కంటెంట్ వేరేవాటిలా కనిపించే మోసపూరిత యాప్‌లను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు లేదా మిమ్మల్ని ట్రాక్ చేయడానికి ఉపయోగించే డేటాను సేకరించవచ్చు. <ph name="BEGIN_LINK" />అయినప్పటికీ, చూపించు<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">యూజర్‌లందరికి</translation>
 <translation id="964050462028070434">పాస్‌వర్డ్‌లను, పాస్-కీలను మేనేజ్ చేయండి…</translation>

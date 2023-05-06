@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Det gick inte att matcha DNS</translation>
 <translation id="1018656279737460067">Avbröts</translation>
 <translation id="1022433422498218992">Allmänna kontroller</translation>
+<translation id="1022628058306505708">Earth Flow</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> trådar, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
 <translation id="1059913517121127803">Det gick inte att börja söka</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Fler åtgärder</translation>
 <translation id="2926057806159140518">Ange användarnamn och lösenord eller läs av QR-koden</translation>
 <translation id="2940811910881150316">Det gick inte att testa enheten. Öppna locket igen för att testa.</translation>
+<translation id="2981143481017883351">Nu finns det exklusiva Chromebook-tillgångar</translation>
 <translation id="3008341117444806826">UPPDATERA</translation>
 <translation id="3009958530611748826">Välj vilken mapp du vill spara i</translation>
 <translation id="3017079585324758401">Bakgrund</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Fönster</translation>
 <translation id="3368922792935385530">Ansluten</translation>
 <translation id="3369013195428705271">Vill du rensa all utskriftshistorik? De pågående utskriftsjobben rensas inte.</translation>
+<translation id="3386675685417744672">Endast på Chromebook</translation>
 <translation id="3404249063913988450">Aktivera skärmsläckare</translation>
 <translation id="3413935475507503304">Klicka på Nästa om du vill fortsätta med uppdateringen.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">VARNING</translation>
 <translation id="4054683689023980771">Laddar ned bild …</translation>
 <translation id="4060260348856573701">Nytt APN</translation>
+<translation id="4079743696465895866">Välj konstverk som endast finns på Chromebook</translation>
 <translation id="4093865285251893588">Profilbild</translation>
 <translation id="409427325554347132">Spara testinformation</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
 <translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
+<translation id="6205145102504628069">Cloud Flow</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Avsluta helskärm</translation>
 <translation id="6223752125779001553">Ingen skanner är tillgänglig</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Anpassning</translation>
 <translation id="6500818810472529210">Visa resultat på Google Sök</translation>
 <translation id="650266656685499220">Besök Google Foto om du vill skapa album</translation>
+<translation id="6505750420152840539">Dawn to dark</translation>
 <translation id="6516990319416533844">Om du vill testa batteriets laddningshastighet låter du det laddas ur under en kortare period</translation>
 <translation id="6517239166834772319">Utforska</translation>
 <translation id="6526200165918397681">Matcha bakgrund</translation>

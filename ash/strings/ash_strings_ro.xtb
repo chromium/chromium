@@ -56,6 +56,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="121097972571826261">Înainte cu un cuvânt</translation>
 <translation id="1217633719248931900">Accesează aplicația</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, aplicație din Magazinul Play</translation>
+<translation id="1219309685806246869">Revino la <ph name="APP_TITLE" />.</translation>
 <translation id="1225748608451425081">Chromebookul este blocat din cauza unei probleme cunoscute. Vei putea să te conectezi după <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Nu mai selecta</translation>
 <translation id="1235458158152011030">Rețele cunoscute</translation>
@@ -1590,6 +1591,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8349964124165471584">Deschide linkul într-o fereastră nouă</translation>
 <translation id="8351131234907093545">Creează o notă</translation>
 <translation id="8364673525741149932">Activează / dezactivează Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> în uz.</translation>
 <translation id="8369166482916924789">Desktop salvat, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Înainte cu o literă</translation>
 <translation id="8371991222807690464">Performanța dispozitivelor periferice poate fi limitată în modul pentru invitați</translation>

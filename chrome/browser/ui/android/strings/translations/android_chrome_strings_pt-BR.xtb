@@ -285,6 +285,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="2587052924345400782">Versão mais recente disponível</translation>
 <translation id="2593272815202181319">Espaçamento uniforme</translation>
 <translation id="2603212228005142861">Faça login para gerenciar suas preferências</translation>
+<translation id="260403163289591229">Seguindo</translation>
 <translation id="2604446170045642109">Nas configurações, é possível desativar o tema escuro para sites.</translation>
 <translation id="2612676031748830579">Número do cartão</translation>
 <translation id="2625189173221582860">Senha copiada</translation>
@@ -584,6 +585,7 @@ Os tokens de estado particular melhoram a privacidade na Web e não podem ser us
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
 <translation id="4202218894997543208">Temas bloqueados</translation>
 <translation id="4214315110991671325">Se você autorizar, o Chrome pode usar cookies no pré-carregamento.</translation>
+<translation id="4225725533026049334">Seguindo</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
 <translation id="4248098802131000011">Manter suas senhas protegidas contra violações de dados e outros problemas de segurança</translation>
@@ -847,7 +849,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="562289928968387744">Gerenciar reações</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Não lidas. Disponíveis off-line</translation>
-<translation id="5635091213277904818">O Chrome exclui automaticamente sites acessados há mais de 30 dias. Um site que você visitar novamente poderá reaparecer. Você também pode bloquear um site para que ele não sugira anúncios.</translation>
+<translation id="5635091213277904818">O Chrome exclui automaticamente sites que estão na lista há mais de 30 dias. Se você visitar um site novamente, ele poderá reaparecer na lista. Você também pode bloquear um site para que ele não sugira anúncios.</translation>
 <translation id="5639724618331995626">Permitir todos os sites</translation>
 <translation id="5641456720590409793">O <ph name="BEGIN_LINK1" />histórico de pesquisa<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser salvos na sua Conta do Google.</translation>
 <translation id="564667659802381754">Guia de privacidade <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -923,6 +925,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="6005538289190791541">Senha sugerida</translation>
 <translation id="6011308810877101166">Melhorar as sugestões de pesquisa</translation>
 <translation id="6026538407078977628">Abrir em tela cheia</translation>
+<translation id="6030719887161080597">Gerencie as informações usadas por sites para avaliar a performance de anúncios</translation>
 <translation id="6039379616847168523">Ir para a próxima guia</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="604124094241169006">Automático</translation>

@@ -222,6 +222,7 @@
 <translation id="1961239773406905488">การแสดงตัวอย่างจากกล้องถ่ายรูปซ่อนอยู่</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">ล็อกหน้าจอ</translation>
+<translation id="1962972976741217487">อุปกรณ์ 1 เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">เปิดฮอตสปอต</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">สวัสดี คุณ <ph name="USERNAME" /></translation>
@@ -928,6 +929,7 @@
 <translation id="5297704307811127955">ปิด</translation>
 <translation id="5300589172476337783">แสดง</translation>
 <translation id="5302048478445481009">ภาษา</translation>
+<translation id="5303783651764314393">อุปกรณ์ <ph name="DEVICECOUNT" /> เครื่องเชื่อมต่ออยู่กับฮอตสปอต <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">เชื่อมต่อ</translation>
 <translation id="5313326810920013265">การตั้งค่าบลูทูธ</translation>
 <translation id="5314219114274263156">อัดหน้าจอแล้ว</translation>
@@ -1337,6 +1339,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">เปลี่ยนกลับไปเป็นความละเอียดเดิมภายใน <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
+<translation id="7187711731540696127">ฮอตสปอต <ph name="DEVICE_NAME" /> เปิดอยู่ ไม่มีอุปกรณ์ใดเชื่อมต่อ</translation>
 <translation id="7188494361780961876">เมนูได้ย้ายไปอยู่ที่มุมซ้ายบนของหน้าจอ</translation>
 <translation id="7189412385142492784">ดาวศุกร์อยู่ไกลแค่ไหน</translation>
 <translation id="7198435252016571249">จัดกล้องพอดีกับมุมขวาล่างแล้ว เนื่องจากขัดแย้งกับแพลตฟอร์มของระบบ</translation>

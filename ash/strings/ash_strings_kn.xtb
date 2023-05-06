@@ -56,6 +56,7 @@
 <translation id="121097972571826261">ಪದದ ಮೂಲಕ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="1217633719248931900">ಆ್ಯಪ್‌ಗೆ ಹೋಗಿ</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store ‌‌ ಆ್ಯಪ್</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> ಗೆ ಹಿಂತಿರುಗಿ.</translation>
 <translation id="1225748608451425081">ತಿಳಿದಿರುವ ಸಮಸ್ಯೆಯಿಂದಾಗಿ ನಿಮ್ಮ Chromebook ಅನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ. ಈ ಸಮಯದ ನಂತರ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮಗೆ ಸಾಧ್ಯವಾಗುತ್ತದೆ: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">ಆಯ್ಕೆಮಾಡುವುದನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1235458158152011030">ತಿಳಿದಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
@@ -1059,6 +1060,7 @@
 <translation id="5881540930187678962">ಫೋನ್ ಹಬ್ ಅನ್ನು ನಂತರ ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="5881663018261910378">ಆಫ್ ಆಗಿದೆ</translation>
 <translation id="5887954372087850114">ವಿಂಡೋ <ph name="WINDOW_TITLE" /> ಅನ್ನು <ph name="DESK_TITLE" /> ಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ ಹಾಗೂ ಎಲ್ಲಾ ಇತರ ಡೆಸ್ಕ್‌ಗಳಿಂದ ನಿಯೋಜನೆಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
+<translation id="588817334757907802">Chrome ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಫೈಲ್ ತೆರೆಯಿರಿ</translation>
 <translation id="5895138241574237353">ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="589817443623831496">ಪಾಯಿಂಟ್ ಸ್ಕ್ಯಾನಿಂಗ್</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8349964124165471584">ಹೊಸ ವಿಂಡೋದಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8351131234907093545">ಟಿಪ್ಪಣಿ ರಚಿಸಿ</translation>
 <translation id="8364673525741149932">ಶೆಲ್ಫ್ ಪಾರ್ಟಿಯನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ಬಳಕೆಯಲ್ಲಿದೆ.</translation>
 <translation id="8369166482916924789">ಉಳಿಸಲಾದ ಡೆಸ್ಕ್, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ಅಕ್ಷರದ ಮೂಲಕ ಫಾರ್ವರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="8371991222807690464">ಅತಿಥಿ ಮೋಡ್‌ನಲ್ಲಿ ಬಾಹ್ಯ ಸಾಧನದ ಕಾರ್ಯಕ್ಷಮತೆಯು ಸೀಮಿತವಾಗಿರಬಹುದು</translation>

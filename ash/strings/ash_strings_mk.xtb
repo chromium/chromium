@@ -221,6 +221,7 @@
 <translation id="1961239773406905488">Сокриен е преглед на камерата</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Заклучен екран</translation>
+<translation id="1962972976741217487">Поврзан е 1 уред на точката на пристап на вашиот <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Вклучување на точката на пристап</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
@@ -931,6 +932,7 @@
 <translation id="5297704307811127955">Исклучено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
 <translation id="5302048478445481009">Јазик</translation>
+<translation id="5303783651764314393">Поврзани се <ph name="DEVICECOUNT" /> уреди на точката на пристап на вашиот <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Поврзи</translation>
 <translation id="5313326810920013265">Поставки за Bluetooth</translation>
 <translation id="5314219114274263156">Направена е снимка од екранот</translation>
@@ -1338,6 +1340,7 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Се навраќа на стара резолуција за <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Освежи</translation>
+<translation id="7187711731540696127">Точката на пристап на вашиот <ph name="DEVICE_NAME" /> е вклучена, нема поврзани уреди</translation>
 <translation id="7188494361780961876">Менито е преместено во горниот лев агол на екранот.</translation>
 <translation id="7189412385142492784">Колку е оддалечена Венера</translation>
 <translation id="7198435252016571249">Камерата е поставена во долниот десен агол. Конфликт со површината на системот.</translation>

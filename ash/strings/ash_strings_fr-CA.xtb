@@ -221,6 +221,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1961239773406905488">Aperçu de la caméra masqué</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Écran de verrouillage</translation>
+<translation id="1962972976741217487">1 appareil connecté à votre point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Activer le point d'accès sans fil</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Bonjour, <ph name="USERNAME" /></translation>
@@ -930,6 +931,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5297704307811127955">Désactivé</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5302048478445481009">Langue</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> appareils connectés à votre point d'accès sans fil <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement de l'écran effectué</translation>
@@ -1337,6 +1339,7 @@ Nouvelle installation</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Rétablissement de la résolution précédente dans <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualiser</translation>
+<translation id="7187711731540696127">Votre point d'accès sans fil <ph name="DEVICE_NAME" /> est activé, aucun appareil connecté</translation>
 <translation id="7188494361780961876">Le menu a été déplacé vers le coin supérieur gauche de l'écran.</translation>
 <translation id="7189412385142492784">À quelle distance se trouve Vénus?</translation>
 <translation id="7198435252016571249">Caméra alignée sur le coin inférieur droit. Conflit avec la surface du système.</translation>

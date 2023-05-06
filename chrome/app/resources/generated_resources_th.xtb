@@ -2183,7 +2183,7 @@
 <translation id="2836269494620652131">ขัดข้อง</translation>
 <translation id="283669119850230892">หากต้องการใช้เครือข่าย <ph name="NETWORK_ID" /> ก่อนอื่น ให้เชื่อมต่ออินเทอร์เน็ตตามด้านล่างนี้</translation>
 <translation id="2838379631617906747">การติดตั้ง</translation>
-<translation id="2839032553903800133">บล็อกการแจ้งเตือนอยู่</translation>
+<translation id="2839032553903800133">การแจ้งเตือนถูกบล็อก</translation>
 <translation id="2841013758207633010">เวลา</translation>
 <translation id="2841837950101800123">ผู้ให้บริการ</translation>
 <translation id="2842013086666334835">ลงชื่อเข้าใช้ "<ph name="NETWORK_ID" />"</translation>
@@ -6108,6 +6108,7 @@
 <translation id="6396175271241405634">แอประบบ</translation>
 <translation id="6398715114293939307">นำ Google Play Store ออก</translation>
 <translation id="6398765197997659313">ออกจากการแสดงแบบเต็มหน้าจอ</translation>
+<translation id="6399675241776343019">ปฏิเสธ</translation>
 <translation id="6399774419735315745">สายลับ</translation>
 <translation id="6400360390396538896">ตลอดเวลาใน <ph name="ORIGIN" /></translation>
 <translation id="6401458660421980302">หากต้องการส่งแท็บนี้ไปยังอุปกรณ์อื่น ให้ลงชื่อเข้าใช้ Chrome ในอุปกรณ์นั้น</translation>

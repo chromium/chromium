@@ -56,6 +56,7 @@
 <translation id="121097972571826261">စာလုံးအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="1217633719248931900">အက်ပ်သို့ သွားရန်</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />၊ Play Store အက်ပ်</translation>
+<translation id="1219309685806246869"><ph name="APP_TITLE" /> သို့ ပြန်သွားရန်။</translation>
 <translation id="1225748608451425081">သိထားသည့် ပြဿနာတစ်ခုကြောင့် သင့် Chromebook လော့ခ်ကျသွားသည်။ <ph name="TIME_LEFT" /> နောက်ပိုင်းတွင် လက်မှတ်ထိုးဝင်နိုင်ပါမည်။</translation>
 <translation id="1229194443904279055">ရွေးချယ်ခြင်းကို ရပ်ရန်</translation>
 <translation id="1235458158152011030">သိထားသည့် ကွန်ရက်များ</translation>
@@ -1059,6 +1060,7 @@
 <translation id="5881540930187678962">'ဖုန်းစင်တာ' ကို နောင်တွင် စနစ်ထည့်သွင်းမည်</translation>
 <translation id="5881663018261910378">ပိတ်</translation>
 <translation id="5887954372087850114"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို <ph name="DESK_TITLE" /> သို့ သတ်မှတ်ပေးပြီး အခြားမျက်နှာပြင်နေရာအားလုံးအား သတ်မှတ်ထားခြင်း မရှိတော့ပါ</translation>
+<translation id="588817334757907802">Chrome ဘရောင်ဇာတွင် ဖိုင်ဖွင့်ရန်</translation>
 <translation id="5895138241574237353">ပြန်စတင်မည</translation>
 <translation id="589817443623831496">အတိအကျ ရှာဖွေခြင်း</translation>
 <translation id="5901316534475909376">Shift+Esc</translation>
@@ -1589,6 +1591,7 @@
 <translation id="8349964124165471584">ဝင်းဒိုးအသစ်တွင် လင့်ခ်ဖွင့်ရန်</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8364673525741149932">Shelf Party ပြောင်းရန်။ <ph name="STATE_TEXT" /></translation>
+<translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> ကို သုံးနေသည်။</translation>
 <translation id="8369166482916924789">သိမ်းထားသည့်မျက်နှာပြင်၊ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">အက္ခရာအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="8371991222807690464">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်း၏ စွမ်းဆောင်ရည်ကို ကန့်သတ်ထားနိုင်သည်</translation>

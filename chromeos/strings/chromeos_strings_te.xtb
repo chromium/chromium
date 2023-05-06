@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">DNSను పరిష్కరించడం సాధ్యం కాదు</translation>
 <translation id="1018656279737460067">రద్దయింది</translation>
 <translation id="1022433422498218992">జనరల్ కంట్రోల్స్</translation>
+<translation id="1022628058306505708">ఎర్త్ ఫ్లో</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> థ్రెడ్‌లు, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">కొత్త ఫీచర్ అందుబాటులో ఉంది, మరింత తెలుసుకోవడానికి పై వైపు బాణం కీని ఉపయోగించండి.</translation>
 <translation id="1059913517121127803">స్కానింగ్ ప్రారంభించడం సాధ్యపడలేదు</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">మరిన్ని చర్యలు</translation>
 <translation id="2926057806159140518">మీ యూజర్‌నేమ్, పాస్‌వర్డ్‌ను ఎంటర్ చేయండి లేదా మీ QR కోడ్‌ను స్కాన్ చేయండి</translation>
 <translation id="2940811910881150316">పరికరాన్ని పరీక్షించడం సాధ్యపడదు. పరీక్షించడానికి మూతను మళ్లీ తెరవండి.</translation>
+<translation id="2981143481017883351">ప్రత్యేకించి Chromebookలో మాత్రమే ఉండే అస్సెట్‌లు ఇప్పుడు అందుబాటులో ఉన్నాయి</translation>
 <translation id="3008341117444806826">రిఫ్రెష్ చేయండి</translation>
 <translation id="3009958530611748826">దీనిలో సేవ్ చేయడానికి ఫోల్డర్‌ను ఎంచుకోండి</translation>
 <translation id="3017079585324758401">నేపథ్యం</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">విండోలు</translation>
 <translation id="3368922792935385530">కనెక్ట్ అయింది</translation>
 <translation id="3369013195428705271">మీరు ఖచ్చితంగా ప్రింట్ హిస్టరీ మొత్తాన్ని క్లియర్ చేయాలనుకుంటున్నారా? మీ కొనసాగుతున్న ప్రింట్ టాస్క్‌లు క్లియర్ చేయబడవు.</translation>
+<translation id="3386675685417744672">ప్రత్యేకించి Chromebookలో మాత్రమే</translation>
 <translation id="3404249063913988450">స్క్రీన్ సేవర్‌ను ఎనేబుల్ చేయి</translation>
 <translation id="3413935475507503304">అప్‌డేట్ చేయడాన్ని కొనసాగించడానికి, 'తర్వాత'ను క్లిక్ చేయండి.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">హెచ్చరిక</translation>
 <translation id="4054683689023980771">ఇమేజ్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="4060260348856573701">కొత్త APN</translation>
+<translation id="4079743696465895866">ప్రత్యేకించి Chromebookలో మాత్రమే ఉండే పోస్టర్ ఇమేజ్‌ను ఎంచుకోండి</translation>
 <translation id="4093865285251893588">ప్రొఫైల్ ఇమేజ్</translation>
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">వినియోగంతో బ్యాటరీ సామర్థ్యం క్షీణిస్తుంది</translation>
 <translation id="6191293864534840972">పేరు తప్పుగా ఉన్న సర్వర్లు</translation>
+<translation id="6205145102504628069">క్లౌడ్ ఫ్లో</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">ఫుల్-స్క్రీన్ మోడ్ నుండి నిష్క్రమించండి</translation>
 <translation id="6223752125779001553">స్కానర్‌లు ఏవీ అందుబాటులో లేవు</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">అనుకూలీకరణ</translation>
 <translation id="6500818810472529210">Google Searchలో ఫలితాన్ని చూడండి</translation>
 <translation id="650266656685499220">ఆల్బమ్‌లను క్రియేట్ చేయడానికి, 'Google Photos'కు వెళ్లండి</translation>
+<translation id="6505750420152840539">ఉదయం నుండి సాయంత్రం వరకు</translation>
 <translation id="6516990319416533844">బ్యాటరీ ఛార్జ్ అయ్యే రేట్‌ను పరీక్షించడానికి, కొంత వ్యవధి పాటు మీ బ్యాటరీని తగ్గనివ్వండి</translation>
 <translation id="6517239166834772319">అన్వేషణ</translation>
 <translation id="6526200165918397681">వాల్‌పేపర్‌ను మ్యాచ్ చేయండి</translation>

@@ -908,6 +908,17 @@ Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behoude
 <translation id="1844972978764975668">Toestaan dat query's naar een Google-server worden gestuurd om een nauwkeurig tijdstempel op te halen</translation>
 <translation id="1845405905602899692">Kiosk-instellingen</translation>
 <translation id="1845429996559814839">Modus voor afdrukken met pincode beperken</translation>
+<translation id="1845567452014584154">Bepaal of Manifest v2-extensies door de browser mogen worden gebruikt.
+
+Ondersteuning voor Manifest v2-extensies wordt beëindigd en alle extensies moeten in de toekomst worden overgezet naar v3. Je kunt meer informatie en een tijdlijn van de migratie vinden op https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Als je het beleid instelt op <ph name="DEFAULT" /> (0) of niet instelt, wordt het laden van v2-extensies bepaald door de browser op basis van de bovenstaande tijdlijn.
+Als je het beleid instelt op <ph name="DISABLE" /> (1), wordt de installatie van v2-extensies geblokkeerd. Bestaande extensies worden uitgezet. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld nadat de v2-ondersteuning standaard is uitgezet.
+Als je het beleid instelt op <ph name="ENABLE" /> (2), zijn v2-extensies toegestaan. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
+Als je het beleid instelt op <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), zijn afgedwongen geïnstalleerde v2-extensies toegestaan. Dit omvat extensies die worden vermeld in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> met <ph name="INSTALLATION_MODE" /> force_installed of normal_installed. Alle andere v2-extensies staan uit. Deze optie is altijd beschikbaar, ongeacht de migratiestatus.
+
+
+De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsregels.</translation>
 <translation id="1846545322805269573">Gebruikers kunnen de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen</translation>
 <translation id="1847960418907100918">Specificeert de parameters die worden gebruikt voor het uitvoeren van een instantzoekopdracht met POST. Het bestaat uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter, zoals {searchTerms} in het bovenstaande voorbeeld, is, wordt de waarde vervangen door echte zoektermgegevens.
 
@@ -3373,6 +3384,17 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4102347680024644994">Rapporteren over XDR-gebeurtenissen (Extended Detection and Response)</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
+<translation id="410740968939768919">Bepaal of Manifest v2-extensies kunnen worden gebruikt op het <ph name="PRODUCT_OS_NAME" />-inlogscherm.
+
+Ondersteuning voor Manifest v2-extensies wordt beëindigd en alle extensies moeten in de toekomst worden overgezet naar v3. Je kunt meer informatie en een tijdlijn van de migratie vinden op https://developer.chrome.com/docs/extensions/mv3/mv2-sunset/.
+
+Als je het beleid instelt op <ph name="DEFAULT" /> (0) of niet instelt, wordt het laden van v2-extensies bepaald door het apparaat op basis van de bovenstaande tijdlijn.
+Als je het beleid instelt op <ph name="DISABLE" /> (1), wordt de installatie van v2-extensies geblokkeerd. Bestaande extensies worden uitgezet. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld nadat de v2-ondersteuning standaard is uitgezet.
+Als je het beleid instelt op <ph name="ENABLE" /> (2), zijn v2-extensies toegestaan. De optie wordt op dezelfde manier behandeld als wanneer het beleid niet is ingesteld voordat de v2-ondersteuning standaard wordt uitgezet.
+Als je het beleid instelt op <ph name="ENABLE_FOR_FORCED_EXTENSIONS" /> (3), zijn afgedwongen geïnstalleerde v2-extensies toegestaan. Dit omvat extensies die worden vermeld in <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> met <ph name="INSTALLATION_MODE" /> force_installed of normal_installed. Alle andere v2-extensies staan uit. Deze optie is altijd beschikbaar, ongeacht de migratiestatus.
+
+
+De beschikbaarheid van extensies wordt nog steeds beheerd door andere beleidsregels.</translation>
 <translation id="4110126170080699437">Om veiligheidsredenen moet voor de web-API <ph name="GET_DISPLAY_MEDIA_API_NAME" /> een eerder gebruikersgebaar ('tijdelijke activering') worden aangeroepen, anders mislukt deze.
 
 Als dit beleid is ingesteld, kunnen beheerders oorsprongen opgeven waarvoor deze API kan worden aangeroepen zonder eerder gebruikersgebaar.
@@ -3740,6 +3762,17 @@ Dit beleid is een tijdelijke oplossing voor bedrijven die problemen ondervinden 
 <translation id="4483649828988077221">Automatisch updaten uitzetten</translation>
 <translation id="4484515651939984695">Hiermee geef je op hoelang (in seconden) een cast-apparaat dat via een toegangscode of QR-code is geselecteerd, in de lijst met cast-apparaten van het <ph name="PRODUCT_NAME" />-menu blijft staan.</translation>
 <translation id="4485425108474077672">De URL van de pagina 'Nieuw tabblad' configureren</translation>
+<translation id="4490420545181481759">X.509-certificaten kunnen beperkingen, zoals naambeperkingen, coderen in extensies in het certificaat. RFC 5280 bepaalt dat het afdwingen van dergelijke beperkingen voor vertrouwensankercertificaten optioneel is. Vanaf <ph name="PRODUCT_NAME" /> 112 worden dergelijke beperkingen afgedwongen in certificaten die worden geladen vanuit de certificaatopslag van het platform.
+
+Dit beleid bestaat als tijdelijke afmelding voor als een bedrijf problemen ondervindt met de beperkingen die in hun eigen roots zijn gecodeerd. In dat geval kan dit beleid worden gebruikt om het afdwingen van de beperkingen tijdelijk uit te zetten en de certificaatproblemen te verhelpen.
+
+Als je dit beleid toepast of niet instelt, dwingt <ph name="PRODUCT_NAME" /> beperkingen af die zijn gecodeerd in vertrouwensankers die zijn geladen vanuit de vertrouwde opslag van het platform.
+
+Als je dit beleid niet toepast, dwingt <ph name="PRODUCT_NAME" /> geen beperkingen af die zijn gecodeerd in vertrouwensankers die zijn geladen vanuit de vertrouwde opslag van het platform.
+
+In <ph name="PRODUCT_NAME" /> 112 heeft dit beleid geen effect als het beleid <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> niet wordt toegepast.
+
+Dit beleid wordt verwijderd in <ph name="PRODUCT_NAME" /> 118.</translation>
 <translation id="4491607814095953976">Kiezen of de <ph name="PRIVACY_SANDBOX_NAME" />-instelling voor advertentiemeting kan worden uitgezet</translation>
 <translation id="4492287494009043413">Maken van screenshots uitzetten</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>

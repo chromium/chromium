@@ -221,6 +221,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1961239773406905488">Kamera önizlemesi gizlendi</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Kilit Ekranı</translation>
+<translation id="1962972976741217487"><ph name="DEVICE_NAME" /> hotspot'unuza 1 cihaz bağlı</translation>
 <translation id="1967970931040389207">Hotspot'u aç</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Merhaba <ph name="USERNAME" /></translation>
@@ -930,6 +931,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5297704307811127955">Kapalı</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5302048478445481009">Dil</translation>
+<translation id="5303783651764314393"><ph name="DEVICE_NAME" /> hotspot'unuza <ph name="DEVICECOUNT" /> cihaz bağlı</translation>
 <translation id="5308380583665731573">Bağlan</translation>
 <translation id="5313326810920013265">Bluetooth ayarları</translation>
 <translation id="5314219114274263156">Ekran kaydı alındı</translation>
@@ -1337,6 +1339,7 @@ Yeni yüklenmiş</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
 <translation id="7180611975245234373">Yenile</translation>
+<translation id="7187711731540696127"><ph name="DEVICE_NAME" /> hotspot'unuz açık, hiçbir cihaz bağlı değil</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>
 <translation id="7198435252016571249">Kamera sağ alt köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>

@@ -1673,6 +1673,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="5051305769747448211">Comédia ao vivo</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
+<translation id="5060419232449737386">Definições das legendas</translation>
 <translation id="5060483733937416656">Optou por validar com o Windows Hello em Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Histórico de impressão</translation>

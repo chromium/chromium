@@ -221,6 +221,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1961239773406905488">Pamja paraprake e kamerës e fshehur</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="1962969542251276847">Ekrani i kyçjes</translation>
+<translation id="1962972976741217487">1 pajisje e lidhur me zonën e qasjes për internet të <ph name="DEVICE_NAME" /></translation>
 <translation id="1967970931040389207">Aktivizo zonën e qasjes për internet</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Përshëndetje, <ph name="USERNAME" /></translation>
@@ -930,6 +931,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="5297704307811127955">Joaktiv</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5302048478445481009">Gjuha</translation>
+<translation id="5303783651764314393"><ph name="DEVICECOUNT" /> pajisje të lidhura me zonën e qasjes për internet të <ph name="DEVICE_NAME" /></translation>
 <translation id="5308380583665731573">Lidh</translation>
 <translation id="5313326810920013265">Cilësimet e Bluetooth-it</translation>
 <translation id="5314219114274263156">Regjistrimi i ekranit përfundoi</translation>
@@ -1337,6 +1339,7 @@ Instalim i ri</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Po rikthehet te rezolucioni i vjetër për <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Rifresko</translation>
+<translation id="7187711731540696127">Zona e qasjes për internet e <ph name="DEVICE_NAME" /> është aktive, asnjë pajisje e lidhur</translation>
 <translation id="7188494361780961876">Menyja u zhvendos në këndin lart majtas të ekranit.</translation>
 <translation id="7189412385142492784">Sa larg është Afërdita</translation>
 <translation id="7198435252016571249">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm djathtas. Në konflikt me sipërfaqen e sistemit.</translation>
