@@ -482,7 +482,7 @@ crbug.com/982294 [ mac passthrough nvidia angle-opengl ] conformance/glsl/sample
 ## Mac / M1 / OpenGL ##
 
 # No active browser window, but no crash stack.
-crbug.com/1240443 [ mac apple-apple-m1 passthrough angle-opengl ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+crbug.com/1240443 [ angle-opengl apple-apple-m1 monterey passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 ####################
 # Linux failures   #
@@ -527,7 +527,6 @@ crbug.com/1165751 [ android-nougat ] conformance/glsl/bugs/vector-matrix-constru
 
 # These video tests are flakey on many configurations.
 crbug.com/1347077 [ android-nexus-5x android-nougat angle-opengles passthrough qualcomm renderer-skia-gl target-cpu-64 ] conformance/textures/misc/video-rotation.html [ Failure ]
-crbug.com/1347077 [ android-s android-sm-a235m angle-disabled no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 
 ## Nexus 5X ##
