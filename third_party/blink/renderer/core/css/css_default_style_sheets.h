@@ -75,6 +75,7 @@ class CSSDefaultStyleSheets final
   RuleSet* DefaultMediaControlsStyle() {
     return default_media_controls_style_.Get();
   }
+  RuleSet* DefaultFullscreenStyle() { return default_fullscreen_style_.Get(); }
 
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
@@ -128,6 +129,7 @@ class CSSDefaultStyleSheets final
     kMathML,
     kSVG,
     kMediaControls,  // Not exactly a namespace
+    kFullscreen,
   };
   void AddRulesToDefaultStyleSheets(StyleSheetContents* rules,
                                     NamespaceType type);
@@ -141,6 +143,7 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_forced_color_style_;
   Member<RuleSet> default_pseudo_element_style_;
   Member<RuleSet> default_media_controls_style_;
+  Member<RuleSet> default_fullscreen_style_;
 
   Member<StyleSheetContents> default_style_sheet_;
   Member<StyleSheetContents> quirks_style_sheet_;

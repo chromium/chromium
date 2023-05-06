@@ -86,6 +86,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
@@ -808,6 +809,9 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
       func(default_style_sheets.DefaultSVGStyle());
     } else if (element.namespaceURI() == mathml_names::kNamespaceURI) {
       func(default_style_sheets.DefaultMathMLStyle());
+    }
+    if (Fullscreen::HasFullscreenElements()) {
+      func(default_style_sheets.DefaultFullscreenStyle());
     }
   } else {
     func(default_style_sheets.DefaultPrintStyle());

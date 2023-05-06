@@ -180,6 +180,7 @@ void CSSDefaultStyleSheets::InitializeDefaultStyles() {
   default_html_quirks_style_ = MakeGarbageCollected<RuleSet>();
   default_print_style_ = MakeGarbageCollected<RuleSet>();
   default_media_controls_style_ = MakeGarbageCollected<RuleSet>();
+  default_fullscreen_style_ = MakeGarbageCollected<RuleSet>();
   default_forced_color_style_.Clear();
   default_pseudo_element_style_.Clear();
 
@@ -225,6 +226,9 @@ void CSSDefaultStyleSheets::AddRulesToDefaultStyleSheets(
       break;
     case NamespaceType::kMediaControls:
       default_media_controls_style_->AddRulesFromSheet(rules, ScreenEval());
+      break;
+    case NamespaceType::kFullscreen:
+      default_fullscreen_style_->AddRulesFromSheet(rules, ScreenEval());
       break;
   }
   // Add to print and forced color for all namespaces.
@@ -376,7 +380,8 @@ void CSSDefaultStyleSheets::EnsureDefaultStyleSheetForFullscreen() {
       UncompressResourceAsASCIIString(IDR_UASTYLE_FULLSCREEN_CSS) +
       LayoutTheme::GetTheme().ExtraFullscreenStyleSheet();
   fullscreen_style_sheet_ = ParseUASheet(fullscreen_rules);
-  AddRulesToDefaultStyleSheets(fullscreen_style_sheet_, NamespaceType::kHTML);
+  AddRulesToDefaultStyleSheets(fullscreen_style_sheet_,
+                               NamespaceType::kFullscreen);
 }
 
 bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetForForcedColors() {
@@ -420,6 +425,9 @@ void CSSDefaultStyleSheets::CollectFeaturesTo(const Document& document,
   if (DefaultMathMLStyle()) {
     features.Merge(DefaultMathMLStyle()->Features());
   }
+  if (DefaultFullscreenStyle()) {
+    features.Merge(DefaultFullscreenStyle()->Features());
+  }
   if (document.IsViewSource() && DefaultViewSourceStyle()) {
     features.Merge(DefaultViewSourceStyle()->Features());
   }
@@ -433,9 +441,10 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(default_print_style_);
   visitor->Trace(default_view_source_style_);
   visitor->Trace(default_forced_color_style_);
-  visitor->Trace(default_media_controls_style_);
-  visitor->Trace(default_style_sheet_);
   visitor->Trace(default_pseudo_element_style_);
+  visitor->Trace(default_media_controls_style_);
+  visitor->Trace(default_fullscreen_style_);
+  visitor->Trace(default_style_sheet_);
   visitor->Trace(quirks_style_sheet_);
   visitor->Trace(svg_style_sheet_);
   visitor->Trace(mathml_style_sheet_);
