@@ -87,20 +87,8 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
     Config* config,
     ExecutionService* execution_service,
     std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
-  SegmentResultProvider::ResultState result_state =
-      result ? result->state : SegmentResultProvider::ResultState::kUnknown;
+  SegmentResultProvider::ResultState result_state = result->state;
 
-  if (!SupportMultiOutput(result.get())) {
-    stats::RecordSegmentSelectionFailure(
-        *config,
-        stats::SegmentationSelectionFailureReason::kMultiOutputNotSupported);
-    return;
-  }
-
-  stats::RecordSegmentSelectionFailure(
-      *config, stats::GetSuccessOrFailureReason(result_state));
-
-  proto::PredictionResult pred_result = result->result;
   // If the model result is available either from database or running the
   // model, update prefs if expired.
   bool unexpired_score_from_db =
@@ -112,17 +100,31 @@ void ResultRefreshManager::OnGetCachedResultOrRunModel(
        (result_state ==
         SegmentResultProvider::ResultState::kDefaultModelScoreUsed));
 
-  if (unexpired_score_from_db || expired_score_and_run_model) {
-    stats::RecordClassificationResultComputed(*config, pred_result);
+  bool success = (unexpired_score_from_db || expired_score_and_run_model);
 
-    proto::ClientResult client_result =
-        metadata_utils::CreateClientResultFromPredResult(pred_result,
-                                                         base::Time::Now());
-    cached_result_writer_->UpdatePrefsIfExpired(config, client_result,
-                                                platform_options_);
-
-    CollectTrainingData(config, execution_service);
+  if (!success) {
+    stats::RecordSegmentSelectionFailure(
+        *config, stats::GetSuccessOrFailureReason(result_state));
+    return;
   }
+
+  if (!SupportMultiOutput(result.get())) {
+    stats::RecordSegmentSelectionFailure(
+        *config,
+        stats::SegmentationSelectionFailureReason::kMultiOutputNotSupported);
+    return;
+  }
+
+  proto::PredictionResult pred_result = result->result;
+  stats::RecordClassificationResultComputed(*config, pred_result);
+
+  proto::ClientResult client_result =
+      metadata_utils::CreateClientResultFromPredResult(pred_result,
+                                                       base::Time::Now());
+  cached_result_writer_->UpdatePrefsIfExpired(config, client_result,
+                                              platform_options_);
+
+  CollectTrainingData(config, execution_service);
 }
 
 }  // namespace segmentation_platform
