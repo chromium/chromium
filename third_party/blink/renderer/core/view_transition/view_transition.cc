@@ -609,6 +609,15 @@ void ViewTransition::ProcessCurrentState() {
         break;
 
       case State::kDOMCallbackFinished:
+        // For testing check: if the flag is enabled, re-create the style
+        // tracker with the serialized state that the current style tracker
+        // produces. This allows us to use SPA tests for MPA serialization.
+        if (RuntimeEnabledFeatures::
+                SerializeViewTransitionStateInSPAEnabled()) {
+          style_tracker_ = MakeGarbageCollected<ViewTransitionStyleTracker>(
+              *document_, style_tracker_->GetViewTransitionState());
+        }
+
         ResumeRendering();
         if (!dom_callback_succeeded_) {
           SkipTransitionInternal(ScriptBoundState::Response::kRejectAbort);

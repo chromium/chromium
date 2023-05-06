@@ -380,10 +380,23 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
 
     element_data_map_.insert(name, std::move(element_data));
   }
+
+  // The aim of this flag is to serialize/deserialize SPA state using MPA
+  // machinery. The intent is to use SPA tests to test MPA implementation as
+  // well. To that end, if the flag is enabled we should invalidate styles and
+  // clear the view transition names, because the "true" MPA implementation
+  // would not have any style or names set.
+  if (RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
+    InvalidateHitTestingCache();
+    InvalidateStyle();
+    document_->GetStyleEngine().SetViewTransitionNames({});
+  }
 }
 
 ViewTransitionStyleTracker::~ViewTransitionStyleTracker() {
-  CHECK_EQ(state_, State::kFinished);
+  if (!RuntimeEnabledFeatures::SerializeViewTransitionStateInSPAEnabled()) {
+    CHECK_EQ(state_, State::kFinished);
+  }
 }
 
 void ViewTransitionStyleTracker::AddConsoleError(
@@ -732,7 +745,6 @@ bool ViewTransitionStyleTracker::Start() {
   // initialized with the style system in the start phase.
   if (deserialized_) {
     DCHECK(document_->GetStyleEngine().ViewTransitionTags().empty());
-    DCHECK_GT(captured_name_count_, 0);
     found_new_names = true;
   }
 
@@ -1496,7 +1508,7 @@ ViewTransitionState ViewTransitionStyleTracker::GetViewTransitionState() const {
     // TODO(khushalsagar): Also writing mode.
     // TODO(vmpstr): Also captured_rect_in_layout_space.
 
-    DCHECK_GT(element.paint_order, 0);
+    DCHECK(!old_root_data_ || element.paint_order > 0);
   }
 
   if (old_root_data_) {

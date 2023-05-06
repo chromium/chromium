@@ -3118,6 +3118,10 @@
       base_feature: "none",
     },
     {
+      name: "SerializeViewTransitionStateInSPA",
+      base_feature: "none",
+    },
+    {
       name: "ServiceWorkerBypassFetchHandler",
       base_feature: "none",
       origin_trial_feature_name: "ServiceWorkerBypassFetchHandlerForMainResource",
