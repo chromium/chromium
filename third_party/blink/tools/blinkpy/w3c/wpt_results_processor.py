@@ -293,13 +293,6 @@ class WPTResultsProcessor:
         }
         self.has_regressions: bool = False
 
-    def recreate_artifacts_dir(self):
-        if self.fs.exists(self.artifacts_dir):
-            self.fs.rmtree(self.artifacts_dir)
-        self.fs.maybe_make_directory(self.artifacts_dir)
-        self._copy_results_viewer()
-        _log.info('Recreated artifacts directory (%s)', self.artifacts_dir)
-
     def _copy_results_viewer(self):
         files_to_copy = ['results.html', 'results.html.version']
         for file in files_to_copy:
@@ -391,7 +384,7 @@ class WPTResultsProcessor:
                 before this manager exited; a well-behaved caller should avoid
                 this.
         """
-        self.recreate_artifacts_dir()
+        self._copy_results_viewer()
         events = queue.SimpleQueue()
         worker = threading.Thread(target=self._consume_events,
                                   args=(events, ),
