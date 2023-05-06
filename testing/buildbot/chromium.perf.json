@@ -100,7 +100,7 @@
           "--test-shard-map-filename=android-go-perf_map.json",
           "--ignore-benchmark-exit-code"
         ],
-        "isolate_name": "performance_test_suite_android_clank_chrome",
+        "isolate_name": "performance_test_suite_android_clank_monochrome",
         "merge": {
           "args": [
             "--lightweight",
@@ -110,7 +110,7 @@
         },
         "name": "performance_test_suite",
         "override_compile_targets": [
-          "performance_test_suite_android_clank_chrome"
+          "performance_test_suite_android_clank_monochrome"
         ],
         "resultdb": {
           "enable": true
@@ -153,13 +153,13 @@
           "--test-shard-map-filename=android-go-perf-pgo_map.json",
           "--ignore-benchmark-exit-code"
         ],
-        "isolate_name": "performance_test_suite_android_clank_chrome",
+        "isolate_name": "performance_test_suite_android_clank_monochrome",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
         "name": "performance_test_suite",
         "override_compile_targets": [
-          "performance_test_suite_android_clank_chrome"
+          "performance_test_suite_android_clank_monochrome"
         ],
         "resultdb": {
           "enable": true
@@ -848,13 +848,13 @@
           "--ignore-benchmark-exit-code",
           "--experimental-tbmv3-metrics"
         ],
-        "isolate_name": "performance_test_suite_android_clank_chrome",
+        "isolate_name": "performance_test_suite_android_clank_trichrome_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_chrome",
+        "name": "performance_test_suite_android_clank_trichrome_bundle",
         "override_compile_targets": [
-          "performance_test_suite_android_clank_chrome"
+          "performance_test_suite_android_clank_trichrome_bundle"
         ],
         "resultdb": {
           "enable": true
@@ -898,13 +898,13 @@
           "--ignore-benchmark-exit-code",
           "--experimental-tbmv3-metrics"
         ],
-        "isolate_name": "performance_test_suite_android_clank_chrome",
+        "isolate_name": "performance_test_suite_android_clank_trichrome_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite_android_clank_chrome",
+        "name": "performance_test_suite_android_clank_trichrome_bundle",
         "override_compile_targets": [
-          "performance_test_suite_android_clank_chrome"
+          "performance_test_suite_android_clank_trichrome_bundle"
         ],
         "resultdb": {
           "enable": true

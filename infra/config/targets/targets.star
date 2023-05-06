@@ -1668,8 +1668,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "performance_test_suite_android_clank_chrome",
-    label = "//chrome/test:performance_test_suite_android_clank_chrome",
+    name = "performance_test_suite_android_clank_monochrome",
+    label = "//chrome/test:performance_test_suite_android_clank_monochrome",
 )
 
 targets.generated_script(

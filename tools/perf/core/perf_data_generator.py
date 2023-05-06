@@ -164,7 +164,7 @@ FYI_BUILDERS = {
     'android-pixel2-perf-fyi': {
         'tests': [{
             'isolate':
-            'performance_test_suite_android_clank_chrome',
+            'performance_test_suite_android_clank_monochrome',
             'extra_args': [
                 '--output-format=histograms',
                 '--experimental-tbmv3-metrics',
@@ -478,8 +478,7 @@ BUILDERS = {
             'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
-        'perf_trigger':
-        False,
+        'perf_trigger': False,
     },
     'android_arm64-builder-perf': {
         'tests': [
@@ -522,8 +521,7 @@ BUILDERS = {
             'os': 'Ubuntu-18.04',
             'pool': 'chrome.tests',
         },
-        'perf_trigger':
-        False,
+        'perf_trigger': False,
     },
     'linux-builder-perf': {
         'additional_compile_targets': ['chromedriver'],
@@ -633,7 +631,7 @@ BUILDERS = {
     'android-go-perf': {
         'tests': [{
             'name': 'performance_test_suite',
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_monochrome',
         }],
         'platform':
         'android-chrome',
@@ -648,7 +646,7 @@ BUILDERS = {
     'android-go-perf-pgo': {
         'tests': [{
             'name': 'performance_test_suite',
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_monochrome',
         }],
         'platform':
         'android-chrome',
@@ -774,7 +772,7 @@ BUILDERS = {
     },
     'android-pixel4a_power-perf': {
         'tests': [{
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_trichrome_bundle',
             'extra_args': [
                 '--experimental-tbmv3-metrics',
             ],
@@ -791,7 +789,7 @@ BUILDERS = {
     },
     'android-pixel4a_power-perf-pgo': {
         'tests': [{
-            'isolate': 'performance_test_suite_android_clank_chrome',
+            'isolate': 'performance_test_suite_android_clank_trichrome_bundle',
             'extra_args': [
                 '--experimental-tbmv3-metrics',
             ],
