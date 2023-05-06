@@ -24,6 +24,7 @@
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
 #include "ash/webui/shortcut_customization_ui/mojom/shortcut_customization.mojom.h"
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/strcat.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -84,6 +85,11 @@ const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
 constexpr int kCustomizationModifierMask =
     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN |
     ui::EF_COMMAND_DOWN;
+
+// The following are keys that are not allowed to be used as a customized
+// activation key.
+constexpr ui::KeyboardCode kReservedKeys[] = {ui::VKEY_POWER, ui::VKEY_F13,
+                                              ui::VKEY_SLEEP};
 
 // Gets the parts of the string that don't contain replacements.
 // Ex: "Press and " -> ["Press ", " and "]
@@ -261,6 +267,11 @@ absl::optional<AcceleratorConfigResult> ValidateAccelerator(
   if (modifiers == ui::EF_NONE &&
       !ui::KeyboardCapability::IsFunctionKey(accelerator.key_code())) {
     return AcceleratorConfigResult::kMissingModifier;
+  }
+
+  // Case: Reserved keys cannot be part of a custom accelerator.
+  if (base::Contains(kReservedKeys, accelerator.key_code())) {
+    return AcceleratorConfigResult::kKeyNotAllowed;
   }
 
   // Case: Top-row action keys cannot be part of the accelerator.

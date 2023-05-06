@@ -1355,6 +1355,43 @@ TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
   EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
 }
 
+TEST_F(AcceleratorConfigurationProviderTest, ReservedKeysNotAllowed) {
+  const AcceleratorData test_data[] = {
+      {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
+       TOGGLE_MIRROR_MODE},
+  };
+
+  AshAcceleratorConfiguration* config =
+      Shell::Get()->ash_accelerator_configuration();
+  config->Initialize(test_data);
+  base::RunLoop().RunUntilIdle();
+
+  AcceleratorResultDataPtr result;
+  // Power key.
+  const ui::Accelerator power_accelerator(ui::VKEY_POWER, ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+                          power_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+
+  // Sleep key.
+  const ui::Accelerator sleep_accelerator(ui::VKEY_SLEEP, ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+                          sleep_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+
+  // Lock/f13 key.
+  const ui::Accelerator lock_accelerator(ui::VKEY_F13, ui::EF_COMMAND_DOWN);
+  ash::shortcut_customization::mojom::
+      AcceleratorConfigurationProviderAsyncWaiter(provider_.get())
+          .AddAccelerator(mojom::AcceleratorSource::kAsh, TOGGLE_MIRROR_MODE,
+                          lock_accelerator, &result);
+  EXPECT_EQ(mojom::AcceleratorConfigResult::kKeyNotAllowed, result->result);
+}
+
 TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorNonConfigConflict) {
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
