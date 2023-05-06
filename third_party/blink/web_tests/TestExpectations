@@ -2918,7 +2918,6 @@ crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/f
 crbug.com/626703 [ Mac13 ] virtual/pending-beacon/external/wpt/pending-beacon/pending_post_beacon-cors.tentative.https.window.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-color/color-mix-currentcolor-003.html [ Failure ]
 crbug.com/626703 [ Linux ] virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators-2.https.html [ Timeout ]
-crbug.com/626703 [ Mac13 ] virtual/prefetch/external/wpt/speculation-rules/prefetch/different-initiators-2.https.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-cascade/import-conditional-002.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/mediacapture-record/passthrough/MediaRecorder-passthrough.https.html [ Timeout ]
@@ -2972,8 +2971,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/css/compositing/mix-blend-mode/mix-bl
 crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Crash Timeout ]
 crbug.com/1232504 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-fromelement/capture.html [ Crash ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-image/MediaStreamTrack-getConstraints.https.html [ Crash ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-audio.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/video-rvfc/request-video-frame-callback-during-xr-session.https.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Crash ]
@@ -5025,7 +5022,6 @@ crbug.com/1213322 [ Mac10.14 Release ] external/wpt/html/browsers/the-window-obj
 
 # Do not retry slow tests that also timeouts
 crbug.com/1210687 [ Mac ] http/tests/permissions/chromium/test-request-worker.html [ Pass Timeout ]
-crbug.com/1210687 [ Mac10.15 ] storage/websql/sql-error-codes.html [ Pass Timeout ]
 
 # Sheriff 2023-03-29
 # TODO(crbug.com/1428895): Re-enable this test
@@ -5176,7 +5172,6 @@ crbug.com/1249176 [ Mac11-arm64 ] css3/blending/svg-blend-multiply.html [ Failur
 crbug.com/1249176 [ Mac12-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]
 crbug.com/1249176 [ Mac13-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
-crbug.com/1249176 [ Mac13-arm64 ] external/wpt/html/canvas/element/manual/drawing-images-to-the-canvas/image-orientation/drawImage-from-blob.tentative.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/largest-contentful-paint/image-src-change.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] http/tests/images/document-policy-oversized-images-forced-layout.php [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Failure ]
@@ -5273,7 +5268,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/directly-comp
 
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-011.html [ Crash Failure Pass ]
-crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-018.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-018.html [ Failure Pass ]
 crbug.com/1249176 [ Mac12-arm64 ] http/tests/security/cross-origin-shared-worker-allowed.html [ Crash Pass ]
 
@@ -5990,7 +5984,6 @@ crbug.com/1392781 [ Win ] http/tests/fetch/window/thorough/auth-base-https-other
 crbug.com/1375147 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/singletap-on-overlay-closes-overflow-menu.html [ Failure ]
 crbug.com/1395120 [ Mac11-arm64 ] fast/frames/sandboxed-iframe-plugins.html [ Failure ]
 crbug.com/1396079 [ Mac ] inspector-protocol/memory/forcibly-purge-javascript-memory.js [ Crash Failure ]
-crbug.com/1395840 [ Mac10.15 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1395840 [ Mac11-arm64 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1395840 [ Mac12 Release ] http/tests/accessibility/slow-document-load.html [ Failure ]
 crbug.com/1406027 [ Win ] virtual/media-foundation-for-clear-dcomp/media/controls/overflow-menu-hide-on-resize.html [ Failure ]
