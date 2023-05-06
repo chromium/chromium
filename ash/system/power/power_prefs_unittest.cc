@@ -224,9 +224,9 @@ class PowerPrefsTest : public NoSessionAshTestBase {
     FakeHumanPresenceDBusClient::Get()->set_hps_service_is_available(true);
     NoSessionAshTestBase::SetUp();
 
-    // Sets adaptive charging hardware support.
+    // Initializes adaptive charging hardware support to false.
     power_manager::PowerSupplyProperties power_props;
-    power_props.set_adaptive_charging_supported(true);
+    power_props.set_adaptive_charging_supported(false);
     power_manager_client()->UpdatePowerProperties(power_props);
 
     power_policy_controller_ = chromeos::PowerPolicyController::Get();
@@ -654,29 +654,38 @@ TEST_F(PowerPrefsTest, QuickDimMetrics) {
 }
 
 TEST_F(PowerPrefsTest, SetAdaptiveChargingParams) {
-  // Should be enabled by default.
-  EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
+  // kPowerAdaptiveChargingEnabled is true by default.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kPowerAdaptiveChargingEnabled));
 
-  // Should be disabled after changing the prefs to false.
-  SetAdaptiveChargingPreference(false);
+  // But adaptive charging should be disabled initially because of no hardware
+  // support.
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
 
-  // Should be enabled after setting the prefs to true.
+  // Sets adaptive charging hardware support.
+  power_manager::PowerSupplyProperties power_props;
+  power_props.set_adaptive_charging_supported(true);
+  power_manager_client()->UpdatePowerProperties(power_props);
+
+  // With hardware support exists, the adaptive charging feature is controlled
+  // by prefs settings.
+  SetAdaptiveChargingPreference(false);
+  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
   SetAdaptiveChargingPreference(true);
   EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 
-  // Removes adaptive charging hardware support.
-  power_manager::PowerSupplyProperties power_props;
+  // Once power properties proto showed hardware adaptive_charging_supported, we
+  // never reset it false because the hardware feature should not change.
+  // So although we force power_manager_client to update the power properties
+  // here, hardware support keeps true.
   power_props.set_adaptive_charging_supported(false);
   power_manager_client()->UpdatePowerProperties(power_props);
 
-  // Should be disabled in spite of the prefs setting because lack of hardware
-  // support.
+  // The adaptive charging feature is controlled by prefs settings as above.
   SetAdaptiveChargingPreference(false);
   EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
-
   SetAdaptiveChargingPreference(true);
-  EXPECT_FALSE(power_manager_client()->policy().adaptive_charging_enabled());
+  EXPECT_TRUE(power_manager_client()->policy().adaptive_charging_enabled());
 }
-
 }  // namespace ash

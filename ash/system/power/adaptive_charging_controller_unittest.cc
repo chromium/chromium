@@ -46,9 +46,10 @@ TEST_F(AdaptiveChargingControllerTest, IsAdaptiveChargingSupported) {
   EXPECT_TRUE(adaptive_charging_controller_->IsAdaptiveChargingSupported());
 
   // Case (3) update adaptive_charging_supported to false.
+  // Because it was already set true in Case 2, it keeps true.
   power_props.set_adaptive_charging_supported(false);
   power_manager_client_->UpdatePowerProperties(power_props);
-  EXPECT_FALSE(adaptive_charging_controller_->IsAdaptiveChargingSupported());
+  EXPECT_TRUE(adaptive_charging_controller_->IsAdaptiveChargingSupported());
 }
 
 TEST_F(AdaptiveChargingControllerTest, IsAdaptiveDelayingCharge) {
