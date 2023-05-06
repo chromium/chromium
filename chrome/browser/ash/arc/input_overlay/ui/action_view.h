@@ -11,6 +11,7 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_edit_button.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -82,15 +83,25 @@ class ActionView : public views::View {
   // Reacts to child label focus change.
   void OnChildLabelUpdateFocus(ActionLabel* child, bool focus);
 
-  bool ApplyMousePressed(const ui::MouseEvent& event);
-  bool ApplyMouseDragged(const ui::MouseEvent& event);
+  void ApplyMousePressed(const ui::MouseEvent& event);
+  void ApplyMouseDragged(const ui::MouseEvent& event);
   void ApplyMouseReleased(const ui::MouseEvent& event);
   void ApplyGestureEvent(ui::GestureEvent* event);
   bool ApplyKeyPressed(const ui::KeyEvent& event);
   bool ApplyKeyReleased(const ui::KeyEvent& event);
 
+  // Callbacks related to reposition operations.
+  void OnDraggingCallback();
+  void OnMouseDragEndCallback();
+  void OnGestureDragEndCallback();
+  void OnKeyPressedCallback();
+  void OnKeyReleasedCallback();
+
   void SetTouchPointCenter(const gfx::Point& touch_point_center);
   gfx::Point GetTouchCenterInWindow() const;
+
+  // views::View:
+  void AddedToWidget() override;
 
   Action* action() { return action_; }
   const std::vector<ActionLabel*>& labels() const { return labels_; }
@@ -137,6 +148,8 @@ class ActionView : public views::View {
   DisplayMode display_mode_ = DisplayMode::kView;
 
  private:
+  friend class ActionViewTest;
+
   void AddEditButton();
   void RemoveEditButton();
 
@@ -145,17 +158,12 @@ class ActionView : public views::View {
 
   void RemoveTouchPoint();
 
-  // Drag operations.
-  void OnDragStart(const ui::LocatedEvent& event);
-  bool OnDragUpdate(const ui::LocatedEvent& event);
-  void OnDragEnd();
+  void SetRepositionController();
 
-  void ChangePositionBinding(const gfx::Point& point);
+  std::unique_ptr<RepositionController> reposition_controller_;
 
   // By default, no label is unbound.
   int unbind_label_index_ = kDefaultLabelIndex;
-  // The position when starting to drag.
-  gfx::Point start_drag_event_pos_;
 
   // TODO(b/250900717): Update when the final UX/UI is ready.
   raw_ptr<views::ImageButton> trash_button_ = nullptr;

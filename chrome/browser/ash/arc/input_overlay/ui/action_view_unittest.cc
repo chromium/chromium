@@ -128,10 +128,18 @@ void CheckActionTapLabelPosition(TapLabelPosition label_position,
   }
 }
 
+}  // namespace
+
 class ActionViewTest : public views::ViewsTestBase {
- protected:
+ public:
   ActionViewTest() = default;
 
+  void SetRepositionController() {
+    move_action_view_->SetRepositionController();
+    tap_action_view_->SetRepositionController();
+  }
+
+ protected:
   void PressLeftMouseAtActionView(ActionView* action_view) {
     // Press down at the center of the touch point.
     local_location_ = action_view->touch_point()->bounds().CenterPoint();
@@ -203,6 +211,7 @@ class ActionViewTest : public views::ViewsTestBase {
     return input_mapping_view_->GetIndexOf(view);
   }
 
+ protected:
   raw_ptr<ActionView> move_action_view_;
   raw_ptr<ActionView> tap_action_view_;
   raw_ptr<Action> move_action_;
@@ -237,6 +246,7 @@ class ActionViewTest : public views::ViewsTestBase {
     tap_action_view_ = tap_action_->action_view();
     move_action_ = actions[1].get();
     move_action_view_ = move_action_->action_view();
+    SetRepositionController();
     SetDisplayMode(DisplayMode::kView);
   }
 
@@ -578,5 +588,4 @@ TEST_F(ActionViewTest, TestActionViewReorder) {
   EXPECT_EQ(0u, *GetIndexOf(move_action_view_));
 }
 
-}  // namespace
 }  // namespace arc::input_overlay

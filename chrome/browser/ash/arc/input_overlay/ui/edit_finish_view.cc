@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_finish_view.h"
 
-#include <memory>
-
 #include "ash/app_list/app_list_util.h"
 #include "ash/style/style_util.h"
 #include "base/functional/bind.h"
@@ -194,7 +192,7 @@ EditFinishView::EditFinishView(
       l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MENU_FOCUS));
 }
 
-EditFinishView::~EditFinishView() {}
+EditFinishView::~EditFinishView() = default;
 
 void EditFinishView::Init(const gfx::Size& parent_size) {
   DCHECK(display_overlay_controller_);
@@ -259,99 +257,67 @@ int EditFinishView::CalculateWidth() {
   return width;
 }
 
-bool EditFinishView::OnMousePressed(const ui::MouseEvent& event) {
-  OnDragStart(event);
-  return true;
-}
-
-bool EditFinishView::OnMouseDragged(const ui::MouseEvent& event) {
-  SetCursor(ui::mojom::CursorType::kGrabbing);
-  OnDragUpdate(event);
-  return true;
-}
-
-void EditFinishView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!is_dragging_) {
-    views::View::OnMouseReleased(event);
-    return;
-  }
-  SetCursor(ui::mojom::CursorType::kGrab);
-  OnDragEnd();
+void EditFinishView::OnMouseDragEndCallback() {
   RecordInputOverlayButtonGroupReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kMouseDragRepostion,
       display_overlay_controller_->GetWindowStateType());
 }
 
-ui::Cursor EditFinishView::GetCursor(const ui::MouseEvent& event) {
-  return ui::mojom::CursorType::kHand;
+void EditFinishView::OnGestureDragEndCallback() {
+  RecordInputOverlayButtonGroupReposition(
+      display_overlay_controller_->GetPackageName(),
+      RepositionType::kTouchscreenDragRepostion,
+      display_overlay_controller_->GetWindowStateType());
 }
 
-void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
-  switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-      OnDragStart(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      OnDragUpdate(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
-      OnDragEnd();
-      event->SetHandled();
-      RecordInputOverlayButtonGroupReposition(
-          display_overlay_controller_->GetPackageName(),
-          RepositionType::kTouchscreenDragRepostion,
-          display_overlay_controller_->GetWindowStateType());
-      break;
-    default:
-      views::View::OnGestureEvent(event);
-      break;
-  }
-}
-
-bool EditFinishView::OnKeyPressed(const ui::KeyEvent& event) {
-  auto target_position = origin();
-  if (!UpdatePositionByArrowKey(event.key_code(), target_position) ||
-      !HasFocus()) {
-    return views::View::OnKeyPressed(event);
-  }
-
-  ClampPosition(target_position, size(), parent()->size(), kParentPadding);
-  SetPosition(target_position);
-  return true;
-}
-
-bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (!ash::IsArrowKeyEvent(event) || !HasFocus()) {
-    return views::View::OnKeyReleased(event);
-  }
-
+void EditFinishView::OnKeyReleasedCallback() {
   RecordInputOverlayButtonGroupReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,
       display_overlay_controller_->GetWindowStateType());
+}
+
+void EditFinishView::AddedToWidget() {
+  SetRepositionController();
+}
+
+bool EditFinishView::OnMousePressed(const ui::MouseEvent& event) {
+  reposition_controller_->OnMousePressed(event);
   return true;
 }
 
-void EditFinishView::OnDragStart(const ui::LocatedEvent& event) {
-  start_drag_event_pos_ = event.location();
-  start_drag_view_pos_ = origin();
+bool EditFinishView::OnMouseDragged(const ui::MouseEvent& event) {
+  SetCursor(ui::mojom::CursorType::kGrabbing);
+  reposition_controller_->OnMouseDragged(event);
+  return true;
 }
 
-void EditFinishView::OnDragUpdate(const ui::LocatedEvent& event) {
-  is_dragging_ = true;
-
-  auto new_location = event.location();
-  auto target_position = origin() + (new_location - start_drag_event_pos_);
-  ClampPosition(target_position, size(), parent()->size(), kParentPadding);
-  SetPosition(target_position);
+void EditFinishView::OnMouseReleased(const ui::MouseEvent& event) {
+  SetCursor(ui::mojom::CursorType::kGrab);
+  reposition_controller_->OnMouseReleased(event);
 }
 
-void EditFinishView::OnDragEnd() {
-  is_dragging_ = false;
+void EditFinishView::OnGestureEvent(ui::GestureEvent* event) {
+  reposition_controller_->OnGestureEvent(event);
+}
+
+bool EditFinishView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (!reposition_controller_->OnKeyPressed(event)) {
+    return views::View::OnKeyPressed(event);
+  }
+  return true;
+}
+
+bool EditFinishView::OnKeyReleased(const ui::KeyEvent& event) {
+  if (!reposition_controller_->OnKeyReleased(event)) {
+    return views::View::OnKeyReleased(event);
+  }
+  return true;
+}
+
+ui::Cursor EditFinishView::GetCursor(const ui::MouseEvent& event) {
+  return ui::mojom::CursorType::kHand;
 }
 
 void EditFinishView::SetCursor(ui::mojom::CursorType cursor_type) {
@@ -388,6 +354,20 @@ void EditFinishView::OnCancelButtonPressed() {
     return;
   }
   display_overlay_controller_->OnCustomizeCancel();
+}
+
+void EditFinishView::SetRepositionController() {
+  if (reposition_controller_) {
+    return;
+  }
+  reposition_controller_ =
+      std::make_unique<RepositionController>(this, kParentPadding);
+  reposition_controller_->set_mouse_drag_end_callback(base::BindRepeating(
+      &EditFinishView::OnMouseDragEndCallback, base::Unretained(this)));
+  reposition_controller_->set_gesture_drag_end_callback(base::BindRepeating(
+      &EditFinishView::OnGestureDragEndCallback, base::Unretained(this)));
+  reposition_controller_->set_key_released_callback(base::BindRepeating(
+      &EditFinishView::OnKeyReleasedCallback, base::Unretained(this)));
 }
 
 }  // namespace arc::input_overlay

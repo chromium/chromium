@@ -94,107 +94,83 @@ void MenuEntryView::ChangeHoverState(bool is_hovered) {
   hover_state_ = is_hovered;
 }
 
-bool MenuEntryView::OnMousePressed(const ui::MouseEvent& event) {
-  OnDragStart(event);
-  return views::Button::OnMousePressed(event);
+void MenuEntryView::OnFirstDraggingCallback() {
+  ChangeMenuEntryOnDrag(/*is_dragging=*/true);
 }
 
-bool MenuEntryView::OnMouseDragged(const ui::MouseEvent& event) {
-  SetCursor(ui::mojom::CursorType::kGrabbing);
-  OnDragUpdate(event);
-  return views::Button::OnMouseDragged(event);
+void MenuEntryView::OnMouseDragEndCallback() {
+  ChangeMenuEntryOnDrag(/*is_dragging=*/false);
+  // When menu entry is in dragging, input events target at overlay layer. When
+  // finishing drag, input events should target on the app content layer
+  // underneath the overlay. So it needs to leave focus to make event target
+  // leave from the overlay layer.
+  on_position_changed_callback_.Run(/*leave_focus=*/true,
+                                    absl::make_optional(origin()));
+  RecordInputOverlayMenuEntryReposition(
+      display_overlay_controller_->GetPackageName(),
+      RepositionType::kMouseDragRepostion,
+      display_overlay_controller_->GetWindowStateType());
 }
 
-void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
-  if (!is_dragging_) {
-    views::Button::OnMouseReleased(event);
-    MayCancelLocatedEvent(event);
-  } else {
-    SetCursor(ui::mojom::CursorType::kGrab);
-    OnDragEnd();
-    RecordInputOverlayMenuEntryReposition(
-        display_overlay_controller_->GetPackageName(),
-        RepositionType::kMouseDragRepostion,
-        display_overlay_controller_->GetWindowStateType());
-  }
+void MenuEntryView::OnGestureDragEndCallback() {
+  ChangeMenuEntryOnDrag(/*is_dragging=*/false);
+  on_position_changed_callback_.Run(/*leave_focus=*/true,
+                                    absl::make_optional(origin()));
+  RecordInputOverlayMenuEntryReposition(
+      display_overlay_controller_->GetPackageName(),
+      RepositionType::kTouchscreenDragRepostion,
+      display_overlay_controller_->GetWindowStateType());
 }
 
-void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
-  switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-      OnDragStart(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      OnDragUpdate(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
-      OnDragEnd();
-      event->SetHandled();
-      RecordInputOverlayMenuEntryReposition(
-          display_overlay_controller_->GetPackageName(),
-          RepositionType::kTouchscreenDragRepostion,
-          display_overlay_controller_->GetWindowStateType());
-      break;
-    default:
-      views::Button::OnGestureEvent(event);
-      break;
-  }
-}
-
-bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
-  auto target_position = origin();
-  if (!UpdatePositionByArrowKey(event.key_code(), target_position)) {
-    return views::ImageButton::OnKeyPressed(event);
-  }
-  ClampPosition(target_position, size(), parent()->size(), kParentPadding);
-  SetPosition(target_position);
-  return true;
-}
-
-bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
-  if (!ash::IsArrowKeyEvent(event)) {
-    return views::ImageButton::OnKeyReleased(event);
-  }
-
+void MenuEntryView::OnKeyReleasedCallback() {
   on_position_changed_callback_.Run(/*leave_focus=*/false,
                                     absl::make_optional(origin()));
   RecordInputOverlayMenuEntryReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,
       display_overlay_controller_->GetWindowStateType());
+}
+
+void MenuEntryView::AddedToWidget() {
+  SetRepositionController();
+}
+
+bool MenuEntryView::OnMousePressed(const ui::MouseEvent& event) {
+  reposition_controller_->OnMousePressed(event);
+  return views::ImageButton::OnMousePressed(event);
+}
+
+bool MenuEntryView::OnMouseDragged(const ui::MouseEvent& event) {
+  SetCursor(ui::mojom::CursorType::kGrabbing);
+  reposition_controller_->OnMouseDragged(event);
   return true;
 }
 
-void MenuEntryView::OnDragStart(const ui::LocatedEvent& event) {
-  start_drag_event_pos_ = event.location();
-  start_drag_view_pos_ = origin();
-}
-
-void MenuEntryView::OnDragUpdate(const ui::LocatedEvent& event) {
-  if (!is_dragging_) {
-    is_dragging_ = true;
-    ChangeMenuEntryOnDrag(/*is_dragging=*/true);
+void MenuEntryView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (!reposition_controller_->OnMouseReleased(event)) {
+    views::ImageButton::OnMouseReleased(event);
+  } else {
+    SetCursor(ui::mojom::CursorType::kGrab);
   }
-  auto new_location = event.location();
-  auto target_position = origin() + (new_location - start_drag_event_pos_);
-  ClampPosition(target_position, size(), parent()->size(), kParentPadding);
-  SetPosition(target_position);
 }
 
-void MenuEntryView::OnDragEnd() {
-  is_dragging_ = false;
-  ChangeMenuEntryOnDrag(is_dragging_);
-  // When menu entry is in dragging, input events target at overlay layer. When
-  // finishing drag, input events should target on the app content layer
-  // underneath the overlay. So it needs to leave focus to make event target
-  // leave from the overlay layer.
-  on_position_changed_callback_.Run(/*leave_focus=*/true,
-                                    origin() != start_drag_view_pos_
-                                        ? absl::make_optional(origin())
-                                        : absl::nullopt);
+void MenuEntryView::OnGestureEvent(ui::GestureEvent* event) {
+  MayCancelLocatedEvent(*event);
+  if (!reposition_controller_->OnGestureEvent(event)) {
+    return views::ImageButton::OnGestureEvent(event);
+  }
+}
+
+bool MenuEntryView::OnKeyPressed(const ui::KeyEvent& event) {
+  return reposition_controller_->OnKeyPressed(event)
+             ? true
+             : views::ImageButton::OnKeyPressed(event);
+}
+
+bool MenuEntryView::OnKeyReleased(const ui::KeyEvent& event) {
+  return reposition_controller_->OnKeyReleased(event)
+             ? true
+             : views::ImageButton::OnKeyReleased(event);
 }
 
 void MenuEntryView::MayCancelLocatedEvent(const ui::LocatedEvent& event) {
@@ -227,6 +203,22 @@ void MenuEntryView::SetCursor(ui::mojom::CursorType cursor_type) {
   if (widget) {
     widget->SetCursor(cursor_type);
   }
+}
+
+void MenuEntryView::SetRepositionController() {
+  if (reposition_controller_) {
+    return;
+  }
+  reposition_controller_ =
+      std::make_unique<RepositionController>(this, kParentPadding);
+  reposition_controller_->set_first_dragging_callback(base::BindRepeating(
+      &MenuEntryView::OnFirstDraggingCallback, base::Unretained(this)));
+  reposition_controller_->set_mouse_drag_end_callback(base::BindRepeating(
+      &MenuEntryView::OnMouseDragEndCallback, base::Unretained(this)));
+  reposition_controller_->set_gesture_drag_end_callback(base::BindRepeating(
+      &MenuEntryView::OnGestureDragEndCallback, base::Unretained(this)));
+  reposition_controller_->set_key_released_callback(base::BindRepeating(
+      &MenuEntryView::OnKeyReleasedCallback, base::Unretained(this)));
 }
 
 }  // namespace arc::input_overlay

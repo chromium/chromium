@@ -196,71 +196,60 @@ void ActionView::OnChildLabelUpdateFocus(ActionLabel* child, bool focus) {
   }
 }
 
-bool ActionView::ApplyMousePressed(const ui::MouseEvent& event) {
-  OnDragStart(event);
-  return true;
+void ActionView::ApplyMousePressed(const ui::MouseEvent& event) {
+  reposition_controller_->OnMousePressed(event);
 }
 
-bool ActionView::ApplyMouseDragged(const ui::MouseEvent& event) {
-  return OnDragUpdate(event);
+void ActionView::ApplyMouseDragged(const ui::MouseEvent& event) {
+  reposition_controller_->OnMouseDragged(event);
 }
 
 void ActionView::ApplyMouseReleased(const ui::MouseEvent& event) {
-  OnDragEnd();
+  reposition_controller_->OnMouseReleased(event);
+}
+
+void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
+  reposition_controller_->OnGestureEvent(event);
+}
+
+bool ActionView::ApplyKeyPressed(const ui::KeyEvent& event) {
+  return reposition_controller_->OnKeyPressed(event);
+}
+
+bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
+  return reposition_controller_->OnKeyReleased(event);
+}
+
+void ActionView::OnDraggingCallback() {
+  MayUpdateLabelPosition();
+}
+
+void ActionView::OnMouseDragEndCallback() {
+  action_->PrepareToBindPosition(GetTouchCenterInWindow());
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kMouseDragRepostion,
       display_overlay_controller_->GetWindowStateType());
 }
 
-void ActionView::ApplyGestureEvent(ui::GestureEvent* event) {
-  switch (event->type()) {
-    case ui::ET_GESTURE_SCROLL_BEGIN:
-      OnDragStart(*event);
-      event->SetHandled();
-      break;
-    case ui::ET_GESTURE_SCROLL_UPDATE:
-      if (OnDragUpdate(*event)) {
-        event->SetHandled();
-      }
-      break;
-    case ui::ET_GESTURE_SCROLL_END:
-    case ui::ET_SCROLL_FLING_START:
-      OnDragEnd();
-      event->SetHandled();
-      RecordInputOverlayActionReposition(
-          display_overlay_controller_->GetPackageName(),
-          RepositionType::kTouchscreenDragRepostion,
-          display_overlay_controller_->GetWindowStateType());
-      break;
-    default:
-      break;
-  }
+void ActionView::OnGestureDragEndCallback() {
+  action_->PrepareToBindPosition(GetTouchCenterInWindow());
+  RecordInputOverlayActionReposition(
+      display_overlay_controller_->GetPackageName(),
+      RepositionType::kTouchscreenDragRepostion,
+      display_overlay_controller_->GetWindowStateType());
 }
 
-bool ActionView::ApplyKeyPressed(const ui::KeyEvent& event) {
-  auto target_location = origin();
-  if (!UpdatePositionByArrowKey(event.key_code(), target_location)) {
-    return View::OnKeyPressed(event);
-  }
-  ClampPosition(target_location, size(), parent()->size());
-  SetPosition(target_location);
+void ActionView::OnKeyPressedCallback() {
   MayUpdateLabelPosition();
-  return true;
 }
 
-bool ActionView::ApplyKeyReleased(const ui::KeyEvent& event) {
-  if (!ash::IsArrowKeyEvent(event)) {
-    return View::OnKeyReleased(event);
-  }
-  DCHECK(touch_point_center_);
-  ChangePositionBinding(gfx::Point(origin().x() + touch_point_center_->x(),
-                                   origin().y() + touch_point_center_->y()));
+void ActionView::OnKeyReleasedCallback() {
+  action_->PrepareToBindPosition(GetTouchCenterInWindow());
   RecordInputOverlayActionReposition(
       display_overlay_controller_->GetPackageName(),
       RepositionType::kKeyboardArrowKeyReposition,
       display_overlay_controller_->GetWindowStateType());
-  return true;
 }
 
 void ActionView::SetTouchPointCenter(const gfx::Point& touch_point_center) {
@@ -321,28 +310,6 @@ void ActionView::RemoveTouchPoint() {
   touch_point_ = nullptr;
 }
 
-void ActionView::OnDragStart(const ui::LocatedEvent& event) {
-  start_drag_event_pos_ = event.location();
-  ResetFocusTo(this);
-}
-
-bool ActionView::OnDragUpdate(const ui::LocatedEvent& event) {
-  auto new_location = event.location();
-  auto target_location = origin() + (new_location - start_drag_event_pos_);
-  ClampPosition(target_location, size(), parent()->size());
-  SetPosition(target_location);
-  MayUpdateLabelPosition();
-  return true;
-}
-
-void ActionView::OnDragEnd() {
-  ChangePositionBinding(GetTouchCenterInWindow());
-}
-
-void ActionView::ChangePositionBinding(const gfx::Point& new_touch_center) {
-  action_->PrepareToBindPosition(new_touch_center);
-}
-
 gfx::Point ActionView::GetTouchCenterInWindow() const {
   if (!touch_point_center_) {
     auto point = action_->GetUICenterPosition();
@@ -352,6 +319,27 @@ gfx::Point ActionView::GetTouchCenterInWindow() const {
   auto pos = *touch_point_center_;
   pos.Offset(origin().x(), origin().y());
   return pos;
+}
+
+void ActionView::AddedToWidget() {
+  SetRepositionController();
+}
+
+void ActionView::SetRepositionController() {
+  if (reposition_controller_) {
+    return;
+  }
+  reposition_controller_ = std::make_unique<RepositionController>(this);
+  reposition_controller_->set_dragging_callback(base::BindRepeating(
+      &ActionView::OnDraggingCallback, base::Unretained(this)));
+  reposition_controller_->set_mouse_drag_end_callback(base::BindRepeating(
+      &ActionView::OnMouseDragEndCallback, base::Unretained(this)));
+  reposition_controller_->set_gesture_drag_end_callback(base::BindRepeating(
+      &ActionView::OnGestureDragEndCallback, base::Unretained(this)));
+  reposition_controller_->set_key_pressed_callback(base::BindRepeating(
+      &ActionView::OnKeyPressedCallback, base::Unretained(this)));
+  reposition_controller_->set_key_released_callback(base::BindRepeating(
+      &ActionView::OnKeyReleasedCallback, base::Unretained(this)));
 }
 
 }  // namespace arc::input_overlay

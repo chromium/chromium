@@ -8,6 +8,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/reposition_controller.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -31,7 +32,14 @@ class MenuEntryView : public views::ImageButton {
   // Change hover state for menu entry button.
   void ChangeHoverState(bool is_hovered);
 
+  // Callbacks related to reposition operations.
+  void OnFirstDraggingCallback();
+  void OnMouseDragEndCallback();
+  void OnGestureDragEndCallback();
+  void OnKeyReleasedCallback();
+
   // views::View:
+  void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -40,11 +48,6 @@ class MenuEntryView : public views::ImageButton {
   bool OnKeyReleased(const ui::KeyEvent& event) override;
 
  private:
-  // Drag operations.
-  void OnDragStart(const ui::LocatedEvent& event);
-  void OnDragUpdate(const ui::LocatedEvent& event);
-  void OnDragEnd();
-
   // TODO(b/260937747) For Alpha version, this view is not movable. Cancel
   // located event and reset event target when the located event doesn't
   // released on top of this view. This can be removed when removing the AlphaV2
@@ -58,14 +61,11 @@ class MenuEntryView : public views::ImageButton {
   // Set cusor type.
   void SetCursor(ui::mojom::CursorType cursor_type);
 
+  void SetRepositionController();
+
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
 
-  // LocatedEvent's position when drag starts.
-  gfx::Point start_drag_event_pos_;
-  // This view's position when drag starts.
-  gfx::Point start_drag_view_pos_;
-  // If this view is in a dragging state.
-  bool is_dragging_ = false;
+  std::unique_ptr<RepositionController> reposition_controller_;
 
   // The current hover state for the menu entry.
   bool hover_state_ = false;

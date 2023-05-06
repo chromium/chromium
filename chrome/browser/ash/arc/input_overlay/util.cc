@@ -57,25 +57,6 @@ MouseAction ConvertToMouseActionEnum(const std::string& mouse_action) {
   return MouseAction::NONE;
 }
 
-bool UpdatePositionByArrowKey(ui::KeyboardCode key, gfx::Point& position) {
-  switch (key) {
-    case ui::VKEY_LEFT:
-      position.set_x(position.x() - kArrowKeyMoveDistance);
-      return true;
-    case ui::VKEY_RIGHT:
-      position.set_x(position.x() + kArrowKeyMoveDistance);
-      return true;
-    case ui::VKEY_UP:
-      position.set_y(position.y() - kArrowKeyMoveDistance);
-      return true;
-    case ui::VKEY_DOWN:
-      position.set_y(position.y() + kArrowKeyMoveDistance);
-      return true;
-    default:
-      return false;
-  }
-}
-
 InputElement* GetInputBindingByBindingOption(Action* action,
                                              BindingOption binding_option) {
   InputElement* input_binding = nullptr;
@@ -93,29 +74,6 @@ InputElement* GetInputBindingByBindingOption(Action* action,
       NOTREACHED();
   }
   return input_binding;
-}
-
-void ClampPosition(gfx::Point& position,
-                   const gfx::Size& ui_size,
-                   const gfx::Size& parent_size,
-                   int parent_padding) {
-  int lo = parent_padding;
-  int hi = parent_size.width() - ui_size.width() - parent_padding;
-  if (lo >= hi) {
-    // Ignore |parent_padding| if there is not enough space.
-    lo = 0;
-    hi += parent_padding;
-  }
-  position.set_x(std::clamp(position.x(), lo, hi));
-
-  lo = parent_padding;
-  hi = parent_size.height() - ui_size.height() - parent_padding;
-  if (lo >= hi) {
-    // Ignore |parent_padding| if there is not enough space.
-    lo = 0;
-    hi += parent_padding;
-  }
-  position.set_y(std::clamp(position.y(), lo, hi));
 }
 
 std::string GetCurrentSystemVersion() {
