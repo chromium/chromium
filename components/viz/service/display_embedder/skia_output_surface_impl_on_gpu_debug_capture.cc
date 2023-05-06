@@ -85,8 +85,11 @@ void AttemptDebuggerBufferCapture(
     gpu::SharedContextState* context_state,
     gpu::SharedImageRepresentationFactory* shared_image_representation_factory,
     GrDirectContext* gr_direct_context) {
-  if (!context_state->MakeCurrent(nullptr)) {
-    DLOG(ERROR) << "Failed to make context state current.";
+  if (!context_state->IsCurrent(nullptr)) {
+    // There should already be a current context from the caller of this
+    // function. We don't make a context current to avoid needing to reset it
+    // afterwards.
+    DLOG(ERROR) << "No current context state.";
     return;
   }
 
@@ -134,7 +137,7 @@ void AttemptDebuggerBufferCapture(
   auto si_info = std::make_unique<DebuggerCaptureBufferSharedImageInfo>();
   si_info->si_format = context->format();
   si_info->size = gfx::Size(dst_info.width(), dst_info.height());
-  si_info->color_space = gfx::ColorSpace(*context->color_space());
+  si_info->color_space = representation->color_space();
   si_info->surface_origin = context->origin();
   si_info->alpha_type = context->alpha_type();
   si_info->usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
