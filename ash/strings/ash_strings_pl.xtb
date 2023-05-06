@@ -276,7 +276,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2417486498593892439">Zaloguj się do sieci</translation>
 <translation id="2426051945783024481">Kadr kamery jest automatycznie wyśrodkowany</translation>
 <translation id="2427507373259914951">Kliknięcie lewym przyciskiem</translation>
-<translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz: <ph name="PASSKEY" /></translation>
+<translation id="2429753432712299108">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Zanim to zaakceptujesz, sprawdź, czy na tym urządzeniu wyświetla się klucz dostępu: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Pokaż hasło</translation>
 <translation id="243878895369688216">Otwierane wczoraj</translation>
 <translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
@@ -1065,7 +1065,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="6643169293433369663">Cofnij sortowanie według nazwy</translation>
 <translation id="6649641931981131786">Dostosuj kamerę tak, aby pokazywała Cię pośrodku ekranu.</translation>
 <translation id="6650072551060208490">Strona <ph name="ORIGIN_NAME" /> wymaga potwierdzenia, że to Ty</translation>
-<translation id="6650933572246256093">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten klucz: <ph name="PASSKEY" /></translation>
+<translation id="6650933572246256093">Urządzenie Bluetooth „<ph name="DEVICE_NAME" />” chce się sparować. Wpisz na nim ten klucz dostępu: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Hasło</translation>
 <translation id="6665545700722362599">przyznawać stronom internetowym, aplikacjom i rozszerzeniom dostęp do usług lokalizacyjnych, mikrofonu bądź aparatu na urządzeniu lub do innych funkcji;</translation>
 <translation id="6667908387435388584">Możesz połączyć się z punktem dostępu na telefonie, wyciszyć i znaleźć telefon oraz wyświetlić ostatnie karty Chrome otwarte na telefonie</translation>

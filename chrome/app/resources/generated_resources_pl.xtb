@@ -1089,7 +1089,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1941995177877935582">Pokaż mapowanie klawiszy</translation>
 <translation id="1942128823046546853">Odczytywanie i zmienianie wszystkich Twoich danych we wszystkich witrynach</translation>
 <translation id="1944528062465413897">Kod parowania Bluetooth:</translation>
-<translation id="1944535645109964458">Brak dostępnych kluczy</translation>
+<translation id="1944535645109964458">Brak dostępnych kluczy dostępu</translation>
 <translation id="1944921356641260203">Znaleziono aktualizację</translation>
 <translation id="1947136734041527201">Umożliwia logowanie się w witrynach za pomocą Twojego konta u dostawcy tożsamości.</translation>
 <translation id="1949584741547056205">Szybkie odpowiedzi</translation>
@@ -1996,7 +1996,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="274029851662193272">Obniżony</translation>
 <translation id="2740363334137520315">Dodaj nową sekcję w opcji „Wyszukaj karty”, żeby móc łatwo znaleźć karty związane z odtwarzaniem plików audio lub filmów. Aby otworzyć tę opcję, użyj przycisku znajdującego się w górnym rogu przeglądarki.</translation>
 <translation id="2740531572673183784">OK</translation>
-<translation id="2740876196999178364">Te klucze są zapisywane tylko na tym urządzeniu. Nie są one zapisywane na Twoim koncie Google.</translation>
+<translation id="2740876196999178364">Te klucze dostępu są zapisywane tylko na tym urządzeniu. Nie są one zapisywane na Twoim koncie Google.</translation>
 <translation id="2741713322780029189">Otwórz terminal odzyskiwania</translation>
 <translation id="2741912629735277980">Wyświetlanie UI na ekranie logowania</translation>
 <translation id="2742448780373473567">Instalacja systemu operacyjnego <ph name="DEVICE_OS" /> spowoduje zastąpienie wszystkich danych na urządzeniu.</translation>
@@ -2073,7 +2073,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2801954693771979815">Rozmiar elementów na ekranie</translation>
 <translation id="2802557211515765772">Nie ma zarządzanych drukarek.</translation>
 <translation id="2803313416453193357">Otwórz folder</translation>
-<translation id="2803719750464280163">Potwierdź, że <ph name="PASSKEY" /> jest kluczem wyświetlanym na urządzeniu Bluetooth <ph name="DEVICE" />.</translation>
+<translation id="2803719750464280163">Potwierdź, że <ph name="PASSKEY" /> jest kluczem dostępu wyświetlanym na urządzeniu Bluetooth <ph name="DEVICE" />.</translation>
 <translation id="2804043232879091219">Nie udało się otworzyć alternatywnej przeglądarki</translation>
 <translation id="2804667941345577550">Wylogujemy Cię z tej strony, także na otwartych kartach</translation>
 <translation id="2804680522274557040">Kamera wyłączona</translation>
@@ -3826,7 +3826,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4409697491990005945">Marginesy</translation>
 <translation id="4410545552906060960">Do odblokowywania urządzenia możesz używać numeru PIN zamiast hasła. Możesz podać PIN później w Ustawieniach.</translation>
 <translation id="4411578466613447185">Certyfikat do podpisywania kodu</translation>
-<translation id="4411719918614785832">Te klucze są zapisywane w systemie Windows Hello na tym komputerze. Nie są one zapisywane na Twoim koncie Google.</translation>
+<translation id="4411719918614785832">Te klucze dostępu są zapisywane w systemie Windows Hello na tym komputerze. Nie są one zapisywane na Twoim koncie Google.</translation>
 <translation id="4412632005703201014">Aplikacje Chrome zmieniamy w progresywne aplikacje internetowe. Tę aplikację Chrome zainstalowała w przeglądarce Twoja organizacja. Aby otworzyć progresywną aplikację internetową z listy aplikacji, najpierw skontaktuj się z administratorem i poproś o odinstalowanie aplikacji Chrome. Tymczasem możesz wejść na <ph name="EXTENSION_LAUNCH_URL" />, aby otworzyć rozszerzenie <ph name="EXTENSION_NAME" /> w przeglądarce.</translation>
 <translation id="4412698727486357573">Centrum pomocy</translation>
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
@@ -4039,7 +4039,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4594577641390224176">Szukasz strony z informacjami o systemie? Wejdź na</translation>
 <translation id="4595560905247879544">Aplikacje i rozszerzenia może zmieniać tylko menedżer (<ph name="CUSTODIAN_NAME" />).</translation>
 <translation id="4596295440756783523">Masz zapisane certyfikaty, które potwierdzają tożsamość tych serwerów</translation>
-<translation id="4598345735110653698">Zarządzaj kluczami</translation>
+<translation id="4598345735110653698">Zarządzaj kluczami dostępu</translation>
 <translation id="4598549027014564149">W trybie incognito witryny nie mogą używać plików cookie do śledzenia Twojej aktywności związanej z przeglądaniem innych witryn, nawet powiązanych. Twoja aktywność związana z przeglądaniem nie służy do personalizowania reklam. Funkcje w niektórych witrynach mogą nie działać.</translation>
 <translation id="4598556348158889687">Zarządzanie pamięcią</translation>
 <translation id="4598776695426288251">Sieć Wi-Fi jest dostępna przez wiele urządzeń</translation>
@@ -4580,7 +4580,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5109816792918100764">Usuń: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="5111646998522066203">Zamknij tryb incognito</translation>
 <translation id="5111692334209731439">&amp;Menedżer zakładek</translation>
-<translation id="5111794652433847656">Brak kluczy na tym urządzeniu dla witryny <ph name="APP_NAME" /></translation>
+<translation id="5111794652433847656">Brak kluczy dostępu na tym urządzeniu dla witryny <ph name="APP_NAME" /></translation>
 <translation id="5112577000029535889">&amp;Narzędzia dla deweloperów</translation>
 <translation id="511313294362309725">Włącz Szybkie parowanie</translation>
 <translation id="5113739826273394829">Jeśli klikniesz tę ikonę, <ph name="DEVICE_TYPE" /> zostanie zablokowany ręcznie. Następnym razem trzeba będzie wpisać hasło, by go odblokować.</translation>
@@ -6065,7 +6065,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6482559668224714696">Lupa pełnoekranowa</translation>
 <translation id="6483485061007832714">Otwieranie pobranego pliku</translation>
 <translation id="6483805311199035658">Otwieram <ph name="FILE" />...</translation>
-<translation id="6486301003991593638">Aby zarządzać kluczami, użyj nowszej wersji systemu Windows</translation>
+<translation id="6486301003991593638">Aby zarządzać kluczami dostępu, użyj nowszej wersji systemu Windows</translation>
 <translation id="6488266788670893993"><ph name="BRAND" /> nie może sprawdzić Twoich haseł pod kątem naruszenia bezpieczeństwa danych. Sprawdź połączenie z internetem.</translation>
 <translation id="6488384360522318064">Wybierz język</translation>
 <translation id="648927581764831596">Brak dostępnych</translation>
@@ -7876,7 +7876,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="810185532889603849">Kolor niestandardowy</translation>
 <translation id="8101987792947961127">Przy następnym uruchomieniu trzeba wykonać Powerwash</translation>
 <translation id="8102139037507939978">Usuń informacje umożliwiające identyfikację z pliku system_logs.txt.</translation>
-<translation id="810362914482827094">Wyszukaj klucze</translation>
+<translation id="810362914482827094">Wyszukaj klucze dostępu</translation>
 <translation id="8104088837833760645">Pobierz profil eSIM</translation>
 <translation id="8105368624971345109">Wyłącz</translation>
 <translation id="8107015733319732394">Instaluję Sklep Google Play na urządzeniu <ph name="DEVICE_TYPE" />. Może to potrwać kilka minut.</translation>
@@ -8356,7 +8356,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8557022314818157177">Dotykaj klucza bezpieczeństwa, dopóki Twój odcisk nie zostanie zarejestrowany</translation>
 <translation id="8557180006508471423">Włącz „Google Chrome” w usługach lokalizacyjnych na Macu</translation>
 <translation id="8557856025359704738">Następne pobieranie: <ph name="NEXT_DATE_DOWNLOAD" />.</translation>
-<translation id="8559858985063901027">Klucze</translation>
+<translation id="8559858985063901027">Klucze dostępu</translation>
 <translation id="8559961053328923750">Chrome ogranicza łączną ilość danych, które witryny mogą udostępniać za pomocą przeglądarki, aby mierzyć skuteczność reklam</translation>
 <translation id="8560327176991673955">{COUNT,plural, =0{Otwórz wszystkie w &amp;nowym oknie}=1{Otwórz w &amp;nowym oknie}few{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}many{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}other{Otwórz wszystkie ({COUNT}) w &amp;nowym oknie}}</translation>
 <translation id="8561206103590473338">Słoń</translation>
