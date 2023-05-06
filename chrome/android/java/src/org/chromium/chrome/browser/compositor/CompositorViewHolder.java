@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -106,7 +107,6 @@ public class CompositorViewHolder extends FrameLayout
                    BrowserControlsStateProvider.Observer, ChromeAccessibilityUtil.Observer,
                    TabObscuringHandler.Observer, ViewGroup.OnHierarchyChangeListener {
     private static final long SYSTEM_UI_VIEWPORT_UPDATE_DELAY_MS = 500;
-    private static final long SET_BACKGROUND_TIMEOUT_MS = 500;
     private static final MutableFlagWithSafeDefault sDeferKeepScreenOnFlag =
             new MutableFlagWithSafeDefault(
                     ChromeFeatureList.DEFER_KEEP_SCREEN_ON_DURING_GESTURE, false);
@@ -230,6 +230,7 @@ public class CompositorViewHolder extends FrameLayout
     private boolean mCanSetBackground;
     private boolean mFirstTabCreated;
     private boolean mHasDrawnOnce;
+    private int mDelayTempStripRemovalTimeoutMs;
 
     /**
      * Last MotionEvent dispatched to this object for a currently active gesture. If there is no
@@ -456,6 +457,8 @@ public class CompositorViewHolder extends FrameLayout
         handleSystemUiVisibilityChange();
 
         mDelayTempStripRemoval = TabUiFeatureUtilities.isDelayTempStripRemovalEnabled(getContext());
+        mDelayTempStripRemovalTimeoutMs =
+                TabManagementFieldTrial.DELAY_TEMP_STRIP_TIMEOUT_MS.getValue();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ApiHelperForO.setDefaultFocusHighlightEnabled(this, false);
@@ -1291,7 +1294,7 @@ public class CompositorViewHolder extends FrameLayout
                     // that we can remove the background when the buffer swaps.
                     mSetBackgroundTimedOut = true;
                 }
-            }, SET_BACKGROUND_TIMEOUT_MS);
+            }, mDelayTempStripRemovalTimeoutMs);
         }
     }
 

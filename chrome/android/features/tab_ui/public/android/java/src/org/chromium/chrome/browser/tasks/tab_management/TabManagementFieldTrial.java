@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 
 /**
  * Common tab UI feature utils for public use.
@@ -13,6 +14,11 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  * chrome/browser.
  */
 public class TabManagementFieldTrial {
+    private static final String DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM = "timeout_ms";
+    public static final IntCachedFieldTrialParameter DELAY_TEMP_STRIP_TIMEOUT_MS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.DELAY_TEMP_STRIP_REMOVAL,
+                    DELAY_TEMP_STRIP_REMOVAL_TIMEOUT_MS_PARAM, 1000);
+
     // Field trial parameter for enabling folio for tab strip redesign.
     private static final String TAB_STRIP_REDESIGN_ENABLE_FOLIO_PARAM = "enable_folio";
     public static final BooleanCachedFieldTrialParameter TAB_STRIP_REDESIGN_ENABLE_FOLIO =
