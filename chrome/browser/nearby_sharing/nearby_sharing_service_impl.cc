@@ -3895,7 +3895,7 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
             base::Unretained(this)));
   }
 
-  // Make sure to call this before calling Disconnect or we risk loosing some
+  // Make sure to call this before calling Disconnect or we risk losing some
   // transfer updates in the receive case due to the Disconnect call cleaning up
   // share targets.
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
