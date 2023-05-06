@@ -286,8 +286,11 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
-  void SetUpCommandLineForKeySystem(const std::string& key_system,
-                                    base::CommandLine* command_line) {
+  void SetUpCommandLineForKeySystem(
+      const std::string& key_system,
+      base::CommandLine* command_line,
+      const std::vector<base::test::FeatureRefAndParams>&
+          enable_additional_features = {}) {
     if (GetServerConfig(key_system)) {
       // Since the web and license servers listen on different ports, we need to
       // disable web-security to send license requests to the license server.
@@ -299,6 +302,10 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features = {
         features::kChromeWhatsNewUI};
+
+    for (auto feature : enable_additional_features) {
+      enabled_features.emplace_back(feature);
+    }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     if (RequiresClearKeyCdm(key_system)) {
@@ -425,6 +432,34 @@ class ECKIncognitoEncryptedMediaTest : public EncryptedMediaTestBase {
   }
 };
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(IS_WIN)
+// Tests encrypted media playback using ClearKey key system while
+// the MediaFoundationForClear feature is enabled. This ensures
+// proper renderer selection occurs when Media Foundation Renderer
+// is set as the default but the playback requires another (e.g.
+// default) renderer.
+// TODO(crbug.com/1442997): We should create a browser test suite
+// intended explicitly for Media Foundation scenarios and move
+// the MFClearEncryptedMediaTest tests there.
+class MFClearEncryptedMediaTest : public EncryptedMediaTestBase {
+ public:
+  void TestSimplePlayback(const std::string& encrypted_media) {
+    RunSimpleEncryptedMediaTest(encrypted_media, media::kClearKeyKeySystem,
+                                SrcType::SRC, PlayCount::ONCE);
+  }
+
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    EncryptedMediaTestBase::SetUpCommandLine(command_line);
+    // Add MediaFoundationClearPlayback feature to enablement list.
+    std::vector<base::test::FeatureRefAndParams> mf_clear;
+    mf_clear.push_back({media::kMediaFoundationClearPlayback, {}});
+    SetUpCommandLineForKeySystem(media::kExternalClearKeyKeySystem,
+                                 command_line, mf_clear);
+  }
+};
+#endif  // BUILDFLAG(IS_WIN)
 
 // A base class for parameterized encrypted media tests. Subclasses must
 // override `CurrentKeySystem()` and `CurrentSourceType()`.
@@ -999,6 +1034,20 @@ IN_PROC_BROWSER_TEST_F(ECKIncognitoEncryptedMediaTest, LoadSessionAfterClose) {
                             media::kEndedTitle);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(MFClearEncryptedMediaTest, Playback_AudioClearVideo) {
+  TestSimplePlayback("bear-320x240-av_enc-a.webm");
+}
+
+IN_PROC_BROWSER_TEST_F(MFClearEncryptedMediaTest, Playback_VideoAudio) {
+  TestSimplePlayback("bear-320x240-av_enc-av.webm");
+}
+
+IN_PROC_BROWSER_TEST_F(MFClearEncryptedMediaTest, Playback_VideoClearAudio) {
+  TestSimplePlayback("bear-320x240-av_enc-v.webm");
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // MediaFoundation Clear Key Key System uses Windows Media Foundation's decoders
