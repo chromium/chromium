@@ -648,6 +648,10 @@ void PagedAppsGridView::ScrollEnded() {
   presentation_time_recorder_.reset();
 }
 
+bool PagedAppsGridView::ShouldContainerHandleDragEvents() {
+  return true;
+}
+
 bool PagedAppsGridView::DoesIntersectRect(const views::View* target,
                                           const gfx::Rect& rect) const {
   gfx::Rect target_bounds(target->GetLocalBounds());

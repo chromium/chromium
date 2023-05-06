@@ -71,6 +71,7 @@ class ASH_EXPORT ScrollableAppsGridView : public AppsGridView {
   absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
   base::ScopedClosureRunner LockAppsGridOpacity() override;
+  bool ShouldContainerHandleDragEvents() override;
 
   views::ScrollView* scroll_view_for_test() { return scroll_view_; }
   base::OneShotTimer* auto_scroll_timer_for_test() {

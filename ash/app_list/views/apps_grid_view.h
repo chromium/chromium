@@ -182,6 +182,13 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnDragExited() override;
   DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
 
+  // Whether or not the apps grid should handle drag and drop events or delegate
+  // them to the container.
+  virtual bool ShouldContainerHandleDragEvents() = 0;
+
+  // Whether the apps grid will accept the drop event by the data it carries.
+  bool WillAcceptDropEvent(const OSExchangeData& data);
+
   // Updates the visibility of app list items according to |app_list_state|.
   void UpdateControlVisibility(AppListViewState app_list_state);
 

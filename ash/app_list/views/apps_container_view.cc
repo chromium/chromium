@@ -35,6 +35,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
@@ -118,6 +119,17 @@ constexpr int kDefaultFadeoutMaskHeight = 16;
 // Max amount of time to wait for zero state results when refreshing recent apps
 // and continue section when launcher becomes visible.
 constexpr base::TimeDelta kZeroStateSearchTimeout = base::Milliseconds(16);
+
+const ui::DropTargetEvent GetTranslatedDropTargetEvent(
+    const ui::DropTargetEvent event,
+    views::View* src_view,
+    views::View* dst_view) {
+  gfx::Point event_location = event.location();
+  views::View::ConvertPointToTarget(src_view, dst_view, &event_location);
+  return ui::DropTargetEvent(event.data(), gfx::PointF(event_location),
+                             event.root_location_f(),
+                             event.source_operations());
+}
 
 }  // namespace
 
@@ -1526,6 +1538,36 @@ void AppsContainerView::OnZeroStateSearchDone() {
     // TODO(b/261662349): Remove explicit layout once the linked issue is fixed.
     Layout();
   }
+}
+
+bool AppsContainerView::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  return apps_grid_view_->GetDropFormats(formats, format_types);
+}
+
+bool AppsContainerView::CanDrop(const OSExchangeData& data) {
+  return apps_grid_view_->WillAcceptDropEvent(data);
+}
+
+void AppsContainerView::OnDragExited() {
+  apps_grid_view_->OnDragExited();
+}
+
+void AppsContainerView::OnDragEntered(const ui::DropTargetEvent& event) {
+  apps_grid_view_->OnDragEntered(
+      GetTranslatedDropTargetEvent(event, this, apps_grid_view_));
+}
+
+int AppsContainerView::OnDragUpdated(const ui::DropTargetEvent& event) {
+  return apps_grid_view_->OnDragUpdated(
+      GetTranslatedDropTargetEvent(event, this, apps_grid_view_));
+}
+
+views::View::DropCallback AppsContainerView::GetDropCallback(
+    const ui::DropTargetEvent& event) {
+  return apps_grid_view_->GetDropCallback(
+      GetTranslatedDropTargetEvent(event, this, apps_grid_view_));
 }
 
 }  // namespace ash

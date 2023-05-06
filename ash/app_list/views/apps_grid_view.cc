@@ -1095,6 +1095,14 @@ bool AppsGridView::GetDropFormats(
 }
 
 bool AppsGridView::CanDrop(const OSExchangeData& data) {
+  if (ShouldContainerHandleDragEvents()) {
+    return false;
+  }
+
+  return WillAcceptDropEvent(data);
+}
+
+bool AppsGridView::WillAcceptDropEvent(const OSExchangeData& data) {
   if (!app_list_features::IsDragAndDropRefactorEnabled()) {
     return true;
   }

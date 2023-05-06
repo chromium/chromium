@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_APP_LIST_BUBBLE_VIEW_H_
 
 #include <memory>
+#include <set>
 
 #include "ash/app_list/app_list_view_provider.h"
 #include "ash/app_list/views/app_list_folder_controller.h"
@@ -98,6 +99,13 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   const char* GetClassName() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool CanDrop(const OSExchangeData& data) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  void OnDragEntered(const ui::DropTargetEvent& event) override;
+  void OnDragExited() override;
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override;
 
   // SearchBoxViewDelegate:
   void QueryChanged(const std::u16string& trimmed_query,

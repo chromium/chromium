@@ -124,6 +124,7 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
       const override;
   base::ScopedClosureRunner LockAppsGridOpacity() override;
+  bool ShouldContainerHandleDragEvents() override;
 
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override;
