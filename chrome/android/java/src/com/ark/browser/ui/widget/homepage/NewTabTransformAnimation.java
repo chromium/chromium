@@ -27,9 +27,9 @@ public final class NewTabTransformAnimation {
 
     //DecorView
     private ViewGroup mRootView;
-    private View animationView;
+    private AnimationView animationView;
 
-    private Rect mRect;
+    private Rect mStartRect;
     //扩散的起点
     private float mStartX = 0, mStartY = 0;
     private Runnable endRunnable;
@@ -51,7 +51,7 @@ public final class NewTabTransformAnimation {
     }
 
     public NewTabTransformAnimation setRect(Rect rect) {
-        mRect = rect;
+        mStartRect = rect;
         return this;
     }
 
@@ -99,14 +99,53 @@ public final class NewTabTransformAnimation {
     }
 
     private void startAnimation() {
-
+//        float radius = animationView.getRadius();
 //        ValueAnimator animator = ValueAnimator.ofFloat(0f, 1f);
 //        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 //            @Override
 //            public void onAnimationUpdate(ValueAnimator valueAnimator) {
-//                float value = (float) valueAnimator.getAnimatedValue();
+//                float p = (float) valueAnimator.getAnimatedValue();
+//
+//                float centerX = mStartX + (mEndRect.centerX() - mStartX) * p;
+//                float centerY = mStartY + (mEndRect.centerY() - mStartY) * p;
+//
+//                int w = (int) ((mEndRect.width() - mStartRect.width()) * p + mStartRect.width());
+//                int h = (int) ((mEndRect.height() - mStartRect.height()) * p + mStartRect.height());
+//
+//                animationView.setRadius(radius * (1 - p));
+//                animationView.measure(View.MeasureSpec.makeMeasureSpec(w, View.MeasureSpec.EXACTLY),
+//                        View.MeasureSpec.makeMeasureSpec(h, View.MeasureSpec.EXACTLY));
+//                animationView.layout((int) (centerX - w / 2), (int) (centerY - h / 2), (int) (centerX + w / 2), (int) (centerY + h / 2));
+//
 //            }
 //        });
+//        animator.addListener(new AnimatorListenerAdapter() {
+//            @Override
+//            public void onAnimationEnd(Animator animation) {
+//                if (endRunnable != null) {
+//                    endRunnable.run();
+//                }
+//                animationView.animate()
+//                        .setListener(new AnimatorListenerAdapter() {
+//                            @Override
+//                            public void onAnimationEnd(Animator animation) {
+//                                isStarted = false;
+//                                //动画播放完毕, 移除View
+//                                if (mRootView != null) {
+//                                    mRootView.removeView(animationView);
+//                                    mRootView = null;
+//                                }
+//                                context = null;
+//                                animationView = null;
+//                            }
+//                        })
+//                        .setInterpolator(new LinearInterpolator())
+//                        .alpha(0f)
+//                        .setDuration(200)
+//                        .start();
+//            }
+//        });
+//        animator.setInterpolator(new DecelerateInterpolator(1.5f));
 //        animator.setDuration(420);
 //        animator.start();
 
@@ -152,7 +191,7 @@ public final class NewTabTransformAnimation {
                 .start();
     }
 
-    public class AnimationView extends View
+    public static class AnimationView extends View
             implements View.OnClickListener, View.OnLongClickListener, View.OnTouchListener {
 
         public AnimationView(Context context) {

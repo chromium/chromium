@@ -101,6 +101,7 @@ public class TabSwitcherManager implements SwitcherRecyclerLayout.Callback {
                         int y = location[1] + rect.centerY();
 
                         NewTabTransformAnimation.with(mContext)
+                                .setRect(rect)
                                 .setCenterPosition(x, y)
                                 .onAnimationStart(() -> {
                                     Toast.makeText(mContext, "start animation", Toast.LENGTH_SHORT).show();

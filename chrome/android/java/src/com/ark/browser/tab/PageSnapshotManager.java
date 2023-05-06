@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import com.ark.browser.core.ArkWebContents;
 import com.ark.browser.core.ArkWebManager;
-import com.ark.browser.tab.core.ITab;
 import com.ark.browser.ui.widget.FitWidthImageView;
 import com.ark.browser.utils.ArkLogger;
 import com.ark.browser.utils.ThreadPool;
@@ -22,14 +21,17 @@ import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 管理web快照
+ *
  * @author Z-P-J
  */
 public class PageSnapshotManager {
@@ -38,6 +40,7 @@ public class PageSnapshotManager {
 
     private final SparseArray<SnapshotTask> snapshotTasks = new SparseArray<>();
     private final LruCache<Integer, Bitmap> mBitmapCache;
+    private static final BitmapFactory.Options mOptions = new BitmapFactory.Options();
 
     private static final class Holder {
         private static final PageSnapshotManager MANAGER = new PageSnapshotManager();
@@ -58,6 +61,7 @@ public class PageSnapshotManager {
                 return value.getByteCount();
             }
         };
+        mOptions.inSampleSize = 2;
     }
 
     public static PageSnapshotManager getInstance() {
@@ -117,7 +121,7 @@ public class PageSnapshotManager {
                             File file = new File(PathHolder.path, pageId + ".thumbnail");
                             if (file.exists()) {
                                 ThreadPool.executeIO(() -> {
-                                    Bitmap bitmap1 = BitmapFactory.decodeFile(file.getPath());
+                                    Bitmap bitmap1 = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
                                     ThreadPool.runOnUIThread(() -> callback.onResult(bitmap1));
                                 });
                                 return;
@@ -212,16 +216,26 @@ public class PageSnapshotManager {
                             ThreadPool.executeIO(() -> {
                                 File file = new File(result);
                                 if (file.exists()) {
-                                    try (FileInputStream fis = new FileInputStream(file)) {
-                                        Bitmap bitmap = BitmapFactory.decodeStream(fis);
+                                    Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), mOptions);
+                                    if (bitmap != null) {
                                         ThreadPool.runOnUIThread(() -> onFinished(bitmap));
                                         synchronized (getInstance().mBitmapCache) {
                                             getInstance().mBitmapCache.put(mPageId, bitmap);
                                         }
                                         return;
-                                    } catch (Exception e) {
-                                        ArkLogger.e(SnapshotTask.class, "decodeBitmap failed! ", e);
                                     }
+
+
+//                                    try (FileInputStream fis = new FileInputStream(file)) {
+//                                        Bitmap bitmap = BitmapFactory.decodeStream(fis);
+//                                        ThreadPool.runOnUIThread(() -> onFinished(bitmap));
+//                                        synchronized (getInstance().mBitmapCache) {
+//                                            getInstance().mBitmapCache.put(mPageId, bitmap);
+//                                        }
+//                                        return;
+//                                    } catch (Exception e) {
+//                                        ArkLogger.e(SnapshotTask.class, "decodeBitmap failed! ", e);
+//                                    }
                                 }
                                 ThreadPool.runOnUIThread(() -> onFinished(null));
                             });
