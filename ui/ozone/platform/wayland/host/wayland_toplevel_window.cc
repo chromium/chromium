@@ -454,6 +454,10 @@ void WaylandToplevelWindow::TooltipHidden() {
   delegate()->OnTooltipHiddenOnServer();
 }
 
+WaylandToplevelWindow* WaylandToplevelWindow::AsWaylandToplevelWindow() {
+  return this;
+}
+
 void WaylandToplevelWindow::HandleToplevelConfigure(
     int32_t width_dip,
     int32_t height_dip,

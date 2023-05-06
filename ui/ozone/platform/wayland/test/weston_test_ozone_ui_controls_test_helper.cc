@@ -371,11 +371,3 @@ void WestonTestOzoneUIControlsTestHelper::DispatchKeyPress(
 }
 
 }  // namespace wl
-
-namespace ui {
-
-OzoneUIControlsTestHelper* CreateOzoneUIControlsTestHelperWayland() {
-  return new wl::WestonTestOzoneUIControlsTestHelper();
-}
-
-}  // namespace ui

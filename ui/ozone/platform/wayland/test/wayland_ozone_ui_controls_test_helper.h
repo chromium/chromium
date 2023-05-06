@@ -1,27 +1,37 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_
-#define UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_OZONE_UI_CONTROLS_TEST_HELPER_H_
+#define UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_OZONE_UI_CONTROLS_TEST_HELPER_H_
 
+#include "base/containers/flat_map.h"
+#include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
+#include "ui/ozone/platform/wayland/emulate/wayland_input_emulate.h"
 #include "ui/ozone/public/ozone_ui_controls_test_helper.h"
 
 namespace wl {
 
-class WestonTestInputEmulate;
+class WaylandInputEmulate;
 
-class WestonTestOzoneUIControlsTestHelper
-    : public ui::OzoneUIControlsTestHelper {
+class WaylandOzoneUIControlsTestHelper : public ui::OzoneUIControlsTestHelper {
  public:
-  WestonTestOzoneUIControlsTestHelper();
-  WestonTestOzoneUIControlsTestHelper(
-      const WestonTestOzoneUIControlsTestHelper&) = delete;
-  WestonTestOzoneUIControlsTestHelper& operator=(
-      const WestonTestOzoneUIControlsTestHelper&) = delete;
-  ~WestonTestOzoneUIControlsTestHelper() override;
+  WaylandOzoneUIControlsTestHelper();
+  WaylandOzoneUIControlsTestHelper(const WaylandOzoneUIControlsTestHelper&) =
+      delete;
+  WaylandOzoneUIControlsTestHelper& operator=(
+      const WaylandOzoneUIControlsTestHelper&) = delete;
+  ~WaylandOzoneUIControlsTestHelper() override;
+
+  // Initializes the connection to the server using the ui_controls protocol
+  // extension. Initialization must be done before calling any Send*() methods.
+  //
+  // This fails if the protocol extension is not available on the server side.
+  // Returns false if the initialization failed, else true.
+  bool Initialize();
 
   // OzoneUIControlsTestHelper:
   void Reset() override;
@@ -54,21 +64,17 @@ class WestonTestOzoneUIControlsTestHelper
   bool MustUseUiControlsForMoveCursorTo() override;
 
  private:
-  // Sends either press or release key based |press_key| value.
-  void SendKeyPressInternal(gfx::AcceleratedWidget widget,
-                            ui::KeyboardCode key,
-                            int accelerator_state,
-                            base::OnceClosure closure,
-                            bool press_key);
-  void DispatchKeyPress(gfx::AcceleratedWidget widget,
-                        ui::EventType event_type,
-                        ui::DomCode key);
+  void RequestProcessed(uint32_t request_id);
 
-  unsigned button_down_mask_ = 0;
+  // Stores the closures to be executed when the request with the matching ID
+  // has been processed.
+  base::flat_map<uint32_t, base::OnceClosure> pending_closures_;
 
-  std::unique_ptr<WestonTestInputEmulate> input_emulate_;
+  std::unique_ptr<WaylandInputEmulate> input_emulate_;
+
+  base::WeakPtrFactory<WaylandOzoneUIControlsTestHelper> weak_factory_{this};
 };
 
 }  // namespace wl
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_WESTON_TEST_OZONE_UI_CONTROLS_TEST_HELPER_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_TEST_WAYLAND_OZONE_UI_CONTROLS_TEST_HELPER_H_

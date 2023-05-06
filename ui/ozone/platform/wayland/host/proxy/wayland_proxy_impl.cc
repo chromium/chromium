@@ -14,21 +14,16 @@ namespace wl {
 WaylandProxyImpl::WaylandProxyImpl(ui::WaylandConnection* connection)
     : connection_(connection) {
   WaylandProxy::SetInstance(this);
+  connection_->window_manager()->AddObserver(this);
 }
 
 WaylandProxyImpl::~WaylandProxyImpl() {
+  connection_->window_manager()->RemoveObserver(this);
   WaylandProxy::SetInstance(nullptr);
-  if (delegate_)
-    connection_->window_manager()->RemoveObserver(this);
 }
 
 void WaylandProxyImpl::SetDelegate(WaylandProxy::Delegate* delegate) {
-  DCHECK(!delegate_);
   delegate_ = delegate;
-  if (delegate_)
-    connection_->window_manager()->AddObserver(this);
-  else
-    connection_->window_manager()->RemoveObserver(this);
 }
 
 wl_display* WaylandProxyImpl::GetDisplay() {
@@ -97,24 +92,28 @@ bool WaylandProxyImpl::WindowHasKeyboardFocus(gfx::AcceleratedWidget widget) {
 }
 
 void WaylandProxyImpl::OnWindowAdded(ui::WaylandWindow* window) {
-  DCHECK(delegate_);
-  delegate_->OnWindowAdded(window->GetWidget());
+  if (delegate_) {
+    delegate_->OnWindowAdded(window->GetWidget());
+  }
 }
 
 void WaylandProxyImpl::OnWindowRemoved(ui::WaylandWindow* window) {
-  DCHECK(delegate_);
-  delegate_->OnWindowRemoved(window->GetWidget());
+  if (delegate_) {
+    delegate_->OnWindowRemoved(window->GetWidget());
+  }
 }
 
 void WaylandProxyImpl::OnWindowConfigured(ui::WaylandWindow* window) {
-  DCHECK(delegate_);
-  delegate_->OnWindowConfigured(window->GetWidget(),
-                                window->IsSurfaceConfigured());
+  if (delegate_) {
+    delegate_->OnWindowConfigured(window->GetWidget(),
+                                  window->IsSurfaceConfigured());
+  }
 }
 
 void WaylandProxyImpl::OnWindowRoleAssigned(ui::WaylandWindow* window) {
-  DCHECK(delegate_);
-  delegate_->OnWindowRoleAssigned(window->GetWidget());
+  if (delegate_) {
+    delegate_->OnWindowRoleAssigned(window->GetWidget());
+  }
 }
 
 }  // namespace wl

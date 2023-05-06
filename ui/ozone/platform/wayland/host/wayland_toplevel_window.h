@@ -75,6 +75,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                     int32_t width,
                     int32_t height) override;
   void TooltipHidden() override;
+  WaylandToplevelWindow* AsWaylandToplevelWindow() override;
 
   // Configure related:
   void HandleToplevelConfigure(int32_t width,

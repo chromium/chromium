@@ -784,6 +784,10 @@ WaylandPopup* WaylandWindow::AsWaylandPopup() {
   return nullptr;
 }
 
+WaylandToplevelWindow* WaylandWindow::AsWaylandToplevelWindow() {
+  return nullptr;
+}
+
 bool WaylandWindow::IsScreenCoordinatesEnabled() const {
   return false;
 }

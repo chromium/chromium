@@ -54,6 +54,7 @@ class WaylandSubsurface;
 class WaylandWindowDragController;
 class WaylandFrameManager;
 class WaylandPopup;
+class WaylandToplevelWindow;
 
 using WidgetSubsurfaceSet = base::flat_set<std::unique_ptr<WaylandSubsurface>>;
 
@@ -328,9 +329,10 @@ class WaylandWindow : public PlatformWindow,
   virtual bool IsActive() const;
 
   // WaylandWindow can be any type of object - WaylandToplevelWindow,
-  // WaylandPopup, WaylandAuxiliaryWindow. This method casts itself to
-  // WaylandPopup, if |this| has type of WaylandPopup.
+  // WaylandPopup. The following methods cast itself to WaylandPopup or
+  // WaylandToplevelWindow, if |this| is of that type.
   virtual WaylandPopup* AsWaylandPopup();
+  virtual WaylandToplevelWindow* AsWaylandToplevelWindow();
 
   // Returns true if the window's bounds is in screen coordinates.
   virtual bool IsScreenCoordinatesEnabled() const;
