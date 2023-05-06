@@ -461,7 +461,8 @@ AcceleratorAliasConverter::FilterAliasBySupportedKeys(
     }
 
     if (accelerator.key_code() == ui::VKEY_ASSISTANT) {
-      if (ui::DeviceKeyboardHasAssistantKey()) {
+      if (priority_keyboard &&
+          keyboard_capability->HasAssistantKey(*priority_keyboard)) {
         filtered_accelerators.push_back(accelerator);
       }
       continue;

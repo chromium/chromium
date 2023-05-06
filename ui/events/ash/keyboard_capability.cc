@@ -763,8 +763,7 @@ std::vector<mojom::ModifierKey> KeyboardCapability::GetModifierKeys(
     modifier_keys.push_back(mojom::ModifierKey::kCapsLock);
   }
 
-  // Assistant key can be checked by querying evdev properties.
-  if (keyboard.has_assistant_key) {
+  if (HasAssistantKey(keyboard)) {
     modifier_keys.push_back(mojom::ModifierKey::kAssistant);
   }
 
@@ -963,6 +962,22 @@ bool KeyboardCapability::HasPrivacyScreenKeyOnAnyKeyboard() const {
   return false;
 }
 
+bool KeyboardCapability::HasAssistantKey(const KeyboardDevice& keyboard) const {
+  // Some external keyboards falsely claim to have assistant keys. However, this
+  // can be trusted for internal + ChromeOS external keyboards.
+  return keyboard.has_assistant_key && IsChromeOSKeyboard(keyboard);
+}
+
+bool KeyboardCapability::HasAssistantKeyOnAnyKeyboard() const {
+  for (const ui::KeyboardDevice& keyboard :
+       ui::DeviceDataManager::GetInstance()->GetKeyboardDevices()) {
+    if (HasAssistantKey(keyboard)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void KeyboardCapability::OnDeviceListsComplete() {
   TrimKeyboardInfoMap();
 }
@@ -1035,7 +1050,7 @@ bool KeyboardCapability::HasKeyEvent(const KeyboardCode& key_code,
 
   // Handle assistant key.
   if (key_code == KeyboardCode::VKEY_ASSISTANT) {
-    return keyboard.has_assistant_key;
+    return HasAssistantKey(keyboard);
   }
 
   // TODO(zhangwenyu): check other specific keys, e.g. assistant key.
@@ -1072,6 +1087,13 @@ bool KeyboardCapability::HasTopRowActionKeyOnAnyKeyboard(
     }
   }
   return false;
+}
+
+bool KeyboardCapability::IsChromeOSKeyboard(
+    const ui::KeyboardDevice& keyboard) const {
+  const auto device_type = GetDeviceType(keyboard);
+  return device_type == DeviceType::kDeviceInternalKeyboard ||
+         device_type == DeviceType::kDeviceExternalChromeOsKeyboard;
 }
 
 }  // namespace ui

@@ -386,6 +386,10 @@ class KeyboardCapability : public InputDeviceEventObserver {
   bool HasMediaKeys(const KeyboardDevice& keyboard) const;
   bool HasMediaKeysOnAnyKeyboard() const;
 
+  // Check if the assistant key exists on the given keyboard.
+  bool HasAssistantKey(const KeyboardDevice& keyboard) const;
+  bool HasAssistantKeyOnAnyKeyboard() const;
+
   // Gets the corresponding function key for the given `action_key` on the
   // given `keyboard`.
   absl::optional<KeyboardCode> GetCorrespondingFunctionKey(
@@ -405,6 +409,8 @@ class KeyboardCapability : public InputDeviceEventObserver {
  private:
   const KeyboardInfo* GetKeyboardInfo(const KeyboardDevice& keyboard) const;
   void TrimKeyboardInfoMap();
+
+  bool IsChromeOSKeyboard(const ui::KeyboardDevice& keyboard) const;
 
   ScanCodeToEvdevKeyConverter scan_code_to_evdev_key_converter_;
 
