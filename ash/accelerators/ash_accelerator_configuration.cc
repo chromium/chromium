@@ -195,13 +195,18 @@ AshAcceleratorConfiguration::~AshAcceleratorConfiguration() {
 // static:
 void AshAcceleratorConfiguration::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  if (!::features::IsShortcutCustomizationEnabled()) {
+    return;
+  }
+
   registry->RegisterDictionaryPref(prefs::kShortcutCustomizationOverrides);
 }
 
 void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   // A pref service may not be available in tests.
-  if (!pref_service || pref_service != GetActiveUserPrefService()) {
+  if (!::features::IsShortcutCustomizationEnabled() || !pref_service ||
+      pref_service != GetActiveUserPrefService()) {
     return;
   }
 
@@ -610,7 +615,9 @@ void AshAcceleratorConfiguration::UpdateAndNotifyAccelerators() {
 
   UpdateAccelerators(id_to_accelerators_);
   NotifyAcceleratorsUpdated();
-  SaveOverridePrefChanges();
+  if (::features::IsShortcutCustomizationEnabled()) {
+    SaveOverridePrefChanges();
+  }
 }
 
 void AshAcceleratorConfiguration::SaveOverridePrefChanges() {

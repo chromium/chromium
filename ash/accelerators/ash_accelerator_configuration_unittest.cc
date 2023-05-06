@@ -118,9 +118,9 @@ class AshAcceleratorConfigurationTest : public AshTestBase {
   ~AshAcceleratorConfigurationTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
     scoped_feature_list_.InitAndEnableFeature(
         ::features::kShortcutCustomization);
+    AshTestBase::SetUp();
     config_ = std::make_unique<AshAcceleratorConfiguration>();
     config_->AddObserver(&observer_);
   }

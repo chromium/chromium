@@ -1453,6 +1453,8 @@ TEST_F(AcceleratorControllerTest, ToggleMultitaskMenu) {
       {chromeos::wm::features::kWindowLayoutMenu,
        ::features::kShortcutCustomization},
       {});
+  // Simulate fake user login to ensure pref registration is done correctly.
+  SimulateUserLogin("fakeuser");
   // Enabling `kShortcutCustomization` will start letting
   // `AcceleratorControllerImpl` to observe changes to the accelerator list.
   // This includes accelerators added by enabling flags.
