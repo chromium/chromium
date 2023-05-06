@@ -63,10 +63,14 @@ InterestGroup::Ad::Ad() = default;
 
 InterestGroup::Ad::Ad(GURL render_url,
                       absl::optional<std::string> metadata,
-                      absl::optional<std::string> size_group)
+                      absl::optional<std::string> size_group,
+                      absl::optional<std::string> buyer_reporting_id,
+                      absl::optional<std::string> buyer_and_seller_reporting_id)
     : render_url(std::move(render_url)),
       size_group(std::move(size_group)),
-      metadata(std::move(metadata)) {}
+      metadata(std::move(metadata)),
+      buyer_reporting_id(std::move(buyer_reporting_id)),
+      buyer_and_seller_reporting_id(std::move(buyer_and_seller_reporting_id)) {}
 
 InterestGroup::Ad::~Ad() = default;
 
@@ -78,12 +82,21 @@ size_t InterestGroup::Ad::EstimateSize() const {
   }
   if (metadata)
     size += metadata->size();
+  if (buyer_reporting_id) {
+    size += buyer_reporting_id->size();
+  }
+  if (buyer_and_seller_reporting_id) {
+    size += buyer_and_seller_reporting_id->size();
+  }
   return size;
 }
 
 bool InterestGroup::Ad::operator==(const Ad& other) const {
-  return std::tie(render_url, size_group, metadata) ==
-         std::tie(other.render_url, other.size_group, other.metadata);
+  return std::tie(render_url, size_group, metadata, buyer_reporting_id,
+                  buyer_and_seller_reporting_id) ==
+         std::tie(other.render_url, other.size_group, other.metadata,
+                  other.buyer_reporting_id,
+                  other.buyer_and_seller_reporting_id);
 }
 
 InterestGroup::InterestGroup() = default;
@@ -371,9 +384,17 @@ std::string KAnonKeyForAdNameReporting(const blink::InterestGroup& group,
   DCHECK(group.ads);
   DCHECK(base::Contains(*group.ads, ad)) << "No such ad: " << ad.render_url;
   DCHECK(group.bidding_url);
-  return "NameReport\n" + group.owner.GetURL().spec() + '\n' +
-         group.bidding_url.value_or(GURL()).spec() + '\n' +
-         ad.render_url.spec() + '\n' + group.name;
+  std::string middle = base::StrCat({group.owner.GetURL().spec(), "\n",
+                                     group.bidding_url.value_or(GURL()).spec(),
+                                     "\n", ad.render_url.spec(), "\n"});
+  if (ad.buyer_and_seller_reporting_id.has_value()) {
+    return base::StrCat({"BuyerAndSellerReportId\n", middle,
+                         *ad.buyer_and_seller_reporting_id});
+  }
+  if (ad.buyer_reporting_id.has_value()) {
+    return base::StrCat({"BuyerReportId\n", middle, *ad.buyer_reporting_id});
+  }
+  return base::StrCat({"NameReport\n", middle, group.name});
 }
 
 }  // namespace blink

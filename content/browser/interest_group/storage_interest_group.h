@@ -56,7 +56,8 @@ struct CONTENT_EXPORT StorageInterestGroup {
   std::vector<KAnonymityData> bidding_ads_kanon;
   // Can a component ad be part of a bid?
   std::vector<KAnonymityData> component_ads_kanon;
-  // Can we report the interest group name for an ad?
+  // Can we report the appropriate of reporting IDs or interest group name for
+  // an ad?
   std::vector<KAnonymityData> reporting_ads_kanon;
 
   // Top level page origin from when the interest group was joined.

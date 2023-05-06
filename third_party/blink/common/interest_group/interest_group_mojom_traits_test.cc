@@ -199,6 +199,23 @@ TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAds) {
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithReportingIds) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(GURL(kUrl1),
+                                   /*metadata=*/absl::nullopt,
+                                   /*size_group=*/absl::nullopt);
+  (*interest_group.ads)[0].buyer_reporting_id = "buyer_id_1";
+  (*interest_group.ads)[0].buyer_and_seller_reporting_id = "both_id_1";
+  interest_group.ads->emplace_back(GURL(kUrl2),
+                                   /*metadata=*/"[]",
+                                   /*size_group=*/absl::nullopt);
+  (*interest_group.ads)[1].buyer_reporting_id = "buyer_id_2";
+  (*interest_group.ads)[1].buyer_and_seller_reporting_id = "both_id_2";
+
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdsWithSizeGroups) {
   InterestGroup interest_group = CreateInterestGroup();
   // All three of the following mappings must be valid in order for the

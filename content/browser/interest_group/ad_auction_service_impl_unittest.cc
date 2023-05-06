@@ -1133,7 +1133,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 "trustedBiddingSignalsKeys": ["new_key"],
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "sizeGroup": "group_new",
-         "metadata": {"new_a": "b"}
+         "metadata": {"new_a": "b"},
+         "buyerReportingId": "new_brid",
+         "buyerAndSellerReportingId": "new_shrid"
         }],
 "adComponents": [{"renderUrl": "https://example.com/component_url",
                   "sizeGroup": "group_new",
@@ -1164,7 +1166,9 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   blink::InterestGroup::Ad ad(
       /*render_url=*/GURL("https://example.com/render"),
       /*metadata=*/"{\"ad\":\"metadata\",\"here\":[1,2,3]}",
-      /*size_group=*/"group_old");
+      /*size_group=*/"group_old",
+      /*buyer_reporting_id=*/"old_brid",
+      /*buyer_and_seller_reporting_id=*/"old_shrid");
   interest_group.ads->emplace_back(std::move(ad));
   interest_group.ad_components.emplace();
   blink::InterestGroup::Ad ad_component(
@@ -1237,6 +1241,10 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
   EXPECT_EQ(group.ads.value()[0].size_group, "group_new");
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+  ASSERT_TRUE(group.ads.value()[0].buyer_reporting_id.has_value());
+  EXPECT_EQ(*group.ads.value()[0].buyer_reporting_id, "new_brid");
+  ASSERT_TRUE(group.ads.value()[0].buyer_and_seller_reporting_id.has_value());
+  EXPECT_EQ(*group.ads.value()[0].buyer_and_seller_reporting_id, "new_shrid");
   ASSERT_TRUE(group.ad_components.has_value());
   ASSERT_EQ(group.ad_components->size(), 1u);
   EXPECT_EQ(group.ad_components.value()[0].render_url.spec(),

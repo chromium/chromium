@@ -15,6 +15,9 @@ bool StructTraits<
                                     blink::InterestGroup::Ad* out) {
   if (!data.ReadRenderUrl(&out->render_url) ||
       !data.ReadSizeGroup(&out->size_group) ||
+      !data.ReadBuyerReportingId(&out->buyer_reporting_id) ||
+      !data.ReadBuyerAndSellerReportingId(
+          &out->buyer_and_seller_reporting_id) ||
       !data.ReadMetadata(&out->metadata)) {
     return false;
   }

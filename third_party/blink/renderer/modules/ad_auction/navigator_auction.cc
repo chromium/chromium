@@ -707,6 +707,12 @@ bool CopyAdsFromIdlToMojo(const ExecutionContext& context,
     if (ad->hasSizeGroup()) {
       mojo_ad->size_group = ad->sizeGroup();
     }
+    if (ad->hasBuyerReportingId()) {
+      mojo_ad->buyer_reporting_id = ad->buyerReportingId();
+    }
+    if (ad->hasBuyerAndSellerReportingId()) {
+      mojo_ad->buyer_and_seller_reporting_id = ad->buyerAndSellerReportingId();
+    }
     if (ad->hasMetadata()) {
       if (!Jsonify(script_state, ad->metadata().V8Value(), mojo_ad->metadata)) {
         exception_state.ThrowTypeError(

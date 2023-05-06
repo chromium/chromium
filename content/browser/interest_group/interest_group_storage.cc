@@ -134,6 +134,13 @@ base::Value ToValue(const blink::InterestGroup::Ad& ad) {
   if (ad.size_group) {
     dict.Set("size_group", ad.size_group.value());
   }
+  if (ad.buyer_reporting_id) {
+    dict.Set("buyer_reporting_id", ad.buyer_reporting_id.value());
+  }
+  if (ad.buyer_and_seller_reporting_id) {
+    dict.Set("buyer_and_seller_reporting_id",
+             ad.buyer_and_seller_reporting_id.value());
+  }
   if (ad.metadata)
     dict.Set("metadata", ad.metadata.value());
   return value;
@@ -147,6 +154,16 @@ blink::InterestGroup::Ad FromInterestGroupAdValue(
   const std::string* maybe_size_group = dict.FindString("size_group");
   if (maybe_size_group) {
     result.size_group = *maybe_size_group;
+  }
+  const std::string* maybe_buyer_reporting_id =
+      dict.FindString("buyer_reporting_id");
+  if (maybe_buyer_reporting_id) {
+    result.buyer_reporting_id = *maybe_buyer_reporting_id;
+  }
+  const std::string* maybe_buyer_and_seller_reporting_id =
+      dict.FindString("buyer_and_seller_reporting_id");
+  if (maybe_buyer_and_seller_reporting_id) {
+    result.buyer_and_seller_reporting_id = *maybe_buyer_and_seller_reporting_id;
   }
   const std::string* maybe_metadata = dict.FindString("metadata");
   if (maybe_metadata)

@@ -30,6 +30,14 @@ namespace {
 constexpr char kOriginString[] = "https://origin.test/";
 constexpr char kNameString[] = "name";
 
+mojom::blink::InterestGroupAdPtr MakeAdWithUrl(const KURL& url) {
+  return mojom::blink::InterestGroupAd::New(
+      url, /*size_group=*/String(),
+      /*buyer_reporting_id=*/String(),
+      /*buyer_and_seler_reporting_id=*/String(),
+      /*metadata=*/String());
+}
+
 }  // namespace
 
 // Test fixture for testing both ValidateBlinkInterestGroup() and
@@ -391,8 +399,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     mojom::blink::InterestGroupPtr blink_interest_group =
         CreateMinimalInterestGroup();
     blink_interest_group->ads.emplace();
-    blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        test_case_url, /*size_group=*/String(), /*metadata=*/String()));
+    blink_interest_group->ads->emplace_back(MakeAdWithUrl(test_case_url));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
@@ -406,11 +413,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdRenderUrlValidation) {
     // Add an InterestGroup with the test cases's URL as the second ad's URL.
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->ads.emplace();
-    blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        KURL(String::FromUTF8("https://origin.test/")),
-        /*size_group=*/String(), /*metadata=*/String()));
-    blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-        test_case_url, /*size_group=*/String(), /*metadata=*/String()));
+    blink_interest_group->ads->emplace_back(
+        MakeAdWithUrl(KURL(String::FromUTF8("https://origin.test/"))));
+    blink_interest_group->ads->emplace_back(MakeAdWithUrl(test_case_url));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
@@ -468,9 +473,7 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
         CreateMinimalInterestGroup();
     blink_interest_group->ad_components.emplace();
     blink_interest_group->ad_components->emplace_back(
-        mojom::blink::InterestGroupAd::New(test_case_url,
-                                           /*size_group=*/String(),
-                                           /*metadata=*/String()));
+        MakeAdWithUrl(test_case_url));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
@@ -486,13 +489,9 @@ TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderUrlValidation) {
     blink_interest_group = CreateMinimalInterestGroup();
     blink_interest_group->ad_components.emplace();
     blink_interest_group->ad_components->emplace_back(
-        mojom::blink::InterestGroupAd::New(
-            KURL(String::FromUTF8("https://origin.test/")),
-            /*size_group=*/String(), /*metadata=*/String()));
+        MakeAdWithUrl(KURL(String::FromUTF8("https://origin.test/"))));
     blink_interest_group->ad_components->emplace_back(
-        mojom::blink::InterestGroupAd::New(test_case_url,
-                                           /*size_group=*/String(),
-                                           /*metadata=*/String()));
+        MakeAdWithUrl(test_case_url));
     if (test_case.expect_allowed) {
       ExpectInterestGroupIsValid(blink_interest_group);
     } else {
@@ -523,9 +522,7 @@ TEST_F(ValidateBlinkInterestGroupTest, MalformedUrl) {
   blink_interest_group->owner = kOrigin;
   blink_interest_group->name = kName;
   blink_interest_group->ads.emplace();
-  blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
-      KURL(kMalformedUrl), /*size_group=*/String(),
-      /*metadata=*/String()));
+  blink_interest_group->ads->emplace_back(MakeAdWithUrl(KURL(kMalformedUrl)));
   String error_field_name;
   String error_field_value;
   String error;
@@ -943,6 +940,8 @@ TEST_F(ValidateBlinkInterestGroupTest, AdSizeGroupEmptyNameOrNotInSizeGroups) {
     blink_interest_group->ads->emplace_back(mojom::blink::InterestGroupAd::New(
         KURL("https://origin.test/foo?bar"),
         /*size_group=*/test_case.ad_size_group,
+        /*buyer_reporting_id=*/String(),
+        /*buyer_and_seler_reporting_id=*/String(),
         /*metadata=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(
@@ -981,6 +980,8 @@ TEST_F(ValidateBlinkInterestGroupTest,
         mojom::blink::InterestGroupAd::New(
             KURL("https://origin.test/foo?bar"),
             /*size_group=*/test_case.ad_component_size_group,
+            /*buyer_reporting_id=*/String(),
+            /*buyer_and_seler_reporting_id=*/String(),
             /*metadata=*/String()));
     blink_interest_group->ad_sizes.emplace();
     blink_interest_group->ad_sizes->insert(

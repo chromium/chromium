@@ -137,6 +137,12 @@ base::Value::List MakeAdsValue(
     if (ad.size_group) {
       entry.Set("sizeGroup", std::move(ad.size_group.value()));
     }
+    if (ad.buyer_reporting_id) {
+      entry.Set("buyerReportingId", *ad.buyer_reporting_id);
+    }
+    if (ad.buyer_and_seller_reporting_id) {
+      entry.Set("buyerAndSellerReportingId", *ad.buyer_and_seller_reporting_id);
+    }
     if (ad.metadata)
       entry.Set("metadata", JsonToValue(*ad.metadata));
     list.Append(std::move(entry));
@@ -2780,6 +2786,44 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
   EXPECT_EQ(group.size_groups->size(), 1u);
   ASSERT_EQ(group.size_groups->at("group_1").size(), 1u);
   ASSERT_EQ(group.size_groups->at("group_1").at(0), "size_1");
+}
+
+IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
+                       JoinInterestGroupValidReportingIds) {
+  GURL url = https_server_->GetURL("a.test", "/echo");
+  auto origin = url::Origin::Create(url);
+  std::string origin_string = origin.Serialize();
+  ASSERT_TRUE(NavigateToURL(shell(), url));
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(origin, "cars")
+              .SetAds(
+                  {{{GURL("https://example.com/render"),
+                     /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/"brid1",
+                     /*buyer_and_seller_reporting_id=*/"sh1"},
+                    {GURL("https://example.com/render2"),
+                     /*metadata=*/absl::nullopt, /*size_group=*/absl::nullopt,
+                     /*buyer_reporting_id=*/absl::nullopt,
+                     /*buyer_and_seller_reporting_id=*/"sh2"}}})
+              .Build()));
+
+  std::vector<StorageInterestGroup> groups = GetInterestGroupsForOwner(origin);
+  ASSERT_EQ(groups.size(), 1u);
+  const blink::InterestGroup& group = groups[0].interest_group;
+  ASSERT_TRUE(group.ads.has_value());
+  ASSERT_EQ(group.ads->size(), 2u);
+  EXPECT_EQ(group.ads.value()[0].render_url,
+            GURL("https://example.com/render"));
+  EXPECT_EQ(group.ads.value()[0].buyer_reporting_id, "brid1");
+  EXPECT_EQ(group.ads.value()[0].buyer_and_seller_reporting_id, "sh1");
+
+  EXPECT_EQ(group.ads.value()[1].render_url,
+            GURL("https://example.com/render2"));
+  EXPECT_FALSE(group.ads.value()[1].buyer_reporting_id.has_value());
+  EXPECT_EQ(group.ads.value()[1].buyer_and_seller_reporting_id, "sh2");
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,

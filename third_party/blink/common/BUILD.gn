@@ -407,6 +407,7 @@ source_set("common_unittests_sources") {
     "interest_group/ad_display_size_utils_unittest.cc",
     "interest_group/auction_config_mojom_traits_test.cc",
     "interest_group/interest_group_mojom_traits_test.cc",
+    "interest_group/interest_group_unittest.cc",
     "loader/inter_process_time_ticks_converter_unittest.cc",
     "loader/mime_sniffing_throttle_unittest.cc",
     "loader/referrer_utils_unittest.cc",
