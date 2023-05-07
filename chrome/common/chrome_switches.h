@@ -80,6 +80,7 @@ extern const char kDisableDefaultApps[];
 extern const char kDisableDomainReliability[];
 extern const char kDisableExtensions[];
 extern const char kDisableExtensionsExcept[];
+extern const char kDisableLazyLoading[];
 extern const char kDisablePrintPreview[];
 extern const char kDisablePromptOnRepost[];
 extern const char kDisableStackProfiler[];
