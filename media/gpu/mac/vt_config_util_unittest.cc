@@ -379,7 +379,7 @@ TEST(VTConfigUtil, FormatDescriptionInvalid) {
       CreateFormatDescription(CFSTR("Cows"), CFSTR("Go"), CFSTR("Moo"));
   ASSERT_TRUE(format_descriptor);
   auto cs = GetFormatDescriptionColorSpace(format_descriptor);
-  EXPECT_EQ(gfx::ColorSpace::CreateREC709(), cs);
+  EXPECT_FALSE(cs.IsValid());
 }
 
 TEST(VTConfigUtil, FormatDescriptionBT709) {

@@ -2241,7 +2241,22 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   PictureInfo* picture_info = it->second.get();
   DCHECK(picture_info->gl_images.empty());
 
-  const gfx::ColorSpace color_space = GetImageBufferColorSpace(frame.image);
+  gfx::ColorSpace color_space;
+  if (codec_ == VideoCodec::kVP9) {
+    // Prefer the color space from the config if available. It generally comes
+    // from the color tag which is more expressive than the VP9 bitstream.
+    color_space = config_.container_color_space.ToGfxColorSpace();
+    if (!color_space.IsValid()) {
+      color_space = GetImageBufferColorSpace(frame.image);
+    }
+  } else {
+    // Otherwise prefer the frame color space.
+    color_space = GetImageBufferColorSpace(frame.image);
+    if (!color_space.IsValid()) {
+      color_space = config_.container_color_space.ToGfxColorSpace();
+    }
+  }
+
   std::vector<gfx::BufferPlane> planes;
   if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
     planes.push_back(gfx::BufferPlane::DEFAULT);
