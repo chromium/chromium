@@ -865,7 +865,7 @@ crbug.com/1042783 external/wpt/css/css-backgrounds/background-size/background-si
 
 # Passes with the WPT runner but not the internal one. (???)
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1a.html [ Failure Pass ]
-crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1b.html [ Failure Pass ]
+crbug.com/1175040 [ Mac10.15 Release ] external/wpt/css/css-backgrounds/background-repeat-space-1b.html [ Failure Pass ]
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-1c.html [ Failure Pass ]
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-3.html [ Failure Pass ]
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-4.html [ Failure Pass ]
@@ -2227,7 +2227,9 @@ crbug.com/399507 virtual/threaded/http/tests/devtools/tracing/timeline-paint/lay
 
 # These tests have test harness errors and PASS lines that have a
 # non-deterministic order.
-crbug.com/705125 fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
+crbug.com/705125 [ Debug Mac13-arm64 ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
+crbug.com/705125 [ Mac11-arm64 Release ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
+crbug.com/705125 [ Mac12-arm64 Release ] fast/mediacapturefromelement/CanvasCaptureMediaStream-capture-out-of-DOM-element.html [ Failure ]
 
 # Working on getting the CSP tests going:
 
@@ -2675,7 +2677,6 @@ crbug.com/1088475 [ Mac10.14 ] external/wpt/webvtt/rendering/cues-with-video/pro
 crbug.com/1088475 [ Mac10.15 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Failure Pass Timeout ]
 crbug.com/1088475 [ Mac11 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Failure Pass Timeout ]
 crbug.com/1088475 [ Mac12 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Failure Pass Timeout ]
-crbug.com/1088475 [ Mac13-arm64 ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Failure Pass Timeout ]
 crbug.com/1088475 [ Win ] external/wpt/webvtt/rendering/cues-with-video/processing-model/embedded_style_media_queries_resized.html [ Failure Pass Timeout ]
 
 # FontFace object failures detected by WPT test
@@ -3751,7 +3752,9 @@ crbug.com/708994 http/tests/security/cross-frame-mouse-source-capabilities.html 
 # Tests failing when enabling new modern media controls
 crbug.com/832157 external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cue-rendering-after-controls-added.html [ Crash Failure Pass Timeout ]
 crbug.com/832169 media/media-controls-fit-properly-while-zoomed.html [ Failure Pass ]
-crbug.com/849694 [ Mac ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
+crbug.com/849694 [ Debug Mac13-arm64 ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
+crbug.com/849694 [ Mac10.14 Release ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
+crbug.com/849694 [ Mac12 ] http/tests/media/controls/toggle-class-with-state-source-buffer.html [ Failure Pass ]
 
 # Tests currently failing on Windows when run on Swarming
 crbug.com/757165 [ Win ] compositing/culling/filter-occlusion-blur.html [ Crash Failure Pass Timeout ]
@@ -5004,7 +5007,6 @@ crbug.com/1048761 external/wpt/websockets/extended-payload-length.html?wpt_flags
 crbug.com/1048761 external/wpt/websockets/binary/001.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/binary/002.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Linux ] external/wpt/websockets/binary/004.html?wpt_flags=h2 [ Failure ]
-crbug.com/1048761 [ Debug Mac12 ] external/wpt/websockets/binary/004.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Win ] external/wpt/websockets/binary/004.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 external/wpt/websockets/binary/005.html?wpt_flags=h2 [ Failure ]
 crbug.com/1048761 [ Linux ] external/wpt/websockets/interfaces/WebSocket/bufferedAmount/bufferedAmount-arraybuffer.html?wpt_flags=h2 [ Failure ]
