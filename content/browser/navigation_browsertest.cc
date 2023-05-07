@@ -5736,7 +5736,7 @@ class CommitNavigationRaceBrowserTest
 
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "UndoCommitNavigation" : "NavigationQueueing";
+    return info.param ? "NavigationQueueing" : "UndoCommitNavigation";
   }
 
  private:
