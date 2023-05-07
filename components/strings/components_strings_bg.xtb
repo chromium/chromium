@@ -2532,7 +2532,7 @@
 <translation id="7201591969684833065">Администраторът ви може да вижда:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да отворите нов раздел в режим „инкогнито“ и да сърфирате частно</translation>
 <translation id="7203375778433816396">Задаване на Chrome като браузър по подразбиране за системата</translation>
-<translation id="7207736436284129083">{COUNT,plural, =0{Няма}=1{1 код за достъп}other{# кода за достъп}}</translation>
+<translation id="7207736436284129083">{COUNT,plural, =0{Няма}=1{1 ключ за достъп}other{# ключа за достъп}}</translation>
 <translation id="7210863904660874423"><ph name="HOST_NAME" /> не се придържа към стандартите за сигурност.</translation>
 <translation id="7210993021468939304">Може да инсталира и стартира приложения за Linux в контейнера, както и да вижда активността в него</translation>
 <translation id="721197778055552897"><ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /> за този проблем.</translation>
