@@ -14,6 +14,7 @@ For more info, see:
 
 import ast
 import concurrent.futures
+import functools
 import io
 import os
 import re
@@ -112,7 +113,7 @@ def ParseExpectation(expectation_string):
   return expectation
 
 
-def ExtractTestConfigs(sourcefile_path, suite_name):
+def ExtractTestConfigs(sourcefile_path, suite_name, resultfile, resultlog):
   """Parses the source file for test configurations.
 
   Each no-compile test in the file is separated by an ifdef macro.  We scan
@@ -123,10 +124,12 @@ def ExtractTestConfigs(sourcefile_path, suite_name):
   Args:
     sourcefile_path: The path to the source file.
     suite_name: The name of the test suite.
+    resultfile: File object for .cc file that results are written to.
+    resultlog: File object for the log file.
 
   Returns:
-    A list of test configurations. Each test configuration is a dictionary of
-    the form:
+    A list of test configurations, excluding tests prefixed with DISABLED_. Each
+    test configuration is a dictionary of the form:
 
       { name: 'NCTEST_NAME'
         suite_name: 'SOURCE_FILE_NAME'
@@ -143,34 +146,41 @@ def ExtractTestConfigs(sourcefile_path, suite_name):
     is actually None, then this specifies a compiler sanity check test, which
     should expect a SUCCESSFUL compilation.
   """
-  sourcefile = open(sourcefile_path, 'r', encoding='utf-8')
-
-  # Start with at least the compiler sanity test.  You need to always have one
-  # sanity test to show that compiler flags and configuration are not just
-  # wrong.  Otherwise, having a misconfigured compiler, or an error in the
-  # shared portions of the .nc file would cause all tests to erroneously pass.
-  test_configs = []
-
-  for line in sourcefile:
-    match_result = NCTEST_CONFIG_RE.match(line)
-    if not match_result:
-      continue
-
-    groups = match_result.groups()
-
-    # Grab the name and remove the defined() predicate if there is one.
-    name = groups[0]
-    strip_result = STRIP_DEFINED_RE.match(name)
-    if strip_result:
-      name = strip_result.group(1)
-
-    # Read expectations if there are any.
-    test_configs.append({
-        'name': name,
+  with open(sourcefile_path, 'r', encoding='utf-8') as sourcefile:
+    # Start with a compiler smoke test. This is important to show that compiler
+    # flags and configuration are not just wrong. Otherwise, having a
+    # misconfigured compiler, or an error in the shared portions of the .nc file
+    # would cause all tests to erroneously pass.
+    test_configs = [{
+        'name': 'NCTEST_SMOKE',
         'suite_name': suite_name,
-        'expectations': ParseExpectation(groups[1])
-    })
-  sourcefile.close()
+        'expectations': None,
+    }]
+
+    for line in sourcefile:
+      match_result = NCTEST_CONFIG_RE.match(line)
+      if not match_result:
+        continue
+
+      groups = match_result.groups()
+
+      # Grab the name and remove the defined() predicate if there is one.
+      name = groups[0]
+      strip_result = STRIP_DEFINED_RE.match(name)
+      if strip_result:
+        name = strip_result.group(1)
+
+      config = {
+          'name': name,
+          'suite_name': suite_name,
+          'expectations': ParseExpectation(groups[1])
+      }
+
+      if config['name'].startswith('DISABLED_'):
+        PassTest(resultfile, resultlog, config)
+        continue
+
+      test_configs.append(config)
   return test_configs
 
 
@@ -392,70 +402,51 @@ def main():
   words = [w.capitalize() for w in words]
   suite_name = 'NoCompile' + ''.join(words)
 
-  test_configs = ExtractTestConfigs(sourcefile_path, suite_name)
-  timings['extract_done'] = time.time()
+  with io.StringIO() as resultfile, io.StringIO() as resultlog:
+    resultfile.write(RESULT_FILE_HEADER % sourcefile_path)
 
-  resultfile = io.StringIO()
-  resultlog = io.StringIO()
-  resultfile.write(RESULT_FILE_HEADER % sourcefile_path)
+    test_configs = ExtractTestConfigs(sourcefile_path, suite_name, resultfile,
+                                      resultlog)
+    timings['extract_done'] = time.time()
 
-  # Run the no-compile tests, but ensure we do not run more than |parallelism|
-  # tests at once.
-  timings['header_written'] = time.time()
-  finished_tests = []
+    # Run the no-compile tests, but ensure we do not run more than |parallelism|
+    # tests at once.
+    timings['header_written'] = time.time()
+    finished_tests = []
 
-  with concurrent.futures.ThreadPoolExecutor(
-      max_workers=parallelism) as executor:
-    executing_tests = {}
-    # Test that a basic compiler invocation actually works, i.e. the nocompile
-    # tests aren't all unexpectedly passing by failing in an incorrect way, e.g.
-    # a compiler crash or syntax error.
-    executing_tests[executor.submit(
-        RunTest, compiler, os.path.dirname(resultfile_path), cflags, {
-            'name': 'NCTEST_SANITY',
-            'suite_name': suite_name,
-            'expectations': None,
-        })] = 'NCTEST_SANITY'
+    with concurrent.futures.ThreadPoolExecutor(
+        max_workers=parallelism) as executor:
+      finished_tests = executor.map(
+          functools.partial(RunTest, compiler, os.path.dirname(resultfile_path),
+                            cflags), test_configs)
 
-    for config in test_configs:
-      if config['name'].startswith('DISABLED_'):
-        PassTest(resultfile, resultlog, config)
-      else:
-        executing_tests[executor.submit(RunTest, compiler,
-                                        os.path.dirname(resultfile_path),
-                                        cflags, config)] = config['name']
+      timings['compile_done'] = time.time()
 
-    for future in concurrent.futures.as_completed(executing_tests):
-      finished_tests.append(future.result())
+      finished_tests = sorted(finished_tests, key=lambda test: test['name'])
+      for test in finished_tests:
+        if test['name'] == 'NCTEST_SMOKE':
+          (stdout, stderr) = ExtractTestOutputAndCleanup(test)
+          return_code = test['returncode']
+          if return_code != 0:
+            sys.stdout.write(stdout)
+            sys.stderr.write(stderr)
+          continue
+        ProcessTestResult(resultfile, resultlog, test)
+      timings['results_processed'] = time.time()
 
-  timings['compile_done'] = time.time()
+    WriteStats(resultlog, suite_name, timings)
 
-  finished_tests = sorted(finished_tests, key=lambda test: test['name'])
-  for test in finished_tests:
-    if test['name'] == 'NCTEST_SANITY':
-      (stdout, stderr) = ExtractTestOutputAndCleanup(test)
-      return_code = test['returncode']
-      if return_code != 0:
-        sys.stdout.write(stdout)
-        sys.stderr.write(stderr)
-      continue
-    ProcessTestResult(resultfile, resultlog, test)
-  timings['results_processed'] = time.time()
+    with open(resultfile_path + '.log', 'w') as fd:
+      fd.write(resultlog.getvalue())
+    if return_code == 0:
+      with open(resultfile_path, 'w') as fd:
+        fd.write(resultfile.getvalue())
 
-  WriteStats(resultlog, suite_name, timings)
-
-  with open(resultfile_path + '.log', 'w') as fd:
-    fd.write(resultlog.getvalue())
-  if return_code == 0:
-    with open(resultfile_path, 'w') as fd:
-      fd.write(resultfile.getvalue())
-
-  resultfile.close()
-  if return_code != 0:
-    print("No-compile driver failure with return_code %d. Result log:" %
-          return_code)
-    print(resultlog.getvalue())
-  sys.exit(return_code)
+    if return_code != 0:
+      print("No-compile driver failure with return_code %d. Result log:" %
+            return_code)
+      print(resultlog.getvalue())
+    sys.exit(return_code)
 
 
 if __name__ == '__main__':
