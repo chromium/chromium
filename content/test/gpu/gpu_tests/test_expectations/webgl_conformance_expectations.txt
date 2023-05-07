@@ -400,8 +400,6 @@ crbug.com/1371306 [ fuchsia fuchsia-board-sherlock ] conformance/textures/misc/t
 # Win failures     #
 ####################
 
-# Failing even with Slow due to heartbeat
-crbug.com/1432255 [ win angle-swiftshader ] conformance/reading/read-pixels-test.html [ Failure ]
 
 # Consistent failures in functions.control_flow.return_in_nested_loop_vertex and functions.control_flow.return_in_nested_loop_fragment
 # Possible HLSL compiler bug.
