@@ -193,8 +193,8 @@ Color Color::FromColorSpace(ColorSpace color_space,
 
   if (color_space == ColorSpace::kLab || color_space == ColorSpace::kOklab ||
       color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch) {
-    // param0_ is luminance which cannot be negative.
-    result.param0_ = std::max(result.param0_, 0.f);
+    // param0_ is luminance which cannot be negative or above 100%.
+    result.param0_ = std::min(100.f, std::max(result.param0_, 0.f));
   }
   if (color_space == ColorSpace::kLch || color_space == ColorSpace::kOklch) {
     // param1_ is chroma, which cannot be negative.
