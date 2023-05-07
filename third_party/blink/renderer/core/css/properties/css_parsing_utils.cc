@@ -1949,12 +1949,14 @@ static bool ParseLCHOrOKLCHParameters(CSSParserTokenRange& range,
     if (CSSPrimitiveValue* value_percent =
             ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
         value_percent) {
-      lightness = std::max(0.0, value_percent->GetDoubleValue());
+      lightness =
+          std::min(100.0, std::max(0.0, value_percent->GetDoubleValue()));
     } else if (CSSPrimitiveValue* value = ConsumeNumber(
                    args, context, CSSPrimitiveValue::ValueRange::kAll);
                value) {
-      lightness = std::max(0.0, value->GetDoubleValue()) *
-                  (function_id == CSSValueID::kLch ? 1.0 : 100.0);
+      lightness =
+          std::min(100.0, std::max(0.0, value->GetDoubleValue()) *
+                              (function_id == CSSValueID::kLch ? 1.0 : 100.0));
     } else {
       return false;
     }
