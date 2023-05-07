@@ -1034,6 +1034,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3531780078352352885">Tờ công việc</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> muốn sử dụng micrô của bạn</translation>
 <translation id="3533328374079021623">Hộp thư 5</translation>
+<translation id="3536227077203206203">Đã cho phép sử dụng cho lần này</translation>
 <translation id="3537165859691846083">Letter Plus</translation>
 <translation id="3542628208405253498">Hình ảnh trên thẻ</translation>
 <translation id="3542768452570884558">Mở đường liên kết trong cửa sổ mới</translation>
@@ -2453,6 +2454,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="7030436163253143341">Chứng chỉ không hợp lệ</translation>
 <translation id="7031646650991750659">Những ứng dụng bạn đã cài đặt bằng Google Play</translation>
 <translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý chế độ cài đặt về quyền riêng tư của Tài khoản Google của bạn</translation>
+<translation id="7044081119134178347">Đã cho phép sử dụng máy ảnh cho lần này</translation>
 <translation id="7048095965575426564">Fanfold châu Âu</translation>
 <translation id="7050187094878475250">Bạn đã cố gắng truy cập <ph name="DOMAIN" /> nhưng máy chủ đã hiển thị chứng chỉ có thời gian hiệu lực quá dài để có thể tin cậy.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{Không thể lưu thẻ này ngay bây giờ}other{Không thể lưu các thẻ này ngay bây giờ}}</translation>
@@ -3045,6 +3047,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8416694386774425977">Cấu hình mạng này là không hợp lệ và không thể nhập được.
 Thông tin chi tiết bổ sung:
 <ph name="DEBUG_INFO" /></translation>
+<translation id="8416874502399604126">Đã cho phép sử dụng micrô cho lần này</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8427848540066057481">500 x 750 mm</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
@@ -3100,6 +3103,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8554912124839363479">{NUM_PERMISSIONS,plural, =1{Đặt lại quyền}other{Đặt lại quyền}}</translation>
 <translation id="8555010941760982128">Sử dụng mã này khi thanh toán</translation>
 <translation id="8557066899867184262">CVC nằm ở mặt sau thẻ của bạn.</translation>
+<translation id="8558347880669160417">Đã cho phép sử dụng micrô và máy ảnh cho lần này</translation>
 <translation id="8559762987265718583">Không thể thiết lập kết nối riêng tư với <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vì ngày và giờ (<ph name="DATE_AND_TIME" />) trên thiết bị của bạn không đúng.</translation>
 <translation id="8564182942834072828">Tài liệu riêng biệt/Bản sao chưa đối chiếu</translation>
 <translation id="8564985650692024650">Chromium khuyên bạn nên đặt lại mật khẩu <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> của mình nếu đã sử dụng lại mật khẩu này trên các trang web khác.</translation>
@@ -3371,6 +3375,7 @@ Thông tin chi tiết bổ sung:
 <translation id="949314938206378263">Bạn đã yêu cầu truy cập trang web này. Cha/mẹ bạn có thể trả lời trong Family Link.</translation>
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="961663415146723894">Đóng gáy dưới cùng</translation>
+<translation id="961930410699694996">Đã cho phép sử dụng thông tin vị trí cho lần này</translation>
 <translation id="962484866189421427">Nội dung này có thể tìm cách cài đặt ứng dụng lừa đảo giả mạo nội dung khác hoặc thu thập dữ liệu có thể được dùng để theo dõi bạn. <ph name="BEGIN_LINK" />Vẫn hiển thị<ph name="END_LINK" /></translation>
 <translation id="963837307749850257">Tất cả người dùng</translation>
 <translation id="964050462028070434">Quản lý mật khẩu và khoá đăng nhập…</translation>

@@ -596,6 +596,7 @@
 <translation id="1506187449813838456">ਪਿਚ ਵਧਾਓ</translation>
 <translation id="1507170440449692343">ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚਣ ਤੋਂ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="1507246803636407672">&amp;ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
+<translation id="1508931164824684991">ਸਾਈਟਾਂ JavaScript ਵਰਤ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="1509163368529404530">&amp;ਗਰੁੱਪ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="1509281256533087115">USB ਰਾਹੀਂ ਕਿਸੇ ਵੀ <ph name="DEVICE_NAME_AND_VENDOR" /> ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1510238584712386396">ਲੌਂਚਰ</translation>
@@ -859,6 +860,7 @@
 <translation id="1708291623166985230">ਹੌਟਸਪੌਟ ਬੰਦ ਹੈ</translation>
 <translation id="1708338024780164500">(ਨਿਸ਼ਕਿਰਿਆ)</translation>
 <translation id="1708713382908678956"><ph name="NAME_PH" /> (ਆਈ.ਡੀ.: <ph name="ID_PH" />)</translation>
+<translation id="1708979186656821319">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਣ 'ਤੇ ਬੁਲਬੁਲਾ ਨਾ ਦਿਖਾਓ</translation>
 <translation id="1709106626015023981"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (ਜੱਦੀ)</translation>
 <translation id="1709217939274742847">ਪ੍ਰਮਾਣੀਕਰਨ ਵਰਤਣ ਲਈ ਟਿਕਟ ਚੁਣੋ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="1709762881904163296">ਨੈੱਟਵਰਕ ਸੈਟਿੰਗਾਂ</translation>
@@ -1682,6 +1684,7 @@
 <translation id="2398546389094871088">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨੂੰ ਪਾਵਰਵਾਸ਼ ਕਰਨ ਨਾਲ ਤੁਹਾਡੇ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਨਹੀਂ ਹਟਣਗੇ। ਇਹਨਾਂ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਹੱਥੀਂ ਹਟਾਉਣ ਲਈ <ph name="LINK_BEGIN" />ਮੋਬਾਈਲ ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ।</translation>
 <translation id="2399699884460174994">ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਕੀਤੀਆਂ ਹੋਈਆਂ ਹਨ</translation>
 <translation id="2399939490305346086">ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਸਾਈਨ-ਇਨ ਡਾਟਾ</translation>
+<translation id="2400323785194108001">ਇਸ ਸਾਈਟ ਨੂੰ ਕਦੇ ਵੀ ਅਕਿਰਿਆਸ਼ੀਲ ਨਾ ਕਰੋ</translation>
 <translation id="2400664245143453337">ਤੁਰੰਤ ਅੱਪਡੇਟ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="2402226831639195063">ਟੋਨਾਂ</translation>
 <translation id="2406153734066939945">ਕੀ ਇਸ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਇਸਦੇ ਡਾਟੇ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
@@ -1997,6 +2000,7 @@
 <translation id="2673135533890720193">ਆਪਣਾ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਪੜ੍ਹੋ</translation>
 <translation id="2674764818721168631">ਬੰਦ</translation>
 <translation id="2675570801872027281">Bruschetta ਨੂੰ ਹਟਾਉਣ ਦੌਰਾਨ ਗੜਬੜ ਹੋਈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="2676084251379299915">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਐਂਟਰਪ੍ਰਾਈਜ਼ ਨੀਤੀ ਕਰਕੇ ਬੰਦ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਹੁਣ ਇਹ Chrome ਵੈੱਬ ਸਟੋਰ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="267708982776801183">ਲਾਲ-ਹਰਾ ਫਿਲਟਰ (ਉਹ ਸਮੱਸਿਆ ਜਿਸ ਵਿੱਚ ਲਾਲ ਰੰਗ ਹਰਾ ਦਿਸਦਾ ਹੈ)</translation>
 <translation id="2678063897982469759">ਮੁੜ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2678100101831051676">ਕਾਸਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
@@ -2093,6 +2097,7 @@
 <translation id="2755349111255270002">ਇਸ <ph name="DEVICE_TYPE" /> ਨੂੰ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2755367719610958252">ਪਹੁੰਚਯੋਗਤਾ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="275662540872599901">ਸਕ੍ਰੀਨ ਬੰਦ</translation>
+<translation id="2756936198272359372">JavaScript ਵਰਤਣ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="2757161511365746634">ਪ੍ਰਿੰਟਰ ਦੇਖੋ</translation>
 <translation id="2757338480560142065">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡੇ ਵੱਲੋਂ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਪਾਸਵਰਡ <ph name="WEBSITE" /> ਦੇ ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਨਾਲ ਮੇਲ ਖਾਂਦਾ ਹੋਵੇ</translation>
 <translation id="2761632996810146912"><ph name="HASHTAG_SETTINGS" /> <ph name="SEARCH_QUERY" /> ਲਈ ਕੋਈ ਖੋਜ ਨਤੀਜਾ ਨਹੀਂ ਮਿਲਿਆ</translation>
@@ -2125,6 +2130,7 @@
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2781800772148653810">ਇਸ ਸਾਈਟ 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਨੂੰ ਆਗਿਆ ਦਿੱਤੀ ਗਈ ਹੈ</translation>
 <translation id="2782104745158847185">Linux ਐਪਲੀਕੇਸ਼ਨ ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋ ਗਈ</translation>
+<translation id="2783024642731649028">ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਮੌਜੂਦ 1 ਆਈਟਮ ਲਈ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> 'ਤੇ <ph name="DISCOUNT_TEXT" /> ਮਿਲ ਰਹੀ ਹੈ, <ph name="RELATIVE_TIME" /> ਪਹਿਲਾਂ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="2783298271312924866">ਡਾਊਨਲੋਡ ਕੀਤਾ</translation>
 <translation id="2783321960289401138">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ...</translation>
 <translation id="2783829359200813069">ਇਨਕ੍ਰਿਪਸ਼ਨ ਦੀਆਂ ਕਿਸਮਾਂ ਚੁਣੋ</translation>
@@ -2906,6 +2912,7 @@
 <translation id="3496213124478423963">ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="3496238553815913323"><ph name="LANGUAGE" /> (ਚੁਣੀ ਨਹੀਂ ਗਈ)</translation>
 <translation id="3496689104192986836">ਬੈਟਰੀ ਪੱਧਰ <ph name="PERCENTAGE" />%</translation>
+<translation id="3496995426334945408">ਸਾਈਟਾਂ ਆਮ ਤੌਰ ਤੇ JavaScript ਨੂੰ ਅੰਤਰਕਿਰਿਆਤਮਕ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਿਖਾਉਣ ਲਈ ਵਰਤਦੀਆਂ ਹਨ, ਜਿਵੇਂ ਕਿ ਵੀਡੀਓ ਗੇਮਾਂ ਜਾਂ ਵੈੱਬ ਫ਼ਾਰਮ</translation>
 <translation id="3497501929010263034"><ph name="VENDOR_NAME" /> ਦਾ USB ਡੀਵਾਈਸ (ਉਤਪਾਦ <ph name="PRODUCT_ID" />)</translation>
 <translation id="3497560059572256875">ਡੂਡਲ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="3500417806337761827">ਸਾਂਝਾਕਰਨ ਮਾਊਂਟ ਕਰਨ ਵਿੱਚ ਗੜਬੜ ਹੋਈ। ਬਹੁਤ ਸਾਰੇ SMB ਸਾਂਝਾਕਰਨਾਂ ਨੂੰ ਪਹਿਲਾਂ ਹੀ ਮਾਊਂਟ ਕੀਤਾ ਜਾ ਚੁੱਕਿਆ ਹੈ।</translation>
@@ -2950,6 +2957,7 @@
 <translation id="354060433403403521">AC ਅਡਾਪਟਰ</translation>
 <translation id="354068948465830244">ਇਹ ਸਾਈਟ ਦਾ ਡਾਟਾ ਪੜ੍ਹ ਅਤੇ ਬਦਲ ਸਕਦੀ ਹੈ</translation>
 <translation id="3541823293333232175">ਜ਼ਿੰਮੇ ਲਗਾਇਆ ਗਿਆ</translation>
+<translation id="354204985370574425">ਇਸ ਸਾਈਟ ਨੂੰ ਕਦੇ ਵੀ ਅਕਿਰਿਆਸ਼ੀਲ ਨਾ ਕਰੋ</translation>
 <translation id="3543393733900874979">ਅੱਪਡੇਟ ਅਸਫਲ (ਗੜਬੜ: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="3543597750097719865">SHA-512 ਨਾਲ X9.62 ECDSA ਹਸਤਾਖਰ</translation>
 <translation id="3544058026430919413">ਕੰਪਨੀ ਅਜਿਹੀਆਂ ਸਾਈਟਾਂ ਦੇ ਸਮੂਹ ਨੂੰ ਪਰਿਭਾਸ਼ਿਤ ਕਰ ਸਕਦੀ ਹੈ ਜੋ ਗਰੁੱਪ ਵਿੱਚ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ ਕੁਕੀਜ਼ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕੇ। ਇਹ ਇਨਕੋਗਨਿਟੋ ਵਿੱਚ ਬੰਦ ਹੈ।</translation>
@@ -3844,6 +3852,7 @@
 <translation id="4324577459193912240">ਅਧੂਰੀ ਫ਼ਾਈਲ</translation>
 <translation id="4325237902968425115"><ph name="LINUX_APP_NAME" /> ਨੂੰ ਅਣਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="4326146840124313313">Chrome ਦੀ ਸਭ ਤੋਂ ਮਜ਼ਬੂਤ ਸੁਰੱਖਿਆ ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਤੁਹਾਡੀ ਰੱਖਿਆ ਕਰਨ ਲਈ ਬਹੁਤ ਕੁਝ ਕਰਦੀ ਹੈ</translation>
+<translation id="4326484226728068206">ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਮੌਜੂਦ ਆਈਟਮਾਂ ਲਈ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> 'ਤੇ <ph name="DISCOUNT_TEXT" /> ਮਿਲ ਰਹੀ ਹੈ, <ph name="RELATIVE_TIME" /> ਪਹਿਲਾਂ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="4330191372652740264">ਠੰਡਾ ਪਾਣੀ</translation>
 <translation id="4330387663455830245">ਕਦੇ ਵੀ <ph name="LANGUAGE" /> ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="4332976768901252016">ਮਾਪਿਆਂ ਦੇ ਕੰਟਰੋਲ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
@@ -4532,6 +4541,7 @@
 <translation id="4940448324259979830">ਇਸ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_NAME" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="4940845626435830013">ਡਿਸਕ ਦਾ ਆਕਾਰ ਰਾਖਵਾਂ ਕਰੋ</translation>
 <translation id="4941074198479265146">ਸਾਈਟਾਂ ਆਮ ਤੌਰ 'ਤੇ ਸੰਗੀਤ ਬਣਾਉਣ ਅਤੇ ਸੰਪਾਦਿਤ ਕਰਨ ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਲਈ MIDI ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਦੀਆਂ ਹਨ</translation>
+<translation id="4941243352516004658">ਤੁਹਾਡੇ ਕਾਰਡ ਵਿੱਚ ਮੌਜੂਦ <ph name="PRODUCT_ITEM_COUNT" /> ਆਈਟਮਾਂ ਲਈ <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> 'ਤੇ <ph name="DISCOUNT_TEXT" /> ਮਿਲ ਰਹੀ ਹੈ, <ph name="RELATIVE_TIME" /> ਪਹਿਲਾਂ ਦੇਖਿਆ ਗਿਆ</translation>
 <translation id="4941246025622441835">ਐਂਟਰਪ੍ਰਾਈਜ਼ ਪ੍ਰਬੰਧਨ ਲਈ ਡੀਵਾਈਸ ਨੂੰ ਦਰਜ ਕਰਦੇ ਸਮੇਂ ਇਹ ਡੀਵਾਈਸ ਬੇਨਤੀ ਵਰਤੋ।</translation>
 <translation id="4941627891654116707">ਫੌਂਟ ਆਕਾਰ</translation>
 <translation id="4941963255146903244">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਐਪਾਂ ਦੇਖੋ</translation>
@@ -5487,6 +5497,7 @@
 <translation id="5832970156002835240">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5833397272224757657">ਵਿਅਕਤੀਗਤਕਰਨ ਲਈ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਸਾਈਟਾਂ ਦੀ ਸਮੱਗਰੀ, ਨਾਲ ਹੀ ਬ੍ਰਾਊਜ਼ਰ ਸਰਗਰਮੀ ਅਤੇ ਅੰਤਰਕਿਰਿਆਵਾਂ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ</translation>
 <translation id="5833726373896279253">ਇਹ ਸੈਟਿੰਗਾਂ ਕੇਵਲ ਮਾਲਕ ਵੱਲੋਂ ਸੰਸ਼ੋਧਿਤ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।</translation>
+<translation id="5833899990800318936">ਸਾਈਟਾਂ ਨੂੰ JavaScript ਵਰਤਣ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="583431638776747">ਸਾਈਟ ਉਪਲਬਧ ਨਹੀਂ ਸੀ</translation>
 <translation id="5834581999798853053">ਲਗਭਗ <ph name="TIME" /> ਮਿੰਟ ਬਾਕੀ</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> ਵੱਲੋਂ HID ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ}=2{ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਾਲੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਗਿਣਤੀ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}one{ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਾਲੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਗਿਣਤੀ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} ਹੋਰ}other{ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਾਲੀਆਂ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਗਿਣਤੀ: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> +{3} ਹੋਰ}}</translation>
@@ -5717,6 +5728,7 @@
 <translation id="6026819612896463875"><ph name="WINDOW_TITLE" /> - USB ਡੀਵਾਈਸ ਕਨੈਕਟ ਕੀਤੀ ਗਈ</translation>
 <translation id="6027945736510816438">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ <ph name="WEBSITE" /> ਸੀ?</translation>
 <translation id="6028117231645531007">ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="6030719887161080597">ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਮਾਪਣ ਲਈ ਸਾਈਟ ਵੱਲੋਂ ਵਰਤੀ ਗਈ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6031600495088157824">ਟੂਲਬਾਰ ਵਿੱਚ ਇਨਪੁੱਟ ਵਿਕਲਪ</translation>
 <translation id="6032715498678347852">ਇਸ ਸਾਈਟ ਨੂੰ ਐਕਸਟੈਂਸ਼ਨ ਪਹੁੰਚ ਦੇਣ ਲਈ, ਇਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="6032912588568283682">ਫਾਈਲ ਸਿਸਟਮ</translation>
@@ -5951,6 +5963,7 @@
 <translation id="623755660902014047">ਪੜ੍ਹਨ ਦਾ ਮੋਡ</translation>
 <translation id="6238767809035845642">ਕਿਸੇ ਹੋਰ ਡੀਵਾਈਸ ਤੋਂ ਸਾਂਝੀ ਕੀਤੀ ਲਿਖਤ</translation>
 <translation id="6238923052227198598">ਨਵੀਨਤਮ ਨੋਟ-ਕਥਨ ਨੂੰ ਲੌਕ ਸਕ੍ਰੀਨ 'ਤੇ ਰੱਖੋ</translation>
+<translation id="6238982280403036866">JavaScript ਵਰਤਣ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="6239558157302047471">&amp;ਫ੍ਰੇਮ ਮੁੜ-ਲੋਡ ਕਰੋ</translation>
 <translation id="6240821072888636753">ਹਰ ਵਾਰ ਪੁੱਛੋ</translation>
 <translation id="6241530762627360640">ਆਪਣੇ ਸਿਸਟਮ ਨਾਲ ਪੇਅਰ ਕੀਤੀਆਂ ਬਲੂਟੁੱਥ ਡਿਵਾਈਸਾਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਤੱਕ ਪਹੁੰਚ ਪ੍ਰਾਪਤ ਕਰੋ ਅਤੇ ਨੇੜਲੀਆਂ ਬਲੂਟੁੱਥ ਡਿਵਾਈਸਾਂ ਖੋਜੋ।</translation>

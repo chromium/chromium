@@ -5,6 +5,7 @@
 <translation id="1018219910092211213">Không thể phân giải DNS</translation>
 <translation id="1018656279737460067">Đã hủy</translation>
 <translation id="1022433422498218992">Chế độ điều khiển chung</translation>
+<translation id="1022628058306505708">Dòng chảy Trái đất</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> luồng, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Đã có tính năng mới, hãy sử dụng phím Mũi tên lên để tìm hiểu thêm.</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
@@ -234,6 +235,7 @@
 <translation id="2902312830803030883">Thao tác khác</translation>
 <translation id="2926057806159140518">Nhập tên người dùng và mật khẩu hoặc quét mã QR</translation>
 <translation id="2940811910881150316">Không kiểm tra được thiết bị. Mở lại nắp thiết bị để kiểm tra.</translation>
+<translation id="2981143481017883351">Hiện đã có các nội dung dành riêng cho Chromebook</translation>
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3017079585324758401">Nền</translation>
@@ -278,6 +280,7 @@
 <translation id="3360306038446926262">Windows</translation>
 <translation id="3368922792935385530">Đã kết nối</translation>
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
+<translation id="3386675685417744672">Dành riêng cho Chromebook</translation>
 <translation id="3404249063913988450">Bật trình bảo vệ màn hình</translation>
 <translation id="3413935475507503304">Để tiếp tục cập nhật, hãy nhấp vào Tiếp theo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -356,6 +359,7 @@
 <translation id="404928562651467259">CẢNH BÁO</translation>
 <translation id="4054683689023980771">Đang tải hình ảnh xuống</translation>
 <translation id="4060260348856573701">APN mới</translation>
+<translation id="4079743696465895866">Chọn hình minh hoạ dành riêng cho Chromebook</translation>
 <translation id="4093865285251893588">Ảnh hồ sơ</translation>
 <translation id="409427325554347132">Lưu thông tin chi tiết của quá trình kiểm tra</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
@@ -622,6 +626,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Dung lượng pin sụt giảm theo mức sử dụng</translation>
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
+<translation id="6205145102504628069">Luồng đám mây</translation>
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223066887782788441">Thoát khỏi trạng thái toàn màn hình</translation>
 <translation id="6223752125779001553">Không có máy quét nào</translation>
@@ -664,6 +669,7 @@
 <translation id="6494974875566443634">Tùy chỉnh</translation>
 <translation id="6500818810472529210">Xem kết quả trên Google Tìm kiếm</translation>
 <translation id="650266656685499220">Để tạo album, hãy chuyển đến Google Photos</translation>
+<translation id="6505750420152840539">Sáng đến tối</translation>
 <translation id="6516990319416533844">Để kiểm tra tốc độ sạc pin, hãy để pin tiêu hao trong khoảng thời gian ngắn</translation>
 <translation id="6517239166834772319">Khám phá</translation>
 <translation id="6526200165918397681">Khớp với hình nền</translation>

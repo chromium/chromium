@@ -460,6 +460,7 @@
 <translation id="316086887565479535">يحتوي النموذج على تطبيقات غير متوافقة.</translation>
 <translation id="3161500364292033097">إغلاق سطح المكتب والنوافذ</translation>
 <translation id="316356270129335934">يعمل <ph name="MANAGER" /> على إعادة جهاز <ph name="DEVICE_TYPE" /> إلى الإصدار السابق. ستتم إعادة ضبط جهازك ويتم حذف كل البيانات المتوفّرة عليه.</translation>
+<translation id="3171170659304083361">إعدادات أساليب الإدخال</translation>
 <translation id="3181441307743005334">قد تستغرق إعادة التشغيل بعض الوقت</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{تم الاتصال بجهاز واحد}zero{تم الاتصال بـ # جهاز}two{تم الاتصال بجهازين (#)}few{تم الاتصال بـ # أجهزة}many{تم الاتصال بـ # جهازًا}other{تم الاتصال بـ # جهاز}}</translation>
 <translation id="320207200541803018">ضبط موقِّت</translation>
@@ -1112,6 +1113,7 @@
 <translation id="6074087755403037157">قناة تجريبية</translation>
 <translation id="6093867385179428431">أوقف المشرف هذه الإعدادات</translation>
 <translation id="6095008505822982596">معدّل سرعة الكلام</translation>
+<translation id="6095425951508823973">إضافة اتصال باستخدام "<ph name="PROVIDER" />"</translation>
 <translation id="6099678161144790572">تم تعديله الشهر الماضي.</translation>
 <translation id="6103838137565245112">النظام</translation>
 <translation id="6114505516289286752">تم تنزيل ملفات اللغة <ph name="LANGUAGE" /> في ميزة "التعرّف على الكلام"</translation>
