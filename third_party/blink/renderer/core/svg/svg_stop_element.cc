@@ -86,7 +86,7 @@ Color SVGStopElement::StopColorIncludingOpacity() const {
     return Color::kBlack;
 
   Color base_color = style->VisitedDependentColor(GetCSSPropertyStopColor());
-  base_color.SetAlpha(style->StopOpacity() * base_color.FloatAlpha());
+  base_color.SetAlpha(style->StopOpacity() * base_color.Alpha());
   return base_color;
 }
 

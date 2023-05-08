@@ -122,7 +122,7 @@ ALWAYS_INLINE void CanvasStyle::ApplyColorToFlags(cc::PaintFlags& flags,
   DCHECK(type_ == kColor);
   flags.setShader(nullptr);
   Color color = color_;
-  color.SetAlpha(color.FloatAlpha() * global_alpha);
+  color.SetAlpha(color.Alpha() * global_alpha);
   flags.setColor(color.toSkColor4f());
 }
 

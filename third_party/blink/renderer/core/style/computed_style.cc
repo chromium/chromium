@@ -2261,8 +2261,7 @@ Color ComputedStyle::VisitedDependentColor(const Longhand& color_property,
   // TODO(dazabani@igalia.com) improve behaviour where unvisited is currentColor
   return Color::FromColorSpace(visited_color.GetColorSpace(),
                                visited_color.Param0(), visited_color.Param1(),
-                               visited_color.Param2(),
-                               unvisited_color.FloatAlpha());
+                               visited_color.Param2(), unvisited_color.Alpha());
 }
 
 blink::Color ComputedStyle::ResolvedColor(const StyleColor& color,

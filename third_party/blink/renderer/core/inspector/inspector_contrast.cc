@@ -228,7 +228,7 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
   Color text_color =
       static_cast<const cssvalue::CSSColor*>(text_color_value)->Value();
 
-  text_color.SetAlpha(text_opacity * text_color.FloatAlpha());
+  text_color.SetAlpha(text_opacity * text_color.Alpha());
 
   float contrast_ratio = color_utils::GetContrastRatio(
       bgcolors.at(0).Blend(text_color).toSkColor4f(),
@@ -338,8 +338,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
 
     // Opacity applies to the entire element so mix it with the alpha channel.
     if (style->HasOpacity()) {
-      background_color.SetAlpha(background_color.FloatAlpha() *
-                                style->Opacity());
+      background_color.SetAlpha(background_color.Alpha() * style->Opacity());
       // If the background element is the ancestor of the top element or is the
       // top element, the opacity affects the text color of the top element.
       if (element == top_element ||

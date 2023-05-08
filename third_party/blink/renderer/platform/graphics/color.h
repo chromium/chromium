@@ -271,7 +271,7 @@ class PLATFORM_EXPORT Color {
   float Param0() const { return param0_; }
   float Param1() const { return param1_; }
   float Param2() const { return param2_; }
-  float FloatAlpha() const { return alpha_; }
+  float Alpha() const { return alpha_; }
 
   void SetAlpha(float alpha) { alpha_ = alpha; }
 
