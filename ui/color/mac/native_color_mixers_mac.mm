@@ -15,6 +15,10 @@
 #include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace ui {
 
 namespace {
