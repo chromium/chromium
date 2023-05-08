@@ -11,7 +11,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace ash {
 
@@ -36,7 +42,16 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
 
+  // Binds a PageHandler to MediaAppGuestUI. This handler grabs a reference to
+  // the page and pushes a colorChangeEvent to the untrusted JS running there
+  // when the OS color scheme has changed.
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          receiver);
+
  private:
+  WEB_UI_CONTROLLER_TYPE_DECL();
+
   void StartFontDataRequest(
       const std::string& path,
       content::WebUIDataSource::GotDataCallback got_data_callback);
@@ -50,6 +65,8 @@ class MediaAppGuestUI : public ui::UntrustedWebUIController,
 
   // Whether ReadyToCommitNavigation has occurred for the main `app.html`.
   bool app_navigation_committed_ = false;
+
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 
   base::WeakPtrFactory<MediaAppGuestUI> weak_factory_{this};
 };
