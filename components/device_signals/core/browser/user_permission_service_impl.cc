@@ -4,11 +4,14 @@
 
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
+#include <set>
+
 #include "base/check.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/prefs/pref_service.h"
 
 namespace device_signals {
@@ -49,7 +52,7 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
     return UserPermission::kUnknownUser;
   }
 
-  if (!user_delegate_->IsManaged()) {
+  if (!user_delegate_->IsManagedUser()) {
     return UserPermission::kConsumerUser;
   }
 
@@ -73,16 +76,29 @@ UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
 }
 
 UserPermission UserPermissionServiceImpl::CanCollectSignals() {
-  // For now, the only condition that is required is that the current
-  // browser is Cloud-managed. The rationale being that signals can be
-  // collected on managed devices by their managing organization, but
-  // would require more scrutiny for unmanaged browsers (including
-  // getting user consent). However, support for unmanaged browsers is
-  // not required yet.
+  if (HasUserConsented()) {
+    return UserPermission::kGranted;
+  }
+
   if (!IsDeviceCloudManaged()) {
+    // Consent is required on unmanaged devices.
     return UserPermission::kMissingConsent;
   }
-  return UserPermission::kGranted;
+
+  if (!user_delegate_->IsManagedUser() || user_delegate_->IsAffiliated()) {
+    // Grant access to signals if the profile is unmanaged or affiliated.
+    return UserPermission::kGranted;
+  }
+
+  // In unaffiliated contexts, signals can only be collected without consent if
+  // they are solely needed by a device-level policy.
+  std::set<policy::PolicyScope> scopes =
+      user_delegate_->GetPolicyScopesNeedingSignals();
+  bool only_needed_by_device =
+      (scopes.find(policy::POLICY_SCOPE_MACHINE) != scopes.end()) &&
+      scopes.size() == 1U;
+  return only_needed_by_device ? UserPermission::kGranted
+                               : UserPermission::kMissingConsent;
 }
 
 bool UserPermissionServiceImpl::HasUserConsented() const {

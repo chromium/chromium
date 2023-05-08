@@ -4,7 +4,10 @@
 
 #include "chrome/browser/enterprise/signals/user_delegate_impl.h"
 
+#include <set>
+
 #include "chrome/test/base/testing_profile.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -32,22 +35,22 @@ class UserDelegateImplTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
-// Tests that IsManaged returns false when the user is not managed.
-TEST_F(UserDelegateImplTest, IsManaged_False) {
+// Tests that IsManagedUser returns false when the user is not managed.
+TEST_F(UserDelegateImplTest, IsManagedUser_False) {
   auto test_profile = CreateProfile(/*is_managed=*/false);
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_FALSE(user_delegate.IsManaged());
+  EXPECT_FALSE(user_delegate.IsManagedUser());
 }
 
-// Tests that IsManaged returns true when the user is managed.
-TEST_F(UserDelegateImplTest, IsManaged_True) {
+// Tests that IsManagedUser returns true when the user is managed.
+TEST_F(UserDelegateImplTest, IsManagedUser_True) {
   auto test_profile = CreateProfile(/*is_managed=*/true);
 
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
-  EXPECT_TRUE(user_delegate.IsManaged());
+  EXPECT_TRUE(user_delegate.IsManagedUser());
 }
 
 // Tests that IsSameUser returns false when given a different user.
@@ -96,6 +99,16 @@ TEST_F(UserDelegateImplTest, IsSameUser_SameUser_Sync) {
   UserDelegateImpl user_delegate(test_profile.get(),
                                  identity_test_env_.identity_manager());
   EXPECT_TRUE(user_delegate.IsSameUser(account.gaia));
+}
+
+// Tests that GetPolicyScopesNeedingSignals only returns an empty set
+// for now.
+TEST_F(UserDelegateImplTest, GetPolicyScopesNeedingSignals_Empty) {
+  auto test_profile = CreateProfile(/*is_managed=*/true);
+  UserDelegateImpl user_delegate(test_profile.get(),
+                                 identity_test_env_.identity_manager());
+  EXPECT_EQ(user_delegate.GetPolicyScopesNeedingSignals(),
+            std::set<policy::PolicyScope>());
 }
 
 }  // namespace enterprise_signals
