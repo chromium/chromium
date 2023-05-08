@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
 import org.chromium.chrome.browser.suggestions.tile.MostVisitedTilesCoordinator;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
+import org.chromium.chrome.browser.suggestions.tile.TileGroup.Delegate;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -77,6 +79,7 @@ public class NewTabPageLayout extends LinearLayout {
     private static final int UNSET_RESOURCE_FLAG = -1;
 
     private final int mTileGridLayoutBleed;
+    private int mSearchBoxTwoSideMargin;
     private final Context mContext;
     private int mSearchBoxEndPadding = UNSET_RESOURCE_FLAG;
 
@@ -124,6 +127,7 @@ public class NewTabPageLayout extends LinearLayout {
     private boolean mSnapshotTileGridChanged;
     private boolean mIsIncognito;
     private WindowAndroid mWindowAndroid;
+    private boolean mIsNtpAsHomeSurfaceEnabled;
 
     /**
      * Vertical inset to add to the top and bottom of the search box bounds. May be 0 if no inset
@@ -172,12 +176,12 @@ public class NewTabPageLayout extends LinearLayout {
      * @param isIncognito Whether the new tab page is in incognito mode.
      * @param windowAndroid An instance of a {@link WindowAndroid}
      */
-    public void initialize(NewTabPageManager manager, Activity activity,
-            TileGroup.Delegate tileGroupDelegate, boolean searchProviderHasLogo,
-            boolean searchProviderIsGoogle, FeedSurfaceScrollDelegate scrollDelegate,
-            TouchEnabledDelegate touchEnabledDelegate, UiConfig uiConfig,
-            ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma, boolean isIncognito,
-            WindowAndroid windowAndroid) {
+    public void initialize(NewTabPageManager manager, Activity activity, Delegate tileGroupDelegate,
+            boolean searchProviderHasLogo, boolean searchProviderIsGoogle,
+            FeedSurfaceScrollDelegate scrollDelegate, TouchEnabledDelegate touchEnabledDelegate,
+            UiConfig uiConfig, ActivityLifecycleDispatcher lifecycleDispatcher, NewTabPageUma uma,
+            boolean isIncognito, WindowAndroid windowAndroid, boolean isNtpAsHomeSurfaceEnabled,
+            boolean isMultiColumnFeedEnabled) {
         TraceEvent.begin(TAG + ".initialize()");
         mScrollDelegate = scrollDelegate;
         mManager = manager;
@@ -186,6 +190,7 @@ public class NewTabPageLayout extends LinearLayout {
         mNewTabPageUma = uma;
         mIsIncognito = isIncognito;
         mWindowAndroid = windowAndroid;
+        mIsNtpAsHomeSurfaceEnabled = isNtpAsHomeSurfaceEnabled;
         Profile profile = Profile.getLastUsedRegularProfile();
 
         mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
@@ -195,6 +200,13 @@ public class NewTabPageLayout extends LinearLayout {
                     R.dimen.ntp_search_box_bounds_vertical_inset_modern);
         }
 
+        if (isMultiColumnFeedEnabled && mIsNtpAsHomeSurfaceEnabled) {
+            // We add extra side margins to the fake search box when multiple column Feeds are
+            // shown. There is only one exception that we don't shorten the width of the fake search
+            // box: one row of MV tiles in portrait mode.
+            mSearchBoxTwoSideMargin =
+                    getResources().getDimensionPixelSize(R.dimen.ntp_search_box_start_margin) * 2;
+        }
         initializeLogoCoordinator(searchProviderHasLogo, searchProviderIsGoogle);
         initializeMostVisitedTilesCoordinator(profile, lifecycleDispatcher, tileGroupDelegate,
                 touchEnabledDelegate, isScrollableMvtEnabled(), searchProviderIsGoogle);
@@ -852,11 +864,23 @@ public class NewTabPageLayout extends LinearLayout {
         if (mMvTilesContainerLayout.getVisibility() != GONE) {
             if (!isScrollableMvtEnabled()) {
                 final int width = mMvTilesContainerLayout.getMeasuredWidth() - mTileGridLayoutBleed;
-                measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
+                measureExactly(searchBoxView, width - mSearchBoxTwoSideMargin,
+                        searchBoxView.getMeasuredHeight());
                 mLogoCoordinator.measureExactlyLogoView(width);
             } else {
                 final int width = getMeasuredWidth() - mTileGridLayoutBleed;
-                measureExactly(searchBoxView, width, searchBoxView.getMeasuredHeight());
+
+                // We reset the extra margins of the fake search box if the scrollable MV tiles are
+                // showing in the portrait mode with multiple column Feeds.
+                int searchBoxTwoSideMargin = mSearchBoxTwoSideMargin;
+                if (mSearchBoxTwoSideMargin != 0
+                        && getResources().getConfiguration().orientation
+                                == Configuration.ORIENTATION_PORTRAIT) {
+                    searchBoxTwoSideMargin = 0;
+                }
+
+                measureExactly(searchBoxView, width - searchBoxTwoSideMargin,
+                        searchBoxView.getMeasuredHeight());
                 mLogoCoordinator.measureExactlyLogoView(width);
             }
         }
