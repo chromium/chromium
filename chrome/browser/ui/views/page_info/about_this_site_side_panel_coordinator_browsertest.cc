@@ -51,6 +51,14 @@ class AboutThisSiteSidePanelCoordinatorBrowserTest
     return https_server_.GetURL(host, "/title1.html");
   }
 
+  std::string CreateAboutThisSiteUrl(const GURL& url) {
+    return base::StringPrintf(
+        "https://www.google.com/search?"
+        "q=About+%s"
+        "&tbm=ilp&ctx=chrome_nav",
+        base::EscapeQueryParamValue(url.spec(), true).c_str());
+  }
+
   page_info::proto::SiteInfo CreateSiteInfo() {
     page_info::proto::SiteInfo info;
     info.mutable_more_about()->set_url(CreateUrl(kAboutThisSiteUrl).spec());
@@ -146,18 +154,140 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kAboutThisSite);
 
-  // Check that the diner url was updated.
-  std::string kAboutThisSiteRegularUrl2 = base::StringPrintf(
-      "https://www.google.com/search?"
-      "q=About+%s"
-      "&tbm=ilp&ctx=chrome_nav",
-      base::EscapeQueryParamValue(kRegularGURL2.spec(), true).c_str());
+  // Check that the AboutThisSite url was updated.
+  std::string kAboutThisSiteRegularUrl2 = CreateAboutThisSiteUrl(kRegularGURL2);
 
   EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
   EXPECT_EQ(side_panel_coordinator()
                 ->GetCurrentSidePanelEntryForTesting()
                 ->GetOpenInNewTabURL(),
             kAboutThisSiteRegularUrl2);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
+                       ShowSameTabNavRef) {
+  GURL kRegularGURL1 = CreateUrl(kRegularUrl1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kRegularGURL1));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Test showing a side panel.
+  GURL kAboutThisSiteGURL = CreateUrl(kAboutThisSiteUrl);
+  ShowAboutThisSiteSidePanel(web_contents(), kAboutThisSiteGURL);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that side panel remains open on navigation with an anchor.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), kRegularGURL1.Resolve("#ref")));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that the AboutThisSite url remains the same.
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kAboutThisSiteGURL);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
+                       ShowSameTabNavSameDocumentPushState) {
+  GURL kRegularGURL1 = CreateUrl(kRegularUrl1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kRegularGURL1));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Test showing a side panel.
+  ShowAboutThisSiteSidePanel(web_contents(), CreateUrl(kAboutThisSiteUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Push state with new path.
+  GURL kRegularGURL1WithPath2 = kRegularGURL1.Resolve("/title2.html");
+  ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                     "history.pushState({},'','title2.html')"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Check that side panel remains open on push state.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that the AboutThisSite url was updated.
+  std::string kAboutThisSiteRegularUrl1WithPath2 =
+      CreateAboutThisSiteUrl(kRegularGURL1WithPath2);
+
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kAboutThisSiteRegularUrl1WithPath2);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
+                       ShowSameTabNavSameDocumentReplaceState) {
+  GURL kRegularGURL1 = CreateUrl(kRegularUrl1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kRegularGURL1));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Test showing a side panel.
+  ShowAboutThisSiteSidePanel(web_contents(), CreateUrl(kAboutThisSiteUrl));
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Replace state with new path.
+  GURL kRegularGURL1WithPath2 = kRegularGURL1.Resolve("/title2.html");
+  ASSERT_TRUE(content::ExecuteScript(
+      web_contents(), "history.replaceState({},'','title2.html')"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Check that side panel remains open on replace state.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that the AboutThisSite url was updated.
+  std::string kAboutThisSiteRegularUrl1WithPath2 =
+      CreateAboutThisSiteUrl(kRegularGURL1WithPath2);
+
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kAboutThisSiteRegularUrl1WithPath2);
+}
+
+IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
+                       ShowSameTabNavSameDocumentReplaceStateRef) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), CreateUrl(kRegularUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Test showing a side panel.
+  GURL kAboutThisSiteGURL = CreateUrl(kAboutThisSiteUrl);
+  ShowAboutThisSiteSidePanel(web_contents(), kAboutThisSiteGURL);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Replace state with anchor.
+  ASSERT_TRUE(content::ExecuteScript(web_contents(),
+                                     "history.replaceState({},'','#ref')"));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+
+  // Check that side panel remains open on replace state.
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kAboutThisSite);
+
+  // Check that the AboutThisSite url remains the same.
+  EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
+  EXPECT_EQ(side_panel_coordinator()
+                ->GetCurrentSidePanelEntryForTesting()
+                ->GetOpenInNewTabURL(),
+            kAboutThisSiteGURL);
 }
 
 IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
@@ -180,14 +310,10 @@ IN_PROC_BROWSER_TEST_F(AboutThisSiteKeepSidePanelOpenBrowserTest,
   EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
             SidePanelEntry::Id::kAboutThisSite);
 
-  // Check that the diner url was updated with the invalid origin but with an
-  // empty path.
-  std::string kAboutThisSiteInvalidUrl = base::StringPrintf(
-      "https://www.google.com/search?"
-      "q=About+%s"
-      "&tbm=ilp&ctx=chrome_nav",
-      base::EscapeQueryParamValue(kInvalidGURL.GetWithEmptyPath().spec(), true)
-          .c_str());
+  // Check that the AboutThisSite url was updated with the invalid origin but
+  // with an empty path.
+  std::string kAboutThisSiteInvalidUrl =
+      CreateAboutThisSiteUrl(kInvalidGURL.GetWithEmptyPath());
 
   EXPECT_TRUE(side_panel_coordinator()->GetCurrentSidePanelEntryForTesting());
   EXPECT_EQ(side_panel_coordinator()

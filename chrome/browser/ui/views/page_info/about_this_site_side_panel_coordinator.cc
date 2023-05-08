@@ -117,8 +117,19 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
 void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
       !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  if (!page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+
+  if (page_info::IsKeepSidePanelOnSameTabNavsFeatureEnabled() &&
+      navigation_handle->IsSameDocument() &&
+      web_contents()->GetLastCommittedURL().GetWithoutRef() ==
+          last_url_info_->context_url.GetWithoutRef()) {
     return;
   }
 
