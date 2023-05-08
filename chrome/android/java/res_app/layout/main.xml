@@ -173,6 +173,13 @@ found in the LICENSE file.
             android:inflatedId="@+id/page_zoom_layout"
             android:layout="@layout/page_zoom_view" />
 
+        <ViewStub
+            android:id="@+id/quick_delete_animation_stub"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout="@layout/quick_delete_animation_view"
+            android:inflatedId="@+id/quick_delete_animation_layout"/>
+
     </org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer>
 
     <!-- This empty view is used as the anchor for custom menu -->

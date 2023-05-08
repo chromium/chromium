@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.quick_delete;
 
 import android.content.Context;
+import android.graphics.drawable.Animatable2;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
@@ -33,6 +37,7 @@ public class QuickDeleteController {
     private final @NonNull QuickDeleteDialogDelegate mDialogDelegate;
     private final @NonNull SnackbarManager mSnackbarManager;
     private final @NonNull LayoutManager mLayoutManager;
+    private final @NonNull View mAnimationView;
 
     /**
      * Constructor for the QuickDeleteController with a dialog and confirmation snackbar.
@@ -44,17 +49,20 @@ public class QuickDeleteController {
      * @param layoutManager {@link LayoutManager} to use for showing the regular overview mode.
      * @param tabModelSelector {@link TabModelSelector} to use for opening the links in search
      *         history disambiguation notice.
+     * @param animationView The {@link View} to use to show the quick delete animation.
      */
     public QuickDeleteController(@NonNull Context context, @NonNull QuickDeleteDelegate delegate,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull SnackbarManager snackbarManager, @NonNull LayoutManager layoutManager,
-            @NonNull TabModelSelector tabModelSelector) {
+            @NonNull TabModelSelector tabModelSelector, @NonNull View animationView) {
         mContext = context;
         mDelegate = delegate;
         mSnackbarManager = snackbarManager;
         mLayoutManager = layoutManager;
         mDialogDelegate = new QuickDeleteDialogDelegate(
                 context, modalDialogManager, this::onDialogDismissed, tabModelSelector);
+        mAnimationView = animationView;
+        mAnimationView.setBackgroundResource(R.drawable.quick_delete_animation);
     }
 
     /**
@@ -73,8 +81,6 @@ public class QuickDeleteController {
 
     /**
      * A method called when the user confirms or cancels the dialog.
-     *
-     * TODO(crbug.com/1412087): Add implementation logic for the deletion.
      */
     private void onDialogDismissed(@DialogDismissalCause int dismissalCause) {
         switch (dismissalCause) {
@@ -97,8 +103,7 @@ public class QuickDeleteController {
     private void onQuickDeleteFinished() {
         navigateToTabSwitcher();
         triggerHapticFeedback();
-        // TODO(crbug.com/1412087): Show post-delete animation.
-        showSnackbar();
+        showDeleteAnimation(this::showSnackbar);
     }
 
     /**
@@ -129,5 +134,21 @@ public class QuickDeleteController {
                 /*controller= */ null, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_QUICK_DELETE);
 
         mSnackbarManager.showSnackbar(snackbar);
+    }
+
+    private void showDeleteAnimation(@NonNull Runnable onAnimationEnd) {
+        AnimatedVectorDrawable deleteAnimation =
+                (AnimatedVectorDrawable) mAnimationView.getBackground();
+        mAnimationView.setVisibility(View.VISIBLE);
+        deleteAnimation.registerAnimationCallback(new Animatable2.AnimationCallback() {
+            @Override
+            public void onAnimationEnd(Drawable drawable) {
+                super.onAnimationEnd(drawable);
+                ((AnimatedVectorDrawable) drawable).unregisterAnimationCallback(this);
+                mAnimationView.setVisibility(View.GONE);
+                onAnimationEnd.run();
+            }
+        });
+        deleteAnimation.start();
     }
 }

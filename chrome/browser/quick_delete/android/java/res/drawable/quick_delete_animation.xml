@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt" >
+
+  <aapt:attr name="android:drawable">
+    <vector
+        android:width="96dp"
+        android:height="96dp"
+        android:viewportHeight="100"
+        android:viewportWidth="100">
+      <group
+          android:name="gradientGroup"
+          android:translateY="0"
+          >
+        <path
+            android:name="gradientPath"
+            android:pathData="M1,1 H99 V99 H1Z">
+          <aapt:attr name="android:fillColor">
+            <!-- TODO(crbug.com/1412087): Add proper colors for light and dark mode. -->
+            <gradient
+                android:startColor="#FFFFFFFF"
+                android:startX="50"
+                android:startY="0"
+                android:endColor="#00000000"
+                android:endX="50"
+                android:endY="50"
+                android:type="linear" />
+          </aapt:attr>
+        </path>
+      </group>
+    </vector>
+  </aapt:attr>
+
+  <target android:name="gradientGroup">
+    <aapt:attr name="android:animation">
+      <set>
+        <objectAnimator
+            android:duration="1200"
+            android:propertyName="translateY"
+            android:valueFrom="150"
+            android:valueTo="-150" />
+      </set>
+    </aapt:attr>
+  </target>
+</animated-vector>
