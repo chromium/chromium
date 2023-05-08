@@ -10,6 +10,8 @@
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "ash/webui/help_app_ui/help_app_ui_delegate.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
+#include "ash/webui/help_app_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_ui_config.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/index.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
@@ -17,6 +19,17 @@
 namespace ash {
 
 class HelpAppPageHandler;
+class HelpAppUI;
+
+// The WebUIConfig for chrome://help-app.
+class HelpAppUIConfig : public SystemWebAppUIConfig<HelpAppUI> {
+ public:
+  explicit HelpAppUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+      : SystemWebAppUIConfig(ash::kChromeUIHelpAppHost,
+                             SystemWebAppType::HELP,
+                             create_controller_func) {}
+};
 
 // The WebUI controller for chrome://help-app.
 class HelpAppUI : public ui::MojoWebUIController,

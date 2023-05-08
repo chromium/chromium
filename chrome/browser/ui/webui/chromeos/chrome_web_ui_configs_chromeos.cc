@@ -29,6 +29,7 @@
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
+#include "ash/webui/help_app_ui/help_app_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
@@ -46,6 +47,7 @@
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/web_applications/projector_app/trusted_projector_ui_config.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -249,6 +251,9 @@ void RegisterAshChromeWebUIConfigs() {
                                                  ash::GuestOSInstallerUI>(
       base::BindRepeating(&guest_os::InstallerDelegateFactory)));
   map.AddWebUIConfig(std::make_unique<ash::HealthdInternalsUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<ash::HelpAppUIConfig, ash::HelpAppUI,
+                                      ash::ChromeHelpAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<ash::HumanPresenceInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetConfigDialogUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::InternetDetailDialogUIConfig>());
