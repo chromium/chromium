@@ -84896,8 +84896,17 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="8" label="Reload"/>
   <int value="9" label="Keyword"/>
   <int value="10" label="Keyword generated"/>
+  <int value="33554432" label="From address bar"/>
   <int value="33554433" label="From address bar | Typed"/>
+  <int value="33554434" label="From address bar | Auto bookmark"/>
+  <int value="33554435" label="From address bar | Auto subframe"/>
+  <int value="33554436" label="From address bar | Manual subframe"/>
   <int value="33554437" label="From address bar | Generated"/>
+  <int value="33554438" label="From address bar | Auto toplevel"/>
+  <int value="33554439" label="From address bar | Form submit"/>
+  <int value="33554440" label="From address bar | Reload"/>
+  <int value="33554441" label="From address bar | Keyword"/>
+  <int value="33554442" label="From address bar | Keyword generated"/>
 </enum>
 
 <enum name="PrerenderBackNavigationEligibility">
