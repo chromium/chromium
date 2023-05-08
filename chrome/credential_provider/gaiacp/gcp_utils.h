@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "base/win/scoped_handle.h"
@@ -276,11 +277,11 @@ std::wstring GetStringResource(UINT base_message_id,
 // Gets the language selected by the base::win::i18n::LanguageSelector.
 std::wstring GetSelectedLanguage();
 
-// Securely clear a base::Value that may be a dictionary value that may
-// have a password field.
-void SecurelyClearDictionaryValue(absl::optional<base::Value>* value);
-void SecurelyClearDictionaryValueWithKey(absl::optional<base::Value>* value,
-                                         const std::string& password_key);
+// Securely clear a base::Value::Dict that may have a password field.
+void SecurelyClearDictionaryValue(base::optional_ref<base::Value::Dict> dict);
+void SecurelyClearDictionaryValueWithKey(
+    base::optional_ref<base::Value::Dict> dict,
+    const std::string& password_key);
 
 // Securely clear std::wstring and std::string.
 void SecurelyClearString(std::wstring& str);
@@ -289,12 +290,10 @@ void SecurelyClearString(std::string& str);
 // Securely clear a given |buffer| with size |length|.
 void SecurelyClearBuffer(void* buffer, size_t length);
 
-// Helpers to get strings from base::Values that are expected to be
-// DictionaryValues.
+// Helpers to get strings from base::Value::Dict.
+std::wstring GetDictString(const base::Value::Dict& dict, const char* name);
+std::string GetDictStringUTF8(const base::Value::Dict& dict, const char* name);
 
-std::wstring GetDictString(const base::Value& dict, const char* name);
-std::wstring GetDictString(const std::unique_ptr<base::Value>& dict,
-                           const char* name);
 // Perform a recursive search on a nested dictionary object. Note that the
 // names provided in the input should be in order. Below is an example : Lets
 // say the json object is {"key1": {"key2": {"key3": "value1"}}, "key4":
@@ -316,9 +315,6 @@ HRESULT SearchForListInStringDictUTF8(
     const std::string& json_string,
     const std::initializer_list<base::StringPiece>& path,
     std::vector<std::string>* output);
-std::string GetDictStringUTF8(const base::Value& dict, const char* name);
-std::string GetDictStringUTF8(const std::unique_ptr<base::Value>& dict,
-                              const char* name);
 
 // Returns the major build version of Windows by reading the registry.
 // See:
@@ -366,7 +362,7 @@ void InitWindowsStringWithString(const WindowsStringCharT* string,
 // Extracts the provided keys from the given dictionary. Returns true if all
 // keys are found. If any of the key isn't found, returns false.
 bool ExtractKeysFromDict(
-    const base::Value& dict,
+    const base::Value::Dict& dict,
     const std::vector<std::pair<std::string, std::string*>>& needed_outputs);
 
 // Gets the bios serial number of the windows device.

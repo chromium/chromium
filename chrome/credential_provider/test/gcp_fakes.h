@@ -296,7 +296,7 @@ class FakeScopedUserProfileFactory {
 
 class FakeScopedUserProfile : public ScopedUserProfile {
  public:
-  HRESULT SaveAccountInfo(const base::Value& properties) override;
+  HRESULT SaveAccountInfo(const base::Value::Dict& properties) override;
 
  private:
   friend class FakeScopedUserProfileFactory;

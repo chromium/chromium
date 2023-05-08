@@ -453,8 +453,7 @@ TEST(Enroll, EnrollToGoogleMdmIfNeeded_NotEnabled) {
   InitializeRegistryOverrideForTesting(&registry_override);
 
   // EnrollToGoogleMdmIfNeeded() should be a noop.
-  base::Value properties(base::Value::Type::DICT);
-  ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(properties));
+  ASSERT_EQ(S_OK, EnrollToGoogleMdmIfNeeded(base::Value::Dict()));
 }
 
 // Tests all possible data combinations sent to EnrollToGoogleMdmIfNeeded to
@@ -514,23 +513,23 @@ TEST_P(GcpEnrollmentArgsTest, EnrollToGoogleMdmIfNeeded_MissingArgs) {
                         (serial_number && serial_number[0]) &&
                         (is_user_ad_joined && is_user_ad_joined[0]);
 
-  base::Value properties(base::Value::Type::DICT);
+  base::Value::Dict properties;
   if (email)
-    properties.SetStringKey(kKeyEmail, email);
+    properties.Set(kKeyEmail, email);
   if (id_token)
-    properties.SetStringKey(kKeyMdmIdToken, id_token);
+    properties.Set(kKeyMdmIdToken, id_token);
   if (access_token)
-    properties.SetStringKey(kKeyAccessToken, access_token);
+    properties.Set(kKeyAccessToken, access_token);
   if (sid)
-    properties.SetStringKey(kKeySID, sid);
+    properties.Set(kKeySID, sid);
   if (username)
-    properties.SetStringKey(kKeyUsername, username);
+    properties.Set(kKeyUsername, username);
   if (domain)
-    properties.SetStringKey(kKeyDomain, domain);
+    properties.Set(kKeyDomain, domain);
   if (sid)
-    properties.SetStringKey(kKeySID, sid);
+    properties.Set(kKeySID, sid);
   if (is_user_ad_joined)
-    properties.SetStringKey(kKeyIsAdJoinedUser, is_user_ad_joined);
+    properties.Set(kKeyIsAdJoinedUser, is_user_ad_joined);
 
   SetMachineGuidForTesting(machine_guid16);
   GoogleRegistrationDataForTesting g_registration_data(serial_number16);

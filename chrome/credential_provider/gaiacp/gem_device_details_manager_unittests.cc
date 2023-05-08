@@ -101,15 +101,15 @@ TEST_P(GemDeviceDetailsExtensionTest, WithUserDeviceContext) {
     ASSERT_EQ(1UL, fake_http_url_fetcher_factory()->requests_created());
     FakeWinHttpUrlFetcherFactory::RequestData request_data =
         fake_http_url_fetcher_factory()->GetRequestData(0);
-    base::Value body_value = base::JSONReader::Read(request_data.body).value();
+    base::Value::Dict body_dict =
+        base::JSONReader::ReadDict(request_data.body).value();
 
-    std::string uploaded_dm_token = GetDictStringUTF8(body_value, "dm_token");
+    std::string uploaded_dm_token = GetDictStringUTF8(body_dict, "dm_token");
     ASSERT_EQ(uploaded_dm_token, base::WideToUTF8(dm_token));
 
     std::string uploaded_username =
-        GetDictStringUTF8(body_value, "account_username");
-    std::string uploaded_domain =
-        GetDictStringUTF8(body_value, "device_domain");
+        GetDictStringUTF8(body_dict, "account_username");
+    std::string uploaded_domain = GetDictStringUTF8(body_dict, "device_domain");
     if (!fail_sid_lookup) {
       ASSERT_EQ(uploaded_username, base::WideToUTF8(kDefaultUsername));
       ASSERT_EQ(uploaded_domain, base::WideToUTF8(domain_name));

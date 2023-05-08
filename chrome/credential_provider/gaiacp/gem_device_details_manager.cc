@@ -302,7 +302,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     return E_FAIL;
   }
 
-  std::string* resource_id = request_result->FindStringKey(
+  auto* resource_id = request_result->GetDict().FindString(
       kUploadDeviceDetailsResponseDeviceResourceIdParameterName);
   if (resource_id) {
     hr = SetUserProperty(sid, kRegUserDeviceResourceId,

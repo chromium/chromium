@@ -50,7 +50,7 @@ constexpr int kProfilePictureSizes[] = {32, 40, 48, 96, 192, 240, 448};
 
 std::string GetEncryptedRefreshToken(
     base::win::ScopedHandle::Handle logon_handle,
-    const base::Value& properties) {
+    const base::Value::Dict& properties) {
   std::string refresh_token = GetDictStringUTF8(properties, kKeyRefreshToken);
   if (refresh_token.empty()) {
     LOGFN(ERROR) << "Refresh token is empty";
@@ -433,7 +433,7 @@ bool ScopedUserProfile::IsValid() {
 }
 
 HRESULT ScopedUserProfile::ExtractAssociationInformation(
-    const base::Value& properties,
+    const base::Value::Dict& properties,
     std::wstring* sid,
     std::wstring* id,
     std::wstring* email,
@@ -507,7 +507,8 @@ HRESULT ScopedUserProfile::RegisterAssociation(
   return S_OK;
 }
 
-HRESULT ScopedUserProfile::SaveAccountInfo(const base::Value& properties) {
+HRESULT ScopedUserProfile::SaveAccountInfo(
+    const base::Value::Dict& properties) {
   LOGFN(VERBOSE);
 
   std::wstring sid;

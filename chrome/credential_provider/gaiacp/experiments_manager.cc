@@ -87,8 +87,9 @@ bool ExperimentsManager::ReloadExperiments(const std::wstring& sid) {
   }
 
   for (const auto& item : *experiments_value) {
-    auto* f = item.FindStringKey(kResponseFeatureKeyName);
-    auto* v = item.FindStringKey(kResponseValueKeyName);
+    const auto& item_dict = item.GetDict();
+    auto* f = item_dict.FindString(kResponseFeatureKeyName);
+    auto* v = item_dict.FindString(kResponseValueKeyName);
     if (!f || !v) {
       LOGFN(WARNING) << "Either feature or value are not found!";
     }
