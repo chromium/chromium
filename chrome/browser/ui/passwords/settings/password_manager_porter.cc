@@ -168,10 +168,10 @@ void PasswordManagerPorter::ContinueImport(
 }
 
 void PasswordManagerPorter::ResetImporter(bool delete_file) {
-  // Importer can be reset only in kNotStarted or kFinished states.
+  // Importer can be reset only in kNotStarted, kFinished, kConflicts states,
+  // but not in kInProgress.
   if (!importer_ ||
-      (!importer_->IsState(password_manager::PasswordImporter::kNotStarted) &&
-       !importer_->IsState(password_manager::PasswordImporter::kFinished))) {
+      importer_->IsState(password_manager::PasswordImporter::kInProgress)) {
     return;
   }
   if (delete_file &&
