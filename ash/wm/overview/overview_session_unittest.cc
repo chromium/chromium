@@ -3693,31 +3693,32 @@ TEST_F(TabletModeOverviewSessionTest, CheckNewLayoutWindowPositions) {
   EXPECT_LT(item3_bounds.y(), item4_bounds.y());
 }
 
+// Tests that with the tablet mode layout, some of the windows are offscreen.
 TEST_F(TabletModeOverviewSessionTest, CheckOffscreenWindows) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateTestWindows(10);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
   OverviewItem* item0 = GetOverviewItemForWindow(windows[0].get());
   OverviewItem* item1 = GetOverviewItemForWindow(windows[1].get());
-  OverviewItem* item6 = GetOverviewItemForWindow(windows[6].get());
-  OverviewItem* item7 = GetOverviewItemForWindow(windows[7].get());
+  OverviewItem* item8 = GetOverviewItemForWindow(windows[8].get());
+  OverviewItem* item9 = GetOverviewItemForWindow(windows[9].get());
 
   const gfx::RectF screen_bounds(GetGridBounds());
   const gfx::RectF item0_bounds = item0->target_bounds();
   const gfx::RectF item1_bounds = item1->target_bounds();
-  const gfx::RectF item6_bounds = item6->target_bounds();
-  const gfx::RectF item7_bounds = item7->target_bounds();
+  const gfx::RectF item8_bounds = item8->target_bounds();
+  const gfx::RectF item9_bounds = item9->target_bounds();
 
   // |item6| should be in the same row of windows as |item0|, but offscreen
   // (one screen length away).
-  EXPECT_FALSE(screen_bounds.Contains(item6_bounds));
-  EXPECT_EQ(item0_bounds.y(), item6_bounds.y());
+  EXPECT_FALSE(screen_bounds.Contains(item8_bounds));
+  EXPECT_EQ(item0_bounds.y(), item8_bounds.y());
   // |item7| should be in the same row of windows as |item1|, but offscreen
   // and below |item6|.
-  EXPECT_FALSE(screen_bounds.Contains(item7_bounds));
-  EXPECT_EQ(item1_bounds.y(), item7_bounds.y());
-  EXPECT_LT(item6_bounds.y(), item7_bounds.y());
+  EXPECT_FALSE(screen_bounds.Contains(item9_bounds));
+  EXPECT_EQ(item1_bounds.y(), item9_bounds.y());
+  EXPECT_LT(item8_bounds.y(), item9_bounds.y());
 }
 
 // Tests to see if windows are not shifted if all already available windows

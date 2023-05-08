@@ -2390,7 +2390,9 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
   // |window_list_|. However, if a window turns out to be an ignored item,
   // |window_position| remains where the item was as to then reposition the
   // other window's bounds in place of that item.
-  const int height = total_bounds.height() / kTabletLayoutRow;
+  const int height = (total_bounds.height() -
+                      ((kTabletLayoutRow - 1) * kSpaceBetweenItemsDp)) /
+                     kTabletLayoutRow;
   int window_position = 0;
   std::vector<gfx::RectF> rects;
   for (const auto& window : window_list_) {
@@ -2403,7 +2405,8 @@ std::vector<gfx::RectF> OverviewGrid::GetWindowRectsForTabletModeLayout(
     // Calculate the width and y position of the item.
     const int width = CalculateWidthAndMaybeSetUnclippedBounds(item, height);
     const int y =
-        height * (window_position % kTabletLayoutRow) + total_bounds.y();
+        (height + kSpaceBetweenItemsDp) * (window_position % kTabletLayoutRow) +
+        total_bounds.y();
 
     // Use the right bounds of the item next to in the row as the x position, if
     // that item exists.
