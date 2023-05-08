@@ -12,15 +12,20 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.color.DynamicColors;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,6 +48,12 @@ import java.util.LinkedHashSet;
 /**
  * A subclass of {@link AppCompatActivity} that maintains states and objects applied to all
  * activities in {@link ChromeApplication} (e.g. night mode).
+ *
+ * This class also adds a persistent back button toolbar for automotive by applying a ThemeOverlay.
+ * Activities that already use their own ActionBar must override
+ * {@link #shouldUseActionBarForAutomotiveToolbar} to false and add
+ * <include layout="@layout/automotive_back_button_toolbar"/>
+ * in their xml layout. See SettingsActivity and settings_activity.xml for an example.
  */
 public class ChromeBaseAppCompatActivity extends AppCompatActivity
         implements NightModeStateProvider.Observer, ModalDialogManagerHolder {
@@ -250,6 +261,10 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             UmaSessionStats.registerSyntheticFieldTrial(
                     "IsDynamicColorAvailable", isDynamicColorAvailable ? "Enabled" : "Disabled");
         });
+
+        if (BuildInfo.getInstance().isAutomotive && shouldUseActionBarForAutomotiveToolbar()) {
+            setTheme(R.style.ThemeOverlay_BrowserUI_Automotive_PersistentBackButtonToolbar);
+        }
     }
 
     /**
@@ -285,5 +300,54 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             mServiceTracingProxyProvider.traceSystemServices();
         }
         return service;
+    }
+
+    /**
+     * Set the back button in the automotive toolbar to perform an Android system level back.
+     *
+     * This toolbar will be used to do things like exit fullscreen YouTube videos because AAOS/cars
+     * don't have a built in back button
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            getOnBackPressedDispatcher().onBackPressed();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        super.setContentView(layoutResID);
+
+        // Activities that use their own ActionBar can add the persistent back button toolbar for
+        // automotive using a Toolbar View.
+        if (BuildInfo.getInstance().isAutomotive && !shouldUseActionBarForAutomotiveToolbar()) {
+            Toolbar backButtonToolbarForAutomotive =
+                    findViewById(R.id.automotive_back_button_toolbar);
+            if (backButtonToolbarForAutomotive != null) {
+                backButtonToolbarForAutomotive.setVisibility(View.VISIBLE);
+                backButtonToolbarForAutomotive.setNavigationOnClickListener(
+                        view -> { getOnBackPressedDispatcher().onBackPressed(); });
+            }
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        if (BuildInfo.getInstance().isAutomotive && shouldUseActionBarForAutomotiveToolbar()
+                && getSupportActionBar() != null) {
+            getSupportActionBar().setHomeActionContentDescription(R.string.back);
+        }
+        super.onResume();
+    }
+
+    /**
+     * @return true if the persistent back button toolbar for automotive will be added by default
+     * using AppCompatActivity's ActionBar, provided by a ThemeOverlay.
+     */
+    protected boolean shouldUseActionBarForAutomotiveToolbar() {
+        return true;
     }
 }

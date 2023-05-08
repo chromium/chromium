@@ -183,6 +183,11 @@ public class BookmarkEditActivity extends SynchronousInitializationActivity {
         super.onDestroy();
     }
 
+    @Override
+    protected boolean shouldUseActionBarForAutomotiveToolbar() {
+        return false;
+    }
+
     @VisibleForTesting
     BookmarkTextInputLayout getTitleEditText() {
         return mTitleEditText;
