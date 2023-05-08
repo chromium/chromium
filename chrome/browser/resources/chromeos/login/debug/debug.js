@@ -669,6 +669,10 @@ const createAssistantZippy = (type, isMinor, isNativeIcons) => {
       ],
     },
     {
+      id: 'gaia-info',
+      kind: ScreenKind.NORMAL,
+    },
+    {
       id: 'offline-login',
       kind: ScreenKind.NORMAL,
       states: [

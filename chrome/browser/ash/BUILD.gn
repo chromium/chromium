@@ -1758,6 +1758,8 @@ source_set("ash") {
     "login/screens/family_link_notice_screen.h",
     "login/screens/fingerprint_setup_screen.cc",
     "login/screens/fingerprint_setup_screen.h",
+    "login/screens/gaia_info_screen.cc",
+    "login/screens/gaia_info_screen.h",
     "login/screens/gaia_password_changed_screen.cc",
     "login/screens/gaia_password_changed_screen.h",
     "login/screens/gaia_password_changed_screen_legacy.cc",

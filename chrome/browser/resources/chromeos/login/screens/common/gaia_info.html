@@ -1,0 +1,33 @@
+<!--
+Copyright 2023 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<style include="oobe-dialog-host-styles">
+</style>
+
+<oobe-adaptive-dialog id="gaiaInfoDialog" role="dialog"
+    for-step="overview" aria-live="polite">
+  <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+  <h1 slot="title" id="gaia-info-title">
+    [[i18nDynamic(locale, 'gaiaInfoScreenTitle')]]
+  </h1>
+  <span inner-h-t-m-l=
+      "[[i18nAdvancedDynamic(locale, 'gaiaInfoScreenDescription')]]"
+      slot="subtitle">
+  </span>
+  <div slot="content" class="flex layout vertical center center-justified">
+    <img src="/images/gaia_info.svg" id="gaiaInfoImage"
+        class="oobe-illustration" aria-hidden="true">
+  </div>
+  <div slot="back-navigation">
+    <oobe-back-button id="backButton" on-click="onBackClicked_"
+        hidden="[[!isBackButtonVisible_]]">
+    </oobe-back-button>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-next-button id="nextButton" class="focus-on-show"
+      on-click="onNextClicked_">
+    </oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>

@@ -83,6 +83,8 @@ class GaiaView : public base::SupportsWeakPtr<GaiaView> {
   virtual void Hide() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
+  // Returns the currently set Gaia path
+  virtual GaiaPath GetGaiaPath() = 0;
   // Show error UI at the end of GAIA flow when user is not allowlisted.
   virtual void ShowAllowlistCheckFailedError() = 0;
   // Reloads authenticator.
@@ -142,6 +144,7 @@ class GaiaScreenHandler
   void Show() override;
   void Hide() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
+  GaiaPath GetGaiaPath() override;
   void ShowAllowlistCheckFailedError() override;
   void ReloadGaiaAuthenticator() override;
   void SetReauthRequestToken(const std::string& reauth_request_token) override;

@@ -1171,6 +1171,10 @@ void GaiaScreenHandler::SetGaiaPath(GaiaScreenHandler::GaiaPath gaia_path) {
   gaia_path_ = gaia_path;
 }
 
+GaiaScreenHandler::GaiaPath GaiaScreenHandler::GetGaiaPath() {
+  return gaia_path_;
+}
+
 void GaiaScreenHandler::LoadGaiaAsync(const AccountId& account_id) {
   // TODO(https://crbug.com/1317991): Investigate why the call is making Gaia
   // loading slowly.

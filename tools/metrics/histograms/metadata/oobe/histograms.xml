@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Enroll"/>
   <variant name="Family-link-notice"/>
   <variant name="Fingerprint-setup"/>
+  <variant name="Gaia-info"/>
   <variant name="Gaia-password-changed"/>
   <variant name="Gaia-signin"/>
   <variant name="Gesture-navigation"/>
@@ -149,6 +150,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Gaia-password-changed.CryptohomeError"/>
   <variant name="Gaia-password-changed.RecreateUser"/>
   <variant name="Gaia-signin.Back"/>
+  <variant name="Gaia-signin.BackChild"/>
   <variant name="Gaia-signin.Cancel"/>
   <variant name="Gaia-signin.EnterpriseEnroll"/>
   <variant name="Gaia-signin.StartConsumerKiosk"/>

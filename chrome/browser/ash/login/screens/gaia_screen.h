@@ -34,6 +34,9 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
 
   enum class Result {
     BACK,
+    // used to distinguish clicking back on the child sign-in/sign-up screen
+    // vs. default Gaia screen
+    BACK_CHILD,
     CANCEL,
     ENTERPRISE_ENROLL,
     START_CONSUMER_KIOSK,

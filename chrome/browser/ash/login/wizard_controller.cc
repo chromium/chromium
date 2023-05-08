@@ -73,6 +73,7 @@
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
+#include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen_legacy.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
@@ -154,6 +155,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -749,6 +751,14 @@ WizardController::CreateScreens() {
       oobe_ui->GetView<PackagedLicenseScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnPackagedLicenseScreenExit,
                           weak_factory_.GetWeakPtr())));
+
+  if (features::IsOobeGaiaInfoScreenEnabled()) {
+    append(std::make_unique<GaiaInfoScreen>(
+        oobe_ui->GetView<GaiaInfoScreenHandler>()->AsWeakPtr(),
+        base::BindRepeating(&WizardController::OnGaiaInfoScreenExit,
+                            weak_factory_.GetWeakPtr())));
+  }
+
   append(std::make_unique<GaiaScreen>(
       oobe_ui->GetView<GaiaScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnGaiaScreenExit,
@@ -973,6 +983,10 @@ void WizardController::ShowGaiaPasswordChangedScreen(
   DCHECK(features::IsCryptohomeRecoveryEnabled());
   wizard_context_->user_context = std::move(user_context);
   SetCurrentScreen(GetScreen<GaiaPasswordChangedScreen>());
+}
+
+void WizardController::ShowGaiaInfoScreen() {
+  SetCurrentScreen(GetScreen(GaiaInfoScreenView::kScreenId));
 }
 
 void WizardController::ShowEnrollmentScreen() {
@@ -1208,7 +1222,11 @@ void WizardController::OnUserCreationScreenExit(
   switch (result) {
     case UserCreationScreen::Result::SIGNIN:
     case UserCreationScreen::Result::SKIPPED:
-      AdvanceToSigninScreen();
+      if (features::IsOobeGaiaInfoScreenEnabled()) {
+        ShowGaiaInfoScreen();
+      } else {
+        AdvanceToSigninScreen();
+      }
       break;
     case UserCreationScreen::Result::CHILD_SIGNIN:
       GetScreen<GaiaScreen>()->LoadOnlineForChildSignin();
@@ -1236,16 +1254,42 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
   OnScreenExit(GaiaView::kScreenId, GaiaScreen::GetResultString(result));
   switch (result) {
     case GaiaScreen::Result::BACK:
+    case GaiaScreen::Result::BACK_CHILD:
     case GaiaScreen::Result::CANCEL: {
-      if (result == GaiaScreen::Result::BACK &&
-          wizard_context_->is_user_creation_enabled) {
-        // `Result::BACK` is only triggered when pressing back button. It goes
-        // back to UserCreationScreen if screen is enabled; otherwise, it
-        // behaves the same as `Result::CANCEL` which is triggered by pressing
-        // ESC key.
-        AdvanceToScreen(UserCreationView::kScreenId);
-        break;
+      if (features::IsOobeGaiaInfoScreenEnabled()) {
+        if (wizard_context_->is_user_creation_enabled) {
+          // `Result::BACK` and `Result::BACK_CHILD` are only triggered when
+          // pressing back button. It goes back to GaiaInfoScreenView if user
+          // creation is enabled; otherwise, it behaves the same as
+          // `Result::CANCEL` which is triggered by pressing ESC key.
+          // In the child flow the GaiaInfo screen is not shown, so in case of
+          // `Result::BACK_CHILD` we should go back to user creation screen
+          if (result == GaiaScreen::Result::BACK) {
+            if (wizard_context_->is_add_person_flow) {
+              AdvanceToScreen(UserCreationView::kScreenId);
+            } else {
+              AdvanceToScreen(GaiaInfoScreenView::kScreenId);
+            }
+            break;
+          }
+          if (result == GaiaScreen::Result::BACK_CHILD) {
+            AdvanceToScreen(UserCreationView::kScreenId);
+            break;
+          }
+        }
+      } else {
+        // TODO: delete this part after removing the feature flag
+        if (result == GaiaScreen::Result::BACK &&
+            wizard_context_->is_user_creation_enabled) {
+          // `Result::BACK` is only triggered when pressing back button. It goes
+          // back to UserCreationScreen if screen is enabled; otherwise, it
+          // behaves the same as `Result::CANCEL` which is triggered by pressing
+          // ESC key.
+          AdvanceToScreen(UserCreationView::kScreenId);
+          break;
+        }
       }
+
       // If a default redirection to third party IdP is set we can hide the
       // dialog.
       const bool gaia_page_defaults_to_saml = IsGaiaPageDefaultsToSAML();
@@ -1266,6 +1310,20 @@ void WizardController::OnGaiaScreenExit(GaiaScreen::Result result) {
       break;
     case GaiaScreen::Result::START_CONSUMER_KIOSK:
       LoginDisplayHost::default_host()->AttemptShowEnableConsumerKioskScreen();
+      break;
+  }
+}
+
+void WizardController::OnGaiaInfoScreenExit(GaiaInfoScreen::Result result) {
+  OnScreenExit(GaiaInfoScreenView::kScreenId,
+               GaiaInfoScreen::GetResultString(result));
+  switch (result) {
+    case GaiaInfoScreen::Result::kBack:
+      AdvanceToScreen(UserCreationView::kScreenId);
+      break;
+    case GaiaInfoScreen::Result::kNext:
+    case GaiaInfoScreen::Result::kNotApplicable:
+      AdvanceToSigninScreen();
       break;
   }
 }
@@ -2439,6 +2497,8 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
     ShowArcVmDataMigrationScreen();
   } else if (screen_id == TouchpadScrollScreenView::kScreenId) {
     ShowTouchpadScrollScreen();
+  } else if (screen_id == GaiaInfoScreenView::kScreenId) {
+    ShowGaiaInfoScreen();
   } else if (screen_id == TpmErrorView::kScreenId ||
              screen_id == GaiaPasswordChangedView::kScreenId ||
              screen_id == ActiveDirectoryPasswordChangeView::kScreenId ||

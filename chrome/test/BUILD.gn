@@ -3963,6 +3963,7 @@ if (!is_android) {
         "../browser/ash/login/screens/edu_coexistence_login_browsertest.cc",
         "../browser/ash/login/screens/family_link_notice_browsertest.cc",
         "../browser/ash/login/screens/fingerprint_setup_browsertest.cc",
+        "../browser/ash/login/screens/gaia_info_screen_browsertest.cc",
         "../browser/ash/login/screens/gesture_navigation_screen_browsertest.cc",
         "../browser/ash/login/screens/guest_tos_screen_browsertest.cc",
         "../browser/ash/login/screens/hid_detection_screen_browsertest.cc",

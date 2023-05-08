@@ -21,6 +21,7 @@ import './screens/common/enable_kiosk.js';
 import './screens/common/error_message.js';
 import './screens/common/family_link_notice.js';
 import './screens/common/fingerprint_setup.js';
+import './screens/common/gaia_info.js';
 import './screens/common/gaia_signin.js';
 import './screens/common/gesture_navigation.js';
 import './screens/common/guest_tos.js';
@@ -101,6 +102,11 @@ export const commonScreensList = [
   {tag: 'error-message-element', id: 'error-message'},
   {tag: 'family-link-notice-element', id: 'family-link-notice'},
   {tag: 'fingerprint-setup-element', id: 'fingerprint-setup'},
+  {
+    tag: 'gaia-info-element',
+    id: 'gaia-info',
+    condition: 'isOobeGaiaInfoScreenEnabled',
+  },
   {tag: 'gaia-signin-element', id: 'gaia-signin'},
   {tag: 'gesture-navigation-element', id: 'gesture-navigation'},
   {tag: 'guest-tos-element', id: 'guest-tos'},

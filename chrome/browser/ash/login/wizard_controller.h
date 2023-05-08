@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/login/screens/enable_debugging_screen.h"
 #include "chrome/browser/ash/login/screens/family_link_notice_screen.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
+#include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_password_changed_screen_legacy.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
@@ -332,6 +333,7 @@ class WizardController : public OobeUI::Observer {
   void ShowDisplaySizeScreen();
   void ShowGaiaPasswordChangedScreen(std::unique_ptr<UserContext> user_context);
   void ShowDrivePinningScreen();
+  void ShowGaiaInfoScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -420,6 +422,7 @@ class WizardController : public OobeUI::Observer {
   void OnTouchpadScreenExit(TouchpadScrollScreen::Result result);
   void OnDisplaySizeScreenExit(DisplaySizeScreen::Result result);
   void OnDrivePinningScreenExit(DrivePinningScreen::Result result);
+  void OnGaiaInfoScreenExit(GaiaInfoScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.

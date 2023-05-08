@@ -67,6 +67,7 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/family_link_notice_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_password_changed_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
@@ -285,6 +286,8 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   // TODO (b/269117729) Cleanup OobeSimon
   source->AddBoolean("isOobeSimonEnabled", features::IsOobeSimonEnabled());
+  source->AddBoolean("isOobeGaiaInfoScreenEnabled",
+                     features::IsOobeGaiaInfoScreenEnabled());
   source->AddBoolean("isChoobeEnabled", features::IsOobeChoobeEnabled());
   source->AddBoolean(
       "isArcVmDataMigrationEnabled",
@@ -440,6 +443,10 @@ void OobeUI::ConfigureOobeDisplay() {
 
   auto password_change_handler =
       std::make_unique<ActiveDirectoryPasswordChangeScreenHandler>();
+
+  if (features::IsOobeGaiaInfoScreenEnabled()) {
+    AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
+  }
 
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(network_state_informer_,
                                                        error_screen));

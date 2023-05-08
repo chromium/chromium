@@ -932,6 +932,13 @@ class CryptohomeRecoverySetupScreenTester extends ScreenElementApi {
   }
 }
 
+class GaiaInfoScreenTester extends ScreenElementApi {
+  constructor() {
+    super('gaia-info');
+    this.nextButton = new PolymerElementApi(this, '#nextButton');
+  }
+}
+
 export class OobeApiProvider {
   constructor() {
     this.screens = {
@@ -958,6 +965,7 @@ export class OobeApiProvider {
       ConsolidatedConsentScreen: new ConsolidatedConsentScreenTester(),
       SmartPrivacyProtectionScreen: new SmartPrivacyProtectionScreenTester(),
       CryptohomeRecoverySetupScreen: new CryptohomeRecoverySetupScreenTester(),
+      GaiaInfoScreen: new GaiaInfoScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {

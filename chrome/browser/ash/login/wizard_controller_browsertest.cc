@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 
 #include <memory>
+#include <tuple>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
@@ -54,6 +56,7 @@
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_configuration_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -80,6 +83,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gesture_navigation_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
@@ -3040,6 +3044,131 @@ IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
   OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
 }
 
+class GaiaInfoTest : public WizardControllerTest {
+ public:
+  GaiaInfoTest() {
+    feature_list_.InitAndEnableFeature(features::kOobeGaiaInfoScreen);
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+class GaiaInfoScreenForEnterpriseEnrollmentTest : public GaiaInfoTest {
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(GaiaInfoScreenForEnterpriseEnrollmentTest,
+                       SkippingGaiaInfo) {
+  WizardController::default_controller()->AdvanceToScreen(
+      GaiaInfoScreenView::kScreenId);
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionToGaiaInfo) {
+  WizardController::default_controller()->AdvanceToScreen(
+      UserCreationView::kScreenId);
+  test::OobeJS().ClickOnPath({"user-creation", "selfButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GaiaInfoTest, TransitionFromGaiaInfo) {
+  WizardController::default_controller()->AdvanceToScreen(
+      GaiaInfoScreenView::kScreenId);
+  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildAccountCreation) {
+  WizardController::default_controller()->AdvanceToScreen(
+      UserCreationView::kScreenId);
+  test::OobeJS().ClickOnPath({"user-creation", "childButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childCreateButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(GaiaInfoTest, SkipGaiaInfoForChildSignIn) {
+  WizardController::default_controller()->AdvanceToScreen(
+      UserCreationView::kScreenId);
+  test::OobeJS().ClickOnPath({"user-creation", "childButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childSignInButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+}
+
+class WizardControllerGaiaTest : public GaiaInfoTest {
+ protected:
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
+};
+
+IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest, GoBackToGaiaInfo) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->is_user_creation_enabled = true;
+  WizardController::default_controller()->AdvanceToScreen(
+      GaiaInfoScreenView::kScreenId);
+  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath(
+      {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
+  OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(WizardControllerGaiaTest,
+                       GoBackSkippingGaiaInfoInAddPersonFlow) {
+  LoginDisplayHost::default_host()
+      ->GetWizardContext()
+      ->is_user_creation_enabled = true;
+  LoginDisplayHost::default_host()->GetWizardContext()->is_add_person_flow =
+      true;
+
+  WizardController::default_controller()->AdvanceToScreen(
+      GaiaInfoScreenView::kScreenId);
+  test::OobeJS().ClickOnPath({"gaia-info", "nextButton"});
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath(
+      {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+}
+
+class GoingBackFromGaiaScreenInChildFlowTest
+    : public GaiaInfoTest,
+      public testing::WithParamInterface<std::tuple<bool, std::string>> {};
+
+IN_PROC_BROWSER_TEST_P(GoingBackFromGaiaScreenInChildFlowTest,
+                       SkippingGaiaInfoScreen) {
+  LoginDisplayHost::default_host()->GetWizardContext()->is_add_person_flow =
+      std::get<0>(GetParam());
+
+  WizardController::default_controller()->AdvanceToScreen(
+      UserCreationView::kScreenId);
+  test::OobeJS().ClickOnPath({"user-creation", "childButton"});
+  test::OobeJS().ClickOnPath({"user-creation", "nextButton"});
+  test::OobeJS().ClickOnPath({"user-creation", std::get<1>(GetParam())});
+  test::OobeJS().ClickOnPath({"user-creation", "childNextButton"});
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+
+  test::OobeJS().ClickOnPath(
+      {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
+  OobeScreenWaiter(UserCreationView::kScreenId).Wait();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    GoingBackFromGaiaScreenInChildFlowTest,
+    testing::Values(std::make_tuple(true, "childCreateButton"),
+                    std::make_tuple(true, "childSignInButton"),
+                    std::make_tuple(false, "childCreateButton"),
+                    std::make_tuple(false, "childSignInButton")));
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
 
 // TODO(merkulova): Add tests for bluetooth HID detection screen variations when
