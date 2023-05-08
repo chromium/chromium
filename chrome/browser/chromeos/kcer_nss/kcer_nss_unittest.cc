@@ -22,15 +22,12 @@
 #include "net/cert/pem.h"
 #include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The tests here provide only the minimal coverage for the basic functionality
 // of Kcer. More thorough testing, including edge cases, will be done in a
 // fuzzer.
 // TODO(244408716): Implement the fuzzer.
-
-using testing::UnorderedElementsAre;
 
 namespace kcer {
 
@@ -46,12 +43,14 @@ std::ostream& operator<<(std::ostream& stream, Token val) {
 
 namespace {
 
+enum class KeyType { kRsa, kEc };
+
 std::string KeyTypeToStr(KeyType key_type) {
   switch (key_type) {
     case KeyType::kRsa:
       return "kRsa";
-    case KeyType::kEcc:
-      return "kEcc";
+    case KeyType::kEc:
+      return "kEc";
   }
 }
 
@@ -289,9 +288,6 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   base::test::TestFuture<base::expected<bool, Error>> does_key_exist_waiter;
   kcer->DoesPrivateKeyExist(PrivateKeyHandle(PublicKeySpki()),
                             does_key_exist_waiter.GetCallback());
-  base::test::TestFuture<base::expected<KeyInfo, Error>> get_key_info_waiter;
-  kcer->GetKeyInfo(PrivateKeyHandle(PublicKeySpki()),
-                   get_key_info_waiter.GetCallback());
   base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
   kcer->SetKeyNickname(PrivateKeyHandle(PublicKeySpki()), "new_nickname",
                        set_nickname_waiter.GetCallback());
@@ -329,128 +325,12 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   ASSERT_FALSE(does_key_exist_waiter.Get().has_value());
   EXPECT_EQ(does_key_exist_waiter.Get().error(),
             Error::kTokenInitializationFailed);
-  ASSERT_FALSE(get_key_info_waiter.Get().has_value());
-  EXPECT_EQ(get_key_info_waiter.Get().error(),
-            Error::kTokenInitializationFailed);
   ASSERT_FALSE(set_nickname_waiter.Get().has_value());
   EXPECT_EQ(set_nickname_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
             Error::kTokenInitializationFailed);
-}
-
-// Test RSA specific fields from GetKeyInfo's result.
-TEST_F(KcerNssTest, GetKeyInfoForRsaKey) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-
-  // Generate new key.
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateRsaKey(Token::kUser, /*modulus_length_bits=*/2048,
-                       /*hardware_backed=*/true, generate_waiter.GetCallback());
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-
-  base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-  kcer->GetKeyInfo(PrivateKeyHandle(public_key), key_info_waiter.GetCallback());
-  ASSERT_TRUE(key_info_waiter.Get().has_value());
-  const KeyInfo& key_info = key_info_waiter.Get().value();
-  EXPECT_EQ(key_info.key_type, KeyType::kRsa);
-  EXPECT_THAT(
-      key_info.supported_signing_schemes,
-      UnorderedElementsAre(
-          SigningScheme::kRsaPkcs1Sha1, SigningScheme::kRsaPkcs1Sha256,
-          SigningScheme::kRsaPkcs1Sha384, SigningScheme::kRsaPkcs1Sha512,
-          SigningScheme::kRsaPssRsaeSha256, SigningScheme::kRsaPssRsaeSha384,
-          SigningScheme::kRsaPssRsaeSha512));
-}
-
-// Test ECC specific fields from GetKeyInfo's result.
-TEST_F(KcerNssTest, GetKeyInfoForEccKey) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-
-  // Generate new key.
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                      /*hardware_backed=*/true, generate_waiter.GetCallback());
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-
-  base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-  kcer->GetKeyInfo(PrivateKeyHandle(public_key), key_info_waiter.GetCallback());
-  ASSERT_TRUE(key_info_waiter.Get().has_value());
-  const KeyInfo& key_info = key_info_waiter.Get().value();
-  EXPECT_EQ(key_info.key_type, KeyType::kEcc);
-  EXPECT_THAT(key_info.supported_signing_schemes,
-              UnorderedElementsAre(SigningScheme::kEcdsaSecp256r1Sha256,
-                                   SigningScheme::kEcdsaSecp384r1Sha384,
-                                   SigningScheme::kEcdsaSecp521r1Sha512));
-}
-
-// Test generic fields from GetKeyInfo's result and they get updated after
-// related Set* methods.
-TEST_F(KcerNssTest, GetKeyInfoGeneric) {
-  TokenHolder user_token(Token::kUser);
-  user_token.Initialize();
-
-  std::unique_ptr<Kcer> kcer = internal::CreateKcer(
-      IOTaskRunner(), user_token.GetWeakPtr(), /*device_token=*/nullptr);
-
-  // Generate new key.
-  base::test::TestFuture<base::expected<PublicKey, Error>> generate_waiter;
-  kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
-                      /*hardware_backed=*/true, generate_waiter.GetCallback());
-  ASSERT_TRUE(generate_waiter.Get().has_value());
-  const PublicKey& public_key = generate_waiter.Get().value();
-
-  {
-    base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
-                     key_info_waiter.GetCallback());
-    ASSERT_TRUE(key_info_waiter.Get().has_value());
-    const KeyInfo& key_info = key_info_waiter.Get().value();
-    // Hardware- vs software-backed indicators on real devices are provided by
-    // Chaps and are wrong in unit tests.
-    EXPECT_EQ(key_info.is_hardware_backed, true);
-    // NSS sets an empty nickname by default, doesn't have to be like this in
-    // general.
-    ASSERT_TRUE(key_info.nickname.has_value());
-    EXPECT_EQ(key_info.nickname.value(), "");
-    EXPECT_FALSE(key_info.key_permissions.has_value());
-    EXPECT_FALSE(key_info.cert_provisioning_profile_id.has_value());
-  }
-
-  constexpr char kNickname[] = "new_nickname";
-  base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
-  kcer->SetKeyNickname(PrivateKeyHandle(public_key), kNickname,
-                       set_nickname_waiter.GetCallback());
-  ASSERT_TRUE(set_nickname_waiter.Get().has_value());
-
-  {
-    base::test::TestFuture<base::expected<KeyInfo, Error>> key_info_waiter;
-    kcer->GetKeyInfo(PrivateKeyHandle(public_key),
-                     key_info_waiter.GetCallback());
-    ASSERT_TRUE(key_info_waiter.Get().has_value());
-    const KeyInfo& key_info = key_info_waiter.Get().value();
-    // Hardware- vs software-backed indicators on real devices are provided by
-    // Chaps and are wrong in unit tests.
-    EXPECT_EQ(key_info.is_hardware_backed, true);
-    ASSERT_TRUE(key_info.nickname.has_value());
-    EXPECT_EQ(key_info.nickname.value(), kNickname);
-    EXPECT_FALSE(key_info.key_permissions.has_value());
-    EXPECT_FALSE(key_info.cert_provisioning_profile_id.has_value());
-  }
-
-  // TODO(244408716): Test setting and reading other key attributes when that's
-  // implemented.
 }
 
 // Test different ways to call DoesPrivateKeyExist() method and that it returns
@@ -554,7 +434,7 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
                            /*hardware_backed=*/true,
                            generate_waiter.GetCallback());
       break;
-    case KeyType::kEcc:
+    case KeyType::kEc:
       kcer->GenerateEcKey(Token::kDevice, EllipticCurve::kP256,
                           /*hardware_backed=*/true,
                           generate_waiter.GetCallback());
@@ -643,7 +523,7 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
                            /*hardware_backed=*/true,
                            generate_waiter.GetCallback());
       break;
-    case KeyType::kEcc:
+    case KeyType::kEc:
       kcer->GenerateEcKey(Token::kUser, EllipticCurve::kP256,
                           /*hardware_backed=*/true,
                           generate_waiter.GetCallback());
@@ -702,7 +582,7 @@ TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
 
 INSTANTIATE_TEST_SUITE_P(AllKeyTypes,
                          KcerNssAllKeyTypesTest,
-                         testing::Values(KeyType::kRsa, KeyType::kEcc),
+                         testing::Values(KeyType::kRsa, KeyType::kEc),
                          // Make test names more readable:
                          [](const auto& info) {
                            return KeyTypeToStr(info.param);

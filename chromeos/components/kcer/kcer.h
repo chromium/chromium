@@ -59,11 +59,8 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToImportCertificate = 10,
   kFailedToRemoveCertificate = 11,
   kKeyNotFound = 12,
-  kUnknownKeyType = 13,
-  kFailedToGetKeyId = 14,
-  kFailedToReadAttribute = 15,
-  kFailedToWriteAttribute = 16,
-  kFailedToParseKeyPermissions = 17,
+  kFailedToGetKeyId = 13,
+  kFailedToWriteAttribute = 14,
 };
 
 // Handles for tokens on ChromeOS.
@@ -100,12 +97,14 @@ enum class COMPONENT_EXPORT(KCER) SigningScheme {
   kRsaPkcs1Sha256 = SSL_SIGN_RSA_PKCS1_SHA256,
   kRsaPkcs1Sha384 = SSL_SIGN_RSA_PKCS1_SHA384,
   kRsaPkcs1Sha512 = SSL_SIGN_RSA_PKCS1_SHA512,
+  kEcdsaSha1 = SSL_SIGN_ECDSA_SHA1,
   kEcdsaSecp256r1Sha256 = SSL_SIGN_ECDSA_SECP256R1_SHA256,
   kEcdsaSecp384r1Sha384 = SSL_SIGN_ECDSA_SECP384R1_SHA384,
   kEcdsaSecp521r1Sha512 = SSL_SIGN_ECDSA_SECP521R1_SHA512,
   kRsaPssRsaeSha256 = SSL_SIGN_RSA_PSS_RSAE_SHA256,
   kRsaPssRsaeSha384 = SSL_SIGN_RSA_PSS_RSAE_SHA384,
   kRsaPssRsaeSha512 = SSL_SIGN_RSA_PSS_RSAE_SHA512,
+  kEd25519 = SSL_SIGN_ED25519,
 };
 
 class COMPONENT_EXPORT(KCER) PublicKey {

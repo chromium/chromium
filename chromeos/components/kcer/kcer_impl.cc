@@ -246,35 +246,7 @@ void KcerImpl::GetTokenInfo(Token token, GetTokenInfoCallback callback) {
 }
 
 void KcerImpl::GetKeyInfo(PrivateKeyHandle key, GetKeyInfoCallback callback) {
-  if (key.GetTokenInternal().has_value()) {
-    return GetKeyInfoWithToken(std::move(callback), std::move(key));
-  }
-
-  auto on_find_key_done =
-      base::BindOnce(&KcerImpl::GetKeyInfoWithToken, weak_factory_.GetWeakPtr(),
-                     std::move(callback));
-  return PopulateTokenForKey(
-      /*key=*/std::move(key), std::move(on_find_key_done));
-}
-
-void KcerImpl::GetKeyInfoWithToken(
-    GetKeyInfoCallback callback,
-    base::expected<PrivateKeyHandle, Error> key_or_error) {
-  if (!key_or_error.has_value()) {
-    return std::move(callback).Run(base::unexpected(key_or_error.error()));
-  }
-  PrivateKeyHandle key = std::move(key_or_error).value();
-
-  const base::WeakPtr<KcerToken>& kcer_token =
-      GetToken(key.GetTokenInternal().value());
-  if (!kcer_token.MaybeValid()) {
-    return std::move(callback).Run(
-        base::unexpected(Error::kTokenIsNotAvailable));
-  }
-  token_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&KcerToken::GetKeyInfo, kcer_token, std::move(key),
-                     base::BindPostTaskToCurrentDefault(std::move(callback))));
+  // TODO(244408716): Implement.
 }
 
 void KcerImpl::SetKeyNickname(PrivateKeyHandle key,
