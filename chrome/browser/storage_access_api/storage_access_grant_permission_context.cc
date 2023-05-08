@@ -16,6 +16,7 @@
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
 #include "net/base/features.h"
+#include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/same_party_context.h"
@@ -344,6 +346,18 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
   const bool permission_allowed = (content_setting == CONTENT_SETTING_ALLOW);
   UpdateTabContext(id, requesting_origin, permission_allowed);
 
+  if (outcome != RequestOutcome::kDeniedByPrerequisites &&
+      !IsImplicitOutcome(outcome)) {
+    auto* content_settings =
+        content_settings::PageSpecificContentSettings::GetForFrame(
+            id.global_render_frame_host_id());
+    if (content_settings) {
+      content_settings->OnTwoSitePermissionRequested(
+          ContentSettingsType::STORAGE_ACCESS,
+          net::SchemefulSite(requesting_origin), permission_allowed);
+    }
+  }
+
   if (!ShouldPersistSetting(permission_allowed, outcome, persist)) {
     if (content_setting == CONTENT_SETTING_DEFAULT) {
       content_setting = CONTENT_SETTING_ASK;
@@ -353,15 +367,14 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     return;
   }
 
-  bool implicit_result = IsImplicitOutcome(outcome);
   // Our failure cases are tracked by the prompt outcomes in the
   // `Permissions.Action.StorageAccess` histogram. Because implicitly denied
   // results return early, in practice this means that an implicit result at
   // this point means a grant was generated.
-  CHECK(!implicit_result || permission_allowed);
+  CHECK(!IsImplicitOutcome(outcome) || permission_allowed);
   if (permission_allowed) {
     base::UmaHistogramBoolean("API.StorageAccess.GrantIsImplicit",
-                              implicit_result);
+                              IsImplicitOutcome(outcome));
   }
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser_context());

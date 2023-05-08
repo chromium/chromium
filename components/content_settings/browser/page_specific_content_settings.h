@@ -31,6 +31,7 @@
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "net/base/schemeful_site.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -314,6 +315,12 @@ class PageSpecificContentSettings
   // only tracks cookies.
   bool IsContentAllowed(ContentSettingsType content_type) const;
 
+  // Returns a map from sites that requested |content_setting| to whether the
+  // permission was granted. This method is only supported for permissions that
+  // are scoped to sites and apply to embedded content, e.g. StorageAccess.
+  std::map<net::SchemefulSite, /*is_allowed*/ bool> GetTwoSiteRequests(
+      ContentSettingsType content_type);
+
   const GURL& media_stream_access_origin() const {
     return media_stream_access_origin_;
   }
@@ -380,6 +387,12 @@ class PageSpecificContentSettings
 
   void OnContentBlocked(ContentSettingsType type);
   void OnContentAllowed(ContentSettingsType type);
+
+  // Call when a two-site permission was prompted in order to display a
+  // ContentSettingsImageModel icon.
+  void OnTwoSitePermissionRequested(ContentSettingsType type,
+                                    net::SchemefulSite requesting_site,
+                                    bool is_allowed);
 
   // |originating_page| is non-null when it differs from page(), which happens
   // when an embedding page's PSCS is notified of an access that happens in an
@@ -533,6 +546,12 @@ class PageSpecificContentSettings
   };
   // Stores which content setting types actually have blocked content.
   std::map<ContentSettingsType, ContentSettingsStatus> content_settings_status_;
+
+  // Stores embedded sites that requested a permission. Only applies to
+  // permissions that are scoped to two sites, e.g. StorageAccess.
+  std::map<ContentSettingsType,
+           std::map<net::SchemefulSite, ContentSettingsStatus>>
+      content_settings_two_site_requests_;
 
   // Profile-bound, this will outlive this class (which is WebContents bound).
   raw_ptr<HostContentSettingsMap> map_;

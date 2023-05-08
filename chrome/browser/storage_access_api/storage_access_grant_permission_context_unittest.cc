@@ -11,10 +11,13 @@
 #include "base/test/test_future.h"
 #include "base/version.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
@@ -31,6 +34,10 @@
 #include "third_party/blink/public/common/features_generated.h"
 
 namespace {
+
+using testing::IsEmpty;
+using testing::Pair;
+using testing::UnorderedElementsAre;
 
 constexpr char kGrantIsImplicitHistogram[] =
     "API.StorageAccess.GrantIsImplicit";
@@ -51,6 +58,10 @@ GURL GetDummyEmbeddingUrlWithSubdomain() {
 
 GURL GetRequesterURL() {
   return GURL("https://requester.example.com");
+}
+
+net::SchemefulSite GetRequesterSite() {
+  return net::SchemefulSite(GetRequesterURL());
 }
 
 GURL GetRequesterURLSubdomain() {
@@ -106,6 +117,11 @@ class StorageAccessGrantPermissionContextTest
         std::make_unique<permissions::MockPermissionPromptFactory>(
             permissions::PermissionRequestManager::FromWebContents(
                 web_contents()));
+
+    content_settings::PageSpecificContentSettings::CreateForWebContents(
+        web_contents(),
+        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+            web_contents()));
   }
 
   void TearDown() override {
@@ -151,6 +167,12 @@ class StorageAccessGrantPermissionContextTest
         request_id_generator_.GenerateNextId());
   }
 
+  content_settings::PageSpecificContentSettings*
+  page_specific_content_settings() {
+    return content_settings::PageSpecificContentSettings::GetForFrame(
+        web_contents()->GetPrimaryMainFrame());
+  }
+
  private:
   base::test::ScopedFeatureList features_;
   std::unique_ptr<permissions::MockPermissionPromptFactory>
@@ -174,6 +196,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest,
                                                                  insecure_url));
   EXPECT_FALSE(permission_context.IsPermissionAvailableToOrigins(
       insecure_url, GetRequesterURL()));
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
 }
 
 // When the Storage Access API feature is disabled (the default) we
@@ -187,6 +213,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest, PermissionBlocked) {
       fake_id, GetRequesterURL(), GetTopLevelURL(),
       /*user_gesture=*/true, future.GetCallback());
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
 }
 
 class StorageAccessGrantPermissionContextAPIEnabledTest
@@ -239,6 +269,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   // Assert that the permission grant set a content setting that applies
   // at the right scope.
   CheckCrossSiteContentSettings(ContentSetting::CONTENT_SETTING_ALLOW);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), true)));
 }
 
 // When the Storage Access API feature is enabled and we have a user gesture we
@@ -271,6 +305,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, PermissionDecided) {
   EXPECT_EQ(CONTENT_SETTING_ASK, future.Get());
   histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
                                         RequestOutcome::kDismissedByUser, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), false)));
 }
 
 // No user gesture should force a permission rejection.
@@ -286,6 +324,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
   EXPECT_EQ(CONTENT_SETTING_BLOCK, future.Get());
   histogram_tester().ExpectUniqueSample(
       kRequestOutcomeHistogram, RequestOutcome::kDeniedByPrerequisites, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIDisabledTest,
@@ -388,6 +430,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   ASSERT_TRUE(manager);
 
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
+
   {
     base::test::TestFuture<ContentSetting> future;
     permission_context.DecidePermissionForTesting(
@@ -477,6 +523,15 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithImplicitGrantsTest,
                                       implicit_grant_limit);
   histogram_tester().ExpectBucketCount(kGrantIsImplicitHistogram,
                                        /*sample=*/true, implicit_grant_limit);
+
+  // TODO(crbug.com/1433644): Here we are actually logging a StorageAccess
+  // request because we don't know that the previously granted permission was
+  // implicit. We should tag implicit grants to be able to know later on whether
+  // a previous grant was implicit.
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(
+                  Pair(GetRequesterSite(), true)));  // Should be IsEmpty().
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
@@ -510,6 +565,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantDenial) {
       1);
   histogram_tester().ExpectUniqueSample(
       kRequestOutcomeHistogram, /*sample=*/RequestOutcome::kDeniedByUser, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), false)));
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
@@ -546,6 +605,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest,
                 .GetPermissionStatus(/*render_frame_host=*/nullptr,
                                      GetRequesterURL(), GetTopLevelURL())
                 .content_setting);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), false)));
 }
 
 TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
@@ -579,6 +642,10 @@ TEST_F(StorageAccessGrantPermissionContextAPIEnabledTest, ExplicitGrantAccept) {
       kPromptResultHistogram, permissions::PermissionAction::GRANTED, 1);
   histogram_tester().ExpectUniqueSample(kRequestOutcomeHistogram,
                                         RequestOutcome::kGrantedByUser, 1);
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              UnorderedElementsAre(Pair(GetRequesterSite(), true)));
 }
 
 class StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest
@@ -660,4 +727,8 @@ TEST_F(StorageAccessGrantPermissionContextAPIWithFirstPartySetsTest,
       ContentSettingsType::STORAGE_ACCESS, &non_restorable_grants,
       content_settings::SessionModel::NonRestorableUserSession);
   EXPECT_EQ(1u, non_restorable_grants.size());
+
+  EXPECT_THAT(page_specific_content_settings()->GetTwoSiteRequests(
+                  ContentSettingsType::STORAGE_ACCESS),
+              IsEmpty());
 }
