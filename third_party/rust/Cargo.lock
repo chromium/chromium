@@ -379,7 +379,7 @@ dependencies = [
 
 [[package]]
 name = "unicode-ident"
-version = "1.0.3"
+version = "1.0.8"
 
 [[package]]
 name = "unicode-linebreak"

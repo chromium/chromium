@@ -13,12 +13,15 @@
 edition = "2018"
 rust-version = "1.31"
 name = "unicode-ident"
-version = "1.0.3"
+version = "1.0.8"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
 documentation = "https://docs.rs/unicode-ident"
 readme = "README.md"
-keywords = ["unicode"]
+keywords = [
+    "unicode",
+    "xid",
+]
 categories = [
     "development-tools::procedural-macro-helpers",
     "no-std",
@@ -29,12 +32,15 @@ repository = "https://github.com/dtolnay/unicode-ident"
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
+[lib]
+doc-scrape-examples = false
+
 [[bench]]
 name = "xid"
 harness = false
 
 [dev-dependencies.criterion]
-version = "0.3"
+version = "0.4"
 default-features = false
 
 [dev-dependencies.fst]
@@ -45,11 +51,11 @@ version = "0.8"
 features = ["small_rng"]
 
 [dev-dependencies.roaring]
-version = "0.9"
+version = "0.10"
 
 [dev-dependencies.ucd-trie]
 version = "0.1"
 default-features = false
 
 [dev-dependencies.unicode-xid]
-version = "0.2"
+version = "0.2.4"
