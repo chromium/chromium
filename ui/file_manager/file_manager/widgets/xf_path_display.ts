@@ -113,7 +113,7 @@ function getCSS(): CSSResultGroup {
         align-items: center;
         padding: 8px;
         border-top: 1px solid var(--cros-sys-separator);
-        font: var(--cros-title-1-font);
+        font: var(--cros-button-1-font);
         outline: none;
         user-select: none;
       }
