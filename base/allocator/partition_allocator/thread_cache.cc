@@ -12,7 +12,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
-#include "base/allocator/partition_allocator/partition_alloc_base/cxx17_backports.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/debugging_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
@@ -304,7 +303,7 @@ void ThreadCacheRegistry::RunPeriodicPurge() {
   // of cached memory cannot change between calls (since we do not purge
   // background threads, but only ask them to purge their own cache at the next
   // allocation).
-  periodic_purge_next_interval_ = internal::base::clamp(
+  periodic_purge_next_interval_ = std::clamp(
       periodic_purge_next_interval_, kMinPurgeInterval, kMaxPurgeInterval);
 
   PurgeAll();
@@ -423,8 +422,8 @@ void ThreadCache::SetGlobalLimits(PartitionRoot<>* root, float multiplier) {
     constexpr size_t kMinLimit = 1;
     // |PutInBucket()| is called on a full bucket, which should not overflow.
     constexpr size_t kMaxLimit = std::numeric_limits<uint8_t>::max() - 1;
-    global_limits_[index] = static_cast<uint8_t>(
-        internal::base::clamp(value, kMinLimit, kMaxLimit));
+    global_limits_[index] =
+        static_cast<uint8_t>(std::clamp(value, kMinLimit, kMaxLimit));
     PA_DCHECK(global_limits_[index] >= kMinLimit);
     PA_DCHECK(global_limits_[index] <= kMaxLimit);
   }

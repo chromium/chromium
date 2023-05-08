@@ -13,12 +13,12 @@
 #include <limits.h>
 #include <math.h>
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/cxx17_backports.h"
 #include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -953,7 +953,7 @@ void ScaledLinearHistogram::AddScaledCount(Sample value, int64_t count) {
   DCHECK_EQ(histogram_->GetHistogramType(), LINEAR_HISTOGRAM);
   LinearHistogram* histogram = static_cast<LinearHistogram*>(histogram_);
   const auto max_value = static_cast<Sample>(histogram->bucket_count() - 1);
-  value = base::clamp(value, 0, max_value);
+  value = std::clamp(value, 0, max_value);
 
   int64_t scaled_count = count / scale_;
   subtle::Atomic32 remainder = static_cast<int>(count - scaled_count * scale_);
