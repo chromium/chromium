@@ -383,9 +383,8 @@ TEST_F(GetUpdatesProcessorTest, MoreToDownloadResponse) {
   StatusController status;
   std::unique_ptr<GetUpdatesProcessor> processor(
       BuildGetUpdatesProcessor(normal_delegate));
-  SyncerError error =
-      processor->ProcessResponse(gu_response, enabled_types(), &status);
-  EXPECT_EQ(error.value(), SyncerError::SERVER_MORE_TO_DOWNLOAD);
+  processor->ProcessResponse(gu_response, enabled_types(), &status);
+  EXPECT_TRUE(processor->HasMoreUpdatesToDownload());
 }
 
 // A simple scenario: No updates returned and nothing more to download.

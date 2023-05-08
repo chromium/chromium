@@ -100369,7 +100369,7 @@ would be helpful to identify which type is being sent.
   <int value="18" label="SERVER_RETURN_CLIENT_DATA_OBSOLETE"/>
   <int value="19" label="SERVER_RETURN_ENCRYPTION_OBSOLETE"/>
   <int value="20" label="(deprecated) DATATYPE_TRIGGERED_RETRY"/>
-  <int value="21" label="SERVER_MORE_TO_DOWNLOAD"/>
+  <int value="21" label="(deprecated) SERVER_MORE_TO_DOWNLOAD"/>
   <int value="22" label="SYNCER_OK"/>
 </enum>
 

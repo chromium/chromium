@@ -41,14 +41,18 @@ class GetUpdatesProcessor {
 
   // Downloads and processes a batch of updates for the specified types.
   //
-  // Returns SYNCER_OK if the download succeeds, SERVER_MORE_TO_DOWNLOAD if the
-  // download succeeded but there are still some updates left to fetch on the
-  // server, or an appropriate error value in case of failure.
+  // Returns SYNCER_OK if the download succeeds or an appropriate error value in
+  // case of failure.
   SyncerError DownloadUpdates(ModelTypeSet* request_types, SyncCycle* cycle);
 
   // Applies any downloaded and processed updates.
   void ApplyUpdates(const ModelTypeSet& gu_types,
                     StatusController* status_controller);
+
+  // Returns true if last DownloadUpdates() outcome indicated that there are
+  // more updates to download from the server, e.g. when GetUpdatesResponse has
+  // non-zero `changes_remaining`.
+  bool HasMoreUpdatesToDownload() const;
 
  private:
   // Populates a GetUpdates request message with per-type information.
@@ -87,6 +91,9 @@ class GetUpdatesProcessor {
   // This must be kept in sync with the routing info.  Our temporary solution to
   // that problem is to initialize this map in set_routing_info().
   raw_ptr<UpdateHandlerMap> update_handler_map_;
+
+  // Whether last GetUpdatesResponse has non-zero `changes_remaining`.
+  bool has_more_updates_to_download_ = false;
 
   const raw_ref<const GetUpdatesDelegate> delegate_;
 };

@@ -42,8 +42,7 @@ class SyncerError {
     SERVER_RETURN_ENCRYPTION_OBSOLETE = 19,
 
     // Deprecated: DATATYPE_TRIGGERED_RETRY = 20,
-
-    SERVER_MORE_TO_DOWNLOAD = 21,
+    // Deprecated: SERVER_MORE_TO_DOWNLOAD = 21,
 
     SYNCER_OK = 22,
 
@@ -64,7 +63,7 @@ class SyncerError {
   std::string ToString() const;
 
   // Helper to check that |error| is set to something (not UNSET) and is not
-  // SYNCER_OK or SERVER_MORE_TO_DOWNLOAD.
+  // SYNCER_OK.
   bool IsActualError() const;
 
  private:

@@ -186,6 +186,8 @@ SyncerError GetUpdatesProcessor::DownloadUpdates(ModelTypeSet* request_types,
                                                  SyncCycle* cycle) {
   TRACE_EVENT0("sync", "DownloadUpdates");
 
+  has_more_updates_to_download_ = false;
+
   sync_pb::ClientToServerMessage message;
   InitDownloadUpdatesContext(cycle, &message);
   PrepareGetUpdates(*request_types, &message);
@@ -353,9 +355,8 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   DCHECK(progress_marker_iter == progress_index_by_type.end() &&
          updates_iter == updates_by_type.end());
 
-  return gu_response.changes_remaining() == 0
-             ? SyncerError(SyncerError::SYNCER_OK)
-             : SyncerError(SyncerError::SERVER_MORE_TO_DOWNLOAD);
+  has_more_updates_to_download_ = gu_response.changes_remaining() != 0;
+  return SyncerError(SyncerError::SYNCER_OK);
 }
 
 void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
@@ -365,6 +366,10 @@ void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
       update_handler->ApplyUpdates(status_controller, /*cycle_done=*/true);
     }
   }
+}
+
+bool GetUpdatesProcessor::HasMoreUpdatesToDownload() const {
+  return has_more_updates_to_download_;
 }
 
 }  // namespace syncer

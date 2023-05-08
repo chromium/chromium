@@ -33,12 +33,14 @@ std::string GetUpdatesResponseEvent::GetType() const {
 
 std::string GetUpdatesResponseEvent::GetDetails() const {
   switch (error_.value()) {
-    case SyncerError::SYNCER_OK:
-      return base::StringPrintf("Received %d update(s).",
-                                response_.get_updates().entries_size());
-    case SyncerError::SERVER_MORE_TO_DOWNLOAD:
-      return base::StringPrintf("Received %d update(s).  Some updates remain.",
-                                response_.get_updates().entries_size());
+    case SyncerError::SYNCER_OK: {
+      std::string details = base::StringPrintf(
+          "Received %d update(s).", response_.get_updates().entries_size());
+      if (response_.get_updates().changes_remaining() != 0) {
+        details += " Some updates remain.";
+      }
+      return details;
+    }
     case SyncerError::UNSET:
     case SyncerError::NETWORK_CONNECTION_UNAVAILABLE:
     case SyncerError::NETWORK_IO_ERROR:

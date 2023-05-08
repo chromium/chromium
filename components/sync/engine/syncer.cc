@@ -124,7 +124,7 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
   do {
     download_result =
         get_updates_processor.DownloadUpdates(&download_types, cycle);
-  } while (download_result.value() == SyncerError::SERVER_MORE_TO_DOWNLOAD);
+  } while (get_updates_processor.HasMoreUpdatesToDownload());
 
   // It is our responsibility to propagate the removal of types that occurred in
   // GetUpdatesProcessor::DownloadUpdates().
