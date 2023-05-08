@@ -3106,7 +3106,6 @@ if (!is_android) {
         "../browser/extensions/api/preference/preference_apitest.cc",
         "../browser/extensions/api/printer_provider/printer_provider_apitest.cc",
         "../browser/extensions/api/processes/processes_apitest.cc",
-        "../browser/extensions/api/proxy/proxy_apitest.cc",
         "../browser/extensions/api/resources_private/resources_private_apitest.cc",
         "../browser/extensions/api/runtime/runtime_apitest.cc",
         "../browser/extensions/api/scripting/scripting_apitest.cc",
@@ -3339,7 +3338,10 @@ if (!is_android) {
       }
 
       if (!is_chromeos_lacros) {
-        sources += [ "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc" ]
+        sources += [
+          "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
+          "../browser/extensions/api/proxy/proxy_apitest.cc",
+        ]
       }
 
       if (is_chromeos) {
@@ -5031,6 +5033,7 @@ if (is_chromeos_lacros) {
       "../browser/extensions/api/enterprise_device_attributes/enterprise_device_attributes_lacros_apitest.cc",
       "../browser/extensions/api/networking_private/networking_private_chromeos_apitest.cc",
       "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
+      "../browser/extensions/api/proxy/proxy_apitest.cc",
       "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
       "../browser/extensions/extension_keeplist_lacros_browsertest.cc",
       "../browser/feedback/show_feedback_page_lacros_browsertest.cc",
