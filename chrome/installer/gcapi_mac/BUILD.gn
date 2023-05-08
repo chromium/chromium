@@ -11,18 +11,16 @@ config("gcapi_config") {
   # on older macOS versions than chrome itself. To not making a dependency on
   # gcapi a problem for these installers, make it target a very old version
   # of macOS.
-  min_version = "10.8"
+  min_version = "10.12"
   cflags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),
     "-mmacos-version-min=$min_version",
-    "-stdlib=libc++",  # TODO(thakis): Remove once min_version >= 10.9.
   ]
   ldflags = [
     "-isysroot",
     rebase_path(sysroot, root_build_dir),
     "-mmacos-version-min=$min_version",
-    "-stdlib=libc++",  # TODO(thakis): Remove once min_version >= 10.9.
   ]
 }
 
@@ -39,6 +37,7 @@ static_library("gcapi_lib") {
   # Don't use runtime_library, to be able to pick a custom mmacos-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   # no_default_deps has no effect in static_libraries, so set it only below.
 }
@@ -51,6 +50,7 @@ executable("gcapi_example") {
   # Don't use runtime_library, to be able to pick a custom mmacos-version-min.
   configs -= [ "//build/config/compiler:runtime_library" ]
   configs += [ ":gcapi_config" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 
   # Every executable by default links to a hermetic libc++, so that we can
   # guarantee the capability of the standard library. Neither gcapi_lib
