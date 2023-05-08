@@ -117,7 +117,9 @@ absl::optional<CookiePartitionKey> CookiePartitionKey::FromNetworkIsolationKey(
   // TODO(crbug.com/1225444): Check if the top frame site is in a First-Party
   // Set or if it is an extension URL.
   const absl::optional<SchemefulSite>& partition_key_site =
-      network_isolation_key.GetTopFrameSite();
+      nonce ? network_isolation_key.GetFrameSiteForCookiePartitionKey(
+                  NetworkIsolationKey::CookiePartitionKeyPasskey())
+            : network_isolation_key.GetTopFrameSite();
   if (!partition_key_site)
     return absl::nullopt;
 

@@ -35,6 +35,9 @@ struct CrossSiteFlagEnabledNetworkIsolationKey {
   // The top-level site of the `net::NetworkIsolationKey`.
   SchemefulSite top_frame_site;
 
+  // The frame site of the `net::NetworkIsolationKey`.
+  SchemefulSite frame_site;
+
   // A boolean indicating whether the `net::NetworkIsolationKey` was created
   // with a frame site that was schemefully cross-site with the top-level site.
   bool is_cross_site;
