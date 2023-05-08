@@ -26365,6 +26365,12 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="72"
       label="Breakpoints in file enabled or disabled form context menu"/>
   <int value="73" label="Breakpoint condition edited from sidebar"/>
+  <int value="74" label="Add Filesystem to Workspace"/>
+  <int value="75" label="Remove Filesystem from Workspace"/>
+  <int value="76" label="Add Folder for Overrides"/>
+  <int value="77" label="Remove Folder for Overrides"/>
+  <int value="78" label="Filesystem source selected"/>
+  <int value="79" label="Overrides source selected"/>
 </enum>
 
 <enum name="DevToolsBackgroundService">
@@ -27199,6 +27205,11 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="5" label="Elements - DOM Breakpoints"/>
   <int value="6" label="Elements - Properties"/>
   <int value="7" label="Elements - Accessibility"/>
+  <int value="8" label="Sources - Page"/>
+  <int value="9" label="Sources - Filesystem"/>
+  <int value="10" label="Sources - Overrides"/>
+  <int value="11" label="Sources - Content Scripts"/>
+  <int value="12" label="Sources - Snippets"/>
 </enum>
 
 <enum name="DevToolsStyleTextCopied">
