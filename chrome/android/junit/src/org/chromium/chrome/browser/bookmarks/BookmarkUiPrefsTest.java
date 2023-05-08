@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -109,5 +110,25 @@ public class BookmarkUiPrefsTest {
         mBookmarkUiPrefs.removeObserver(mObserver);
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
         verifyNoInteractions(mObserver);
+    }
+
+    @Test
+    public void testSortOrder() {
+        // Default should be REVERSE_CHRONOLOGICAL.
+        Assert.assertEquals(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
+                mBookmarkUiPrefs.getBookmarkRowSortOrder());
+
+        mBookmarkUiPrefs.addObserver(mObserver);
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+        verify(mObserver).onBookmarkRowSortOrderChanged(BookmarkRowSortOrder.ALPHABETICAL);
+        Assert.assertEquals(
+                BookmarkRowSortOrder.ALPHABETICAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
+
+        reset(mObserver);
+        mBookmarkUiPrefs.removeObserver(mObserver);
+        mBookmarkUiPrefs.setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
+        verifyNoInteractions(mObserver);
+        Assert.assertEquals(
+                BookmarkRowSortOrder.CHRONOLOGICAL, mBookmarkUiPrefs.getBookmarkRowSortOrder());
     }
 }

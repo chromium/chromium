@@ -106,6 +106,7 @@ public final class ChromePreferenceKeys {
     public static final String BOOKMARKS_LAST_USED_URL = "enhanced_bookmark_last_used_url";
     public static final String BOOKMARKS_LAST_USED_PARENT =
             "enhanced_bookmark_last_used_parent_folder";
+    public static final String BOOKMARKS_SORT_ORDER = "Chrome.Bookmarks.BookmarkRowSortOrder";
     public static final String BOOKMARKS_VISUALS_PREF = "Chrome.Bookmarks.BookmarkRowDisplay";
 
     /**
@@ -999,6 +1000,7 @@ public final class ChromePreferenceKeys {
                 APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO,
                 APPLICATION_OVERRIDE_LANGUAGE,
                 BLUETOOTH_NOTIFICATION_IDS,
+                BOOKMARKS_SORT_ORDER,
                 BOOKMARKS_VISUALS_PREF,
                 CHROME_SURVEY_DOWNLOAD_ATTEMPTS.pattern(),
                 CHROME_SURVEY_PROMPT_DISPLAYED_TIMESTAMP.pattern(),

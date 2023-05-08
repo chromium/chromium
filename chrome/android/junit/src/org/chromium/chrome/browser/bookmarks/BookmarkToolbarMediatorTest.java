@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.util.browser.Features;
@@ -358,5 +359,60 @@ public class BookmarkToolbarMediatorTest {
         initModelAndMediator();
         Assert.assertEquals(
                 R.id.visual_view, mModel.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
+    }
+
+    @Test
+    public void testOnMenuItemClick_sortOrder() {
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_newest));
+        Assert.assertEquals(
+                R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs)
+                .setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL);
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_oldest));
+        Assert.assertEquals(
+                R.id.sort_by_oldest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.CHRONOLOGICAL);
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_alpha));
+        Assert.assertEquals(
+                R.id.sort_by_alpha, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.ALPHABETICAL);
+
+        Assert.assertTrue(mMediator.onMenuIdClick(R.id.sort_by_reverse_alpha));
+        Assert.assertEquals(R.id.sort_by_reverse_alpha,
+                mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+        verify(mBookmarkUiPrefs).setBookmarkRowSortOrder(BookmarkRowSortOrder.REVERSE_ALPHABETICAL);
+    }
+
+    @Test
+    public void testInitialization_sortOrder() {
+        doReturn(BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+        initModelAndMediator();
+        Assert.assertEquals(
+                R.id.sort_by_newest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+
+        doReturn(BookmarkRowSortOrder.CHRONOLOGICAL)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+        initModelAndMediator();
+        Assert.assertEquals(
+                R.id.sort_by_oldest, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+
+        doReturn(BookmarkRowSortOrder.ALPHABETICAL)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+        initModelAndMediator();
+        Assert.assertEquals(
+                R.id.sort_by_alpha, mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
+
+        doReturn(BookmarkRowSortOrder.REVERSE_ALPHABETICAL)
+                .when(mBookmarkUiPrefs)
+                .getBookmarkRowSortOrder();
+        initModelAndMediator();
+        Assert.assertEquals(R.id.sort_by_reverse_alpha,
+                mModel.get(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID));
     }
 }

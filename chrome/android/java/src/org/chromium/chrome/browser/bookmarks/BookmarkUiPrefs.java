@@ -19,6 +19,8 @@ import java.lang.annotation.RetentionPolicy;
 public class BookmarkUiPrefs {
     private static final @BookmarkRowDisplayPref int INITIAL_BOOKMARK_ROW_DISPLAY_PREF =
             BookmarkRowDisplayPref.COMPACT;
+    private static final @BookmarkRowSortOrder int INITIAL_BOOKMARK_ROW_SORT_ORDER =
+            BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL;
 
     // This is persisted to preferences, entries shouldn't be reordered or removed.
     @IntDef({BookmarkRowDisplayPref.COMPACT, BookmarkRowDisplayPref.VISUAL})
@@ -28,10 +30,24 @@ public class BookmarkUiPrefs {
         int VISUAL = 1;
     }
 
+    // This is persisted to preferences, entries shouldn't be reordered or removed.
+    @IntDef({BookmarkRowSortOrder.CHRONOLOGICAL, BookmarkRowSortOrder.REVERSE_CHRONOLOGICAL,
+            BookmarkRowSortOrder.ALPHABETICAL, BookmarkRowSortOrder.REVERSE_ALPHABETICAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface BookmarkRowSortOrder {
+        int CHRONOLOGICAL = 0;
+        int REVERSE_CHRONOLOGICAL = 1;
+        int ALPHABETICAL = 2;
+        int REVERSE_ALPHABETICAL = 3;
+    }
+
     /** Observer for changes to prefs. */
     public interface Observer {
         /** Called when the current {@link BookmarkRowDisplayPref} changes. */
-        void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref);
+        default void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {}
+
+        // Called when the current {@link BookmarkRowSortOrder} changes. */
+        default void onBookmarkRowSortOrderChanged(@BookmarkRowSortOrder int sortOrder) {}
     }
 
     private final SharedPreferencesManager mPrefsManager;
@@ -73,6 +89,18 @@ public class BookmarkUiPrefs {
     public void setBookmarkRowDisplayPref(@BookmarkRowDisplayPref int displayPref) {
         mPrefsManager.writeInt(ChromePreferenceKeys.BOOKMARKS_VISUALS_PREF, displayPref);
         for (Observer obs : mObservers) obs.onBookmarkRowDisplayPrefChanged(displayPref);
+    }
+
+    /** Returns the order bookmark rows are displayed when not showing order in parent. */
+    public @BookmarkRowSortOrder int getBookmarkRowSortOrder() {
+        return mPrefsManager.readInt(
+                ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, INITIAL_BOOKMARK_ROW_SORT_ORDER);
+    }
+
+    /** Sets the order to sort bookmark rows. */
+    public void setBookmarkRowSortOrder(@BookmarkRowSortOrder int sortOrder) {
+        mPrefsManager.writeInt(ChromePreferenceKeys.BOOKMARKS_SORT_ORDER, sortOrder);
+        for (Observer obs : mObservers) obs.onBookmarkRowSortOrderChanged(sortOrder);
     }
 
     /**
