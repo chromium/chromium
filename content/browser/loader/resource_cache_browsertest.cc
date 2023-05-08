@@ -257,8 +257,10 @@ INSTANTIATE_TEST_SUITE_P(All, ResourceCacheBFCacheTest, testing::Bool());
 // active renderer becomes a new host. Once the inactive renderer becomes
 // active, it should use the ResourceCache that is hosted by the second
 // renderer.
+// TODO(https://crbug.com/1434647): Flaky in trybots. Enable this test before
+// starting an experiment.
 IN_PROC_BROWSER_TEST_P(ResourceCacheBFCacheTest,
-                       HostingRendererNavigateToAnotherOriginAndBack) {
+                       DISABLED_HostingRendererNavigateToAnotherOriginAndBack) {
   // Labels for renderers:
   // * R1: RenderFrameHost lives in the first tab, navigated to `kUrl`.
   // * R2: RenderFrameHost lives in the second tab, navigated to `kUrl`.
