@@ -96,8 +96,7 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
               {"cache_size", "1"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kPreloadingConfig});
+        /*disabled_features=*/{features::kPreloadingConfig});
   }
 
   void SetUp() override {
@@ -671,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
           GetCanonicalSearchURL(expected_prerender_url));
   EXPECT_TRUE(prefetch_status.has_value());
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(expected_prerender_url),
-                           {SearchPrefetchStatus::kInFlight});
+                           {SearchPrefetchStatus::kCanBeServed});
 
   // 3. Type a different query which results in different suggestions.
   std::string search_query_2 = "pre";
@@ -686,7 +685,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   EXPECT_TRUE(prefetch_status.has_value());
   WaitUntilStatusChangesTo(GetCanonicalSearchURL(GetSearchUrl(
                                prerender_query_1, UrlType::kPrerender)),
-                           {SearchPrefetchStatus::kInFlight});
+                           {SearchPrefetchStatus::kCanBeServed});
 
   EXPECT_FALSE(prerender_manager()->HasSearchResultPagePrerendered());
 }
@@ -1043,8 +1042,7 @@ class SearchPreloadUnifiedHoldbackBrowserTest
               {"device_memory_threshold_MB", "0"}}},
             {features::kPrerender2Holdback, {{}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kPreloadingConfig});
+        /*disabled_features=*/{features::kPreloadingConfig});
   }
   ~SearchPreloadUnifiedHoldbackBrowserTest() override = default;
 
@@ -1152,8 +1150,7 @@ class HTTPCacheSearchPreloadUnifiedBrowserTest
         },
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kBackForwardCache,
+        /*disabled_features=*/{features::kBackForwardCache,
                                features::kPreloadingConfig});
   }
 
@@ -1433,8 +1430,7 @@ class NoCancelSearchPreloadUnifiedBrowserTest
         },
         // Disable BackForwardCache to ensure that the page is not restored from
         // the cache.
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kBackForwardCache,
+        /*disabled_features=*/{features::kBackForwardCache,
                                features::kPreloadingConfig});
   }
 
@@ -1559,8 +1555,7 @@ class SearchPreloadUnifiedFallbackBrowserTest
              {{"max_attempts_per_caching_duration", "3"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kPreloadingConfig});
+        /*disabled_features=*/{features::kPreloadingConfig});
   }
   ~SearchPreloadUnifiedFallbackBrowserTest() override = default;
 
@@ -1983,8 +1978,7 @@ class NoCancelSearchPreloadUnifiedFallbackBrowserTest
               {"cache_size", "4"},
               {"device_memory_threshold_MB", "0"}}},
         },
-        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders,
-                               features::kPreloadingConfig});
+        /*disabled_features=*/{features::kPreloadingConfig});
   }
   ~NoCancelSearchPreloadUnifiedFallbackBrowserTest() override = default;
 
