@@ -224,10 +224,11 @@ class BrowsingHistoryService : public HistoryServiceObserver,
   void WebHistoryTimeout(scoped_refptr<QueryHistoryState> state);
 
   // Callback from the WebHistoryService when a query has completed.
-  void WebHistoryQueryComplete(scoped_refptr<QueryHistoryState> state,
-                               base::Time start_time,
-                               WebHistoryService::Request* request,
-                               const base::Value* results_value);
+  void WebHistoryQueryComplete(
+      scoped_refptr<QueryHistoryState> state,
+      base::Time start_time,
+      WebHistoryService::Request* request,
+      base::optional_ref<base::Value::Dict> results_dict);
 
   // Callback telling us whether other forms of browsing history were found
   // on the history server.

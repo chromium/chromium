@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "components/history/core/browser/browsing_history_driver.h"
 #include "components/history/core/browser/history_types.h"
@@ -641,7 +642,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     scoped_refptr<QueryHistoryState> state,
     base::Time start_time,
     WebHistoryService::Request* request,
-    const base::Value* results_value) {
+    base::optional_ref<base::Value::Dict> results_dict) {
   // If the response came in too late, do nothing.
   // TODO(dubroy): Maybe show a banner, and prompt the user to reload?
   if (!web_history_timer_->IsRunning())
@@ -649,10 +650,9 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
   web_history_timer_->Stop();
   web_history_request_.reset();
 
-  if (results_value) {
+  if (results_dict.has_value()) {
     has_synced_results_ = true;
-    if (const base::Value::List* events =
-            results_value->GetDict().FindList("event")) {
+    if (const base::Value::List* events = results_dict->FindList("event")) {
       state->remote_results.reserve(state->remote_results.size() +
                                     events->size());
       std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
@@ -708,8 +708,9 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
           const std::string* timestamp_string;
           int64_t timestamp_usec = 0;
 
-          if (!id.is_dict() ||
-              !(timestamp_string = id.FindStringKey("timestamp_usec")) ||
+          auto* id_dict = id.GetIfDict();
+          if (!id_dict ||
+              !(timestamp_string = id_dict->FindString("timestamp_usec")) ||
               !base::StringToInt64(*timestamp_string, &timestamp_usec)) {
             NOTREACHED() << "Unable to extract timestamp.";
             continue;
@@ -732,7 +733,7 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
       }
     }
     const std::string* continuation_token =
-        results_value->FindStringKey("continuation_token");
+        results_dict->FindString("continuation_token");
     state->remote_status = !continuation_token || continuation_token->empty()
                                ? REACHED_BEGINNING
                                : MORE_RESULTS;

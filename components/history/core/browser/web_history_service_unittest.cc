@@ -55,7 +55,7 @@ class TestingWebHistoryService : public WebHistoryService {
 
   // This is sorta an override but override and static don't mix.
   // This function just calls WebHistoryService::ReadResponse.
-  static absl::optional<base::Value> ReadResponse(Request* request);
+  static absl::optional<base::Value::Dict> ReadResponse(Request* request);
 
   const std::string& GetExpectedPostData(WebHistoryService::Request* request);
 
@@ -173,7 +173,7 @@ WebHistoryService::Request* TestingWebHistoryService::CreateRequest(
   return request;
 }
 
-absl::optional<base::Value> TestingWebHistoryService::ReadResponse(
+absl::optional<base::Value::Dict> TestingWebHistoryService::ReadResponse(
     Request* request) {
   return WebHistoryService::ReadResponse(request);
 }
@@ -327,12 +327,12 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
                       "{\n"         /* response body */
                       "  \"history_recording_enabled\": true\n"
                       "}"));
-  absl::optional<base::Value> response_value;
   // ReadResponse deletes the request
-  response_value = TestingWebHistoryService::ReadResponse(request.get());
+  auto response_value = TestingWebHistoryService::ReadResponse(request.get());
+  ASSERT_TRUE(response_value);
   bool enabled_value = false;
   if (absl::optional<bool> enabled =
-          response_value->GetDict().FindBool("history_recording_enabled")) {
+          response_value->FindBool("history_recording_enabled")) {
     enabled_value = *enabled;
   }
   EXPECT_TRUE(enabled_value);
@@ -344,12 +344,12 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
       "{\n"
       "  \"history_recording_enabled\": false\n"
       "}"));
-  absl::optional<base::Value> response_value2;
   // ReadResponse deletes the request
-  response_value2 = TestingWebHistoryService::ReadResponse(request2.get());
+  auto response_value2 = TestingWebHistoryService::ReadResponse(request2.get());
+  ASSERT_TRUE(response_value2);
   enabled_value = true;
   if (absl::optional<bool> enabled =
-          response_value2->GetDict().FindBool("history_recording_enabled")) {
+          response_value2->FindBool("history_recording_enabled")) {
     enabled_value = *enabled;
   }
   EXPECT_FALSE(enabled_value);
@@ -361,9 +361,8 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
                       "{\n"
                       "  \"history_recording_enabled\": true\n"
                       "}"));
-  absl::optional<base::Value> response_value3;
   // ReadResponse deletes the request
-  response_value3 = TestingWebHistoryService::ReadResponse(request3.get());
+  auto response_value3 = TestingWebHistoryService::ReadResponse(request3.get());
   EXPECT_FALSE(response_value3);
 
   // Test that improperly formatted response returns false.
@@ -375,9 +374,8 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
       "{\n"
       "  \"history_recording_enabled\": not true\n"
       "}"));
-  absl::optional<base::Value> response_value4;
   // ReadResponse deletes the request
-  response_value4 = TestingWebHistoryService::ReadResponse(request4.get());
+  auto response_value4 = TestingWebHistoryService::ReadResponse(request4.get());
   EXPECT_FALSE(response_value4);
 
   // Test that improperly formatted response returns false.
@@ -386,11 +384,10 @@ TEST_F(WebHistoryServiceTest, VerifyReadResponse) {
       "{\n"
       "  \"history_recording\": true\n"
       "}"));
-  absl::optional<base::Value> response_value5;
   // ReadResponse deletes the request
-  response_value5 = TestingWebHistoryService::ReadResponse(request5.get());
-  EXPECT_FALSE(
-      response_value5->GetDict().FindBool("history_recording_enabled"));
+  auto response_value5 = TestingWebHistoryService::ReadResponse(request5.get());
+  ASSERT_TRUE(response_value5);
+  EXPECT_FALSE(response_value5->FindBool("history_recording_enabled"));
 }
 
 }  // namespace history
