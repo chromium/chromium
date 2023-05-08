@@ -86,6 +86,20 @@ ColorConversionSkFilterCache::Key::Key(const gfx::ColorSpace& src,
       dst(dst),
       sdr_max_luminance_nits(sdr_max_luminance_nits) {}
 
+ColorConversionSkFilterCache::Value::Value() = default;
+
+ColorConversionSkFilterCache::Value::Value(Value&& other)
+    : transform(std::move(other.transform)), effect(std::move(other.effect)) {}
+
+ColorConversionSkFilterCache::Value&
+ColorConversionSkFilterCache::Value::operator=(Value&& other) {
+  transform = std::move(other.transform);
+  effect = std::move(other.effect);
+  return *this;
+}
+
+ColorConversionSkFilterCache::Value::~Value() = default;
+
 sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
     const gfx::ColorSpace& src,
     const gfx::ColorSpace& dst,
@@ -112,23 +126,27 @@ sk_sp<SkColorFilter> ColorConversionSkFilterCache::Get(
   }
 
   const Key key(src, src_bit_depth.value_or(0), dst, sdr_max_luminance_nits);
-  sk_sp<SkRuntimeEffect>& effect = cache_[key];
+  Value& value = cache_[key];
 
-  gfx::ColorTransform::Options options;
-  options.tone_map_pq_and_hlg_to_dst = true;
-  if (src_bit_depth)
-    options.src_bit_depth = src_bit_depth.value();
+  if (!value.effect) {
+    gfx::ColorTransform::Options options;
+    options.tone_map_pq_and_hlg_to_dst = true;
+    if (src_bit_depth) {
+      options.src_bit_depth = src_bit_depth.value();
+    }
+    options.sdr_max_luminance_nits = sdr_max_luminance_nits;
+    value.transform = gfx::ColorTransform::NewColorTransform(src, dst, options);
+    value.effect = value.transform->GetSkRuntimeEffect();
+  }
+
+  gfx::ColorTransform::RuntimeOptions options;
+  options.offset = resource_offset;
+  options.multiplier = resource_multiplier;
   options.sdr_max_luminance_nits = sdr_max_luminance_nits;
   options.src_hdr_metadata = src_hdr_metadata;
   options.dst_max_luminance_relative = dst_max_luminance_relative;
-  if (!effect) {
-    std::unique_ptr<gfx::ColorTransform> transform =
-        gfx::ColorTransform::NewColorTransform(src, dst, options);
-    effect = transform->GetSkRuntimeEffect();
-  }
-
-  return effect->makeColorFilter(gfx::ColorTransform::GetSkShaderUniforms(
-      src, dst, resource_offset, resource_multiplier, options));
+  return value.effect->makeColorFilter(
+      value.transform->GetSkShaderUniforms(options));
 }
 
 sk_sp<SkImage> ColorConversionSkFilterCache::ApplyGainmap(
