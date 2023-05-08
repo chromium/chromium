@@ -1242,6 +1242,8 @@ chromium-metrics-reviews@google.com.
     This is a new implementation of the older
     Graphics.Smoothness.PercentDroppedFrames.AllInteractions metric.
 
+    See http://shortn/_ItBDdHoyCf (internal only) for more details.
+
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
   </summary>
