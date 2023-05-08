@@ -88,7 +88,8 @@ namespace {
 class BasePasswordManagerViewControllerTest
     : public ChromeTableViewControllerTest {
  protected:
-  BasePasswordManagerViewControllerTest() = default;
+  BasePasswordManagerViewControllerTest()
+      : enable_grouping_(password_manager::features::kPasswordsGrouping) {}
 
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
@@ -324,6 +325,7 @@ class BasePasswordManagerViewControllerTest
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
+  base::test::ScopedFeatureList enable_grouping_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -400,16 +402,15 @@ TEST_F(PasswordManagerViewControllerTest, TestSavedPasswordsOrder) {
   AddSavedForm2();
 
   CheckURLCellTitleAndDetailText(
-      @"example2.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 0);
+      @"example2.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords),
+      0);
 
   AddSavedForm1();
   CheckURLCellTitleAndDetailText(
-      @"example.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 0);
+      @"example.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords), 0);
   CheckURLCellTitleAndDetailText(
-      @"example2.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 1);
+      @"example2.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords),
+      1);
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
@@ -451,68 +452,10 @@ TEST_F(PasswordManagerViewControllerTest, AddBlockedDuplicates) {
   [GetPasswordManagerViewController() settingsWillBeDismissed];
 }
 
-// Tests deleting items from saved passwords and blocked passwords sections.
-TEST_F(PasswordManagerViewControllerTest, DeleteItems) {
-  AddSavedForm1();
-  AddBlockedForm1();
-  AddBlockedForm2();
-  ASSERT_EQ(4, NumberOfSections());
-
-  // Delete item in save passwords section.
-  deleteItemAndWait(GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  EXPECT_EQ(3, NumberOfSections());
-
-  // The blocked passwords section should still have both its items.
-  EXPECT_EQ(2,
-            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-
-  // Delete item in blocked passwords section.
-  deleteItemAndWait(GetSectionIndex(SectionIdentifierBlocked), 0);
-  EXPECT_EQ(1,
-            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-
-  // There should be no password sections remaining and no search bar.
-  deleteItemAndWait(GetSectionIndex(SectionIdentifierBlocked), 0);
-  EXPECT_EQ(0, NumberOfSections());  // Empty state
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
-}
-
-// Tests deleting items from saved passwords and blocked passwords sections
-// when there are duplicates in the store.
-TEST_F(PasswordManagerViewControllerTest, DeleteItemsWithDuplicates) {
-  AddSavedForm1();
-  AddSavedForm1();
-  AddBlockedForm1();
-  AddBlockedForm1();
-  AddBlockedForm2();
-  ASSERT_EQ(4, NumberOfSections());
-
-  // Delete item in save passwords section.
-  deleteItemAndWait(GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  EXPECT_EQ(3, NumberOfSections());
-
-  // The blocked passwords section should still have both its items.
-  EXPECT_EQ(2,
-            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-
-  // Delete item in blocked passwords section.
-  deleteItemAndWait(GetSectionIndex(SectionIdentifierBlocked), 0);
-  EXPECT_EQ(1,
-            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-
-  // There should be no password sections remaining and no search bar.
-  deleteItemAndWait(GetSectionIndex(SectionIdentifierBlocked), 0);
-  EXPECT_EQ(0, NumberOfSections());  // Empty state
-  [GetPasswordManagerViewController() settingsWillBeDismissed];
-}
-
 // Tests deleting items from saved passwords (as affiliated groups) and blocked
 // passwords sections.
 TEST_F(PasswordManagerViewControllerTest,
        DeleteAffiliatedGroupsAndBlockedPasswords) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kPasswordsGrouping);
-
   AddSavedForm1();
   AddSavedForm1(u"test2@egmail.com");
   AddSavedForm2();
@@ -733,21 +676,7 @@ TEST_F(PasswordManagerViewControllerTest, FilterItems) {
   EXPECT_EQ(0,
             NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
   CheckURLCellTitleAndDetailText(
-      @"example.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-
-  [passwords_controller searchBar:bar textDidChange:@"test@egmail.com"];
-  // Only two items in saved passwords should remain.
-  EXPECT_EQ(2, NumberOfItemsInSection(
-                   GetSectionIndex(SectionIdentifierSavedPasswords)));
-  EXPECT_EQ(0,
-            NumberOfItemsInSection(GetSectionIndex(SectionIdentifierBlocked)));
-  CheckURLCellTitleAndDetailText(
-      @"example.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 0);
-  CheckURLCellTitleAndDetailText(
-      @"example2.com", @"test@egmail.com",
-      GetSectionIndex(SectionIdentifierSavedPasswords), 1);
+      @"example.com", @"", GetSectionIndex(SectionIdentifierSavedPasswords), 0);
 
   [passwords_controller searchBar:bar textDidChange:@"secret"];
   // Only two blocked items should remain.
