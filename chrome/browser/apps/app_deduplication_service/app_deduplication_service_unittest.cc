@@ -453,28 +453,18 @@ TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   auto* skype_group = data.add_app_group();
   skype_group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
   skype_group->add_package_id();
-  skype_group->set_package_id(0, "phonehub:com.skype.raider");
+  skype_group->set_package_id(0, "android:com.skype.raider");
   skype_group->add_package_id();
-  skype_group->set_package_id(1, "website:https://web.skype.com/");
-  auto* skype_app_1 = skype_group->add_app();
-  skype_app_1->set_app_id("com.skype.raider");
-  skype_app_1->set_platform("phonehub");
-  auto* skype_app_2 = skype_group->add_app();
-  skype_app_2->set_app_id("https://web.skype.com/");
-  skype_app_2->set_platform("website");
+  skype_group->set_package_id(1, "web:https://web.skype.com/");
 
   auto* duo_group = data.add_app_group();
   duo_group->set_app_group_uuid("1d460a2b-d6d5-471d-b1e6-bbfc87971ea8");
   duo_group->add_package_id();
-  duo_group->set_package_id(0, "arc:com.google.android.apps.tachyon");
+  duo_group->set_package_id(0, "android:com.google.duo");
   duo_group->add_package_id();
   duo_group->set_package_id(1, "web:https://duo.google.com/?lfhs=2");
-  auto* duo_app_1 = duo_group->add_app();
-  duo_app_1->set_app_id("com.google.android.apps.tachyon");
-  duo_app_1->set_platform("arc");
-  auto* duo_app_2 = duo_group->add_app();
-  duo_app_2->set_app_id("https://duo.google.com/?lfhs=2");
-  duo_app_2->set_platform("web");
+  duo_group->add_package_id();
+  duo_group->set_package_id(2, "website:https://duo.google.com/?lfhs=2");
 
   TestingProfile profile;
   ASSERT_TRUE(AppDeduplicationServiceFactory::
@@ -485,28 +475,31 @@ TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   service->DeduplicateDataToEntries(data);
 
   uint32_t skype_test_index = 1;
-  std::string skype_phonehub_app_id = "com.skype.raider";
-  auto it = service->entry_to_group_map_.find(EntryId(skype_phonehub_app_id));
+
+  std::string skype_android_app_id = "com.skype.raider";
+  auto it = service->entry_to_group_map_.find(
+      EntryId(skype_android_app_id, AppType::kArc));
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(skype_test_index, it->second);
 
-  std::string skype_website_id = "https://web.skype.com/";
-  it = service->entry_to_group_map_.find(EntryId(GURL(skype_website_id)));
+  std::string skype_web_id = "https://web.skype.com/";
+  it = service->entry_to_group_map_.find(EntryId(skype_web_id, AppType::kWeb));
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(skype_test_index, it->second);
 
   auto map_it = service->duplication_map_.find(skype_test_index);
   ASSERT_FALSE(map_it == service->duplication_map_.end());
   EXPECT_THAT(map_it->second.entries,
-              ElementsAre(Entry(EntryId(skype_phonehub_app_id)),
-                          Entry(EntryId(GURL(skype_website_id)))));
+              ElementsAre(Entry(EntryId(skype_android_app_id, AppType::kArc)),
+                          Entry(EntryId(skype_web_id, AppType::kWeb))));
 
   uint32_t duo_test_index = 2;
-  std::string duo_arc_app_id = "com.google.android.apps.tachyon";
-  it =
-      service->entry_to_group_map_.find(EntryId(duo_arc_app_id, AppType::kArc));
+
+  std::string duo_android_app_id = "com.google.duo";
+  it = service->entry_to_group_map_.find(
+      EntryId(skype_android_app_id, AppType::kArc));
   ASSERT_NE(it, service->entry_to_group_map_.end());
-  EXPECT_EQ(duo_test_index, it->second);
+  EXPECT_EQ(skype_test_index, it->second);
 
   std::string duo_web_app_id = "https://duo.google.com/?lfhs=2";
   it =
@@ -514,10 +507,14 @@ TEST_F(AppDeduplicationServiceTest, DeduplicateDataToEntries) {
   ASSERT_NE(it, service->entry_to_group_map_.end());
   EXPECT_EQ(duo_test_index, it->second);
 
+  std::string duo_website_app_id = "https://duo.google.com/?lfhs=2";
+  it = service->entry_to_group_map_.find(EntryId(duo_website_app_id));
+  EXPECT_EQ(it, service->entry_to_group_map_.end());
+
   map_it = service->duplication_map_.find(duo_test_index);
   ASSERT_FALSE(map_it == service->duplication_map_.end());
   EXPECT_THAT(map_it->second.entries,
-              ElementsAre(Entry(EntryId(duo_arc_app_id, AppType::kArc)),
+              ElementsAre(Entry(EntryId(duo_android_app_id, AppType::kArc)),
                           Entry(EntryId(duo_web_app_id, AppType::kWeb))));
 }
 
@@ -569,10 +566,7 @@ TEST_F(AppDeduplicationServiceTest, PrefSetAfterServerSuccess) {
   auto* group = data.add_app_group();
   group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
   group->add_package_id();
-  group->set_package_id(0, "phonehub:com.skype.raider");
-  auto* app = group->add_app();
-  app->set_app_id("com.skype.raider");
-  app->set_platform("phonehub");
+  group->set_package_id(0, "website:https://web.skype.com/");
 
   url_loader_factory.AddResponse(
       AppDeduplicationServerConnector::GetServerUrl().spec(),

@@ -46,10 +46,7 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataSuccess) {
   auto* group = data.add_app_group();
   group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
   group->add_package_id();
-  group->set_package_id(0, "phonehub:com.skype.raidar");
-  auto* app = group->add_app();
-  app->set_app_id("com.skype.raidar");
-  app->set_platform("phonehub");
+  group->set_package_id(0, "web:https://keep.google.com/?usp=installed_webapp");
 
   EXPECT_FALSE(base::DirectoryExists(temp_dir_path_));
 
@@ -85,10 +82,8 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataSuccess) {
     auto observed_group = data.app_group(0);
     EXPECT_EQ(observed_group.app_group_uuid(),
               "15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
-    EXPECT_EQ(observed_group.package_id(0), "phonehub:com.skype.raidar");
-    auto observed_app = data.app_group(0).app(0);
-    EXPECT_EQ(observed_app.app_id(), "com.skype.raidar");
-    EXPECT_EQ(observed_app.platform(), "phonehub");
+    EXPECT_EQ(observed_group.package_id(0),
+              "web:https://keep.google.com/?usp=installed_webapp");
   }
 }
 
@@ -97,10 +92,7 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataExistingPath) {
   auto* group = data.add_app_group();
   group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
   group->add_package_id();
-  group->set_package_id(0, "phonehub:com.skype.raidar");
-  auto* app = group->add_app();
-  app->set_app_id("com.skype.raidar");
-  app->set_platform("phonehub");
+  group->set_package_id(0, "web:https://keep.google.com/?usp=installed_webapp");
 
   EXPECT_TRUE(base::CreateDirectory(temp_dir_path_));
 
@@ -136,10 +128,8 @@ TEST_F(AppDeduplicationCacheTest, WriteAndReadDataExistingPath) {
     auto observed_group = data.app_group(0);
     EXPECT_EQ(observed_group.app_group_uuid(),
               "15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
-    EXPECT_EQ(observed_group.package_id(0), "phonehub:com.skype.raidar");
-    auto observed_app = data.app_group(0).app(0);
-    EXPECT_EQ(observed_app.app_id(), "com.skype.raidar");
-    EXPECT_EQ(observed_app.platform(), "phonehub");
+    EXPECT_EQ(observed_group.package_id(0),
+              "web:https://keep.google.com/?usp=installed_webapp");
   }
 }
 

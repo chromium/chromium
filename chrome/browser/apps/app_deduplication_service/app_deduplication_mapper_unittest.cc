@@ -22,9 +22,6 @@ TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseValid) {
   group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
   group->add_package_id();
   group->set_package_id(0, "website:https://web.skype.com/");
-  auto* app = group->add_app();
-  app->set_app_id("https://web.skype.com/");
-  app->set_platform("website");
 
   absl::optional<proto::DeduplicateData> data =
       mapper_.ToDeduplicateData(response);
@@ -34,9 +31,6 @@ TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseValid) {
   EXPECT_EQ(observed_group.app_group_uuid(),
             "15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
   EXPECT_EQ(observed_group.package_id(0), "website:https://web.skype.com/");
-  auto observed_app = data->app_group(0).app(0);
-  EXPECT_EQ(observed_app.app_id(), "https://web.skype.com/");
-  EXPECT_EQ(observed_app.platform(), "website");
 }
 
 TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseEmpty) {
@@ -51,18 +45,19 @@ TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseEmptyAppGroup) {
   ASSERT_FALSE(mapper_.ToDeduplicateData(response).has_value());
 }
 
-TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseEmptyPlatform) {
+TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseEmptyAppGroupUuid) {
   proto::DeduplicateResponse response;
-  auto* app = response.add_app_group()->add_app();
-  app->set_app_id("com.skype.raidar");
+  auto* app_group = response.add_app_group();
+  app_group->add_package_id();
+  app_group->set_package_id(0, "website:https://web.skype.com/");
 
   ASSERT_FALSE(mapper_.ToDeduplicateData(response).has_value());
 }
 
 TEST_F(AppDeduplicationMapperTest, TestDeduplicateResponseEmptyAppId) {
   proto::DeduplicateResponse response;
-  auto* app = response.add_app_group()->add_app();
-  app->set_platform("phonehub");
+  auto* app_group = response.add_app_group();
+  app_group->set_app_group_uuid("15ca3ac3-c8cd-4a0c-a195-2ea210ea922c");
 
   ASSERT_FALSE(mapper_.ToDeduplicateData(response).has_value());
 }

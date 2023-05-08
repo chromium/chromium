@@ -12,14 +12,6 @@ package apps.proto;
 // The DeduplicateResponse proto will be mapped to the DeduplicateData proto
 // before being saved to disk.
 
-message Application {
-  // The unique App identifier for the given platform.
-  optional string app_id = 1;
-
-  // The platform of the Duplicated App (e.g. PhoneHub, ARC, Website).
-  optional string platform = 2;
-}
-
 message DeduplicateData {
   // An Application Group representing a set of "duplicate" apps.
   message AppGroup {
@@ -27,8 +19,6 @@ message DeduplicateData {
 
     // Applications which belong to the App Group.
     repeated string package_id = 2;
-
-    repeated Application app = 3;
   }
 
   // The list of Application Groups corresponding to the requested applications.
