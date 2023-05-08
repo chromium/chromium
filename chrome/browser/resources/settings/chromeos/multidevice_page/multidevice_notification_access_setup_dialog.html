@@ -1,5 +1,6 @@
 <style include="cr-shared-style settings-shared">
-  :host {
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)):host {
     --cr-dialog-font-family: 'Google Sans';
     --cr-dialog-title-font-size: 16px;
   }

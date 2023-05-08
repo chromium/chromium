@@ -23,18 +23,34 @@
     color: var(--cros-text-color-primary);
     display: flex;
     flex-direction: row;
-    font-family: 'Google Sans Medium';
-    font-size: 16px;
     gap: 8px;
     justify-content: flex-start;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #title {
+    font-family: 'Google Sans Medium';
+    font-size: 16px;
     line-height: 24px;
+  }
+
+  :host-context(body.jelly-enabled) #title {
+    font: var(--cros-title-1-font);
   }
 
   #subtitle {
     color: var(--cros-text-color-secondary);
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #subtitle {
     font-family: 'Roboto';
     font-size: 14px;
     line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #subtitle {
+    font: var(--cros-body-1-font);
   }
 
   #dialogBody {
@@ -113,10 +129,18 @@
 
   #description {
     color: var(--cros-text-color-secondary);
+    padding-top: 24px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #description {
     font-family: 'Roboto';
     font-size: 13px;
     line-height: 20px;
-    padding-top: 24px;
+  }
+
+  :host-context(body.jelly-enabled) #description {
+    font: var(--cros-body-2-font);
   }
 
   #feature-description {
@@ -139,12 +163,20 @@
     color: var(--cros-text-color-secondary);
     display: flex;
     flex-direction: row;
-    font-family: 'Roboto';
-    font-size: 13px;
     gap: 20px;
     justify-content: start;
-    line-height: 20px;
     padding-bottom: 16px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #feature-details-container {
+    font-family: 'Roboto';
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #feature-details-container {
+    font: var(--cros-body-2-font);
   }
 
   #half-container {
@@ -160,7 +192,6 @@
     color: var(--cros-text-color-secondary);
     display: flex;
     flex-direction: row;
-    font-family: 'Roboto';
     font-size: 11px;
     gap: 6px;
     justify-content: start;
@@ -168,17 +199,30 @@
     padding-bottom: 24px;
   }
 
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #instruction {
+    font-family: 'Roboto';
+  }
+
   #screen-lock-instruction {
     align-items: flex-start;
     color: var(--cros-text-color-secondary);
     display: flex;
     flex-direction: row;
-    font-family: 'Roboto';
-    font-size: 13px;
     gap: 8px;
     justify-content: start;
-    line-height: 20px;
     padding-bottom: 24px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) #screen-lock-instruction {
+    font-family: 'Roboto';
+    font-size: 13px;
+    line-height: 20px;
+  }
+
+  :host-context(body.jelly-enabled) #screen-lock-instruction {
+    font: var(--cros-body-2-font);
   }
 
   #illustration {

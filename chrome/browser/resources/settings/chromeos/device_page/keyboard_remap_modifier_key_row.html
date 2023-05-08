@@ -9,15 +9,19 @@
     box-sizing: border-box;
     color: var(--cros-text-color-secondary);
     display: flex;
-    font-family: 'Google Sans', Roboto, sans-serif;
-    font-size: 13px;
-    font-weight: 500;
     height: 28px;
     justify-content: center;
-    line-height: 20px;
     margin-inline-end: 8px;
     min-width: 28px;
     padding: 6px;
+  }
+
+  /* TODO(b/281116317) Remove once Jelly is launched */
+  :host-context(body:not(.jelly-enabled)) .key-container {
+    font-family: 'Google Sans', Roboto, sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 20px;
   }
 
   #keyLabel {
