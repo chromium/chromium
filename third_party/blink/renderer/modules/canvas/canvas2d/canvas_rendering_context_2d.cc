@@ -1040,8 +1040,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
   bool bidi_override =
       computed_style ? IsOverride(computed_style->GetUnicodeBidi()) : false;
 
-  TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion, direction,
-                   bidi_override);
+  TextRun text_run(text, 0, direction, bidi_override);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
   gfx::PointF location(ClampTo<float>(x),
@@ -1088,8 +1087,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
       [this, text = std::move(text), direction, bidi_override, location](
           cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
-        TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
-                         direction, bidi_override);
+        TextRun text_run(text, 0, direction, bidi_override);
         text_run.SetNormalizeSpace(true);
         TextRunPaintInfo text_run_paint_info(text_run);
         this->AccessFont().DrawBidiText(c, text_run_paint_info, location,

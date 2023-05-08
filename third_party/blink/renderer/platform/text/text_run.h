@@ -43,28 +43,14 @@ class PLATFORM_EXPORT TextRun final {
   DISALLOW_NEW();
 
  public:
-  enum ExpansionBehaviorFlags {
-    kForbidTrailingExpansion = 0 << 0,
-    kAllowTrailingExpansion = 1 << 0,
-    kForbidLeadingExpansion = 0 << 1,
-    kAllowLeadingExpansion = 1 << 1,
-  };
-
-  typedef unsigned ExpansionBehavior;
-
   TextRun(const LChar* c,
           unsigned len,
           float xpos = 0,
-          float expansion = 0,
-          ExpansionBehavior expansion_behavior = kAllowTrailingExpansion |
-                                                 kForbidLeadingExpansion,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
       : characters_length_(len),
         len_(len),
         xpos_(xpos),
-        expansion_(expansion),
-        expansion_behavior_(expansion_behavior),
         is_8bit_(true),
         allow_tabs_(false),
         direction_(static_cast<unsigned>(direction)),
@@ -78,16 +64,11 @@ class PLATFORM_EXPORT TextRun final {
   TextRun(const UChar* c,
           unsigned len,
           float xpos = 0,
-          float expansion = 0,
-          ExpansionBehavior expansion_behavior = kAllowTrailingExpansion |
-                                                 kForbidLeadingExpansion,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
       : characters_length_(len),
         len_(len),
         xpos_(xpos),
-        expansion_(expansion),
-        expansion_behavior_(expansion_behavior),
         is_8bit_(false),
         allow_tabs_(false),
         direction_(static_cast<unsigned>(direction)),
@@ -100,16 +81,11 @@ class PLATFORM_EXPORT TextRun final {
 
   TextRun(const StringView& string,
           float xpos = 0,
-          float expansion = 0,
-          ExpansionBehavior expansion_behavior = kAllowTrailingExpansion |
-                                                 kForbidLeadingExpansion,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
       : characters_length_(string.length()),
         len_(string.length()),
         xpos_(xpos),
-        expansion_(expansion),
-        expansion_behavior_(expansion_behavior),
         allow_tabs_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
@@ -228,24 +204,12 @@ class PLATFORM_EXPORT TextRun final {
     characters_length_ = characters_length;
   }
 
-  void SetExpansionBehavior(ExpansionBehavior behavior) {
-    expansion_behavior_ = behavior;
-  }
-
   bool AllowTabs() const { return allow_tabs_; }
   TabSize GetTabSize() const { return tab_size_; }
   void SetTabSize(bool, TabSize);
 
   float XPos() const { return xpos_; }
   void SetXPos(float x_pos) { xpos_ = x_pos; }
-  float Expansion() const { return expansion_; }
-  void SetExpansion(float expansion) { expansion_ = expansion; }
-  bool AllowsLeadingExpansion() const {
-    return expansion_behavior_ & kAllowLeadingExpansion;
-  }
-  bool AllowsTrailingExpansion() const {
-    return expansion_behavior_ & kAllowTrailingExpansion;
-  }
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
   }
@@ -284,8 +248,6 @@ class PLATFORM_EXPORT TextRun final {
   // as left start of the containing block.
   float xpos_;
 
-  float expansion_;
-  ExpansionBehavior expansion_behavior_ : 2;
   unsigned is_8bit_ : 1;
   unsigned allow_tabs_ : 1;
   unsigned direction_ : 1;

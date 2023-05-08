@@ -173,8 +173,7 @@ float GetAvgCharWidth(const ComputedStyle& style) {
 
   const UChar kCh = '0';
   const String str = String(&kCh, 1u);
-  TextRun text_run =
-      ConstructTextRun(str, style, TextRun::kAllowTrailingExpansion);
+  TextRun text_run = ConstructTextRun(str, style);
   return font.Width(text_run);
 }
 

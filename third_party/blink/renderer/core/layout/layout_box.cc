@@ -243,13 +243,12 @@ LayoutUnit FileUploadControlIntrinsicInlineSize(const HTMLInputElement& input,
   const Font& font = box.StyleRef().GetFont();
   const float min_default_label_width =
       kDefaultWidthNumChars *
-      font.Width(ConstructTextRun(character_as_string, box.StyleRef(),
-                                  TextRun::kAllowTrailingExpansion));
+      font.Width(ConstructTextRun(character_as_string, box.StyleRef()));
 
   const String label =
       input.GetLocale().QueryString(IDS_FORM_FILE_NO_FILE_LABEL);
-  float default_label_width = font.Width(ConstructTextRun(
-      label, box.StyleRef(), TextRun::kAllowTrailingExpansion));
+  float default_label_width =
+      font.Width(ConstructTextRun(label, box.StyleRef()));
   if (HTMLInputElement* button = input.UploadButton()) {
     if (auto* button_box = button->GetLayoutBox()) {
       LayoutUnit max;

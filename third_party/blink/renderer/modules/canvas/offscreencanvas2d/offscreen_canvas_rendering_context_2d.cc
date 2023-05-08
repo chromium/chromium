@@ -683,8 +683,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
 
   TextDirection direction = ToTextDirection(GetState().GetDirection());
   bool is_rtl = direction == TextDirection::kRtl;
-  TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion, direction,
-                   false);
+  TextRun text_run(text, 0, direction, false);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
   gfx::PointF location(x, y + GetFontBaseline(*font_data));
@@ -731,8 +730,7 @@ void OffscreenCanvasRenderingContext2D::DrawTextInternal(
       [this, text = std::move(text), direction, location](
           cc::PaintCanvas* paint_canvas,
           const cc::PaintFlags* flags) /* draw lambda */ {
-        TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
-                         direction, false);
+        TextRun text_run(text, 0, direction, false);
         text_run.SetNormalizeSpace(true);
         TextRunPaintInfo text_run_paint_info(text_run);
         this->AccessFont().DrawBidiText(
