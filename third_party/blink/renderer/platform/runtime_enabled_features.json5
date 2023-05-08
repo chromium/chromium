@@ -909,11 +909,6 @@
       base_feature: "none",
     },
     {
-      name: "CSSLastBaseline",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSLayoutAPI",
       status: "experimental",
       base_feature: "none",

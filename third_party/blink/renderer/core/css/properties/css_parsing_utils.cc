@@ -4120,10 +4120,7 @@ CSSValue* ConsumeSelfPositionOverflowPosition(
     return ConsumeIdent(range);
   }
 
-  CSSValue* baseline = RuntimeEnabledFeatures::CSSLastBaselineEnabled()
-                           ? ConsumeBaseline(range)
-                           : ConsumeFirstBaseline(range);
-  if (baseline) {
+  if (CSSValue* baseline = ConsumeBaseline(range)) {
     return baseline;
   }
 
