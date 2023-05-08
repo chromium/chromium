@@ -3809,6 +3809,12 @@
       base_feature: "none",
     },
     {
+      name: "WebEnvironmentIntegrity",
+      status: "experimental",
+      base_feature: "none",
+      origin_trial_feature_name: "WebEnvironmentIntegrity",
+    },
+    {
       name: "WebFontResizeLCP",
       status: "experimental",
     },

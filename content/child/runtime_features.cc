@@ -368,6 +368,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WebAppTabStrip", raw_ref(features::kDesktopPWAsTabStrip)},
           {"WebAppTabStripCustomizations",
            raw_ref(blink::features::kDesktopPWAsTabStripCustomizations)},
+          {"WebEnvironmentIntegrity",
+           raw_ref(features::kWebEnvironmentIntegrity)},
           {"WGIGamepadTriggerRumble",
            raw_ref(features::kEnableWindowsGamingInputDataFetcher)},
           {"UserAgentFull", raw_ref(blink::features::kFullUserAgent)},
