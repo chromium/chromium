@@ -35,7 +35,6 @@
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
@@ -214,9 +213,6 @@ void AppListClientImpl::OnAppListControllerDestroyed() {
 
 void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
   if (search_controller_) {
-    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
-      LOG(ERROR) << "Launcher search start search with query " << trimmed_query;
-    }
     if (trimmed_query.empty()) {
       search_controller_->ClearSearch();
     } else {
@@ -241,9 +237,6 @@ void AppListClientImpl::StartSearch(const std::u16string& trimmed_query) {
 void AppListClientImpl::StartZeroStateSearch(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
   if (search_controller_) {
-    if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
-      LOG(ERROR) << "Launcher search start zero state search";
-    }
     search_controller_->StartZeroState(std::move(on_done), timeout);
     OnSearchStarted();
   } else {

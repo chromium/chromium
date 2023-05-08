@@ -14,7 +14,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_core.h"
 #include "chrome/browser/ash/app_list/reorder/app_list_reorder_delegate.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
-#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -339,18 +337,9 @@ void ChromeAppListModelUpdater::PublishSearchResults(
   std::vector<std::unique_ptr<ash::SearchResult>> ash_results;
   std::vector<std::unique_ptr<ash::SearchResultMetadata>> result_data;
   for (auto* result : results) {
-    if (search_features::isLauncherOmniboxPublishLogicLogEnabled() &&
-        result->result_type() == ash::AppListSearchResultType::kOmnibox) {
-      LOG(ERROR) << "Launcher search publish omnibox result " << result->title()
-                 << " with score " << result->display_score();
-    }
     auto ash_result = std::make_unique<ash::SearchResult>();
     ash_result->SetMetadata(result->CloneMetadata());
     ash_results.push_back(std::move(ash_result));
-  }
-  if (search_features::isLauncherOmniboxPublishLogicLogEnabled()) {
-    LOG(ERROR) << "Launcher search model updater publish " << ash_results.size()
-               << " results";
   }
   search_model_.PublishResults(std::move(ash_results), categories);
 }

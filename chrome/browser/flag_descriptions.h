@@ -3716,9 +3716,6 @@ extern const char kLauncherFuzzyMatchForOmniboxDescription[];
 extern const char kLauncherSystemInfoAnswerCardsName[];
 extern const char kLauncherSystemInfoAnswerCardsDescription[];
 
-extern const char kLauncherOmniboxPublishLogicLogName[];
-extern const char kLauncherOmniboxPublishLogicLogDescription[];
-
 extern const char kMacAddressRandomizationName[];
 extern const char kMacAddressRandomizationDescription[];
 

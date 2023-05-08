@@ -6461,12 +6461,6 @@ const char kLauncherSystemInfoAnswerCardsDescription[] =
     "Enables System info answer cards in the launcher to provide system "
     "performance metrics";
 
-const char kLauncherOmniboxPublishLogicLogName[] =
-    "Omnibox publish logic log in launcher";
-const char kLauncherOmniboxPublishLogicLogDescription[] =
-    "Enables omnibox provider publish logic logs so that we can debug the "
-    "reason why some results disappars";
-
 const char kMacAddressRandomizationName[] = "MAC address randomization";
 const char kMacAddressRandomizationDescription[] =
     "Feature to allow MAC address randomization to be enabled for WiFi "
