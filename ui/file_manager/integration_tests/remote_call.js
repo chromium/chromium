@@ -1053,4 +1053,89 @@ export class RemoteCallFilesApp extends RemoteCall {
       return true;
     });
   }
+
+  /**
+   * Waits for the <xf-cloud-panel> element to be visible on the DOM.
+   * @param {string} appId app window ID
+   */
+  async waitForCloudPanelVisible(appId) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const styles = await this.waitForElementStyles(
+          appId, ['xf-cloud-panel', 'cr-action-menu', 'dialog'], ['left']);
+
+      if (styles.renderedHeight > 0 && styles.renderedWidth > 0 &&
+          styles.renderedTop > 0 && styles.renderedLeft > 0) {
+        return true;
+      }
+
+      return pending(caller, `Waiting for xf-cloud-panel to appear.`);
+    });
+  }
+
+  /**
+   * Wait for the underlying bulk pinning manager to enter the specified stage.
+   * @param {string} want The stage the bulk pinning is expected to be in. This
+   *     is a string relating to the stage defined in the `PinManager`.
+   */
+  async waitForBulkPinningStage(want) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const currentStage = await sendTestMessage({name: 'getBulkPinningStage'});
+      if (currentStage === want) {
+        return true;
+      }
+      return pending(caller, `Still waiting for syncing stage: ${want}`);
+    });
+  }
+
+  /**
+   * Wait until the pin manager has the expected required space.
+   * @param {number} want
+   */
+  async waitForBulkPinningRequiredSpace(want) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const actualRequiredSpace =
+          await sendTestMessage({name: 'getBulkPinningRequiredSpace'});
+      const parsedSpace = parseInt(actualRequiredSpace, 10);
+      if (parsedSpace === want) {
+        return true;
+      }
+      return pending(caller, `Still waiting for required space to be ${want}`);
+    });
+  }
+
+  /**
+   * Wait until the cloud panel has the specified item and percentage attributes
+   * defined, if the `timeoutSeconds` is supplied it will only wait for the
+   * specified time before timing out.
+   * @param {string} appId app window ID
+   * @param {number} items The items expected on the cloud panel.
+   * @param {number} percentage The percentage integer expected on the cloud
+   *     panel.
+   * @param {number=} timeoutSeconds Whether to timeout when verifying the panel
+   *     attributes.
+   */
+  async waitForCloudPanelState(appId, items, percentage, timeoutSeconds = 10) {
+    const futureDate = new Date();
+    futureDate.setSeconds(futureDate.getSeconds() + timeoutSeconds);
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      chrome.test.assertTrue(
+          new Date() < futureDate,
+          `Timed out waiting for items=${items} and percentage=${
+              percentage} to appear on xf-cloud-panel`);
+      const cloudPanel = await this.callRemoteTestUtil(
+          'deepQueryAllElements', appId,
+          [`xf-cloud-panel[percentage="${percentage}"][items="${items}"]`]);
+      if (cloudPanel && cloudPanel.length === 1) {
+        return true;
+      }
+      return pending(
+          caller,
+          `Still waiting for xf-cloud-panel to have items=${
+              items} and percentage=${percentage}`);
+    });
+  }
 }
