@@ -45,7 +45,8 @@ struct RendererPreferences {
   uint32 focus_ring_color = 0xFFE59700;
 
   // The colors used in selection text. Currently only used on Linux and Ash.
-  uint32 active_selection_bg_color = 0xFF1E90FF;
+  // Note: these must match the values in renderer_preferences.h.
+  uint32 active_selection_bg_color = 0xFF1967D2;
   uint32 active_selection_fg_color = 0xFFFFFFFF;
   uint32 inactive_selection_bg_color = 0xFFC8C8C8;
   uint32 inactive_selection_fg_color = 0xFF323232;
