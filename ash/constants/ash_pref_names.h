@@ -698,6 +698,8 @@ extern const char kOwnerPrimaryPointingStickButtonRight[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kOwnerTapToClickEnabled[];
 
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEventRemappedToRightClick[];
 }  // namespace prefs
 }  // namespace ash
 

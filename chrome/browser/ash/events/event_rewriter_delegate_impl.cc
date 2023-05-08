@@ -170,6 +170,14 @@ void EventRewriterDelegateImpl::SuppressMetaTopRowKeyComboRewrites(
   suppress_meta_top_row_key_rewrites_ = should_suppress;
 }
 
+void EventRewriterDelegateImpl::RecordEventRemappedToRightClick() {
+  PrefService* const pref_service = GetPrefService();
+  if (!pref_service) {
+    return;
+  }
+  pref_service->SetBoolean(prefs::kEventRemappedToRightClick, true);
+}
+
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {
   return deprecation_controller_->NotifyDeprecatedRightClickRewrite();
 }
@@ -179,7 +187,7 @@ bool EventRewriterDelegateImpl::NotifyDeprecatedSixPackKeyRewrite(
   return deprecation_controller_->NotifyDeprecatedSixPackKeyRewrite(key_code);
 }
 
-const PrefService* EventRewriterDelegateImpl::GetPrefService() const {
+PrefService* EventRewriterDelegateImpl::GetPrefService() const {
   if (pref_service_for_testing_)
     return pref_service_for_testing_;
   Profile* profile = ProfileManager::GetActiveUserProfile();

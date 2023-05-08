@@ -347,6 +347,8 @@ void Preferences::RegisterProfilePrefs(
   // device.
   registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
 
+  registry->RegisterBooleanPref(prefs::kEventRemappedToRightClick, false);
+
   // Don't sync the note-taking app; it may not be installed on other devices.
   registry->RegisterStringPref(::prefs::kNoteTakingAppId, std::string());
   registry->RegisterBooleanPref(::prefs::kRestoreLastLockScreenNote, true);

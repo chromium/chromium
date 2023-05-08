@@ -584,6 +584,7 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
+  void RecordEventRemappedToRightClick() override {}
 
  protected:
   bool suppress_modifier_key_rewrites_ = false;

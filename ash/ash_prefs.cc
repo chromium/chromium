@@ -154,6 +154,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
                                  std::string());
     registry->RegisterStringPref(language::prefs::kPreferredLanguages,
                                  std::string());
+    registry->RegisterBooleanPref(prefs::kEventRemappedToRightClick, false);
   }
 }
 

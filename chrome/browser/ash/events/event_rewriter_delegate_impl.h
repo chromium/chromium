@@ -30,7 +30,7 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
 
   ~EventRewriterDelegateImpl() override;
 
-  void set_pref_service_for_testing(const PrefService* pref_service) {
+  void set_pref_service_for_testing(PrefService* pref_service) {
     pref_service_for_testing_ = pref_service;
   }
 
@@ -49,11 +49,12 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override;
   void SuppressModifierKeyRewrites(bool should_suppress) override;
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override;
+  void RecordEventRemappedToRightClick() override;
 
  private:
-  const PrefService* GetPrefService() const;
+  PrefService* GetPrefService() const;
 
-  raw_ptr<const PrefService, ExperimentalAsh> pref_service_for_testing_;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_for_testing_;
 
   raw_ptr<wm::ActivationClient, DanglingUntriaged | ExperimentalAsh>
       activation_client_;

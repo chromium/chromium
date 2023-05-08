@@ -4896,6 +4896,7 @@ class DesksAcceleratorsTest : public DesksTest,
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
+  void RecordEventRemappedToRightClick() override {}
 
   void SendAccelerator(ui::KeyboardCode key_code, int flags) {
     ui::test::EventGenerator* generator = GetEventGenerator();

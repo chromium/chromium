@@ -210,6 +210,7 @@ class ChromeVoxAccessibilityEventRewriterTest
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
+  void RecordEventRemappedToRightClick() override {}
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 };
@@ -610,6 +611,7 @@ class SwitchAccessAccessibilityEventRewriterTest
   bool NotifyDeprecatedSixPackKeyRewrite(ui::KeyboardCode key_code) override {
     return false;
   }
+  void RecordEventRemappedToRightClick() override {}
 
   std::map<std::string, ui::mojom::ModifierKey> modifier_remapping_;
 

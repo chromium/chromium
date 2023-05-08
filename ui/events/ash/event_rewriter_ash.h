@@ -132,6 +132,11 @@ class EventRewriterAsh : public EventRewriter {
     // is only sent once per user session, and this function returns true if
     // the notification was shown.
     virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
+
+    // Used to record when either Alt+Click or Search+Click is remapped to a
+    // right click event. The `kEventRemappedToRightClick` pref will be used
+    // to determine the default behavior for simulating a right click.
+    virtual void RecordEventRemappedToRightClick() = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

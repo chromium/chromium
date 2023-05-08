@@ -1777,6 +1777,7 @@ int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
         base::RecordAction(
             base::UserMetricsAction("AltClickMappedToRightClick"));
       }
+      delegate_->RecordEventRemappedToRightClick();
     } else {
       pressed_as_right_button_device_ids_.erase(mouse_event.source_device_id());
     }
