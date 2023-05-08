@@ -261,14 +261,8 @@ hyperthreaded, 12 GB RAM)
 
 The Chrome binary contains embedded symbols by default. You can reduce its size
 by using the Linux `strip` command to remove this debug information. You can
-also reduce binary size by disabling debug mode, disabling dchecks, and turning
-on all optimizations by enabling official build mode, with these GN args:
-
-```
-is_debug = false
-dcheck_always_on = false
-is_official_build = true
-```
+also reduce binary size and turn on all optimizations by enabling official build
+mode, with the GN arg `is_official_build = true`.
 
 ## Build Chromium
 
