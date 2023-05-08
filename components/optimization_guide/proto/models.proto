@@ -226,6 +226,8 @@ enum ModelEngineVersion {
   MODEL_ENGINE_VERSION_TFLITE_2_12 = 11;
   // A model using only operations that are supported by TensorflowLite 2.13.0.
   MODEL_ENGINE_VERSION_TFLITE_2_13 = 12;
+  // A model using only operations that are supported by TensorflowLite 2.14.0.
+  MODEL_ENGINE_VERSION_TFLITE_2_14 = 13;
 }
 
 // The set of parameters that the server can use to vary the served model for
