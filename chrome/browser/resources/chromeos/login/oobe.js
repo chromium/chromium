@@ -17,45 +17,13 @@ import {refreshColorCss, startColorChangeUpdater} from '//resources/cr_component
 import {Oobe} from './cr_ui.js';
 import * as OobeDebugger from './debug/debug.js';
 import {loadTimeData} from './i18n_setup.js';
+import { addScreensToMainContainer } from './login_ui_tools.js';
 import {MultiTapDetector} from './multi_tap_detector.js';
-import {TraceEvent, traceExecution} from './oobe_trace.js';
+import { TraceEvent, traceExecution } from './oobe_trace.js';
 import {commonScreensList, loginScreensList, oobeScreensList} from './screens.js';
 
 // Everything has been imported at this point.
 traceExecution(TraceEvent.FIRST_LINE_AFTER_IMPORTS);
-
-/**
- * Add screens from the given list into the main screen container.
- * Screens are added with the following properties:
- *    - Classes: "step hidden" + any extra classes the screen may have
- *    - Attribute: "hidden"
- *
- * If a screen should be added only under some certain conditions, it must have
- * the `condition` property associated with a boolean flag. If the condition
- * yields true it will be added, otherwise it is skipped.
- * @param {Array<{tag: string, id: string}>}
- */
-function addScreensToMainContainer(screenList) {
-  const screenContainer = $('inner-container');
-  for (const screen of screenList) {
-    if (screen.condition) {
-      if (!loadTimeData.getBoolean(screen.condition)) {
-        continue;
-      }
-    }
-
-    const screenElement = document.createElement(screen.tag);
-    screenElement.id = screen.id;
-    screenElement.classList.add('step', 'hidden');
-    screenElement.setAttribute('hidden', '');
-    if (screen.extra_classes) {
-      screenElement.classList.add(...screen.extra_classes);
-    }
-    screenContainer.appendChild(screenElement);
-    assert(
-        !!$(screen.id).shadowRoot, `Error! No shadow root in <${screen.tag}>`);
-  }
-}
 
 // Create the global values attached to `window` that are used
 // for accessing OOBE controls from the browser side.
