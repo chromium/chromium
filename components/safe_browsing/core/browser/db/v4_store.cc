@@ -265,6 +265,76 @@ class BaseFileOutputStream
   CopyingBaseFileOutputStream stream_;
 };
 
+// A ZeroCopyInputStream that reads from a file using base::File. Any errors
+// during deserialization close the file.
+class BaseFileInputStream : public google::protobuf::io::ZeroCopyInputStream {
+ public:
+  // Creates and opens `input_file`.
+  explicit BaseFileInputStream(const base::FilePath& input_file)
+      : stream_(input_file), impl_(&stream_) {}
+  BaseFileInputStream(const BaseFileInputStream&) = delete;
+  BaseFileInputStream& operator=(const BaseFileInputStream&) = delete;
+
+  // Closes the file, if it was still open.
+  ~BaseFileInputStream() override = default;
+
+  // Returns `base::File::FILE_OK` if no error and the file is still open; else
+  // the error that led to closure of the file.
+  base::File::Error GetError() const { return stream_.GetError(); }
+
+  // google::protobuf::io::ZeroCopyInputStream:
+  bool Next(const void** data, int* size) override {
+    return impl_.Next(data, size);
+  }
+  void BackUp(int count) override { return impl_.BackUp(count); }
+  bool Skip(int count) override { return impl_.Skip(count); }
+  int64_t ByteCount() const override { return impl_.ByteCount(); }
+
+ private:
+  class CopyingBaseFileInputStream
+      : public google::protobuf::io::CopyingInputStream {
+   public:
+    explicit CopyingBaseFileInputStream(const base::FilePath& input_file)
+        : file_(input_file,
+                base::File::FLAG_OPEN | base::File::FLAG_READ |
+                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                    base::File::FLAG_WIN_SHARE_DELETE) {}
+    CopyingBaseFileInputStream(const CopyingBaseFileInputStream&) = delete;
+    CopyingBaseFileInputStream& operator=(const CopyingBaseFileInputStream&) =
+        delete;
+    ~CopyingBaseFileInputStream() override = default;
+
+    base::File::Error GetError() const { return file_.error_details(); }
+
+    // google::protobuf::io::CopyingInputStream:
+    int Read(void* buffer, int size) override {
+      if (!file_.IsValid()) {
+        return -1;
+      }
+      const int bytes_read =
+          file_.ReadAtCurrentPos(reinterpret_cast<char*>(buffer), size);
+      if (bytes_read >= 0) {
+        return bytes_read;
+      }
+      file_ = base::File(base::File::GetLastFileError());
+      return -1;
+    }
+
+    int Skip(int count) override {
+      if (file_.Seek(base::File::FROM_CURRENT, count) != -1) {
+        return count;
+      }
+      return CopyingInputStream::Skip(count);
+    }
+
+   private:
+    base::File file_;
+  };
+
+  CopyingBaseFileInputStream stream_;
+  google::protobuf::io::CopyingInputStreamAdaptor impl_;
+};
+
 }  // namespace
 
 using ::google::protobuf::int32;
@@ -798,22 +868,21 @@ StoreReadResult V4Store::ReadFromDisk() {
   V4StoreFileFormat file_format;
   int64_t file_size;
   {
-    // A temporary scope to make sure that |contents| get destroyed as soon as
-    // we are doing using it.
-    std::string contents;
-    if (!base::ReadFileToStringWithMaxSize(store_path_, &contents,
-                                           kMaxStoreSizeBytes)) {
+    BaseFileInputStream input_stream(store_path_);
+    if (!file_format.ParseFromZeroCopyStream(&input_stream)) {
+      return input_stream.GetError() != base::File::FILE_OK
+                 ? FILE_UNREADABLE_FAILURE
+                 : PROTO_PARSING_FAILURE;
+    }
+    // `ParseFromZeroCopyStream` will return true if the file didn't exist, so
+    // explicitly check for an error when reading from the file.
+    if (input_stream.GetError() != base::File::FILE_OK) {
       return FILE_UNREADABLE_FAILURE;
     }
-
-    if (contents.empty()) {
+    file_size = input_stream.ByteCount();
+    if (!file_size) {
       return FILE_EMPTY_FAILURE;
     }
-
-    if (!file_format.ParseFromString(contents)) {
-      return PROTO_PARSING_FAILURE;
-    }
-    file_size = static_cast<int64_t>(contents.size());
   }
 
   if (file_format.magic_number() != kFileMagic) {
