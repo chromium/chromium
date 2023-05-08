@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_FACTOR_ENGINE_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_FACTOR_ENGINE_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/account_id/account_id.h"
@@ -97,8 +98,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
     kDisabled,                 // Discard authentication attempts.
   };
 
-  using CommonInitCallback = base::OnceClosure;
-  using ShutdownCallback = base::OnceClosure;
+  using CommonInitCallback = base::OnceCallback<void(AshAuthFactor)>;
+  using ShutdownCallback = base::OnceCallback<void(AshAuthFactor)>;
 
   virtual ~AuthFactorEngine() = default;
 
@@ -152,6 +153,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthFactorEngine {
   // Relevant for factors like fingerprint, where in some
   // device orientations FP sensor can be used unintentionally.
   virtual bool IsOrientationRestricted() = 0;
+
+  // Engines might override these methods to gracefully handle
+  // timeout during relevant lifecycle operations.
+  virtual void InitializationTimedOut() {}
+  virtual void ShutdownTimedOut() {}
 };
 
 }  // namespace ash

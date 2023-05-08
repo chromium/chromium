@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {

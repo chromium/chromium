@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
@@ -54,11 +55,22 @@ AuthPartsImpl::~AuthPartsImpl() {
 void AuthPartsImpl::CreateDefaultComponents() {
   session_storage_ =
       std::make_unique<AuthSessionStorageImpl>(UserDataAuthClient::Get());
+  auth_hub_ = std::make_unique<AuthHubImpl>();
 }
 
 AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {
   CHECK(session_storage_);
   return session_storage_.get();
+}
+
+AuthHub* AuthPartsImpl::GetAuthHub() {
+  CHECK(auth_hub_);
+  return auth_hub_.get();
+}
+
+void AuthPartsImpl::SetAuthHub(std::unique_ptr<AuthHub> auth_hub) {
+  CHECK(!auth_hub_);
+  auth_hub_ = std::move(auth_hub);
 }
 
 void AuthPartsImpl::RegisterEngineFactory(

@@ -18,6 +18,7 @@ source_set("public") {
     "auth_factor_engine.h",
     "auth_factor_engine_factory.h",
     "auth_factor_status_consumer.h",
+    "auth_hub.h",
     "auth_parts.h",
     "auth_session_storage.h",
     "common_types.h",

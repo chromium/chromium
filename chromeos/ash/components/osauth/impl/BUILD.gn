@@ -19,6 +19,10 @@ component("impl") {
     "//chromeos/ash/components/login/auth/public:authpublic",
   ]
   sources = [
+    "auth_hub_impl.cc",
+    "auth_hub_impl.h",
+    "auth_hub_mode_lifecycle.cc",
+    "auth_hub_mode_lifecycle.h",
     "auth_parts_impl.cc",
     "auth_parts_impl.h",
     "auth_session_storage_impl.cc",
@@ -31,12 +35,18 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     "//base",
+    "//base/test:test_support",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/osauth/test_support",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
   ]
-  sources = [ "auth_session_storage_impl_unittest.cc" ]
+  sources = [
+    "auth_hub_impl_test.cc",
+    "auth_hub_mode_lifecycle_unittest.cc",
+    "auth_session_storage_impl_unittest.cc",
+  ]
 }
