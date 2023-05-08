@@ -100,7 +100,7 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
       static const mojom::Feature kTopLevelFeaturesInSuite[] = {
           mojom::Feature::kInstantTethering, mojom::Feature::kMessages,
           mojom::Feature::kPhoneHub,         mojom::Feature::kSmartLock,
-          mojom::Feature::kWifiSync,         mojom::Feature::kEche,
+          mojom::Feature::kWifiSync,
       };
       for (mojom::Feature top_level_feature : kTopLevelFeaturesInSuite) {
         if (IsFeatureAllowed(top_level_feature, pref_service))
