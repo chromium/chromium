@@ -636,6 +636,7 @@ void ContentAnalysisDelegate::PreparePageRequest() {
 
     PrepareRequest(enterprise_connectors::PRINT, request.get());
     request->set_filename(title_);
+    request->set_printer_name(data_.printer_name);
     if (!page_content_type_.empty()) {
       request->set_content_type(page_content_type_);
     }

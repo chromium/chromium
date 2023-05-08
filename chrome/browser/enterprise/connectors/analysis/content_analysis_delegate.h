@@ -111,6 +111,11 @@ class ContentAnalysisDelegate : public ContentAnalysisDelegateBase {
     // Page to be printed to scan.
     base::ReadOnlySharedMemoryRegion page;
 
+    // TODO(b/280457160): Set printer name once scan after printer preview
+    // is done.
+    // Printer name of the page being sent to, empty for non-print actions.
+    std::string printer_name;
+
     // The settings to use for the analysis of the data in this struct.
     enterprise_connectors::AnalysisSettings settings;
   };

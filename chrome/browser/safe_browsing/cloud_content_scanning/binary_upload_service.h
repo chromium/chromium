@@ -168,6 +168,7 @@ class BinaryUploadService : public KeyedService,
     void set_user_action_id(const std::string& user_action_id);
     void set_user_action_requests_count(uint64_t user_action_requests_count);
     void set_tab_url(const GURL& tab_url);
+    void set_printer_name(const std::string& printer_name);
 
     std::string SetRandomRequestToken();
 
