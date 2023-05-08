@@ -5,11 +5,11 @@
 #include "media/video/h266_nalu_parser.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <cmath>
 #include <cstring>
 
-#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "media/base/decrypt_config.h"
 #include "media/video/bit_reader_macros.h"
