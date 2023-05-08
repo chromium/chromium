@@ -1542,9 +1542,11 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   original_document.UpdateStyleAndLayoutTreeForNode(this);
 
   // Queue a delayed hide event, if necessary.
-  if (!GetDocument().HoverElement() ||
-      !IsNodePopoverDescendant(*GetDocument().HoverElement())) {
-    MaybeQueuePopoverHideEvent();
+  if (RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
+    if (!GetDocument().HoverElement() ||
+        !IsNodePopoverDescendant(*GetDocument().HoverElement())) {
+      MaybeQueuePopoverHideEvent();
+    }
   }
 
   SetPopoverFocusOnShow();
@@ -2148,9 +2150,7 @@ bool HTMLElement::IsNodePopoverDescendant(const Node& node) const {
 }
 
 void HTMLElement::MaybeQueuePopoverHideEvent() {
-  if (!RuntimeEnabledFeatures::HTMLPopoverHintEnabled()) {
-    return;
-  }
+  CHECK(RuntimeEnabledFeatures::HTMLPopoverHintEnabled());
   CHECK(HasPopoverAttribute());
   // If the popover isn't showing, or it has an infinite PopoverHideDelay, do
   // nothing.

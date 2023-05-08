@@ -1263,7 +1263,7 @@
   {
     "prefix": "popover-hint-disabled",
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": [],
+    "bases": ["external/wpt/html/semantics/popovers/"],
     "args": ["--enable-blink-features=HTMLPopoverAttribute",
       "--disable-blink-features=HTMLPopoverHint"],
     "expires": "Jan 1, 2024"
