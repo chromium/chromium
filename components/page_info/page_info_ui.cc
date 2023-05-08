@@ -807,11 +807,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
   switch (permission.setting) {
     case CONTENT_SETTING_ALLOW:
       DCHECK_EQ(opposite_to_block_setting, CONTENT_SETTING_ALLOW);
-      if (permission.is_one_time) {
-        permission.setting = CONTENT_SETTING_DEFAULT;
-      } else {
-        SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
-      }
+      SetTargetContentSetting(permission, CONTENT_SETTING_BLOCK);
       permission.is_one_time = false;
       break;
     case CONTENT_SETTING_BLOCK:
