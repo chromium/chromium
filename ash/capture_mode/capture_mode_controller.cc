@@ -456,7 +456,7 @@ int GetFileSizeInKB(const base::FilePath& file_path) {
   return size_in_bytes / 1024;
 }
 
-constexpr char kShareToYouTubeURL[] = "https://studio.youtube.com";
+constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 
 }  // namespace
 
