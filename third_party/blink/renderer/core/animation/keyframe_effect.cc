@@ -305,7 +305,7 @@ HeapVector<ScriptValue> KeyframeEffect::getKeyframes(
     animation->FlushPendingUpdates();
     if (ViewTimeline* view_timeline =
             DynamicTo<ViewTimeline>(animation->timeline())) {
-      view_timeline->ResolveTimelineOffsets(/* invalidate_effect */ false);
+      view_timeline->ResolveTimelineOffsets();
     }
   }
 

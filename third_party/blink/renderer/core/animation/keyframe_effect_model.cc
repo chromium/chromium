@@ -417,7 +417,7 @@ void KeyframeEffectModelBase::SetViewTimelineIfRequired(
   }
   view_timeline_ = timeline;
   if (timeline) {
-    timeline->ResolveTimelineOffsets(false);
+    timeline->ResolveTimelineOffsets();
   }
 }
 

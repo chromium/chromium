@@ -839,7 +839,10 @@ class CORE_EXPORT LocalFrame final
   // All newly created ScrollSnapshotClients are considered "unvalidated". This
   // means that the internal state of the client is considered tentative, and
   // computing the actual state may require an additional style/layout pass.
-  //
+  // ScrollSnapshotClients may be marked as unvalidated if a style or layout
+  // change suggests that the snapshot is stale. This additional check is
+  // expected to be lightweight since run once per frame.
+
   // The lifecycle update will call this function after style and layout has
   // completed. The function will then go though all unvalidated clients,
   // and compare the current state snapshot to a fresh state snapshot. If they
@@ -856,8 +859,8 @@ class CORE_EXPORT LocalFrame final
   void ClearScrollSnapshotClients();
 
   const HeapHashSet<WeakMember<ScrollSnapshotClient>>&
-  GetUnvalidatedScrollSnapshotClientsForTesting() {
-    return unvalidated_scroll_snapshot_clients_;
+  GetScrollSnapshotClientsForTesting() {
+    return scroll_snapshot_clients_;
   }
 
   void ScheduleNextServiceForScrollSnapshotClients();
@@ -1091,9 +1094,6 @@ class CORE_EXPORT LocalFrame final
   // ScrollSnapshotClients owned by elements in this frame. The clients must
   // be registered at the actual elements as the references here are weak.
   HeapHashSet<WeakMember<ScrollSnapshotClient>> scroll_snapshot_clients_;
-
-  HeapHashSet<WeakMember<ScrollSnapshotClient>>
-      unvalidated_scroll_snapshot_clients_;
 
   // Set lazily, when the browser asks to host a resource cache in this frame.
   Member<ResourceCacheImpl> resource_cache_;

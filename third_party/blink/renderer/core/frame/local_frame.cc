@@ -429,7 +429,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(scroll_snapshot_clients_);
-  visitor->Trace(unvalidated_scroll_snapshot_clients_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
   visitor->Trace(box_shadow_paint_image_generator_);
@@ -3475,7 +3474,6 @@ LocalFrame::GetNotRestoredReasons() {
 
 void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {
   scroll_snapshot_clients_.insert(&client);
-  unvalidated_scroll_snapshot_clients_.insert(&client);
 }
 
 void LocalFrame::UpdateScrollSnapshots() {
@@ -3487,15 +3485,14 @@ void LocalFrame::UpdateScrollSnapshots() {
 
 bool LocalFrame::ValidateScrollSnapshotClients() {
   bool valid = true;
-  for (auto& client : unvalidated_scroll_snapshot_clients_)
-    valid &= client->ValidateSnapshot();
-  unvalidated_scroll_snapshot_clients_.clear();
+  for (auto& client : scroll_snapshot_clients_) {
+    valid &= client->ValidateSnapshotIfNeeded();
+  }
   return valid;
 }
 
 void LocalFrame::ClearScrollSnapshotClients() {
   scroll_snapshot_clients_.clear();
-  unvalidated_scroll_snapshot_clients_.clear();
 }
 
 void LocalFrame::ScheduleNextServiceForScrollSnapshotClients() {

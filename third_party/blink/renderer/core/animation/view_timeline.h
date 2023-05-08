@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/animation/timeline_inset.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -66,7 +67,7 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   CSSNumericValue* startOffset() const;
   CSSNumericValue* endOffset() const;
 
-  bool ResolveTimelineOffsets(bool invalidate_effect) const;
+  bool ResolveTimelineOffsets() const;
 
   Animation* Play(AnimationEffect*,
                   ExceptionState& = ASSERT_NO_EXCEPTION) override;
@@ -80,7 +81,12 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
 
   // ScrollSnapshotClient:
   void UpdateSnapshot() override;
-  bool ValidateSnapshot() override;
+  bool CheckIfNeedsValidation() override;
+
+  bool ValidateTimelineOffsets() override;
+
+  absl::optional<LayoutSize> SubjectSize() const;
+  absl::optional<gfx::PointF> SubjectPosition() const;
 
   void FlushStyleUpdate() override;
 
@@ -91,8 +97,11 @@ class CORE_EXPORT ViewTimeline : public ScrollTimeline {
   mutable double viewport_size_;
   mutable double start_side_inset_;
   mutable double end_side_inset_;
-  mutable double start_offset_ = 0;
-  mutable double end_offset_ = 0;
+  // Cache values for post-layout validation check.  If the subject position or
+  // size changes, then the range boundaries are stale.
+  mutable absl::optional<LayoutSize> subject_size_;
+  mutable absl::optional<gfx::PointF> subject_position_;
+
   // If either of the following elements are non-null, we need to update
   // |inset_| on a style change.
   Member<const CSSValue> style_dependant_start_inset_;

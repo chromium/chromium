@@ -123,7 +123,7 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
 
   // Mark every effect target of every Animation attached to this timeline
   // for style recalc.
-  void InvalidateEffectTargetStyle();
+  void InvalidateEffectTargetStyle() const;
 
   cc::AnimationTimeline* EnsureCompositorTimeline() override;
   void UpdateCompositorTimeline() override;
@@ -185,6 +185,9 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   void UpdateSnapshot() override;
   bool ValidateSnapshot() override;
   bool ShouldScheduleNextService() override;
+  bool CheckIfNeedsValidation() override;
+
+  virtual bool ValidateTimelineOffsets() { return true; }
 
   bool ComputeIsResolved() const;
 
@@ -212,6 +215,8 @@ class CORE_EXPORT ScrollTimeline : public AnimationTimeline,
   TimelineAttachment attachment_type_;
   Member<Node> resolved_source_;
   bool is_resolved_ = false;
+  absl::optional<ScrollOffset> minimum_scroll_offset_;
+  absl::optional<ScrollOffset> maximum_scroll_offset_;
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;

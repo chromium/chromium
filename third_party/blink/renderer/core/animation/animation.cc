@@ -2311,6 +2311,9 @@ void Animation::OnRangeUpdate() {
     content_->InvalidateNormalizedTiming();
     content_->Invalidate();
   }
+
+  // TODO(kevers): Do not update start if "sticky" (explicitly set via startTime
+  // or currentTime).
   if (start_time_) {
     UpdateStartTimeForViewTimeline();
   }
