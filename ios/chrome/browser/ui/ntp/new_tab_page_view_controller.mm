@@ -138,6 +138,9 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 // constraints are not set before the views have been added to view hierarchy.
 @property(nonatomic, assign) BOOL viewDidFinishLoading;
 
+// YES if the NTP is in the middle of animating an omnibox focus.
+@property(nonatomic, assign) BOOL isAnimatingOmniboxFocus;
+
 @end
 
 @implementation NewTabPageViewController
@@ -376,6 +379,18 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
 #pragma mark - Public
 
 - (void)focusOmnibox {
+  // Do nothing if the omnibox is already focused or is in the middle of a
+  // focus. This prevents `collectionShiftingOffset` from being reset to close
+  // to 0, which would result in the defocus animation not returning to the top
+  // of the NTP if that was the original position.
+  // This is relevant beacuse the omnibox logic signals the NTP to focus the
+  // omnibox when it becomes the keyboard first responder, but that happens
+  // during the NTP focus animation, which results in -focusOmnibox being called
+  // twice.
+  if (self.omniboxFocused || self.isAnimatingOmniboxFocus) {
+    return;
+  }
+
   // If the feed is meant to be visible and its contents have not loaded yet,
   // then any omnibox focus animations (i.e. opening app from search widget
   // action) needs to wait until it is ready. viewDidAppear: currently serves as
@@ -888,9 +903,11 @@ const CGFloat kShiftTilesUpAnimationDuration = 0.1;
     strongSelf.disableScrollAnimation = NO;
     [strongSelf.headerViewController
         completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:finalPosition];
+    strongSelf.isAnimatingOmniboxFocus = NO;
   }];
 
   self.animator.interruptible = YES;
+  self.isAnimatingOmniboxFocus = YES;
   [self.animator startAnimation];
 }
 
