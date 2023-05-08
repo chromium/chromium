@@ -10,6 +10,7 @@ GEN('#include "chrome/browser/ash/web_applications/personalization_app/personali
 
 GEN('#include "ash/constants/ash_features.h"');
 GEN('#include "ash/public/cpp/ambient/ambient_client.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const ROOT_PAGE = 'chrome://personalization/';
@@ -518,3 +519,156 @@ TEST_F(PersonalizationAppWallpaperSubpageBrowserTest.name, 'All', async () => {
 
   mocha.run();
 });
+
+class PersonalizationAppDynamicColorEnabledBrowserTest extends
+    PersonalizationAppBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'ash::features::kPersonalizationJelly',
+        'chromeos::features::kJelly',
+      ],
+    };
+  }
+}
+
+this[PersonalizationAppDynamicColorEnabledBrowserTest.name] =
+    PersonalizationAppDynamicColorEnabledBrowserTest;
+
+TEST_F(
+    PersonalizationAppDynamicColorEnabledBrowserTest.name, 'All', async () => {
+      await import('chrome://webui-test/mojo_webui_test_support.js');
+
+      function getDynamicColorElement() {
+        const dynamicColor =
+            getRouter()
+                .shadowRoot.querySelector('personalization-main')
+                .shadowRoot.querySelector('personalization-theme')
+                .shadowRoot.querySelector('dynamic-color');
+        assertTrue(!!dynamicColor);
+        return dynamicColor;
+      }
+
+      function getDynamicColorToggle() {
+        const toggle = getDynamicColorElement().shadowRoot.getElementById(
+            'dynamicColorToggle');
+        assertTrue(!!toggle);
+        return toggle;
+      }
+
+      function getColorSchemeSelector() {
+        const colorScheme = getDynamicColorElement().shadowRoot.getElementById(
+            'colorSchemeSelector');
+        assertTrue(!!colorScheme);
+        return colorScheme;
+      }
+
+      function getStaticColorSelector() {
+        const staticColor = getDynamicColorElement().shadowRoot.getElementById(
+            'staticColorSelector');
+        assertTrue(!!staticColor);
+        return staticColor;
+      }
+
+      function setDynamicColorToggle(checkedState) {
+        const toggle = getDynamicColorToggle();
+        if (checkedState !== toggle.checked) {
+          toggle.click();
+        }
+      }
+
+      suite('dynamic color', () => {
+        test('shows dynamic color options', () => {
+          assertTrue(!!getDynamicColorToggle());
+          assertTrue(!!getColorSchemeSelector());
+          assertTrue(!!getStaticColorSelector());
+        });
+      });
+
+      test('shows color scheme options', () => {
+        setDynamicColorToggle(true);
+
+        assertTrue(getDynamicColorToggle().checked);
+        assertTrue(getStaticColorSelector().hidden);
+        assertFalse(getColorSchemeSelector().hidden);
+      });
+
+      test('selects color scheme options', async () => {
+        const toggleDescription =
+            getDynamicColorElement().shadowRoot.getElementById(
+                'dynamicColorToggleDescription');
+        setDynamicColorToggle(true);
+
+        // Click all of the color scheme buttons and save the text color of the
+        // toggle description to a set.
+        const crosSysSecondarySet = new Set();
+        const colorSchemeButtons =
+            Array.from(getColorSchemeSelector().querySelectorAll('cr-button'));
+        for (const button of colorSchemeButtons) {
+          if (button.ariaPressed === 'false') {
+            const originalColor = getComputedStyle(toggleDescription).color;
+            button.click();
+            await waitUntil(
+                () =>
+                    originalColor !== getComputedStyle(toggleDescription).color,
+                'failed to update colors');
+          }
+
+          const newColor = getComputedStyle(toggleDescription).color;
+          crosSysSecondarySet.add(newColor);
+        }
+
+        assertEquals(
+            colorSchemeButtons.length, crosSysSecondarySet.size,
+            'Each color should be unique');
+      });
+
+      test('shows static color options', () => {
+        const toggleButton = getDynamicColorToggle();
+
+        setDynamicColorToggle(false);
+
+        assertFalse(toggleButton.checked);
+        assertFalse(getStaticColorSelector().hidden);
+        assertTrue(getColorSchemeSelector().hidden);
+      });
+
+      test('selects static color options', async () => {
+        const theme = getRouter()
+                          .shadowRoot.querySelector('personalization-main')
+                          .shadowRoot.querySelector('personalization-theme');
+        const lightButton = theme.shadowRoot.getElementById('lightMode');
+        lightButton.click();
+        await waitUntil(
+            () => getBodyColorChannels().every(channel => channel > 200),
+            'failed to switch to light mode');
+        assertEquals('true', lightButton.getAttribute('aria-pressed'));
+        setDynamicColorToggle(false);
+
+        // Click all of the static color buttons and save the background color
+        // of the light mode button to a set.
+        const crosButtonBackgroundColorPrimarySet = new Set();
+        const staticColorButtons =
+            Array.from(getStaticColorSelector().querySelectorAll('cr-button'));
+        for (const button of staticColorButtons) {
+          if (button.ariaPressed === 'false') {
+            const originalColor = getComputedStyle(lightButton).backgroundColor;
+            button.click();
+            await waitUntil(
+                () => originalColor !==
+                    getComputedStyle(lightButton).backgroundColor,
+                'failed to update colors');
+          }
+
+          const newColor = getComputedStyle(lightButton).backgroundColor;
+          crosButtonBackgroundColorPrimarySet.add(newColor);
+        }
+
+        assertEquals(
+            staticColorButtons.length, crosButtonBackgroundColorPrimarySet.size,
+            'Each color should be unique');
+      });
+
+      mocha.run();
+    });
