@@ -501,9 +501,15 @@ TEST_P(AffiliationsPrefetcherTest, OnLoginsRetained) {
       ->OnLoginsRetained(nullptr, forms);
 }
 
+// Test both true and false (kFillingAcrossAffiliatedWebsites on/off) on Android
+// only. On other platforms, this is already enabled by default.
 INSTANTIATE_TEST_SUITE_P(FillingAcrossAffiliatedWebsites,
                          AffiliationsPrefetcherTest,
+#if BUILDFLAG(IS_ANDROID)
                          ::testing::Bool());
+#else
+                         ::testing::Values(true));
+#endif
 
 class AffiliationsPrefetcherWithTwoStoresTest
     : public AffiliationsPrefetcherTest {
