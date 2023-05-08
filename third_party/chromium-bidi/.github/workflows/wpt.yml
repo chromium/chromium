@@ -1,7 +1,7 @@
 # This workflow will check out wpt and run the WebDriver BiDi tests against our
 # implementation.
 
-name: Web platform tests with Chromedriver (headless)
+name: Web platform tests
 
 on:
   pull_request:
@@ -11,6 +11,20 @@ on:
 jobs:
   wpt:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            head: headful
+            kind: mapper
+          - os: ubuntu-latest
+            head: headless
+            kind: mapper
+          - os: ubuntu-latest
+            head: headless
+            kind: chromedriver
+    name: ${{ matrix.kind }}-${{ matrix.head }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -29,7 +43,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-          cache: pip
+          cache: 'pip'
       - name: Set up virtualenv
         run: pip install virtualenv
       - name: Set up hosts
@@ -37,13 +51,37 @@ jobs:
         working-directory: wpt
       - name: Install Chromium
         run: echo "chromium_binary=$(npx @puppeteer/browsers install chromium@latest | cut -f 2- -d' ')" >> $GITHUB_ENV
-      - name: Run WPT tests
+      - name: Run WPT tests (mapper, headful)
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headful' && matrix.kind == 'mapper' }}
+        timeout-minutes: 60
+        # For verbose logging, add --log-mach - --log-mach-level info
+        run: >
+          xvfb-run --auto-servernum
+          ./runWPT.sh webdriver/tests/bidi/
+        env:
+          BROWSER_BIN: ${{ env.chromium_binary }}
+          HEADLESS: false
+          UPDATE_EXPECTATIONS: true
+          WPT_REPORT: out/wptreport.json
+      - name: Run WPT tests (mapper, headless)
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headless' && matrix.kind == 'mapper' }}
+        timeout-minutes: 60
+        # For verbose logging, add --log-mach - --log-mach-level info
+        run: ./runWPT.sh webdriver/tests/bidi/
+        env:
+          BROWSER_BIN: ${{ env.chromium_binary }}
+          HEADLESS: true
+          UPDATE_EXPECTATIONS: true
+          WPT_REPORT: out/wptreport.json
+      - name: Run WPT tests (chromedriver, new headless)
+        if: ${{ matrix.os == 'ubuntu-latest' && matrix.head == 'headless' && matrix.kind == 'chromedriver' }}
         timeout-minutes: 60
         # For verbose logging, add --log-mach - --log-mach-level info
         run: ./runWPT.sh webdriver/tests/bidi/
         env:
           BROWSER_BIN: ${{ env.chromium_binary }}
           CHROMEDRIVER: true
+          UPDATE_EXPECTATIONS: true
           WPT_REPORT: out/wptreport.json
       - name: Generate HTML test report
         # Force run task even if the previous tasks failed.
@@ -52,29 +90,22 @@ jobs:
           node test-report/htmlWptReport.mjs
           out/wptreport.json
           out/wptreport.html
-      - name: Update expectations
-        # Force run task even if the previous tasks failed.
-        if: ${{ always() }}
-        run: >
-          ./wpt/wpt update-expectations
-          --product chrome
-          --manifest MANIFEST.json
-          --metadata wpt-metadata/chromedriver/headless
-          out/wptreport.json
       - name: Upload expectations
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-metadata-chromedriver-headless
-          path: wpt-metadata/chromedriver/headless
+          name: wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
+          path: wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
       - name: Upload artifacts
         # Force run task even if the previous tasks failed.
         if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
-          name: wpt-chromedriver-artifacts
-          path: out
+          name: ${{ matrix.kind }}-${{ matrix.head }}-artifacts
+          path: |
+            logs
+            out
 
 env:
   DEBUG: bidiServer:log
