@@ -4948,6 +4948,7 @@
       computable: false,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_highlight: true,
     },
     {
       name: "text-underline-position",
