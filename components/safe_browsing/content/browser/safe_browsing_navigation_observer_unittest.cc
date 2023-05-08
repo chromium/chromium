@@ -852,6 +852,65 @@ TEST_F(SBNavigationObserverTest,
   EXPECT_TRUE(referrer_chain[0].is_retargeting());
 }
 
+TEST_F(SBNavigationObserverTest,
+       CanceledRetargetingNavigationHasCorrectRedirects) {
+  base::Time now = base::Time::Now();
+  base::Time one_second_ago = base::Time::FromDoubleT(now.ToDoubleT() - 1.0);
+
+  SessionID source_tab = SessionID::NewUnique();
+  SessionID target_tab = SessionID::NewUnique();
+
+  // Add two navigations. A initially opens a new tab with url B, but cancels
+  // that before it completes. It then navigates the new tab to C. We expect
+  // that asking for the referrer chain for C has C as the event url.
+  std::unique_ptr<NavigationEvent> first_navigation =
+      std::make_unique<NavigationEvent>();
+  first_navigation->source_url = GURL("http://example.com/a");
+  first_navigation->original_request_url = GURL("http://example.com/b");
+  first_navigation->server_redirect_urls.emplace_back(
+      "http://example.com/b_redirect1");
+  first_navigation->server_redirect_urls.emplace_back(
+      "http://example.com/b_redirect2");
+  first_navigation->last_updated = one_second_ago;
+  first_navigation->navigation_initiation =
+      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
+  first_navigation->source_tab_id = source_tab;
+  first_navigation->target_tab_id = target_tab;
+  first_navigation->has_committed = false;
+  navigation_event_list()->RecordNavigationEvent(std::move(first_navigation));
+
+  std::unique_ptr<NavigationEvent> second_navigation =
+      std::make_unique<NavigationEvent>();
+  second_navigation->original_request_url = GURL("http://example.com/c");
+  second_navigation->server_redirect_urls.emplace_back(
+      "http://example.com/c_redirect1");
+  second_navigation->server_redirect_urls.emplace_back(
+      "http://example.com/c_redirect2");
+  second_navigation->last_updated = now;
+  second_navigation->navigation_initiation =
+      ReferrerChainEntry::BROWSER_INITIATED;
+  second_navigation->source_tab_id = target_tab;
+  second_navigation->target_tab_id = target_tab;
+  navigation_event_list()->RecordNavigationEvent(std::move(second_navigation));
+
+  ReferrerChain referrer_chain;
+  navigation_observer_manager_->IdentifyReferrerChainByEventURL(
+      GURL("http://example.com/c_redirect2"), SessionID::InvalidValue(),
+      content::GlobalRenderFrameHostId(), 10, &referrer_chain);
+
+  ASSERT_EQ(1, referrer_chain.size());
+
+  EXPECT_EQ("http://example.com/c_redirect2", referrer_chain[0].url());
+  ASSERT_EQ(3, referrer_chain[0].server_redirect_chain_size());
+  EXPECT_EQ("http://example.com/c",
+            referrer_chain[0].server_redirect_chain(0).url());
+  EXPECT_EQ("http://example.com/c_redirect1",
+            referrer_chain[0].server_redirect_chain(1).url());
+  EXPECT_EQ("http://example.com/c_redirect2",
+            referrer_chain[0].server_redirect_chain(2).url());
+  EXPECT_TRUE(referrer_chain[0].is_retargeting());
+}
+
 TEST_F(SBNavigationObserverTest, TestGetLatestPendingNavigationEvent) {
   base::Time now = base::Time::Now();
   base::Time one_minute_ago = base::Time::FromDoubleT(now.ToDoubleT() - 60.0);

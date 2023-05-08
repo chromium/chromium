@@ -205,15 +205,13 @@ absl::optional<size_t> NavigationEventList::FindNavigationEvent(
           // need to adjust our search url to the original request.
           auto* retargeting_nav_event =
               GetNavigationEvent(retargeting_nav_event_index);
-          if (!nav_event->server_redirect_urls.empty()) {
-            // Adjust retargeting navigation event's attributes.
-            retargeting_nav_event->server_redirect_urls.push_back(
-                std::move(search_url));
-          } else {
-            // The retargeting_nav_event original request url is unreliable,
-            // since that navigation can be canceled.
-            retargeting_nav_event->original_request_url = std::move(search_url);
-          }
+          // Adjust retargeting navigation event's attributes. The
+          // retargeting_nav_event original request and redirects are
+          // unreliable, since that navigation can be canceled.
+          retargeting_nav_event->server_redirect_urls =
+              nav_event->server_redirect_urls;
+          retargeting_nav_event->original_request_url =
+              nav_event->original_request_url;
           result_index = retargeting_nav_event_index;
         }
       }
