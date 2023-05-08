@@ -146,7 +146,7 @@ def check_distro(options):
     return
 
   distro_id = subprocess.check_output(["lsb_release", "--id",
-                                       "--short"].decode().strip())
+                                       "--short"]).decode().strip()
 
   supported_codenames = ["bionic", "focal", "jammy"]
   supported_ids = ["Debian"]
