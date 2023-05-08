@@ -70,10 +70,31 @@
     white-space: pre-wrap;
   }
 
+  #descriptionDialog h3[slot='title'] {
+    color: var(--cros-sys-on_secondary_container);
+    font: var(--cros-title-1-font);
+    padding-top: 24px;
+  }
+
+  #descriptionDialog p[slot='body'] {
+    color: var(--cros-sys-secondary);
+    font: var(--cros-body-1-font);
+  }
+
+  #descriptionDialog div[slot='button-container'] {
+    height: 36px;
+    padding: 8px 20px 20px 20px;
+  }
+
+  #descriptionDialog div[slot='button-container'] cr-button {
+    border-radius: 18px;
+    font: var(--cros-button-2-font);
+    height: 100%;
+  }
+
   info-svg::part(path) {
     fill: var(--text-color);
   }
-
 </style>
 <header id="container" class$="[[getContainerClass_(isLoading_, showImage_)]]">
   <template is="dom-if" if="[[showPlaceholders_(isLoading_, showImage_)]]">

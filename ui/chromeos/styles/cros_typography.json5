@@ -58,6 +58,12 @@
         font_size: 13,
         font_weight: 500,
         line_height: 20,
+      },
+      title_1: {
+        font_family: '$font_family_google_sans',
+        font_size: 16,
+        font_weight: 500,
+        line_height: 24,
       }
     }
   },
