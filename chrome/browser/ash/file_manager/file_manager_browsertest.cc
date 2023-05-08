@@ -1426,6 +1426,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("openQuickViewUmaForCheckSelectViaContextMenu"),
         TestCase("openQuickViewUmaViaSelectionMenu"),
         TestCase("openQuickViewUmaViaSelectionMenuKeyboard"),
+        TestCase("openQuickViewEncryptedFile"),
         TestCase("closeQuickView")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

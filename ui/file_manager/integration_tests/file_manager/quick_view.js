@@ -10,7 +10,7 @@ import {addEntries, ENTRIES, EntryType, getCaller, getHistogramCount, pending, r
 import {testcase} from '../testcase.js';
 
 import {mountCrostini, mountGuestOs, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
-import {BASIC_ANDROID_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
+import {BASIC_ANDROID_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_FAKE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, BASIC_ZIP_ENTRY_SET, MODIFIED_ENTRY_SET} from './test_data.js';
 
 /**
  * The tag used to create a safe environment to display the preview.
@@ -3588,4 +3588,42 @@ testcase.openQuickViewUmaViaSelectionMenuKeyboard = async () => {
   chrome.test.assertEq(
       selectionMenuUMAValueAfterOpening,
       selectionMenuUMAValueBeforeOpening + 1);
+};
+
+/**
+ * Tests that Quick View does not display a CSE file preview.
+ */
+testcase.openQuickViewEncryptedFile = async () => {
+  const caller = getCaller();
+
+  /**
+   * The #innerContentPanel resides in the #quick-view shadow DOM as a child
+   * of the #dialog element, and contains the file preview result.
+   */
+  const contentPanel = ['#quick-view', '#dialog[open] #innerContentPanel'];
+
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.testCSEFile]);
+
+  // Open the file in Quick View.
+  await openQuickView(appId, ENTRIES.testCSEFile.nameText);
+
+  // Get the content panel 'No preview available' item text.
+  const noPreviewAvailableText =
+      await i18nQuickViewLabelText('No preview available');
+
+  // Wait for the innerContentPanel to load and display its content.
+  function checkInnerContentPanel(elements) {
+    const haveElements = Array.isArray(elements) && elements.length === 1;
+    if (!haveElements || elements[0].styles.display !== 'flex') {
+      return pending(caller, 'Waiting for inner content panel to load.');
+    }
+    // Check: the preview should not be shown.
+    chrome.test.assertEq(noPreviewAvailableText, elements[0].innerText);
+    return;
+  }
+  await repeatUntil(async () => {
+    return checkInnerContentPanel(await remoteCall.callRemoteTestUtil(
+        'deepQueryAllElements', appId, [contentPanel, ['display']]));
+  });
 };
