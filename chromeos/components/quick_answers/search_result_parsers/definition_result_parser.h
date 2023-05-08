@@ -19,18 +19,19 @@ class DefinitionResultParser : public ResultParser {
   // ResultParser:
   bool Parse(const base::Value::Dict& result,
              QuickAnswer* quick_answer) override;
+  std::unique_ptr<StructuredResult> ParseInStructuredResult(
+      const base::Value::Dict& result) override;
+  bool PopulateQuickAnswer(const StructuredResult& structured_result,
+                           QuickAnswer* quick_answer) override;
+  bool SupportsNewInterface() const override;
 
  private:
   const base::Value::Dict* ExtractFirstSenseFamily(
       const base::Value::Dict& definition_entry);
   const base::Value::Dict* ExtractFirstPhonetics(
       const base::Value::Dict& definition_entry);
-  const std::string* ExtractDefinition(
-      const base::Value::Dict& definition_entry);
-  const std::string* ExtractPhoneticsText(
-      const base::Value::Dict& definition_entry);
-  void ExtractPhoneticsInfo(PhoneticsInfo* phonetics_info,
-                            const base::Value::Dict& definition_entry);
+  std::unique_ptr<PhoneticsInfo> ParsePhoneticsInfo(
+      const base::Value::Dict& entry_result);
 };
 
 }  // namespace quick_answers

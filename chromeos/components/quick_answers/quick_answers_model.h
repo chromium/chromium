@@ -127,6 +127,9 @@ struct PhoneticsInfo {
   PhoneticsInfo(const PhoneticsInfo&);
   ~PhoneticsInfo();
 
+  // Pronunciation of a word, i.e. in phonetic symbols.
+  std::string text;
+
   // Phonetics audio URL for playing pronunciation of dictionary results.
   // For other type of results the URL will be empty.
   GURL phonetics_audio = GURL();
@@ -224,6 +227,27 @@ struct QuickAnswersRequest {
   // links, etc).
 };
 
+// `Sense` must be copyable.
+struct Sense {
+ public:
+  Sense();
+  ~Sense();
+
+  std::string definition;
+};
+
+// `DefinitionResult` holds result for definition intent.
+// `DefinitionResult` must be copyable.
+struct DefinitionResult {
+ public:
+  DefinitionResult();
+  ~DefinitionResult();
+
+  std::string word;
+  PhoneticsInfo phonetics_info;
+  Sense sense;
+};
+
 // `TranslationResult` holds result for translation intent.
 // `TranslationResult` must be copyable as it can be copied to a view.
 struct TranslationResult {
@@ -231,6 +255,7 @@ struct TranslationResult {
   TranslationResult();
   ~TranslationResult();
 
+  // TODO(b/278929409): Migrate to `std::string` for strings in structs.
   std::u16string text_to_translate;
   std::u16string translated_text;
   std::string source_locale;
@@ -248,6 +273,7 @@ class StructuredResult {
 
   // Result type specific structs must be copyable.
   std::unique_ptr<TranslationResult> translation_result;
+  std::unique_ptr<DefinitionResult> definition_result;
 };
 
 // `QuickAnswersSession` holds states related to a single Quick Answer session.

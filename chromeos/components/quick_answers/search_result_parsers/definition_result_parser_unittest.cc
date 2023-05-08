@@ -9,12 +9,16 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
 
 namespace quick_answers {
 namespace {
+constexpr char kPhoneticsAudioUrlWithoutProtocol[] = "//example.com/audio";
+constexpr char kPhoneticsAudioUrlWithProtocol[] = "https://example.com/audio";
+
 using base::Value;
 }  // namespace
 
@@ -40,11 +44,14 @@ class DefinitionResultParserTest : public testing::Test {
     Value::List entries;
     Value::Dict entry;
 
+    entry.Set("locale", "en");
+
     // Build phonetics.
     if (!phonetic_str.empty()) {
       Value::List phonetics;
       Value::Dict phonetic;
       phonetic.Set("text", phonetic_str);
+      phonetic.Set("oxfordAudio", kPhoneticsAudioUrlWithoutProtocol);
       phonetics.Append(std::move(phonetic));
       entry.Set("phonetics", std::move(phonetics));
     }
@@ -99,6 +106,28 @@ TEST_F(DefinitionResultParserTest, Success) {
   auto* title = static_cast<QuickAnswerText*>(quick_answer.title[0].get());
   EXPECT_EQ(expected_title, GetQuickAnswerTextForTesting(quick_answer.title));
   EXPECT_EQ(ui::kColorLabelForeground, title->color_id);
+
+  // Expectations for `StructuredResult`.
+  std::unique_ptr<StructuredResult> structured_result =
+      parser_->ParseInStructuredResult(result);
+  ASSERT_TRUE(structured_result);
+  ASSERT_TRUE(structured_result->definition_result);
+
+  DefinitionResult* definition_result =
+      structured_result->definition_result.get();
+  EXPECT_EQ(definition_result->word, "unfathomable");
+
+  // `PhoneticsInfo::query_text` is headword. It's a query text for TTS. We
+  // should not expect this test case response from the server as either
+  // `query_text` or `phonetics_audio` should be filled.
+  EXPECT_TRUE(definition_result->phonetics_info.query_text.empty());
+  EXPECT_EQ(definition_result->phonetics_info.text, "ˌənˈfaT͟Həməb(ə)");
+  EXPECT_EQ(definition_result->phonetics_info.locale, "en");
+  EXPECT_EQ(definition_result->phonetics_info.phonetics_audio,
+            GURL(kPhoneticsAudioUrlWithProtocol));
+  EXPECT_FALSE(definition_result->phonetics_info.tts_audio_enabled);
+
+  EXPECT_EQ(definition_result->sense.definition, expected_answer);
 }
 
 TEST_F(DefinitionResultParserTest, EmptyValue) {

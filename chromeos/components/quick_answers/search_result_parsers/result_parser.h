@@ -18,9 +18,25 @@ class ResultParser {
  public:
   virtual ~ResultParser() = default;
 
-  // Parse the result into |quick_answer|.
+  // Parse the result into `quick_answer`. All `ResultParser`s must support this
+  // for now for backward compatibility reason. `Parse` method would be deleted
+  // after we migrate interfaces of all parsers.
   virtual bool Parse(const base::Value::Dict& result,
                      QuickAnswer* quick_answer) = 0;
+
+  // Interfaces for supporting Rich Answers.
+  virtual std::unique_ptr<StructuredResult> ParseInStructuredResult(
+      const base::Value::Dict& result);
+
+  // `quick_answer` can be modified even if `PopulateQuickAnswer` returns false,
+  // i.e. do not assume that `quick_answer` is un-modified if this method
+  // returns false.
+  virtual bool PopulateQuickAnswer(const StructuredResult& structured_result,
+                                   QuickAnswer* quick_answer);
+
+  // Returns true if this parser supports the new interfaces. Note that all
+  // parsers must support old interfaces even if it supports new interfaces.
+  virtual bool SupportsNewInterface() const;
 
  protected:
   // Helper function to get the first element in a value list, which is expected

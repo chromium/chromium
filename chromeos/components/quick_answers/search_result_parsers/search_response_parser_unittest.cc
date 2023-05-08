@@ -30,8 +30,13 @@ class SearchResponseParserTest : public testing::Test {
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  void SearchResponseParserCallback(std::unique_ptr<QuickAnswer> quick_answer) {
-    quick_answer_ = std::move(quick_answer);
+  void SearchResponseParserCallback(
+      std::unique_ptr<QuickAnswersSession> quick_answers_session) {
+    if (quick_answers_session) {
+      quick_answer_ = std::move(quick_answers_session->quick_answer);
+    } else {
+      quick_answer_ = nullptr;
+    }
     run_loop_->Quit();
   }
 

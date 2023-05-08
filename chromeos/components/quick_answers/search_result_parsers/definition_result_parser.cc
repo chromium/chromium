@@ -8,7 +8,9 @@
 
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace quick_answers {
@@ -18,56 +20,170 @@ using base::Value;
 
 constexpr char kHttpsPrefix[] = "https:";
 
-constexpr char kDictionaryEntriesPath[] = "dictionaryResult.entries";
-constexpr char kDefinitionPathUnderSense[] = "definition.text";
+// DictionaryResult
+constexpr char kDictionaryResultKey[] = "dictionaryResult";
+constexpr char kQueryTermKey[] = "queryTerm";
+constexpr char kEntriesKey[] = "entries";
+
+// Entry
 constexpr char kHeadwordKey[] = "headword";
 constexpr char kLocaleKey[] = "locale";
 constexpr char kPhoneticsKey[] = "phonetics";
+constexpr char kSenseFamiliesKey[] = "senseFamilies";
+
+// Phonetics
 constexpr char kPhoneticsTextKey[] = "text";
 constexpr char kPhoneticsAudioKey[] = "oxfordAudio";
 constexpr char kPhoneticsTtsAudioEnabledKey[] = "ttsAudioEnabled";
-constexpr char kSenseFamiliesKey[] = "senseFamilies";
+
+// SenseFamilies
 constexpr char kSensesKey[] = "senses";
-constexpr char kQueryTermPath[] = "dictionaryResult.queryTerm";
+
+// Sense
+constexpr char kDefinitionKey[] = "definition";
+constexpr char kDefinitionTextKey[] = "text";
+
+std::unique_ptr<Sense> ParseSense(const base::Value::Dict& sense_result) {
+  const base::Value::Dict* definition_entry =
+      sense_result.FindDict(kDefinitionKey);
+  if (!definition_entry) {
+    DLOG(ERROR) << "Unable to find definition entry.";
+    return nullptr;
+  }
+
+  const std::string* definition_text =
+      definition_entry->FindString(kDefinitionTextKey);
+  if (!definition_text) {
+    DLOG(ERROR) << "Unable to find a text in a definition entry.";
+    return nullptr;
+  }
+
+  std::unique_ptr<Sense> sense = std::make_unique<Sense>();
+  sense->definition = *definition_text;
+  return sense;
+}
+
+const std::string* GetQueryTerm(const base::Value::Dict& result) {
+  return result.FindString(kQueryTermKey);
+}
+
+const std::string* GetHeadword(const base::Value::Dict& entry_result) {
+  return entry_result.FindString(kHeadwordKey);
+}
 
 }  // namespace
 
+std::unique_ptr<StructuredResult>
+DefinitionResultParser::ParseInStructuredResult(
+    const base::Value::Dict& result) {
+  const Value::Dict* dictionary_result = result.FindDict(kDictionaryResultKey);
+  if (!dictionary_result) {
+    DLOG(ERROR) << "Unable to find the dictionary result entry.";
+    return nullptr;
+  }
+
+  const Value::Dict* first_entry =
+      GetFirstListElement(*dictionary_result, kEntriesKey);
+  if (!first_entry) {
+    DLOG(ERROR) << "Unable to find a first entry.";
+    return nullptr;
+  }
+
+  const Value::Dict* first_sense_family = ExtractFirstSenseFamily(*first_entry);
+  if (!first_sense_family) {
+    DLOG(ERROR) << "Unable to find a first sense familiy.";
+    return nullptr;
+  }
+
+  const Value::Dict* first_sense =
+      GetFirstListElement(*first_sense_family, kSensesKey);
+  if (!first_sense) {
+    DLOG(ERROR) << "Unable to find a first sense.";
+    return nullptr;
+  }
+
+  std::unique_ptr<Sense> sense = ParseSense(*first_sense);
+  if (!sense) {
+    DLOG(ERROR) << "Unable to parse a sense.";
+    return nullptr;
+  }
+  std::unique_ptr<DefinitionResult> definition_result =
+      std::make_unique<DefinitionResult>();
+  definition_result->sense = *(sense.get());
+
+  const std::string* word = GetQueryTerm(*dictionary_result);
+  if (!word) {
+    word = GetHeadword(*first_entry);
+  }
+  if (!word) {
+    DLOG(ERROR) << "Unable to find a word in either query term or headword.";
+    return nullptr;
+  }
+  definition_result->word = *word;
+
+  std::unique_ptr<PhoneticsInfo> phonetics_info =
+      ParsePhoneticsInfo(*first_entry);
+  if (phonetics_info) {
+    definition_result->phonetics_info = *(phonetics_info.get());
+  }
+
+  std::unique_ptr<StructuredResult> structured_result =
+      std::make_unique<StructuredResult>();
+  structured_result->definition_result = std::move(definition_result);
+  return structured_result;
+}
+
+bool DefinitionResultParser::PopulateQuickAnswer(
+    const StructuredResult& structured_result,
+    QuickAnswer* quick_answer) {
+  DefinitionResult* definition_result =
+      structured_result.definition_result.get();
+  if (!definition_result) {
+    DLOG(ERROR) << "Unable to find definition_result.";
+    return false;
+  }
+
+  quick_answer->result_type = ResultType::kDefinitionResult;
+  quick_answer->phonetics_info =
+      structured_result.definition_result->phonetics_info;
+
+  // Title line
+  if (definition_result->word.empty()) {
+    DLOG(ERROR) << "Unable to find a word in definition_result.";
+    return false;
+  }
+  const std::string& title =
+      !quick_answer->phonetics_info.text.empty()
+          ? BuildDefinitionTitleText(definition_result->word,
+                                     quick_answer->phonetics_info.text)
+          : definition_result->word;
+  quick_answer->title.push_back(std::make_unique<QuickAnswerText>(title));
+
+  // Second line, i.e. definition.
+  if (definition_result->sense.definition.empty()) {
+    DLOG(ERROR) << "Unable to find a definition in a sense.";
+    return false;
+  }
+
+  quick_answer->first_answer_row.push_back(
+      std::make_unique<QuickAnswerResultText>(
+          definition_result->sense.definition));
+  return true;
+}
+
+bool DefinitionResultParser::SupportsNewInterface() const {
+  return true;
+}
+
 bool DefinitionResultParser::Parse(const base::Value::Dict& result,
                                    QuickAnswer* quick_answer) {
-  const Value::Dict* first_entry =
-      GetFirstListElement(result, kDictionaryEntriesPath);
-  if (!first_entry) {
-    LOG(ERROR) << "Can't find a definition entry.";
+  std::unique_ptr<StructuredResult> structured_result =
+      ParseInStructuredResult(result);
+  if (!structured_result) {
     return false;
   }
 
-  // Get definition and phonetics.
-  const std::string* definition = ExtractDefinition(*first_entry);
-  if (!definition) {
-    LOG(ERROR) << "Fail in extracting definition.";
-    return false;
-  }
-  const std::string* phonetics = ExtractPhoneticsText(*first_entry);
-
-  // If query term path not found, fallback to use headword.
-  const std::string* query = result.FindStringByDottedPath(kQueryTermPath);
-  if (!query)
-    query = first_entry->FindStringByDottedPath(kHeadwordKey);
-  if (!query) {
-    LOG(ERROR) << "Fail in extracting query.";
-    return false;
-  }
-
-  const std::string& secondary_answer =
-      phonetics ? BuildDefinitionTitleText(query->c_str(), phonetics->c_str())
-                : query->c_str();
-  quick_answer->result_type = ResultType::kDefinitionResult;
-  quick_answer->title.push_back(
-      std::make_unique<QuickAnswerText>(secondary_answer));
-  quick_answer->first_answer_row.push_back(
-      std::make_unique<QuickAnswerResultText>(*definition));
-  ExtractPhoneticsInfo(&quick_answer->phonetics_info, *first_entry);
-  return true;
+  return PopulateQuickAnswer(*structured_result, quick_answer);
 }
 
 const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
@@ -75,7 +191,7 @@ const Value::Dict* DefinitionResultParser::ExtractFirstSenseFamily(
   const Value::Dict* first_sense_family =
       GetFirstListElement(definition_entry, kSenseFamiliesKey);
   if (!first_sense_family) {
-    LOG(ERROR) << "Can't find a sense family.";
+    DLOG(ERROR) << "Can't find a sense family.";
     return nullptr;
   }
 
@@ -95,67 +211,52 @@ const Value::Dict* DefinitionResultParser::ExtractFirstPhonetics(
   if (sense_family)
     return GetFirstListElement(*sense_family, kPhoneticsKey);
 
-  LOG(ERROR) << "Can't find a phonetics.";
+  DLOG(ERROR) << "Can't find a phonetics.";
   return nullptr;
 }
 
-const std::string* DefinitionResultParser::ExtractDefinition(
-    const base::Value::Dict& definition_entry) {
-  const Value::Dict* first_sense_family =
-      ExtractFirstSenseFamily(definition_entry);
-  if (!first_sense_family)
-    return nullptr;
-
-  const Value::Dict* first_sense =
-      GetFirstListElement(*first_sense_family, kSensesKey);
-  if (!first_sense) {
-    LOG(ERROR) << "Can't find a sense.";
+std::unique_ptr<PhoneticsInfo> DefinitionResultParser::ParsePhoneticsInfo(
+    const base::Value::Dict& entry_result) {
+  const Value::Dict* first_phonetics = ExtractFirstPhonetics(entry_result);
+  if (!first_phonetics) {
+    DLOG(ERROR) << "Unable to find a first phonetics.";
     return nullptr;
   }
 
-  return first_sense->FindStringByDottedPath(kDefinitionPathUnderSense);
-}
+  std::unique_ptr<PhoneticsInfo> phonetics_info =
+      std::make_unique<PhoneticsInfo>();
 
-const std::string* DefinitionResultParser::ExtractPhoneticsText(
-    const base::Value::Dict& definition_entry) {
-  const Value::Dict* first_phonetics = ExtractFirstPhonetics(definition_entry);
-  if (!first_phonetics)
-    return nullptr;
+  const std::string* text = first_phonetics->FindString(kPhoneticsTextKey);
+  if (text) {
+    phonetics_info->text = *text;
+  }
 
-  return first_phonetics->FindStringByDottedPath(kPhoneticsTextKey);
-}
-
-void DefinitionResultParser::ExtractPhoneticsInfo(
-    PhoneticsInfo* phonetics_info,
-    const base::Value::Dict& definition_entry) {
   // Check for the query text used for tts audio.
-  if (definition_entry.FindStringByDottedPath(kHeadwordKey)) {
-    phonetics_info->query_text =
-        *definition_entry.FindStringByDottedPath(kHeadwordKey);
+  const std::string* headword = GetHeadword(entry_result);
+  if (headword) {
+    phonetics_info->query_text = *headword;
   }
 
   // Check for the locale used for tts audio.
-  if (definition_entry.FindStringByDottedPath(kLocaleKey)) {
-    phonetics_info->locale =
-        *definition_entry.FindStringByDottedPath(kLocaleKey);
+  const std::string* locale = entry_result.FindString(kLocaleKey);
+  if (locale) {
+    phonetics_info->locale = *locale;
   }
 
-  const Value::Dict* first_phonetics = ExtractFirstPhonetics(definition_entry);
-
-  if (!first_phonetics)
-    return;
-
   // Check if the phonetics has an audio URL.
-  if (first_phonetics->FindStringByDottedPath(kPhoneticsAudioKey)) {
-    phonetics_info->phonetics_audio =
-        GURL(kHttpsPrefix +
-             *first_phonetics->FindStringByDottedPath(kPhoneticsAudioKey));
+  const std::string* audio_url =
+      first_phonetics->FindString(kPhoneticsAudioKey);
+  if (audio_url) {
+    phonetics_info->phonetics_audio = GURL(kHttpsPrefix + *audio_url);
   }
 
   // Check if tts audio is enabled for the query.
-  if (first_phonetics->FindBoolByDottedPath(kPhoneticsTtsAudioEnabledKey)) {
-    phonetics_info->tts_audio_enabled = true;
+  absl::optional<bool> tts_audio_enabled =
+      first_phonetics->FindBool(kPhoneticsTtsAudioEnabledKey);
+  if (tts_audio_enabled) {
+    phonetics_info->tts_audio_enabled = tts_audio_enabled.value();
   }
+  return phonetics_info;
 }
 
 }  // namespace quick_answers

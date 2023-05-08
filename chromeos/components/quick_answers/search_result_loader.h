@@ -38,9 +38,6 @@ class SearchResultLoader : public ResultLoader {
                        ResponseParserCallback complete_callback) override;
 
  private:
-  void OnSearchResponseParsed(ResponseParserCallback complete_callback,
-                              std::unique_ptr<QuickAnswer> quick_answer);
-
   std::unique_ptr<SearchResponseParser> search_response_parser_;
   base::WeakPtrFactory<SearchResultLoader> weak_ptr_factory_{this};
 };

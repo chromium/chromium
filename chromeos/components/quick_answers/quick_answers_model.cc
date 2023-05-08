@@ -36,6 +36,12 @@ QuickAnswersRequest::QuickAnswersRequest(const QuickAnswersRequest& other) =
     default;
 QuickAnswersRequest::~QuickAnswersRequest() = default;
 
+Sense::Sense() = default;
+Sense::~Sense() = default;
+
+DefinitionResult::DefinitionResult() = default;
+DefinitionResult::~DefinitionResult() = default;
+
 TranslationResult::TranslationResult() = default;
 TranslationResult::~TranslationResult() = default;
 
