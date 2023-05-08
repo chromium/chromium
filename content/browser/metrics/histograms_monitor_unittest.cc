@@ -38,7 +38,7 @@ TEST_F(HistogramsMonitorTest, StartMonitoringThenGetDiff) {
 
   diff = monitor.GetDiff();
   ASSERT_EQ(diff.size(), 1ull);
-  std::string* header1 = diff[0].FindStringKey("header");
+  std::string* header1 = diff[0].GetDict().FindString("header");
   EXPECT_EQ(*header1,
             "Histogram: MonitorHistogram1 recorded 2 samples, mean = 35.0");
 
@@ -48,7 +48,7 @@ TEST_F(HistogramsMonitorTest, StartMonitoringThenGetDiff) {
   histogram2->Add(50);
   diff = monitor.GetDiff();
   ASSERT_EQ(diff.size(), 2ull);
-  std::string* header2 = diff[1].FindStringKey("header");
+  std::string* header2 = diff[1].GetDict().FindString("header");
   EXPECT_EQ(*header2,
             "Histogram: MonitorHistogram2 recorded 1 samples, mean = 50.0");
 }

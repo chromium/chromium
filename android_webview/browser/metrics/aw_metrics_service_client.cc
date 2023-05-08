@@ -176,8 +176,8 @@ void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
 
   PrefService* local_state = pref_service();
   DCHECK(local_state);
-  local_state->Set(prefs::kMetricsAppPackageNameLoggingRule,
-                   record.value().ToDictionary());
+  local_state->SetDict(prefs::kMetricsAppPackageNameLoggingRule,
+                       record.value().ToDictionary());
   cached_package_name_record_ = record;
   package_name_record_status_ =
       AppPackageNameLoggingRuleStatus::kNewVersionLoaded;
@@ -196,7 +196,7 @@ AwMetricsServiceClient::GetCachedAppPackageNameLoggingRule() {
   PrefService* local_state = pref_service();
   DCHECK(local_state);
   cached_package_name_record_ = AppPackageNameLoggingRule::FromDictionary(
-      local_state->GetValue(prefs::kMetricsAppPackageNameLoggingRule));
+      local_state->GetDict(prefs::kMetricsAppPackageNameLoggingRule));
   if (cached_package_name_record_.has_value()) {
     package_name_record_status_ =
         AppPackageNameLoggingRuleStatus::kNotLoadedUseCache;

@@ -85,7 +85,7 @@ std::string GetSpawnerUrlBase() {
   if (!config)
     LOG(FATAL) << "Failed to parse " << config_path.value();
 
-  std::string* result = config->FindStringKey("spawner_url_base");
+  std::string* result = config->GetDict().FindString("spawner_url_base");
   if (!result)
     LOG(FATAL) << "spawner_url_base is not specified in the config";
 

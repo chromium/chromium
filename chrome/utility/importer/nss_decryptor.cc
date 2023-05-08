@@ -175,33 +175,40 @@ bool NSSDecryptor::ReadAndParseLogins(
   const base::Value::List* password_list = parsed_json_dict->FindList("logins");
   if (password_list) {
     for (const auto& value : *password_list) {
-      if (!value.is_dict())
+      auto* dict = value.GetIfDict();
+      if (!dict) {
         continue;
+      }
 
       FirefoxRawPasswordInfo raw_password_info;
 
-      if (const std::string* hostname = value.FindStringKey("hostname"))
+      if (const std::string* hostname = dict->FindString("hostname")) {
         raw_password_info.host = *hostname;
+      }
 
-      if (const std::string* username = value.FindStringKey("usernameField"))
+      if (const std::string* username = dict->FindString("usernameField")) {
         raw_password_info.username_element = base::UTF8ToUTF16(*username);
+      }
 
-      if (const std::string* password = value.FindStringKey("passwordField"))
+      if (const std::string* password = dict->FindString("passwordField")) {
         raw_password_info.password_element = base::UTF8ToUTF16(*password);
+      }
 
-      if (const std::string* username =
-              value.FindStringKey("encryptedUsername"))
+      if (const std::string* username = dict->FindString("encryptedUsername")) {
         raw_password_info.encrypted_username = *username;
+      }
 
-      if (const std::string* password =
-              value.FindStringKey("encryptedPassword"))
+      if (const std::string* password = dict->FindString("encryptedPassword")) {
         raw_password_info.encrypted_password = *password;
+      }
 
-      if (const std::string* submit_url = value.FindStringKey("formSubmitURL"))
+      if (const std::string* submit_url = dict->FindString("formSubmitURL")) {
         raw_password_info.form_action = *submit_url;
+      }
 
-      if (const std::string* realm = value.FindStringKey("httpRealm"))
+      if (const std::string* realm = dict->FindString("httpRealm")) {
         raw_password_info.realm = *realm;
+      }
 
       importer::ImportedPasswordForm form;
       if (CreatePasswordFormFromRawInfo(raw_password_info, &form))

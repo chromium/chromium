@@ -686,8 +686,8 @@ bool CreditCardFidoAuthenticator::IsValidRequestOptions(
   }
 
   for (const base::Value& key_info : *key_info_list) {
-    if (!key_info.is_dict() ||
-        !key_info.GetDict().FindString("credential_id")) {
+    auto* dict = key_info.GetIfDict();
+    if (!dict || !dict->FindString("credential_id")) {
       return false;
     }
   }

@@ -101,7 +101,8 @@ void PublishSubresourceFilterRulesetFromResourceBundle() {
           IDR_SUBRESOURCE_FILTER_UNINDEXED_RULESET_MANIFEST_JSON);
   auto ruleset_manifest = base::JSONReader::Read(ruleset_manifest_string);
   DCHECK(ruleset_manifest);
-  std::string* content_version = ruleset_manifest->FindStringKey("version");
+  std::string* content_version =
+      ruleset_manifest->GetDict().FindString("version");
 
   // Instruct the RulesetService to obtain the unindexed ruleset data from the
   // ResourceBundle and give it the version of that data.

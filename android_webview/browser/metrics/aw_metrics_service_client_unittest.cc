@@ -123,8 +123,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
   base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule expected_record(
       base::Version(kTestAllowlistVersion), base::Time::Now() + expiry_time);
-  prefs->Set(prefs::kMetricsAppPackageNameLoggingRule,
-             expected_record.ToDictionary());
+  prefs->SetDict(prefs::kMetricsAppPackageNameLoggingRule,
+                 expected_record.ToDictionary());
 
   absl::optional<AppPackageNameLoggingRule> cached_record =
       client->GetCachedAppPackageNameLoggingRule();
@@ -278,7 +278,8 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
   base::TimeDelta expiry_time = base::Days(1);
   AppPackageNameLoggingRule record(base::Version(kTestAllowlistVersion),
                                    base::Time::Now() + expiry_time);
-  prefs->Set(prefs::kMetricsAppPackageNameLoggingRule, record.ToDictionary());
+  prefs->SetDict(prefs::kMetricsAppPackageNameLoggingRule,
+                 record.ToDictionary());
   client->SetAppPackageNameLoggingRule(record);
 
   EXPECT_TRUE(client->ShouldRecordPackageName());

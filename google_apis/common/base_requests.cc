@@ -76,11 +76,12 @@ absl::optional<std::string> MapJsonErrorToReason(
 
     // Returns the reason of the first error.
     if (const base::Value::List* errors = error->FindList(kErrorErrorsKey)) {
-      const base::Value& first_error = (*errors)[0];
-      if (first_error.is_dict()) {
-        const std::string* reason = first_error.FindStringKey(kErrorReasonKey);
-        if (reason)
+      const base::Value::Dict* first_error = errors->front().GetIfDict();
+      if (first_error) {
+        const std::string* reason = first_error->FindString(kErrorReasonKey);
+        if (reason) {
           return *reason;
+        }
       }
     }
   }
