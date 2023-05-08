@@ -44,7 +44,16 @@ class ASH_EXPORT UnifiedBrightnessView
       &kUnifiedMenuBrightnessHighIcon,    // High brightness.
   };
 
+  // The maximum index of `kBrightnessLevelIcons`.
+  static constexpr int kBrightnessLevels = std::size(kBrightnessLevelIcons) - 1;
+
  private:
+  friend class UnifiedBrightnessViewTest;
+
+  // Get vector icon reference that corresponds to the given brightness level.
+  // `level` is between 0.0 to 1.0.
+  const gfx::VectorIcon& GetBrightnessIconForLevel(float level);
+
   // Callback called when `night_light_button_` is pressed.
   void OnNightLightButtonPressed();
 

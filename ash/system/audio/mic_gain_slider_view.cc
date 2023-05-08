@@ -23,6 +23,8 @@
 
 namespace ash {
 
+using Style = QuickSettingsSlider::Style;
+
 namespace {
 // Gets resource ID for the string that should be used for mute state portion of
 // the microphone toggle button tooltip.
@@ -68,7 +70,7 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
           kImeMenuMicrophoneIcon,
           IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL,
           /*read_only=*/false,
-          QuickSettingsSlider::Style::kRadioActive),
+          Style::kRadioActive),
       device_id_(device_id),
       internal_(internal) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
@@ -79,8 +81,9 @@ MicGainSliderView::MicGainSliderView(MicGainSliderController* controller,
         kSliderChildrenViewSpacing));
     slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
     slider()->SetPreferredSize(kRadioSliderPreferredSize);
-    slider_icon()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));
-    layout->SetFlexForView(slider()->parent(), /*flex=*/1);
+    slider_button()->SetBorder(
+        views::CreateEmptyBorder(kRadioSliderIconPadding));
+    layout->SetFlexForView(slider(), /*flex=*/1);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     announcement_view_ = AddChildView(std::make_unique<views::View>());
@@ -162,13 +165,10 @@ void MicGainSliderView::Update(bool by_user) {
           audio_handler->GetDeviceByType(AudioDeviceType::kFrontMic)->id;
     }
 
-    // Checks if the device is muted. If so, sets its level to be 0 to render
-    // the muted state for slider. Otherwise, gets its volume level.
-    level =
-        audio_handler->IsInputMutedForDevice(device_id)
-            ? 0
-            : audio_handler->GetInputGainPercentForDevice(device_id) / 100.f;
-    is_muted = level == 0;
+    level = audio_handler->GetInputGainPercentForDevice(device_id) / 100.f;
+    // Still needs to check if `level` is 0 because toggling the mic mute by
+    // keyboard will not set the input to be muted in `MicGainSliderController`.
+    is_muted = audio_handler->IsInputMutedForDevice(device_id) || level == 0;
   }
 
   if (toast_label()) {
@@ -200,14 +200,15 @@ void MicGainSliderView::Update(bool by_user) {
     // showing and `device_id_` doesn't match with `active_device_id`.
     const bool is_active = show_internal_stub || active_device_id == device_id_;
     static_cast<QuickSettingsSlider*>(slider())->SetSliderStyle(
-        is_active ? QuickSettingsSlider::Style::kRadioActive
-                  : QuickSettingsSlider::Style::kRadioInactive);
+        is_active ? (is_muted ? Style::kRadioActiveMuted : Style::kRadioActive)
+                  : Style::kRadioInactive);
 
-    slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
-        is_muted ? kMutedMicrophoneIcon : kImeMenuMicrophoneIcon,
-        is_active ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                  : cros_tokens::kCrosSysOnSurfaceVariant,
-        kQsSliderIconSize));
+    slider_button()->SetVectorIcon(is_muted ? kMutedMicrophoneIcon
+                                            : kImeMenuMicrophoneIcon);
+    slider_button()->SetIconColorId(
+        is_active ? (is_muted ? cros_tokens::kCrosSysOnSurface
+                              : cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                  : cros_tokens::kCrosSysOnSurfaceVariant);
   }
 
   // Slider's value is in finer granularity than audio volume level(0.01),

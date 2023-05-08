@@ -40,10 +40,17 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
     // parts are center-aligned horizontally. The ends of both parts have fully
     // rounded corners.
     kDefault,
+    // Same style as `kDefault`, except for the thumb and trough are in gray for
+    // the muted default sliders.
+    kDefaultMuted,
     // Represents the style where both the full part and the empty part of the
     // slider have a height of `kFullSliderThickness`. The ends are fully
     // rounded.
     kRadioActive,
+    // Same style as `kRadioActive`, except for the thumb and trough are in
+    // gray for the muted radio sliders. Only the active radio sliders will have
+    // the muted state.
+    kRadioActiveMuted,
     // Represents the style where the full part and the empty part also have the
     // same height of `kFullSliderThickness`, except that the ends are not fully
     // rounded but have a radius of `kInactiveRadioSliderRoundedRadius`.

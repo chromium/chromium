@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
+#include "ash/system/unified/quick_settings_slider.h"
 #include "base/check_op.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -35,8 +36,7 @@ using ContentLayerType = AshColorProvider::ContentLayerType;
 namespace {
 
 constexpr auto kQsSliderRowPadding = gfx::Insets::TLBR(0, 12, 4, 16);
-constexpr auto kQsSliderIconInsets = gfx::Insets::VH(0, 10);
-constexpr auto kQsSliderBorder = gfx::Insets::TLBR(0, 4, 0, 16);
+constexpr auto kQsSliderBorder = gfx::Insets::TLBR(4, 4, 4, 16);
 
 std::unique_ptr<views::Slider> CreateSlider(
     UnifiedSliderListener* listener,
@@ -50,13 +50,13 @@ std::unique_ptr<views::Slider> CreateSlider(
 }  // namespace
 
 void UnifiedSliderListener::TrackToggleUMA(bool target_toggle_state) {
-  DCHECK_NE(GetCatalogName(), QsSliderCatalogName::kUnknown);
+  CHECK_NE(GetCatalogName(), QsSliderCatalogName::kUnknown);
   quick_settings_metrics_util::RecordQsSliderToggle(
       GetCatalogName(), /*enable=*/target_toggle_state);
 }
 
 void UnifiedSliderListener::TrackValueChangeUMA(bool going_up) {
-  DCHECK_NE(GetCatalogName(), QsSliderCatalogName::kUnknown);
+  CHECK_NE(GetCatalogName(), QsSliderCatalogName::kUnknown);
   quick_settings_metrics_util::RecordQsSliderValueChange(GetCatalogName(),
                                                          /*going_up=*/going_up);
 }
@@ -103,44 +103,39 @@ UnifiedSliderView::UnifiedSliderView(views::Button::PressedCallback callback,
     return;
   }
 
-  auto container = std::make_unique<views::View>();
-  slider_ =
-      container->AddChildView(CreateSlider(listener, read_only, slider_style));
-  // Uses `icon_container` to hold `slider_icon_` and makes it left align.
-  auto icon_container = std::make_unique<views::View>();
-  icon_container->SetCanProcessEventsWithinSubtree(false);
-
-  slider_icon_ =
-      icon_container->AddChildView(std::make_unique<views::ImageView>());
-  slider_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-      icon, cros_tokens::kCrosSysSystemOnPrimaryContainer, kQsSliderIconSize));
-  // Sets up the `slider_icon_` for RTL since `ImageView` doesn't handle it.
-  slider_icon_->SetFlipCanvasOnPaintForRTLUI(true);
-
-  auto* icon_container_layout =
-      icon_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, kQsSliderIconInsets,
-          /*between_child_spacing=*/0));
-  icon_container_layout->set_main_axis_alignment(
+  slider_ = AddChildView(CreateSlider(listener, read_only, slider_style));
+  slider_->SetBorder(views::CreateEmptyBorder(kQsSliderBorder));
+  // Sets `slider_` to have a `BoxLayout` to align the child view
+  // `slider_button_` to the left.
+  auto* slider_layout =
+      slider_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  slider_layout->set_main_axis_alignment(
       views::BoxLayout::MainAxisAlignment::kStart);
 
-  container->AddChildView(std::move(icon_container));
-  container->SetLayoutManager(std::make_unique<views::FillLayout>());
+  const bool is_default_style =
+      (slider_style == QuickSettingsSlider::Style::kDefault ||
+       slider_style == QuickSettingsSlider::Style::kDefaultMuted);
+  slider_button_ = slider_->AddChildView(std::make_unique<IconButton>(
+      std::move(callback),
+      is_default_style ? IconButton::Type::kMediumFloating
+                       : IconButton::Type::kLargeFloating,
+      &icon, accessible_name_id,
+      /*is_togglable=*/true,
+      /*has_border=*/true));
+  slider_button_->SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
 
   // Prevent an accessibility event while initiallizing this view.
   // Typically the first update of the slider value is conducted by the
   // caller function to reflect the current value.
   slider_->SetEnableAccessibilityEvents(false);
-
   slider_->GetViewAccessibility().OverrideName(
       l10n_util::GetStringUTF16(accessible_name_id));
-  slider_->SetBorder(views::CreateEmptyBorder(kQsSliderBorder));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kQsSliderRowPadding,
       kSliderChildrenViewSpacing));
-  container_ = AddChildView(std::move(container));
-  layout->SetFlexForView(container_, /*flex=*/1);
+  layout->SetFlexForView(slider_, /*flex=*/1);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
@@ -175,7 +170,7 @@ void UnifiedSliderView::CreateToastLabel() {
         accessible_name_id_,
         /*is_togglable=*/true,
         /*has_border=*/true));
-    container_->SetVisible(false);
+    slider_->SetVisible(false);
   }
   toast_label_ = AddChildView(std::make_unique<views::Label>());
   TrayPopupUtils::SetLabelFontList(toast_label_,

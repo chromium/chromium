@@ -69,7 +69,8 @@ void MicGainSliderController::SliderValueChanged(
   // Unmute if muted.
   if (CrasAudioHandler::Get()->IsInputMuted()) {
     CrasAudioHandler::Get()->SetMuteForDevice(
-        CrasAudioHandler::Get()->GetPrimaryActiveInputNode(), false);
+        CrasAudioHandler::Get()->GetPrimaryActiveInputNode(),
+        /*mute_on=*/false);
   }
 
   const int level = value * 100;
@@ -82,8 +83,9 @@ void MicGainSliderController::SliderValueChanged(
   // and level is 0 state in QsRevamp.
   if (features::IsQsRevampEnabled() && level == 0) {
     CrasAudioHandler::Get()->SetMuteForDevice(
-        CrasAudioHandler::Get()->GetPrimaryActiveInputNode(), true);
+        CrasAudioHandler::Get()->GetPrimaryActiveInputNode(), /*mute_on=*/true);
   }
+
   CrasAudioHandler::Get()->SetInputGainPercent(level);
 
   input_gain_metric_delay_timer_.Reset();
@@ -92,6 +94,13 @@ void MicGainSliderController::SliderValueChanged(
 void MicGainSliderController::SliderButtonPressed() {
   auto* const audio_handler = CrasAudioHandler::Get();
   const bool mute = !audio_handler->IsInputMuted();
+
+  // If the level is 0, this slider is still muted, and nothing needs to be
+  // done.
+  if (features::IsQsRevampEnabled() &&
+      audio_handler->GetInputGainPercent() == 0) {
+    return;
+  }
 
   TrackToggleUMA(/*target_toggle_state=*/mute);
 

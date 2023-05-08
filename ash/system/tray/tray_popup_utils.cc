@@ -44,6 +44,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/painter.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -298,15 +299,13 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
                                               bool checked,
                                               bool enterprise_managed) {
   const int dip_size = GetDefaultSizeOfVectorIcon(kCheckCircleIcon);
-  ui::ImageModel check_mark = ui::ImageModel::FromVectorIcon(
-      kHollowCheckCircleIcon,
-      // The mapping of `cros_tokens::kCrosSysSystemOnPrimaryContainer` cannot
-      // accommodate `check_mark` and other components, so we still want to
-      // guard with Jelly flag here.
+  // The mapping of `cros_tokens::kCrosSysSystemOnPrimaryContainer` cannot
+  // accommodate `check_mark` and other components, so we still want to
+  // guard with Jelly flag here.
+  ui::ImageModel check_mark = CreateCheckMark(
       chromeos::features::IsJellyEnabled()
           ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-          : static_cast<ui::ColorId>(kColorAshIconColorProminent),
-      dip_size);
+          : static_cast<ui::ColorId>(kColorAshIconColorProminent));
   if (enterprise_managed) {
     ui::ImageModel enterprise_managed_icon = ui::ImageModel::FromVectorIcon(
         chromeos::kEnterpriseIcon, kColorAshIconColorBlocked, dip_size);
@@ -319,12 +318,33 @@ void TrayPopupUtils::InitializeAsCheckableRow(HoverHighlightView* container,
 
 void TrayPopupUtils::UpdateCheckMarkVisibility(HoverHighlightView* container,
                                                bool visible) {
-  if (!container)
+  if (!container) {
     return;
+  }
+
   container->SetRightViewVisible(visible);
   container->SetAccessibilityState(
       visible ? HoverHighlightView::AccessibilityState::CHECKED_CHECKBOX
               : HoverHighlightView::AccessibilityState::UNCHECKED_CHECKBOX);
+}
+
+void TrayPopupUtils::UpdateCheckMarkColor(HoverHighlightView* container,
+                                          ui::ColorId color_id) {
+  if (!container || !container->right_view()) {
+    return;
+  }
+
+  auto check_mark = CreateCheckMark(color_id);
+  if (views::IsViewClass<views::ImageView>(container->right_view())) {
+    static_cast<views::ImageView*>(container->right_view())
+        ->SetImage(check_mark);
+  }
+}
+
+ui::ImageModel TrayPopupUtils::CreateCheckMark(ui::ColorId color_id) {
+  return ui::ImageModel::FromVectorIcon(
+      kHollowCheckCircleIcon, color_id,
+      GetDefaultSizeOfVectorIcon(kCheckCircleIcon));
 }
 
 void TrayPopupUtils::SetLabelFontList(views::Label* label, FontStyle style) {

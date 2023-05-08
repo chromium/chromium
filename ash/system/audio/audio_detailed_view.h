@@ -16,6 +16,7 @@
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/audio_device.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "components/soda/soda_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -33,7 +34,8 @@ class UnifiedVolumeSliderController;
 
 class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
                                      public AccessibilityObserver,
-                                     public speech::SodaInstaller::Observer {
+                                     public speech::SodaInstaller::Observer,
+                                     public CrasAudioHandler::AudioObserver {
  public:
   METADATA_HEADER(AudioDetailedView);
 
@@ -113,6 +115,15 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   // Updates the child views in `scroll_content()`.
   void UpdateScrollableList();
 
+  // Updates the label and checkmark color of `device_name_container` based on
+  // whether this device is muted or not.
+  void UpdateDeviceContainerColor(HoverHighlightView* device_name_container,
+                                  bool is_muted);
+
+  // Callback to change the active node's color based on the mute state. Gets
+  // called when the input/output node's mute state changes.
+  void UpdateActiveDeviceColor(bool is_input, bool is_muted);
+
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
   void CreateExtraTitleRowButtons() override;
@@ -123,6 +134,13 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
                           speech::SodaInstaller::ErrorCode error_code) override;
   void OnSodaProgress(speech::LanguageCode language_code,
                       int combined_progress) override;
+
+  // CrasAudioHandler::AudioObserver:
+  void OnOutputMuteChanged(bool mute_on) override;
+  void OnInputMuteChanged(
+      bool mute_on,
+      CrasAudioHandler::InputMuteChangeMethod method) override;
+  void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
 
   typedef std::map<views::View*, AudioDevice> AudioDeviceMap;
 

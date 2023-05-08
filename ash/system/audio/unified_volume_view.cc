@@ -15,6 +15,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/system/audio/unified_volume_slider_controller.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/quick_settings_slider.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -25,6 +26,8 @@
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
+
+using Style = QuickSettingsSlider::Style;
 
 namespace {
 
@@ -38,24 +41,6 @@ const gfx::VectorIcon* const kVolumeLevelIcons[] = {
 
 // The maximum index of `kVolumeLevelIcons`.
 constexpr int kVolumeLevels = std::size(kVolumeLevelIcons) - 1;
-
-// The maximum index of `kQsVolumeLevelIcons`.
-constexpr int kQsVolumeLevels =
-    std::size(UnifiedVolumeView::kQsVolumeLevelIcons) - 1;
-
-// Get vector icon reference that corresponds to the given volume level. `level`
-// is between 0.0 to 1.0 inclusive.
-const gfx::VectorIcon& GetVolumeIconForLevel(float level) {
-  if (!features::IsQsRevampEnabled()) {
-    int index = static_cast<int>(std::ceil(level * kVolumeLevels));
-    DCHECK(index >= 0 && index <= kVolumeLevels);
-    return *kVolumeLevelIcons[index];
-  }
-
-  int index = static_cast<int>(std::ceil(level * kQsVolumeLevels));
-  DCHECK(index >= 0 && index <= kQsVolumeLevels);
-  return *UnifiedVolumeView::kQsVolumeLevelIcons[index];
-}
 
 }  // namespace
 
@@ -78,7 +63,6 @@ UnifiedVolumeView::UnifiedVolumeView(
           &kQuickSettingsRightArrowIcon,
           IDS_ASH_STATUS_TRAY_AUDIO))),
       is_active_output_node_(is_active_output_node),
-      slider_style_(QuickSettingsSlider::Style::kDefault),
       a11y_controller_(Shell::Get()->accessibility_controller()),
       device_id_(CrasAudioHandler::Get()->GetPrimaryActiveOutputNode()) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
@@ -143,10 +127,9 @@ UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller,
                         kSystemMenuVolumeHighIcon,
                         IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_LABEL,
                         false,
-                        QuickSettingsSlider::Style::kRadioActive),
+                        Style::kRadioActive),
       more_button_(nullptr),
       is_active_output_node_(is_active_output_node),
-      slider_style_(QuickSettingsSlider::Style::kRadioActive),
       a11y_controller_(Shell::Get()->accessibility_controller()),
       device_id_(device_id) {
   CrasAudioHandler::Get()->AddAudioObserver(this);
@@ -156,11 +139,10 @@ UnifiedVolumeView::UnifiedVolumeView(UnifiedVolumeSliderController* controller,
       kSliderChildrenViewSpacing));
   slider()->SetBorder(views::CreateEmptyBorder(kRadioSliderPadding));
   slider()->SetPreferredSize(kRadioSliderPreferredSize);
-  slider_icon()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));
-  layout->SetFlexForView(slider()->parent(), /*flex=*/1);
+  slider_button()->SetBorder(views::CreateEmptyBorder(kRadioSliderIconPadding));
+  layout->SetFlexForView(slider(), /*flex=*/1);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetPreferredSize(kRadioSliderPreferredSize);
 
   Update(/*by_user=*/false);
 }
@@ -196,35 +178,55 @@ void UnifiedVolumeView::Update(bool by_user) {
         IDS_ASH_STATUS_TRAY_VOLUME, state_tooltip_text));
   } else {
     level = audio_handler->GetOutputVolumePercentForDevice(device_id_) / 100.f;
-    // When muted by keyboard, the level stored in `audio_handler` should be
-    // preserved but the slider should appear as muted. `level` is set to 0
-    // manually to update the slider and icon.
-    if (audio_handler->IsOutputMutedForDevice(device_id_)) {
-      level = 0;
-    }
+    // Still needs to check if `level` is 0 because toggling the output mute by
+    // keyboard will not set it to be muted in `UnifiedVolumeSliderController`.
+    const bool is_muted =
+        audio_handler->IsOutputMutedForDevice(device_id_) || level == 0;
+
     auto active_device_id = audio_handler->GetPrimaryActiveOutputNode();
 
-    switch (slider_style_) {
-      case QuickSettingsSlider::Style::kDefault: {
+    // Updates the style before updating the slider icon.
+    auto* qs_slider = static_cast<QuickSettingsSlider*>(slider());
+    const Style slider_style = qs_slider->slider_style();
+    // The default style is for the slider in the main page and in the toast.
+    const bool is_default_style = (slider_style == Style::kDefault ||
+                                   slider_style == Style::kDefaultMuted);
+    if (is_default_style) {
+      qs_slider->SetSliderStyle(is_muted ? Style::kDefaultMuted
+                                         : Style::kDefault);
+    } else if (active_device_id == device_id_) {
+      qs_slider->SetSliderStyle(is_muted ? Style::kRadioActiveMuted
+                                         : Style::kRadioActive);
+    }
+
+    // Updates the slider icon based on mute state and the style for radio
+    // sliders.
+    switch (slider_style) {
+      case Style::kDefault:
+      case Style::kDefaultMuted: {
         // TODO(b/257151067): Adds tooltip.
-        slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
-            GetVolumeIconForLevel(level),
-            cros_tokens::kCrosSysSystemOnPrimaryContainer, kQsSliderIconSize));
+        slider_button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
+                                                : GetVolumeIconForLevel(level));
+        slider_button()->SetIconColorId(
+            is_muted ? cros_tokens::kCrosSysOnSurfaceVariant
+                     : cros_tokens::kCrosSysSystemOnPrimaryContainer);
+
         break;
       }
-      case QuickSettingsSlider::Style::kRadioActive:
-      case QuickSettingsSlider::Style::kRadioInactive: {
-        static_cast<QuickSettingsSlider*>(slider())->SetSliderStyle(
+      case Style::kRadioActive:
+      case Style::kRadioActiveMuted:
+      case Style::kRadioInactive: {
+        qs_slider->SetSliderStyle(
             active_device_id == device_id_
-                ? QuickSettingsSlider::Style::kRadioActive
-                : QuickSettingsSlider::Style::kRadioInactive);
-
-        slider_icon()->SetImage(ui::ImageModel::FromVectorIcon(
-            GetVolumeIconForLevel(level),
+                ? (is_muted ? Style::kRadioActiveMuted : Style::kRadioActive)
+                : Style::kRadioInactive);
+        slider_button()->SetVectorIcon(is_muted ? kUnifiedMenuVolumeMuteIcon
+                                                : GetVolumeIconForLevel(level));
+        slider_button()->SetIconColorId(
             active_device_id == device_id_
-                ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                : cros_tokens::kCrosSysSecondary,
-            kQsSliderIconSize));
+                ? (is_muted ? cros_tokens::kCrosSysOnSurface
+                            : cros_tokens::kCrosSysSystemOnPrimaryContainer)
+                : cros_tokens::kCrosSysOnSurfaceVariant);
         break;
       }
       default:
@@ -243,6 +245,18 @@ void UnifiedVolumeView::Update(bool by_user) {
   // Note: even if the value does not change, we still need to call this
   // function to enable accessibility events (crbug.com/1013251).
   SetSliderValue(level, by_user);
+}
+
+const gfx::VectorIcon& UnifiedVolumeView::GetVolumeIconForLevel(float level) {
+  if (!features::IsQsRevampEnabled()) {
+    int index = static_cast<int>(std::ceil(level * kVolumeLevels));
+    CHECK(index >= 0 && index <= kVolumeLevels);
+    return *kVolumeLevelIcons[index];
+  }
+
+  int index = static_cast<int>(std::ceil(level * kQsVolumeLevels));
+  CHECK(index >= 0 && index <= kQsVolumeLevels);
+  return *kQsVolumeLevelIcons[index];
 }
 
 void UnifiedVolumeView::OnLiveCaptionButtonPressed() {

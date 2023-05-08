@@ -54,7 +54,7 @@ void ConfigureSliderViewStyle(UnifiedSliderView* slider_view) {
         slider_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
             kQsToastSliderViewPadding, kSliderChildrenViewSpacing));
-    layout->SetFlexForView(slider_view->slider()->parent(), /*flex=*/1);
+    layout->SetFlexForView(slider_view->slider(), /*flex=*/1);
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
     return;
@@ -262,7 +262,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
   // If the bubble already exists, update the content of the bubble and extend
   // the autoclose timer.
   if (bubble_widget_) {
-    DCHECK(bubble_view_);
+    CHECK(bubble_view_);
 
     if (slider_type_ != slider_type) {
       bubble_view_->RemoveAllChildViews();
@@ -284,7 +284,7 @@ void UnifiedSliderBubbleController::ShowBubble(SliderType slider_type) {
 
   tray_->CloseSecondaryBubbles();
 
-  DCHECK(!bubble_view_);
+  CHECK(!bubble_view_);
 
   slider_type_ = slider_type;
   CreateSliderController();
