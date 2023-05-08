@@ -324,19 +324,10 @@ void EnrollmentHandler::OnRegistrationStateChanged(CloudPolicyClient* client) {
 
   device_mode_ = client_->device_mode();
 
-  // If the management mode setting from DM Server is Active Directory, we
-  // override this setting to cloud management (b/259180126).
-  if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
-    device_mode_ = DEVICE_MODE_ENTERPRISE;
-  }
-
   switch (device_mode_) {
     case DEVICE_MODE_ENTERPRISE:
     case DEVICE_MODE_DEMO:
       // Do nothing.
-      break;
-    case DEVICE_MODE_ENTERPRISE_AD:
-      ash::UpstartClient::Get()->StartAuthPolicyService();
       break;
     default:
       LOG(ERROR) << "Supplied device mode is not supported:" << device_mode_;
@@ -649,27 +640,12 @@ void EnrollmentHandler::StartLockDevice() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void EnrollmentHandler::HandleDMTokenStoreResult(bool success) {
-  CHECK_EQ(STEP_STORE_TOKEN, enrollment_step_);
-  if (!success) {
-    ReportResult(
-        EnrollmentStatus::ForStatus(EnrollmentStatus::DM_TOKEN_STORE_FAILED));
-    return;
-  }
-
-  StartStoreRobotAuth();
-}
-
 void EnrollmentHandler::HandleLockDeviceResult(
     ash::InstallAttributes::LockResult lock_result) {
   DCHECK_EQ(STEP_LOCK_DEVICE, enrollment_step_);
   switch (lock_result) {
     case ash::InstallAttributes::LOCK_SUCCESS:
-      if (device_mode_ == DEVICE_MODE_ENTERPRISE_AD) {
-        StartStoreDMToken();
-      } else {
-        StartStoreRobotAuth();
-      }
+      StartStoreRobotAuth();
       break;
     case ash::InstallAttributes::LOCK_NOT_READY:
       // We wait up to |kLockRetryTimeoutMs| milliseconds and if it hasn't
@@ -699,17 +675,6 @@ void EnrollmentHandler::HandleLockDeviceResult(
       ReportResult(EnrollmentStatus::ForLockError(lock_result));
       break;
   }
-}
-
-void EnrollmentHandler::StartStoreDMToken() {
-  DCHECK(device_mode_ == DEVICE_MODE_ENTERPRISE_AD);
-  SetStep(STEP_STORE_TOKEN);
-  dm_token_storage_ =
-      std::make_unique<DMTokenStorage>(g_browser_process->local_state());
-  dm_token_storage_->StoreDMToken(
-      client_->dm_token(),
-      base::BindOnce(&EnrollmentHandler::HandleDMTokenStoreResult,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void EnrollmentHandler::StartStoreRobotAuth() {

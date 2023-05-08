@@ -189,12 +189,6 @@ class EnrollmentHandler : public CloudPolicyClient::Observer,
   // Handle callback from InstallAttributes::LockDevice() and retry on failure.
   void HandleLockDeviceResult(ash::InstallAttributes::LockResult lock_result);
 
-  // Initiates storing DM token. For Active Directory devices only.
-  void StartStoreDMToken();
-
-  // Called after StartStoreDMtoken() is done.
-  void HandleDMTokenStoreResult(bool success);
-
   // Initiates storing of robot auth token.
   void StartStoreRobotAuth();
 
