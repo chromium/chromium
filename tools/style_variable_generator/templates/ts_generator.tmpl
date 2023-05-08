@@ -81,11 +81,11 @@ const TYPOGRAPHY_CSS = window ? `
 const LEGACY_MAPPINGS_CSS = window ? `
 {%- for name, color in legacy_mappings[Modes.DEFAULT].items() %}
 {%-   if needs_rgb_variant(color) %}
-    {{name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
+    {{name | to_css_var_name_unscoped}}-rgb: {{color | css_color_rgb}};
 {%-   endif %}
-    {{name | to_css_var_name}}: {{css_color_var(name, color, mode)}};
-    {{name | to_css_var_name}}-light: var({{name | to_css_var_name}});
-    {{name | to_css_var_name}}-dark: var({{name | to_css_var_name}});
+    {{name | to_css_var_name_unscoped}}: {{css_color_var(name, color, mode, True)}};
+    {{name | to_css_var_name_unscoped}}-light: {{css_color_var(name, color, Modes.LIGHT, True)}};
+    {{name | to_css_var_name_unscoped}}-dark: {{css_color_var(name, color, Modes.DARK, True)}};
 {%  endfor -%}
 ` : '';
 
@@ -127,6 +127,9 @@ export function getColorsCSS(options?: GetColorsCSSOptions) {
       @media (prefers-color-scheme: dark) {
         html:not(body), :host {
           ${DARK_MODE_OVERRIDES_CSS}
+{%-       if useDynamicColors == 'true' %}
+          ${LEGACY_MAPPINGS_CSS}
+{%-       endif %}
         }
         :host([inverted-colors]) {
           ${DEFAULT_CSS}

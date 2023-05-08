@@ -82,13 +82,13 @@ const TYPOGRAPHY_CSS = window ? `
 const LEGACY_MAPPINGS_CSS = window ? `
     --cros-legacy-color-rgb: var(--cros-text-color-primary-rgb);
     --cros-legacy-color: var(--cros-text-color-primary);
-    --cros-legacy-color-light: var(--cros-legacy-color);
-    --cros-legacy-color-dark: var(--cros-legacy-color);
+    --cros-legacy-color-light: var(--cros-text-color-primary);
+    --cros-legacy-color-dark: var(--cros-text-color-primary);
 
     --cros-legacy-color-w-opacity-rgb: var(--cros-text-color-primary-rgb);
     --cros-legacy-color-w-opacity: rgba(var(--cros-legacy-color-w-opacity-rgb), 0.3);
-    --cros-legacy-color-w-opacity-light: var(--cros-legacy-color-w-opacity);
-    --cros-legacy-color-w-opacity-dark: var(--cros-legacy-color-w-opacity);
+    --cros-legacy-color-w-opacity-light: rgba(var(--cros-legacy-color-w-opacity-rgb), 0.3);
+    --cros-legacy-color-w-opacity-dark: rgba(var(--cros-legacy-color-w-opacity-rgb), 0.3);
 ` : '';
 
 /**
@@ -175,6 +175,7 @@ export function getColorsCSS(options?: GetColorsCSSOptions) {
       @media (prefers-color-scheme: dark) {
         html:not(body), :host {
           ${DARK_MODE_OVERRIDES_CSS}
+          ${LEGACY_MAPPINGS_CSS}
         }
         :host([inverted-colors]) {
           ${DEFAULT_CSS}

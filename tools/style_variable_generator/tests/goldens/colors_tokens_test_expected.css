@@ -36,10 +36,10 @@ html:not(body) {
 
   --cros-sys-reference_opacity: var(--cros-sys-disabled_opacity);
 
-  --cros_color_primary-rgb: var(--cros-sys-primary_container-rgb);
-  --cros_color_primary: var(--cros-sys-primary_container);
-  --cros_color_primary-light: var(--cros_color_primary);
-  --cros_color_primary-dark: var(--cros_color_primary);
+  --cros-color-primary-rgb: var(--cros-sys-primary_container-rgb);
+  --cros-color-primary: var(--cros-sys-primary_container);
+  --cros-color-primary-light: var(--cros-sys-primary_container);
+  --cros-color-primary-dark: var(--cros-sys-primary_container);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -62,5 +62,10 @@ html:not(body) {
   --cros-sys-blend_a_blend: color-mix(in srgb, rgb(255, 255, 255) 40.0%, color-mix(in srgb, var(--cros-sys-blend_opac) 2.0%, rgb(255, 255, 255)));
 
   --cros-sys-reference_opacity: 1;
+
+  --cros-color-primary-rgb: var(--cros-sys-primary_container-rgb);
+  --cros-color-primary: var(--cros-sys-primary_container);
+  --cros-color-primary-light: var(--cros-sys-primary_container);
+  --cros-color-primary-dark: var(--cros-sys-primary_container);
 }
 }

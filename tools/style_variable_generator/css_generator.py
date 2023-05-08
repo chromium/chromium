@@ -192,7 +192,7 @@ class CSSStyleGenerator(BaseGenerator):
         # If we don't have opacity information assume we want to blend 100%.
         return 100
 
-    def CSSColorVar(self, name, color, mode):
+    def CSSColorVar(self, name, color, mode, unscoped=False):
         '''Returns the CSS color representation given a color name and color'''
         if isinstance(color, ColorVar):
             return 'var(%s)' % self.ToCSSVarName(color.var)
@@ -202,7 +202,11 @@ class CSSStyleGenerator(BaseGenerator):
 
         if isinstance(color,
                       ((ColorRGB, ColorRGBVar))) and color.opacity.a != 1:
-            return 'rgba(var(%s-rgb), %s)' % (self.ToCSSVarName(name),
+            if unscoped:
+                var_name = self.ToCSSVarNameUnscoped(name)
+            else:
+                var_name = self.ToCSSVarName(name)
+            return 'rgba(var(%s-rgb), %s)' % (var_name,
                                               self._CSSOpacity(color.opacity))
 
         return 'rgb(var(%s-rgb))' % self.ToCSSVarName(name)

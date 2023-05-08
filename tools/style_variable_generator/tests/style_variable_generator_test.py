@@ -21,17 +21,9 @@ import unittest
 
 print(os.path.join(os.path.dirname(__file__)))
 
-# Dirty hack to make updating goldens easier. Setting to true then running the
-# tests will force all goldens to match script output.
-UPDATE_GOLDENS = True
-
-
 class BaseStyleGeneratorTest:
     def assertEqualToFile(self, value, filename):
         path = os.path.join(os.path.dirname(__file__), 'goldens', filename)
-        if UPDATE_GOLDENS:
-            with open(path, 'w') as f:
-                f.write(value)
         with open(path, 'r') as f:
             self.maxDiff = None
             self.assertEqual(value, f.read(), f'Did not match golden: {path}')
@@ -311,13 +303,4 @@ class InvertedStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 
 
 if __name__ == '__main__':
-    if UPDATE_GOLDENS:
-        print("""\033[1;31;40m
-============================ [WARNING] ============================
-! UPDATE_GOLDENS IS TRUE. EACH TIME THE TESTS ARE RUN ALL GOLDENS
-  WILL BE UPDATED TO MATCH CURRENT BEHAVIOUR.
-! ALL TESTS WILL PASS WITHOUT BEING CHECKED.
-! THE CODE SHOULD NOT BE SUBMITTED AS IS.
-===================================================================\033[0m
-        """)
     unittest.main()
