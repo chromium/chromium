@@ -400,8 +400,8 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 
 // Change the tableview's width constraint based on the screen's orientation.
 - (void)adjustTableViewWidthConstraint {
-  CGSize screenSize = [[UIScreen mainScreen] bounds].size;
-  BOOL isLandscape = screenSize.width > screenSize.height;
+  BOOL isLandscape =
+      UIDeviceOrientationIsLandscape([UIDevice currentDevice].orientation);
   _landscapeTableWidthConstraint.active = isLandscape;
   _portraitTableWidthConstraint.active = !isLandscape;
 }
