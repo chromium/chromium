@@ -208,7 +208,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
         } else {
             // System UI dimensions are not settled yet. Post the task.
             new Handler().post(() -> {
-                if (mSheetOnRight) configureLayoutBeyondScreen(false);
+                if (mSheetOnRight) {
+                    configureLayoutBeyondScreen(false);
+                    maybeResetTalkbackFocus();
+                }
                 initializeSize();
                 maybeInvokeResizeCallback();
             });
@@ -216,12 +219,15 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     private void maybeResetTalkbackFocus() {
-        // Move the talkback focus from the leftmost button back to maximize button. This happens
-        // when double-tapping on the button causes the sheet to be resized to full width in
-        // talkback mode. Some delay is required for this to work as expected.
         var am = (AccessibilityManager) mActivity.getSystemService(Context.ACCESSIBILITY_SERVICE);
         if (am != null && am.isTouchExplorationEnabled()) {
+            // After resizing the view, notify the window state change to let the talkback
+            // focus navigation work as before.
+            mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
             new Handler().postDelayed(() -> {
+                // Move the talkback focus from the leftmost button back to maximize button. This
+                // happens when double-tapping on the button causes the sheet to be resized to full
+                // width in talkback mode. Some delay is required for this to work as expected.
                 var maximizeButton = mToolbarView.findViewById(R.id.custom_tabs_sidepanel_maximize);
                 maximizeButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
             }, 200);
