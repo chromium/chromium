@@ -11,12 +11,15 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/files/file_util.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
+#include "base/sys_byteorder.h"
 
 namespace {
 
@@ -41,6 +44,24 @@ void DeclareAndExposeProtocol(fuchsia_component_decl::Component& decl) {
       .target = Ref::WithParent({}),
       .target_name = kProtocolName,
   }}));
+}
+
+uint64_t FetchAbiRevision() {
+  constexpr char kPkgAbiRevisionPath[] = "/pkg/meta/fuchsia.abi/abi-revision";
+
+  // Read the Little Endian representation of the unsigned 64-bit integer ABI
+  // revision from the file in the metadata directory.
+  uint64_t abi_revision_le = 0u;
+  int read_bytes = base::ReadFile(base::FilePath(kPkgAbiRevisionPath),
+                                  reinterpret_cast<char*>(&abi_revision_le),
+                                  sizeof(abi_revision_le));
+  CHECK_EQ(read_bytes, static_cast<int>(sizeof(abi_revision_le)));
+
+  // Swap the byte-order of `abi_revision_le` from little-endian to host-endian
+  // by using `ByteSwapToLE64()`. If the host is little-endian then this is a
+  // no-op, otherwise the byte order will be swapped, resulting in the correct
+  // big-endian/host-endian.
+  return base::ByteSwapToLE64(abi_revision_le);
 }
 
 }  // namespace
@@ -99,11 +120,13 @@ void CastResolver::Resolve(CastResolver::ResolveRequest& request,
   }
 
   // Encode the component manifest into the resolver result.
+  static const uint64_t abi_revision = FetchAbiRevision();
   fuchsia_component_resolution::ResolverResolveResponse result{{
       .component = fuchsia_component_resolution::Component{{
           .url = std::move(request.component_url()),
           .decl =
               fuchsia_mem::Data::WithBytes(std::move(persisted_decl.value())),
+          .abi_revision = abi_revision,
       }},
   }};
 
