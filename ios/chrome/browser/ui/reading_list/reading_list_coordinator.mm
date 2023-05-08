@@ -666,7 +666,7 @@
 - (BOOL)isSyncDisabledByAdministrator {
   syncer::SyncService* syncService = SyncServiceFactory::GetForBrowserState(
       self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
-  const bool syncDisabledPolicy = syncService->GetDisableReasons().Has(
+  const bool syncDisabledPolicy = syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   const bool syncTypesDisabledPolicy = IsManagedSyncDataType(
       syncService, syncer::UserSelectableType::kReadingList);

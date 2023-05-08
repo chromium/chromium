@@ -133,7 +133,7 @@ AccountErrorUIInfo* GetAccountErrorUIInfo(syncer::SyncService* sync_service) {
 SyncState GetSyncState(syncer::SyncService* sync_service) {
   syncer::SyncService::UserActionableError error_state =
       sync_service->GetUserActionableError();
-  if (sync_service->GetDisableReasons().Has(
+  if (sync_service->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     // Sync is disabled by administrator policy.
     return SyncState::kSyncDisabledByAdministrator;

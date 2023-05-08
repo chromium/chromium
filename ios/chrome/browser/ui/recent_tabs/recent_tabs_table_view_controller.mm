@@ -279,7 +279,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  if (self.syncService->GetDisableReasons().Has(
+  if (self.syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     // Return YES if the SyncDisabled policy is enabled.
     return YES;

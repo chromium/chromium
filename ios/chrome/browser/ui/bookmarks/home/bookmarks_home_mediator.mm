@@ -726,7 +726,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Returns YES if the user cannot turn on sync for enterprise policy reasons.
 - (BOOL)isSyncDisabledByAdministrator {
   DCHECK(self.syncService);
-  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
+  bool syncDisabledPolicy = self.syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
   bool syncTypesDisabledPolicy = IsManagedSyncDataType(
       self.syncService, syncer::UserSelectableType::kBookmarks);

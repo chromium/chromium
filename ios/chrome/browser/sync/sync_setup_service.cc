@@ -89,7 +89,7 @@ void SyncSetupService::SetSyncEverythingEnabled(bool sync_all) {
 }
 
 bool SyncSetupService::IsSyncRequested() const {
-  return !sync_service_->GetDisableReasons().Has(
+  return !sync_service_->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_USER_CHOICE);
 }
 

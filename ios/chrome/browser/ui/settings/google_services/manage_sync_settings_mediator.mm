@@ -887,7 +887,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 #pragma mark - Properties
 
 - (BOOL)isSyncDisabledByAdministrator {
-  return self.syncService->GetDisableReasons().Has(
+  return self.syncService->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }
 

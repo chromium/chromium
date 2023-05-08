@@ -623,8 +623,8 @@ TEST_F(SyncServiceImplTest, DisableReasonUserChoiceIfStartsSignedOut) {
   CreateService(SyncServiceImpl::MANUAL_START);
   service()->Initialize();
 
-  EXPECT_TRUE(service()->GetDisableReasons().Has(
-      SyncService::DISABLE_REASON_USER_CHOICE));
+  EXPECT_TRUE(
+      service()->HasDisableReason(SyncService::DISABLE_REASON_USER_CHOICE));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

@@ -44,6 +44,6 @@ bool HasManagedSyncDataType(syncer::SyncService* sync_service) {
 }
 
 bool IsSyncDisabledByPolicy(syncer::SyncService* sync_service) {
-  return sync_service->GetDisableReasons().Has(
+  return sync_service->HasDisableReason(
       syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
 }

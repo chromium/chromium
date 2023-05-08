@@ -61,7 +61,7 @@
       SyncServiceFactory::GetForBrowserState(browserState);
 
   BOOL shouldSkipSyncScreen =
-      syncService->GetDisableReasons().Has(
+      syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
       syncSetupService->IsFirstSetupComplete();
   if (shouldSkipSyncScreen) {
