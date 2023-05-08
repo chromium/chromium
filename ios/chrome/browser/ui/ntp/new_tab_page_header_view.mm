@@ -389,15 +389,6 @@ CGFloat ToolbarHeight() {
     percent = std::clamp<CGFloat>(
         animatingOffset / ntp_header::kAnimationDistance, 0, 1);
   }
-  if (IsMagicStackEnabled()) {
-    // Update background color of fake toolbar if stuck to top of NTP so that it
-    // has a non-clear background that matches the NTP background. Otherwise,
-    // return to clear background.
-    self.fakeToolbar.backgroundColor =
-        percent == 1.0f
-            ? [UIColor colorNamed:@"ntp_background_light_mode_only_color"]
-            : [UIColor clearColor];
-  }
   return percent;
 }
 
@@ -418,6 +409,14 @@ CGFloat ToolbarHeight() {
 
   CGFloat percent = [self searchFieldProgressForOffset:offset
                                         safeAreaInsets:safeAreaInsets];
+  if (IsMagicStackEnabled()) {
+    // Update background color of fake toolbar if stuck to top of NTP so that it
+    // has a non-clear background that matches the NTP background. Otherwise,
+    // return to clear background.
+    self.fakeToolbar.backgroundColor =
+        percent == 1.0f ? [UIColor colorNamed:@"ntp_background_color"]
+                        : [UIColor clearColor];
+  }
 
   // Offset the hint label constraints with half of the change in width
   // from the original scale, since constraints are calculated before

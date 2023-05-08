@@ -203,7 +203,7 @@ source_set("ntp_internal") {
     ":logo",
     ":ntp",
     "resources:fake_omnibox_background_color",
-    "resources:ntp_background_light_mode_only_color",
+    "resources:ntp_background_color",
     "//base",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
