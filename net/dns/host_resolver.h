@@ -499,17 +499,8 @@ class NET_EXPORT HostResolver {
   // Helper for squashing error code to a small set of DNS error codes.
   static int SquashErrorCode(int error);
 
-  // Utility to convert an AddressList to an equivalent list of
-  // `HostResolverEndpointResults`. Assumes all addresses in the input list
-  // represent the default non-protocol endpoint.
-  //
-  // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
-  // in `HostResolver` and results.
-  static std::vector<HostResolverEndpointResult> AddressListToEndpointResults(
-      const AddressList& address_list);
-
-  // Opposite conversion of `AddressListToEndpointResults()`. Builds an
-  // AddressList from the first non-protocol endpoint found in `endpoints`.
+  // Builds an AddressList from the first non-protocol endpoint found in
+  // `endpoints`.
   //
   // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
   // in `HostResolver` and results.

@@ -503,17 +503,6 @@ int HostResolver::SquashErrorCode(int error) {
 }
 
 // static
-std::vector<HostResolverEndpointResult>
-HostResolver::AddressListToEndpointResults(const AddressList& address_list) {
-  HostResolverEndpointResult connection_endpoint;
-  connection_endpoint.ip_endpoints = address_list.endpoints();
-
-  std::vector<HostResolverEndpointResult> list;
-  list.push_back(std::move(connection_endpoint));
-  return list;
-}
-
-// static
 AddressList HostResolver::EndpointResultToAddressList(
     base::span<const HostResolverEndpointResult> endpoints,
     const std::set<std::string>& aliases) {
