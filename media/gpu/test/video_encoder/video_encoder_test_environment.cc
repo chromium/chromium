@@ -120,8 +120,6 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     const base::FilePath& output_folder,
     const std::string& codec,
     const std::string& svc_mode,
-    size_t num_temporal_layers,
-    size_t num_spatial_layers,
     bool save_output_bitstream,
     absl::optional<uint32_t> encode_bitrate,
     Bitrate::Mode bitrate_mode,
@@ -166,26 +164,19 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
   }
   const VideoCodecProfile profile = codec_it->profile;
 
+  size_t num_temporal_layers = 1u;
+  size_t num_spatial_layers = 1u;
   auto inter_layer_pred_mode =
       VideoEncodeAccelerator::Config::InterLayerPredMode::kOff;
-  // VEA supports SVC-mode only.
-  if (num_spatial_layers > 1u) {
-    inter_layer_pred_mode =
-        VideoEncodeAccelerator::Config::InterLayerPredMode::kOnKeyPic;
+  const auto* svc_it = base::ranges::find(kSVCModeParamToSVCConfig, svc_mode,
+                                          &SVCConfig::svc_mode);
+  if (svc_it == std::end(kSVCModeParamToSVCConfig)) {
+    LOG(ERROR) << "Unsupported svc_mode: " << svc_mode;
+    return nullptr;
   }
-  // If SVC mode is filled, overwrite |num_spatial_layers|,
-  // |num_temporal_layers| and |inter_layer_pred_mode|.
-  if (svc_mode != "L1T1") {
-    const auto* svc_it = base::ranges::find(kSVCModeParamToSVCConfig, svc_mode,
-                                            &SVCConfig::svc_mode);
-    if (svc_it == std::end(kSVCModeParamToSVCConfig)) {
-      LOG(ERROR) << "Unsupported svc_mode: " << svc_mode;
-      return nullptr;
-    }
-    num_spatial_layers = svc_it->num_spatial_layers;
-    num_temporal_layers = svc_it->num_temporal_layers;
-    inter_layer_pred_mode = svc_it->inter_layer_pred_mode;
-  }
+  num_spatial_layers = svc_it->num_spatial_layers;
+  num_temporal_layers = svc_it->num_temporal_layers;
+  inter_layer_pred_mode = svc_it->inter_layer_pred_mode;
 
   if (num_spatial_layers > 1u && profile != VP9PROFILE_PROFILE0) {
     LOG(ERROR) << "Spatial layer encoding is supported only if output profile "

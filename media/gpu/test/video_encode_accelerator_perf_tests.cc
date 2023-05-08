@@ -107,9 +107,6 @@ media::test::VideoEncoderTestEnvironment* g_env;
 
 constexpr size_t kNumFramesToEncodeForPerformance = 300;
 
-constexpr size_t kMaxTemporalLayers = 3;
-constexpr size_t kMaxSpatialLayers = 3;
-
 // The event timeout used in perf tests because encoding 2160p
 // |kNumFramesToEncodeForPerformance| frames take much time.
 constexpr base::TimeDelta kPerfEventTimeout = base::Seconds(180);
@@ -910,8 +907,6 @@ int main(int argc, char** argv) {
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
-  size_t num_spatial_layers = 1u;
-  size_t num_temporal_layers = 1u;
   media::Bitrate::Mode bitrate_mode = media::Bitrate::Mode::kConstant;
   bool reverse = false;
   absl::optional<uint32_t> encode_bitrate;
@@ -928,33 +923,19 @@ int main(int argc, char** argv) {
       continue;
     }
 
+    if (it->first == "num_temporal_layers" ||
+        it->first == "num_spatial_layers") {
+      std::cout << "--num_temporal_layers and --num_spatial_layers have been "
+                << "removed. Please use --svc_mode";
+      return EXIT_FAILURE;
+    }
+
     if (it->first == "output_folder") {
       output_folder = it->second;
     } else if (it->first == "codec") {
       codec = it->second;
     } else if (it->first == "svc_mode") {
       svc_mode = it->second;
-    } else if (it->first == "num_spatial_layers") {
-      if (!base::StringToSizeT(it->second, &num_spatial_layers)) {
-        std::cout << "invalid number of spatial layers: " << it->second << "\n";
-        return EXIT_FAILURE;
-      }
-      if (num_spatial_layers > media::test::kMaxSpatialLayers) {
-        std::cout << "unsupported number of spatial layers: " << it->second
-                  << "\n";
-        return EXIT_FAILURE;
-      }
-    } else if (it->first == "num_temporal_layers") {
-      if (!base::StringToSizeT(it->second, &num_temporal_layers)) {
-        std::cout << "invalid number of temporal layers: " << it->second
-                  << "\n";
-        return EXIT_FAILURE;
-      }
-      if (num_spatial_layers > media::test::kMaxTemporalLayers) {
-        std::cout << "unsupported number of temporal layers: " << it->second
-                  << "\n";
-        return EXIT_FAILURE;
-      }
     } else if (it->first == "bitrate_mode") {
       if (it->second == "vbr") {
         bitrate_mode = media::Bitrate::Mode::kVariable;
@@ -988,9 +969,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, svc_mode, num_temporal_layers, num_spatial_layers,
-          false /* output_bitstream */, encode_bitrate, bitrate_mode, reverse,
-          media::test::FrameOutputConfig(),
+          codec, svc_mode, false /* output_bitstream */, encode_bitrate,
+          bitrate_mode, reverse, media::test::FrameOutputConfig(),
           /*enabled_features=*/{}, disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;

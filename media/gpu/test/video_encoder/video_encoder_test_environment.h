@@ -45,8 +45,6 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const base::FilePath& output_folder,
       const std::string& codec,
       const std::string& svc_mode,
-      size_t num_temporal_layers,
-      size_t num_spatial_layers,
       bool save_output_bitstream,
       absl::optional<uint32_t> output_bitrate,
       Bitrate::Mode bitrate_mode,
