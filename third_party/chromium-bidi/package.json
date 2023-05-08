@@ -1,6 +1,6 @@
 {
   "name": "chromium-bidi",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
   "scripts": {
     "build": "wireit",
@@ -151,7 +151,7 @@
     "chai-as-promised": "7.1.1",
     "chai-exclude": "2.1.0",
     "debug": "4.3.4",
-    "devtools-protocol": "0.0.1107588",
+    "devtools-protocol": "0.0.1120988",
     "eslint": "8.39.0",
     "eslint-config-prettier": "8.8.0",
     "eslint-plugin-import": "2.27.5",
