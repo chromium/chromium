@@ -674,6 +674,7 @@ crbug.com/1374285 [ chromeos chromeos-board-kevin no-passthrough ] conformance/o
 crbug.com/1232446 [ chromeos chromeos-board-amd64-generic ] conformance/rendering/gl-scissor-test.html [ Failure ]
 crbug.com/1357064 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/rendering/blending.html [ Failure ]
 crbug.com/1429948 [ chromeos chromeos-board-amd64-generic ] conformance/textures/misc/tex-image-and-sub-image-2d-with-array-buffer-view.html [ Failure ]
+crbug.com/1440905 [ chromeos chromeos-board-amd64-generic ] conformance/extensions/ext-disjoint-timer-query.html [ Failure ]
 
 ###########################
 # Lacros/Wayland failures #
