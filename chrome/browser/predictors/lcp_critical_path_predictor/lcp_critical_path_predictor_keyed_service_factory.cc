@@ -12,13 +12,15 @@
 LCPCriticalPathPredictorKeyedService*
 LCPCriticalPathPredictorKeyedServiceFactory::GetForProfile(Profile* profile) {
   return static_cast<LCPCriticalPathPredictorKeyedService*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+      GetInstance().GetServiceForBrowserContext(profile, true));
 }
 
 // static
-LCPCriticalPathPredictorKeyedServiceFactory*
+LCPCriticalPathPredictorKeyedServiceFactory&
 LCPCriticalPathPredictorKeyedServiceFactory::GetInstance() {
-  return base::Singleton<LCPCriticalPathPredictorKeyedServiceFactory>::get();
+  static base::NoDestructor<LCPCriticalPathPredictorKeyedServiceFactory>
+      instance;
+  return *instance;
 }
 
 LCPCriticalPathPredictorKeyedServiceFactory::

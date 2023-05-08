@@ -25,33 +25,32 @@ void LCPCriticalPathPredictorKeyedService::Shutdown() {
   // TODO(crbug.com/1419756): Re-visit this to shutdown `persister_` gracefully.
 }
 
+bool LCPCriticalPathPredictorKeyedService::IsReady() const {
+  return persister_.get();
+}
+
 absl::optional<LCPElement> LCPCriticalPathPredictorKeyedService::GetLCPElement(
     const GURL& page_url) {
-  if (persister_) {
-    return persister_->GetLCPElement(page_url);
-  }
-  return absl::nullopt;
+  return persister_->GetLCPElement(page_url);
 }
 
 void LCPCriticalPathPredictorKeyedService::SetLCPElement(
     const GURL& page_url,
     const LCPElement& lcp_element) {
-  if (persister_) {
-    persister_->SetLCPElement(page_url, lcp_element);
-  }
+  persister_->SetLCPElement(page_url, lcp_element);
 }
 
 LCPCriticalPathPredictorKeyedService::LCPCriticalPathPredictorKeyedService(
     Profile* profile,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner) {
   LCPCriticalPathPredictorPersister::CreateForFilePath(
-      db_task_runner,
+      std::move(db_task_runner),
       // Backend database is created with this KeyedService name in a profile
       // directory.
       profile->GetPath().Append(kLCPCriticalPathPredictorKeyedServiceName),
       /*flush_delay_for_writes=*/base::TimeDelta(),
       base::BindOnce(&LCPCriticalPathPredictorKeyedService::OnPersisterCreated,
-                     AsWeakPtr()));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void LCPCriticalPathPredictorKeyedService::OnPersisterCreated(

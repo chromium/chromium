@@ -41,6 +41,7 @@ void LCPCriticalPathPredictorKeyedServiceTest::SetUp() {
           profile_.get(), std::move(db_task_runner));
   // Allow database initialization to complete.
   task_environment_.RunUntilIdle();
+  ASSERT_TRUE(lcp_critical_path_predictor_->IsReady());
 }
 
 TEST_F(LCPCriticalPathPredictorKeyedServiceTest, SetAndThenGetLCPElementUrl) {

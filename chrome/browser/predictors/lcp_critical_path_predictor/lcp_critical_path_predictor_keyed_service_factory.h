@@ -5,19 +5,18 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_KEYED_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_KEYED_SERVICE_FACTORY_H_
 
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class LCPCriticalPathPredictorKeyedService;
 
-// Singleton that owns the LCPCriticalPathPredictorKeyedServices and associates
-// them with Profiles.
+// Singleton that creates the LCPCriticalPathPredictorKeyedServices and
+// associates them with Profiles.
 class LCPCriticalPathPredictorKeyedServiceFactory
     : public ProfileKeyedServiceFactory {
  public:
   static LCPCriticalPathPredictorKeyedService* GetForProfile(Profile* profile);
-  static LCPCriticalPathPredictorKeyedServiceFactory* GetInstance();
 
   LCPCriticalPathPredictorKeyedServiceFactory(
       const LCPCriticalPathPredictorKeyedServiceFactory&) = delete;
@@ -25,8 +24,8 @@ class LCPCriticalPathPredictorKeyedServiceFactory
       const LCPCriticalPathPredictorKeyedServiceFactory&) = delete;
 
  private:
-  friend struct base::DefaultSingletonTraits<
-      LCPCriticalPathPredictorKeyedServiceFactory>;
+  friend class base::NoDestructor<LCPCriticalPathPredictorKeyedServiceFactory>;
+  static LCPCriticalPathPredictorKeyedServiceFactory& GetInstance();
 
   LCPCriticalPathPredictorKeyedServiceFactory();
   ~LCPCriticalPathPredictorKeyedServiceFactory() override;

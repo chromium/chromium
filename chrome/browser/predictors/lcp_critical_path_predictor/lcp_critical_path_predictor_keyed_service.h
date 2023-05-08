@@ -21,10 +21,18 @@ class SequencedTaskRunner;
 
 // KeyedService for LCP Critical Path Predictor.
 //
-// LCPCriticalPathPredictorPersister handles most tasks.
-class LCPCriticalPathPredictorKeyedService
-    : public KeyedService,
-      public base::SupportsWeakPtr<LCPCriticalPathPredictorKeyedService> {
+// This class becomes ready asynchronously, so callers should check the
+// state by calling the `IsReady()` method. For example:
+//
+// LCPCriticalPathPredictorKeyedService* predictor =
+//     LCPCriticalPathPredictorKeyedServiceFactory::GetForProfile(profile);
+// if (predictor && predictor->IsReady()) {
+//   predictor->SetLCPElement(...);
+// }
+//
+// If this class's methods are called when the class is not ready, a CHECK
+// failure will occur.
+class LCPCriticalPathPredictorKeyedService : public KeyedService {
  public:
   LCPCriticalPathPredictorKeyedService(
       Profile* profile,
@@ -36,6 +44,8 @@ class LCPCriticalPathPredictorKeyedService
       const LCPCriticalPathPredictorKeyedService&) = delete;
 
   ~LCPCriticalPathPredictorKeyedService() override;
+
+  bool IsReady() const;
 
   absl::optional<LCPElement> GetLCPElement(const GURL& page_url);
   void SetLCPElement(const GURL& page_url, const LCPElement& lcp_element);
@@ -49,6 +59,9 @@ class LCPCriticalPathPredictorKeyedService
 
   // `persister_` can be nullptr since `persister_` is asynchronously set.
   std::unique_ptr<LCPCriticalPathPredictorPersister> persister_;
+
+  base::WeakPtrFactory<LCPCriticalPathPredictorKeyedService> weak_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_KEYED_SERVICE_H_
