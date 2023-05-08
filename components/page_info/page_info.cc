@@ -553,19 +553,15 @@ void PageInfo::OnSitePermissionChanged(
 
   // Count how often a permission for a specific content type is changed using
   // the Page Info UI.
-  size_t num_values;
-  int histogram_value = ContentSettingTypeToHistogramValue(type, &num_values);
-  base::UmaHistogramExactLinear("WebsiteSettings.OriginInfo.PermissionChanged",
-                                histogram_value, num_values);
+  RecordContentSettingsHistogram("WebsiteSettings.OriginInfo.PermissionChanged",
+                                 type);
 
   if (setting == ContentSetting::CONTENT_SETTING_ALLOW) {
-    base::UmaHistogramExactLinear(
-        "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", histogram_value,
-        num_values);
+    RecordContentSettingsHistogram(
+        "WebsiteSettings.OriginInfo.PermissionChanged.Allowed", type);
   } else if (setting == ContentSetting::CONTENT_SETTING_BLOCK) {
-    base::UmaHistogramExactLinear(
-        "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", histogram_value,
-        num_values);
+    RecordContentSettingsHistogram(
+        "WebsiteSettings.OriginInfo.PermissionChanged.Blocked", type);
   }
 
   // This is technically redundant given the histogram above, but putting the

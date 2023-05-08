@@ -9,27 +9,25 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace {
-
-struct HistogramValue {
-  ContentSettingsType type;
-  int value;
-};
 
 // WARNING: The value specified here for a type should match exactly the value
 // specified in the ContentType enum in enums.xml. Since these values are
 // used for histograms, please do not reuse the same value for a different
 // content setting. Always append to the end and increment.
-//
-// TODO(raymes): We should use a sparse histogram here on the hash of the
-// content settings type name instead.
-constexpr HistogramValue kHistogramValue[] = {
-    {ContentSettingsType::COOKIES, 0},
+constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
+                                                        int>({
+    // Cookies was previously logged to bucket 0, which is not a valid bucket
+    // for linear histograms.
+    {ContentSettingsType::COOKIES, 100},
     {ContentSettingsType::IMAGES, 1},
     {ContentSettingsType::JAVASCRIPT, 2},
     // Removed PLUGINS in M91.
@@ -41,6 +39,8 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::MEDIASTREAM_MIC, 12},
     {ContentSettingsType::MEDIASTREAM_CAMERA, 13},
     {ContentSettingsType::PROTOCOL_HANDLERS, 14},
+    // PPAPI_BROKER is deprecated and shouldn't get logged anymore.
+    {ContentSettingsType::DEPRECATED_PPAPI_BROKER, -1},
     {ContentSettingsType::AUTOMATIC_DOWNLOADS, 16},
     {ContentSettingsType::MIDI_SYSEX, 17},
     {ContentSettingsType::SSL_CERT_DECISIONS, 19},
@@ -48,6 +48,7 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::APP_BANNER, 22},
     {ContentSettingsType::SITE_ENGAGEMENT, 23},
     {ContentSettingsType::DURABLE_STORAGE, 24},
+    // Removed "Key generation setting"
     {ContentSettingsType::BLUETOOTH_GUARD, 26},
     {ContentSettingsType::BACKGROUND_SYNC, 27},
     {ContentSettingsType::AUTOPLAY, 28},
@@ -119,7 +120,19 @@ constexpr HistogramValue kHistogramValue[] = {
     {ContentSettingsType::ANTI_ABUSE, 96},
     {ContentSettingsType::THIRD_PARTY_STORAGE_PARTITIONING, 97},
     {ContentSettingsType::HTTPS_ENFORCED, 98},
-};
+    {ContentSettingsType::USB_CHOOSER_DATA, 99},
+    // The value 100 is assigned to COOKIES!
+    {ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS, 101},
+    {ContentSettingsType::MIDI, 102},
+
+    // As mentioned at the top, please don't forget to update ContentType in
+    // enums.xml when you add entries here!
+});
+
+constexpr int kkHistogramValueMax = std::max_element(
+    kHistogramValue.begin(),
+    kHistogramValue.end(),
+    [](const auto a, const auto b) { return a.second < b.second; }) -> second;
 
 void FilterRulesForType(ContentSettingsForOneType& settings,
                         const GURL& primary_url) {
@@ -140,28 +153,24 @@ ContentSetting IntToContentSetting(int content_setting) {
              : static_cast<ContentSetting>(content_setting);
 }
 
-int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting,
-                                       size_t* num_values) {
-  *num_values = std::size(kHistogramValue);
+void RecordContentSettingsHistogram(const char* name,
+                                    ContentSettingsType content_setting) {
+  base::UmaHistogramExactLinear(
+      name, ContentSettingTypeToHistogramValue(content_setting),
+      kkHistogramValueMax + 1);
+}
 
-  // Verify the array is sorted by enum type and contains all values.
-  DCHECK(std::is_sorted(std::begin(kHistogramValue), std::end(kHistogramValue),
-                        [](const HistogramValue& a, const HistogramValue& b) {
-                          return a.type < b.type;
-                        }));
-  static_assert(
-      kHistogramValue[std::size(kHistogramValue) - 1].type ==
-          ContentSettingsType(
-              static_cast<int32_t>(ContentSettingsType::NUM_TYPES) - 1),
-      "Update content settings histogram lookup");
+int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting) {
+  static_assert(kHistogramValue.size() ==
+                    static_cast<size_t>(ContentSettingsType::NUM_TYPES),
+                "Update content settings histogram lookup");
 
-  const HistogramValue* found = std::lower_bound(
-      std::begin(kHistogramValue), std::end(kHistogramValue), content_setting,
-      [](const HistogramValue& a, ContentSettingsType b) {
-        return a.type < b;
-      });
-  if (found != std::end(kHistogramValue) && found->type == content_setting)
-    return found->value;
+  auto* found = kHistogramValue.find(content_setting);
+  if (found != kHistogramValue.end()) {
+    DCHECK_NE(found->second, -1)
+        << "Used for deprecated settings: " << static_cast<int>(found->first);
+    return found->second;
+  }
   NOTREACHED();
   return -1;
 }

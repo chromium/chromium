@@ -267,12 +267,9 @@ void RecordPermissionUsageUkm(ContentSettingsType permission_type,
   if (!source_id.has_value())
     return;
 
-  size_t num_values = 0;
-
   ukm::builders::PermissionUsage builder(source_id.value());
   builder.SetPermissionType(static_cast<int64_t>(
-      ContentSettingTypeToHistogramValue(permission_type, &num_values)));
-
+      ContentSettingTypeToHistogramValue(permission_type)));
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -301,8 +298,6 @@ void RecordPermissionActionUkm(
   if (!source_id.has_value())
     return;
 
-  size_t num_values = 0;
-
   const int loud_ui_prompts_count_for_request_type =
       loud_ui_actions_counts_for_request_type.total();
   const int loud_ui_prompts_count = loud_ui_actions_counts.total();
@@ -312,8 +307,8 @@ void RecordPermissionActionUkm(
   ukm::builders::Permission builder(source_id.value());
   builder.SetAction(static_cast<int64_t>(action))
       .SetGesture(static_cast<int64_t>(gesture_type))
-      .SetPermissionType(static_cast<int64_t>(
-          ContentSettingTypeToHistogramValue(permission, &num_values)))
+      .SetPermissionType(
+          static_cast<int64_t>(ContentSettingTypeToHistogramValue(permission)))
       .SetPriorDismissals(std::min(kPriorCountCap, dismiss_count))
       .SetPriorIgnores(std::min(kPriorCountCap, ignore_count))
       .SetSource(static_cast<int64_t>(source_ui))
