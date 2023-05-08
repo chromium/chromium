@@ -159,10 +159,10 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
   // Required to successfully load PDFs in the `<embed>` element.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc, "frame-src blob:;");
-  // Allow wasm and mojo.
+  // Allow wasm.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src 'self' 'wasm-eval' chrome-untrusted://resources;");
+      "script-src 'self' 'wasm-eval';");
   // Allow calls to Maps reverse geocoding API for loading metadata.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ConnectSrc,
@@ -255,16 +255,8 @@ void MediaAppGuestUI::StartFontDataRequestAfterPathExists(
   }
 }
 
-void MediaAppGuestUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {
   return MediaAppMetricsHelper::actions;
 }
-
-WEB_UI_CONTROLLER_TYPE_IMPL(MediaAppGuestUI)
 
 }  // namespace ash
