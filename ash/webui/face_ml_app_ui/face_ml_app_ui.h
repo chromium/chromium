@@ -20,9 +20,20 @@
 
 namespace ash {
 
+class FaceMLAppUI;
 class FaceMLPageHandler;
 
-// The Web UI for chrome://face-ml.
+// The WebUIConfig for chrome://face-ml.
+class FaceMLAppUIConfig : public SystemWebAppUIConfig<FaceMLAppUI> {
+ public:
+  explicit FaceMLAppUIConfig(
+      SystemWebAppUIConfig::CreateWebUIControllerFunc create_controller_func)
+      : SystemWebAppUIConfig(ash::kChromeUIFaceMLAppHost,
+                             SystemWebAppType::FACE_ML,
+                             create_controller_func) {}
+};
+
+// The WebUI for chrome://face-ml.
 class FaceMLAppUI : public ui::MojoWebUIController,
                     public mojom::face_ml_app::PageHandlerFactory {
  public:
@@ -52,6 +63,7 @@ class FaceMLAppUI : public ui::MojoWebUIController,
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
+
 }  // namespace ash
 
 #endif  // ASH_WEBUI_FACE_ML_APP_UI_FACE_ML_APP_UI_H_

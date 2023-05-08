@@ -16,6 +16,7 @@
 #include "ui/webui/webui_allowlist.h"
 
 namespace ash {
+
 FaceMLAppUI::FaceMLAppUI(content::WebUI* web_ui,
                          std::unique_ptr<FaceMLUserProvider> user_provider)
     : ui::MojoWebUIController(web_ui),

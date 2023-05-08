@@ -24,6 +24,7 @@
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
 #include "ash/webui/eche_app_ui/eche_app_ui.h"
+#include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ash/scanning/chrome_scanning_app_delegate.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/face_ml/chrome_face_ml_user_provider.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/web_applications/projector_app/trusted_projector_ui_config.h"
@@ -229,6 +231,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
   map.AddWebUIConfig(MakeEcheAppUIConfig());
   map.AddWebUIConfig(std::make_unique<ash::EmojiUIConfig>());
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<ash::FaceMLAppUIConfig, ash::FaceMLAppUI,
+                                      ash::ChromeFaceMLUserProvider>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<ash::FilesInternalsUIConfig,
                                       ash::FilesInternalsUI,

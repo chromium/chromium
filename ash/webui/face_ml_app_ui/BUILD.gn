@@ -21,11 +21,13 @@ static_library("face_ml_app_ui") {
   ]
 
   deps = [
+    "//ash/constants:constants",
     "//ash/webui/face_ml_app_ui/mojom:trusted",
     "//ash/webui/resources:face_ml_app_bundle_resources",
     "//ash/webui/resources:face_ml_app_resources",
     "//ash/webui/resources:face_ml_app_untrusted_resources",
     "//ash/webui/system_apps/public:system_web_app_config",
+    "//ash/webui/system_apps/public:system_web_app_type",
     "//content/public/browser",
     "//ui/webui",
   ]
