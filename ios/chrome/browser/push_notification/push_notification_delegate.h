@@ -9,8 +9,15 @@
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
+
 @interface PushNotificationDelegate
-    : NSObject <UNUserNotificationCenterDelegate>
+    : NSObject <UNUserNotificationCenterDelegate, AppStateObserver>
+
+- (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Passes the contents of an incoming push notification to the appropriate
 // `PushNotificationClient` for processing and logs the time it takes for the

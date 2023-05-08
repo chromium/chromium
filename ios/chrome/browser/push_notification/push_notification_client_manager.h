@@ -71,6 +71,9 @@ class PushNotificationClientManager {
   static std::string PushNotificationClientIdToString(
       PushNotificationClientId client_id);
 
+  // Signals to client manager that a browser is ready.
+  void OnBrowserReady();
+
  private:
   using ClientMap = std::unordered_map<PushNotificationClientId,
                                        std::unique_ptr<PushNotificationClient>>;
