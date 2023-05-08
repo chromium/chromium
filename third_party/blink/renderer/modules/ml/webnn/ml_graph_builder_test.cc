@@ -3564,7 +3564,7 @@ TEST_F(MLGraphBuilderTest, EluTest) {
     TestBuildElu(scope, builder, input, {1, 2, 3}, options);
   }
   {
-    // Test building elu with int32 input and alpha = 0.1.
+    // Test building elu with float32 input and alpha = 0.1.
     auto* input =
         BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kFloat32,
                    scope.GetExceptionState());
@@ -3573,7 +3573,35 @@ TEST_F(MLGraphBuilderTest, EluTest) {
     TestBuildElu(scope, builder, input, {2, 2, 3}, options);
   }
   {
-    // Test building elu with int32 input.
+    // Test throwing error when alpha = 0.
+    auto* input =
+        BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLEluOptions::Create();
+    options->setAlpha(0);
+    auto* output = builder->elu(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The value of alpha must be greater than 0.");
+  }
+  {
+    // Test throwing error when alpha = -1.
+    auto* input =
+        BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kFloat32,
+                   scope.GetExceptionState());
+    auto* options = MLEluOptions::Create();
+    options->setAlpha(-1);
+    auto* output = builder->elu(input, options, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The value of alpha must be greater than 0.");
+  }
+  {
+    // Test throwing error when input type is int32.
     auto* input =
         BuildInput(builder, "input", {2, 2, 3}, V8MLOperandType::Enum::kInt32,
                    scope.GetExceptionState());

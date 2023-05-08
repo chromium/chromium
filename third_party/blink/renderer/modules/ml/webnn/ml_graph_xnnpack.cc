@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_compute_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_gemm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_leaky_relu_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
@@ -1106,6 +1107,23 @@ xnn_status DefineXnnNodeForElementWiseBinary(
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForElu(xnn_subgraph_t subgraph,
+                               const MLOperator* elu,
+                               const OperandValueIdMap& operand_value_id_map,
+                               String& error_message) {
+  const uint32_t input_id = GetOperatorInputValueId(elu, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(elu, operand_value_id_map);
+  const MLEluOptions* options =
+      static_cast<const MLEluOptions*>(elu->Options());
+  CHECK(options);
+  const float alpha = options->alpha();
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_elu(subgraph, alpha, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForGemm(xnn_subgraph_t subgraph,
                                 const MLOperator* gemm,
                                 const OperandValueIdMap& operand_value_id_map,
@@ -1650,6 +1668,10 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
+    case MLOperator::OperatorKind::kElu:
+      XNN_CHECK_STATUS(DefineXnnNodeForElu(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
     case MLOperator::OperatorKind::kGemm:
       XNN_CHECK_STATUS(DefineXnnNodeForGemm(
           subgraph, ml_operator, operand_value_id_map, error_message));

@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_elu_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
@@ -685,6 +686,106 @@ TEST_F(MLGraphXnnpackTest, ComputeAsyncTest) {
               output_buffer_view_byte_length);
     EXPECT_EQ(result_output_buffer_view->BaseAddress(),
               output_buffer_view_base_address);
+  }
+}
+
+// The outputs of elu function are floating-point numbers
+// with mantissa when the input data is negative. The WPT WebNN conformance test
+// cases of elu operator,
+// https://github.com/web-platform-tests/wpt/blob/master/webnn/resources/test_data/elu.json,
+// will test the accuracy loss of the results against the expected values with
+// the WG-agreed tolerance setting.
+//
+// For MLGraphXnnpack unit testing, EluTester instead checks the compute
+// results of an MLGraph containing a elu MLOperator against the results of
+// calling XNNPACK elu operator API for the same input. With that, the
+// expected values are not needed.
+struct EluTester {
+  OperandInfo<float> input;
+
+  void Test(MLGraphXnnpackTest& helper,
+            V8TestingScope& scope,
+            MLEluOptions* options = MLEluOptions::Create()) {
+    // Create and run XNNPACK elu operator.
+    ASSERT_EQ(xnn_status_success, xnn_initialize(/*allocator=*/nullptr));
+
+    const uint32_t batch_size = 1;
+    uint32_t channels = input.dimensions[0];
+    for (uint32_t i = 1; i < input.dimensions.size(); i++) {
+      channels *= input.dimensions[i];
+    }
+
+    xnn_operator_t elu_op = nullptr;
+    const xnn_status status = xnn_create_elu_nc_f32(
+        channels, channels, channels, options->alpha(), /*flags=*/0, &elu_op);
+    ASSERT_EQ(xnn_status_success, status);
+    ASSERT_NE(nullptr, elu_op);
+    std::unique_ptr<xnn_operator, decltype(&xnn_delete_operator)> auto_op(
+        elu_op, xnn_delete_operator);
+
+    // XNNPACK may access beyond array bounds. The caller must allocate at least
+    // XNN_EXTRA_BYTES extra bytes after the tensor data passed to XNNPACK.
+    Vector<float> xnnpack_input(input.values);
+    xnnpack_input.Grow(input.values.size() + XNN_EXTRA_BYTES / sizeof(float));
+    Vector<float> xnnpack_output(batch_size * channels +
+                                 XNN_EXTRA_BYTES / sizeof(float));
+    ASSERT_EQ(xnn_status_success,
+              xnn_setup_elu_nc_f32(elu_op, batch_size, xnnpack_input.data(),
+                                   xnnpack_output.data(),
+                                   /*threadpool=*/nullptr));
+
+    ASSERT_EQ(xnn_status_success,
+              xnn_run_operator(elu_op, /*threadpool=*/nullptr));
+    // Remove the extra bytes of XNNPACK output.
+    xnnpack_output.Shrink(batch_size * channels);
+
+    // Build WebNN graph with elu operator.
+    auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    auto* output_operand =
+        builder->elu(input_operand, options, scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    EXPECT_NE(graph, nullptr);
+
+    // Compute WebNN graph.
+    MLNamedArrayBufferViews inputs(
+        {{"input",
+          CreateArrayBufferViewForOperand(input_operand, input.values)}});
+    MLNamedArrayBufferViews outputs(
+        {{"output", CreateArrayBufferViewForOperand(output_operand)}});
+    auto* compute_exception =
+        helper.ComputeGraph(scope, graph, inputs, outputs);
+    EXPECT_EQ(compute_exception, nullptr);
+    auto results = GetArrayBufferViewValues<float>(outputs[0].second);
+
+    // Compare the results of WebNN graph and XNNPACK operator.
+    EXPECT_EQ(results, xnnpack_output);
+  }
+};
+
+TEST_P(MLGraphXnnpackTest, EluTest) {
+  V8TestingScope scope;
+  {
+    // Test elu operator with default options.
+    // There is no need to set expected results, because EluTester will
+    // calculate the expected results by calling XNNPACK elu operator
+    // APIs.
+    auto* options = MLEluOptions::Create();
+    EluTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                        .dimensions = {2, 2},
+                        .values = {-1.0, 0.5, 0.5, 1.0}}}
+        .Test(*this, scope, options);
+  }
+  {
+    // Test elu operator with alpha = 2.0.
+    auto* options = MLEluOptions::Create();
+    options->setAlpha(2.0);
+    EluTester{.input = {.type = V8MLOperandType::Enum::kFloat32,
+                        .dimensions = {2, 2},
+                        .values = {-1.0, -0.5, 0.5, 1.0}}}
+        .Test(*this, scope, options);
   }
 }
 

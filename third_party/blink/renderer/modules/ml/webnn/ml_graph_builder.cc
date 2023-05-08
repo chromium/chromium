@@ -1333,6 +1333,14 @@ MLOperand* MLGraphBuilder::elu(const MLOperand* input,
         "The type of input must be one of the floating point types.");
     return nullptr;
   }
+  // The current spec doesn't restrict the value of alpha. An issue has been
+  // filed to track it: https://github.com/webmachinelearning/webnn/issues/383
+  if (options->alpha() <= 0.0f) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The value of alpha must be greater than 0.");
+    return nullptr;
+  }
   auto* elu = MakeGarbageCollected<MLOperator>(
       this, MLOperator::OperatorKind::kElu, options);
   // According to WebNN spec
