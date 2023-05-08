@@ -1329,6 +1329,11 @@ bool ViewTransitionStyleTracker::IsTransitionElement(const Node* node) const {
   if (state_ == State::kIdle || state_ == State::kCaptured)
     return false;
 
+  if (RuntimeEnabledFeatures::ViewTransitionAnonymousLayoutObjectEnabled() &&
+      !node) {
+    return false;
+  }
+
   for (auto& entry : element_data_map_) {
     if (entry.value->target_element == node)
       return true;

@@ -3525,6 +3525,11 @@
       implied_by: ["ViewTransitionOnNavigation"],
     },
     {
+      // Temporary flag for stable merge. See crbug.com/1443134.
+      name: "ViewTransitionAnonymousLayoutObject",
+      status: "stable",
+    },
+    {
       // If enabled, ViewTransition API is supported for navigations including
       // cross-document transitions.
       // See https://drafts.csswg.org/css-view-transitions-1/.
