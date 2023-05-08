@@ -103,6 +103,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
+#include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_model.h"
 #include "ui/views/view_model_utils.h"
 #include "ui/views/widget/widget.h"
@@ -1374,6 +1375,16 @@ void RootWindowController::CreateContainers() {
 
   CreateContainer(kShellWindowId_PowerButtonAnimationContainer,
                   "PowerButtonAnimationContainer", magnified_container);
+
+  // Make sure booting animation container is always on top of all other
+  // siblings under the `magnified_container`.
+  if (ash::features::IsOobeSimonEnabled()) {
+    aura::Window* booting_animation_container =
+        CreateContainer(kShellWindowId_BootingAnimationContainer,
+                        "BootingAnimationContainer", magnified_container);
+    booting_animation_container->SetLayoutManager(
+        std::make_unique<FillLayoutManager>(booting_animation_container));
+  }
 }
 
 aura::Window* RootWindowController::CreateContainer(int window_id,

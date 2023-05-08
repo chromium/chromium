@@ -30,6 +30,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_feature_usage_metrics.h"
 #include "ash/assistant/assistant_controller_impl.h"
+#include "ash/booting/booting_animation_controller.h"
 #include "ash/calendar/calendar_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/child_accounts/parent_access_controller_impl.h"
@@ -1570,6 +1571,11 @@ void Shell::Init(
   }
 
   window_tree_host_manager_->InitHosts();
+
+  if (ash::features::IsOobeSimonEnabled()) {
+    booting_animation_controller_ =
+        std::make_unique<BootingAnimationController>();
+  }
 
   // Create virtual keyboard after WindowTreeHostManager::InitHosts() since
   // it may enable the virtual keyboard immediately, which requires a

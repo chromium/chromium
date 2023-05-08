@@ -23,6 +23,9 @@ enum ShellWindowId {
   // screenshots will screenshot previous screenshots.
   kShellWindowId_ScreenAnimationContainer = 0,
 
+  // The container that displays booting animations.
+  kShellWindowId_BootingAnimationContainer,
+
   // The magnified container which contains everything that would be magnified
   // when docked magnifier is enabled.
   kShellWindowId_MagnifiedContainer,

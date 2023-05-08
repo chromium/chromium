@@ -306,7 +306,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
 
   // Configure shared resources
   AddProductLogoResources(source);
-  AddProjectSimonResources(source);
+  if (ash::features::IsOobeSimonEnabled()) {
+    AddProjectSimonResources(source);
+  }
 
   quick_unlock::AddFingerprintResources(source);
   AddSyncConsentResources(source);

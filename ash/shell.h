@@ -116,6 +116,7 @@ class BacklightsForcedOffSetter;
 class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
 class BluetoothStateCache;
+class BootingAnimationController;
 class BrightnessControlDelegate;
 class CalendarController;
 class CameraEffectsController;
@@ -429,6 +430,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   BluetoothStateCache* bluetooth_state_cache() {
     return bluetooth_state_cache_.get();
+  }
+  BootingAnimationController* booting_animation_controller() {
+    return booting_animation_controller_.get();
   }
   BrightnessControlDelegate* brightness_control_delegate() {
     return brightness_control_delegate_.get();
@@ -953,6 +957,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FloatController> float_controller_;
   std::unique_ptr<GameDashboardController> game_dashboard_controller_;
   std::unique_ptr<GeolocationController> geolocation_controller_;
+  std::unique_ptr<BootingAnimationController> booting_animation_controller_;
   std::unique_ptr<GlanceablesController> glanceables_controller_;
   std::unique_ptr<GlanceablesV2Controller> glanceables_v2_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
