@@ -27,19 +27,17 @@ suite('ZoomLevels', function() {
    */
   const zoomList: ZoomLevelEntry[] = [
     {
-      origin: 'http://www.google.com',
-      displayName: 'http://www.google.com',
-      originForFavicon: 'http://www.google.com',
-      setting: '',
-      source: '',
+      hostOrSpec: 'www.google.com',
+      originForFavicon: 'www.google.com',
+      displayName: 'www.google.com',
       zoom: '125%',
     },
     {
-      origin: 'http://www.chromium.org',
-      displayName: 'http://www.chromium.org',
-      originForFavicon: 'http://www.chromium.org',
-      setting: '',
-      source: '',
+      hostOrSpec:
+          'isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic',
+      originForFavicon:
+          'isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic',
+      displayName: 'IWA Name',
       zoom: '125%',
     },
   ];
@@ -95,6 +93,6 @@ suite('ZoomLevels', function() {
     assertTrue(!!removeButton);
     removeButton.click();
     const args = await browserProxy.whenCalled('removeZoomLevel');
-    assertEquals('http://www.google.com', args[0]);
+    assertEquals('www.google.com', args[0]);
   });
 });

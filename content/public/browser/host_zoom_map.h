@@ -25,6 +25,7 @@ namespace content {
 class NavigationEntry;
 class BrowserContext;
 class SiteInstance;
+class StoragePartition;
 class WebContents;
 struct GlobalRenderFrameHostId;
 
@@ -77,6 +78,10 @@ class HostZoomMap {
   // multiple WebContents share the same SiteInstance, then they share a single
   // HostZoomMap.
   CONTENT_EXPORT static HostZoomMap* GetForWebContents(WebContents* contents);
+
+  // Returns the HostZoomMap associated with this StoragePartition.
+  CONTENT_EXPORT static HostZoomMap* GetForStoragePartition(
+      StoragePartition* storage_partition);
 
   // Returns the current zoom level for the specified WebContents. May be
   // temporary or host-specific.

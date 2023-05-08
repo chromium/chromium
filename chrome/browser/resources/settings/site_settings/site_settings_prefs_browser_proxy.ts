@@ -163,10 +163,8 @@ export interface MediaPickerEntry {
 
 export interface ZoomLevelEntry {
   displayName: string;
-  origin: string;
+  hostOrSpec: string;
   originForFavicon: string;
-  setting: string;
-  source: string;
   zoom: string;
 }
 

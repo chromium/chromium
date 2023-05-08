@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -215,6 +216,9 @@ class SiteSettingsHandler
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, HandleGetExtensionName);
 #endif
   FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerTest, IsolatedWebAppUsageInfo);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest, ZoomLevel);
+  FRIEND_TEST_ALL_PREFIXES(SiteSettingsHandlerIsolatedWebAppTest,
+                           ZoomLevelsSortedByAppName);
 
   // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
   // serviced when both models are built.
@@ -421,7 +425,7 @@ class SiteSettingsHandler
       observed_profiles_{this};
 
   // Keeps track of events related to zooming.
-  base::CallbackListSubscription host_zoom_map_subscription_;
+  std::vector<base::CallbackListSubscription> host_zoom_map_subscriptions_;
 
   // The origin for which to fetch usage.
   std::string usage_origin_;

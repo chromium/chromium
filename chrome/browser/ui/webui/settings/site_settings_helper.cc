@@ -34,6 +34,10 @@
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -1029,6 +1033,28 @@ base::Value::List GetChooserExceptionListFromProfile(
   }
 
   return exceptions;
+}
+
+std::vector<web_app::IsolatedWebAppUrlInfo> GetInstalledIsolatedWebApps(
+    Profile* profile) {
+  auto* web_app_provider = web_app::WebAppProvider::GetForWebApps(profile);
+  if (!web_app_provider) {
+    return {};
+  }
+
+  std::vector<web_app::IsolatedWebAppUrlInfo> iwas;
+  web_app::WebAppRegistrar& registrar = web_app_provider->registrar_unsafe();
+  for (const web_app::WebApp& web_app : registrar.GetApps()) {
+    if (!registrar.IsIsolated(web_app.app_id())) {
+      continue;
+    }
+    base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
+        web_app::IsolatedWebAppUrlInfo::Create(web_app.scope());
+    if (url_info.has_value()) {
+      iwas.push_back(*url_info);
+    }
+  }
+  return iwas;
 }
 
 }  // namespace site_settings

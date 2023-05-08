@@ -78,7 +78,7 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
    * @param sites The up to date list of sites and their zoom levels.
    */
   private onZoomLevelsChanged_(sites: ZoomLevelEntry[]) {
-    this.updateList('sites_', item => item.origin, sites);
+    this.updateList('sites_', item => item.hostOrSpec, sites);
     this.showNoSites_ = this.sites_.length === 0;
   }
 
@@ -87,7 +87,7 @@ export class ZoomLevelsElement extends ZoomLevelsElementBase {
    */
   private removeZoomLevel_(event: DomRepeatEvent<ZoomLevelEntry>) {
     const site = this.sites_[event.model.index];
-    this.browserProxy.removeZoomLevel(site.origin);
+    this.browserProxy.removeZoomLevel(site.hostOrSpec);
   }
 }
 
