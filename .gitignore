@@ -318,6 +318,7 @@ vs-chromium-project.txt
 /tools/.bisect-builds-cache.json
 /tools/cygprofile/*.wprgo
 /tools/clang/dsymutil/bin/dsymutil
+/tools/clang/plugins/tests/*.txt.actual
 /tools/distcc
 /tools/gn/bin/linux
 /tools/gn/bin/mac
