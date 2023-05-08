@@ -116,7 +116,7 @@ namespace base {
 //     return base::ok(std::move(result));
 //   }
 template <typename T>
-class ok<T, /* is_void_v<T> = */ false> {
+class ok<T, /* is_void_v<T> = */ false> final {
  public:
   template <typename U = T, internal::EnableIfOkValueConstruction<T, U> = 0>
   constexpr explicit ok(U&& val) noexcept : value_(std::forward<U>(val)) {}
@@ -148,7 +148,7 @@ class ok<T, /* is_void_v<T> = */ false> {
 };
 
 template <typename T>
-class ok<T, /* is_void_v<T> = */ true> {
+class ok<T, /* is_void_v<T> = */ true> final {
  public:
   constexpr explicit ok() noexcept = default;
 };
@@ -171,7 +171,7 @@ ok()->ok<void>;
 // [expected.un.object], class template unexpected
 // https://eel.is/c++draft/expected#un.object
 template <typename E>
-class unexpected {
+class unexpected final {
  public:
   // [expected.un.ctor] Constructors
   template <typename Err = E,
@@ -228,7 +228,7 @@ unexpected(E) -> unexpected<E>;
 // [expected.expected], class template expected
 // https://eel.is/c++draft/expected#expected
 template <typename T, typename E>
-class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ false> {
+class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ false> final {
   // Note: A partial specialization for void value types follows below.
   static_assert(!std::is_void_v<T>, "Error: T must not be void");
 
@@ -637,7 +637,7 @@ class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ false> {
 
 // [expected.void], partial specialization of expected for void types
 template <typename T, typename E>
-class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ true> {
+class [[nodiscard]] expected<T, E, /* is_void_v<T> = */ true> final {
   // Note: A partial specialization for non-void value types can be found above.
   static_assert(std::is_void_v<T>, "Error: T must be void");
 
