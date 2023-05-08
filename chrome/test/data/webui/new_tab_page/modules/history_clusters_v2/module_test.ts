@@ -86,10 +86,10 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
       // Assert.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header');
+      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
       assertTrue(!!headerElement);
 
-      assertModuleHeaderTitle(headerElement, sampleClusterLabel);
+      assertModuleHeaderTitle(headerElement, `${sampleClusterLabel}`);
     });
 
     test('Header info button click opens info dialog', async () => {
@@ -100,7 +100,7 @@ suite('NewTabPageModulesHistoryClustersV2ModuleTest', () => {
 
       // Act.
       assertTrue(!!moduleElement);
-      const headerElement = $$(moduleElement, 'ntp-module-header');
+      const headerElement = $$(moduleElement, 'ntp-module-header-v2');
       assertTrue(!!headerElement);
 
       headerElement!.dispatchEvent(new Event('info-button-click'));

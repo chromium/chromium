@@ -1,7 +1,20 @@
-<style>
+<style include="cr-icons">
   :host {
     height: 500px;
     width: 100%;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+    --cr-icon-button-hover-background-color:
+        var(--color-new-tab-page-control-background-hovered);
+    margin-inline-end: -4px;
+    margin-inline-start: 0;
+  }
+
+  #doneButton {
+    --cr-icon-image: url(chrome://resources/images/icon_checkmark.svg);
   }
 
   ntp-module-header::part(title) {
@@ -11,28 +24,23 @@
   }
 </style>
 <div id="content">
-    <ntp-module-header
+    <ntp-module-header-v2
       disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesJourneyDisable')]]"
       dismiss-text="[[i18n('modulesDismissButtonText', cluster.label)]]"
-      show-dismiss-button
       on-disable-button-click="onDisableButtonClick_"
       on-dismiss-button-click="onDismissButtonClick_"
-      on-info-button-click="onInfoButtonClick_"
-      icon-src="chrome://resources/images/icon_journeys.svg">
+      on-info-button-click="onInfoButtonClick_">
     [[cluster.label]]
+    <cr-icon-button id="doneButton" slot="title-actions">
+    </cr-icon-button>
     <button id="openAllInTabGroupButton" class="dropdown-item"
         on-click="onOpenAllInTabGroupClick_"
         slot="action-menu-items" type="button">
       [[i18n('modulesJourneysOpenAllInNewTabGroupButtonText')]]
     </button>
-    <button id="openInfoDialogButton" class="dropdown-item"
-        on-click="onInfoButtonClick_"
-        slot="action-menu-items" type="button">
-      [[i18n('moduleInfoButtonTitle')]]
-    </button>
-  </ntp-module-header>
+  </ntp-module-header-v2>
 </div>
 <cr-lazy-render id="infoDialogRender">
   <template>

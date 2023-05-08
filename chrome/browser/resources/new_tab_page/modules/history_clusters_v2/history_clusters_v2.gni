@@ -3,5 +3,7 @@
 # found in the LICENSE file.
 
 # List of files that should be passed to html_to_wrapper().
-history_clusters_v2_web_component_files =
-    [ "modules/history_clusters_v2/module.ts" ]
+history_clusters_v2_web_component_files = [
+  "modules/history_clusters_v2/module.ts",
+  "modules/history_clusters_v2/module_header.ts",
+]
