@@ -43,10 +43,7 @@ using ICompleteStatusPtr = ::Microsoft::WRL::ComPtr<ICompleteStatus>;
 
 // This class implements the IUpdaterObserver interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterObserver
-    : public DynamicIIDsImpl<IUpdaterObserver,
-                             __uuidof(IUpdaterObserverUser),
-                             __uuidof(IUpdaterObserverSystem)> {
+class UpdaterObserver : public DYNAMICIIDSIMPL(IUpdaterObserver) {
  public:
   UpdaterObserver(UpdateService::StateChangeCallback state_update_callback,
                   UpdateService::Callback callback)
@@ -212,10 +209,7 @@ class UpdaterObserver
 
 // This class implements the IUpdaterCallback interface and exposes it as a COM
 // object. The class has thread-affinity for the STA thread.
-class UpdaterCallback
-    : public DynamicIIDsImpl<IUpdaterCallback,
-                             __uuidof(IUpdaterCallbackUser),
-                             __uuidof(IUpdaterCallbackSystem)> {
+class UpdaterCallback : public DYNAMICIIDSIMPL(IUpdaterCallback) {
  public:
   explicit UpdaterCallback(base::OnceCallback<void(LONG)> callback)
       : callback_(std::move(callback)) {}

@@ -30,9 +30,7 @@ namespace {
 // This class implements the IUpdaterInternalCallback interface and exposes it
 // as a COM object. The class has thread-affinity for the STA thread.
 class UpdaterInternalCallback
-    : public DynamicIIDsImpl<IUpdaterInternalCallback,
-                             __uuidof(IUpdaterInternalCallbackUser),
-                             __uuidof(IUpdaterInternalCallbackSystem)> {
+    : public DYNAMICIIDSIMPL(IUpdaterInternalCallback) {
  public:
   explicit UpdaterInternalCallback(base::OnceClosure callback)
       : callback_(std::move(callback)) {}

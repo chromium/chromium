@@ -120,6 +120,21 @@ class DynamicIIDsImpl : public WrlRuntimeClass<Interface> {
   }
 };
 
+// Macro that makes it easier to derive from `DynamicIIDsImpl`.
+#define DYNAMICIIDSIMPL(interface)                      \
+  DynamicIIDsImpl<interface, __uuidof(interface##User), \
+                  __uuidof(interface##System)>
+
+// Macros that makes it easier to call the `IDispatchImpl` constructor.
+#define IID_MAP_ENTRY_USER(interface) \
+  { __uuidof(interface##User), __uuidof(interface) }
+#define IID_MAP_ENTRY_SYSTEM(interface) \
+  { __uuidof(interface##System), __uuidof(interface) }
+#define IID_MAPS_USERSYSTEM(interface) \
+  {IID_MAP_ENTRY_USER(interface)}, {   \
+    IID_MAP_ENTRY_SYSTEM(interface)    \
+  }
+
 // Returns the last error as an HRESULT or E_FAIL if last error is NO_ERROR.
 // This is not a drop in replacement for the HRESULT_FROM_WIN32 macro.
 // The macro maps a NO_ERROR to S_OK, whereas the HRESULTFromLastError maps a
