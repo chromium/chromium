@@ -13,7 +13,7 @@ import subprocess
 
 from contextlib import AbstractContextManager
 
-from common import find_image_in_sdk, get_system_info, \
+from common import check_ssh_config_file, find_image_in_sdk, get_system_info, \
                    run_ffx_command, SDK_ROOT
 from compatible_utils import get_host_arch, get_sdk_hash
 
@@ -55,6 +55,7 @@ class FfxEmulator(AbstractContextManager):
     def _start_emulator(self) -> None:
         """Start the emulator."""
         logging.info('Starting emulator %s', self._node_name)
+        check_ssh_config_file()
         emu_command = [
             'emu', 'start', self._product_bundle, '--name', self._node_name
         ]

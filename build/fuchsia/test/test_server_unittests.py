@@ -18,10 +18,10 @@ class TestServerTest(unittest.TestCase):
     """Unittests for test_server.py."""
 
     def setUp(self) -> None:
-        self._log_patcher = mock.patch('test_server.logging.debug')
         self._subprocess_patcher = mock.patch('test_server.subprocess.run')
-        self._log_mock = self._log_patcher.start()
+        self._log_patcher = mock.patch('test_server.logging.debug')
         self._subprocess_mock = self._subprocess_patcher.start()
+        self._log_mock = self._log_patcher.start()
         self.addCleanup(self._log_mock.stop)
         self.addCleanup(self._subprocess_mock.stop)
 
@@ -34,40 +34,36 @@ class TestServerTest(unittest.TestCase):
         cmd_mock.stdout = str(port_pair[0])
         self._subprocess_mock.return_value = cmd_mock
 
-        with mock.patch('compatible_utils.open', mock.mock_open()):
-            forwarder = test_server.SSHPortForwarder(_HOST_PORT_PAIR)
+        forwarder = test_server.SSHPortForwarder(_HOST_PORT_PAIR)
 
-            # Unmap should raise an exception if no ports are mapped.
-            with self.assertRaises(Exception):
-                forwarder.Unmap(port_pair[0])
-
-            forwarder.Map([port_pair])
-            self.assertEqual(self._subprocess_mock.call_count, 2)
-            self.assertEqual(forwarder.GetDevicePortForHostPort(port_pair[1]),
-                             port_pair[0])
-
-            # Unmap should also raise an exception if the unmap command fails.
-            self._subprocess_mock.reset_mock()
-            cmd_mock.returncode = 1
-            with self.assertRaises(Exception):
-                forwarder.Unmap(port_pair[0])
-            self.assertEqual(self._subprocess_mock.call_count, 1)
-
-            self._subprocess_mock.reset_mock()
-            cmd_mock.returncode = 0
+        # Unmap should raise an exception if no ports are mapped.
+        with self.assertRaises(Exception):
             forwarder.Unmap(port_pair[0])
-            self.assertEqual(self._subprocess_mock.call_count, 1)
 
-    @mock.patch('os.path.isfile')
-    def test_port_forward_exception(self, isfile_mock) -> None:
+        forwarder.Map([port_pair])
+        self.assertEqual(self._subprocess_mock.call_count, 2)
+        self.assertEqual(forwarder.GetDevicePortForHostPort(port_pair[1]),
+                         port_pair[0])
+
+        # Unmap should also raise an exception if the unmap command fails.
+        self._subprocess_mock.reset_mock()
+        cmd_mock.returncode = 1
+        with self.assertRaises(Exception):
+            forwarder.Unmap(port_pair[0])
+        self.assertEqual(self._subprocess_mock.call_count, 1)
+
+        self._subprocess_mock.reset_mock()
+        cmd_mock.returncode = 0
+        forwarder.Unmap(port_pair[0])
+        self.assertEqual(self._subprocess_mock.call_count, 1)
+
+    def test_port_forward_exception(self) -> None:
         """Tests that exception is raised if |port_forward| command fails."""
 
         cmd_mock = mock.Mock()
         cmd_mock.returncode = 1
-        isfile_mock.return_value = False
         self._subprocess_mock.return_value = cmd_mock
-        with mock.patch('compatible_utils.open', mock.mock_open()), \
-             self.assertRaises(Exception):
+        with self.assertRaises(Exception):
             test_server.port_forward(_HOST_PORT_PAIR, _HOST_PORT)
 
     @mock.patch('test_server.chrome_test_server_spawner.SpawningServer')
