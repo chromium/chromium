@@ -68,6 +68,9 @@ class ASH_EXPORT QuickSettingsMediaViewController
   // Updates the order of media items in the quick settings media view.
   void UpdateMediaItemOrder();
 
+  // Helper functions for testing.
+  QuickSettingsMediaView* media_view_for_testing() { return media_view_; }
+
  private:
   raw_ptr<UnifiedSystemTrayController> tray_controller_ = nullptr;
 

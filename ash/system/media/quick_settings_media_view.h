@@ -49,6 +49,15 @@ class ASH_EXPORT QuickSettingsMediaView : public views::View {
   // Updates the media item order given the id order in the list.
   void UpdateItemOrder(std::list<std::string> ids);
 
+  // Helper functions for testing.
+  PaginationModel* pagination_model_for_testing() {
+    return pagination_model_.get();
+  }
+  std::map<const std::string, global_media_controls::MediaItemUIView*>
+  items_for_testing() {
+    return items_;
+  }
+
  private:
   raw_ptr<QuickSettingsMediaViewController> controller_ = nullptr;
 

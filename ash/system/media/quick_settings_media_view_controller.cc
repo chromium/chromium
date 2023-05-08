@@ -24,6 +24,11 @@ QuickSettingsMediaViewController::QuickSettingsMediaViewController(
   media_session::MediaSessionService* service =
       Shell::Get()->shell_delegate()->GetMediaSessionService();
 
+  // Return if this is called from tests and there is no media service.
+  if (!service) {
+    return;
+  }
+
   mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_remote;
   mojo::Remote<media_session::mojom::MediaControllerManager>
       controller_manager_remote;
