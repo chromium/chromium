@@ -143,10 +143,11 @@ std::map<std::string, int64_t> UsageTracker::GetCachedHostsUsage() const {
   std::map<std::string, int64_t> host_usage;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      std::map<std::string, int64_t> client_host_usage =
-          client_tracker->GetCachedHostsUsage();
-      for (const auto& host_and_usage : client_host_usage)
-        host_usage[host_and_usage.first] += host_and_usage.second;
+      const std::map<BucketLocator, int64_t>& usage_map =
+          client_tracker->GetCachedBucketsUsage();
+      for (const auto& [bucket, usage] : usage_map) {
+        host_usage[bucket.storage_key.origin().host()] += usage;
+      }
     }
   }
   return host_usage;
@@ -158,14 +159,29 @@ std::map<blink::StorageKey, int64_t> UsageTracker::GetCachedStorageKeysUsage()
   std::map<blink::StorageKey, int64_t> storage_key_usage;
   for (const auto& client_type_and_trackers : client_tracker_map_) {
     for (const auto& client_tracker : client_type_and_trackers.second) {
-      std::map<blink::StorageKey, int64_t> client_storage_key_usage =
-          client_tracker->GetCachedStorageKeysUsage();
-      for (const auto& storage_key_and_usage : client_storage_key_usage)
-        storage_key_usage[storage_key_and_usage.first] +=
-            storage_key_and_usage.second;
+      const std::map<BucketLocator, int64_t>& usage_map =
+          client_tracker->GetCachedBucketsUsage();
+      for (const auto& [bucket, usage] : usage_map) {
+        storage_key_usage[bucket.storage_key] += usage;
+      }
     }
   }
   return storage_key_usage;
+}
+
+std::map<BucketLocator, int64_t> UsageTracker::GetCachedBucketsUsage() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::map<BucketLocator, int64_t> aggregated_usage;
+  for (const auto& client_type_and_trackers : client_tracker_map_) {
+    for (const auto& client_tracker : client_type_and_trackers.second) {
+      const std::map<BucketLocator, int64_t>& usage_map =
+          client_tracker->GetCachedBucketsUsage();
+      for (const auto& [bucket, usage] : usage_map) {
+        aggregated_usage[bucket] += usage;
+      }
+    }
+  }
+  return aggregated_usage;
 }
 
 void UsageTracker::SetUsageCacheEnabled(QuotaClientType client_type,

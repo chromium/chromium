@@ -84,13 +84,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
 
   // Returns the next bucket to evict, or nullopt if there are no evictable
   // buckets.
-  virtual void GetEvictionBucket(blink::mojom::StorageType type,
-                                 GetBucketCallback callback) = 0;
+  virtual void GetEvictionBuckets(int64_t target_usage,
+                                  GetBucketsCallback callback) = 0;
 
-  // Called to evict a bucket.
-  virtual void EvictBucketData(
-      const BucketLocator& bucket,
-      base::OnceCallback<void(QuotaError)> callback) = 0;
+  // Called to evict a set of buckets. The callback will be run with the number
+  // of successfully evicted buckets.
+  virtual void EvictBucketData(const std::set<BucketLocator>& buckets,
+                               base::OnceCallback<void(int)> callback) = 0;
 
  protected:
   virtual ~QuotaEvictionHandler() = default;
@@ -395,10 +395,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // QuotaEvictionHandler.
   void EvictExpiredBuckets(StatusCallback done) override;
-  void GetEvictionBucket(blink::mojom::StorageType type,
-                         GetBucketCallback callback) override;
-  void EvictBucketData(const BucketLocator& bucket,
-                       base::OnceCallback<void(QuotaError)> callback) override;
+  void GetEvictionBuckets(int64_t target_usage,
+                          GetBucketsCallback callback) override;
+  void EvictBucketData(const std::set<BucketLocator>& buckets,
+                       base::OnceCallback<void(int)> callback) override;
   void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
 
   // Called by UI and internal modules.
@@ -551,13 +551,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // The values returned total_space, available_space.
   using StorageCapacityCallback = base::OnceCallback<void(int64_t, int64_t)>;
 
-  struct EvictionContext {
-    EvictionContext();
-    ~EvictionContext();
-    BucketLocator evicted_bucket;
-    base::OnceCallback<void(QuotaError)> evict_bucket_data_callback;
-  };
-
   // Lazily called on the IO thread when the first quota manager API is called.
   //
   // Initialize() must be called after all quota clients are added to the
@@ -659,7 +652,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       base::OnceCallback<void(QuotaErrorOr<mojom::BucketTableEntryPtr>)>
           callback);
 
-  void DidEvictBucketData(QuotaErrorOr<mojom::BucketTableEntryPtr> entry);
+  // `barrier` should be called with true for a successful eviction or false if
+  // there's an error.
+  void DidEvictBucketData(BucketId evicted_bucket_id,
+                          base::RepeatingCallback<void(bool)> barrier,
+                          QuotaErrorOr<mojom::BucketTableEntryPtr> entry);
 
   void ReportHistogram();
   void DidGetTemporaryGlobalUsageForHistogram(int64_t usage,
@@ -672,15 +669,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Returns the list of bucket ids that should be excluded from eviction due to
   // consistent errors after multiple attempts.
   std::set<BucketId> GetEvictionBucketExceptions();
-  void DidGetEvictionBucket(GetBucketCallback callback,
-                            const absl::optional<BucketLocator>& bucket);
+  void DidGetEvictionBuckets(GetBucketsCallback callback,
+                             const std::set<BucketLocator>& buckets);
 
   void DidGetEvictionRoundInfo();
 
-  void GetLruEvictableBucket(blink::mojom::StorageType type,
-                             GetBucketCallback callback);
+  void GetBucketsForEvictionFromDatabase(
+      int64_t target_usage,
+      std::map<BucketLocator, int64_t> usage_map,
+      GetBucketsCallback callback);
 
-  void DidGetLruEvictableBucket(QuotaErrorOr<BucketLocator> result);
+  void DidGetBucketsForEvictionFromDatabase(
+      GetBucketsCallback callback,
+      QuotaErrorOr<std::set<BucketLocator>> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(absl::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);
@@ -807,8 +808,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // The last time that an eviction round was started due to a full disk error.
   base::TimeTicks last_full_disk_eviction_time_;
 
-  GetBucketCallback lru_bucket_callback_;
-
   // Buckets that have been notified of access during LRU task to exclude from
   // eviction.
   std::set<BucketLocator> access_notified_buckets_;
@@ -843,7 +842,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // reinstantiate the trackers when they're not handling requests.
 
   std::unique_ptr<QuotaTemporaryStorageEvictor> temporary_storage_evictor_;
-  EvictionContext eviction_context_;
   // Set when there is an eviction task in-flight.
   bool is_getting_eviction_bucket_ = false;
 

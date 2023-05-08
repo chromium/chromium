@@ -53,7 +53,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
 
     int64_t usage_on_beginning_of_round = -1;
     int64_t usage_on_end_of_round = -1;
-    int64_t num_evicted_buckets_in_round = 0;
+    int64_t num_evicted_buckets = 0;
   };
 
   QuotaTemporaryStorageEvictor(QuotaEvictionHandler* quota_eviction_handler,
@@ -84,8 +84,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
                               int64_t total_space,
                               int64_t current_usage,
                               bool current_usage_is_complete);
-  void OnGotEvictionBucket(const absl::optional<BucketLocator>& bucket);
-  void OnEvictionComplete(QuotaError status);
+  void OnGotEvictionBuckets(const std::set<BucketLocator>& buckets);
+  void OnEvictionComplete(int expected_evicted_buckets,
+                          int actual_evicted_buckets);
 
   void OnEvictionRoundStarted();
   void OnEvictionRoundFinished();

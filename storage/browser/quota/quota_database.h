@@ -176,12 +176,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaErrorOr<mojom::BucketTableEntryPtr> DeleteBucketData(
       const BucketLocator& bucket);
 
-  // Returns the BucketLocator for the least recently used bucket. Will exclude
-  // buckets with ids in `bucket_exceptions`, buckets marked persistent, and
-  // origins that have the special unlimited storage policy. Returns a
-  // QuotaError if the operation has failed.
-  QuotaErrorOr<BucketLocator> GetLruEvictableBucket(
+  // Returns BucketLocators for the least recently used buckets, to clear at
+  // least `target_usage` space. Will exclude buckets with ids in
+  // `bucket_exceptions`, buckets marked persistent, and origins that have the
+  // special unlimited storage policy. Returns a QuotaError if the operation has
+  // failed. `usage_map` describes the amount of space used by each bucket; any
+  // bucket missing from this map will be considered to use only 1b.
+  QuotaErrorOr<std::set<BucketLocator>> GetBucketsForEviction(
       blink::mojom::StorageType type,
+      int64_t target_usage,
+      const std::map<BucketLocator, int64_t>& usage_map,
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);
 

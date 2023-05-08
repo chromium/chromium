@@ -1789,9 +1789,6 @@ QuotaManagerImpl::~QuotaManagerImpl() {
   }
 }
 
-QuotaManagerImpl::EvictionContext::EvictionContext() = default;
-QuotaManagerImpl::EvictionContext::~EvictionContext() = default;
-
 void QuotaManagerImpl::EnsureDatabaseOpened() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_thread_->BelongsToCurrentThread());
@@ -2163,6 +2160,8 @@ void QuotaManagerImpl::DeleteBucketFromDatabase(
 }
 
 void QuotaManagerImpl::DidEvictBucketData(
+    BucketId evicted_bucket_id,
+    base::RepeatingCallback<void(bool)> barrier,
     QuotaErrorOr<mojom::BucketTableEntryPtr> entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_thread_->BelongsToCurrentThread());
@@ -2176,16 +2175,14 @@ void QuotaManagerImpl::DidEvictBucketData(
     base::UmaHistogramCounts1000(
         QuotaManagerImpl::kEvictedBucketDaysSinceAccessHistogram,
         (now - entry.value()->last_accessed).InDays());
-    std::move(eviction_context_.evict_bucket_data_callback)
-        .Run(QuotaError::kNone);
+    barrier.Run(true);
   } else {
     // We only try to evict buckets that are not in use, so basically deletion
     // attempt for eviction should not fail.  Let's record the bucket if we get
     // an error and exclude it from future eviction if the error happens
     // consistently (> kThresholdOfErrorsToBeDenylisted).
-    buckets_in_error_[eviction_context_.evicted_bucket.id]++;
-    std::move(eviction_context_.evict_bucket_data_callback)
-        .Run(entry.error().quota_error);
+    buckets_in_error_[evicted_bucket_id]++;
+    barrier.Run(false);
   }
 }
 
@@ -2493,33 +2490,33 @@ std::set<BucketId> QuotaManagerImpl::GetEvictionBucketExceptions() {
   return exceptions;
 }
 
-void QuotaManagerImpl::DidGetEvictionBucket(
-    GetBucketCallback callback,
-    const absl::optional<BucketLocator>& bucket) {
+void QuotaManagerImpl::DidGetEvictionBuckets(
+    GetBucketsCallback callback,
+    const std::set<BucketLocator>& buckets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
-  // Make sure the returned bucket has not been accessed since we posted the
-  // eviction task.
-  DCHECK(!bucket.has_value() ||
-         !bucket->storage_key.origin().GetURL().is_empty());
-  if (bucket.has_value() &&
-      std::count_if(access_notified_buckets_.begin(),
-                    access_notified_buckets_.end(),
-                    [&bucket](const BucketLocator& locator) {
-                      return bucket->IsEquivalentTo(locator);
-                    })) {
-    std::move(callback).Run(absl::nullopt);
-  } else {
-    std::move(callback).Run(bucket);
-  }
-  access_notified_buckets_.clear();
+  // Filter out buckets that were accessed while getting eviction buckets.
+  auto bucket_wasnt_accessed =
+      [this](const BucketLocator& to_be_evicted_bucket) {
+        return !std::count_if(
+            access_notified_buckets_.begin(), access_notified_buckets_.end(),
+            [&to_be_evicted_bucket](const BucketLocator& accessed_bucket) {
+              return to_be_evicted_bucket.IsEquivalentTo(accessed_bucket);
+            });
+      };
 
+  std::set<BucketLocator> bucket_copies;
+  std::copy_if(buckets.begin(), buckets.end(),
+               std::inserter(bucket_copies, bucket_copies.end()),
+               bucket_wasnt_accessed);
+  std::move(callback).Run(bucket_copies);
+  access_notified_buckets_.clear();
   is_getting_eviction_bucket_ = false;
 }
 
-void QuotaManagerImpl::GetEvictionBucket(StorageType type,
-                                         GetBucketCallback callback) {
+void QuotaManagerImpl::GetEvictionBuckets(int64_t target_usage,
+                                          GetBucketsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
@@ -2528,9 +2525,18 @@ void QuotaManagerImpl::GetEvictionBucket(StorageType type,
   DCHECK(!is_getting_eviction_bucket_);
   is_getting_eviction_bucket_ = true;
 
-  GetLruEvictableBucket(
-      type, base::BindOnce(&QuotaManagerImpl::DidGetEvictionBucket,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
+  // The usage map should have been cached recently due to
+  // `GetEvictionRoundInfo()`.
+  std::map<BucketLocator, int64_t> usage_map;
+  if (base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)) {
+    usage_map =
+        GetUsageTracker(StorageType::kTemporary)->GetCachedBucketsUsage();
+  }
+
+  GetBucketsForEvictionFromDatabase(
+      target_usage, std::move(usage_map),
+      base::BindOnce(&QuotaManagerImpl::DidGetEvictionBuckets,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void QuotaManagerImpl::EvictExpiredBuckets(StatusCallback done) {
@@ -2558,19 +2564,27 @@ void QuotaManagerImpl::EvictExpiredBuckets(StatusCallback done) {
 }
 
 void QuotaManagerImpl::EvictBucketData(
-    const BucketLocator& bucket,
-    base::OnceCallback<void(QuotaError)> callback) {
+    const std::set<BucketLocator>& buckets,
+    base::OnceCallback<void(int)> on_eviction_done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(io_thread_->BelongsToCurrentThread());
-  DCHECK_EQ(bucket.type, StorageType::kTemporary);
-  DCHECK(callback);
 
-  eviction_context_.evicted_bucket = bucket;
-  eviction_context_.evict_bucket_data_callback = std::move(callback);
+  auto barrier = base::BarrierCallback<bool>(
+      buckets.size(), base::BindOnce(
+                          [](base::OnceCallback<void(int)> on_eviction_done,
+                             std::vector<bool> results) {
+                            const int evicted_count = std::count(
+                                results.begin(), results.end(), true);
+                            std::move(on_eviction_done).Run(evicted_count);
+                          },
+                          std::move(on_eviction_done)));
 
-  DeleteBucketDataInternal(bucket, AllQuotaClientTypes(),
-                           base::BindOnce(&QuotaManagerImpl::DidEvictBucketData,
-                                          weak_factory_.GetWeakPtr()));
+  for (const auto& bucket : buckets) {
+    DeleteBucketDataInternal(
+        bucket, AllQuotaClientTypes(),
+        base::BindOnce(&QuotaManagerImpl::DidEvictBucketData,
+                       weak_factory_.GetWeakPtr(), bucket.id, barrier));
+  }
 }
 
 void QuotaManagerImpl::GetEvictionRoundInfo(
@@ -2593,43 +2607,47 @@ void QuotaManagerImpl::DidGetEvictionRoundInfo() {
   eviction_helper_.reset();
 }
 
-void QuotaManagerImpl::GetLruEvictableBucket(StorageType type,
-                                             GetBucketCallback callback) {
+void QuotaManagerImpl::GetBucketsForEvictionFromDatabase(
+    int64_t target_usage,
+    std::map<BucketLocator, int64_t> usage_map,
+    GetBucketsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
 
-  // This must not be called while there's an in-flight task.
-  DCHECK(lru_bucket_callback_.is_null());
-  lru_bucket_callback_ = std::move(callback);
   if (db_disabled_) {
-    std::move(lru_bucket_callback_).Run(absl::nullopt);
+    std::move(callback).Run({});
     return;
   }
 
   PostTaskAndReplyWithResultForDBThread(
       base::BindOnce(
-          [](StorageType type, const std::set<BucketId>& bucket_exceptions,
+          [](int64_t target_usage, std::map<BucketLocator, int64_t> usage_map,
+             const std::set<BucketId>& bucket_exceptions,
              SpecialStoragePolicy* policy, QuotaDatabase* database) {
             DCHECK(database);
-            return database->GetLruEvictableBucket(type, bucket_exceptions,
-                                                   policy);
+            return database->GetBucketsForEviction(
+                blink::mojom::StorageType::kTemporary, target_usage, usage_map,
+                bucket_exceptions, policy);
           },
-          type, GetEvictionBucketExceptions(),
+          target_usage, std::move(usage_map), GetEvictionBucketExceptions(),
           base::RetainedRef(special_storage_policy_)),
-      base::BindOnce(&QuotaManagerImpl::DidGetLruEvictableBucket,
-                     weak_factory_.GetWeakPtr()));
+      base::BindOnce(&QuotaManagerImpl::DidGetBucketsForEvictionFromDatabase,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void QuotaManagerImpl::DidGetLruEvictableBucket(
-    QuotaErrorOr<BucketLocator> result) {
+void QuotaManagerImpl::DidGetBucketsForEvictionFromDatabase(
+    GetBucketsCallback callback,
+    QuotaErrorOr<std::set<BucketLocator>> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result.has_value() ||
                   result.error() != QuotaError::kDatabaseError);
 
-  std::move(lru_bucket_callback_)
-      .Run(result.has_value() ? absl::make_optional(std::move(result.value()))
-                              : absl::nullopt);
+  if (result.has_value()) {
+    std::move(callback).Run(result.value());
+  } else {
+    std::move(callback).Run({});
+  }
 }
 
 void QuotaManagerImpl::GetQuotaSettings(QuotaSettingsCallback callback) {

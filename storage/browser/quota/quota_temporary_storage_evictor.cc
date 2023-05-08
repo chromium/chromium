@@ -9,8 +9,10 @@
 #include <algorithm>
 
 #include "base/auto_reset.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
@@ -77,7 +79,7 @@ void QuotaTemporaryStorageEvictor::ReportPerRoundHistogram() {
                      round_statistics_.usage_on_beginning_of_round -
                          round_statistics_.usage_on_end_of_round);
   base::UmaHistogramCounts1M("Quota.NumberOfEvictedBucketsPerRound",
-                             round_statistics_.num_evicted_buckets_in_round);
+                             round_statistics_.num_evicted_buckets);
 }
 
 void QuotaTemporaryStorageEvictor::ReportPerHourHistogram() {
@@ -107,7 +109,7 @@ void QuotaTemporaryStorageEvictor::OnEvictionRoundFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check if skipped round
-  if (round_statistics_.num_evicted_buckets_in_round) {
+  if (round_statistics_.num_evicted_buckets) {
     ReportPerRoundHistogram();
     time_of_end_of_last_nonskipped_round_ = base::Time::Now();
   } else {
@@ -158,8 +160,10 @@ void QuotaTemporaryStorageEvictor::StartEvictionTimerWithDelay(
 
 void QuotaTemporaryStorageEvictor::ConsiderEviction() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Only look for expired buckets once per round.
-  if (in_round()) {
+  if (base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)) {
+    CHECK(!in_round());
+  } else if (in_round()) {
+    // Only look for expired buckets once per round.
     OnEvictedExpiredBuckets(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
@@ -216,13 +220,13 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
 
   int64_t amount_to_evict = std::max(usage_overage, diskspace_shortage);
   if (status == blink::mojom::QuotaStatusCode::kOk && amount_to_evict > 0) {
-    // Space is getting tight. Get the least recently used storage key and
-    // continue.
     // TODO(michaeln): if the reason for eviction is low physical disk space,
     // make 'unlimited' storage keys subject to eviction too.
-    quota_eviction_handler_->GetEvictionBucket(
-        blink::mojom::StorageType::kTemporary,
-        base::BindOnce(&QuotaTemporaryStorageEvictor::OnGotEvictionBucket,
+    quota_eviction_handler_->GetEvictionBuckets(
+        base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)
+            ? amount_to_evict
+            : 1,
+        base::BindOnce(&QuotaTemporaryStorageEvictor::OnGotEvictionBuckets,
                        weak_factory_.GetWeakPtr()));
     return;
   }
@@ -240,36 +244,37 @@ void QuotaTemporaryStorageEvictor::OnGotEvictionRoundInfo(
   OnEvictionRoundFinished();
 }
 
-void QuotaTemporaryStorageEvictor::OnGotEvictionBucket(
-    const absl::optional<BucketLocator>& bucket) {
+void QuotaTemporaryStorageEvictor::OnGotEvictionBuckets(
+    const std::set<BucketLocator>& buckets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!bucket.has_value()) {
+  if (buckets.empty()) {
     StartEvictionTimerWithDelay(interval_ms_);
     OnEvictionRoundFinished();
     return;
   }
 
-  DCHECK(!bucket->storage_key.origin().GetURL().is_empty());
-
   quota_eviction_handler_->EvictBucketData(
-      bucket.value(),
-      base::BindOnce(&QuotaTemporaryStorageEvictor::OnEvictionComplete,
-                     weak_factory_.GetWeakPtr()));
+      buckets, base::BindOnce(&QuotaTemporaryStorageEvictor::OnEvictionComplete,
+                              weak_factory_.GetWeakPtr(), buckets.size()));
 }
 
-void QuotaTemporaryStorageEvictor::OnEvictionComplete(QuotaError status) {
+void QuotaTemporaryStorageEvictor::OnEvictionComplete(
+    int expected_evicted_buckets,
+    int actual_evicted_buckets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Just calling ConsiderEviction() or StartEvictionTimerWithDelay() here is
-  // ok. No need to deal with the case that all of the Delete operations fail
-  // for a certain bucket. It doesn't result in trying to evict the same bucket
-  // permanently. The evictor skips buckets which had deletion errors a few
-  // times.
+  statistics_.num_evicted_buckets += actual_evicted_buckets;
+  round_statistics_.num_evicted_buckets += actual_evicted_buckets;
 
-  if (status == QuotaError::kNone) {
-    ++statistics_.num_evicted_buckets;
-    ++round_statistics_.num_evicted_buckets_in_round;
+  if (base::FeatureList::IsEnabled(features::kNewQuotaEvictionRoutine)) {
+    StartEvictionTimerWithDelay(interval_ms_);
+    OnEvictionRoundFinished();
+    return;
+  }
+
+  const bool success = expected_evicted_buckets == actual_evicted_buckets;
+  if (success) {
     // We many need to get rid of more space so reconsider immediately.
     ConsiderEviction();
   } else {

@@ -624,8 +624,10 @@ QuotaErrorOr<mojom::BucketTableEntryPtr> QuotaDatabase::DeleteBucketData(
   return BucketTableEntryFromSqlStatement(statement);
 }
 
-QuotaErrorOr<BucketLocator> QuotaDatabase::GetLruEvictableBucket(
+QuotaErrorOr<std::set<BucketLocator>> QuotaDatabase::GetBucketsForEviction(
     StorageType type,
+    int64_t target_usage,
+    const std::map<BucketLocator, int64_t>& usage_map,
     const std::set<BucketId>& bucket_exceptions,
     SpecialStoragePolicy* special_storage_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -633,6 +635,8 @@ QuotaErrorOr<BucketLocator> QuotaDatabase::GetLruEvictableBucket(
   if (open_error != QuotaError::kNone) {
     return base::unexpected(open_error);
   }
+
+  std::set<BucketLocator> buckets_to_evict;
 
   // clang-format off
   static constexpr char kSql[] =
@@ -643,6 +647,9 @@ QuotaErrorOr<BucketLocator> QuotaDatabase::GetLruEvictableBucket(
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindInt(0, static_cast<int>(type));
+
+  // The total space used by all buckets marked for eviction.
+  int64_t total_usage = 0;
 
   while (statement.Step()) {
     absl::optional<StorageKey> read_storage_key =
@@ -664,10 +671,20 @@ QuotaErrorOr<BucketLocator> QuotaDatabase::GetLruEvictableBucket(
          special_storage_policy->IsStorageUnlimited(read_gurl))) {
       continue;
     }
-    return BucketLocator(read_bucket_id, std::move(read_storage_key).value(),
-                         type, is_default);
+
+    BucketLocator locator(read_bucket_id, std::move(read_storage_key).value(),
+                          type, is_default);
+    const auto& bucket_usage = usage_map.find(locator);
+    total_usage += (bucket_usage == usage_map.end()) ? 1 : bucket_usage->second;
+    buckets_to_evict.insert(locator);
+    if (total_usage >= target_usage) {
+      break;
+    }
   }
-  return base::unexpected(QuotaError::kNotFound);
+  if (buckets_to_evict.empty()) {
+    return base::unexpected(QuotaError::kNotFound);
+  }
+  return buckets_to_evict;
 }
 
 QuotaErrorOr<std::set<StorageKey>> QuotaDatabase::GetStorageKeysForType(
