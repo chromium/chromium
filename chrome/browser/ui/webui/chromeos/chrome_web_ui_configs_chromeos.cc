@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/projector_app/trusted_projector_ui_config.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -265,6 +266,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::SysInternalsUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::SystemExtensionsInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<ash::TrustedProjectorUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::UrgentPasswordExpiryNotificationUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::VcTrayTesterUIConfig>());
