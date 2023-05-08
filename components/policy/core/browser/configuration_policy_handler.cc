@@ -118,30 +118,33 @@ ListPolicyHandler::~ListPolicyHandler() {}
 
 bool ListPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
                                             policy::PolicyErrorMap* errors) {
-  return CheckAndGetList(policies, errors, nullptr);
+  absl::optional<base::Value::List> empty = absl::nullopt;
+  return CheckAndGetList(policies, errors, empty);
 }
 
 void ListPolicyHandler::ApplyPolicySettings(const policy::PolicyMap& policies,
                                             PrefValueMap* prefs) {
-  base::Value list(base::Value::Type::NONE);
-  if (CheckAndGetList(policies, nullptr, &list) && list.is_list())
-    ApplyList(std::move(list), prefs);
+  auto list = absl::make_optional<base::Value::List>();
+  if (CheckAndGetList(policies, nullptr, list) && list) {
+    ApplyList(*std::move(list), prefs);
+  }
 }
 
-bool ListPolicyHandler::CheckAndGetList(const policy::PolicyMap& policies,
-                                        policy::PolicyErrorMap* errors,
-                                        base::Value* filtered_list) {
+bool ListPolicyHandler::CheckAndGetList(
+    const policy::PolicyMap& policies,
+    policy::PolicyErrorMap* errors,
+    absl::optional<base::Value::List>& filtered_list) {
   const base::Value* value = nullptr;
   if (!CheckAndGetValue(policies, errors, &value))
     return false;
 
-  if (!value)
+  if (!value) {
+    filtered_list = absl::nullopt;  // nothing to apply
     return true;
+  }
 
   // Filter the list, rejecting any invalid strings.
   const base::Value::List& list = value->GetList();
-  if (filtered_list)
-    *filtered_list = base::Value(base::Value::Type::LIST);
   for (size_t list_index = 0; list_index < list.size(); ++list_index) {
     const base::Value& entry = list[list_index];
     if (entry.type() != list_entry_type_) {
@@ -162,7 +165,7 @@ bool ListPolicyHandler::CheckAndGetList(const policy::PolicyMap& policies,
     }
 
     if (filtered_list)
-      filtered_list->GetList().Append(entry.Clone());
+      filtered_list->Append(entry.Clone());
   }
 
   return true;

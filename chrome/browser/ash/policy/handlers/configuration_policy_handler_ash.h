@@ -105,7 +105,7 @@ class PinnedLauncherAppsPolicyHandler : public ListPolicyHandler {
 
   // Converts the list of strings |filtered_list| to a list of dictionaries and
   // sets the pref.
-  void ApplyList(base::Value filtered_list, PrefValueMap* prefs) override;
+  void ApplyList(base::Value::List filtered_list, PrefValueMap* prefs) override;
 };
 
 // Maps the DefaultHandlersForFileExtensions policy to the corresponding pref.
