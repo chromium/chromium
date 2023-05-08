@@ -760,9 +760,10 @@ crbug.com/1218607 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/
 crbug.com/1219024 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/1212917 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-creation-and-destruction.html [ Failure ]
 
-
+crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance/canvas/framebuffer-bindings-unaffected-on-resize.html [ RetryOnFailure ]
 crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/extensions/oes-draw-buffers-indexed.html [ Failure ]
 crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
+crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance2/textures/canvas/tex-2d-srgb8_alpha8-rgba-unsigned_byte.html [ RetryOnFailure ]
 
 crbug.com/1232106 [ chromeos chromeos-board-amd64-generic no-passthrough ] conformance/extensions/webgl-compressed-texture-astc.html [ Failure ]
 crbug.com/1232118 [ angle-opengles chromeos chromeos-board-amd64-generic passthrough ] conformance/uniforms/uniform-samplers-test.html [ Failure ]

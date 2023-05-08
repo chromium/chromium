@@ -614,8 +614,6 @@ crbug.com/angleproject/5038 [ chromeos passthrough ] conformance/extensions/ext-
 # Failures on validating command decoder only; won't fix.
 crbug.com/angleproject/5038 [ chromeos chromeos-board-amd64-generic mesa_ge_21.0 no-passthrough target-cpu-64 ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
-
-
 crbug.com/1080400 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_color_buffer_half_float [ Failure ]
 crbug.com/1080356 [ chromeos chromeos-board-kevin ] WebglExtension_EXT_frag_depth [ Failure ]
 crbug.com/1080375 [ chromeos chromeos-board-kevin ] WebglExtension_OES_texture_float [ Failure ]
@@ -628,6 +626,8 @@ crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/
 crbug.com/1080380 [ chromeos chromeos-board-kevin ] conformance/offscreencanvas/context-lost-restored.html [ Failure ]
 crbug.com/1108368 [ chromeos chromeos-board-kevin ] conformance/misc/shader-precision-format.html [ Failure ]
 crbug.com/1357064 [ chromeos chromeos-board-kevin no-passthrough ] conformance/rendering/blending.html [ Failure ]
+
+crbug.com/1441195 [ chromeos chromeos-board-kevin no-passthrough ] conformance/context/context-creation-and-destruction.html [ RetryOnFailure ]
 
 ## VM Issues ##
 
