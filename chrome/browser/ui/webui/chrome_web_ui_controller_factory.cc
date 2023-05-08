@@ -250,7 +250,6 @@
 #include "chrome/browser/ui/webui/ash/in_session_password_change/password_change_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_ui.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_network_ui.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_start_reauth_ui.h"
@@ -781,10 +780,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
-  if (base::FeatureList::IsEnabled(net::features::kKerberosInBrowserRedirect) &&
-      url.host_piece() == chrome::kChromeUIKerberosInBrowserHost) {
-    return &NewWebUI<ash::KerberosInBrowserUI>;
-  }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (url.host_piece() == chrome::kChromeUIWebUIJsErrorHost)

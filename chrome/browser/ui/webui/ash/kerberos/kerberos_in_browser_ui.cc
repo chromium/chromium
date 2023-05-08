@@ -19,8 +19,19 @@
 #include "chrome/grit/kerberos_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "net/base/features.h"
 
 namespace ash {
+
+KerberosInBrowserUIConfig::KerberosInBrowserUIConfig()
+    : ChromeOSWebUIConfig(content::kChromeUIScheme,
+                          chrome::kChromeUIKerberosInBrowserHost) {}
+
+bool KerberosInBrowserUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return base::FeatureList::IsEnabled(
+      net::features::kKerberosInBrowserRedirect);
+}
 
 KerberosInBrowserUI::KerberosInBrowserUI(content::WebUI* web_ui)
     : WebDialogUI(web_ui) {
