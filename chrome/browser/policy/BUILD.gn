@@ -28,6 +28,7 @@ source_set("path_parser") {
   ]
 
   if (is_mac) {
+    configs += [ "//build/config/compiler:enable_arc" ]
     deps += [ "//build:branding_buildflags" ]
   } else if (is_win) {
     deps += [ "//chrome/install_static:install_static_util" ]
@@ -385,6 +386,7 @@ source_set("browser_tests") {
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.h",
       "cloud/chrome_browser_cloud_management_browsertest_mac_util.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   if (is_win) {
