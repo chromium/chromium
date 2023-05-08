@@ -41,6 +41,8 @@ class BrowserAppMenuButton : public AppMenuButton {
   // Used only in testing.
   static bool g_open_app_immediately_for_testing;
 
+  void UpdateColors();
+
   // AppMenuButton:
   void OnThemeChanged() override;
   // Updates the presentation according to |severity_| and the theme provider.
@@ -54,6 +56,11 @@ class BrowserAppMenuButton : public AppMenuButton {
 
   void UpdateTextAndHighlightColor();
 
+  bool ShouldPaintBorder() const override;
+  absl::optional<SkColor> GetHighlightTextColor() const override;
+
+  bool IsLabelPresentAndVisible() const;
+  SkColor GetForegroundColor(ButtonState state) const override;
   void SetHasInProductHelpPromo(bool has_in_product_help_promo);
 
   // Closes and continue the flow of an in-product help promo; Returns

@@ -20,6 +20,8 @@
            kChromeColorsStart) \
   E_CPONLY(kColorAppMenuHighlightSeverityHigh) \
   E_CPONLY(kColorAppMenuHighlightSeverityMedium) \
+  E_CPONLY(kColorAppMenuHighlightDefault) \
+  E_CPONLY(kColorAppMenuExpandedForegroundDefault) \
   /* Avatar colors. */ \
   E_CPONLY(kColorAvatarButtonHighlightNormal) \
   E_CPONLY(kColorAvatarButtonHighlightSyncError) \

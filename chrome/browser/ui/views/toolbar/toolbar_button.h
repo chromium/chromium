@@ -151,6 +151,13 @@ class ToolbarButton : public views::LabelButton,
   // Returns the icon size of the toolbar button
   virtual int GetIconSize() const;
 
+  // Retuns true if a non-empty border should be painted.
+  virtual bool ShouldPaintBorder() const;
+
+  // Virtual method to explicitly set the highlighted text color instead of the
+  // default behavior of the HighlightColorAnimation.
+  virtual absl::optional<SkColor> GetHighlightTextColor() const;
+
   // Updates the images using the given icons and specific colors.
   void UpdateIconsWithColors(const gfx::VectorIcon& icon,
                              SkColor normal_color,

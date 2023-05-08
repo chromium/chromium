@@ -24,6 +24,12 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // overriding when required to do so according to the new material spec.
   // TODO(crbug.com/1408542): Update color recipes to match UX mocks.
   ui::ColorMixer& mixer = provider->AddMixer();
+  mixer[kColorAppMenuHighlightDefault] = {ui::kColorSysTonalContainer};
+  mixer[kColorAppMenuHighlightSeverityLow] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuHighlightSeverityMedium] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuHighlightSeverityHigh] = {kColorAppMenuHighlightDefault};
+  mixer[kColorAppMenuExpandedForegroundDefault] = {
+      ui::kColorSysOnTonalContainer};
   mixer[kColorAvatarButtonHighlightNormal] =
       AdjustHighlightColorForContrast(ui::kColorSysPrimary, kColorToolbar);
   mixer[kColorBookmarkBarBackground] = {ui::kColorSysBase};

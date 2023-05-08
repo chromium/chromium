@@ -285,7 +285,7 @@ void ToolbarButton::UpdateColorsAndInsets() {
   if (!GetBorder() || target_insets != current_insets ||
       last_border_color_ != border_color ||
       last_paint_insets_ != paint_insets) {
-    if (border_color) {
+    if (ShouldPaintBorder() && border_color) {
       int border_thickness_dp = GetText().empty()
                                     ? kBorderThicknessDpWithoutLabel
                                     : kBorderThicknessDpWithLabel;
@@ -349,6 +349,14 @@ int ToolbarButton::GetIconSize() const {
 
   return features::IsChromeRefresh2023() ? kDefaultIconSizeChromeRefresh
                                          : kDefaultIconSize;
+}
+
+bool ToolbarButton::ShouldPaintBorder() const {
+  return true;
+}
+
+absl::optional<SkColor> ToolbarButton::GetHighlightTextColor() const {
+  return absl::nullopt;
 }
 
 void ToolbarButton::SetVectorIcon(const gfx::VectorIcon& icon) {
@@ -722,8 +730,15 @@ absl::optional<SkColor> ToolbarButton::HighlightColorAnimation::GetTextColor()
     const {
   if (!IsShown() || !parent_->GetColorProvider())
     return absl::nullopt;
+
+  // Use the overriden value is supplied by the button
+  const absl::optional<SkColor> text_color_overriden =
+      parent_->GetHighlightTextColor();
   SkColor text_color;
-  if (highlight_color_) {
+
+  if (text_color_overriden.has_value()) {
+    text_color = *text_color_overriden;
+  } else if (highlight_color_) {
     text_color = *highlight_color_;
   } else {
     text_color = parent_->GetColorProvider()->GetColor(kColorToolbarButtonText);
@@ -755,9 +770,13 @@ ToolbarButton::HighlightColorAnimation::GetBackgroundColor() const {
   SkColor bg_color =
       color_provider->GetColor(kColorToolbarButtonBackgroundHighlightedDefault);
   if (highlight_color_) {
-    bg_color = color_utils::AlphaBlend(*highlight_color_,
-                                       color_provider->GetColor(kColorToolbar),
-                                       kToolbarInkDropHighlightVisibleAlpha);
+    if (features::IsChromeRefresh2023()) {
+      bg_color = *highlight_color_;
+    } else {
+      bg_color = color_utils::AlphaBlend(
+          *highlight_color_, color_provider->GetColor(kColorToolbar),
+          kToolbarInkDropHighlightVisibleAlpha);
+    }
   }
   return FadeWithAnimation(bg_color, highlight_color_animation_);
 }
