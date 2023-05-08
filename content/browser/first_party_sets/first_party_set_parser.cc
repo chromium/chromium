@@ -262,8 +262,9 @@ base::expected<void, ParseError> ParseSubset(
 // with `elements`), and singleton sets (i.e. sets must have a primary and at
 // least one valid associated site).
 //
-// Uses `elements` to check disjointness of sets; augments `elements` to include
-// the elements of the set that was parsed.
+// Uses `elements` to check disjointness of sets. The caller is expected to
+// augment `elements` to include the elements of the set returned by this
+// function (including any aliases).
 //
 // Returns the parsed set if parsing and validation were successful; otherwise,
 // returns an appropriate ParseError.
@@ -274,7 +275,7 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
     const base::Value& value,
     bool exempt_from_limits,
     bool emit_errors,
-    base::flat_set<net::SchemefulSite>& elements,
+    const base::flat_set<net::SchemefulSite>& elements,
     std::vector<ParseWarning>* warnings) {
   if (!value.is_dict())
     return base::unexpected(ParseError(ParseErrorType::kInvalidType, {}));
@@ -338,15 +339,6 @@ base::expected<SetsAndAliases, ParseError> ParseSet(
                                        {kFirstPartySetAssociatedSitesField}));
   }
 
-  for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
-           site_and_entry : set_entries) {
-    CHECK(elements.insert(site_and_entry.first).second);
-  }
-  for (const std::pair<net::SchemefulSite, net::SchemefulSite>&
-           alias_and_canonical : aliases) {
-    CHECK(elements.insert(alias_and_canonical.first).second);
-  }
-
   return std::make_pair(FirstPartySetParser::SingleSet(set_entries), aliases);
 }
 
@@ -394,6 +386,10 @@ GetPolicySetsFromList(const base::Value::List* policy_sets,
       }
       set.insert(std::make_move_iterator(alias_entries.begin()),
                  std::make_move_iterator(alias_entries.end()));
+    }
+    for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+             site_and_entry : set) {
+      CHECK(elements.insert(site_and_entry.first).second);
     }
     parsed_sets.push_back(set);
     previous_size = warnings.size();
@@ -472,6 +468,17 @@ SetsAndAliases FirstPartySetParser::ParseSetsFromStream(std::istream& input,
             "Cookie.FirstPartySets.ProcessedEntireComponent", false);
       }
       return {};
+    }
+
+    for (const std::pair<net::SchemefulSite, net::FirstPartySetEntry>&
+             site_and_entry : parsed->first) {
+      const net::SchemefulSite& site = site_and_entry.first;
+      CHECK(elements.insert(site).second);
+    }
+    for (const std::pair<net::SchemefulSite, net::SchemefulSite>&
+             alias_and_canonical : parsed->second) {
+      const net::SchemefulSite& alias = alias_and_canonical.first;
+      CHECK(elements.insert(alias).second);
     }
 
     base::ranges::move(parsed.value().first, std::back_inserter(sets));
