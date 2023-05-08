@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/proto/password_requirements.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,12 +46,9 @@ bool IsCharInClass(char16_t c, const std::string& class_name) {
 
 size_t CountCharsInClass(const std::u16string& password,
                          const std::string& class_name) {
-  size_t num = 0;
-  for (char16_t c : password) {
-    if (IsCharInClass(c, class_name))
-      ++num;
-  }
-  return num;
+  return base::ranges::count_if(password, [&class_name](char16_t c) {
+    return IsCharInClass(c, class_name);
+  });
 }
 
 PasswordRequirementsSpec_CharacterClass* GetMutableCharClass(
