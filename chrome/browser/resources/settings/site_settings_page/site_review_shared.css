@@ -50,13 +50,11 @@ site-favicon {
 }
 
 .site-list {
-  margin-inline-start: 32px;
+  margin-inline-start: 48px;
 }
 
-/* TODO(crbug.com/1392710): Use a .list-item instead of .cr-row. */
-.site-list .cr-row {
-  border-top-width: 0;
-  padding-inline-end: 0;
+.site-list .list-item {
+  --cr-icon-button-margin-end: initial;
 }
 
 iron-icon[icon='cr:check'] {
