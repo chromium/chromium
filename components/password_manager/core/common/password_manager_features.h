@@ -52,7 +52,7 @@ BASE_DECLARE_FEATURE(kInferConfirmationPasswordField);
 BASE_DECLARE_FEATURE(kIOSPasswordUISplit);
 BASE_DECLARE_FEATURE(kIOSPasswordCheckup);
 BASE_DECLARE_FEATURE(kIOSPasswordBottomSheet);
-#endif  // IS_IOS
+#endif                                            // IS_IOS
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 BASE_DECLARE_FEATURE(kMemoryMapWeaknessCheckDictionaries);
 #endif
@@ -81,7 +81,6 @@ BASE_DECLARE_FEATURE(kPasswordGenerationBottomSheet);
 BASE_DECLARE_FEATURE(kShowUPMErrorNotification);
 BASE_DECLARE_FEATURE(kUnifiedCredentialManagerDryRun);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroid);
-BASE_DECLARE_FEATURE(kUnifiedPasswordManagerErrorMessages);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerSyncUsingAndroidBackendOnly);
 BASE_DECLARE_FEATURE(kUnifiedPasswordManagerAndroidBranding);
@@ -165,9 +164,6 @@ inline constexpr base::FeatureParam<UpmExperimentVariation>
     kUpmExperimentVariationParam{&kUnifiedPasswordManagerAndroid, "stage",
                                  UpmExperimentVariation::kEnableForSyncingUsers,
                                  &kUpmExperimentVariationOption};
-
-extern const base::FeatureParam<bool> kIgnoreAuthErrorMessageTimeouts;
-extern const base::FeatureParam<int> kMaxShownUPMErrorsBeforeEviction;
 
 extern const base::FeatureParam<int> kSaveUpdatePromptSyncingStringVersion;
 #endif

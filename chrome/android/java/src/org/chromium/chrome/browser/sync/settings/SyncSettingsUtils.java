@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.sync.settings;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES;
-
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -47,9 +45,7 @@ import org.chromium.ui.widget.Toast;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/**
- * Helper methods for sync settings.
- */
+/** Helper methods for sync settings. */
 public class SyncSettingsUtils {
     private static final String DASHBOARD_URL = "https://www.google.com/settings/chrome/sync";
     private static final String MY_ACCOUNT_URL = "https://myaccount.google.com/smartlink/home";
@@ -82,9 +78,7 @@ public class SyncSettingsUtils {
         int OTHER_ERRORS = 128;
     }
 
-    /**
-     * Returns the type of the sync error.
-     */
+    /** Returns the type of the sync error. */
     @SyncError
     public static int getSyncError() {
         SyncService syncService = SyncService.get();
@@ -137,15 +131,14 @@ public class SyncSettingsUtils {
 
     /**
      * Gets hint message to resolve sync error.
+     *
      * @param context The application context.
      * @param error The sync error.
      */
     public static String getSyncErrorHint(Context context, @SyncError int error) {
         switch (error) {
             case SyncError.AUTH_ERROR:
-                return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
-                        ? context.getString(R.string.hint_sync_auth_error_modern)
-                        : context.getString(R.string.hint_sync_auth_error);
+                return context.getString(R.string.hint_sync_auth_error_modern);
             case SyncError.CLIENT_OUT_OF_DATE:
                 return context.getString(
                         R.string.hint_client_out_of_date, BuildInfo.getInstance().hostPackageLabel);

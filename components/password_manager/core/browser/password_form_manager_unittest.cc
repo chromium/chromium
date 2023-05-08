@@ -2897,8 +2897,6 @@ TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameCrossOriginIframe) {
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorResolvable) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerErrorMessages);
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
       PasswordStoreBackendErrorType::kAuthErrorResolvable,
       PasswordStoreBackendErrorRecoveryType::kRecoverable));
@@ -2912,9 +2910,6 @@ TEST_P(PasswordFormManagerTest,
 
 TEST_P(PasswordFormManagerTest,
        ClientShouldShowErrorMessageForAuthErrorUnresolvable) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerErrorMessages);
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
       PasswordStoreBackendErrorType::kAuthErrorUnresolvable,
       PasswordStoreBackendErrorRecoveryType::kRecoverable));
@@ -2927,23 +2922,7 @@ TEST_P(PasswordFormManagerTest,
 }
 
 TEST_P(PasswordFormManagerTest,
-       ClientShouldNotShowErrorMessageWhenFeatureIsDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kUnifiedPasswordManagerErrorMessages);
-  fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
-      PasswordStoreBackendErrorType::kAuthErrorResolvable,
-      PasswordStoreBackendErrorRecoveryType::kRecoverable));
-
-  EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
-  fetcher_->NotifyFetchCompleted();
-}
-
-TEST_P(PasswordFormManagerTest,
        ClientShouldNotShowErrorMessageWhenThereIsNoError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerErrorMessages);
   fetcher_->SetProfileStoreBackendError(absl::nullopt);
 
   EXPECT_CALL(client_, ShowPasswordManagerErrorMessage).Times(0);
@@ -2952,9 +2931,6 @@ TEST_P(PasswordFormManagerTest,
 
 TEST_P(PasswordFormManagerTest,
        ClientShouldNotShowErrorMessageWhenErrorIsNotAuthError) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerErrorMessages);
   fetcher_->SetProfileStoreBackendError(PasswordStoreBackendError(
       PasswordStoreBackendErrorType::kUncategorized,
       PasswordStoreBackendErrorRecoveryType::kUnspecified));
@@ -2964,9 +2940,6 @@ TEST_P(PasswordFormManagerTest,
 }
 
 TEST_P(PasswordFormManagerTest, ClientShouldNotShowErrorMessageWhenUnenrolled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kUnifiedPasswordManagerErrorMessages);
   client_.GetPrefs()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);

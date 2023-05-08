@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.sync.ui;
 
 import static org.chromium.base.ContextUtils.getApplicationContext;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,7 +22,6 @@ import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -52,10 +50,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * A message UI that informs the current sync error and contains a button to take action to resolve
- * it.
- * This class is tied to a window and at most one instance per window can exist at a time.
- * In practice however, because the time limit imposed between 2 displays is global,
- * only one instance in the whole application will exist at a time.
+ * it. This class is tied to a window and at most one instance per window can exist at a time. In
+ * practice however, because the time limit imposed between 2 displays is global, only one instance
+ * in the whole application will exist at a time.
  */
 public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserData {
     @VisibleForTesting
@@ -187,11 +184,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
                 assert false;
                 break;
             case MessageType.AUTH_ERROR:
-                if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)) {
-                    startUpdateCredentialsFlow(mActivity);
-                } else {
-                    openSyncSettings();
-                }
+                startUpdateCredentialsFlow(mActivity);
                 break;
             case MessageType.PASSPHRASE_REQUIRED:
             case MessageType.SYNC_SETUP_INCOMPLETE:
@@ -268,9 +261,7 @@ public class SyncErrorMessage implements SyncStateChangedListener, UnownedUserDa
     private static String getPrimaryButtonText(Context context, @SyncError int error) {
         switch (error) {
             case SyncError.AUTH_ERROR:
-                return ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ERROR_MESSAGES)
-                        ? context.getString(R.string.password_error_sign_in_button_title)
-                        : context.getString(R.string.open_settings_button);
+                return context.getString(R.string.password_error_sign_in_button_title);
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:

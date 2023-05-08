@@ -376,7 +376,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kUnifiedCredentialManagerDryRun,
     &password_manager::features::kUnifiedPasswordManagerAndroid,
     &password_manager::features::kUnifiedPasswordManagerAndroidBranding,
-    &password_manager::features::kUnifiedPasswordManagerErrorMessages,
     &password_manager::features::kPasswordEditDialogWithDetails,
     &privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
     &privacy_sandbox::kPrivacySandboxSettings3,

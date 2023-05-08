@@ -3211,12 +3211,6 @@ const char kUnifiedPasswordManagerAndroidDescription[] =
     "Warning: Highly experimental. May lead to loss of passwords and "
     "impact performance.";
 
-const char kUnifiedPasswordManagerErrorMessagesName[] =
-    "Error Messages when using Google Mobile Services for passwords";
-const char kUnifiedPasswordManagerErrorMessagesDescription[] =
-    "Enables showing error messages that offer signing in again to fix the "
-    "auth errors.";
-
 const char kUnifiedPasswordManagerAndroidReenrollmentName[] =
     "Automatic reenrollement of users who were evicted from using Google "
     "Mobile Services after experiencing errors.";

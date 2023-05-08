@@ -1153,8 +1153,6 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
        FocusedInputChangedFormsFetched) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      {password_manager::features::kUnifiedPasswordManagerErrorMessages});
   FormData observed_form_data = MakePasswordFormData();
   SetUpGenerationPreconditions(observed_form_data.url);
 

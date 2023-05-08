@@ -349,31 +349,6 @@ void RecordRetryHistograms(PasswordStoreOperation operation,
                                 attempt, kMaxReportedRetryAttempts);
 }
 
-bool HasPromptedTooManyAuthErrors(PrefService* pref_service) {
-  DCHECK(pref_service);
-  // This question only makes sense if auth error prompts are enabled.
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kUnifiedPasswordManagerErrorMessages));
-
-  // If there is no limit on how many times an auth error can be shown,
-  // there is no such thing as too many auth error prompts.
-  int max_auth_error_prompts =
-      password_manager::features::kMaxShownUPMErrorsBeforeEviction.Get();
-  if (max_auth_error_prompts < 0) {
-    return false;
-  }
-
-  if (pref_service->GetInteger(
-          password_manager::prefs::kTimesUPMAuthErrorShown) <
-      max_auth_error_prompts) {
-    return false;
-  }
-
-  LOG(ERROR) << "Auth error prompts exceeds limit of "
-             << max_auth_error_prompts;
-  return true;
-}
-
 bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
                                  PasswordStoreOperation operation,
                                  PrefService* pref_service) {
@@ -391,17 +366,6 @@ bool IsUnrecoverableBackendError(AndroidBackendAPIErrorCode api_error_code,
           static_cast<int>(api_error_code))) {
     // If the error should not be ignored, it will immediately evict the user
     // with no possibility to recover.
-    return true;
-  }
-
-  // Auth errors require explicit handling and are not recoverable if this
-  // handling is disabled. They are also considered unrecoverable if the client
-  // has been in a broke auth state for too long, verified by the number of auth
-  // error prompts that were shown.
-  if (IsAuthenticationError(api_error_code) &&
-      (!base::FeatureList::IsEnabled(
-           password_manager::features::kUnifiedPasswordManagerErrorMessages) ||
-       HasPromptedTooManyAuthErrors(pref_service))) {
     return true;
   }
 
@@ -1074,10 +1038,7 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
         }
         password_manager_upm_eviction::EvictCurrentUser(api_error, prefs_);
       }
-    } else if (IsAuthenticationError(api_error_code) &&
-               base::FeatureList::IsEnabled(
-                   password_manager::features::
-                       kUnifiedPasswordManagerErrorMessages)) {
+    } else if (IsAuthenticationError(api_error_code)) {
       // Auth error specific handling is only triggered if the error is
       // considered recoverable.
       prefs_->SetBoolean(prefs::kSavePasswordsSuspendedByError, true);

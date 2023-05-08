@@ -83,12 +83,9 @@ bool IsUnenrolledFromUPM(PrefService* pref_service) {
 // pref to temporarily prevent password saves. If the user doesn't use GMS,
 // saving keeps working and only the syncing of changes is delayed.
 bool ShouldSuspendPasswordSavingDueToError(PrefService* pref_service) {
-  // The messages feature is a subset of UPM. The actual feature is irrelevant.
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
-    return false;  // Non-UPM users can still save.
-  }
   // Ensure the user is still enrolled. Evicted users can still save normally.
+  // TODO(crbug.com/1443356): possibly auth error disables password saving
+  // after pwd sync is turned off.
   return !IsUnenrolledFromUPM(pref_service) &&
          pref_service->GetBoolean(
              password_manager::prefs::kSavePasswordsSuspendedByError);

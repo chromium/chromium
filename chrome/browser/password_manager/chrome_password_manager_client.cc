@@ -351,13 +351,8 @@ void ChromePasswordManagerClient::FocusedInputChanged(
 
   if (web_contents()->GetFocusedFrame()) {
     bool manual_generation_available =
-        password_manager_util::ManualPasswordGenerationEnabled(driver);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
-      manual_generation_available =
-          manual_generation_available &&
-          password_manager_.HaveFormManagersReceivedData(driver);
-    }
+        password_manager_util::ManualPasswordGenerationEnabled(driver) &&
+        password_manager_.HaveFormManagersReceivedData(driver);
     GetOrCreatePasswordAccessory()->RefreshSuggestionsForField(
         focused_field_type, manual_generation_available);
   }

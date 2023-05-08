@@ -3107,13 +3107,6 @@ constexpr FeatureEntry::FeatureVariation
          std::size(kUpmAndroidEnableForAllUsers), nullptr},
 };
 
-constexpr FeatureEntry::FeatureParam kIgnoreUPMAuthErrorMessageTimeouts[] = {
-    {"ignore_auth_error_message_timeouts", "true"}};
-constexpr FeatureEntry::FeatureVariation
-    kUnifiedPasswordManagerErrorMessagesVariations[] = {
-        {"Ignore timeouts", kIgnoreUPMAuthErrorMessageTimeouts,
-         std::size(kIgnoreUPMAuthErrorMessageTimeouts), nullptr}};
-
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -8679,15 +8672,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kUnifiedPasswordManagerAndroid,
          kUnifiedPasswordManagerAndroidVariations,
          "UnifiedPasswordManagerAndroid")},
-
-    {"google-mobile-services-passwords-error-messages",
-     flag_descriptions::kUnifiedPasswordManagerErrorMessagesName,
-     flag_descriptions::kUnifiedPasswordManagerErrorMessagesDescription,
-     kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         password_manager::features::kUnifiedPasswordManagerErrorMessages,
-         kUnifiedPasswordManagerErrorMessagesVariations,
-         "UnifiedPasswordManagerErrorMessages")},
 #endif
 
     {"tab-search-fuzzy-search", flag_descriptions::kTabSearchFuzzySearchName,

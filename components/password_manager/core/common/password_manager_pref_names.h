@@ -118,6 +118,7 @@ extern const char kTimesAttemptedToReenrollToGoogleMobileServices[];
 // auth error UI was displayed to the user. Reset once the error is resolved
 // (detected by a successful backend request) or when the user is unenrolled
 // from UPM.
+// Deprecated. TODO(crbug/1313893): cleanup.
 extern const char kTimesUPMAuthErrorShown[];
 #endif
 

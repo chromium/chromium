@@ -145,10 +145,6 @@ bool ShouldShowErrorMessage(
     return false;
   DCHECK(error.recovery_type !=
          PasswordStoreBackendErrorRecoveryType::kUnrecoverable);
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kUnifiedPasswordManagerErrorMessages)) {
-    return false;
-  }
   return true;
 }
 #endif

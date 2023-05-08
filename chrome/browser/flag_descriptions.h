@@ -1843,9 +1843,6 @@ extern const char kTurnOffStreamingMediaCachingAlwaysDescription[];
 extern const char kUnifiedPasswordManagerAndroidName[];
 extern const char kUnifiedPasswordManagerAndroidDescription[];
 
-extern const char kUnifiedPasswordManagerErrorMessagesName[];
-extern const char kUnifiedPasswordManagerErrorMessagesDescription[];
-
 extern const char kUnifiedPasswordManagerAndroidReenrollmentName[];
 extern const char kUnifiedPasswordManagerAndroidReenrollmentDescription[];
 
