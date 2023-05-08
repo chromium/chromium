@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
-
 module crosapi.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 
@@ -14,6 +13,7 @@ import "ui/base/mojom/ui_base_types.mojom";
 // written to logs. New enum values can be added, but existing enums must
 // never be renumbered, deleted, or reused. If adding an enum, add it at the
 // bottom.
+// Next MinVersion: 3
 [Stable, Extensible]
 enum ClipboardHistoryControllerShowSource {
   // Shown by the accelerator(search + v).
@@ -44,22 +44,30 @@ enum ClipboardHistoryDisplayFormat {
   kFile = 3,
 };
 
+// Deprecated. Use `ClipboardHistoryItemDescriptor` instead.
+[RenamedFrom="crosapi.mojom.ClipboardHistoryItemDescriptor"]
+struct DeprecatedClipboardHistoryItemDescriptor {
+  mojo_base.mojom.String16 display_text;
+  ClipboardHistoryDisplayFormat display_format;
+  string item_id;
+};
+
 // Describes a clipboard history item.
 //
 // NOTE: This structure does not contain the actual clipboard data. The
 // clipboard data is indicated by the `display_text` and `display_format`
 // fields.
 //
+// The `item_id` field is a unique identifier for the clipboard history item.
+//
 // The `display_text` field is the text that is displayed in the clipboard
 // history menu. The `display_format` field indicates the format of the
 // clipboard data.
 //
-// The `item_id` field is a unique identifier for the clipboard history item.
-[Stable]
 struct ClipboardHistoryItemDescriptor {
-  mojo_base.mojom.String16 display_text;
-  ClipboardHistoryDisplayFormat display_format;
-  string item_id;
+  mojo_base.mojom.UnguessableToken item_id@0;
+  ClipboardHistoryDisplayFormat display_format@1;
+  mojo_base.mojom.String16 display_text@2;
 };
 
 // This interface is implemented by Ash-Chrome.

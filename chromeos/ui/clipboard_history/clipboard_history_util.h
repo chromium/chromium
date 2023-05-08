@@ -11,6 +11,10 @@
 #include "base/functional/callback_forward.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace ui {
 class ImageModel;
 }  // namespace ui
@@ -31,7 +35,7 @@ QueryItemDescriptorsImpl::ResultType QueryItemDescriptors();
 // Sets the function implementation that pastes the clipboard item specified
 // by id. CrOS Ash and CrOS Lacros have different implementations.
 using PasteClipboardItemByIdImpl = base::RepeatingCallback<void(
-    const std::string&,
+    const base::UnguessableToken&,
     int,
     crosapi::mojom::ClipboardHistoryControllerShowSource)>;
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
@@ -40,7 +44,7 @@ void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl);
 // Pastes the clipboard item specified by `id`.
 COMPONENT_EXPORT(CHROMEOS_UI_CLIPBOARD_HISTORY)
 void PasteClipboardItemById(
-    const std::string& id,
+    const base::UnguessableToken& id,
     int event_flags,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source);
 

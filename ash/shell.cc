@@ -1673,10 +1673,10 @@ void Shell::Init(
       clipboard_history_controller_.get()));
   chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(
       base::BindRepeating(
-          [](const std::string& id, int event_flags,
+          [](const base::UnguessableToken& id, int event_flags,
              crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
             ClipboardHistoryController::Get()->PasteClipboardItemById(
-                id, event_flags, show_source);
+                id.ToString(), event_flags, show_source);
           }));
 
   for (auto& observer : shell_observers_) {

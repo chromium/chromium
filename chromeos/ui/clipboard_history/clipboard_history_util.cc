@@ -40,7 +40,7 @@ void SetPasteClipboardItemByIdImpl(PasteClipboardItemByIdImpl impl) {
 }
 
 void PasteClipboardItemById(
-    const std::string& id,
+    const base::UnguessableToken& id,
     int event_flags,
     crosapi::mojom::ClipboardHistoryControllerShowSource show_source) {
   GetPasteClipboardItemByIdImpl().Run(id, event_flags, show_source);
