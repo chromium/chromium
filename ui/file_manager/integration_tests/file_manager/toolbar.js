@@ -463,6 +463,8 @@ testcase.toolbarCloudIconShouldShowForInProgress = async () => {
   // hidden.
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
   await remoteCall.waitForElementLost(appId, '#cloud-button[hidden]');
+  await remoteCall.waitForElement(
+      appId, '#cloud-button > xf-icon[type="cloud_sync"]');
 };
 
 /**
@@ -482,6 +484,8 @@ testcase.toolbarCloudIconShowsWhenNotEnoughDiskSpaceIsReturned = async () => {
   // error, there is a UI state to show so the toolbar should still be visible.
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
   await remoteCall.waitForElementLost(appId, '#cloud-button[hidden]');
+  await remoteCall.waitForElement(
+      appId, '#cloud-button > xf-icon[type="cloud_error"]');
 };
 
 
@@ -585,6 +589,32 @@ testcase.toolbarCloudIconShouldNotShowWhenPrefDisabled = async () => {
   const stage = await sendTestMessage({name: 'getBulkPinningStage'});
   chrome.test.assertEq('Paused', stage);
   await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+};
+
+/**
+ * Tests that the cloud icon should show if bulk pinning is paused (which
+ * represents an offline state) and the user preference is enabled.
+ */
+testcase.toolbarCloudIconShouldShowWhenPausedState = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+  await remoteCall.waitForElement(appId, '#cloud-button[hidden]');
+
+  // Force the bulk pinning preference on.
+  await sendTestMessage({name: 'setSpacedFreeSpace', freeSpace: 1 << 30});
+  await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: true});
+
+  // Set the bulk pinning manager to enter offline mode. This will surface a
+  // `PAUSED` state which has a UI representation iff the pref is enabled.
+  await sendTestMessage({name: 'setBulkPinningOnline', enabled: false});
+
+  // Assert the stage is `PAUSED`, the cloud button is visible and the icon is
+  // the offline icon.
+  const stage = await sendTestMessage({name: 'getBulkPinningStage'});
+  chrome.test.assertEq('Paused', stage);
+  await remoteCall.waitForElement(appId, '#cloud-button:not([hidden])');
+  await remoteCall.waitForElement(
+      appId, '#cloud-button > xf-icon[type="bulk_pinning_offline"]');
 };
 
 /**

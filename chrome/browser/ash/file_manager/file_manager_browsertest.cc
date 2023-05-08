@@ -1339,6 +1339,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("toolbarCloudIconShouldNotShowWhenPrefDisabled")
             .EnableBulkPinning(),
         TestCase("toolbarCloudIconShouldShowOnStartupEvenIfSyncing")
+            .EnableBulkPinning(),
+        TestCase("toolbarCloudIconShouldShowWhenPausedState")
             .EnableBulkPinning()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(

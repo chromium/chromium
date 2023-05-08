@@ -13,6 +13,7 @@ import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
 
+import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {A11yAnnounce} from './ui/a11y_announce.js';
@@ -119,6 +120,20 @@ export class ToolbarController {
      * @const
      */
     this.cloudButton_ = queryRequiredElement('#cloud-button', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.cloudStatusIcon_ = queryRequiredElement(
+        '#cloud-button > xf-icon[slot="suffix-icon"]', this.toolbar_);
+
+    /**
+     * @private {!HTMLElement}
+     * @const
+     */
+    this.cloudButtonIcon_ = queryRequiredElement(
+        '#cloud-button > xf-icon[slot="prefix-icon"]', this.toolbar_);
 
     /**
      * @private {!Command}
@@ -515,7 +530,7 @@ export class ToolbarController {
    */
   updateBulkPinning_(state) {
     const bulkPinningPref = state.preferences?.driveFsBulkPinningEnabled;
-    const bulkPinningStage = state.bulkPinning?.stage;
+    const bulkPinning = state.bulkPinning;
     // If the bulk pinning preference is enabled, the user should not be able to
     // toggle items offline.
     if (this.bulkPinningPref_ !== bulkPinningPref) {
@@ -523,10 +538,49 @@ export class ToolbarController {
       this.togglePinnedCommand_.canExecuteChange(
           this.listContainer_.currentList);
     }
-    if (util.canBulkPinningCloudPanelShow(bulkPinningStage, bulkPinningPref)) {
-      this.cloudButton_.hidden = false;
+    if (!util.canBulkPinningCloudPanelShow(
+            bulkPinning?.stage, bulkPinningPref)) {
+      this.cloudButton_.hidden = true;
       return;
     }
-    this.cloudButton_.hidden = true;
+    this.updateBulkPinningIcon_(bulkPinning);
+    this.cloudButton_.hidden = false;
+  }
+
+  /**
+   * Encapsulates the logic to update the bulk pinning cloud icon and the sub
+   * icons that indicate the current stage it is in.
+   * @param {chrome.fileManagerPrivate.BulkPinProgress|undefined} progress
+   */
+  updateBulkPinningIcon_(progress) {
+    switch (progress?.stage) {
+      case chrome.fileManagerPrivate.BulkPinStage.SYNCING:
+        this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
+        if (progress.bytesToPin === 0 ||
+            progress.pinnedBytes / progress.bytesToPin === 1) {
+          this.cloudStatusIcon_.setAttribute(
+              'type', constants.ICON_TYPES.CLOUD_DONE);
+        } else {
+          this.cloudStatusIcon_.setAttribute(
+              'type', constants.ICON_TYPES.CLOUD_SYNC);
+        }
+        break;
+      case chrome.fileManagerPrivate.BulkPinStage.NOT_ENOUGH_SPACE:
+        this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
+        this.cloudStatusIcon_.setAttribute(
+            'type', constants.ICON_TYPES.CLOUD_ERROR);
+        break;
+      case chrome.fileManagerPrivate.BulkPinStage.PAUSED:
+        this.cloudButtonIcon_.setAttribute(
+            'type', constants.ICON_TYPES.BULK_PINNING_OFFLINE);
+        this.cloudStatusIcon_.removeAttribute('type');
+        this.cloudStatusIcon_.removeAttribute('size');
+        break;
+      default:
+        this.cloudButtonIcon_.setAttribute('type', constants.ICON_TYPES.CLOUD);
+        this.cloudStatusIcon_.removeAttribute('type');
+        this.cloudStatusIcon_.removeAttribute('size');
+        break;
+    }
   }
 }

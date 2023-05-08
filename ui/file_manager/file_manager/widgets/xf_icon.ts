@@ -416,6 +416,21 @@ function getCSS() {
     :host([type='word']) span {
       background-color: var(--cros-sys-file_ms_word);
     }
+
+    /**
+     * These icons are never shown on their own but are shown as suffix icons,
+     * hence why they are smaller with offset margins. At the moment these are
+     * only supported with "small" size prefix icons.
+     */
+    :host([type='cloud_done']) span,
+    :host([type='cloud_error']) span,
+    :host([type='cloud_offline']) span,
+    :host([type='cloud_sync']) span {
+      margin-inline-start: 10px;
+      margin-top: 8px;
+      height: 12px;
+      width: 12px;
+    }
   `;
 }
 
