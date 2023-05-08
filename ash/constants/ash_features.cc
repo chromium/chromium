@@ -3091,7 +3091,7 @@ bool IsOobeChoobeEnabled() {
 
 bool IsOobeDrivePinningEnabled() {
   return base::FeatureList::IsEnabled(kOobeDrivePinning) &&
-         IsOobeChoobeEnabled();
+         IsOobeChoobeEnabled() && IsDriveFsBulkPinningEnabled();
 }
 
 bool IsOobeQuickStartEnabled() {
