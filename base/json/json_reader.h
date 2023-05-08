@@ -112,6 +112,13 @@ class BASE_EXPORT JSONReader {
       int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
+  // Reads and parses |json|, returning a Value::Dict.
+  // If |json| is not a properly formed JSON dict string, returns absl::nullopt.
+  static absl::optional<Value::Dict> ReadDict(
+      StringPiece json,
+      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      size_t max_depth = internal::kAbsoluteMaxDepth);
+
   // Reads and parses |json| like Read(). On success returns a Value as the
   // expected value. Otherwise, it returns an Error instance, populated with a
   // formatted error message, an error code, and the error location if

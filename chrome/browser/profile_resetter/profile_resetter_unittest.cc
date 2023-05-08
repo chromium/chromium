@@ -983,18 +983,18 @@ TEST_F(ProfileResetterTest, GetReadableFeedback) {
   base::Value::List list = std::move(capture.list_);
   bool checked_extensions = false;
   bool checked_shortcuts = false;
-  for (size_t i = 0; i < list.size(); ++i) {
-    const base::Value& dict = list[i];
-    ASSERT_TRUE(dict.is_dict());
-    const std::string* value = dict.FindStringKey("key");
+  for (const auto& entry : list) {
+    const base::Value::Dict* dict = entry.GetIfDict();
+    ASSERT_TRUE(dict);
+    const std::string* value = dict->FindString("key");
     ASSERT_TRUE(value);
     if (*value == "Extensions") {
-      const std::string* extensions = dict.FindStringKey("value");
+      const std::string* extensions = dict->FindString("value");
       ASSERT_TRUE(extensions);
       EXPECT_EQ(*extensions, "Tiësto");
       checked_extensions = true;
     } else if (*value == "Shortcut targets") {
-      const std::string* targets = dict.FindStringKey("value");
+      const std::string* targets = dict->FindString("value");
       ASSERT_TRUE(targets);
       EXPECT_NE(std::string::npos, targets->find("foo.com")) << *targets;
       checked_shortcuts = true;

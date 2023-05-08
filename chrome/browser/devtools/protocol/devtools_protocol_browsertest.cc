@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
   std::string target_id;
   base::Value::Dict ext_target;
   for (const auto& target : *result->FindList("targetInfos")) {
-    if (*target.FindStringKey("type") == "service_worker") {
+    if (*target.GetDict().FindString("type") == "service_worker") {
       ext_target = target.Clone().TakeDict();
       break;
     }
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTest,
 
   {
     base::Value::Dict params;
-    params.Set("targetId", *targetInfo->FindStringKey("targetId"));
+    params.Set("targetId", *targetInfo->GetDict().FindString("targetId"));
     params.Set("waitForDebuggerOnStart", false);
     SendCommandSync("Target.autoAttachRelated", std::move(params));
   }

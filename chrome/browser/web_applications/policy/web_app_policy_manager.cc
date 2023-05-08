@@ -432,12 +432,10 @@ void WebAppPolicyManager::ParsePolicySettings() {
 
   // Read policy for individual web apps
   for (const auto& iter : web_apps_list) {
-    const std::string* web_app_id_str = iter.FindStringKey(kManifestId);
+    const auto& dict = iter.GetDict();
+    const std::string* web_app_id_str = dict.FindString(kManifestId);
 
     if (*web_app_id_str == kWildcard)
-      continue;
-
-    if (!iter.is_dict())
       continue;
 
     GURL url = GURL(*web_app_id_str);
@@ -447,7 +445,7 @@ void WebAppPolicyManager::ParsePolicySettings() {
     }
 
     WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
-    if (by_url.Parse(iter.GetDict(), false)) {
+    if (by_url.Parse(dict, /*for_default_settings=*/false)) {
       settings_by_url_[url.spec()] = by_url;
     } else {
       LOG(WARNING) << "Malformed web app settings for " << url;

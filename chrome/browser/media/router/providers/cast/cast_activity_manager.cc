@@ -705,8 +705,14 @@ void CastActivityManager::SendRouteJsonMessage(
           result.error());
     }
 
-    const std::string* const client_id =
-        result.value().FindStringKey("clientId");
+    auto* dict = result->GetIfDict();
+    if (!dict) {
+      return base::unexpected(
+          "Error parsing JSON data when sending route JSON message: " +
+          result.error());
+    }
+
+    const std::string* const client_id = dict->FindString("clientId");
     if (!client_id) {
       return base::unexpected(
           "Cannot send route JSON message without client id.");

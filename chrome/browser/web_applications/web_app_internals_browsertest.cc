@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
 
   // Parses base url from the log: the port for embedded_test_server() changes
   // on every test run.
-  const std::string* url_value = error_log.FindStringKey("!url");
+  const std::string* url_value = error_log.GetDict().FindString("!url");
   ASSERT_TRUE(url_value);
   GURL url{*url_value};
   ASSERT_TRUE(url.is_valid());

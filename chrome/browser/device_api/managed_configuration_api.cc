@@ -194,7 +194,8 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   std::set<url::Origin> current_origins;
 
   for (const auto& entry : managed_configurations) {
-    const std::string* url = entry.FindStringKey(kOriginKey);
+    const auto& entry_dict = entry.GetDict();
+    const std::string* url = entry_dict.FindString(kOriginKey);
     if (!url)
       continue;
     const url::Origin origin = url::Origin::Create(GURL(*url));
@@ -202,9 +203,9 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
       continue;
 
     const std::string* configuration_url =
-        entry.FindStringKey(kManagedConfigurationUrlKey);
+        entry_dict.FindString(kManagedConfigurationUrlKey);
     const std::string* configuration_hash =
-        entry.FindStringKey(kManagedConfigurationHashKey);
+        entry_dict.FindString(kManagedConfigurationHashKey);
     current_origins.insert(origin);
 
     if (!configuration_url || !configuration_hash)

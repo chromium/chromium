@@ -35,7 +35,7 @@ class DevToolsDeviceDiscovery {
     RemotePage(scoped_refptr<AndroidDeviceManager::Device> device,
                const std::string& browser_id,
                const std::string& browser_version,
-               base::Value dict);
+               base::Value::Dict dict);
 
     virtual ~RemotePage();
 
@@ -43,7 +43,7 @@ class DevToolsDeviceDiscovery {
     std::string browser_id_;
     std::string browser_version_;
     std::string frontend_url_;
-    base::Value dict_;
+    base::Value::Dict dict_;
     scoped_refptr<content::DevToolsAgentHost> agent_host_;
   };
 

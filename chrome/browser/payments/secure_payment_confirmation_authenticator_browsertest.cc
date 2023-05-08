@@ -99,14 +99,15 @@ class SecurePaymentConfirmationAuthenticatorTestBase
     absl::optional<base::Value> value = base::JSONReader::Read(response);
     ASSERT_TRUE(value.has_value());
     ASSERT_TRUE(value->is_dict());
+    const auto& value_dict = value->GetDict();
 
-    std::string* webidl_type = value->FindStringKey("webIdlType");
+    const std::string* webidl_type = value_dict.FindString("webIdlType");
     ASSERT_NE(nullptr, webidl_type) << response;
 
-    std::string* type = value->FindStringKey("type");
+    const std::string* type = value_dict.FindString("type");
     ASSERT_NE(nullptr, type) << response;
 
-    std::string* id = value->FindStringKey("id");
+    const std::string* id = value_dict.FindString("id");
     ASSERT_NE(nullptr, id) << response;
 
     if (out_info) {

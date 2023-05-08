@@ -573,8 +573,9 @@ void SyncFileSystemService::DidDumpFiles(const GURL& origin,
 
   // After all metadata loaded, sync status can be added to each entry.
   for (base::Value& file : files) {
+    const base::Value::Dict* file_dict = file.GetIfDict();
     const std::string* path_string =
-      file.is_dict() ? file.FindStringKey("path") : nullptr;
+        file_dict ? file_dict->FindString("path") : nullptr;
     if (!path_string) {
       NOTREACHED();
       accumulate_callback.Run(nullptr, SYNC_FILE_ERROR_FAILED,
