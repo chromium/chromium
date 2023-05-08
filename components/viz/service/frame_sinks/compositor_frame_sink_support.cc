@@ -903,14 +903,14 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
       bool frame_ack = ack_queued_for_client_count_ > 0;
       ack_pending_during_on_begin_frame_ =
           !frame_ack && ack_pending_from_surface_count_;
-      client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_),
-                            frame_ack, std::move(surface_returned_resources_));
+      client_->OnBeginFrame(adjusted_args, frame_timing_details_, frame_ack,
+                            std::move(surface_returned_resources_));
       if (frame_ack) {
         ack_queued_for_client_count_--;
       }
       surface_returned_resources_.clear();
     } else {
-      client_->OnBeginFrame(adjusted_args, std::move(frame_timing_details_),
+      client_->OnBeginFrame(adjusted_args, frame_timing_details_,
                             /*frame_ack=*/false,
                             std::vector<ReturnedResource>());
     }
