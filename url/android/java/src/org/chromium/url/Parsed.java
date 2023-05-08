@@ -7,12 +7,10 @@ package org.chromium.url;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * A java wrapper for Parsed, GURL's internal parsed URI representation.
  */
-@MainDex
 @JNINamespace("url")
 /* package */ class Parsed {
     /* package */ final int mSchemeBegin;

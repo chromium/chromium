@@ -7,14 +7,12 @@ package org.chromium.components.subresource_filter;
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of subresource_filter component Features.
  */
 // TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList exists.
 @JNINamespace("subresource_filter")
-@MainDex
 public class SubresourceFilterFeatureList {
     public static final String SUBRESOURCE_FILTER = "SubresourceFilter";
 

@@ -8,13 +8,11 @@ import android.media.MediaCodecInfo.CodecProfileLevel;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.build.annotations.MainDex;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @JNINamespace("media")
-@MainDex
 class CodecProfileLevelList {
     private static final String TAG = "CodecProfileLevelList";
 

@@ -21,7 +21,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.compat.ApiHelperForN;
-import org.chromium.build.annotations.MainDex;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -33,7 +32,6 @@ import java.util.NoSuchElementException;
  * A collection of MediaCodec utility functions.
  */
 @JNINamespace("media")
-@MainDex
 class MediaCodecUtil {
     private static final String TAG = "MediaCodecUtil";
 

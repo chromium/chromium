@@ -7,14 +7,12 @@ package org.chromium.audio;
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Audio Service Features.
  */
 // TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList exists.
 @JNINamespace("features")
-@MainDex
 public class AudioFeatureList {
     public static final String BLOCK_MIDI_BY_DEFAULT = "BlockMidiByDefault";
 

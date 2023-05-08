@@ -9,8 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import org.chromium.build.annotations.MainDex;
-
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -19,7 +17,6 @@ import java.util.concurrent.CountDownLatch;
  * query function.
  * Note: if you move or rename this class, make sure you have also updated AndroidManifest.xml.
  */
-@MainDex
 public class TestPartnerBrowserCustomizationsDelayedProvider
         extends TestPartnerBrowserCustomizationsProvider {
     private static String sUriPathToDelay;

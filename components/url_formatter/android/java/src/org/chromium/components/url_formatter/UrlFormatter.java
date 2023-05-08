@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -18,7 +17,6 @@ import org.chromium.url.Origin;
  * Wrapper for utilities in url_formatter.
  */
 @JNINamespace("url_formatter::android")
-@MainDex
 public final class UrlFormatter {
     /**
      * Refer to url_formatter::FixupURL.

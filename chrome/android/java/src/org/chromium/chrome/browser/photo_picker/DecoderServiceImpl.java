@@ -13,14 +13,12 @@ import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
 import org.chromium.components.browser_ui.photo_picker.ImageDecoder;
 
 /**
  * A service to accept requests to take image file contents and decode them.
  */
-@MainDex
 public class DecoderServiceImpl extends DecoderService.Impl {
     private static final String TAG = "DecoderService";
 

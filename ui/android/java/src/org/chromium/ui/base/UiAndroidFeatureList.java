@@ -6,13 +6,11 @@ package org.chromium.ui.base;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Java accessor for ui/android/ui_android_feature_list.cc state
  */
 @JNINamespace("ui")
-@MainDex
 public class UiAndroidFeatureList {
     // Do not instantiate this class
     private UiAndroidFeatureList() {}

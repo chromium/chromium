@@ -21,7 +21,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 import java.nio.ByteBuffer;
 import java.util.LinkedList;
@@ -31,7 +30,6 @@ import java.util.Queue;
  * A MediaCodec wrapper for adapting the API and catching exceptions.
  */
 @JNINamespace("media")
-@MainDex
 class MediaCodecBridge {
     private static final String TAG = "MediaCodecBridge";
 

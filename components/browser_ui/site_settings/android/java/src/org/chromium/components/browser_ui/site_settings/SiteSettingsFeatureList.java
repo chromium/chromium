@@ -7,14 +7,12 @@ package org.chromium.components.browser_ui.site_settings;
 import org.chromium.base.FeatureList;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides an API for querying the status of Site Settings features.
  */
 // TODO(crbug.com/1060097): Remove/update this once a generalized FeatureList exists.
 @JNINamespace("browser_ui")
-@MainDex
 public class SiteSettingsFeatureList {
     public static final String SITE_DATA_IMPROVEMENTS = "SiteDataImprovements";
     public static final String REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE =

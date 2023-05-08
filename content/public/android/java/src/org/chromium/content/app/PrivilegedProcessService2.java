@@ -4,11 +4,8 @@
 
 package org.chromium.content.app;
 
-import org.chromium.build.annotations.MainDex;
-
 /**
  * This is needed to register multiple PrivilegedProcess services so that we can have
  * more than one unsandboxed process.
  */
-@MainDex
 public class PrivilegedProcessService2 extends PrivilegedProcessService {}

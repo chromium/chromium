@@ -9,14 +9,12 @@ import android.util.Log;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Wrapper class for the underlying platform's SurfaceTexture in order to
  * provide a stable JNI API.
  */
 @JNINamespace("gl")
-@MainDex
 class SurfaceTexturePlatformWrapper {
     private static final String TAG = "SurfaceTexturePlatformWrapper";
 

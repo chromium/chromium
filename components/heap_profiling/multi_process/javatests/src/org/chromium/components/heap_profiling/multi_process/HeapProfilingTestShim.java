@@ -5,13 +5,11 @@
 package org.chromium.components.heap_profiling.multi_process;
 
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides direct access to heap_profiling_test_shim, which in turn forwards to
  * heap_profiling::TestDriver. Only used for testing.
  */
-@MainDex
 public class HeapProfilingTestShim {
     public HeapProfilingTestShim() {
         mNativeHeapProfilingTestShim = HeapProfilingTestShimJni.get().init(this);

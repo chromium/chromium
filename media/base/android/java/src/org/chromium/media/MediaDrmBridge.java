@@ -14,7 +14,6 @@ import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.build.annotations.MainDex;
 import org.chromium.media.MediaDrmSessionManager.SessionId;
 import org.chromium.media.MediaDrmSessionManager.SessionInfo;
 
@@ -55,7 +54,6 @@ import java.util.UUID;
  * MediaCodecAudioDecoders or MediaCodecVideoDecoders.
  */
 @JNINamespace("media")
-@MainDex
 @SuppressLint("WrongConstant")
 public class MediaDrmBridge {
     private static final String TAG = "media";
