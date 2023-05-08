@@ -15,8 +15,6 @@
 
 namespace autofill {
 
-class AutofillProfile;
-
 // A form group that stores name information.
 class NameInfo : public FormGroup {
  public:
@@ -113,10 +111,8 @@ class CompanyInfo : public FormGroup {
  public:
   CompanyInfo();
   CompanyInfo(const CompanyInfo& info);
-  explicit CompanyInfo(const AutofillProfile* profile);
   ~CompanyInfo() override;
 
-  CompanyInfo& operator=(const CompanyInfo& info);
   bool operator==(const CompanyInfo& other) const;
   bool operator!=(const CompanyInfo& other) const { return !operator==(other); }
 
@@ -125,17 +121,19 @@ class CompanyInfo : public FormGroup {
   void SetRawInfoWithVerificationStatus(ServerFieldType type,
                                         const std::u16string& value,
                                         VerificationStatus status) override;
-  void set_profile(const AutofillProfile* profile) { profile_ = profile; }
+
+  // The `company_name_` is considered valid if it doesn't look like a birthdate
+  // or social title. Only valid company names are considered for voting.
+  bool IsValid() const;
 
  private:
   // FormGroup:
   void GetSupportedTypes(ServerFieldTypeSet* supported_types) const override;
-  bool IsValidOrVerified(const std::u16string& value) const;
+  void GetMatchingTypes(const std::u16string& text,
+                        const std::string& app_locale,
+                        ServerFieldTypeSet* matching_types) const override;
 
   std::u16string company_name_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #union
-  RAW_PTR_EXCLUSION const AutofillProfile* profile_ = nullptr;
 };
 
 }  // namespace autofill

@@ -180,97 +180,41 @@ INSTANTIATE_TEST_SUITE_P(
         FullNameTestCase{"Arthur Ignatius Conan Doyle", "Arthur",
                          "Ignatius Conan", "Doyle"}));
 
-TEST(CompanyTest, CompanyName) {
-  AutofillProfile profile;
-  CompanyInfo company(&profile);
-  ASSERT_FALSE(profile.IsVerified());
+TEST(CompanyTest, SetRawInfo) {
+  CompanyInfo company;
+  company.SetRawInfo(COMPANY_NAME, u"Google");
+  EXPECT_EQ(company.GetRawInfo(COMPANY_NAME), u"Google");
+}
 
-  auto SetAndGetCompany = [&company](const char* company_name) mutable {
-    company.SetRawInfo(COMPANY_NAME, UTF8ToUTF16(company_name));
-    return base::UTF16ToUTF8(company.GetRawInfo(COMPANY_NAME));
+TEST(CompanyTest, IsValid) {
+  auto set_and_validate = [](const std::u16string& company_name) {
+    CompanyInfo company;
+    company.SetRawInfo(COMPANY_NAME, company_name);
+    return company.IsValid();
   };
 
-  EXPECT_EQ(SetAndGetCompany("Google"), "Google");
-  EXPECT_EQ(SetAndGetCompany("1818"), "1818");
-  EXPECT_EQ(SetAndGetCompany("1987"), "");
-  EXPECT_EQ(SetAndGetCompany("2019"), "");
-  EXPECT_EQ(SetAndGetCompany("2345"), "2345");
-  EXPECT_EQ(SetAndGetCompany("It was 1987."), "It was 1987.");
-  EXPECT_EQ(SetAndGetCompany("1987 was the year."), "1987 was the year.");
-  EXPECT_EQ(SetAndGetCompany("Mr"), "");
-  EXPECT_EQ(SetAndGetCompany("Mr."), "");
-  EXPECT_EQ(SetAndGetCompany("Mrs"), "");
-  EXPECT_EQ(SetAndGetCompany("Mrs."), "");
-  EXPECT_EQ(SetAndGetCompany("Mr. & Mrs."), "Mr. & Mrs.");
-  EXPECT_EQ(SetAndGetCompany("Mr. & Mrs. Smith"), "Mr. & Mrs. Smith");
-  EXPECT_EQ(SetAndGetCompany("Frau"), "");
-  EXPECT_EQ(SetAndGetCompany("Frau Doktor"), "Frau Doktor");
-  EXPECT_EQ(SetAndGetCompany("Herr"), "");
-  EXPECT_EQ(SetAndGetCompany("Mme"), "");
-  EXPECT_EQ(SetAndGetCompany("Ms"), "");
-  EXPECT_EQ(SetAndGetCompany("Dr"), "");
-  EXPECT_EQ(SetAndGetCompany("Dr."), "");
-  EXPECT_EQ(SetAndGetCompany("Prof"), "");
-  EXPECT_EQ(SetAndGetCompany("Prof."), "");
-
-  profile.set_origin("Not empty");
-  ASSERT_TRUE(profile.IsVerified());
-
-  EXPECT_EQ(SetAndGetCompany("Google"), "Google");
-  EXPECT_EQ(SetAndGetCompany("1818"), "1818");
-  EXPECT_EQ(SetAndGetCompany("1987"), "1987");
-  EXPECT_EQ(SetAndGetCompany("2019"), "2019");
-  EXPECT_EQ(SetAndGetCompany("2345"), "2345");
-  EXPECT_EQ(SetAndGetCompany("It was 1987."), "It was 1987.");
-  EXPECT_EQ(SetAndGetCompany("1987 was the year."), "1987 was the year.");
-  EXPECT_EQ(SetAndGetCompany("Mr"), "Mr");
-  EXPECT_EQ(SetAndGetCompany("Mr."), "Mr.");
-  EXPECT_EQ(SetAndGetCompany("Mrs"), "Mrs");
-  EXPECT_EQ(SetAndGetCompany("Mrs."), "Mrs.");
-  EXPECT_EQ(SetAndGetCompany("Mr. & Mrs."), "Mr. & Mrs.");
-  EXPECT_EQ(SetAndGetCompany("Mr. & Mrs. Smith"), "Mr. & Mrs. Smith");
-  EXPECT_EQ(SetAndGetCompany("Frau"), "Frau");
-  EXPECT_EQ(SetAndGetCompany("Frau Doktor"), "Frau Doktor");
-  EXPECT_EQ(SetAndGetCompany("Herr"), "Herr");
-  EXPECT_EQ(SetAndGetCompany("Mme"), "Mme");
-  EXPECT_EQ(SetAndGetCompany("Ms"), "Ms");
-  EXPECT_EQ(SetAndGetCompany("Dr"), "Dr");
-  EXPECT_EQ(SetAndGetCompany("Dr."), "Dr.");
-  EXPECT_EQ(SetAndGetCompany("Prof"), "Prof");
-  EXPECT_EQ(SetAndGetCompany("Prof."), "Prof.");
-}
-
-TEST(CompanyTest, CompanyNameSocialTitleCopy) {
-  AutofillProfile profile;
-  CompanyInfo company(&profile);
-  ASSERT_FALSE(profile.IsVerified());
-
-
-  CompanyInfo company_google(&profile);
-  CompanyInfo company_year(&profile);
-  CompanyInfo company_social_title(&profile);
-
-  company_google.SetRawInfo(COMPANY_NAME, u"Google");
-  company_year.SetRawInfo(COMPANY_NAME, u"1987");
-  company_social_title.SetRawInfo(COMPANY_NAME, u"Dr");
-
-  company_google = company_year;
-  EXPECT_EQ(u"", company_google.GetRawInfo(COMPANY_NAME));
-  company_google = company_social_title;
-  EXPECT_EQ(u"", company_google.GetRawInfo(COMPANY_NAME));
-}
-
-TEST(CompanyTest, CompanyNameYearIsEqual) {
-  AutofillProfile profile;
-  ASSERT_FALSE(profile.IsVerified());
-
-  CompanyInfo company_year(&profile);
-  CompanyInfo company_social_title(&profile);
-
-  company_year.SetRawInfo(COMPANY_NAME, u"1987");
-  company_social_title.SetRawInfo(COMPANY_NAME, u"Dr");
-
-  EXPECT_EQ(company_year, company_social_title);
+  EXPECT_TRUE(set_and_validate(u"Google"));
+  EXPECT_TRUE(set_and_validate(u"1818"));
+  EXPECT_FALSE(set_and_validate(u"1987"));
+  EXPECT_FALSE(set_and_validate(u"2019"));
+  EXPECT_TRUE(set_and_validate(u"2345"));
+  EXPECT_TRUE(set_and_validate(u"It was 1987."));
+  EXPECT_TRUE(set_and_validate(u"1987 was the year."));
+  EXPECT_FALSE(set_and_validate(u"Mr"));
+  EXPECT_FALSE(set_and_validate(u"Mr."));
+  EXPECT_FALSE(set_and_validate(u"Mrs"));
+  EXPECT_FALSE(set_and_validate(u"Mrs."));
+  EXPECT_TRUE(set_and_validate(u"Mr. & Mrs."));
+  EXPECT_TRUE(set_and_validate(u"Mr. & Mrs. Smith"));
+  EXPECT_FALSE(set_and_validate(u"Frau"));
+  EXPECT_TRUE(set_and_validate(u"Frau Doktor"));
+  EXPECT_FALSE(set_and_validate(u"Herr"));
+  EXPECT_FALSE(set_and_validate(u"Mme"));
+  EXPECT_FALSE(set_and_validate(u"Ms"));
+  EXPECT_FALSE(set_and_validate(u"Dr"));
+  EXPECT_FALSE(set_and_validate(u"Dr."));
+  EXPECT_FALSE(set_and_validate(u"Prof"));
+  EXPECT_FALSE(set_and_validate(u"Prof."));
 }
 
 }  // namespace autofill

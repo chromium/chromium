@@ -4122,51 +4122,6 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<AutofillSimpleFormTest::ParamType>&
            info) { return info.param.test_name; });
 
-// Test that if a company is of a format of a birthyear and the relevant feature
-// is enabled, we would not fill it.
-TEST_F(BrowserAutofillManagerTest, FillAddressForm_CompanyBirthyear) {
-  // Set up our form data.
-  FormData address_form;
-  address_form.name = u"MyForm";
-  address_form.url = GURL("https://myform.com/form.html");
-  address_form.action = GURL("https://myform.com/submit.html");
-
-  FormFieldData field;
-  test::CreateTestFormField("First name", "firstname", "", "text", &field);
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Middle name", "middle", "", "text", &field);
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Last name", "lastname", "", "text", &field);
-  address_form.fields.push_back(field);
-  test::CreateTestFormField("Company", "company", "", "text", &field);
-  address_form.fields.push_back(field);
-
-  FormsSeen({address_form});
-
-  AutofillProfile profile;
-  const char guid[] = "00000000-0000-0000-0000-000000000123";
-  test::SetProfileInfo(&profile, "Elvis", "Aaron", "Presley",
-                       "theking@gmail.com", "1987", "3734 Elvis Presley Blvd.",
-                       "Apt. 10", "Memphis", "Tennessee", "38116", "US",
-                       "12345678901");
-  profile.set_guid(guid);
-  personal_data().AddProfile(profile);
-
-  FormData response_data;
-  FillAutofillFormDataAndSaveResults(address_form, *address_form.fields.begin(),
-                                     MakeFrontendId({.profile_id = guid}),
-                                     &response_data);
-
-  // All the fields should be filled except the company.
-  ExpectFilledField("First name", "firstname", "Elvis", "text",
-                    response_data.fields[0]);
-  ExpectFilledField("Middle name", "middle", "Aaron", "text",
-                    response_data.fields[1]);
-  ExpectFilledField("Last name", "lastname", "Presley", "text",
-                    response_data.fields[2]);
-  ExpectFilledField("Company", "company", "", "text", response_data.fields[3]);
-}
-
 // Test that credit card fields are filled even if they have the autocomplete
 // attribute set to off.
 TEST_F(BrowserAutofillManagerTest, FillCreditCardForm_AutocompleteOff) {

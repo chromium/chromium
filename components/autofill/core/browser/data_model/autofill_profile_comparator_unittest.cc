@@ -936,8 +936,6 @@ TEST_F(AutofillProfileComparatorTest, MergeCompanyNames) {
   static const char16_t kCompanyB16[] = u"SÔMÈ ÇÖMPÁÑÝ";
   static const char kCompanyC[] = "SÔMÈ ÇÖMPÁÑÝ A.G.";
   static const char16_t kCompanyC16[] = u"SÔMÈ ÇÖMPÁÑÝ A.G.";
-  static const char kCompanyD[] = "1987";
-  static const char16_t kCompanyD16[] = u"1987";
 
   CompanyInfo company_a;
   company_a.SetRawInfo(COMPANY_NAME, kCompanyA16);
@@ -958,31 +956,17 @@ TEST_F(AutofillProfileComparatorTest, MergeCompanyNames) {
   AutofillProfile profile_c = CreateProfileWithCompanyName(kCompanyC);
   profile_c.set_use_date(profile_a.use_date() - base::Days(1));
 
-  // Company Name D is in the format of a birthyear, invalid and non-verified.
-  CompanyInfo company_d;
-  company_d.SetRawInfo(COMPANY_NAME, kCompanyD16);
-  AutofillProfile profile_d = CreateProfileWithCompanyName(kCompanyD);
-  profile_a.set_use_date(AutofillClock::Now());
-
   MergeCompanyNamesAndExpect(profile_a, profile_a, company_a);
   MergeCompanyNamesAndExpect(profile_a, profile_b, company_b);
   MergeCompanyNamesAndExpect(profile_a, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_a, profile_d, company_a);
 
   MergeCompanyNamesAndExpect(profile_b, profile_a, company_b);
   MergeCompanyNamesAndExpect(profile_b, profile_b, company_b);
   MergeCompanyNamesAndExpect(profile_b, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_b, profile_d, company_b);
 
   MergeCompanyNamesAndExpect(profile_c, profile_a, company_c);
   MergeCompanyNamesAndExpect(profile_c, profile_b, company_c);
   MergeCompanyNamesAndExpect(profile_c, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_c, profile_d, company_c);
-
-  MergeCompanyNamesAndExpect(profile_d, profile_a, company_a);
-  MergeCompanyNamesAndExpect(profile_d, profile_b, company_b);
-  MergeCompanyNamesAndExpect(profile_d, profile_c, company_c);
-  MergeCompanyNamesAndExpect(profile_d, profile_d, company_d);
 }
 
 TEST_F(AutofillProfileComparatorTest, MergePhoneNumbers_NA) {
