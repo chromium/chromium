@@ -22,91 +22,6 @@
 #endif
 
 namespace media {
-namespace {
-
-enum MacBookVersions {
-  OTHER = 0,
-  MACBOOK_5,  // MacBook5.X
-  MACBOOK_6,
-  MACBOOK_7,
-  MACBOOK_8,
-  MACBOOK_PRO_11,  // MacBookPro11.X
-  MACBOOK_PRO_12,
-  MACBOOK_PRO_13,
-  MACBOOK_AIR_5,  // MacBookAir5.X
-  MACBOOK_AIR_6,
-  MACBOOK_AIR_7,
-  MACBOOK_AIR_8,
-  MACBOOK_AIR_3,
-  MACBOOK_AIR_4,
-  MACBOOK_4,
-  MACBOOK_9,
-  MACBOOK_10,
-  MACBOOK_PRO_10,
-  MACBOOK_PRO_9,
-  MACBOOK_PRO_8,
-  MACBOOK_PRO_7,
-  MACBOOK_PRO_6,
-  MACBOOK_PRO_5,
-  MAX_MACBOOK_VERSION = MACBOOK_PRO_5
-};
-
-MacBookVersions GetMacBookModel(const std::string& model) {
-  struct {
-    const char* name;
-    MacBookVersions version;
-  } static const kModelToVersion[] = {
-      {"MacBook4,", MACBOOK_4},          {"MacBook5,", MACBOOK_5},
-      {"MacBook6,", MACBOOK_6},          {"MacBook7,", MACBOOK_7},
-      {"MacBook8,", MACBOOK_8},          {"MacBook9,", MACBOOK_9},
-      {"MacBook10,", MACBOOK_10},        {"MacBookPro5,", MACBOOK_PRO_5},
-      {"MacBookPro6,", MACBOOK_PRO_6},   {"MacBookPro7,", MACBOOK_PRO_7},
-      {"MacBookPro8,", MACBOOK_PRO_8},   {"MacBookPro9,", MACBOOK_PRO_9},
-      {"MacBookPro10,", MACBOOK_PRO_10}, {"MacBookPro11,", MACBOOK_PRO_11},
-      {"MacBookPro12,", MACBOOK_PRO_12}, {"MacBookPro13,", MACBOOK_PRO_13},
-      {"MacBookAir3,", MACBOOK_AIR_3},   {"MacBookAir4,", MACBOOK_AIR_4},
-      {"MacBookAir5,", MACBOOK_AIR_5},   {"MacBookAir6,", MACBOOK_AIR_6},
-      {"MacBookAir7,", MACBOOK_AIR_7},   {"MacBookAir8,", MACBOOK_AIR_8},
-  };
-
-  for (const auto& entry : kModelToVersion) {
-    if (base::StartsWith(model, entry.name,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      return entry.version;
-    }
-  }
-  return OTHER;
-}
-
-// Add Uma stats for number of detected devices on MacBooks. These are used for
-// investigating crbug/582931.
-void MaybeWriteUma(int number_of_devices, int number_of_suspended_devices) {
-  std::string model = base::mac::GetModelIdentifier();
-  if (!base::StartsWith(model, "MacBook",
-                        base::CompareCase::INSENSITIVE_ASCII)) {
-    return;
-  }
-  static int attempt_since_process_start_counter = 0;
-  static bool has_seen_zero_device_count = false;
-  const int attempt_count_since_process_start =
-      ++attempt_since_process_start_counter;
-  const int device_count = number_of_devices + number_of_suspended_devices;
-  UMA_HISTOGRAM_COUNTS_1M("Media.VideoCapture.MacBook.NumberOfDevices",
-                          device_count);
-  if (device_count == 0) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Media.VideoCapture.MacBook.HardwareVersionWhenNoCamera",
-        GetMacBookModel(model), MAX_MACBOOK_VERSION + 1);
-    if (!has_seen_zero_device_count) {
-      UMA_HISTOGRAM_COUNTS_1M(
-          "Media.VideoCapture.MacBook.AttemptCountWhenNoCamera",
-          attempt_count_since_process_start);
-      has_seen_zero_device_count = true;
-    }
-  }
-}
-
-}  // namespace
 
 std::string MacFourCCToString(OSType fourcc) {
   char arr[] = {static_cast<char>(fourcc >> 24),
@@ -141,12 +56,10 @@ GetVideoCaptureDeviceNames() {
   NSArray<AVCaptureDevice*>* devices = GetVideoCaptureDevices(
       base::FeatureList::IsEnabled(media::kUseAVCaptureDeviceDiscoverySession));
 
-  int number_of_suspended_devices = 0;
   for (AVCaptureDevice* device in devices) {
     if ([device hasMediaType:AVMediaTypeVideo] ||
         [device hasMediaType:AVMediaTypeMuxed]) {
       if (device.suspended) {
-        ++number_of_suspended_devices;
         continue;
       }
 
@@ -164,7 +77,6 @@ GetVideoCaptureDeviceNames() {
       device_names[device.uniqueID] = name_and_transport_type;
     }
   }
-  MaybeWriteUma(device_names.count, number_of_suspended_devices);
   return device_names;
 }
 
