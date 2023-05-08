@@ -3041,8 +3041,6 @@ crbug.com/626703 external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failu
 crbug.com/626703 virtual/css-highlight-inheritance/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 virtual/css-highlight-overlay-painting/external/wpt/css/css-pseudo/svg-text-selection-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/descriptor-prefix.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/fallback-cycle.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/suffix-fallback.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-additive.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-alphabetic.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/counter-style-at-rule/system-extends.html [ Failure ]
