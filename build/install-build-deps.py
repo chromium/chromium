@@ -17,7 +17,7 @@ import subprocess
 import sys
 
 
-@functools.cache
+@functools.lru_cache
 def build_apt_package_list():
   print("Building apt package list.", file=sys.stderr)
   output = subprocess.check_output(["apt-cache", "dumpavail"], text=True)
@@ -135,7 +135,7 @@ def check_lsb_release():
     sys.exit(1)
 
 
-@functools.cache
+@functools.lru_cache
 def distro_codename():
   return subprocess.check_output(["lsb_release", "--codename", "--short"],
                                  text=True).strip()
