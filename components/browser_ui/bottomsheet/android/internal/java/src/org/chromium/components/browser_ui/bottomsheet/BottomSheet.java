@@ -196,8 +196,7 @@ class BottomSheet extends FrameLayout
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
         // If the sheet is scrolling off-screen or in the process of hiding, gestures should not
         // affect it.
-        if (getCurrentOffsetPx() < getSheetHeightForState(SheetState.PEEK)
-                || getOffsetFromBrowserControls() > 0 || isHiding()) {
+        if (getOffsetFromBrowserControls() > 0 || isHiding()) {
             return false;
         }
 
