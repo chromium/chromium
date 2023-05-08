@@ -161,9 +161,8 @@ void SyncBasedUrlKeyedDataCollectionConsentHelper::OnSyncShutdown(
 }
 
 void SyncBasedUrlKeyedDataCollectionConsentHelper::UpdateSyncDataTypeStates() {
-  for (auto iter = sync_data_type_states_.begin();
-       iter != sync_data_type_states_.end(); ++iter) {
-    iter->second = syncer::GetUploadToGoogleState(sync_service_, iter->first);
+  for (auto& [model_type, upload_state] : sync_data_type_states_) {
+    upload_state = syncer::GetUploadToGoogleState(sync_service_, model_type);
   }
 }
 
