@@ -7,6 +7,7 @@
 
 #include "services/device/public/mojom/smart_card.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -25,13 +26,23 @@ class SmartCardConnection final : public ScriptWrappable {
       ExecutionContext*);
 
   // SmartCardConnection idl
-  ScriptPromise disconnect(const V8SmartCardDisposition& disposition);
+  ScriptPromise disconnect(ScriptState* script_state,
+                           ExceptionState& exception_state);
+  ScriptPromise disconnect(ScriptState* script_state,
+                           const V8SmartCardDisposition& disposition,
+                           ExceptionState& exception_state);
   ScriptPromise status();
 
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
 
  private:
+  bool EnsureNoOperationInProgress(ExceptionState& exception_state) const;
+  bool EnsureConnection(ExceptionState& exception_state) const;
+  void OnDisconnectDone(ScriptPromiseResolver* resolver,
+                        device::mojom::blink::SmartCardResultPtr result);
+
+  bool operation_in_progress_ = false;
   HeapMojoRemote<device::mojom::blink::SmartCardConnection> connection_;
 };
 
