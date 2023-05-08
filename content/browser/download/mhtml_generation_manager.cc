@@ -283,10 +283,6 @@ class MHTMLGenerationManager::Job {
   // false for failure.
   static bool CloseFileIfValid(base::File& file, int64_t* file_size);
 
-  // Time tracking for performance metrics reporting.
-  base::TimeTicks wait_on_renderer_start_time_;
-  base::TimeDelta all_renderers_wait_time_;
-
   // User-configurable parameters. Includes the file location, binary encoding
   // choices.
   MHTMLGenerationParams params_;
@@ -460,8 +456,6 @@ mojom::MhtmlSaveStatus MHTMLGenerationManager::Job::SendToNextRenderFrame() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("page-serialization", "WaitingOnRenderer",
                                     this, "frame tree node id",
                                     frame_tree_node_id_of_busy_frame_);
-  DCHECK(wait_on_renderer_start_time_.is_null());
-  wait_on_renderer_start_time_ = base::TimeTicks::Now();
   return mojom::MhtmlSaveStatus::kSuccess;
 }
 
@@ -580,8 +574,6 @@ void MHTMLGenerationManager::Job::OnFinished(
   TRACE_EVENT_NESTABLE_ASYNC_END2("page-serialization", "SavingMhtmlJob", this,
                                   "job save status", save_status, "file size",
                                   file_size);
-  UMA_HISTOGRAM_ENUMERATION("PageSerialization.MhtmlGeneration.FinalSaveStatus",
-                            save_status);
 
   std::move(callback_).Run(close_file_result.toMHTMLGenerationResult());
 
@@ -606,23 +598,6 @@ void MHTMLGenerationManager::Job::MarkAsFinished() {
 
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("page-serialization", "JobFinished",
                                       this);
-
-  // End of job timing reports.
-  if (!wait_on_renderer_start_time_.is_null()) {
-    base::TimeDelta renderer_wait_time =
-        base::TimeTicks::Now() - wait_on_renderer_start_time_;
-    UMA_HISTOGRAM_TIMES(
-        "PageSerialization.MhtmlGeneration.BrowserWaitForRendererTime."
-        "SingleFrame",
-        renderer_wait_time);
-    all_renderers_wait_time_ += renderer_wait_time;
-  }
-  if (!all_renderers_wait_time_.is_zero()) {
-    UMA_HISTOGRAM_TIMES(
-        "PageSerialization.MhtmlGeneration.BrowserWaitForRendererTime."
-        "FrameTree",
-        all_renderers_wait_time_);
-  }
 }
 
 void MHTMLGenerationManager::Job::CloseFile(
@@ -664,16 +639,6 @@ void MHTMLGenerationManager::Job::SerializeAsMHTMLResponse(
 
 void MHTMLGenerationManager::Job::RecordDigests(
     const std::vector<std::string>& digests_of_uris_of_serialized_resources) {
-  DCHECK(!wait_on_renderer_start_time_.is_null());
-  base::TimeDelta renderer_wait_time =
-      base::TimeTicks::Now() - wait_on_renderer_start_time_;
-  UMA_HISTOGRAM_TIMES(
-      "PageSerialization.MhtmlGeneration.BrowserWaitForRendererTime."
-      "SingleFrame",
-      renderer_wait_time);
-  all_renderers_wait_time_ += renderer_wait_time;
-  wait_on_renderer_start_time_ = base::TimeTicks();
-
   // Renderer should be deduping resources with the same uris.
   DCHECK_EQ(0u, base::STLSetIntersection<std::set<std::string>>(
                     digests_of_already_serialized_uris_,

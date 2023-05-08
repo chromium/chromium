@@ -3091,58 +3091,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PageSerialization.MhtmlGeneration.BrowserWaitForRendererTime.FrameTree"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Total time the browser process waited for all render processes to save their
-    respective frames while saving a page into MHTML.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageSerialization.MhtmlGeneration.BrowserWaitForRendererTime.SingleFrame"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time the browser process waited on a single frame to be saved by a render
-    processes while saving a page into MHTML.
-  </summary>
-</histogram>
-
-<histogram name="PageSerialization.MhtmlGeneration.FinalSaveStatus"
-    enum="MhtmlGenerationFinalSaveStatus" expires_after="2021-08-08">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>Final status of the MHTML save operation for a page.</summary>
-</histogram>
-
-<histogram
-    name="PageSerialization.MhtmlGeneration.RendererMainThreadTime.SingleFrame"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time spent by the renderer main thread while saving one frame of a page to
-    MHTML.
-  </summary>
-</histogram>
-
-<histogram name="PageSerialization.MhtmlGeneration.WriteToDiskTime.SingleFrame"
-    units="ms" expires_after="2020-12-01">
-  <owner>sclittle@chromium.org</owner>
-  <owner>offline-dev@chromium.org</owner>
-  <summary>
-    Time spent writing a frame's encoded MHTML data to the file or data pipe
-    handle passed to the Renderer, recorded when the writing is done and the
-    handle is closed. Note that when writing to a data pipe, this metric does
-    not precisely reflect the time taken to write the data to disk.
-  </summary>
-</histogram>
-
 <histogram name="PageSerialization.MhtmlLoading.LoadResult"
     enum="MhtmlLoadResult" expires_after="2023-04-23">
   <owner>sclittle@chromium.org</owner>

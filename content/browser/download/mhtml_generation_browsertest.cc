@@ -521,11 +521,6 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTML) {
     EXPECT_THAT(mhtml,
                 HasSubstr("Content-Transfer-Encoding: quoted-printable"));
   }
-
-  // Checks that the final status reported to UMA is correct.
-  histogram_tester()->ExpectUniqueSample(
-      "PageSerialization.MhtmlGeneration.FinalSaveStatus",
-      static_cast<int>(mojom::MhtmlSaveStatus::kSuccess), 1);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -565,11 +560,6 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, GenerateMHTMLInNonTempDir) {
     EXPECT_THAT(mhtml,
                 HasSubstr("Content-Transfer-Encoding: quoted-printable"));
   }
-
-  // Checks that the final status reported to UMA is correct.
-  histogram_tester()->ExpectUniqueSample(
-      "PageSerialization.MhtmlGeneration.FinalSaveStatus",
-      static_cast<int>(mojom::MhtmlSaveStatus::kSuccess), 1);
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -616,11 +606,6 @@ IN_PROC_BROWSER_TEST_P(MHTMLGenerationTest, MAYBE_InvalidPath) {
   GenerateMHTML(path, embedded_test_server()->GetURL("/page_with_image.html"));
 
   EXPECT_EQ(file_size(), -1);  // Expecting that the callback reported failure.
-
-  // Checks that the final status reported to UMA is correct.
-  histogram_tester()->ExpectUniqueSample(
-      "PageSerialization.MhtmlGeneration.FinalSaveStatus",
-      static_cast<int>(mojom::MhtmlSaveStatus::kFileCreationError), 1);
 }
 
 // Tests that MHTML generated using the default 'quoted-printable' encoding does
