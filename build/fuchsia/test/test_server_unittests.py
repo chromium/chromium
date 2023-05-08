@@ -58,18 +58,15 @@ class TestServerTest(unittest.TestCase):
             forwarder.Unmap(port_pair[0])
             self.assertEqual(self._subprocess_mock.call_count, 1)
 
-    @mock.patch('os.path.isdir')
     @mock.patch('os.path.isfile')
-    def test_port_forward_exception(self, isfile_mock, isdir_mock) -> None:
+    def test_port_forward_exception(self, isfile_mock) -> None:
         """Tests that exception is raised if |port_forward| command fails."""
 
         cmd_mock = mock.Mock()
         cmd_mock.returncode = 1
         isfile_mock.return_value = False
-        isdir_mock.return_value = False
         self._subprocess_mock.return_value = cmd_mock
         with mock.patch('compatible_utils.open', mock.mock_open()), \
-             mock.patch('os.makedirs'), \
              self.assertRaises(Exception):
             test_server.port_forward(_HOST_PORT_PAIR, _HOST_PORT)
 
