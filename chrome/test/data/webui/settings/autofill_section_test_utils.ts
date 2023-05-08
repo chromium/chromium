@@ -204,3 +204,22 @@ export async function createRemoveAddressDialog(
 
   return initiateRemoving(section, 0);
 }
+
+/**
+ * Performs some UI and manager manipulations to simulate the address removal.
+ */
+export async function deleteAddress(
+    section: SettingsAutofillSectionElement, manager: TestAutofillManager,
+    index: number) {
+  const dialog = await initiateRemoving(section, index);
+  const closePromise = eventToPromise('close', dialog.$.dialog);
+  dialog.$.remove.click();
+  await closePromise;
+
+  const address = [...manager.data.addresses];
+  address.splice(index, 1);
+  manager.data.addresses = address;
+  manager.lastCallback.setPersonalDataManagerListener!
+      (address, [], [], manager.data.accountInfo);
+  await flushTasks();
+}

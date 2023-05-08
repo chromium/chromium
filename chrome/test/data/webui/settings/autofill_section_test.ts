@@ -13,7 +13,7 @@ import {eventToPromise, whenAttributeIs, isVisible} from 'chrome://webui-test/te
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {AutofillManagerExpectations, createAddressEntry, createEmptyAddressEntry, STUB_USER_ACCOUNT_INFO, TestAutofillManager} from './passwords_and_autofill_fake_data.js';
-import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog} from './autofill_section_test_utils.js';
+import {createAutofillSection, initiateRemoving, initiateEditing, CountryDetailManagerTestImpl, createAddressDialog, createRemoveAddressDialog, expectEvent, openAddressDialog, deleteAddress} from './autofill_section_test_utils.js';
 // clang-format on
 
 suite('AutofillSectionUiTest', function() {
@@ -184,6 +184,43 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
+
+    document.body.removeChild(section);
+  });
+});
+
+suite('AutofillSectionFocusTest', function() {
+  test('verifyFocusLocationAfterRemoving', async () => {
+    const section = await createAutofillSection(
+        [
+          createAddressEntry(),
+          createAddressEntry(),
+          createAddressEntry(),
+        ],
+        {profile_enabled: {value: true}});
+    const manager = AutofillManagerImpl.getInstance() as TestAutofillManager;
+
+    await deleteAddress(section, manager, 1);
+    const addressesAfterRemovingInTheMiddle =
+        section.$.addressList.querySelectorAll('.list-item');
+    assertTrue(
+        addressesAfterRemovingInTheMiddle[1]!.matches(':focus-within'),
+        'The focus should remain on the same index on the list (but next ' +
+            'to the removed address).');
+
+    await deleteAddress(section, manager, 1);
+    const addressesAfterRemovingLastInTheList =
+        section.$.addressList.querySelectorAll('.list-item');
+    assertTrue(
+        addressesAfterRemovingLastInTheList[0]!.matches(':focus-within'),
+        'After removing the last address on the list the focus should go ' +
+            'to the preivous address.');
+
+    await deleteAddress(section, manager, 0);
+    assertTrue(
+        section.$.addAddress.matches(':focus-within'),
+        'If there are no addresses remaining after removal the focus should ' +
+            'go to the Add button.');
 
     document.body.removeChild(section);
   });
