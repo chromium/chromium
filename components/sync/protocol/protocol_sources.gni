@@ -4,7 +4,6 @@
 
 sync_protocol_sources = [
   "app_list_specifics.proto",
-  "app_notification_specifics.proto",
   "app_setting_specifics.proto",
   "app_specifics.proto",
   "arc_package_specifics.proto",
@@ -35,7 +34,6 @@ sync_protocol_sources = [
   "loopback_server.proto",
   "managed_user_setting_specifics.proto",
   "managed_user_shared_setting_specifics.proto",
-  "managed_user_specifics.proto",
   "model_type_state.proto",
   "model_type_store_schema_descriptor.proto",
   "nigori_local_data.proto",
@@ -62,8 +60,6 @@ sync_protocol_sources = [
   "sync_entity.proto",
   "sync_enums.proto",
   "sync_invalidations_payload.proto",
-  "synced_notification_app_info_specifics.proto",
-  "synced_notification_specifics.proto",
   "test.proto",
   "theme_specifics.proto",
   "typed_url_specifics.proto",
