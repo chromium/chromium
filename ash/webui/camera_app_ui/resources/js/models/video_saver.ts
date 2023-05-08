@@ -215,7 +215,7 @@ class TimeLapseFixedSpeedSaver {
 /**
  * Maximum duration for the time-lapse video in seconds.
  */
-const TIME_LAPSE_MAX_DURATION = 30;
+export const TIME_LAPSE_MAX_DURATION = 30;
 
 /**
  * Default number of fps in case it's not defined from the original video.
@@ -320,7 +320,8 @@ export class TimeLapseSaver {
   private async init(speed: number): Promise<void> {
     this.initialSpeed = speed;
     this.currSpeedSaver = await this.createSaver(speed);
-    this.nextSpeedSaver = await this.createSaver(this.getNextSpeed(speed));
+    this.nextSpeedSaver =
+        await this.createSaver(TimeLapseSaver.getNextSpeed(speed));
     this.speedCheckpoint = speed * TIME_LAPSE_MAX_DURATION * this.fps;
     setTimeout(() => this.manageSavers(), SAVER_MANAGER_TIMEOUT_MS);
   }
@@ -414,7 +415,8 @@ export class TimeLapseSaver {
     this.currSpeedSaver = this.nextSpeedSaver;
 
     const speed = this.currSpeedSaver.speed;
-    this.nextSpeedSaver = await this.createSaver(this.getNextSpeed(speed));
+    this.nextSpeedSaver =
+        await this.createSaver(TimeLapseSaver.getNextSpeed(speed));
     this.speedCheckpoint = speed * TIME_LAPSE_MAX_DURATION * this.fps;
 
     // Drops unused frames.
@@ -471,7 +473,7 @@ export class TimeLapseSaver {
   /**
    * Returns the time-lapse speed after the given speed.
    */
-  getNextSpeed(speed: number): number {
+  static getNextSpeed(speed: number): number {
     return speed * 2;
   }
 
