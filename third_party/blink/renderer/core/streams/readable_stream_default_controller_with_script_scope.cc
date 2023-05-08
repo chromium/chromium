@@ -33,10 +33,15 @@ void ReadableStreamDefaultControllerWithScriptScope::Close() {
   if (!controller_)
     return;
 
-  ScriptState::Scope scope(script_state_);
-
   if (ReadableStreamDefaultController::CanCloseOrEnqueue(controller_)) {
-    ReadableStreamDefaultController::Close(script_state_, controller_);
+    if (script_state_->ContextIsValid()) {
+      ScriptState::Scope scope(script_state_);
+      ReadableStreamDefaultController::Close(script_state_, controller_);
+    } else {
+      // If the context is not valid then Close() will not try to resolve the
+      // promises, and that is not a problem.
+      ReadableStreamDefaultController::Close(script_state_, controller_);
+    }
   }
   controller_ = nullptr;
 }
