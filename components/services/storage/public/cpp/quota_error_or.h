@@ -9,15 +9,19 @@
 
 namespace storage {
 
+// These values are logged to UMA. Entries should not be renumbered and numeric
+// values should never be reused. Please keep in sync with "QuotaError" in
+// tools/metrics/histograms/enums.xml.
 enum class QuotaError {
   kNone = 0,
-  kUnknownError,
-  kDatabaseError,
-  kNotFound,
-  kEntryExistsError,
-  kFileOperationError,
-  kInvalidExpiration,
-  kQuotaExceeded,
+  kUnknownError = 1,
+  kDatabaseError = 2,
+  kNotFound = 3,
+  kEntryExistsError = 4,
+  kFileOperationError = 5,
+  kInvalidExpiration = 6,
+  kQuotaExceeded = 7,
+  kMaxValue = kQuotaExceeded
 };
 
 struct DetailedQuotaError {
