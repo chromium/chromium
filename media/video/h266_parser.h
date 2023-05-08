@@ -47,6 +47,10 @@ enum {
 
   // 7.4.11 num_ref_entries: [0, kMaxDpbSize + 13]
   kMaxRefEntries = 29,
+
+  kMaxTiles = 990,       // A.4.1 Table A.1
+  kMaxTileRows = 990,    // 990 tile rows and 1 column.
+  kMaxTileColumns = 30,  // A.4.1  Table A.1
 };
 
 // Section 7.4.4.2
@@ -520,6 +524,104 @@ struct MEDIA_EXPORT H266SPS {
   VideoChromaSampling GetChromaSampling() const;
 };
 
+struct MEDIA_EXPORT H266PPS {
+  H266PPS();
+
+  // Syntax elements.
+  int pps_pic_parameter_set_id;
+  int pps_seq_parameter_set_id;
+  bool pps_mixed_nalu_types_in_pic_flag;
+  int pps_pic_width_in_luma_samples;
+  int pps_pic_height_in_luma_samples;
+  bool pps_conformance_window_flag;
+  int pps_conf_win_left_offset;
+  int pps_conf_win_right_offset;
+  int pps_conf_win_top_offset;
+  int pps_conf_win_bottom_offset;
+  bool pps_scaling_window_explicit_signaling_flag;
+  int pps_scaling_win_left_offset;
+  int pps_scaling_win_right_offset;
+  int pps_scaling_win_top_offset;
+  int pps_scaling_win_bottom_offset;
+  bool pps_output_flag_present_flag;
+  bool pps_no_pic_partition_flag;
+  bool pps_subpic_id_mapping_present_flag;
+  int pps_num_subpics_minus1;
+  int pps_subpic_id_len_minus1;
+  int pps_subpic_id[kMaxSlices];
+  int pps_log2_ctu_size_minus5;
+  int pps_num_exp_tile_columns_minus1;
+  int pps_num_exp_tile_rows_minus1;
+  int pps_tile_column_width_minus1[kMaxTileColumns];
+  int pps_tile_row_height_minus1[kMaxTileRows];
+  bool pps_loop_filter_across_tiles_enabled_flag;
+  bool pps_rect_slice_flag;
+  bool pps_single_slice_per_subpic_flag;
+  int pps_num_slices_in_pic_minus1;
+  bool pps_tile_idx_delta_present_flag;
+  int pps_slice_width_in_tiles_minus1[kMaxSlices];
+  int pps_slice_height_in_tiles_minus1[kMaxSlices];
+  int pps_num_exp_slices_in_tile[kMaxSlices];
+  int pps_exp_slice_height_in_ctus_minus1[kMaxSlices][kMaxTileRows];
+  int pps_tile_idx_delta_val[kMaxSlices];
+  bool pps_loop_filter_across_slices_enabled_flag;
+  bool pps_cabac_init_present_flag;
+  int pps_num_ref_idx_default_active_minus1[2];
+  bool pps_rpl1_idx_present_flag;
+  bool pps_weighted_pred_flag;
+  bool pps_weighted_bipred_flag;
+  bool pps_ref_wraparound_enabled_flag;
+  int pps_pic_width_minus_wraparound_offset;
+  int pps_init_qp_minus26;
+  bool pps_cu_qp_delta_enabled_flag;
+  bool pps_chroma_tool_offsets_present_flag;
+  int pps_cb_qp_offset;
+  int pps_cr_qp_offset;
+  bool pps_joint_cbcr_qp_offset_present_flag;
+  int pps_joint_cbcr_qp_offset_value;
+  bool pps_slice_chroma_qp_offsets_present_flag;
+  int pps_cu_chroma_qp_offset_list_enabled_flag;
+  int pps_chroma_qp_offset_list_len_minus1;
+  int pps_cb_qp_offset_list[6];
+  int pps_cr_qp_offset_list[6];
+  int pps_joint_cbcr_qp_offset_list[6];
+  bool pps_deblocking_filter_control_present_flag;
+  bool pps_deblocking_filter_override_enabled_flag;
+  bool pps_deblocking_filter_disabled_flag;
+  bool pps_dbf_info_in_ph_flag;
+  int pps_luma_beta_offset_div2;
+  int pps_luma_tc_offset_div2;
+  int pps_cb_beta_offset_div2;
+  int pps_cb_tc_offset_div2;
+  int pps_cr_beta_offset_div2;
+  int pps_cr_tc_offset_div2;
+  bool pps_rpl_info_in_ph_flag;
+  bool pps_sao_info_in_ph_flag;
+  bool pps_alf_info_in_ph_flag;
+  bool pps_wp_info_in_ph_flag;
+  bool pps_qp_delta_info_in_ph_flag;
+  bool pps_picture_header_extension_present_flag;
+  bool pps_slice_header_extension_present_flag;
+  bool pps_extension_flag;
+  // Skip possible extensions
+
+  // Calculated values
+  int pic_width_in_ctbs_y;
+  int pic_height_in_ctbs_y;
+  int pic_size_in_ctbs_y;
+  int pic_width_in_min_cbs_y;
+  int pic_height_in_min_cbs_y;
+  int pic_size_in_min_cbs_y;
+  int pic_size_in_samples_y;
+  int pic_width_in_samples_c;
+  int pic_height_in_samples_c;
+  int num_tiles_in_pic;
+  int num_tile_columns;
+  int num_tile_rows;
+  int slice_height_in_ctus[kMaxSlices];
+  int num_slices_in_subpic[kMaxSlices];
+};
+
 // Class to parse an Annex-B H.266 stream.
 class MEDIA_EXPORT H266Parser : public H266NaluParser {
  public:
@@ -546,6 +648,12 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   // the returned |*sps_id| as parameter.
   Result ParseSPS(const H266NALU& nalu, int* sps_id);
 
+  // Parse a PPS NALU and save its data in the parser, returning id
+  // of the parsed structure in |*pps_id|. To get a pointer
+  // to a given PPS structure, use GetPPS(), passing
+  // the returned |*pps_id| as parameter.
+  Result ParsePPS(const H266NALU& nalu, int* pps_id);
+
   // Return a pointer to VPS with given |*vps_id| or
   // null if not present.
   const H266VPS* GetVPS(int vps_id) const;
@@ -553,6 +661,10 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
   // Return a pointer to SPS with given |*sps_id| or
   // null if not present.
   const H266SPS* GetSPS(int sps_id) const;
+
+  // Return a pointer to PPS with given |*pps_id| or
+  // null if not present.
+  const H266PPS* GetPPS(int pps_id) const;
 
   static VideoCodecProfile ProfileIDCToVideoCodecProfile(int profile_idc);
 
@@ -588,9 +700,10 @@ class MEDIA_EXPORT H266Parser : public H266NaluParser {
                          const H266SPS& sps,
                          H266VUIParameters* vui);
 
-  // VPSes/SPSes stored for future reference.
+  // VPSes/SPSes/PPSes stored for future reference.
   base::flat_map<int, std::unique_ptr<H266VPS>> active_vps_;
   base::flat_map<int, std::unique_ptr<H266SPS>> active_sps_;
+  base::flat_map<int, std::unique_ptr<H266PPS>> active_pps_;
 };
 
 }  // namespace media

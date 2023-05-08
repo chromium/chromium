@@ -26,14 +26,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     }
 
     switch (nalu.nal_unit_type) {
-      case media::H266NALU::VPS_NUT:
+      case media::H266NALU::kVPS:
         int vps_id;
         res = parser.ParseVPS(&vps_id);
         break;
-      case media::H266NALU::SPS_NUT:
+      case media::H266NALU::kSPS:
         int sps_id;
         res = parser.ParseSPS(nalu, &sps_id);
         break;
+      case media::H266NALU::kPPS:
+        int pps_id;
+        res = parser.ParsePPS(nalu, &pps_id);
       // TODO(crbugs.com/1417910): Other NALU types will be checked.
       default:
         // Skip other NALU types

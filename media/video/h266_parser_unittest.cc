@@ -82,6 +82,11 @@ TEST_F(H266ParserTest, RawVvcStreamFileParsingShouldSucceed) {
           res = parser_.ParseSPS(nalu, &sps_id);
           EXPECT_TRUE(!!parser_.GetSPS(sps_id));
           break;
+        case H266NALU::kPPS:
+          int pps_id;
+          res = parser_.ParsePPS(nalu, &pps_id);
+          EXPECT_TRUE(!!parser_.GetPPS(pps_id));
+          break;
         // TODO(crbugs.com/1417910): add more NALU types.
         default:
           break;
@@ -505,6 +510,243 @@ TEST_F(H266ParserTest,
     EXPECT_EQ(sps->sps_subpic_height_minus1[0],
               sps->sps_subpic_height_minus1[i]);
   }
+}
+
+TEST_F(H266ParserTest, ParsePPSShouldGetCorrectSyntaxValues) {
+  LoadParserFile("bear_180p.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  // Verify syntax elements.
+  EXPECT_EQ(pps->pps_pic_parameter_set_id, 0);
+  EXPECT_EQ(pps->pps_seq_parameter_set_id, 0);
+  EXPECT_FALSE(pps->pps_mixed_nalu_types_in_pic_flag);
+  EXPECT_EQ(pps->pps_pic_width_in_luma_samples, 320);
+  EXPECT_EQ(pps->pps_pic_height_in_luma_samples, 184);
+  EXPECT_FALSE(pps->pps_conformance_window_flag);
+  EXPECT_EQ(pps->pps_conf_win_left_offset, 0);
+  EXPECT_EQ(pps->pps_conf_win_right_offset, 0);
+  EXPECT_EQ(pps->pps_conf_win_top_offset, 0);
+  // When conformance window flag is false, the value is derived
+  // from SPS.
+  EXPECT_EQ(pps->pps_conf_win_bottom_offset, 2);
+  EXPECT_FALSE(pps->pps_scaling_window_explicit_signaling_flag);
+  EXPECT_EQ(pps->pps_scaling_win_left_offset, 0);
+  EXPECT_EQ(pps->pps_scaling_win_right_offset, 0);
+  EXPECT_EQ(pps->pps_scaling_win_top_offset, 0);
+  EXPECT_EQ(pps->pps_scaling_win_bottom_offset, 2);
+  EXPECT_FALSE(pps->pps_output_flag_present_flag);
+  EXPECT_TRUE(pps->pps_no_pic_partition_flag);
+  EXPECT_FALSE(pps->pps_subpic_id_mapping_present_flag);
+  EXPECT_EQ(pps->pps_num_subpics_minus1, 0);
+  EXPECT_EQ(pps->pps_log2_ctu_size_minus5, 0);
+  EXPECT_EQ(pps->pps_num_exp_tile_columns_minus1, 0);
+  EXPECT_EQ(pps->pps_num_exp_tile_rows_minus1, 0);
+  // This stream is without subpicture/multi-slice, decoder
+  // may not overlook this flag. We check this as it may
+  // impact existence of other syntax elements.
+  EXPECT_TRUE(pps->pps_rect_slice_flag);
+  EXPECT_FALSE(pps->pps_cabac_init_present_flag);
+  EXPECT_EQ(pps->pps_num_ref_idx_default_active_minus1[0], 1);
+  EXPECT_EQ(pps->pps_num_ref_idx_default_active_minus1[1], 1);
+  EXPECT_FALSE(pps->pps_rpl1_idx_present_flag);
+  EXPECT_FALSE(pps->pps_weighted_pred_flag);
+  EXPECT_FALSE(pps->pps_weighted_bipred_flag);
+  EXPECT_FALSE(pps->pps_ref_wraparound_enabled_flag);
+  EXPECT_EQ(pps->pps_init_qp_minus26, -9);
+  EXPECT_TRUE(pps->pps_cu_qp_delta_enabled_flag);
+  EXPECT_TRUE(pps->pps_chroma_tool_offsets_present_flag);
+  EXPECT_EQ(pps->pps_cb_qp_offset, 0);
+  EXPECT_EQ(pps->pps_cr_qp_offset, 0);
+  EXPECT_TRUE(pps->pps_joint_cbcr_qp_offset_present_flag);
+  EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_value, -1);
+  EXPECT_TRUE(pps->pps_slice_chroma_qp_offsets_present_flag);
+  EXPECT_FALSE(pps->pps_cu_chroma_qp_offset_list_enabled_flag);
+  EXPECT_FALSE(pps->pps_deblocking_filter_control_present_flag);
+  EXPECT_FALSE(pps->pps_picture_header_extension_present_flag);
+  EXPECT_FALSE(pps->pps_slice_header_extension_present_flag);
+  EXPECT_FALSE(pps->pps_extension_flag);
+}
+
+// Verify tile layout parsing for stream with multiple tiles and single slice.
+TEST_F(H266ParserTest,
+       ParsePPSWithMultipleTilesAndSingleSliceShouldGetCorrectSyntaxValues) {
+  LoadParserFile("bbb_9tiles.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  EXPECT_EQ(pps->pps_tile_column_width_minus1[0], 4);
+  EXPECT_EQ(pps->pps_tile_row_height_minus1[0], 2);
+  EXPECT_FALSE(pps->pps_rect_slice_flag);
+  EXPECT_EQ(pps->num_tile_columns, 3);
+  EXPECT_EQ(pps->num_tile_rows, 3);
+}
+
+// Verify tile/slice layout parsing for stream with multiple tiles and
+// multiple rect slices.
+TEST_F(H266ParserTest,
+       ParsePPSWithTileAndSliceSizeEqualShouldGetCorrectSynatxValues) {
+  LoadParserFile("bbb_15tiles_15slices.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  for (int i = 0; i < pps->pps_num_slices_in_pic_minus1; i++) {
+    EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[i], 0);
+    EXPECT_EQ(pps->pps_slice_height_in_tiles_minus1[i], 0);
+    EXPECT_EQ(pps->pps_num_exp_slices_in_tile[i], 0);
+  }
+  EXPECT_TRUE(pps->pps_loop_filter_across_tiles_enabled_flag);
+  EXPECT_TRUE(pps->pps_loop_filter_across_slices_enabled_flag);
+  EXPECT_TRUE(pps->pps_rect_slice_flag);
+  EXPECT_EQ(pps->num_tile_columns, 5);
+  EXPECT_EQ(pps->num_tile_rows, 3);
+  EXPECT_EQ(pps->pps_num_slices_in_pic_minus1, 14);
+}
+
+// Verify tile/slice layout parsing for stream with non-equal tile/slice size
+TEST_F(H266ParserTest,
+       ParsePPSWithNonEqualTileAndSliceShouldGetCorrectSyntaxValues) {
+  LoadParserFile("bbb_9tiles_18slices.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  EXPECT_EQ(pps->pps_tile_column_width_minus1[0], 4);
+  EXPECT_EQ(pps->pps_tile_row_height_minus1[0], 2);
+  EXPECT_TRUE(pps->pps_loop_filter_across_tiles_enabled_flag);
+  EXPECT_TRUE(pps->pps_loop_filter_across_slices_enabled_flag);
+  EXPECT_TRUE(pps->pps_rect_slice_flag);
+  EXPECT_EQ(pps->num_tile_columns, 3);
+  EXPECT_EQ(pps->num_tile_rows, 3);
+  EXPECT_EQ(pps->pps_num_slices_in_pic_minus1, 17);
+  EXPECT_TRUE(pps->pps_tile_idx_delta_present_flag);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[0], 0);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[0], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[0], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[0][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[1], 3);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[2], 0);
+  EXPECT_EQ(pps->pps_slice_height_in_tiles_minus1[2], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[2], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[2][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[3], 3);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[4], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[4], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[4][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[5], -5);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[6], 0);
+  EXPECT_EQ(pps->pps_slice_height_in_tiles_minus1[6], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[6], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[6][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[7], 3);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[8], 0);
+  EXPECT_EQ(pps->pps_slice_height_in_tiles_minus1[8], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[8], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[8][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[9], 3);
+  EXPECT_EQ(pps->pps_slice_width_in_tiles_minus1[10], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[10], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[10][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[11], -5);
+  EXPECT_EQ(pps->pps_slice_height_in_tiles_minus1[12], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[12], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[12][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[13], 3);
+  EXPECT_EQ(pps->pps_slice_height_in_tiles_minus1[14], 0);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[14], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[14][0], 1);
+  EXPECT_EQ(pps->pps_tile_idx_delta_val[15], 3);
+  EXPECT_EQ(pps->pps_num_exp_slices_in_tile[16], 1);
+  EXPECT_EQ(pps->pps_exp_slice_height_in_ctus_minus1[16][0], 1);
+}
+
+// Verify the Cb/Cr QP offset list in PPS.
+TEST_F(H266ParserTest, ParsePPSShouldReturnCorrectChromaQPOffsetLists) {
+  LoadParserFile("bbb_chroma_qp_offset_lists.vvc");
+  H266NALU target_nalu;
+  int sps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kSPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParseSPS(target_nalu, &sps_id));
+  // Parsing of the SPS should generate fake VPS with vps_id = 0;
+  const H266VPS* vps = parser_.GetVPS(0);
+  EXPECT_TRUE(!!vps);
+  const H266SPS* sps = parser_.GetSPS(sps_id);
+  EXPECT_TRUE(!!sps);
+  int pps_id;
+  EXPECT_TRUE(ParseNalusUntilNut(&target_nalu, H266NALU::kPPS));
+  EXPECT_EQ(H266Parser::kOk, parser_.ParsePPS(target_nalu, &pps_id));
+  const H266PPS* pps = parser_.GetPPS(pps_id);
+  EXPECT_TRUE(!!pps);
+
+  EXPECT_EQ(pps->pps_init_qp_minus26, 8);
+  EXPECT_FALSE(pps->pps_cu_qp_delta_enabled_flag);
+  EXPECT_TRUE(pps->pps_chroma_tool_offsets_present_flag);
+  EXPECT_EQ(pps->pps_cb_qp_offset, 1);
+  EXPECT_EQ(pps->pps_cr_qp_offset, 1);
+  EXPECT_TRUE(pps->pps_joint_cbcr_qp_offset_present_flag);
+  EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_value, -1);
+  EXPECT_FALSE(pps->pps_slice_chroma_qp_offsets_present_flag);
+  EXPECT_TRUE(pps->pps_cu_chroma_qp_offset_list_enabled_flag);
+  EXPECT_EQ(pps->pps_chroma_qp_offset_list_len_minus1, 3);
+  EXPECT_EQ(pps->pps_cb_qp_offset_list[0], 3);
+  EXPECT_EQ(pps->pps_cr_qp_offset_list[0], 2);
+  EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_list[0], 0);
+  EXPECT_EQ(pps->pps_cb_qp_offset_list[1], 3);
+  EXPECT_EQ(pps->pps_cr_qp_offset_list[1], 4);
+  EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_list[1], 0);
+  EXPECT_EQ(pps->pps_cb_qp_offset_list[2], 8);
+  EXPECT_EQ(pps->pps_cr_qp_offset_list[2], 1);
+  EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_list[2], 0);
+  EXPECT_EQ(pps->pps_cb_qp_offset_list[3], 9);
+  EXPECT_EQ(pps->pps_cr_qp_offset_list[3], 7);
+  EXPECT_EQ(pps->pps_joint_cbcr_qp_offset_list[3], 0);
 }
 
 }  // namespace media

@@ -113,7 +113,8 @@ ffmpeg -i sfx.flac -map 0:0 -acodec copy -strict -2 -movflags frag_keyframe+empt
 Created using FFmpeg/vvencapp with the following commands:
 ```
 ffmpeg -i bear.y4m -f rawvideo bear_180P.yuv
-vvencapp --preset medium -i bear_180P.yuv -s 320x180 -r 15 -b 1000000 -p 2 -o bear_180p.vvc
+vvencapp --preset medium -i bear_180P.yuv -s 320x180 -r 15 -b 1000000 \
+  -p 2 -o bear_180p.vvc
 ```
 
 #### bbb_360p.vvc
@@ -121,13 +122,66 @@ Created using FFmpeg/vvencapp with the following commands:
 ```
 ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
 ffmpeg -i bbb.y4m -vf scale=480x360 bbb_480x360.yuv
-vvencapp --preset medium -i bbb_480x360.yuv -s 480x360 -r 15 -b 1000000 -p 2 -f 60 -o bbb_360p.vvc
+vvencapp --preset medium -i bbb_480x360.yuv -s 480x360 -r 15 -b 1000000 \
+  -p 2 -f 60 -o bbb_360p.vvc
 ```
 
 #### basketball_2_layers.vvc
 2 spatial layer VVC video with layer 0 at 208x120 and layer 1 at 832x480.
 Used for vvc parser test. Once vvencapp supports multi-layer encoding, the
 creation command needs to be provided.
+
+#### bbb_9tiles.vvc
+VVC stream generated with VTM with each picture configured to be with 9 tiles
+and single raster scan slice.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp --EnablePicPartitioning=1 --CTUSize=128 --TileColumnWidthArray=5 \
+  --TileRowHeightArray=3 --RasterScanSlices=1 --RasterSliceSizes=15 \
+  -f 8 --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles.vvc
+```
+
+#### bbb_15tiles_15slices.vvc
+VVC stream generated with VTM with each picture configured to be with 15 tiles
+and 15 rect slices.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp -f 8 --EnablePicPartitioning=1 --CTUSize=128 \
+  --TileColumnWidthArray=3,3,3,3,3  --TileRowHeightArray=3,3 \
+  --RasterScanSlices=0 --RectSliceFixedWidth=1 \
+  --RectSliceFixedHeight=1 --InputFile=bbb_1920x1080.yuv \
+  --BitstreamFile=bbb_15tiles_15slices.vvc
+```
+
+#### bbb_9tiles_18slices.vvc
+VVC stream generated with VTM with each picture configured to be with 9 tiles
+and 18 rect slices.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp -f 8 --EnablePicPartitioning=1 --CTUSize=128 \
+  --TileColumnWidthArray=5,5,5 --TileRowHeightArray=3,3 --RasterScanSlices=0 \
+  --RectSliceFixedWidth=0 --RectSliceFixedHeight=0 \
+  --RectSlicePositions=0,19,30,34,45,64,75,79,90,109,120,124,5,24,35,39,50,69,\
+80,84,95,114,125,129,10,29,40,44,55,74,85,89,100,119,130,134 \
+  --InputFile=bbb_1920x1080.yuv --BitstreamFile=bbb_9tiles_18slices.vvc
+```
+
+#### bbb_chroma_qp_offset_lists.vvc
+VVC stream generated with VTM with chroma QP offset lists enabled.
+Created with VTM and ffmpeg:
+```
+ffmpeg -i bbb-320x240-2video-2audio.mp4 bbb.y4m
+ffmpeg -i bbb.y4m -vf scale=1920x1080 bbb_1920x1080.yuv
+EncoderApp --CTUSize=128 --CbQpOffsetList=3,3,8,9 --CrQpOffsetList=2,4,1,7 \
+  -f 8 --InputFile=bbb_1920x1080.yuv \
+  --BitstreamFile=bbb_chroma_qp_offset_lists.vvc
+```
 
 ### AV1
 
