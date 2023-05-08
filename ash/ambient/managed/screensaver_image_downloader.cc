@@ -163,6 +163,10 @@ void ScreensaverImageDownloader::DeleteDownloadedImages() {
                      download_directory_));
 }
 
+base::FilePath ScreensaverImageDownloader::GetDowloadDirForTesting() {
+  return download_directory_;
+}
+
 void ScreensaverImageDownloader::StartDownloadJob(
     std::unique_ptr<Job> download_job) {
   queue_state_ = QueueState::kDownloading;

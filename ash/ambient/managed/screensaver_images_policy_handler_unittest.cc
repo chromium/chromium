@@ -23,6 +23,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_path_override.h"
+#include "chromeos/ash/components/login/login_state/scoped_test_public_session_login_state.h"
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -38,6 +39,8 @@ constexpr char kFakeFilePath1[] = "/path/to/file1";
 constexpr char kFakeFilePath2[] = "/path/to/file2";
 
 constexpr char kCacheDirectoryName[] = "managed_screensaver";
+constexpr char kManagedGuestsCacheDirectoryPath[] =
+    "/var/cache/managed_screensaver/guest";
 constexpr char kCacheFileExt[] = ".cache";
 
 constexpr char kImageUrl1[] = "https://example.com/1.jpg";
@@ -81,7 +84,20 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     policy_handler_->OnDownloadJobCompleted(result, path);
   }
 
-  void CreateHandlerInstanceWithUserProfile() {
+  ScreensaverImageDownloader* GetPrivateImageDownloader(
+      const ScreensaverImagesPolicyHandler& policy_handler) {
+    return policy_handler.image_downloader_.get();
+  }
+
+  void VerifyPrivateImageDownloaderDownloadFolder(
+      const ScreensaverImagesPolicyHandler& policy_handler,
+      const base::FilePath& expected_path) {
+    ASSERT_TRUE(policy_handler.image_downloader_.get());
+    EXPECT_EQ(expected_path,
+              policy_handler.image_downloader_->GetDowloadDirForTesting());
+  }
+
+  void RegisterUserWithUserPrefs(const AccountId& account_id) {
     // Create a fake user prefs map.
     auto user_prefs = std::make_unique<TestingPrefServiceSimple>();
     RegisterUserProfilePrefs(user_prefs->registry(), /*for_test=*/true);
@@ -93,15 +109,24 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
     GetSessionControllerClient()->AddUserSession(
         kUserEmail, user_manager::USER_TYPE_REGULAR,
         /*provide_pref_service=*/false);
-    GetSessionControllerClient()->SetUserPrefService(
-        AccountId::FromUserEmail(kUserEmail), std::move(user_prefs));
-    GetSessionControllerClient()->SwitchActiveUser(
-        AccountId::FromUserEmail(kUserEmail));
+    GetSessionControllerClient()->SetUserPrefService(account_id,
+                                                     std::move(user_prefs));
+    GetSessionControllerClient()->SwitchActiveUser(account_id);
     GetSessionControllerClient()->SetSessionState(
         session_manager::SessionState::ACTIVE);
+  }
+
+  void CreateHandlerInstanceWithUserProfile() {
+    RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail));
 
     policy_handler_ =
         std::make_unique<ScreensaverImagesPolicyHandler>(user_prefs_);
+
+    // Verify that the policy handler detected the new user and created a new
+    // image downloader instance.
+    ASSERT_TRUE(GetPrivateImageDownloader(*policy_handler_));
+    VerifyPrivateImageDownloaderDownloadFolder(
+        *policy_handler_, temp_dir_.GetPath().AppendASCII(kCacheDirectoryName));
   }
 
   base::FilePath GetExpectedFilePath(const std::string url) {
@@ -140,6 +165,22 @@ class ScreensaverImagesPolicyHandlerTest : public AshTestBase {
   // Class under test
   std::unique_ptr<ScreensaverImagesPolicyHandler> policy_handler_;
 };
+
+TEST_F(ScreensaverImagesPolicyHandlerTest,
+       SharedDirectoryForManagedGuestSessions) {
+  ash::ScopedTestPublicSessionLoginState test_scoped_mgs_session;
+
+  // Register the user profile with its own pref service.
+  RegisterUserWithUserPrefs(AccountId::FromUserEmail(kUserEmail));
+
+  ScreensaverImagesPolicyHandler policy_handler(user_prefs());
+
+  // Verify that the policy handler detected the new user and created a new
+  // image downloader instance.
+  ASSERT_TRUE(GetPrivateImageDownloader(policy_handler));
+  VerifyPrivateImageDownloaderDownloadFolder(
+      policy_handler, base::FilePath(kManagedGuestsCacheDirectoryPath));
+}
 
 TEST_F(ScreensaverImagesPolicyHandlerTest, ShouldRunCallbackIfImagesUpdated) {
   CreateHandlerInstanceWithUserProfile();

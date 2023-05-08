@@ -97,6 +97,8 @@ class ASH_EXPORT ScreensaverImageDownloader {
   // Clears out the download folder.
   void DeleteDownloadedImages();
 
+  base::FilePath GetDowloadDirForTesting();
+
  private:
   friend class ScreensaverImageDownloaderTest;
 

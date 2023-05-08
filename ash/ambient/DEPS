@@ -11,6 +11,9 @@ specific_include_rules = {
   "ambient_controller.*": [
     "+chromeos/ash/components/assistant/buildflags.h",
   ],
+  "screensaver_images_policy_handler.*" : [
+    "+chromeos/ash/components/login",
+  ],
   ".*test.cc": [
     "+cc/test",
   ],

@@ -3610,6 +3610,7 @@ test("ash_unittests") {
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth:test_support",
     "//chromeos/ash/components/login/login_state",
+    "//chromeos/ash/components/login/login_state:test_support",
     "//chromeos/ash/components/network:test_support",
     "//chromeos/ash/components/phonehub:test_support",
     "//chromeos/ash/components/settings",

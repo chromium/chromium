@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -22,12 +23,19 @@ namespace ash {
 namespace {
 
 constexpr char kCacheDirectoryName[] = "managed_screensaver";
+constexpr char kManagedGuestsCacheDirectoryPath[] =
+    "/var/cache/managed_screensaver/guest";
 
 // This limit is specified in the policy definition for the policies
 // ScreensaverLockScreenImages and DeviceScreensaverLoginScreenImages.
 constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
 
 base::FilePath GetDownloaderRootPath() {
+  if (LoginState::IsInitialized() && LoginState::Get()->IsPublicSessionUser()) {
+    return base::FilePath(kManagedGuestsCacheDirectoryPath);
+  }
+  // TODO(b/271093537): Support the folder location for sign-in screensaver.
+
   base::FilePath home_dir;
   CHECK(base::PathService::Get(base::DIR_HOME, &home_dir));
   return home_dir.Append(FILE_PATH_LITERAL(kCacheDirectoryName));
