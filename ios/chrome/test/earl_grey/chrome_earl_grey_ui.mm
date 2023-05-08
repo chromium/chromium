@@ -528,6 +528,8 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
   [self waitForAppToIdle];
 
   // Recheck "Saved Passwords" and "Autofill Data".
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:ClearSavedPasswordsButton()];
   [[EarlGrey selectElementWithMatcher:ClearSavedPasswordsButton()]
       performAction:grey_tap()];
   [[[EarlGrey
