@@ -14,12 +14,14 @@
 #include "gpu/command_buffer/service/command_buffer_task_executor.h"
 #include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"
+#include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -273,6 +275,11 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
 
   if (!MakeContextCurrent())
     return;
+
+  // Creating a si with data can result in raster work. This will be a textureop
+  // that requires a program. See crbug.com/1442725.
+  absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse> cache_use;
+  context_state_->UseShaderCache(cache_use);
 
   DCHECK(shared_image_factory_);
   if (!shared_image_factory_->CreateSharedImage(

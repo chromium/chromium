@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/command_buffer/service/gl_context_virtual_delegate.h"
 #include "gpu/command_buffer/service/gr_cache_controller.h"
+#include "gpu/command_buffer/service/gr_shader_cache.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -125,6 +126,10 @@ class GPU_GLES2_EXPORT SharedContextState
   void PessimisticallyResetGrContext() const;
 
   void StoreVkPipelineCacheIfNeeded();
+
+  void UseShaderCache(
+      absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use)
+      const;
 
   gl::GLShareGroup* share_group() { return share_group_.get(); }
   gl::GLContext* context() { return context_.get(); }

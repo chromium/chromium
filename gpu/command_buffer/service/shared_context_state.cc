@@ -749,6 +749,14 @@ void SharedContextState::StoreVkPipelineCacheIfNeeded() {
   }
 }
 
+void SharedContextState::UseShaderCache(
+    absl::optional<gpu::raster::GrShaderCache::ScopedCacheUse>& cache_use)
+    const {
+  if (gr_shader_cache_) {
+    cache_use.emplace(gr_shader_cache_, gpu::kDisplayCompositorClientId);
+  }
+}
+
 gl::GLDisplay* SharedContextState::display() {
   return surface_.get()->GetGLDisplay();
 }
