@@ -8,6 +8,10 @@
 #include "base/files/file_util.h"
 #include "chrome/common/importer/importer_data_types.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 bool SafariImporterCanImport(const base::FilePath& library_dir,
                              uint16_t* services_supported) {
   DCHECK(services_supported);

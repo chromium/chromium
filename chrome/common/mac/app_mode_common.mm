@@ -5,6 +5,7 @@
 #include "chrome/common/mac/app_mode_common.h"
 
 #import <Foundation/Foundation.h>
+
 #include <type_traits>
 
 #include "base/check.h"
@@ -12,6 +13,10 @@
 #include "base/strings/string_split.h"
 #include "components/version_info/version_info.h"
 #include "mojo/core/embedder/embedder.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace app_mode {
 
@@ -63,7 +68,8 @@ NSString* const kShortcutURLPlaceholder = @"APP_MODE_SHORTCUT_URL";
 NSString* const kShortcutBrowserBundleIDPlaceholder =
                     @"APP_MODE_BROWSER_BUNDLE_ID";
 
-static_assert(std::is_pod<ChromeAppModeInfo>::value == true,
+static_assert(std::is_standard_layout_v<ChromeAppModeInfo> &&
+                  std::is_trivial_v<ChromeAppModeInfo>,
               "ChromeAppModeInfo must be a POD type");
 
 // ChromeAppModeInfo is built into the app_shim_loader binary that is not

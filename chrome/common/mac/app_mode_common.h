@@ -13,8 +13,6 @@
 
 #ifdef __OBJC__
 @class NSString;
-#else
-class NSString;
 #endif
 
 // This file contains constants, interfaces, etc. which are common to the
@@ -76,6 +74,8 @@ extern const char kLaunchedAfterRebuild[];
 // launched it, while still making sure it connects to the correct chrome
 // process.
 extern const char kIsNormalLaunch[];
+
+#ifdef __OBJC__
 
 // Keys for specifying the file types handled by an app.
 extern NSString* const kCFBundleDocumentTypesKey;
@@ -151,6 +151,8 @@ extern NSString* const kShortcutNamePlaceholder; // Extension name.
 extern NSString* const kShortcutURLPlaceholder;
 // Bundle ID of the Chrome browser bundle.
 extern NSString* const kShortcutBrowserBundleIDPlaceholder;
+
+#endif  // __OBJC__
 
 // Indicates the MojoIpcz feature configuration for a launched shim process.
 enum class MojoIpczConfig {
