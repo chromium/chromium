@@ -37,7 +37,6 @@ const base::Time kJune2017 = base::Time::FromDoubleT(1497552271);
 // returned from ConstructCompleteSpecifics().
 AutofillProfile ConstructCompleteProfile() {
   AutofillProfile profile(kGuid, AutofillProfile::Source::kLocalOrSyncable);
-  profile.set_origin("https://www.example.com/");
 
   profile.set_use_count(7);
   profile.set_use_date(base::Time::FromTimeT(1423182152));
@@ -136,7 +135,9 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   AutofillProfileSpecifics specifics;
 
   specifics.set_guid(kGuid);
-  specifics.set_origin("https://www.example.com/");
+  // TODO(crbug.com/1441905): Remove. See comment in
+  // `CreateEntityDataFromAutofillProfile()`.
+  specifics.set_deprecated_origin(kSettingsOrigin);
   specifics.set_use_count(7);
   specifics.set_use_date(1423182152);
   specifics.set_profile_label("profile_label");

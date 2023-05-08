@@ -4,20 +4,17 @@
 
 #include "components/autofill/core/browser/autofill_profile_sync_util.h"
 
-#include "base/uuid.h"
-// TODO(crbug.com/904390): Remove when the investigation is over.
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
-// TODO(crbug.com/904390): Remove when the investigation is over.
-#include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
+#include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/sync/protocol/entity_data.h"
 
@@ -98,7 +95,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       entity_data->specifics.mutable_autofill_profile();
 
   specifics->set_guid(entry.guid());
-  specifics->set_origin(entry.origin());
+  // TODO(crbug.com/1441905): Remove the origin field from
+  // AutofillProfileSpecifics. AutofillProfile::origin was already deprecated,
+  // effectively treating all profiles as unverified. However, older clients
+  // reject updates to verified profiles from unverified profiles. To retain
+  // syncing functionality, all profiles are explicitly synced as verified.
+  specifics->set_deprecated_origin(kSettingsOrigin);
 
   if (!entry.profile_label().empty())
     specifics->set_profile_label(entry.profile_label());
@@ -256,7 +258,6 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
   }
   std::unique_ptr<AutofillProfile> profile = std::make_unique<AutofillProfile>(
       specifics.guid(), AutofillProfile::Source::kLocalOrSyncable);
-  profile->set_origin(specifics.origin());
 
   // Set info that has a default value (and does not distinguish whether it is
   // set or not).

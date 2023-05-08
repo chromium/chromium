@@ -191,7 +191,7 @@ VISIT_PROTO_FIELDS(
 
 VISIT_PROTO_FIELDS(const sync_pb::AutofillProfileSpecifics& proto) {
   VISIT(guid);
-  VISIT(origin);
+  VISIT(deprecated_origin);
   VISIT(use_count);
   VISIT(use_date);
   VISIT(profile_label);

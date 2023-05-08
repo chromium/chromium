@@ -45,7 +45,14 @@ message AutofillProfileSpecifics {
   }
 
   optional string guid = 15;
-  optional string origin = 16;
+  // Starting from M115, Autofill ignores the origin and doesn't distinguish
+  // between verified (meaning `deprecated_origin == kSettingsOrigin`) and
+  // unverified profiles anymore. However, clients prior to this milestone only
+  // accept updates to verified profiles through Sync if the remote profile is
+  // verified as well. For this reason, M115 clients and above always set the
+  // origin to kSettingsOrigin.
+  // TODO(crbug.com/1441905): Remove in a few milestones.
+  optional string deprecated_origin = 16;
   optional int64 use_count = 22;
 
   // The time_t value of the last time this profile was used. This
