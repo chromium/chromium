@@ -1,4 +1,16 @@
 <style>
+  :host-context(body.jelly-enabled) .help-content-label {
+    font: var(--cros-headline-1-font);
+  }
+
+  :host-context(body.jelly-enabled) .help-item a {
+    font: var(--cros-body-1-font);
+  }
+
+  :host-context(body.jelly-enabled) paper-tooltip::part(tooltip) {
+    font: var(--cros-annotation-2-font);
+  }
+
   [class~='help-item']:last-of-type  {
     padding-bottom: 3px;
   }

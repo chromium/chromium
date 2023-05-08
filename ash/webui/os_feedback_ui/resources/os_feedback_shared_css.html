@@ -11,12 +11,34 @@
       --feedback-medium-font-weight: 500;
     }
 
+    :host-context(body.jelly-enabled) {
+      --feedback-roboto-font-family: var(--cros-body-0-font);
+      --feedback-google-sans-font-family: var(--cros-body-0-font);
+      font: var(--cros-body-2-font);
+    }
+
     :host-context([dir='rtl']) .dialog-back-arrow {
       transform: rotate(180deg);
     }
 
+    :host-context(body.jelly-enabled) .dialog-toolbar {
+      font: var(--cros-headline-1-font);
+    }
+
     :host-context(body.jelly-enabled) .md-select {
       --md-select-bg-color: var(--cros-sys-app_base);
+    }
+
+    :host-context(body.jelly-enabled) .page-title {
+      font: var(--cros-display-6-font);
+    }
+
+    :host-context(body:not(jelly-enabled)) cr-button {
+      font: var(--cros-button-2-font);
+    }
+
+    :host-context(body:not(jelly-enabled)) cr-button.action-button {
+      font: var(--cros-body-1-font);
     }
 
     :host-context(body:not(jelly-enabled)) cr-checkbox {
@@ -25,6 +47,15 @@
 
     :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
       border-radius: 20px;
+      font: var(--cros-body-2-font);
+    }
+
+    :host-context(body.jelly-enabled) paper-tooltip::part(tooltip) {
+      font: var(--cros-annotation-2-font);
+    }
+
+    :host-context(body.jelly-enabled) h2 {
+      font: var(--cros-headline-1-font);
     }
 
     a {

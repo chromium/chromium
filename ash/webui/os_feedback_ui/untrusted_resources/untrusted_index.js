@@ -40,8 +40,14 @@ function initialize() {
   if (loadTimeData.getBoolean('isJellyEnabledForOsFeedback')) {
     // TODO(b/276493287): After the Jelly experiment is launched, replace
     // `cros_styles.css` with `theme/colors.css` directly in `index.html`.
+    // Also add `theme/typography.css` to `index.html`.
     document.querySelector('link[href*=\'cros_styles.css\']')
         ?.setAttribute('href', '//theme/colors.css?sets=legacy,sys');
+    const typographyLink = document.createElement('link');
+    typographyLink.href = '//theme/typography.css';
+    typographyLink.rel = 'stylesheet';
+    document.head.appendChild(typographyLink);
+    document.body.classList.add('jelly-enabled');
     startColorChangeUpdater();
     // Post a message to parent to make testing `startColorChangeUpdater()`
     // called from untrusted ui easier.

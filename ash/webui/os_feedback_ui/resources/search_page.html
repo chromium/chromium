@@ -1,11 +1,24 @@
 <style include="os-feedback-shared">
+  :host-context(body.jelly-enabled) #descriptionEmptyError {
+    font: var(--cros-annotation-2-font);
+  }
+
   :host-context(body.jelly-enabled) #descriptionText {
     background-color: var(--cros-sys-input_field_on_shaded);
+    font: var(--cros-body-2-font);
+  }
+
+  :host-context(body.jelly-enabled) #descriptionText::placeholder {
+    font: var(--cros-body-2-font);
   }
 
   :host-context(body.jelly-enabled) #descriptionText.has-error {
     color: var(--cros-sys-error);
     outline: 2px solid var(--cros-sys-error);
+  }
+
+  :host-context(body.jelly-enabled) #feedbackWritingGuidance {
+    font: var(--cros-body-2-font);
   }
 
   :host-context(body.jelly-enabled) #emptyErrorIcon {

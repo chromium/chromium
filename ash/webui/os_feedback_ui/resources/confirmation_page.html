@@ -5,6 +5,14 @@
     --iron-icon-height: 40px;
   }
 
+  :host-context(body.jelly-enabled) .label {
+    font: var(--cros-button-1-font);
+  }
+
+  :host-context(body.jelly-enabled) .sub-label {
+    font: var(--cros-button-2-font);
+  }
+
   :host-context(body.jelly-enabled) cr-link-row {
     background-color: var(--cros-sys-app_base);
     border: none;
