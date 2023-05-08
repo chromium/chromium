@@ -527,6 +527,22 @@ public class AutofillUiUtils {
         return R.dimen.card_unmask_dialog_credit_card_icon_height;
     }
 
+    public static int getVirtualCardEnrollmentDialogIconWidthId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.virtual_card_enrollment_dialog_card_art_width_new;
+        }
+        return R.dimen.virtual_card_enrollment_dialog_card_art_width;
+    }
+
+    public static int getVirtualCardEnrollmentDialogIconHeightId() {
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES)) {
+            return R.dimen.virtual_card_enrollment_dialog_card_art_height_new;
+        }
+        return R.dimen.virtual_card_enrollment_dialog_card_art_height;
+    }
+
     /**
      * Resize the bitmap to the required specs, round corners, and add grey border.
      * @param bitmap to be updated.

@@ -21,6 +21,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
@@ -32,6 +33,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -45,6 +48,7 @@ import java.util.List;
 
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES})
 public class AutofillVirtualCardEnrollmentDialogTest {
     private static final String LEGAL_MESSAGE_URL = "http://www.google.com";
     private static final String ACCEPT_BUTTON_TEXT = "Yes";
@@ -52,6 +56,9 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Mock
     private Callback<Integer> mResultHandlerMock;

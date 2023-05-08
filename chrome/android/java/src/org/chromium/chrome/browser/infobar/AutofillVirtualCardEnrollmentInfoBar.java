@@ -213,9 +213,9 @@ public class AutofillVirtualCardEnrollmentInfoBar extends ConfirmInfoBar {
         // Get and resize the issuer icon.
         Bitmap scaledIssuerIcon = Bitmap.createScaledBitmap(mIssuerIcon,
                 layout.getResources().getDimensionPixelSize(
-                        R.dimen.virtual_card_enrollment_dialog_card_art_width),
+                        AutofillUiUtils.getVirtualCardEnrollmentDialogIconWidthId()),
                 layout.getResources().getDimensionPixelSize(
-                        R.dimen.virtual_card_enrollment_dialog_card_art_height),
+                        AutofillUiUtils.getVirtualCardEnrollmentDialogIconHeightId()),
                 true);
 
         // Add the issuer icon and the card container text.
