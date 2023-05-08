@@ -147,6 +147,9 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.showLoading();
 
     document.onselectionchange = () => {
+      if (!this.hasContent_) {
+        return;
+      }
       const shadowRoot = this.shadowRoot;
       assert(shadowRoot);
       const selection = shadowRoot.getSelection();
