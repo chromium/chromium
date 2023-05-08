@@ -516,10 +516,6 @@ class BuildConfigGenerator extends DefaultTask {
                 """.stripIndent(/* forceGroovyBehavior */ true))
             if (dependency.supportsAndroid) {
                 sb.append('  supports_android = true\n')
-            } else {
-                // Save some time by not validating classpaths of desktop .jars. Also required to break a dependency
-                // cycle for errorprone.
-                sb.append('  enable_bytecode_checks = false\n')
             }
         } else if (dependency.extension == 'aar') {
             sb.append("""\
@@ -532,7 +528,16 @@ class BuildConfigGenerator extends DefaultTask {
                 java_group("${targetName}") {
             """.stripIndent(/* forceGroovyBehavior */ true))
         } else {
-            throw new IllegalStateException('Dependency type should be JAR or AAR')
+            throw new IllegalStateException('Dependency type should be JAR or AAR or group')
+        }
+
+        // Skip jdeps analysis of direct deps for third-party prebuilt targets. Many of these targets from maven are
+        // missing direct dependencies for its code, but this code is typically not called in practice and is removed
+        // by R8. Rely on R8's TraceReferences check to catch any actually missing dependencies. Although it would be
+        // helpful to have the full list of correct direct deps for these prebuilt targets, in practice it is too
+        // onerous to maintain for each third party maven prebuilt target.
+        if (dependency.extension == 'jar' || dependency.extension == 'aar') {
+            sb.append('  enable_bytecode_checks = false\n')
         }
 
         sb.append(generateBuildTargetVisibilityDeclaration(dependency))
@@ -692,9 +697,6 @@ class BuildConfigGenerator extends DefaultTask {
             case 'androidx_privacysandbox_ads_ads_adservices':
                 sb.append('  alternative_android_sdk_dep = "//third_party/android_sdk:android_privacy_sandbox_sdk_java"\n')
                 break
-            case 'androidx_room_room_runtime':
-                sb.append('  enable_bytecode_checks = false\n')
-                break
             case 'androidx_transition_transition':
                 // Not specified in the POM, compileOnly dependency not supposed to be used unless
                 // the library is present: b/70887421
@@ -718,9 +720,6 @@ class BuildConfigGenerator extends DefaultTask {
                 break
             case 'com_google_android_material_material':
                 sb.with {
-                    append('\n')
-                    append('  # Needed until next material update, see crbug.com/1349521.\n')
-                    append('  enable_bytecode_checks = false\n')
                     append('\n')
                     append('  # Reduce binary size. https:crbug.com/954584\n')
                     append('  ignore_proguard_configs = true\n')
@@ -800,18 +799,6 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  jar_excluded_patterns += ["*/ListenableFuture.class"]\n')
                 }
                 break
-            case 'com_google_code_findbugs_jsr305':
-            case 'com_google_errorprone_error_prone_annotations':
-            case 'com_google_guava_failureaccess':
-            case 'com_google_j2objc_j2objc_annotations':
-            case 'com_google_guava_listenablefuture':
-            case 'com_googlecode_java_diff_utils_diffutils':
-            case 'org_checkerframework_checker_qual':
-            case 'org_codehaus_mojo_animal_sniffer_annotations':
-                sb.append('\n')
-                sb.append('  # Needed to break dependency cycle for errorprone_plugin_java.\n')
-                sb.append('  enable_bytecode_checks = false\n')
-                break
             case 'androidx_test_rules':
                 // Target needs Android SDK deps which exist in third_party/android_sdk.
                 sb.append('''\
@@ -822,11 +809,6 @@ class BuildConfigGenerator extends DefaultTask {
                 |  ]
                 |
                 |'''.stripMargin())
-                break
-            case 'androidx_test_espresso_espresso_contrib':
-            case 'androidx_test_espresso_espresso_web':
-            case 'androidx_window_window':
-                sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'net_sf_kxml_kxml2':
                 sb.append('  # Target needs to exclude *xmlpull* files as already included in Android SDK.\n')
@@ -870,21 +852,12 @@ class BuildConfigGenerator extends DefaultTask {
                     append('  ]')
                 }
                 break
-            case 'androidx_slidingpanelayout_slidingpanelayout':
-            case 'androidx_window_window_java':
-                // Every target that has a dep on androidx_window_window will need these checks turned off.
-                sb.append('  enable_bytecode_checks = false\n')
-                break
             case 'androidx_credentials_credentials':
                 sb.append('\n')
                 // We are overriding 1.0.0-SNAPSHOT to 1.2.0-alpha03 which has different deps.
                 // TODO(1433052): remove after 1.2.0 becomes part of the normal release structure.
                 sb.append('  deps += [":androidx_core_core_java"]\n')
                 break
-            case 'androidx_asynclayoutinflater_asynclayoutinflater':
-                sb.append('\n')
-                sb.append('  # References AppCompatActivity using reflection, if exists.\n')
-                sb.append('  enable_bytecode_checks = false\n')
             case 'androidx_startup_startup_runtime':
                 sb.append('  # Keeps emoji2 code. See http://crbug.com/1205141\n')
                 sb.append('  ignore_proguard_configs = true\n')
@@ -895,32 +868,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('    "//third_party/android_deps:*"\n')
                 sb.append('  ]')
                 break
-            case 'com_android_tools_desugar_jdk_libs_configuration':
-                sb.append('  enable_bytecode_checks = false\n')
-                break
-            case 'com_google_firebase_firebase_common':
-                sb.append('\n')
-                sb.append('  # Ignore missing kotlin.KotlinVersion definition in\n')
-                sb.append('  # com.google.firebase.platforminfo.KotlinDetector.\n')
-                sb.append('  enable_bytecode_checks = false\n')
-                break
-            case 'com_google_firebase_firebase_components':
-                sb.append('\n')
-                sb.append('  # Can\'t find com.google.firebase.components.Component$ComponentType.\n')
-                sb.append('  enable_bytecode_checks = false\n')
-                break
-            case 'com_google_firebase_firebase_installations':
-            case 'com_google_firebase_firebase_installations_interop':
-                sb.append('\n')
-                sb.append('  # Can\'t find com.google.auto.value.AutoValue$Builder.\n')
-                sb.append('  enable_bytecode_checks = false\n')
-                break
-            case 'com_google_firebase_firebase_messaging':
-                sb.append('\n')
-                sb.append('  # We removed the datatransport dependency to reduce binary size.\n')
-                sb.append('  # The library works without it as it\'s only used for logging.\n')
-                sb.append('  enable_bytecode_checks = false\n')
-                break
             case 'com_android_tools_sdk_common':
             case 'com_android_tools_common':
             case 'com_android_tools_layoutlib_layoutlib_api':
@@ -929,11 +876,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # only meant to be used by the resources shrinker. If you wish to use\n')
                 sb.append('  # this for other purposes, change buildCompileNoDeps in build.gradle.\n')
                 sb.append('  visibility = [ "//build/android/unused_resources:*" ]\n')
-                break
-            case 'net_bytebuddy_byte_buddy_agent':
-            case 'net_bytebuddy_byte_buddy':
-                sb.append('  # Can\'t find com.sun.jna / dalvik.system classes.\n')
-                sb.append('  enable_bytecode_checks = false\n')
                 break
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_android':
             case 'org_jetbrains_kotlinx_kotlinx_coroutines_guava':
@@ -944,8 +886,6 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  requires_android = true\n')
                 break
             case 'org_mockito_mockito_core':
-                sb.append('  # Can\'t find org.opentest4j.AssertionFailedError classes.\n')
-                sb.append('  enable_bytecode_checks = false\n')
                 sb.append('  # Uses java.time which does not exist until API 26.\n')
                 sb.append('  # Modifications are added in third_party/mockito.\n')
                 sb.append('  jar_excluded_patterns = [\n')

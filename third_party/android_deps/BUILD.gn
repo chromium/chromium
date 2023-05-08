@@ -175,8 +175,6 @@ java_prebuilt("com_google_code_findbugs_jsr305_java") {
   jar_path = "libs/com_google_code_findbugs_jsr305/jsr305-3.0.2.jar"
   output_name = "com_google_code_findbugs_jsr305"
   supports_android = true
-
-  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
@@ -185,6 +183,7 @@ java_prebuilt("com_google_code_gson_gson_java") {
   jar_path = "libs/com_google_code_gson_gson/gson-2.9.0.jar"
   output_name = "com_google_code_gson_gson"
   supports_android = true
+  enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -192,6 +191,7 @@ java_prebuilt("com_google_dagger_dagger_java") {
   jar_path = "libs/com_google_dagger_dagger/dagger-2.30.jar"
   output_name = "com_google_dagger_dagger"
   supports_android = true
+  enable_bytecode_checks = false
   deps = [ ":javax_inject_javax_inject_java" ]
 }
 
@@ -231,8 +231,6 @@ java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
   jar_path = "libs/com_google_errorprone_error_prone_annotations/error_prone_annotations-2.14.0.jar"
   output_name = "com_google_errorprone_error_prone_annotations"
   supports_android = true
-
-  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
@@ -287,8 +285,6 @@ java_prebuilt("com_google_guava_failureaccess_java") {
   jar_path = "libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
   output_name = "com_google_guava_failureaccess"
   supports_android = true
-
-  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
@@ -317,8 +313,6 @@ java_prebuilt("com_google_guava_listenablefuture_java") {
   jar_path = "libs/com_google_guava_listenablefuture/listenablefuture-1.0.jar"
   output_name = "com_google_guava_listenablefuture"
   supports_android = true
-
-  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
@@ -328,8 +322,6 @@ java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
       "libs/com_google_j2objc_j2objc_annotations/j2objc-annotations-1.3.jar"
   output_name = "com_google_j2objc_j2objc_annotations"
   supports_android = true
-
-  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
@@ -345,6 +337,7 @@ java_prebuilt("javax_annotation_jsr250_api_java") {
   jar_path = "libs/javax_annotation_jsr250_api/jsr250-api-1.0.jar"
   output_name = "javax_annotation_jsr250_api"
   supports_android = true
+  enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -352,6 +345,7 @@ java_prebuilt("javax_inject_javax_inject_java") {
   jar_path = "libs/javax_inject_javax_inject/javax.inject-1.jar"
   output_name = "javax_inject_javax_inject"
   supports_android = true
+  enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -359,6 +353,7 @@ java_prebuilt("org_checkerframework_checker_compat_qual_java") {
   jar_path = "libs/org_checkerframework_checker_compat_qual/checker-compat-qual-2.5.5.jar"
   output_name = "org_checkerframework_checker_compat_qual"
   supports_android = true
+  enable_bytecode_checks = false
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -366,8 +361,6 @@ java_prebuilt("org_checkerframework_checker_qual_java") {
   jar_path = "libs/org_checkerframework_checker_qual/checker-qual-3.25.0.jar"
   output_name = "org_checkerframework_checker_qual"
   supports_android = true
-
-  # Needed to break dependency cycle for errorprone_plugin_java.
   enable_bytecode_checks = false
 }
 
@@ -684,6 +677,7 @@ if (!limit_android_deps) {
     jar_path = "libs/android_arch_lifecycle_common/common-1.1.1.jar"
     output_name = "android_arch_lifecycle_common"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [ ":com_android_support_support_annotations_java" ]
   }
 
@@ -692,6 +686,7 @@ if (!limit_android_deps) {
     jar_path = "libs/android_arch_lifecycle_common_java8/common-java8-1.1.1.jar"
     output_name = "android_arch_lifecycle_common_java8"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":android_arch_lifecycle_common_java",
       ":com_android_support_support_annotations_java",
@@ -702,6 +697,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("android_arch_lifecycle_runtime_java") {
     aar_path = "libs/android_arch_lifecycle_runtime/runtime-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_runtime/android_arch_lifecycle_runtime.info"
+    enable_bytecode_checks = false
     deps = [
       ":android_arch_core_common_java",
       ":android_arch_lifecycle_common_java",
@@ -713,6 +709,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("android_arch_lifecycle_viewmodel_java") {
     aar_path = "libs/android_arch_lifecycle_viewmodel/viewmodel-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_viewmodel/android_arch_lifecycle_viewmodel.info"
+    enable_bytecode_checks = false
     deps = [ ":com_android_support_support_annotations_java" ]
   }
 
@@ -720,6 +717,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_asynclayoutinflater_java") {
     aar_path = "libs/com_android_support_asynclayoutinflater/asynclayoutinflater-28.0.0.aar"
     info_path = "libs/com_android_support_asynclayoutinflater/com_android_support_asynclayoutinflater.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_support_annotations_java",
       ":com_android_support_support_compat_java",
@@ -732,6 +730,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_android_support_collections/collections-28.0.0.jar"
     output_name = "com_android_support_collections"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [ ":com_android_support_support_annotations_java" ]
   }
 
@@ -739,6 +738,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_coordinatorlayout_java") {
     aar_path = "libs/com_android_support_coordinatorlayout/coordinatorlayout-28.0.0.aar"
     info_path = "libs/com_android_support_coordinatorlayout/com_android_support_coordinatorlayout.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_customview_java",
       ":com_android_support_support_annotations_java",
@@ -754,6 +754,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_customview_java") {
     aar_path = "libs/com_android_support_customview/customview-28.0.0.aar"
     info_path = "libs/com_android_support_customview/com_android_support_customview.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_support_annotations_java",
       ":com_android_support_support_compat_java",
@@ -766,6 +767,7 @@ if (!limit_android_deps) {
     aar_path = "libs/com_android_support_design/design-28.0.0.aar"
     info_path =
         "libs/com_android_support_design/com_android_support_design.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_appcompat_v7_java",
       ":com_android_support_cardview_v7_java",
@@ -784,6 +786,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_drawerlayout_java") {
     aar_path = "libs/com_android_support_drawerlayout/drawerlayout-28.0.0.aar"
     info_path = "libs/com_android_support_drawerlayout/com_android_support_drawerlayout.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_customview_java",
       ":com_android_support_support_annotations_java",
@@ -796,6 +799,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_interpolator_java") {
     aar_path = "libs/com_android_support_interpolator/interpolator-28.0.0.aar"
     info_path = "libs/com_android_support_interpolator/com_android_support_interpolator.info"
+    enable_bytecode_checks = false
     deps = [ ":com_android_support_support_annotations_java" ]
     resource_overlay = true
   }
@@ -804,6 +808,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_localbroadcastmanager_java") {
     aar_path = "libs/com_android_support_localbroadcastmanager/localbroadcastmanager-28.0.0.aar"
     info_path = "libs/com_android_support_localbroadcastmanager/com_android_support_localbroadcastmanager.info"
+    enable_bytecode_checks = false
     deps = [ ":com_android_support_support_annotations_java" ]
     resource_overlay = true
   }
@@ -813,6 +818,7 @@ if (!limit_android_deps) {
     aar_path = "libs/com_android_support_multidex/multidex-1.0.0.aar"
     info_path =
         "libs/com_android_support_multidex/com_android_support_multidex.info"
+    enable_bytecode_checks = false
     resource_overlay = true
   }
 
@@ -821,6 +827,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_android_support_support_annotations/support-annotations-28.0.0.jar"
     output_name = "com_android_support_support_annotations"
     supports_android = true
+    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -828,6 +835,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/com_android_support_support_compat/support-compat-28.0.0.aar"
     info_path = "libs/com_android_support_support_compat/com_android_support_support_compat.info"
+    enable_bytecode_checks = false
     deps = [
       ":android_arch_lifecycle_runtime_java",
       ":com_android_support_collections_java",
@@ -854,6 +862,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/com_android_support_support_core_ui/support-core-ui-28.0.0.aar"
     info_path = "libs/com_android_support_support_core_ui/com_android_support_support_core_ui.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_asynclayoutinflater_java",
       ":com_android_support_coordinatorlayout_java",
@@ -875,6 +884,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_support_core_utils_java") {
     aar_path = "libs/com_android_support_support_core_utils/support-core-utils-28.0.0.aar"
     info_path = "libs/com_android_support_support_core_utils/com_android_support_support_core_utils.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_documentfile_java",
       ":com_android_support_loader_java",
@@ -891,6 +901,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/com_android_support_support_fragment/support-fragment-28.0.0.aar"
     info_path = "libs/com_android_support_support_fragment/com_android_support_support_fragment.info"
+    enable_bytecode_checks = false
     deps = [
       ":android_arch_lifecycle_viewmodel_java",
       ":com_android_support_loader_java",
@@ -906,6 +917,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_support_v4_java") {
     aar_path = "libs/com_android_support_support_v4/support-v4-28.0.0.aar"
     info_path = "libs/com_android_support_support_v4/com_android_support_support_v4.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_support_compat_java",
       ":com_android_support_support_core_ui_java",
@@ -920,6 +932,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_swiperefreshlayout_java") {
     aar_path = "libs/com_android_support_swiperefreshlayout/swiperefreshlayout-28.0.0.aar"
     info_path = "libs/com_android_support_swiperefreshlayout/com_android_support_swiperefreshlayout.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_interpolator_java",
       ":com_android_support_support_annotations_java",
@@ -933,6 +946,7 @@ if (!limit_android_deps) {
     aar_path = "libs/com_android_support_viewpager/viewpager-28.0.0.aar"
     info_path =
         "libs/com_android_support_viewpager/com_android_support_viewpager.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_android_support_customview_java",
       ":com_android_support_support_annotations_java",
@@ -946,6 +960,7 @@ if (!limit_android_deps) {
       "com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework_java") {
     aar_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/accessibility-test-framework-4.0.0.aar"
     info_path = "libs/com_google_android_apps_common_testing_accessibility_framework_accessibility_test_framework/com_google_android_accessibility_test_framework.info"
+    enable_bytecode_checks = false
     testonly = true
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
@@ -965,6 +980,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_auth_java") {
     aar_path = "libs/com_google_android_gms_play_services_auth/play-services-auth-20.1.0.aar"
     info_path = "libs/com_google_android_gms_play_services_auth/com_google_android_gms_play_services_auth.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_auth_api_phone_java",
       ":google_play_services_auth_base_java",
@@ -980,6 +996,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_auth_api_phone_java") {
     aar_path = "libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone-18.0.1.aar"
     info_path = "libs/com_google_android_gms_play_services_auth_api_phone/com_google_android_gms_play_services_auth_api_phone.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -991,6 +1008,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_auth_base_java") {
     aar_path = "libs/com_google_android_gms_play_services_auth_base/play-services-auth-base-18.0.2.aar"
     info_path = "libs/com_google_android_gms_play_services_auth_base/com_google_android_gms_play_services_auth_base.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1003,6 +1021,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_base_java") {
     aar_path = "libs/com_google_android_gms_play_services_base/play-services-base-18.0.1.aar"
     info_path = "libs/com_google_android_gms_play_services_base/com_google_android_gms_play_services_base.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_basement_java",
       ":google_play_services_tasks_java",
@@ -1018,6 +1037,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_basement_java") {
     aar_path = "libs/com_google_android_gms_play_services_basement/play-services-basement-18.1.0.aar"
     info_path = "libs/com_google_android_gms_play_services_basement/com_google_android_gms_play_services_basement.info"
+    enable_bytecode_checks = false
     deps = [
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
@@ -1043,6 +1063,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_cast_java") {
     aar_path = "libs/com_google_android_gms_play_services_cast/play-services-cast-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_cast/com_google_android_gms_play_services_cast.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1057,6 +1078,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_cast_framework_java") {
     aar_path = "libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_cast_framework/com_google_android_gms_play_services_cast_framework.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1075,6 +1097,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_gcm_java") {
     aar_path = "libs/com_google_android_gms_play_services_gcm/play-services-gcm-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_gcm/com_google_android_gms_play_services_gcm.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1090,6 +1113,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_iid_java") {
     aar_path = "libs/com_google_android_gms_play_services_iid/play-services-iid-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_iid/com_google_android_gms_play_services_iid.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1104,6 +1128,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_instantapps_java") {
     aar_path = "libs/com_google_android_gms_play_services_instantapps/play-services-instantapps-18.0.1.aar"
     info_path = "libs/com_google_android_gms_play_services_instantapps/com_google_android_gms_play_services_instantapps.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1115,6 +1140,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_location_java") {
     aar_path = "libs/com_google_android_gms_play_services_location/play-services-location-19.0.1.aar"
     info_path = "libs/com_google_android_gms_play_services_location/com_google_android_gms_play_services_location.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1127,6 +1153,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_tasks_java") {
     aar_path = "libs/com_google_android_gms_play_services_tasks/play-services-tasks-18.0.2.aar"
     info_path = "libs/com_google_android_gms_play_services_tasks/com_google_android_gms_play_services_tasks.info"
+    enable_bytecode_checks = false
     deps = [ ":google_play_services_basement_java" ]
   }
 
@@ -1134,6 +1161,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_vision_java") {
     aar_path = "libs/com_google_android_gms_play_services_vision/play-services-vision-20.1.3.aar"
     info_path = "libs/com_google_android_gms_play_services_vision/com_google_android_gms_play_services_vision.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1145,6 +1173,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_vision_common_java") {
     aar_path = "libs/com_google_android_gms_play_services_vision_common/play-services-vision-common-19.1.3.aar"
     info_path = "libs/com_google_android_gms_play_services_vision_common/com_google_android_gms_play_services_vision_common.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_play_services_base_java",
       ":google_play_services_basement_java",
@@ -1159,6 +1188,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/com_google_android_material_material/material-1.7.0-alpha02.aar"
     info_path = "libs/com_google_android_material_material/com_google_android_material_material.info"
+    enable_bytecode_checks = false
 
     # Target is swapped out when internal code is enabled.
     # Please depend on //third_party/android_deps:material_design_java instead.
@@ -1181,9 +1211,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_viewpager2_viewpager2_java",
     ]
 
-    # Needed until next material update, see crbug.com/1349521.
-    enable_bytecode_checks = false
-
     # Reduce binary size. https:crbug.com/954584
     ignore_proguard_configs = true
     proguard_configs = [ "material_design.flags" ]
@@ -1203,6 +1230,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
     aar_path = "libs/com_google_android_play_feature_delivery/feature-delivery-2.0.1.aar"
     info_path = "libs/com_google_android_play_feature_delivery/com_google_android_play_feature_delivery.info"
+    enable_bytecode_checks = false
     deps = [
       ":com_google_android_play_core_common_java",
       ":google_play_services_basement_java",
@@ -1214,6 +1242,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_firebase_firebase_iid_java") {
     aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
     info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_firebase_firebase_common_java",
       ":google_firebase_firebase_components_java",
@@ -1234,6 +1263,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_firebase_firebase_messaging_java") {
     aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
     info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
+    enable_bytecode_checks = false
     deps = [
       ":google_android_datatransport_transport_api_java",
       ":google_firebase_firebase_common_java",
@@ -1251,10 +1281,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:androidx_collection_collection_java",
       "//third_party/androidx:androidx_core_core_java",
     ]
-
-    # We removed the datatransport dependency to reduce binary size.
-    # The library works without it as it's only used for logging.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1262,6 +1288,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_google_guava_guava_android/guava-31.1-android.jar"
     output_name = "com_google_guava_guava_android"
     supports_android = true
+    enable_bytecode_checks = false
 
     # Target is swapped out when internal code is enabled.
     # Please depend on //third_party/android_deps:guava_android_java instead.
@@ -1295,6 +1322,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-3.21.1.jar"
     output_name = "com_google_protobuf_protobuf_javalite"
     supports_android = true
+    enable_bytecode_checks = false
 
     # Target is swapped out when internal code is enabled.
     # Please depend on //third_party/android_deps:protobuf_lite_runtime_java instead.
@@ -1317,10 +1345,8 @@ if (!limit_android_deps) {
         "libs/com_googlecode_java_diff_utils_diffutils/diffutils-1.3.0.jar"
     output_name = "com_googlecode_java_diff_utils_diffutils"
     supports_android = true
-    testonly = true
-
-    # Needed to break dependency cycle for errorprone_plugin_java.
     enable_bytecode_checks = false
+    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1329,6 +1355,7 @@ if (!limit_android_deps) {
         "libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm-4.5.1.jar"
     output_name = "com_squareup_wire_wire_runtime_jvm"
     supports_android = true
+    enable_bytecode_checks = false
     testonly = true
     deps = [
       ":com_squareup_okio_okio_jvm_java",
@@ -1342,6 +1369,7 @@ if (!limit_android_deps) {
     jar_path = "libs/io_grpc_grpc_api/grpc-api-1.49.0.jar"
     output_name = "io_grpc_grpc_api"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":com_google_code_findbugs_jsr305_java",
       ":com_google_errorprone_error_prone_annotations_java",
@@ -1357,6 +1385,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("io_grpc_grpc_binder_java") {
     aar_path = "libs/io_grpc_grpc_binder/grpc-binder-1.49.0.aar"
     info_path = "libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
+    enable_bytecode_checks = false
     deps = [
       ":io_grpc_grpc_core_java",
       "//third_party/android_deps:guava_android_java",
@@ -1371,6 +1400,7 @@ if (!limit_android_deps) {
     jar_path = "libs/io_grpc_grpc_context/grpc-context-1.49.0.jar"
     output_name = "io_grpc_grpc_context"
     supports_android = true
+    enable_bytecode_checks = false
 
     # https://crbug.com/1412551
     requires_android = true
@@ -1381,6 +1411,7 @@ if (!limit_android_deps) {
     jar_path = "libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite-1.49.0.jar"
     output_name = "io_grpc_grpc_protobuf_lite"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":com_google_code_findbugs_jsr305_java",
       ":io_grpc_grpc_api_java",
@@ -1397,6 +1428,7 @@ if (!limit_android_deps) {
     jar_path = "libs/io_grpc_grpc_stub/grpc-stub-1.49.0.jar"
     output_name = "io_grpc_grpc_stub"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":com_google_errorprone_error_prone_annotations_java",
       ":io_grpc_grpc_api_java",
@@ -1412,6 +1444,7 @@ if (!limit_android_deps) {
     jar_path = "libs/javax_annotation_javax_annotation_api/javax.annotation-api-1.3.2.jar"
     output_name = "javax_annotation_javax_annotation_api"
     supports_android = true
+    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -1419,6 +1452,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_ccil_cowan_tagsoup_tagsoup/tagsoup-1.2.1.jar"
     output_name = "org_ccil_cowan_tagsoup_tagsoup"
     supports_android = true
+    enable_bytecode_checks = false
     testonly = true
   }
 
@@ -1427,6 +1461,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_checkerframework_checker_util/checker-util-3.25.0.jar"
     output_name = "org_checkerframework_checker_util"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [ ":org_checkerframework_checker_qual_java" ]
   }
 
@@ -1435,8 +1470,6 @@ if (!limit_android_deps) {
     jar_path = "libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations-1.21.jar"
     output_name = "org_codehaus_mojo_animal_sniffer_annotations"
     supports_android = true
-
-    # Needed to break dependency cycle for errorprone_plugin_java.
     enable_bytecode_checks = false
   }
 
@@ -1453,6 +1486,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk7"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
   }
 
@@ -1461,6 +1495,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk8/kotlin-stdlib-jdk8-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk8"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk7_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -1472,6 +1507,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_android"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
@@ -1484,6 +1520,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
@@ -1495,6 +1532,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava-1.6.4.jar"
     output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"
     supports_android = true
+    enable_bytecode_checks = false
     deps = [
       ":org_jetbrains_kotlin_kotlin_stdlib_jdk8_java",
       ":org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java",
@@ -1508,6 +1546,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_jsoup_jsoup/jsoup-1.15.1.jar"
     output_name = "org_jsoup_jsoup"
     supports_android = true
+    enable_bytecode_checks = false
     testonly = true
   }
 
@@ -1516,6 +1555,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_mockito_mockito_android/mockito-android-5.3.1.jar"
     output_name = "org_mockito_mockito_android"
     supports_android = true
+    enable_bytecode_checks = false
     testonly = true
     deps = [
       ":org_mockito_mockito_core_java",
@@ -1531,15 +1571,13 @@ if (!limit_android_deps) {
     jar_path = "libs/org_mockito_mockito_core/mockito-core-5.3.1.jar"
     output_name = "org_mockito_mockito_core"
     supports_android = true
+    enable_bytecode_checks = false
     testonly = true
     deps = [
       ":net_bytebuddy_byte_buddy_agent_java",
       ":net_bytebuddy_byte_buddy_java",
       ":org_objenesis_objenesis_java",
     ]
-
-    # Can't find org.opentest4j.AssertionFailedError classes.
-    enable_bytecode_checks = false
 
     # Uses java.time which does not exist until API 26.
     # Modifications are added in third_party/mockito.
@@ -1554,6 +1592,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_mockito_mockito_subclass/mockito-subclass-5.3.1.jar"
     output_name = "org_mockito_mockito_subclass"
     supports_android = true
+    enable_bytecode_checks = false
     testonly = true
     deps = [ ":org_mockito_mockito_core_java" ]
   }
@@ -1618,6 +1657,7 @@ if (!limit_android_deps) {
     jar_path = "libs/android_arch_core_common/common-1.1.1.jar"
     output_name = "android_arch_core_common"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1632,6 +1672,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("android_arch_core_runtime_java") {
     aar_path = "libs/android_arch_core_runtime/runtime-1.1.1.aar"
     info_path = "libs/android_arch_core_runtime/android_arch_core_runtime.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1649,6 +1690,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("android_arch_lifecycle_livedata_java") {
     aar_path = "libs/android_arch_lifecycle_livedata/livedata-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_livedata/android_arch_lifecycle_livedata.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1668,6 +1710,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/android_arch_lifecycle_livedata_core/livedata-core-1.1.1.aar"
     info_path = "libs/android_arch_lifecycle_livedata_core/android_arch_lifecycle_livedata_core.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1686,6 +1729,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_animated_vector_drawable_java") {
     aar_path = "libs/com_android_support_animated_vector_drawable/animated-vector-drawable-28.0.0.aar"
     info_path = "libs/com_android_support_animated_vector_drawable/com_android_support_animated_vector_drawable.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1704,6 +1748,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_appcompat_v7_java") {
     aar_path = "libs/com_android_support_appcompat_v7/appcompat-v7-28.0.0.aar"
     info_path = "libs/com_android_support_appcompat_v7/com_android_support_appcompat_v7.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1728,6 +1773,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_cardview_v7_java") {
     aar_path = "libs/com_android_support_cardview_v7/cardview-v7-28.0.0.aar"
     info_path = "libs/com_android_support_cardview_v7/com_android_support_cardview_v7.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1743,6 +1789,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_cursoradapter_java") {
     aar_path = "libs/com_android_support_cursoradapter/cursoradapter-28.0.0.aar"
     info_path = "libs/com_android_support_cursoradapter/com_android_support_cursoradapter.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1758,6 +1805,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_documentfile_java") {
     aar_path = "libs/com_android_support_documentfile/documentfile-28.0.0.aar"
     info_path = "libs/com_android_support_documentfile/com_android_support_documentfile.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1774,6 +1822,7 @@ if (!limit_android_deps) {
     aar_path = "libs/com_android_support_loader/loader-28.0.0.aar"
     info_path =
         "libs/com_android_support_loader/com_android_support_loader.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1794,6 +1843,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_print_java") {
     aar_path = "libs/com_android_support_print/print-28.0.0.aar"
     info_path = "libs/com_android_support_print/com_android_support_print.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1810,6 +1860,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/com_android_support_recyclerview_v7/recyclerview-v7-28.0.0.aar"
     info_path = "libs/com_android_support_recyclerview_v7/com_android_support_recyclerview_v7.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1829,6 +1880,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_slidingpanelayout_java") {
     aar_path = "libs/com_android_support_slidingpanelayout/slidingpanelayout-28.0.0.aar"
     info_path = "libs/com_android_support_slidingpanelayout/com_android_support_slidingpanelayout.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1848,6 +1900,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_support_media_compat_java") {
     aar_path = "libs/com_android_support_support_media_compat/support-media-compat-28.0.0.aar"
     info_path = "libs/com_android_support_support_media_compat/com_android_support_support_media_compat.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1870,6 +1923,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_support_vector_drawable_java") {
     aar_path = "libs/com_android_support_support_vector_drawable/support-vector-drawable-28.0.0.aar"
     info_path = "libs/com_android_support_support_vector_drawable/com_android_support_support_vector_drawable.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1888,6 +1942,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_transition_java") {
     aar_path = "libs/com_android_support_transition/transition-28.0.0.aar"
     info_path = "libs/com_android_support_transition/com_android_support_transition.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1907,6 +1962,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_android_support_versionedparcelable_java") {
     aar_path = "libs/com_android_support_versionedparcelable/versionedparcelable-28.0.0.aar"
     info_path = "libs/com_android_support_versionedparcelable/com_android_support_versionedparcelable.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1933,6 +1989,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_google_android_annotations/annotations-4.1.1.4.jar"
     output_name = "com_google_android_annotations"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1946,6 +2003,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_android_datatransport_transport_api_java") {
     aar_path = "libs/com_google_android_datatransport_transport_api/transport-api-2.2.1.aar"
     info_path = "libs/com_google_android_datatransport_transport_api/com_google_android_datatransport_transport_api.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1960,6 +2018,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_clearcut_java") {
     aar_path = "libs/com_google_android_gms_play_services_clearcut/play-services-clearcut-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_clearcut/com_google_android_gms_play_services_clearcut.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1980,6 +2039,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_cloud_messaging_java") {
     aar_path = "libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-16.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_cloud_messaging/com_google_android_gms_play_services_cloud_messaging.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -1997,6 +2057,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_flags_java") {
     aar_path = "libs/com_google_android_gms_play_services_flags/play-services-flags-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_flags/com_google_android_gms_play_services_flags.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2014,6 +2075,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_phenotype_java") {
     aar_path = "libs/com_google_android_gms_play_services_phenotype/play-services-phenotype-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_phenotype/com_google_android_gms_play_services_phenotype.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2033,6 +2095,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_places_placereport_java") {
     aar_path = "libs/com_google_android_gms_play_services_places_placereport/play-services-places-placereport-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_places_placereport/com_google_android_gms_play_services_places_placereport.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2047,6 +2110,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_play_services_stats_java") {
     aar_path = "libs/com_google_android_gms_play_services_stats/play-services-stats-17.0.0.aar"
     info_path = "libs/com_google_android_gms_play_services_stats/com_google_android_gms_play_services_stats.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2064,6 +2128,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("com_google_android_play_core_common_java") {
     aar_path = "libs/com_google_android_play_core_common/core-common-2.0.2.aar"
     info_path = "libs/com_google_android_play_core_common/com_google_android_play_core_common.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2078,6 +2143,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_google_firebase_firebase_annotations/firebase-annotations-16.0.0.jar"
     output_name = "com_google_firebase_firebase_annotations"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2092,6 +2158,7 @@ if (!limit_android_deps) {
     aar_path =
         "libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
     info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2104,16 +2171,13 @@ if (!limit_android_deps) {
       ":google_play_services_basement_java",
       ":google_play_services_tasks_java",
     ]
-
-    # Ignore missing kotlin.KotlinVersion definition in
-    # com.google.firebase.platforminfo.KotlinDetector.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_firebase_firebase_components_java") {
     aar_path = "libs/com_google_firebase_firebase_components/firebase-components-16.1.0.aar"
     info_path = "libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2125,9 +2189,6 @@ if (!limit_android_deps) {
       ":google_firebase_firebase_annotations_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-
-    # Can't find com.google.firebase.components.Component$ComponentType.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2135,6 +2196,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_google_firebase_firebase_encoders/firebase-encoders-16.1.0.jar"
     output_name = "com_google_firebase_firebase_encoders"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2152,6 +2214,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
     aar_path = "libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json-17.1.0.aar"
     info_path = "libs/com_google_firebase_firebase_encoders_json/com_google_firebase_firebase_encoders_json.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2169,6 +2232,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
     aar_path = "libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.0.0.aar"
     info_path = "libs/com_google_firebase_firebase_iid_interop/com_google_firebase_firebase_iid_interop.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2186,6 +2250,7 @@ if (!limit_android_deps) {
   android_aar_prebuilt("google_firebase_firebase_installations_java") {
     aar_path = "libs/com_google_firebase_firebase_installations/firebase-installations-16.3.5.aar"
     info_path = "libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2199,15 +2264,13 @@ if (!limit_android_deps) {
       ":google_firebase_firebase_installations_interop_java",
       ":google_play_services_tasks_java",
     ]
-
-    # Can't find com.google.auto.value.AutoValue$Builder.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_firebase_firebase_installations_interop_java") {
     aar_path = "libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-16.0.1.aar"
     info_path = "libs/com_google_firebase_firebase_installations_interop/com_google_firebase_firebase_installations_interop.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2219,15 +2282,13 @@ if (!limit_android_deps) {
       ":google_firebase_firebase_annotations_java",
       ":google_play_services_tasks_java",
     ]
-
-    # Can't find com.google.auto.value.AutoValue$Builder.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   android_aar_prebuilt("google_firebase_firebase_measurement_connector_java") {
     aar_path = "libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-18.0.0.aar"
     info_path = "libs/com_google_firebase_firebase_measurement_connector/com_google_firebase_firebase_measurement_connector.info"
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2243,6 +2304,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_squareup_javawriter/javawriter-2.1.1.jar"
     output_name = "com_squareup_javawriter"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2258,6 +2320,7 @@ if (!limit_android_deps) {
     jar_path = "libs/com_squareup_okio_okio_jvm/okio-jvm-3.0.0.jar"
     output_name = "com_squareup_okio_okio_jvm"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2277,6 +2340,7 @@ if (!limit_android_deps) {
     jar_path = "libs/io_grpc_grpc_core/grpc-core-1.49.0.jar"
     output_name = "io_grpc_grpc_core"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2303,6 +2367,7 @@ if (!limit_android_deps) {
     jar_path = "libs/io_perfmark_perfmark_api/perfmark-api-0.25.0.jar"
     output_name = "io_perfmark_perfmark_api"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2317,6 +2382,7 @@ if (!limit_android_deps) {
     jar_path = "libs/net_bytebuddy_byte_buddy/byte-buddy-1.14.4.jar"
     output_name = "net_bytebuddy_byte_buddy"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2325,9 +2391,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
-
-    # Can't find com.sun.jna / dalvik.system classes.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2335,6 +2398,7 @@ if (!limit_android_deps) {
     jar_path = "libs/net_bytebuddy_byte_buddy_agent/byte-buddy-agent-1.14.4.jar"
     output_name = "net_bytebuddy_byte_buddy_agent"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2343,9 +2407,6 @@ if (!limit_android_deps) {
       "//third_party/androidx:*",
     ]
     testonly = true
-
-    # Can't find com.sun.jna / dalvik.system classes.
-    enable_bytecode_checks = false
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2368,6 +2429,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_hamcrest_hamcrest/hamcrest-2.2.jar"
     output_name = "org_hamcrest_hamcrest"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
@@ -2383,6 +2445,7 @@ if (!limit_android_deps) {
     jar_path = "libs/org_objenesis_objenesis/objenesis-3.3.jar"
     output_name = "org_objenesis_objenesis"
     supports_android = true
+    enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
     # //third_party/android_deps/build.gradle.
