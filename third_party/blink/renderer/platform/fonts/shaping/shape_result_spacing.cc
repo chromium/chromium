@@ -64,7 +64,7 @@ void ShapeResultSpacing<TextRun>::SetSpacingAndExpansion(
     return;
 
   normalize_space_ = text_.NormalizeSpace();
-  allow_tabs_ = text_.AllowTabs();
+  allow_tabs_ = false;
 }
 
 template <typename TextContainerType>

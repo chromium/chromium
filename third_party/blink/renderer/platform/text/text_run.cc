@@ -36,9 +36,7 @@ struct SameSizeAsTextRun {
   DISALLOW_NEW();
   const void* pointer;
   int integers[2];
-  float floats[1];
-  uint32_t bitfields : 8;
-  TabSize tab_size;
+  uint32_t bitfields : 7;
 };
 
 ASSERT_SIZE(TextRun, SameSizeAsTextRun);

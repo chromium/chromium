@@ -30,7 +30,6 @@
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/text/tab_size.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -45,53 +44,41 @@ class PLATFORM_EXPORT TextRun final {
  public:
   TextRun(const LChar* c,
           unsigned len,
-          float xpos = 0,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
       : characters_length_(len),
         len_(len),
-        xpos_(xpos),
         is_8bit_(true),
-        allow_tabs_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         disable_spacing_(false),
-        normalize_space_(false),
-        tab_size_(0) {
+        normalize_space_(false) {
     data_.characters8 = c;
   }
 
   TextRun(const UChar* c,
           unsigned len,
-          float xpos = 0,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
       : characters_length_(len),
         len_(len),
-        xpos_(xpos),
         is_8bit_(false),
-        allow_tabs_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         disable_spacing_(false),
-        normalize_space_(false),
-        tab_size_(0) {
+        normalize_space_(false) {
     data_.characters16 = c;
   }
 
   TextRun(const StringView& string,
-          float xpos = 0,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
       : characters_length_(string.length()),
         len_(string.length()),
-        xpos_(xpos),
-        allow_tabs_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         disable_spacing_(false),
-        normalize_space_(false),
-        tab_size_(0) {
+        normalize_space_(false) {
     if (!characters_length_) {
       is_8bit_ = true;
       data_.characters8 = nullptr;
@@ -204,12 +191,6 @@ class PLATFORM_EXPORT TextRun final {
     characters_length_ = characters_length;
   }
 
-  bool AllowTabs() const { return allow_tabs_; }
-  TabSize GetTabSize() const { return tab_size_; }
-  void SetTabSize(bool, TabSize);
-
-  float XPos() const { return xpos_; }
-  void SetXPos(float x_pos) { xpos_ = x_pos; }
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
   }
@@ -242,27 +223,14 @@ class PLATFORM_EXPORT TextRun final {
   unsigned characters_length_;
   unsigned len_;
 
-  // m_xpos is the x position relative to the left start of the text line, not
-  // relative to the left start of the containing block. In the case of right
-  // alignment or center alignment, left start of the text line is not the same
-  // as left start of the containing block.
-  float xpos_;
-
   unsigned is_8bit_ : 1;
-  unsigned allow_tabs_ : 1;
   unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
   unsigned disable_spacing_ : 1;
   unsigned text_justify_ : 2;
   unsigned normalize_space_ : 1;
-  TabSize tab_size_;
 };
-
-inline void TextRun::SetTabSize(bool allow, TabSize size) {
-  allow_tabs_ = allow;
-  tab_size_ = size;
-}
 
 }  // namespace blink
 

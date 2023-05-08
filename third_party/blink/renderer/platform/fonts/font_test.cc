@@ -40,8 +40,8 @@ class FontTest : public FontTestBase {
         test::PlatformTestDataPath("third_party/Roboto/roboto-regular.woff2"),
         100, &ligatures);
 
-    TextRun text_run(text, /* xpos */ 0,
-                     ltr ? TextDirection::kLtr : TextDirection::kRtl, false);
+    TextRun text_run(text, ltr ? TextDirection::kLtr : TextDirection::kRtl,
+                     false);
 
     font.ExpandRangeToIncludePartialGlyphs(text_run, &from, &to);
     return Vector<int>({from, to});

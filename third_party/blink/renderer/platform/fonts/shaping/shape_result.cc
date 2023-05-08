@@ -1453,16 +1453,6 @@ void ShapeResult::CheckConsistency() const {
 
 scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
     const Font* font,
-    const TextRun& text_run,
-    float position_offset,
-    unsigned length) {
-  return CreateForTabulationCharacters(
-      font, text_run.Direction(), text_run.GetTabSize(),
-      text_run.XPos() + position_offset, 0, length);
-}
-
-scoped_refptr<ShapeResult> ShapeResult::CreateForTabulationCharacters(
-    const Font* font,
     TextDirection direction,
     const TabSize& tab_size,
     float position,
