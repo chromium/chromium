@@ -22,3 +22,12 @@ div {
     -webkit-animation: mymove 5s infinite; /* Safari 4.0 - 8.0 */
     animation: mymove 5s infinite;
 }
+
+@supports (display: block) {
+    .unused {
+        display: block;
+    }
+    .class {
+        display: block;
+    }
+}

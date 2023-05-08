@@ -1903,6 +1903,12 @@ InspectorStyleSheet::BuildObjectForRuleUsage(CSSRule* rule, bool was_used) {
 
   SourceRange whole_rule_range(source_data->rule_header_range.start,
                                source_data->rule_body_range.end + 1);
+  auto type = rule->GetType();
+  if (type == CSSRule::kMediaRule || type == CSSRule::kSupportsRule ||
+      type == CSSRule::kScopeRule || type == CSSRule::kContainerRule) {
+    whole_rule_range.end = source_data->rule_header_range.end + 1;
+  }
+
   std::unique_ptr<protocol::CSS::RuleUsage> result =
       protocol::CSS::RuleUsage::create()
           .setStyleSheetId(Id())
