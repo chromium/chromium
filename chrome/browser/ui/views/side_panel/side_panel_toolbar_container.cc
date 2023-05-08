@@ -181,9 +181,10 @@ void SidePanelToolbarContainer::CreatePinnedEntryButtons() {
   auto* search_companion_coordinator =
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view_->browser());
-  AddPinnedEntryButtonFor(SidePanelEntry::Id::kSearchCompanion,
-                          search_companion_coordinator->name(),
-                          search_companion_coordinator->icon());
+  AddPinnedEntryButtonFor(
+      SidePanelEntry::Id::kSearchCompanion,
+      search_companion_coordinator->GetTooltipForToolbarButton(),
+      search_companion_coordinator->icon());
 }
 
 void SidePanelToolbarContainer::AddPinnedEntryButtonFor(
@@ -246,12 +247,7 @@ void SidePanelToolbarContainer::UpdateSidePanelContainerButtonsState() {
       pinned_button->SetHighlighted(false);
     }
   }
-  // TODO(corising): Update tooltip for case when pinned button is highlighted
-  // once provided by UX.
   GetSidePanelButton()->SetHighlighted(side_panel_button_highlighted);
-  GetSidePanelButton()->SetTooltipText(l10n_util::GetStringUTF16(
-      side_panel_visible ? IDS_TOOLTIP_SIDE_PANEL_HIDE
-                         : IDS_TOOLTIP_SIDE_PANEL_SHOW));
 }
 
 bool SidePanelToolbarContainer::HasPinnedEntryButtonFor(SidePanelEntry::Id id) {

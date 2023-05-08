@@ -97,7 +97,7 @@ TEST_F(SidePanelToolbarContainerTest, CompanionPinnedByDefault) {
       SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(
           browser_view()->browser());
   ASSERT_EQ(pinned_buttons[0]->GetTooltipText(gfx::Point()),
-            search_companion_coordinator->name());
+            search_companion_coordinator->GetTooltipForToolbarButton());
 }
 
 TEST_F(SidePanelToolbarContainerTest, ClickingPinnedEntryOpensSidePanel) {

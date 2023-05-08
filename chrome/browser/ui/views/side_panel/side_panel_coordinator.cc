@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -89,9 +90,9 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
   views::ConfigureVectorImageButton(button.get());
   ConfigureControlButton(button.get());
   button->SetTooltipText(
-      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_PIN));
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_HEADER_PIN_BUTTON_TOOLTIP));
   button->SetToggledTooltipText(
-      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_TOOLBAR_BUTTON_CXMENU_UNPIN));
+      l10n_util::GetStringUTF16(IDS_SIDE_PANEL_HEADER_UNPIN_BUTTON_TOOLTIP));
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
@@ -294,8 +295,10 @@ void SidePanelCoordinator::Close() {
   ClearCachedEntryViews();
 
   // TODO(pbos): Make this button observe panel-visibility state instead.
-  SetSidePanelButtonTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
+  if (!companion::IsCompanionFeatureEnabled()) {
+    SetSidePanelButtonTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
+  }
 
   // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may already
   // have deleted the content view, so check that it still exists.
@@ -485,8 +488,10 @@ bool SidePanelCoordinator::IsGlobalEntryShowing(
 
 void SidePanelCoordinator::InitializeSidePanel() {
   // TODO(pbos): Make this button observe panel-visibility state instead.
-  SetSidePanelButtonTooltipText(
-      l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+  if (!companion::IsCompanionFeatureEnabled()) {
+    SetSidePanelButtonTooltipText(
+        l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_HIDE));
+  }
 
   auto container = std::make_unique<views::FlexLayoutView>();
   // Align views vertically top to bottom.

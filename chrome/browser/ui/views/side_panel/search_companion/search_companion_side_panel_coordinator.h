@@ -44,6 +44,7 @@ class SearchCompanionSidePanelCoordinator
 
   bool Show();
   BrowserView* GetBrowserView();
+  std::u16string GetTooltipForToolbarButton();
 
   std::u16string name() { return name_; }
   const gfx::VectorIcon& icon() { return *icon_; }

@@ -102,6 +102,11 @@ BrowserView* SearchCompanionSidePanelCoordinator::GetBrowserView() {
   return BrowserView::GetBrowserViewForBrowser(&GetBrowser());
 }
 
+std::u16string
+SearchCompanionSidePanelCoordinator::GetTooltipForToolbarButton() {
+  return l10n_util::GetStringUTF16(IDS_SIDE_PANEL_COMPANION_TOOLBAR_TOOLTIP);
+}
+
 void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

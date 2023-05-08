@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -36,7 +37,9 @@ SidePanelToolbarButton::SidePanelToolbarButton(Browser* browser)
                           base::Unretained(this)));
 
   UpdateToolbarButtonIcon();
-  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
+  SetTooltipText(l10n_util::GetStringUTF16(
+      companion::IsCompanionFeatureEnabled() ? IDS_TOOLTIP_SIDE_PANEL
+                                             : IDS_TOOLTIP_SIDE_PANEL_SHOW));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
