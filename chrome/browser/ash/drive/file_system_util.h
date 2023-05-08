@@ -34,6 +34,9 @@ bool IsDriveAvailableForProfile(Profile* profile);
 // Returns true if Drive is currently enabled for the given Profile.
 bool IsDriveEnabledForProfile(Profile* profile);
 
+// Returns true if bulk pinning is currently enabled for the given Profile.
+bool IsDriveFsBulkPinningEnabled();
+
 // Enum type for describing the current connection status to Drive.
 enum ConnectionStatusType {
   // Disconnected because Drive service is unavailable for this account (either

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
@@ -1246,7 +1247,7 @@ void AddFileManagerFeatureStrings(const std::string& locale,
             base::FeatureList::IsEnabled(ash::features::kFilesDriveShortcuts));
 
   dict->Set("DRIVE_FS_BULK_PINNING",
-            base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning));
+            drive::util::IsDriveFsBulkPinningEnabled());
 
   if (base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy) &&
       base::FeatureList::IsEnabled(

@@ -237,7 +237,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
                          !drive_integration_service->mount_failed();
   result.cellular_disabled =
       service->GetBoolean(drive::prefs::kDisableDriveOverCellular);
-  if (ash::features::IsDriveFsBulkPinningEnabled()) {
+  if (drive::util::IsDriveFsBulkPinningEnabled()) {
     result.drive_fs_bulk_pinning_enabled =
         service->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
   }
@@ -278,7 +278,7 @@ FileManagerPrivateSetPreferencesFunction::Run() {
     service->SetBoolean(drive::prefs::kDisableDriveOverCellular,
                         *params->change_info.cellular_disabled);
   }
-  if (ash::features::IsDriveFsBulkPinningEnabled() &&
+  if (drive::util::IsDriveFsBulkPinningEnabled() &&
       params->change_info.drive_fs_bulk_pinning_enabled) {
     service->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
                         *params->change_info.drive_fs_bulk_pinning_enabled);

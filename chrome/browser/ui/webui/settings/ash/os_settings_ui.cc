@@ -16,6 +16,7 @@
 #include "ash/webui/personalization_app/search/search.mojom.h"
 #include "ash/webui/personalization_app/search/search_handler.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
@@ -301,7 +302,7 @@ void OSSettingsUI::BindInterface(
 
 void OSSettingsUI::BindInterface(
     mojo::PendingReceiver<google_drive::mojom::PageHandlerFactory> receiver) {
-  CHECK(ash::features::IsDriveFsBulkPinningEnabled());
+  CHECK(drive::util::IsDriveFsBulkPinningEnabled());
   // The PageHandlerFactory is reused across same-origin navigations, so ensure
   // any existing factories are reset.
   google_drive_page_handler_factory_.reset();
