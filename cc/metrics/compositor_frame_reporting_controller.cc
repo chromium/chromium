@@ -418,7 +418,10 @@ void CompositorFrameReportingController::
 
 void CompositorFrameReportingController::TrackSwapTiming(
     const viz::FrameTimingDetails& details) {
-  if (details.swap_timings.swap_start != base::TimeTicks()) {
+  if (last_started_compositor_frame_.args.IsValid() &&
+      details.swap_timings.swap_start != base::TimeTicks() &&
+      details.swap_timings.swap_start >
+          last_started_compositor_frame_.args.frame_time) {
     if (latest_swap_times_.empty() ||
         latest_swap_times_.back() < details.swap_timings.swap_start)
       latest_swap_times_.push(details.swap_timings.swap_start);
@@ -618,6 +621,7 @@ void CompositorFrameReportingController::OnStoppedRequestingBeginFrames() {
     }
   }
   last_started_compositor_frame_ = {};
+  latest_swap_times_ = {};
 }
 
 void CompositorFrameReportingController::NotifyReadyToCommit(
