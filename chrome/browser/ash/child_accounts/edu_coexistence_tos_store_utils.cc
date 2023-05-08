@@ -81,11 +81,9 @@ std::vector<UserConsentInfo> GetUserConsentInfoListForProfile(
 
 std::string GetAcceptedToSVersion(Profile* profile,
                                   const std::string& secondary_edu_gaia_id) {
-  const base::Value& accepted_values =
-      profile->GetPrefs()->GetValue(prefs::kEduCoexistenceToSAcceptedVersion);
-
-  const std::string* entry =
-      accepted_values.FindStringKey(secondary_edu_gaia_id);
+  const base::Value::Dict& accepted_dict =
+      profile->GetPrefs()->GetDict(prefs::kEduCoexistenceToSAcceptedVersion);
+  const std::string* entry = accepted_dict.FindString(secondary_edu_gaia_id);
   return entry ? *entry : std::string();
 }
 
