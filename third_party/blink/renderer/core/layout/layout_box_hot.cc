@@ -374,6 +374,12 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
         if (is_fragmented)
           return nullptr;
 
+        if (cached_layout_result->MinimalSpaceShortage()) {
+          // The fragmentation line has moved, and there was space shortage
+          // reported. This value is no longer valid.
+          return nullptr;
+        }
+
         // Fragmentation inside a nested multicol container depends on the
         // amount of remaining space in the outer fragmentation context, so if
         // this has changed, we cannot necessarily re-use it. To keep things

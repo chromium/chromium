@@ -298,15 +298,18 @@ class CORE_EXPORT NGLayoutResult final
   }
 
   absl::optional<LayoutUnit> MinimalSpaceShortage() const {
-    if (!HasRareData() || rare_data_->minimal_space_shortage == kIndefiniteSize)
+    if (!HasRareData() || space_.IsInitialColumnBalancingPass() ||
+        rare_data_->minimal_space_shortage == kIndefiniteSize) {
       return absl::nullopt;
+    }
     return rare_data_->minimal_space_shortage;
   }
 
   LayoutUnit TallestUnbreakableBlockSize() const {
-    if (!HasRareData() ||
-        rare_data_->tallest_unbreakable_block_size == kIndefiniteSize)
+    if (!HasRareData() || !space_.IsInitialColumnBalancingPass() ||
+        rare_data_->tallest_unbreakable_block_size == kIndefiniteSize) {
       return LayoutUnit();
+    }
     return rare_data_->tallest_unbreakable_block_size;
   }
 
