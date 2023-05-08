@@ -7,8 +7,8 @@
 //     base/android/jni_generator/jni_registration_generator.py
 // Please do not change its content.
 
-#ifndef HEADER_GUARD
-#define HEADER_GUARD
+#ifndef TEMP_DIR_HEADER_
+#define TEMP_DIR_HEADER_
 
 #include <jni.h>
 
@@ -23,36 +23,29 @@
 
 // Step 2: Forward declarations (methods).
 
-JNI_GENERATOR_EXPORT void
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo(
+JNI_GENERATOR_EXPORT void Java_J_N_MygCV2jQ(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar(
+JNI_GENERATOR_EXPORT jobject Java_J_N_MHuqnmXT(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_GENERATOR_EXPORT jstring
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString(
+JNI_GENERATOR_EXPORT jstring Java_J_N_MM5Xkwyy(
     JNIEnv* env,
     jclass jcaller,
     jstring stringToReverse);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAC2QhR9(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MGhRh4Nd(
     JNIEnv* env,
     jclass jcaller,
     jobjectArray strs);
-JNI_GENERATOR_EXPORT jboolean
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange(
+JNI_GENERATOR_EXPORT jboolean Java_J_N_MW0aEs4h(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jintArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives(
+JNI_GENERATOR_EXPORT jintArray Java_J_N_MlVFI4RX(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -71,8 +64,7 @@ JNI_GENERATOR_EXPORT jintArray
     jfloatArray floats,
     jboolean zbool,
     jbooleanArray bools);
-JNI_GENERATOR_EXPORT void
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes(
+JNI_GENERATOR_EXPORT void Java_J_N_MqOnlud7(
     JNIEnv* env,
     jclass jcaller,
     jclass clazz,
@@ -85,44 +77,34 @@ JNI_GENERATOR_EXPORT void
     jobjectArray structs,
     jobject obj,
     jobjectArray objects);
-JNI_GENERATOR_EXPORT jthrowable
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable(
+JNI_GENERATOR_EXPORT jthrowable Java_J_N_MuZc76Vt(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MAD53J7V(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jclass
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass(
+JNI_GENERATOR_EXPORT jclass Java_J_N_M_00024ZgOi4g(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_M_00024hL1577(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jstring
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString(
+JNI_GENERATOR_EXPORT jstring Java_J_N_M0k1OjBK(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_Mssfs54E(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStruct(
+JNI_GENERATOR_EXPORT jobject Java_J_N_MSzcel_1H(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MIBrQLK4(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobject
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject(
+JNI_GENERATOR_EXPORT jobject Java_J_N_M_00024hPywjv(
     JNIEnv* env,
     jclass jcaller);
-JNI_GENERATOR_EXPORT jobjectArray
-    Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects(
+JNI_GENERATOR_EXPORT jobjectArray Java_J_N_MPpCU1l5(
     JNIEnv* env,
     jclass jcaller);
 
@@ -134,7 +116,7 @@ JNI_GENERATOR_EXPORT jclass Java_J_N_resolve_1for_1class(
         switch (switch_num) {
           
           case -461602969360398827:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClass(env, jcaller);
+            return Java_J_N_M_00024ZgOi4g(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1class was called with an invalid switch number: " << switch_num;
@@ -148,7 +130,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1class_1array(
         switch (switch_num) {
           
           case -427008638958312484:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnClasses(env, jcaller);
+            return Java_J_N_M_00024hL1577(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1class_1array was called with an invalid switch number: " << switch_num;
@@ -162,10 +144,10 @@ JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object(
         switch (switch_num) {
           
           case 5419834314509580268:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStruct(env, jcaller);
+            return Java_J_N_MSzcel_1H(env, jcaller);
           
           case -426730623629742951:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObject(env, jcaller);
+            return Java_J_N_M_00024hPywjv(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object was called with an invalid switch number: " << switch_num;
@@ -179,7 +161,7 @@ JNI_GENERATOR_EXPORT jobject Java_J_N_resolve_1for_1object_1O(
         switch (switch_num) {
           
           case 2227777243221232668:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1bar(env, jcaller, object_param1);
+            return Java_J_N_MHuqnmXT(env, jcaller, object_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1O was called with an invalid switch number: " << switch_num;
@@ -193,10 +175,10 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array(
         switch (switch_num) {
           
           case 2313390248928530514:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStructs(env, jcaller);
+            return Java_J_N_MIBrQLK4(env, jcaller);
           
           case 4508266875426191279:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnObjects(env, jcaller);
+            return Java_J_N_MPpCU1l5(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1array was called with an invalid switch number: " << switch_num;
@@ -210,7 +192,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1object_1array_1OA(
         switch (switch_num) {
           
           case 1879234562834588228:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendSamplesToNative(env, jcaller, object_array_param1);
+            return Java_J_N_MGhRh4Nd(env, jcaller, object_array_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1object_1array_1OA was called with an invalid switch number: " << switch_num;
@@ -224,7 +206,7 @@ JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string(
         switch (switch_num) {
           
           case -3292889389021976364:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnString(env, jcaller);
+            return Java_J_N_M0k1OjBK(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string was called with an invalid switch number: " << switch_num;
@@ -238,7 +220,7 @@ JNI_GENERATOR_EXPORT jstring Java_J_N_resolve_1for_1string_1R(
         switch (switch_num) {
           
           case 3717128594383367634:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1revString(env, jcaller, string_param1);
+            return Java_J_N_MM5Xkwyy(env, jcaller, string_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1R was called with an invalid switch number: " << switch_num;
@@ -252,7 +234,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array(
         switch (switch_num) {
           
           case -5564218335546380707:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnStrings(env, jcaller);
+            return Java_J_N_Mssfs54E(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1array was called with an invalid switch number: " << switch_num;
@@ -266,7 +248,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1string_1array_1RA(
         switch (switch_num) {
           
           case 12825275381484104:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1sendToNative(env, jcaller, string_array_param1);
+            return Java_J_N_MAC2QhR9(env, jcaller, string_array_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1string_1array_1RA was called with an invalid switch number: " << switch_num;
@@ -280,7 +262,7 @@ JNI_GENERATOR_EXPORT jthrowable Java_J_N_resolve_1for_1throwable(
         switch (switch_num) {
           
           case -5073520581764159162:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowable(env, jcaller);
+            return Java_J_N_MuZc76Vt(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1throwable was called with an invalid switch number: " << switch_num;
@@ -294,7 +276,7 @@ JNI_GENERATOR_EXPORT jobjectArray Java_J_N_resolve_1for_1throwable_1array(
         switch (switch_num) {
           
           case 17582460986153510:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1returnThrowables(env, jcaller);
+            return Java_J_N_MAD53J7V(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1throwable_1array was called with an invalid switch number: " << switch_num;
@@ -308,7 +290,7 @@ JNI_GENERATOR_EXPORT jboolean Java_J_N_resolve_1for_1boolean(
         switch (switch_num) {
           
           case 6577090212445038314:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1hasPhalange(env, jcaller);
+            return Java_J_N_MW0aEs4h(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1boolean was called with an invalid switch number: " << switch_num;
@@ -322,7 +304,7 @@ JNI_GENERATOR_EXPORT jintArray Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABB
         switch (switch_num) {
           
           case -7687282957371512872:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testAllPrimitives(env, jcaller, int_param1, int_array_param1, long_param1, long_array_param1, short_param1, short_array_param1, char_param1, char_array_param1, byte_param1, byte_array_param1, double_param1, double_array_param1, float_param1, float_array_param1, boolean_param1, boolean_array_param1);
+            return Java_J_N_MlVFI4RX(env, jcaller, int_param1, int_array_param1, long_param1, long_array_param1, short_param1, short_array_param1, char_param1, char_array_param1, byte_param1, byte_array_param1, double_param1, double_array_param1, float_param1, float_array_param1, boolean_param1, boolean_array_param1);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1int_1array_1IIAJJASSACCABBADDAFFAZZA was called with an invalid switch number: " << switch_num;
@@ -336,7 +318,7 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void(
         switch (switch_num) {
           
           case -3890945313637314700:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1foo(env, jcaller);
+            return Java_J_N_MygCV2jQ(env, jcaller);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1void was called with an invalid switch number: " << switch_num;
@@ -350,7 +332,7 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
         switch (switch_num) {
           
           case -6275232019293411879:
-            return Java_J_N_org_1chromium_1example_1jni_11generator_1SampleForAnnotationProcessor_1testSpecialTypes(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, object_param1, object_array_param1, object_param2, object_array_param2);
+            return Java_J_N_MqOnlud7(env, jcaller, class_param1, class_array_param1, throwable_param1, throwable_array_param1, string_param1, string_array_param1, object_param1, object_array_param1, object_param2, object_array_param2);
           
           default:
             CHECK(false) << "JNI multiplexing function Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA was called with an invalid switch number: " << switch_num;
@@ -358,4 +340,4 @@ JNI_GENERATOR_EXPORT void Java_J_N_resolve_1for_1void_1LLATTARRAOOAOOA(
         }
 }
 
-#endif  // HEADER_GUARD
+#endif  // TEMP_DIR_HEADER_

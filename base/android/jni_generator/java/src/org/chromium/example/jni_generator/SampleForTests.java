@@ -58,6 +58,9 @@ class SampleForTests {
         SampleForTestsJni.get().method(mNativeCPPObject, this);
     }
 
+    // Just a comment to ensure we aren't reading comments:
+    // private native void thisShouldNotExist();
+
     public void finishExample() {
         // We're done, so let's destroy nativePtr object.
         SampleForTestsJni.get().destroy(mNativeCPPObject, this);

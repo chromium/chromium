@@ -38,8 +38,7 @@ _COMMENT_REMOVER_REGEX = re.compile(
 
 _EXTRACT_NATIVES_REGEX = re.compile(
     r'(@NativeClassQualifiedName'
-    r'\(\"(?P<native_class_name>.*?)\"\)\s+)?'
-    r'(@NativeCall(\(\"(?P<java_class_name>.*?)\"\))\s+)?'
+    r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
     r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native '
     r'(?P<return_type>\S*) '
     r'(?P<name>native\w+)\((?P<params>.*?)\);')
@@ -51,8 +50,7 @@ _MAIN_DEX_REGEX = re.compile(r'^\s*(?:@(?:\w+\.)*\w+\s+)*@MainDex\b',
 # doesn't require name to be prefixed with native, and does not
 # require a native qualifier.
 _EXTRACT_METHODS_REGEX = re.compile(
-    r'(@NativeClassQualifiedName'
-    r'\(\"(?P<native_class_name>.*?)\"\)\s*)?'
+    r'(@NativeClassQualifiedName\(\"(?P<native_class_name>\S*?)\"\)\s*)?'
     r'(?P<qualifiers>'
     r'((public|private|static|final|abstract|protected|native)\s*)*)\s+'
     r'(?P<return_type>\S*)\s+'
@@ -124,7 +122,6 @@ class NativeMethod(object):
 
   def __init__(self, **kwargs):
     self.static = kwargs['static']
-    self.java_class_name = kwargs['java_class_name']
     self.return_type = kwargs['return_type']
     self.params = kwargs['params']
     self.is_proxy = kwargs.get('is_proxy', False)
@@ -547,7 +544,6 @@ def ExtractNatives(contents, ptr_type):
   for match in _EXTRACT_NATIVES_REGEX.finditer(contents):
     native = NativeMethod(
         static='static' in match.group('qualifiers'),
-        java_class_name=match.group('java_class_name'),
         native_class_name=match.group('native_class_name'),
         return_type=match.group('return_type'),
         name=match.group('name').replace('native', ''),
@@ -970,7 +966,6 @@ class ProxyHelpers(object):
             fully_qualified_class, name, use_hash=True)
         native = NativeMethod(
             static=True,
-            java_class_name=None,
             return_type=return_type,
             name=name,
             native_class_name=method.group('native_class_name'),
@@ -1064,8 +1059,6 @@ class HeaderFileGeneratorHelper(object):
     template = Template('Java_${JAVA_NAME}_native${NAME}')
 
     java_name = self.fully_qualified_class
-    if native.java_class_name:
-      java_name += '$' + native.java_class_name
 
     values = {'NAME': native.name, 'JAVA_NAME': EscapeClassName(java_name)}
     return template.substitute(values)
@@ -1082,7 +1075,7 @@ class HeaderFileGeneratorHelper(object):
 
       class_name = self.class_name
       jni_class_path = self.fully_qualified_class
-      if entry.java_class_name:
+      if isinstance(entry, CalledByNative) and entry.java_class_name:
         class_name = entry.java_class_name
         jni_class_path = self.fully_qualified_class + '$' + class_name
       ret[class_name] = jni_class_path
@@ -1206,7 +1199,7 @@ $METHOD_STUBS
 #endif  // ${HEADER_GUARD}
 """)
     values = {
-        'SCRIPT_NAME': self.options.script_name,
+        'SCRIPT_NAME': GetScriptName(),
         'FULLY_QUALIFIED_CLASS': self.fully_qualified_class,
         'CLASS_PATH_DEFINITIONS': self.GetClassPathDefinitionsString(),
         'CONSTANT_FIELDS': self.GetConstantFieldsString(),
@@ -1294,12 +1287,7 @@ $METHOD_STUBS
         })
 
   def GetImplementationMethodName(self, native):
-    class_name = self.class_name
-    if native.java_class_name is not None:
-      # Inner class
-      class_name = native.java_class_name
-
-    return 'JNI_%s_%s' % (class_name, native.name)
+    return 'JNI_%s_%s' % (self.class_name, native.name)
 
   def GetNativeStub(self, native):
     is_method = native.type == 'method'
@@ -1627,11 +1615,6 @@ See SampleForTests.java for more details.
                       action='append',
                       dest='output_names',
                       help='Output filenames within output directory.')
-  parser.add_argument(
-      '--script_name',
-      default=GetScriptName(),
-      help='The name of this script in the generated '
-      'header.')
   parser.add_argument(
       '--includes',
       help='The comma-separated list of header files to '
