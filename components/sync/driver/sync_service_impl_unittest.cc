@@ -1194,10 +1194,36 @@ TEST_F(SyncServiceImplTest, ShouldSendDataTypesToSyncInvalidationsService) {
                     {BOOKMARKS, false},
                     {DEVICE_INFO, true},
                 });
+  // Note: Even though NIGORI technically isn't registered, it should always be
+  // considered part of the interested data types.
   EXPECT_CALL(*sync_invalidations_service(),
-              SetInterestedDataTypes(AllOf(ContainsDataType(BOOKMARKS),
+              SetInterestedDataTypes(AllOf(ContainsDataType(NIGORI),
+                                           ContainsDataType(BOOKMARKS),
                                            ContainsDataType(DEVICE_INFO))));
   InitializeForNthSync();
+  ASSERT_TRUE(service()->IsSyncFeatureActive());
+  EXPECT_TRUE(engine()->started_handling_invalidations());
+}
+
+TEST_F(SyncServiceImplTest,
+       ShouldSendDataTypesToSyncInvalidationsServiceInTransportMode) {
+  SignIn();
+  CreateService(SyncServiceImpl::MANUAL_START,
+                /*registered_types_and_transport_mode_support=*/
+                {
+                    {BOOKMARKS, false},
+                    {DEVICE_INFO, true},
+                });
+  // In this test, BOOKMARKS doesn't support transport mode, so it should *not*
+  // be included.
+  // Note: Even though NIGORI technically isn't registered, it should always be
+  // considered part of the interested data types.
+  EXPECT_CALL(*sync_invalidations_service(),
+              SetInterestedDataTypes(AllOf(ContainsDataType(NIGORI),
+                                           Not(ContainsDataType(BOOKMARKS)),
+                                           ContainsDataType(DEVICE_INFO))));
+  InitializeForFirstSync();
+  ASSERT_FALSE(service()->IsSyncFeatureActive());
   EXPECT_TRUE(engine()->started_handling_invalidations());
 }
 

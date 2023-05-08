@@ -1401,8 +1401,11 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypes() const {
 }
 
 ModelTypeSet SyncServiceImpl::GetModelTypesForTransportOnlyMode() const {
+  // Control types (in practice, NIGORI) are always supported. This special case
+  // is necessary because the NIGORI controller isn't in
+  // `data_type_controllers_`.
+  ModelTypeSet allowed_types = ControlTypes();
   // Collect the types from all controllers that support transport-only mode.
-  ModelTypeSet allowed_types;
   for (const auto& [type, controller] : data_type_controllers_) {
     if (controller->ShouldRunInTransportOnlyMode()) {
       allowed_types.Put(type);

@@ -288,10 +288,13 @@ ModelTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
 #endif
   types.RetainAll(registered_model_types_);
 
+  // Control types (in practice, NIGORI) are always considered "preferred", even
+  // though they're technically not registered.
+  types.PutAll(ControlTypes());
+
   static_assert(46 == GetNumModelTypes(),
                 "If adding a new sync data type, update the list below below if"
                 " you want to disable the new data type for local sync.");
-  types.PutAll(ControlTypes());
   if (prefs_->IsLocalSyncEnabled()) {
     types.Remove(APP_LIST);
     types.Remove(AUTOFILL_WALLET_OFFER);
