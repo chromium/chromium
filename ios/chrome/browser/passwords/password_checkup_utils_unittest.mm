@@ -5,14 +5,17 @@
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
 
 #import "base/strings/string_piece.h"
+#import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -88,12 +91,20 @@ void AddIssueToForm(PasswordForm* form,
 class PasswordCheckupUtilsTest : public PlatformTest {
  protected:
   PasswordCheckupUtilsTest() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordsGrouping);
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(
         IOSChromePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<password_manager::FakeAffiliationService>());
+        })));
     browser_state_ = builder.Build();
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
@@ -111,6 +122,7 @@ class PasswordCheckupUtilsTest : public PlatformTest {
   IOSChromePasswordCheckManager& manager() { return *manager_; }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_env_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
   scoped_refptr<TestPasswordStore> store_;
