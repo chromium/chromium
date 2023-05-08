@@ -1497,17 +1497,9 @@ public class ExternalNavigationHandler {
                 || ignoreBackForwardNav(params);
     }
 
-    private void recordIntentSelectorMetrics(GURL targetUrl, Intent targetIntent) {
-        if (UrlUtilities.hasIntentScheme(targetUrl)) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.Intent.IntentUriWithSelector", targetIntent.getSelector() != null);
-        }
-    }
-
     private OverrideUrlLoadingResult shouldOverrideUrlLoadingInternal(
             ExternalNavigationParams params, Intent targetIntent, GURL browserFallbackUrl,
             MutableBoolean canLaunchExternalFallbackResult) {
-        recordIntentSelectorMetrics(params.getUrl(), targetIntent);
         sanitizeQueryIntentActivitiesIntent(targetIntent);
 
         // Any subsequent navigations should cancel the existing AlertDialog.
