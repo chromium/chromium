@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 408 tests; 267 PASS, 141 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 408 tests; 279 PASS, 129 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: Not implemented"
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -198,13 +198,13 @@ PASS MLGraphBuilder interface: operation div(MLOperand, MLOperand)
 PASS MLGraphBuilder interface: operation max(MLOperand, MLOperand)
 PASS MLGraphBuilder interface: operation min(MLOperand, MLOperand)
 FAIL MLGraphBuilder interface: operation pow(MLOperand, MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "pow" missing
-FAIL MLGraphBuilder interface: operation abs(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "abs" missing
-FAIL MLGraphBuilder interface: operation ceil(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "ceil" missing
+PASS MLGraphBuilder interface: operation abs(MLOperand)
+PASS MLGraphBuilder interface: operation ceil(MLOperand)
 FAIL MLGraphBuilder interface: operation cos(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "cos" missing
 FAIL MLGraphBuilder interface: operation exp(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "exp" missing
-FAIL MLGraphBuilder interface: operation floor(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "floor" missing
+PASS MLGraphBuilder interface: operation floor(MLOperand)
 FAIL MLGraphBuilder interface: operation log(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "log" missing
-FAIL MLGraphBuilder interface: operation neg(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "neg" missing
+PASS MLGraphBuilder interface: operation neg(MLOperand)
 FAIL MLGraphBuilder interface: operation sin(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "sin" missing
 FAIL MLGraphBuilder interface: operation tan(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "tan" missing
 PASS MLGraphBuilder interface: operation elu(MLOperand, optional MLEluOptions)
@@ -294,20 +294,20 @@ PASS MLGraphBuilder interface: builder must inherit property "min(MLOperand, MLO
 PASS MLGraphBuilder interface: calling min(MLOperand, MLOperand) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "pow(MLOperand, MLOperand)" with the proper type assert_inherits: property "pow" not found in prototype chain
 FAIL MLGraphBuilder interface: calling pow(MLOperand, MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "pow" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "abs(MLOperand)" with the proper type assert_inherits: property "abs" not found in prototype chain
-FAIL MLGraphBuilder interface: calling abs(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "abs" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "ceil(MLOperand)" with the proper type assert_inherits: property "ceil" not found in prototype chain
-FAIL MLGraphBuilder interface: calling ceil(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "ceil" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "abs(MLOperand)" with the proper type
+PASS MLGraphBuilder interface: calling abs(MLOperand) on builder with too few arguments must throw TypeError
+PASS MLGraphBuilder interface: builder must inherit property "ceil(MLOperand)" with the proper type
+PASS MLGraphBuilder interface: calling ceil(MLOperand) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "cos(MLOperand)" with the proper type assert_inherits: property "cos" not found in prototype chain
 FAIL MLGraphBuilder interface: calling cos(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "cos" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "exp(MLOperand)" with the proper type assert_inherits: property "exp" not found in prototype chain
 FAIL MLGraphBuilder interface: calling exp(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "exp" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "floor(MLOperand)" with the proper type assert_inherits: property "floor" not found in prototype chain
-FAIL MLGraphBuilder interface: calling floor(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "floor" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "floor(MLOperand)" with the proper type
+PASS MLGraphBuilder interface: calling floor(MLOperand) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "log(MLOperand)" with the proper type assert_inherits: property "log" not found in prototype chain
 FAIL MLGraphBuilder interface: calling log(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "log" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "neg(MLOperand)" with the proper type assert_inherits: property "neg" not found in prototype chain
-FAIL MLGraphBuilder interface: calling neg(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "neg" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "neg(MLOperand)" with the proper type
+PASS MLGraphBuilder interface: calling neg(MLOperand) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "sin(MLOperand)" with the proper type assert_inherits: property "sin" not found in prototype chain
 FAIL MLGraphBuilder interface: calling sin(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "sin" not found in prototype chain
 FAIL MLGraphBuilder interface: builder must inherit property "tan(MLOperand)" with the proper type assert_inherits: property "tan" not found in prototype chain

@@ -128,6 +128,12 @@ dictionary MLTransposeOptions{
   [RaisesException] MLOperand max(MLOperand a, MLOperand b);
   [RaisesException] MLOperand min(MLOperand a, MLOperand b);
 
+  // Element-wise unary operations
+  [RaisesException] MLOperand abs(MLOperand x);
+  [RaisesException] MLOperand ceil(MLOperand x);
+  [RaisesException] MLOperand floor(MLOperand x);
+  [RaisesException] MLOperand neg(MLOperand x);
+
   [RaisesException] MLOperand elu(MLOperand x, optional MLEluOptions options = {});
   [RaisesException] MLActivation elu(optional MLEluOptions options = {});
 

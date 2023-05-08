@@ -2917,6 +2917,114 @@ TEST_F(MLGraphBuilderTest, ElementWiseBinaryTest) {
   }
 }
 
+void TestBuildElementWiseUnary(V8TestingScope& scope,
+                               MLGraphBuilder* builder,
+                               ElementWiseUnaryKind kind,
+                               const MLOperand* input) {
+  MLOperand* output = nullptr;
+  switch (kind) {
+    case ElementWiseUnaryKind::kAbs:
+      output = builder->abs(input, scope.GetExceptionState());
+      break;
+    case ElementWiseUnaryKind::kCeil:
+      output = builder->ceil(input, scope.GetExceptionState());
+      break;
+    case ElementWiseUnaryKind::kFloor:
+      output = builder->floor(input, scope.GetExceptionState());
+      break;
+    case ElementWiseUnaryKind::kNeg:
+      output = builder->neg(input, scope.GetExceptionState());
+      break;
+  }
+  EXPECT_NE(output, nullptr);
+  EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+  EXPECT_EQ(output->Type(), input->Type());
+  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  auto* op = output->Operator();
+  EXPECT_NE(op, nullptr);
+  switch (kind) {
+    case ElementWiseUnaryKind::kAbs:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kAbs);
+      break;
+    case ElementWiseUnaryKind::kCeil:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kCeil);
+      break;
+    case ElementWiseUnaryKind::kFloor:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kFloor);
+      break;
+    case ElementWiseUnaryKind::kNeg:
+      EXPECT_EQ(op->Kind(), MLOperator::OperatorKind::kNeg);
+      break;
+  }
+  EXPECT_EQ(op->IsConnected(), true);
+  EXPECT_EQ(op->Options(), nullptr);
+}
+
+TEST_F(MLGraphBuilderTest, ElementWiseUnaryTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building element-wise abs.
+    const Vector<uint32_t> input_shape({1});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    TestBuildElementWiseUnary(scope, builder, ElementWiseUnaryKind::kAbs,
+                              input);
+  }
+  {
+    // Test building element-wise ceil.
+    const Vector<uint32_t> input_shape({1, 2});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    TestBuildElementWiseUnary(scope, builder, ElementWiseUnaryKind::kCeil,
+                              input);
+  }
+  {
+    // Test building element-wise floor.
+    const Vector<uint32_t> input_shape({1, 2, 3});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    TestBuildElementWiseUnary(scope, builder, ElementWiseUnaryKind::kFloor,
+                              input);
+  }
+  {
+    // Test building element-wise neg.
+    const Vector<uint32_t> input_shape({1, 2, 3, 4});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    TestBuildElementWiseUnary(scope, builder, ElementWiseUnaryKind::kNeg,
+                              input);
+  }
+  {
+    // Test throwing exception when building ceil with int32 input.
+    auto* input =
+        BuildInput(builder, "input", {3, 4}, V8MLOperandType::Enum::kInt32,
+                   scope.GetExceptionState());
+    auto* output = builder->ceil(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+  {
+    // Test throwing exception when building neg with uint32 input.
+    auto* input =
+        BuildInput(builder, "input", {3, 4}, V8MLOperandType::Enum::kUint32,
+                   scope.GetExceptionState());
+    auto* output = builder->neg(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+}
+
 TEST_F(MLGraphBuilderTest, ReshapeTest) {
   V8TestingScope scope;
   MLGraphBuilder* builder = CreateMLGraphBuilder(scope.GetExecutionContext());

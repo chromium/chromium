@@ -156,6 +156,12 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                  const MLOperand* b,
                  ExceptionState& exception_state);
 
+  // Element-wise unary operations
+  MLOperand* abs(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* ceil(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* floor(const MLOperand* input, ExceptionState& exception_state);
+  MLOperand* neg(const MLOperand* input, ExceptionState& exception_state);
+
   MLOperand* elu(const MLOperand* input,
                  const MLEluOptions* options,
                  ExceptionState& exception_state);

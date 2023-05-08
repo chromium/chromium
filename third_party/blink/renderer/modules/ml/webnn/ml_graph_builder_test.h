@@ -65,6 +65,8 @@ MLOperand* BuildElementWiseBinary(V8TestingScope& scope,
                                   const MLOperand* a,
                                   const MLOperand* b);
 
+enum class ElementWiseUnaryKind { kAbs, kCeil, kFloor, kNeg };
+
 MLOperand* BuildPad(V8TestingScope& scope,
                     MLGraphBuilder* builder,
                     const MLOperand* input,

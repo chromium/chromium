@@ -5515,9 +5515,11 @@ interface MLGraph
     method constructor
 interface MLGraphBuilder
     attribute @@toStringTag
+    method abs
     method add
     method averagePool2d
     method build
+    method ceil
     method clamp
     method concat
     method constant
@@ -5526,6 +5528,7 @@ interface MLGraphBuilder
     method convTranspose2d
     method div
     method elu
+    method floor
     method gemm
     method hardSwish
     method input
@@ -5534,6 +5537,7 @@ interface MLGraphBuilder
     method maxPool2d
     method min
     method mul
+    method neg
     method pad
     method prelu
     method relu

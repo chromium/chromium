@@ -145,6 +145,36 @@ MLOperand* BuildElementWiseBinary(MLGraphBuilder* builder,
   return output;
 }
 
+MLOperand* BuildElementWiseUnary(MLGraphBuilder* builder,
+                                 MLOperator::OperatorKind kind,
+                                 const MLOperand* input,
+                                 ExceptionState& exception_state) {
+  // The input type must be one of the floating point types. Although this
+  // constraint is not specified in current WebNN spec, there is a feature
+  // request for that: https://github.com/webmachinelearning/webnn/issues/283
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input type must be one of the floating point types.");
+    return nullptr;
+  }
+  // According to WebNN spec:
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-unary, the shape of the
+  // output tensor is the same as the shape of input tensor.
+  Vector<uint32_t> dims_output = input->Dimensions();
+  auto* unary = MakeGarbageCollected<MLOperator>(builder, kind);
+  String error_message;
+  auto* output = MLOperand::ValidateAndCreateOutput(
+      builder, input->Type(), dims_output, unary, error_message);
+  if (!output) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      error_message);
+    return nullptr;
+  }
+  unary->Connect({input}, {output});
+  return output;
+}
+
 // Calculate the output size for conv2d based on WebNN spec:
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-conv2d
 // Return the calculated output size if no error.
@@ -1278,6 +1308,18 @@ BUILD_ELEMENTWISE_BINARY_OP(mul, kMul)
 BUILD_ELEMENTWISE_BINARY_OP(div, kDiv)
 BUILD_ELEMENTWISE_BINARY_OP(min, kMin)
 BUILD_ELEMENTWISE_BINARY_OP(max, kMax)
+
+#define BUILD_ELEMENTWISE_UNARY_OP(op, op_kind)                           \
+  MLOperand* MLGraphBuilder::op(const MLOperand* input,                   \
+                                ExceptionState& exception_state) {        \
+    return BuildElementWiseUnary(this, MLOperator::OperatorKind::op_kind, \
+                                 input, exception_state);                 \
+  }
+
+BUILD_ELEMENTWISE_UNARY_OP(abs, kAbs)
+BUILD_ELEMENTWISE_UNARY_OP(ceil, kCeil)
+BUILD_ELEMENTWISE_UNARY_OP(floor, kFloor)
+BUILD_ELEMENTWISE_UNARY_OP(neg, kNeg)
 
 MLOperand* MLGraphBuilder::elu(const MLOperand* input,
                                const MLEluOptions* options,

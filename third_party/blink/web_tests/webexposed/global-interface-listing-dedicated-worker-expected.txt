@@ -1160,9 +1160,11 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface MLGraphBuilder
 [Worker]     attribute @@toStringTag
+[Worker]     method abs
 [Worker]     method add
 [Worker]     method averagePool2d
 [Worker]     method buildSync
+[Worker]     method ceil
 [Worker]     method clamp
 [Worker]     method concat
 [Worker]     method constant
@@ -1171,6 +1173,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method convTranspose2d
 [Worker]     method div
 [Worker]     method elu
+[Worker]     method floor
 [Worker]     method gemm
 [Worker]     method hardSwish
 [Worker]     method input
@@ -1179,6 +1182,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method maxPool2d
 [Worker]     method min
 [Worker]     method mul
+[Worker]     method neg
 [Worker]     method pad
 [Worker]     method prelu
 [Worker]     method relu
