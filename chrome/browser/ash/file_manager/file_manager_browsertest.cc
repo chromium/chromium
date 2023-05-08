@@ -2158,8 +2158,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("searchRemovableDevice").EnableSearchV2(),
         TestCase("searchPartitionedRemovableDevice").EnableSearchV2(),
         TestCase("resetSearchOptionsOnFolderChange").EnableSearchV2(),
-        // TODO(crbug.com/1442564): Re-enable this test
-        // TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
+        TestCase("showSearchResultMessageWhenSearching").EnableSearchV2(),
         TestCase("showsEducationNudge").EnableSearchV2(),
         TestCase("searchFromMyFiles").EnableSearchV2(),
         TestCase("selectionPath").EnableSearchV2(),

@@ -639,7 +639,6 @@ testcase.showSearchResultMessageWhenSearching = async () => {
 
   // Clear and close search.
   await remoteCall.waitAndClickElement(appId, '#search-box .clear');
-  await remoteCall.waitAndClickElement(appId, '#search-button');
 
   // Wait for the search to fully close.
   await remoteCall.waitForElement(appId, '#search-wrapper[collapsed]');
