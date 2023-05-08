@@ -154,13 +154,6 @@ bool DeviceDisablingManager::IsDeviceDisabledDuringNormalOperation() {
     return false;
   }
 
-  // If the device is AD managed, force disable the device (b/259180126).
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->IsActiveDirectoryManaged()) {
-    return true;
-  }
-
   bool device_disabled = false;
   CrosSettings::Get()->GetBoolean(kDeviceDisabled, &device_disabled);
   return device_disabled;
