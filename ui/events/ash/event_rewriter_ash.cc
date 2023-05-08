@@ -704,6 +704,7 @@ bool EventRewriterAsh::HasAssistantKeyOnKeyboard(
 }
 
 bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
+                                           int device_id,
                                            MutableKeyState* state) {
   DCHECK(key_event.type() == ET_KEY_PRESSED ||
          key_event.type() == ET_KEY_RELEASED);
@@ -732,13 +733,13 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
       if (IsISOLevel5ShiftUsedByCurrentInputMethod()) {
         if (incoming.code == DomCode::CAPS_LOCK) {
           characteristic_flag = EF_ALTGR_DOWN | EF_MOD3_DOWN;
-          remapped_key = GetRemappedKey(
-              last_keyboard_device_id_, mojom::ModifierKey::kCapsLock,
-              prefs::kLanguageRemapCapsLockKeyTo, delegate_);
+          remapped_key =
+              GetRemappedKey(device_id, mojom::ModifierKey::kCapsLock,
+                             prefs::kLanguageRemapCapsLockKeyTo, delegate_);
         } else {
           characteristic_flag = EF_ALTGR_DOWN;
-          remapped_key = GetSearchRemappedKey(
-              delegate_, last_keyboard_device_id_, *keyboard_capability_);
+          remapped_key =
+              GetSearchRemappedKey(delegate_, device_id, *keyboard_capability_);
         }
       }
       if (remapped_key && remapped_key->result.key_code == VKEY_CAPITAL) {
@@ -783,15 +784,15 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
       }
 
       characteristic_flag = EF_CAPS_LOCK_ON;
-      remapped_key = GetRemappedKey(
-          last_keyboard_device_id_, mojom::ModifierKey::kCapsLock,
-          prefs::kLanguageRemapCapsLockKeyTo, delegate_);
+      remapped_key =
+          GetRemappedKey(device_id, mojom::ModifierKey::kCapsLock,
+                         prefs::kLanguageRemapCapsLockKeyTo, delegate_);
       break;
     case DomCode::META_LEFT:
     case DomCode::META_RIGHT:
       characteristic_flag = EF_COMMAND_DOWN;
-      remapped_key = GetSearchRemappedKey(delegate_, last_keyboard_device_id_,
-                                          *keyboard_capability_);
+      remapped_key =
+          GetSearchRemappedKey(delegate_, device_id, *keyboard_capability_);
       // Default behavior is Super key, hence don't remap the event if the pref
       // is unavailable.
       break;
@@ -799,31 +800,30 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     case DomCode::CONTROL_RIGHT:
       characteristic_flag = EF_CONTROL_DOWN;
       remapped_key =
-          GetRemappedKey(last_keyboard_device_id_, mojom::ModifierKey::kControl,
+          GetRemappedKey(device_id, mojom::ModifierKey::kControl,
                          prefs::kLanguageRemapControlKeyTo, delegate_);
       break;
     case DomCode::ALT_LEFT:
     case DomCode::ALT_RIGHT:
       // ALT key
       characteristic_flag = EF_ALT_DOWN;
-      remapped_key =
-          GetRemappedKey(last_keyboard_device_id_, mojom::ModifierKey::kAlt,
-                         prefs::kLanguageRemapAltKeyTo, delegate_);
+      remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kAlt,
+                                    prefs::kLanguageRemapAltKeyTo, delegate_);
       break;
     case DomCode::ESCAPE:
       remapped_key =
-          GetRemappedKey(last_keyboard_device_id_, mojom::ModifierKey::kEscape,
+          GetRemappedKey(device_id, mojom::ModifierKey::kEscape,
                          prefs::kLanguageRemapEscapeKeyTo, delegate_);
       break;
     case DomCode::BACKSPACE:
-      remapped_key = GetRemappedKey(
-          last_keyboard_device_id_, mojom::ModifierKey::kBackspace,
-          prefs::kLanguageRemapBackspaceKeyTo, delegate_);
+      remapped_key =
+          GetRemappedKey(device_id, mojom::ModifierKey::kBackspace,
+                         prefs::kLanguageRemapBackspaceKeyTo, delegate_);
       break;
     case DomCode::LAUNCH_ASSISTANT:
-      remapped_key = GetRemappedKey(
-          last_keyboard_device_id_, mojom::ModifierKey::kAssistant,
-          prefs::kLanguageRemapAssistantKeyTo, delegate_);
+      remapped_key =
+          GetRemappedKey(device_id, mojom::ModifierKey::kAssistant,
+                         prefs::kLanguageRemapAssistantKeyTo, delegate_);
       break;
     default:
       break;
@@ -856,7 +856,7 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   }
 
   // Next, remap modifier bits.
-  state->flags |= GetRemappedModifierMasks(key_event, incoming.flags);
+  state->flags |= GetRemappedModifierMasks(device_id, incoming.flags);
 
   // If the DomKey is not a modifier before remapping but is after, set the
   // modifier latches for the later non-modifier key's modifier states.
@@ -903,18 +903,20 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
   return exact_event;
 }
 
-void EventRewriterAsh::DeviceKeyPressedOrReleased(int device_id) {
-  KeyboardCapability::DeviceType type =
-      keyboard_capability_->GetDeviceType(device_id);
-
-  // Ignore virtual Xorg keyboard (magic that generates key repeat
-  // events). Pretend that the previous real keyboard is the one that is still
-  // in use.
-  if (type == KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard) {
-    return;
+int EventRewriterAsh::GetKeyboardDeviceId(int keyboard_device_id,
+                                          int last_keyboard_device_id) const {
+  if (keyboard_device_id == ED_UNKNOWN_DEVICE) {
+    return ED_UNKNOWN_DEVICE;
   }
 
-  last_keyboard_device_id_ = device_id;
+  // Ignore virtual Xorg keyboard (magic that generates key repeat events).
+  // Pretend that the previous real keyboard is the one that is still in use.
+  if (keyboard_capability_->GetDeviceType(keyboard_device_id) ==
+      KeyboardCapability::DeviceType::kDeviceVirtualCoreKeyboard) {
+    return last_keyboard_device_id;
+  }
+
+  return keyboard_device_id;
 }
 
 bool EventRewriterAsh::IsHotrodRemote(int device_id) const {
@@ -922,7 +924,7 @@ bool EventRewriterAsh::IsHotrodRemote(int device_id) const {
          KeyboardCapability::DeviceType::kDeviceHotrodRemote;
 }
 
-int EventRewriterAsh::GetRemappedModifierMasks(const Event& event,
+int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
                                                int original_flags) const {
   int unmodified_flags = original_flags;
   int rewritten_flags = pressed_modifier_latches_ | latched_modifier_latches_;
@@ -934,8 +936,8 @@ int EventRewriterAsh::GetRemappedModifierMasks(const Event& event,
     }
     switch (kModifierRemappings[i].flag) {
       case EF_COMMAND_DOWN:
-        remapped_key = GetSearchRemappedKey(delegate_, last_keyboard_device_id_,
-                                            *keyboard_capability_);
+        remapped_key =
+            GetSearchRemappedKey(delegate_, device_id, *keyboard_capability_);
         break;
       case EF_MOD3_DOWN:
         // If EF_MOD3_DOWN is used by the current input method, leave it alone;
@@ -959,9 +961,9 @@ int EventRewriterAsh::GetRemappedModifierMasks(const Event& event,
         break;
     }
     if (!remapped_key && kModifierRemappings[i].pref_name) {
-      remapped_key = GetRemappedKey(
-          last_keyboard_device_id_, kModifierRemappings[i].remap_to,
-          kModifierRemappings[i].pref_name, delegate_);
+      remapped_key =
+          GetRemappedKey(device_id, kModifierRemappings[i].remap_to,
+                         kModifierRemappings[i].pref_name, delegate_);
     }
     if (remapped_key) {
       unmodified_flags &= ~kModifierRemappings[i].flag;
@@ -1035,6 +1037,7 @@ bool EventRewriterAsh::ShouldRemapToRightClick(
 }
 
 void EventRewriterAsh::RecordModifierKeyPressedAfterRemapping(
+    int device_id,
     DomCode dom_code) {
   const ModifierKeyUsageMapping* modifier_key_usage_mapping = nullptr;
   for (const auto& mapping : modifier_key_usage_mappings) {
@@ -1048,7 +1051,7 @@ void EventRewriterAsh::RecordModifierKeyPressedAfterRemapping(
     return;
   }
 
-  switch (keyboard_capability_->GetDeviceType(last_keyboard_device_id_)) {
+  switch (keyboard_capability_->GetDeviceType(device_id)) {
     case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
       UMA_HISTOGRAM_ENUMERATION(
           "ChromeOS.Inputs.Keyboard.RemappedModifierPressed.Internal",
@@ -1078,6 +1081,7 @@ void EventRewriterAsh::RecordModifierKeyPressedAfterRemapping(
 }
 
 void EventRewriterAsh::RecordModifierKeyPressedBeforeRemapping(
+    int device_id,
     DomCode dom_code) {
   const ModifierKeyUsageMapping* modifier_key_usage_mapping = nullptr;
   for (const auto& mapping : modifier_key_usage_mappings) {
@@ -1091,7 +1095,7 @@ void EventRewriterAsh::RecordModifierKeyPressedBeforeRemapping(
     return;
   }
 
-  switch (keyboard_capability_->GetDeviceType(last_keyboard_device_id_)) {
+  switch (keyboard_capability_->GetDeviceType(device_id)) {
     case KeyboardCapability::DeviceType::kDeviceInternalKeyboard:
       UMA_HISTOGRAM_ENUMERATION(
           "ChromeOS.Inputs.Keyboard.ModifierPressed.Internal",
@@ -1123,14 +1127,15 @@ void EventRewriterAsh::RecordModifierKeyPressedBeforeRemapping(
 EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
     const KeyEvent& key_event,
     std::unique_ptr<Event>* rewritten_event) {
-  if (key_event.source_device_id() != ED_UNKNOWN_DEVICE) {
-    DeviceKeyPressedOrReleased(key_event.source_device_id());
+  int device_id = GetKeyboardDeviceId(key_event.source_device_id(),
+                                      last_keyboard_device_id_);
+  if (device_id != ED_UNKNOWN_DEVICE) {
+    last_keyboard_device_id_ = device_id;
   }
 
   // Drop repeated keys from Hotrod remote.
   if ((key_event.flags() & EF_IS_REPEAT) &&
-      (key_event.type() == ET_KEY_PRESSED) &&
-      IsHotrodRemote(last_keyboard_device_id_) &&
+      (key_event.type() == ET_KEY_PRESSED) && IsHotrodRemote(device_id) &&
       key_event.key_code() != VKEY_BACK) {
     return EVENT_REWRITE_DISCARD;
   }
@@ -1139,7 +1144,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   const bool should_record_modifier_key_press_metrics =
       !(key_event.flags() & EF_IS_REPEAT) && key_event.type() == ET_KEY_PRESSED;
   if (should_record_modifier_key_press_metrics) {
-    RecordModifierKeyPressedBeforeRemapping(key_event.code());
+    RecordModifierKeyPressedBeforeRemapping(device_id, key_event.code());
   }
 
   MutableKeyState state = {key_event.flags(), key_event.code(),
@@ -1151,9 +1156,9 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
     // If RewriteModifierKeys() returns true there should be no more processing
     // done to the key event. It will only return true if the key event is
     // rewritten to ALTGR. A false return is not an error.
-    if (RewriteModifierKeys(key_event, &state)) {
+    if (RewriteModifierKeys(key_event, device_id, &state)) {
       if (should_record_modifier_key_press_metrics) {
-        RecordModifierKeyPressedAfterRemapping(state.code);
+        RecordModifierKeyPressedAfterRemapping(device_id, state.code);
       }
       // Early exit with completed event.
       BuildRewrittenKeyEvent(key_event, state, rewritten_event);
@@ -1163,7 +1168,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   }
 
   if (should_record_modifier_key_press_metrics) {
-    RecordModifierKeyPressedAfterRemapping(state.code);
+    RecordModifierKeyPressedAfterRemapping(device_id, state.code);
   }
 
   if (delegate_ &&
@@ -1209,7 +1214,7 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
   // thereafter.
   if (!is_sticky_key_extension_command && !(key_event.flags() & EF_FINAL)) {
     RewriteExtendedKeys(key_event, &state);
-    RewriteFunctionKeys(key_event, &state);
+    RewriteFunctionKeys(key_event, device_id, &state);
   }
   if ((key_event.flags() == state.flags) &&
       (key_event.key_code() == state.key_code) &&
@@ -1529,6 +1534,7 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
 }
 
 void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
+                                           int device_id,
                                            MutableKeyState* state) {
   CHECK(key_event.type() == ET_KEY_PRESSED ||
         key_event.type() == ET_KEY_RELEASED);
@@ -1549,24 +1555,24 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
   }
 
   KeyboardCapability::KeyboardTopRowLayout layout =
-      keyboard_capability_->GetTopRowLayout(key_event.source_device_id());
+      keyboard_capability_->GetTopRowLayout(device_id);
 
   const bool search_is_pressed = (state->flags & EF_COMMAND_DOWN) != 0;
-  const bool flip_remapping = ShouldRewriteMetaTopRowKeyComboEvents(
-                                  delegate_, last_keyboard_device_id_) &&
-                              search_is_pressed;
+  const bool flip_remapping =
+      ShouldRewriteMetaTopRowKeyComboEvents(delegate_, device_id) &&
+      search_is_pressed;
   if (layout ==
       KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutCustom) {
-    if (RewriteTopRowKeysForCustomLayout(key_event.source_device_id(),
-                                         key_event, search_is_pressed, state)) {
+    if (RewriteTopRowKeysForCustomLayout(key_event, device_id,
+                                         search_is_pressed, state)) {
       return;
     }
   } else if (layout == KeyboardCapability::KeyboardTopRowLayout::
                            kKbdTopRowLayoutWilco ||
              layout == KeyboardCapability::KeyboardTopRowLayout::
                            kKbdTopRowLayoutDrallion) {
-    if (RewriteTopRowKeysForLayoutWilco(key_event, search_is_pressed, state,
-                                        layout)) {
+    if (RewriteTopRowKeysForLayoutWilco(key_event, device_id, search_is_pressed,
+                                        state, layout)) {
       return;
     }
   } else if ((state->key_code >= VKEY_F1) && (state->key_code <= VKEY_F12)) {
@@ -1580,8 +1586,7 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
     //  No      System   No                 Fn -> System
     //  Yes     Fn       No                 Unchanged
     //  Yes     System   No                 Unchanged
-    if (ForceTopRowAsFunctionKeys(key_event.source_device_id()) ==
-        flip_remapping) {
+    if (ForceTopRowAsFunctionKeys(device_id) == flip_remapping) {
       // Rewrite the F1-F12 keys on a Chromebook keyboard to system keys.
       // This is the original Chrome OS layout.
       static const KeyboardRemapping kFkeysToSystemKeys1[] = {
@@ -1740,7 +1745,9 @@ int EventRewriterAsh::RewriteLocatedEvent(const Event& event) {
   if (!delegate_) {
     return event.flags();
   }
-  return GetRemappedModifierMasks(event, event.flags());
+
+  // Use the keyboard device_id for the last KeyEvent.
+  return GetRemappedModifierMasks(last_keyboard_device_id_, event.flags());
 }
 
 int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
@@ -1938,8 +1945,8 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
 //  No        Yes               No                  Action     Unchanged
 //  Yes       Yes               No                  Action     Unchanged
 bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
-    int device_id,
     const KeyEvent& key_event,
+    int device_id,
     bool search_is_pressed,
     EventRewriterAsh::MutableKeyState* state) {
   // Incoming function keys are never remapped.
@@ -1947,9 +1954,9 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
     return true;
   }
 
-  const bool flip_remapping = ShouldRewriteMetaTopRowKeyComboEvents(
-                                  delegate_, last_keyboard_device_id_) &&
-                              search_is_pressed;
+  const bool flip_remapping =
+      ShouldRewriteMetaTopRowKeyComboEvents(delegate_, device_id) &&
+      search_is_pressed;
 
   const auto* scan_code_vector_ptr =
       keyboard_capability_->GetTopRowScanCodes(device_id);
@@ -1965,8 +1972,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_vector.end());
   if (is_action_key) {
-    if (flip_remapping !=
-        ForceTopRowAsFunctionKeys(key_event.source_device_id())) {
+    if (flip_remapping != ForceTopRowAsFunctionKeys(device_id)) {
       ApplyRemapping(kCustomTopRowLayoutFKeys[std::distance(
                          scan_code_vector.begin(), key_iter)],
                      state);
@@ -2010,6 +2016,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
 //  Yes     Yes                 No                  Action     Action -> Fn
 bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
     const KeyEvent& key_event,
+    int device_id,
     bool search_is_pressed,
     MutableKeyState* state,
     KeyboardCapability::KeyboardTopRowLayout layout) {
@@ -2084,9 +2091,9 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
       {{EF_NONE, VKEY_PRIVACY_SCREEN_TOGGLE},
        {EF_NONE, DomCode::F12, DomKey::F12, VKEY_F12}},
   };
-  const bool flip_remapping = ShouldRewriteMetaTopRowKeyComboEvents(
-                                  delegate_, last_keyboard_device_id_) &&
-                              search_is_pressed;
+  const bool flip_remapping =
+      ShouldRewriteMetaTopRowKeyComboEvents(delegate_, device_id) &&
+      search_is_pressed;
   MutableKeyState incoming_with_command_removed_if_neccessary = *state;
   if (flip_remapping) {
     incoming_with_command_removed_if_neccessary.flags &= ~EF_COMMAND_DOWN;
@@ -2118,8 +2125,7 @@ bool EventRewriterAsh::RewriteTopRowKeysForLayoutWilco(
                                  std::size(kActionToFnKeys))) {
     // Incoming key code is an action key. Check if it needs to be mapped back
     // to its corresponding function key.
-    if (flip_remapping !=
-        ForceTopRowAsFunctionKeys(key_event.source_device_id())) {
+    if (flip_remapping != ForceTopRowAsFunctionKeys(device_id)) {
       // On Drallion, mirror mode toggle is on its own key so don't remap it.
       if (layout == KeyboardCapability::KeyboardTopRowLayout::
                         kKbdTopRowLayoutDrallion &&

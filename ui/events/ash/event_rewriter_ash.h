@@ -215,11 +215,20 @@ class EventRewriterAsh : public EventRewriter {
 
   // Returns true when the input |state| has key |DomKey::ALT_GRAPH_LATCH| and
   // is remapped.
-  bool RewriteModifierKeys(const KeyEvent& event, MutableKeyState* state);
-  void RewriteFunctionKeys(const KeyEvent& event, MutableKeyState* state);
+  // TODO(crbug.com/1440147): Remove this function.
+  bool RewriteModifierKeys(const KeyEvent& event, MutableKeyState* state) {
+    return RewriteModifierKeys(event, last_keyboard_device_id_, state);
+  }
+  void RewriteFunctionKeys(const KeyEvent& event, MutableKeyState* state) {
+    return RewriteFunctionKeys(event, last_keyboard_device_id_, state);
+  }
 
  private:
-  void DeviceKeyPressedOrReleased(int device_id);
+  // Returns the fixed-up keyboard device id.
+  // |keyboard_device_id| should be KeyEvent::source_device_id() for the current
+  // event, and |last_keyboard_device_id| is the previous one.
+  int GetKeyboardDeviceId(int keyboard_device_id,
+                          int last_keyboard_device_id) const;
 
   // By default the top row (F1-F12) keys are system keys for back, forward,
   // brightness, volume, etc. However, windows for v2 apps can optionally
@@ -231,7 +240,7 @@ class EventRewriterAsh : public EventRewriter {
 
   // Given modifier flags |original_flags|, returns the remapped modifiers
   // according to user preferences and/or event properties.
-  int GetRemappedModifierMasks(const Event& event, int original_flags) const;
+  int GetRemappedModifierMasks(int device_id, int original_flags) const;
 
   // Returns true if this event should be remapped to a right-click.
   // |matched_mask| will be set to the variant (Alt+Click or Search+Click)
@@ -251,8 +260,8 @@ class EventRewriterAsh : public EventRewriter {
 
   // Records when modifier keys are pressed to metrics for tracking usage of
   // various metrics before and after remapping.
-  void RecordModifierKeyPressedBeforeRemapping(DomCode dom_code);
-  void RecordModifierKeyPressedAfterRemapping(DomCode dom_code);
+  void RecordModifierKeyPressedBeforeRemapping(int device_id, DomCode dom_code);
+  void RecordModifierKeyPressedAfterRemapping(int device_id, DomCode dom_code);
 
   // Rewrite a particular kind of event.
   EventRewriteStatus RewriteKeyEvent(const KeyEvent& key_event,
@@ -269,22 +278,28 @@ class EventRewriterAsh : public EventRewriter {
 
   // Rewriter phases. These can inspect the original |event|, but operate using
   // the current |state|, which may have been modified by previous phases.
+  bool RewriteModifierKeys(const KeyEvent& event,
+                           int device_id,
+                           MutableKeyState* state);
   void RewriteNumPadKeys(const KeyEvent& event, MutableKeyState* state);
+  void RewriteFunctionKeys(const KeyEvent& event,
+                           int device_id,
+                           MutableKeyState* state);
   void RewriteExtendedKeys(const KeyEvent& event, MutableKeyState* state);
   int RewriteLocatedEvent(const Event& event);
   int RewriteModifierClick(const MouseEvent& event, int* flags);
 
   // Handle Function <-> Action key remapping for new CrOS keyboards that
   // support supplying a custom layout via sysfs.
-  bool RewriteTopRowKeysForCustomLayout(
-      int device_id,
-      const ui::KeyEvent& key_event,
-      bool search_is_pressed,
-      ui::EventRewriterAsh::MutableKeyState* state);
+  bool RewriteTopRowKeysForCustomLayout(const ui::KeyEvent& key_event,
+                                        int device_id,
+                                        bool search_is_pressed,
+                                        MutableKeyState* state);
 
   // Handle Fn/Action key remapping for Wilco keyboard layout.
   bool RewriteTopRowKeysForLayoutWilco(
       const KeyEvent& key_event,
+      int device_id,
       bool search_is_pressed,
       MutableKeyState* state,
       KeyboardCapability::KeyboardTopRowLayout layout);
