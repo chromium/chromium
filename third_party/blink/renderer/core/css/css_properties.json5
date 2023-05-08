@@ -3112,7 +3112,6 @@
       inherited: false,
       keywords: ["drop", "normal", "raise"],
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSInitialLetter",
       type_name: "StyleInitialLetter",
       valid_for_first_letter: true,
     },

@@ -899,11 +899,6 @@
       base_feature: "none",
     },
     {
-      // http://crbug.com/1276900
-      name: "CSSInitialLetter",
-      status: "stable",
-    },
-    {
       name: "CSSInitialPseudo",
       status: "experimental",
       base_feature: "none",

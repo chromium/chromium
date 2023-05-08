@@ -1573,7 +1573,6 @@ TEST_F(NGInlineNodeTest, ShouldNotResueLigature) {
 }
 
 TEST_F(NGInlineNodeTest, InitialLetter) {
-  ScopedCSSInitialLetterForTest enable_initial_letter_scope(true);
   LoadAhem();
   InsertStyleElement(
       "p { font: 20px/24px Ahem; }"
