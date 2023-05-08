@@ -68,8 +68,7 @@ bool SequenceCheckerImpl::CalledOnValidSequence(
 
   // SequenceChecker behaves as a ThreadChecker when it is not bound to a
   // valid sequence token.
-  return thread_checker_.CalledOnValidThreadInternal(
-      bound_at, ThreadLocalStorage::HasBeenDestroyed());
+  return thread_checker_.CalledOnValidThreadInternal(bound_at);
 }
 
 void SequenceCheckerImpl::DetachFromSequence() {

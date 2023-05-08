@@ -62,8 +62,8 @@ class LOCKABLE BASE_EXPORT ThreadCheckerImpl {
   friend class SequenceCheckerImpl;
 
   [[nodiscard]] bool CalledOnValidThreadInternal(
-      std::unique_ptr<debug::StackTrace>* out_bound_at,
-      bool has_thread_been_destroyed) const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      std::unique_ptr<debug::StackTrace>* out_bound_at) const
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Returns ownership of a pointer to StackTrace where the ThreadCheckerImpl
   // was bound for debug logs, or nullptr if such logging was not enabled at
