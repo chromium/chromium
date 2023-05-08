@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/user_education/user_education_ping_controller.h"
 #include "ash/user_education/user_education_private_api_key.h"
 #include "base/functional/callback_forward.h"
 #include "base/scoped_observation.h"
@@ -56,6 +57,9 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // The delegate  which facilitates communication between Ash and user
   // education services in the browser.
   std::unique_ptr<UserEducationDelegate> delegate_;
+
+  // The controller responsible for creation/management of pings.
+  UserEducationPingController ping_controller_;
 
   // The set of controllers responsible for specific user education features.
   std::set<std::unique_ptr<UserEducationFeatureController>>

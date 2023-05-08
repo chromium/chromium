@@ -1,0 +1,146 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/user_education/user_education_ping_controller.h"
+
+#include <memory>
+#include <vector>
+
+#include "ash/constants/ash_features.h"
+#include "ash/user_education/user_education_ash_test_base.h"
+#include "ash/user_education/user_education_types.h"
+#include "base/test/scoped_feature_list.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
+#include "ui/views/metadata/view_factory.h"
+#include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
+
+namespace ash {
+namespace {
+
+// Aliases.
+using ::testing::Conditional;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsEmpty;
+using ::testing::Mock;
+using ::testing::Property;
+
+}  // namespace
+
+// UserEducationPingControllerTest ---------------------------------------------
+
+// Base class for tests of the `UserEducationPingController`.
+class UserEducationPingControllerTest : public UserEducationAshTestBase {
+ public:
+  UserEducationPingControllerTest() {
+    // NOTE: The `UserEducationPingController` exists only when a user education
+    // feature is enabled. Controller existence is verified in test coverage for
+    // the controller's owner.
+    std::vector<base::test::FeatureRef> enabled_features;
+    enabled_features.emplace_back(features::kCaptureModeTour);
+    enabled_features.emplace_back(features::kHoldingSpaceTour);
+    enabled_features.emplace_back(features::kWelcomeTour);
+    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+  }
+
+  // Returns the singleton instance owned by the `UserEducationController`.
+  UserEducationPingController* controller() {
+    return UserEducationPingController::Get();
+  }
+
+  // Returns the view to ping.
+  views::View* view() { return widget_->GetContentsView(); }
+
+  // Creates a ping for the specified view, returning `true` if successful.
+  bool CreatePing(PingId ping_id = PingId::kTest1,
+                  const absl::optional<views::View*>& v = absl::nullopt) {
+    return controller()->CreatePing(ping_id, v.value_or(this->view()));
+  }
+
+  // Expects that no ping exists for the specified view. No ping exists for a
+  // view if the view does not have any associated ping layers.
+  void ExpectNoPing(const absl::optional<views::View*>& v = absl::nullopt) {
+    views::View* const view = v.value_or(this->view());
+    EXPECT_THAT(
+        view->GetLayersInOrder(),
+        Conditional(view->layer(), ElementsAre(Eq(view->layer())), IsEmpty()));
+  }
+
+  // Asserts that a ping exists for the specified view. A ping exists for a view
+  // if the view has ping layers configured with expected properties.
+  void AssertPing(const absl::optional<views::View*>& v = absl::nullopt) {
+    views::View* const view = v.value_or(this->view());
+    ASSERT_THAT(
+        view->GetLayersInOrder(),
+        ElementsAre(Property(&ui::Layer::name,
+                             Eq(UserEducationPingController::kPingLayerName)),
+                    Eq(view->layer())));
+  }
+
+ private:
+  // UserEducationPingControllerTest:
+  void SetUp() override {
+    UserEducationAshTestBase::SetUp();
+
+    // Create a `widget_` whose contents `view()` will be pinged.
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetContentsView(
+        views::Builder<views::View>().SetPaintToLayer().Build());
+    widget_->CenterWindow(gfx::Size(100, 100));
+  }
+
+  // Used to enable user education features which are required for existence of
+  // the `controller()` under test.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Owns the `view()` to ping.
+  std::unique_ptr<views::Widget> widget_;
+};
+
+// Tests -----------------------------------------------------------------------
+
+// Verifies that a single view cannot be pinged multiple times concurrently but
+// that multiple concurrent pings may exist for distinct views.
+TEST_F(UserEducationPingControllerTest, MultipleConcurrent) {
+  ExpectNoPing();
+
+  // Ping `view()`.
+  EXPECT_TRUE(CreatePing(PingId::kTest1));
+  ASSERT_NO_FATAL_FAILURE(AssertPing());
+
+  // Attempts to ping `view()` multiple times concurrently should fail, even if
+  // no ping yet exists for the specified ping ID.
+  EXPECT_FALSE(CreatePing(PingId::kTest1));
+  ASSERT_NO_FATAL_FAILURE(AssertPing());
+  EXPECT_FALSE(CreatePing(PingId::kTest2));
+  ASSERT_NO_FATAL_FAILURE(AssertPing());
+
+  // Add `another_view` to the view hierarchy.
+  views::View* another_view = nullptr;
+  view()->AddChildView(views::Builder<views::View>()
+                           .CopyAddressTo(&another_view)
+                           .SetPaintToLayer()
+                           .Build());
+
+  // Attempts to ping `another_view` should succeed if and only if no ping yet
+  // exists for the specified ping ID.
+  EXPECT_FALSE(CreatePing(PingId::kTest1, another_view));
+  ExpectNoPing(another_view);
+  EXPECT_TRUE(CreatePing(PingId::kTest2, another_view));
+  ASSERT_NO_FATAL_FAILURE(AssertPing(another_view));
+}
+
+// Verifies that a `view()` cannot be pinged if not drawn.
+TEST_F(UserEducationPingControllerTest, NotIsDrawn) {
+  view()->SetVisible(false);
+  ExpectNoPing();
+
+  EXPECT_FALSE(CreatePing());
+  ExpectNoPing();
+}
+
+}  // namespace ash
