@@ -97,15 +97,24 @@ class TargetDeviceBootstrapController
       TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
  private:
+  friend class TargetDeviceBootstrapControllerTest;
+
   void NotifyObservers();
   void OnStartAdvertisingResult(bool success);
   void OnStopAdvertising();
+
+  // If the target device successfully receives an ack message within a
+  // specified timeout, it prepares to automatically resume Quick Start after
+  // the update and closes the connection. If ack_successful is 'false', it
+  // closes the connection without preparing to automatically resume Quick Start
+  // after the update.
+  void OnNotifySourceOfUpdateResponse(bool ack_successful);
+
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
   std::string pin_;
   // TODO: Should we enforce one observer at a time here too?
   base::ObserverList<Observer> observers_;
-  bool prepare_for_update_on_connection_closed_ = false;
 
   Status status_;
 

@@ -82,6 +82,10 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     bootstrap_controller_->AddObserver(fake_observer_.get());
   }
 
+  void NotifySourceOfUpdateResponse(bool ack_successful) {
+    bootstrap_controller_->OnNotifySourceOfUpdateResponse(ack_successful);
+  }
+
   PrefService* GetLocalState() { return local_state_.Get(); }
 
  protected:
@@ -235,29 +239,8 @@ TEST_F(TargetDeviceBootstrapControllerTest, GetPhoneInstanceId) {
   ASSERT_TRUE(bootstrap_controller_->GetPhoneInstanceId().empty());
 }
 
-TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate_NotConnected) {
-  ASSERT_FALSE(
-      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
-  ASSERT_TRUE(GetLocalState()
-                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
-                  .empty());
-
-  // PrepareForUpdate() shouldn't do anything if the connection is not
-  // established.
-  bootstrap_controller_->StartAdvertising();
-  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
-      /*success=*/true);
-  ASSERT_NE(fake_observer_->last_status.step, Step::CONNECTED);
-
-  bootstrap_controller_->PrepareForUpdate();
-  EXPECT_FALSE(
-      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
-  EXPECT_TRUE(GetLocalState()
-                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
-                  .empty());
-}
-
-TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate) {
+TEST_F(TargetDeviceBootstrapControllerTest,
+       OnNotifySourceOfUpdateResponse_AckSuccessful) {
   ASSERT_FALSE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
   ASSERT_TRUE(GetLocalState()
@@ -272,22 +255,46 @@ TEST_F(TargetDeviceBootstrapControllerTest, PrepareForUpdate) {
       kSourceDeviceId);
   ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
 
-  bootstrap_controller_->PrepareForUpdate();
-  // Pref shouldn't change until the connection is closed.
-  EXPECT_FALSE(
-      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
-  EXPECT_TRUE(GetLocalState()
-                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
-                  .empty());
-  fake_target_device_connection_broker_->CloseConnection(
-      ConnectionClosedReason::kConnectionLost);
+  NotifySourceOfUpdateResponse(/*ack_successful=*/true);
+
+  ASSERT_TRUE(
+      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::CONNECTION_CLOSED);
   EXPECT_TRUE(
       GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
   EXPECT_FALSE(GetLocalState()
                    ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
                    .empty());
-  GetLocalState()->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
-  GetLocalState()->ClearPref(prefs::kResumeQuickStartAfterRebootInfo);
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
+       OnNotifySourceOfUpdateResponse_AckUnsuccessful) {
+  ASSERT_FALSE(
+      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  ASSERT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
+
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+  ASSERT_EQ(fake_observer_->last_status.step, Step::CONNECTED);
+
+  NotifySourceOfUpdateResponse(/*ack_successful=*/false);
+
+  ASSERT_TRUE(
+      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::CONNECTION_CLOSED);
+  EXPECT_FALSE(
+      GetLocalState()->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot));
+  EXPECT_TRUE(GetLocalState()
+                  ->GetDict(prefs::kResumeQuickStartAfterRebootInfo)
+                  .empty());
 }
 
 }  // namespace ash::quick_start

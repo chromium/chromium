@@ -106,20 +106,13 @@ void TargetDeviceBootstrapController::PrepareForUpdate() {
     return;
   }
 
-  // TODO(b/280308026): Implement NotifySourceOfUpdateCallback and pass as
-  // argument here. This callback persists the connection info to local disk if
-  // the success param it receives is 'true' and then drops the connection.
-  authenticated_connection_->NotifySourceOfUpdate(session_id_,
-                                                  base::DoNothing());
-
-  // TODO(b/234655072): Implement timeout for connection to close.
-  // If the source device successfully receives this message, it drops the
-  // connection. The target device waits 1-3 seconds for the connection to close
-  // in order to confirm the source device is prepared to re-connect after the
-  // target device reboots. If the connection isn't closed within the timeout,
-  // the target device reboots like normal and will not automatically resume
-  // Quick Start after the update.
-  prepare_for_update_on_connection_closed_ = true;
+  // TODO(b/234655072): Implement 3 second timeout for invocation of
+  // OnNotifySourceOfUpdateResponse() callback.
+  authenticated_connection_->NotifySourceOfUpdate(
+      session_id_,
+      base::BindOnce(
+          &TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TargetDeviceBootstrapController::OnPinVerificationRequested(
@@ -175,13 +168,6 @@ void TargetDeviceBootstrapController::OnConnectionClosed(
   status_.step = Step::ERROR;
   status_.payload = ErrorCode::CONNECTION_CLOSED;
   NotifyObservers();
-
-  if (prepare_for_update_on_connection_closed_) {
-    PrefService* prefs = g_browser_process->local_state();
-    prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
-    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
-    prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
-  }
 }
 
 void TargetDeviceBootstrapController::NotifyObservers() {
@@ -205,6 +191,22 @@ void TargetDeviceBootstrapController::OnStopAdvertising() {
   status_.step = Step::NONE;
   status_.payload.emplace<absl::monostate>();
   NotifyObservers();
+}
+
+void TargetDeviceBootstrapController::OnNotifySourceOfUpdateResponse(
+    bool ack_successful) {
+  CHECK(authenticated_connection_);
+
+  if (ack_successful) {
+    PrefService* prefs = g_browser_process->local_state();
+    prefs->SetBoolean(prefs::kShouldResumeQuickStartAfterReboot, true);
+    base::Value::Dict info = connection_broker_->GetPrepareForUpdateInfo();
+    prefs->SetDict(prefs::kResumeQuickStartAfterRebootInfo, std::move(info));
+  }
+
+  authenticated_connection_->Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason::
+          kTargetDeviceUpdate);
 }
 
 }  // namespace ash::quick_start

@@ -107,7 +107,8 @@ void FakeTargetDeviceConnectionBroker::AuthenticateConnection(
       nearby_connection, session_context,
       mojo::SharedRemote<ash::quick_start::mojom::QuickStartDecoder>(
           fake_quick_start_decoder_->GetRemote()),
-      base::DoNothing(),
+      base::BindOnce(&FakeTargetDeviceConnectionBroker::OnConnectionClosed,
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(
           &FakeTargetDeviceConnectionBroker::OnConnectionAuthenticated,
           weak_ptr_factory_.GetWeakPtr()));

@@ -92,8 +92,9 @@ class Connection
   // Get the state of the connection (open, closing, or closed)
   State GetState();
 
-  // Close the connection.
-  void Close(TargetDeviceConnectionBroker::ConnectionClosedReason reason);
+  // TargetDeviceConnectionBroker::AuthenticatedConnection:
+  void Close(
+      TargetDeviceConnectionBroker::ConnectionClosedReason reason) override;
 
   // Changes the connection state to authenticated and invokes the
   // ConnectionAuthenticatedCallback. The caller must ensure that the connection
@@ -117,7 +118,7 @@ class Connection
   using PayloadResponseCallback =
       base::OnceCallback<void(absl::optional<std::vector<uint8_t>>)>;
 
-  // TargetDeviceConnectionBroker::AuthenticatedConnection
+  // TargetDeviceConnectionBroker::AuthenticatedConnection:
   void RequestWifiCredentials(int32_t session_id,
                               RequestWifiCredentialsCallback callback) override;
   void NotifySourceOfUpdate(int32_t session_id,

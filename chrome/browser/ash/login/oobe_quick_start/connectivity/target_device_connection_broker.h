@@ -43,6 +43,7 @@ class TargetDeviceConnectionBroker {
     kAuthenticationFailed,
     kConnectionLost,
     kRequestTimedOut,
+    kTargetDeviceUpdate,
     kUnknownError,
   };
 
@@ -57,6 +58,10 @@ class TargetDeviceConnectionBroker {
         base::OnceCallback<void(/*ack_successful=*/bool)>;
     using RequestAccountTransferAssertionCallback =
         base::OnceCallback<void(absl::optional<FidoAssertionInfo>)>;
+
+    // Close the connection.
+    virtual void Close(
+        TargetDeviceConnectionBroker::ConnectionClosedReason reason) = 0;
 
     // Request wifi credentials from target Android device. The session_id is
     // used to identify this QuickStart session and is distinct from the
