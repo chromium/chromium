@@ -2149,8 +2149,9 @@ void WallpaperControllerImpl::SetOnlineWallpaperImpl(
 
 void WallpaperControllerImpl::ShowOobeWallpaper() {
   if (ash::features::IsOobeSimonEnabled()) {
-    const base::FilePath simon_file_path = base::FilePath(FILE_PATH_LITERAL(
-        "/usr/share/chromeos-assets/simon/simon_wallpaper.jpg"));
+    const base::FilePath simon_file_path = base::FilePath(
+        FILE_PATH_LITERAL("/usr/share/chromeos-assets/animated_splash_screen/"
+                          "oobe_wallpaper.jpg"));
     if (!cached_oobe_wallpaper_.image.isNull() &&
         cached_oobe_wallpaper_.file_path == simon_file_path) {
       OnOobeWallpaperDecoded(simon_file_path, cached_oobe_wallpaper_.image);
