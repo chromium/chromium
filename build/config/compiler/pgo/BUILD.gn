@@ -118,6 +118,21 @@ config("pgo_optimization_flags") {
       # See https://crbug.com/978401
       "-Wno-backend-plugin",
     ]
+
+    # Enable basic block layout based on the extended TSP problem. This aims to
+    # improve icache utilization and reduce the binary size.
+    if (use_thin_lto) {
+      if (is_win) {
+        ldflags = [ "-mllvm:-enable-ext-tsp-block-placement=1" ]
+      } else {
+        ldflags = [ "-Wl,-mllvm,-enable-ext-tsp-block-placement=1" ]
+      }
+    } else {
+      cflags += [
+        "-mllvm",
+        "-enable-ext-tsp-block-placement=1",
+      ]
+    }
   }
 }
 
