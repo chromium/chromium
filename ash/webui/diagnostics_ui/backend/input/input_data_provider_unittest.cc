@@ -585,6 +585,8 @@ class TestEventRewriterAshDelegate : public ui::EventRewriterAsh::Delegate {
     return false;
   }
   void RecordEventRemappedToRightClick() override {}
+  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
+                                 bool alt_based) override {}
 
  protected:
   bool suppress_modifier_key_rewrites_ = false;

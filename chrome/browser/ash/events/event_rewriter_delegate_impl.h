@@ -50,6 +50,8 @@ class EventRewriterDelegateImpl : public ui::EventRewriterAsh::Delegate {
   void SuppressModifierKeyRewrites(bool should_suppress) override;
   void SuppressMetaTopRowKeyComboRewrites(bool should_suppress) override;
   void RecordEventRemappedToRightClick() override;
+  void RecordSixPackEventRewrite(ui::KeyboardCode key_code,
+                                 bool alt_based) override;
 
  private:
   PrefService* GetPrefService() const;

@@ -700,6 +700,21 @@ extern const char kOwnerTapToClickEnabled[];
 
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEventRemappedToRightClick[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackDelete[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackHome[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackEnd[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackPageUp[];
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kKeyEventRemappedToSixPackPageDown[];
 }  // namespace prefs
 }  // namespace ash
 

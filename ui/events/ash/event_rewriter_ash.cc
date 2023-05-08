@@ -517,11 +517,18 @@ void RecordSearchPlusDigitFKeyRewrite(ui::EventType event_type,
 
 // Records metrics for the Alt and Search based variants of keys in the
 // "six pack" eg. Home, End, PageUp, PageDown, Delete, Insert.
-void RecordSixPackEventRewrites(ui::EventType event_type,
+void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
+                                ui::EventType event_type,
                                 ui::KeyboardCode key_code,
                                 bool legacy_variant) {
   if (event_type != ET_KEY_PRESSED) {
     return;
+  }
+
+  // The "Insert" key is omitted since the (Search+Shift+Backspace) rewrite is
+  // the only way to emit an "Insert" key event.
+  if (delegate && key_code != ui::VKEY_INSERT) {
+    delegate->RecordSixPackEventRewrite(key_code, /*alt_based=*/legacy_variant);
   }
 
   if (!legacy_variant) {
@@ -1442,7 +1449,8 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
           RewriteWithKeyboardRemappings(kNewInsertRemapping,
                                         std::size(kNewInsertRemapping),
                                         incoming, state, strict)) {
-        RecordSixPackEventRewrites(key_event.type(), state->key_code,
+        RecordSixPackEventRewrites(/*delegate=*/nullptr, key_event.type(),
+                                   state->key_code,
                                    /*legacy_variant=*/false);
         return;
       }
@@ -1460,7 +1468,7 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
           RewriteWithKeyboardRemappings(kOldInsertRemapping,
                                         std::size(kOldInsertRemapping),
                                         incoming, state, strict)) {
-        RecordSixPackEventRewrites(key_event.type(), state->key_code,
+        RecordSixPackEventRewrites(delegate_, key_event.type(), state->key_code,
                                    /*legacy_variant=*/true);
         return;
       }
@@ -1487,7 +1495,7 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
         RewriteWithKeyboardRemappings(kSixPackRemappings,
                                       std::size(kSixPackRemappings), incoming,
                                       state, strict)) {
-      RecordSixPackEventRewrites(key_event.type(), state->key_code,
+      RecordSixPackEventRewrites(delegate_, key_event.type(), state->key_code,
                                  /*legacy_variant=*/false);
       return;
     }
@@ -1516,7 +1524,7 @@ void EventRewriterAsh::RewriteExtendedKeys(const KeyEvent& key_event,
       if (RewriteWithKeyboardRemappings(kLegacySixPackRemappings,
                                         std::size(kLegacySixPackRemappings),
                                         incoming, state)) {
-        RecordSixPackEventRewrites(key_event.type(), state->key_code,
+        RecordSixPackEventRewrites(delegate_, key_event.type(), state->key_code,
                                    /*legacy_variant=*/true);
         return;
       }

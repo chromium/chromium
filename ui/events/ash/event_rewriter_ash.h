@@ -137,6 +137,16 @@ class EventRewriterAsh : public EventRewriter {
     // right click event. The `kEventRemappedToRightClick` pref will be used
     // to determine the default behavior for simulating a right click.
     virtual void RecordEventRemappedToRightClick() = 0;
+
+    // Used to record Alt/Search based key event rewrites for Six Pack keys.
+    // `alt_based` tells us whether this "six pack" event was produced by an
+    // Alt or Search/Launcher based keyboard shortcut. The corresponding
+    // "six pack" key pref will be incremented when the Alt variant is used and
+    // decremented when the Search/Launcher variant is used. This information
+    // will determine the default behavior for rewriting a key event to a
+    // "six pack" key.
+    virtual void RecordSixPackEventRewrite(KeyboardCode key_code,
+                                           bool alt_based) = 0;
   };
 
   // Enum used to record the usage of the modifier keys on all devices. Do not

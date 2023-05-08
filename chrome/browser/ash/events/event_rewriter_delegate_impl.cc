@@ -9,6 +9,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/notifications/deprecation_notification_controller.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
@@ -176,6 +177,38 @@ void EventRewriterDelegateImpl::RecordEventRemappedToRightClick() {
     return;
   }
   pref_service->SetBoolean(prefs::kEventRemappedToRightClick, true);
+}
+
+void EventRewriterDelegateImpl::RecordSixPackEventRewrite(
+    ui::KeyboardCode key_code,
+    bool alt_based) {
+  PrefService* const pref_service = GetPrefService();
+  if (!pref_service) {
+    return;
+  }
+  // A map between "six pack" keys to prefs which track how often a user uses
+  // either the alt or search based shortcut variant to emit a "six pack" event.
+  // The "Insert" key is omitted since the (Search+Shift+Backspace) rewrite is
+  // the only way to emit an "Insert" key event.
+  static constexpr auto kSixPackKeyToPrefMap =
+      base::MakeFixedFlatMap<ui::KeyboardCode, const char*>({
+          {ui::KeyboardCode::VKEY_DELETE,
+           prefs::kKeyEventRemappedToSixPackDelete},
+          {ui::KeyboardCode::VKEY_HOME, prefs::kKeyEventRemappedToSixPackHome},
+          {ui::KeyboardCode::VKEY_PRIOR,
+           prefs::kKeyEventRemappedToSixPackPageDown},
+          {ui::KeyboardCode::VKEY_END, prefs::kKeyEventRemappedToSixPackEnd},
+          {ui::KeyboardCode::VKEY_NEXT,
+           prefs::kKeyEventRemappedToSixPackPageUp},
+      });
+  auto* it = kSixPackKeyToPrefMap.find(key_code);
+  CHECK(it != kSixPackKeyToPrefMap.end());
+  int count = pref_service->GetInteger(it->second);
+  // `alt_based` tells us whether this "six pack" event was produced by an
+  // Alt or Search/Launcher based keyboard shortcut. Update our pref to track
+  // which method the user uses more frequently.
+  count += alt_based ? 1 : -1;
+  pref_service->SetInteger(it->second, count);
 }
 
 bool EventRewriterDelegateImpl::NotifyDeprecatedRightClickRewrite() {

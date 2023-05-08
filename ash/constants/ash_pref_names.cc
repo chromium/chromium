@@ -1474,6 +1474,51 @@ const char kOwnerTapToClickEnabled[] = "owner.touchpad.enable_tap_to_click";
 const char kEventRemappedToRightClick[] =
     "ash.settings.event_remapped_to_right_click";
 
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the Delete "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to Delete.
+// Default setting:
+//  Pref contains a positive value: Alt+BackSpace
+//  Pref contains a negative value: Search+BackSpace
+const char kKeyEventRemappedToSixPackDelete[] =
+    "ash.settings.key_event_remapped_to_six_pack_delete";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the Home "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to Home.
+// Default setting:
+//  Pref contains a positive value: Control+Alt+Up
+//  Pref contains a negative value: Search+Left
+const char kKeyEventRemappedToSixPackHome[] =
+    "ash.settings.key_event_remapped_to_six_pack_home";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the End "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to End.
+// Default setting:
+//  Pref contains a positive value: Control+Alt+Down
+//  Pref contains a negative value: Search+Right
+const char kKeyEventRemappedToSixPackEnd[] =
+    "ash.settings.key_event_remapped_to_six_pack_end";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the PageUp "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to PageUp.
+// Default setting:
+//  Pref contains a positive value: Alt+Up
+//  Pref contains a negative value: Search+Up
+const char kKeyEventRemappedToSixPackPageUp[] =
+    "ash.settings.key_event_remapped_to_six_pack_page_up";
+
+// An integer pref for tracking Alt and Search based key event rewrites for
+// the PageDown "six pack" key. The value of this pref will be used to set the
+// default behavior for remapping a key event to PageDown.
+// Default setting:
+//  Pref contains a positive value: Alt+Down
+//  Pref contains a negative value: Search+Down
+const char kKeyEventRemappedToSixPackPageDown[] =
+    "ash.settings.key_event_remapped_to_six_pack_page_down";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 
