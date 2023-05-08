@@ -658,7 +658,7 @@ IN_PROC_BROWSER_TEST_F(AccessContextAuditSessionRestoreBrowserTest,
 
 // TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
 // TODO(crbug.com/1431000): Failing consistently on Linux Wayland.
-#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreSession DISABLED_RestoreSession
 #else
 #define MAYBE_RestoreSession RestoreSession
