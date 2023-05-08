@@ -578,11 +578,9 @@ DlpReportingManager* DlpRulesManagerImpl::GetReportingManager() const {
   return reporting_manager_.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 DlpFilesController* DlpRulesManagerImpl::GetDlpFilesController() const {
   return files_controller_.get();
 }
-#endif
 
 std::string DlpRulesManagerImpl::GetSourceUrlPattern(
     const GURL& source_url,
