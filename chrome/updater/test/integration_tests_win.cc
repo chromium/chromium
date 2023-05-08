@@ -882,8 +882,7 @@ void ExpectMarshalInterfaceSucceeds(UpdaterScope scope) {
   // Marshal and unmarshal an IUpdaterInternal object.
   Microsoft::WRL::ComPtr<IUpdaterInternal> updater_internal;
   EXPECT_HRESULT_SUCCEEDED(
-      Microsoft::WRL::MakeAndInitialize<UpdaterInternalImpl>(
-          &updater_internal));
+      MakeAndInitializeComObject<UpdaterInternalImpl>(updater_internal));
 
   Microsoft::WRL::ComPtr<IStream> stream;
   EXPECT_HRESULT_SUCCEEDED(::CoMarshalInterThreadInterfaceInStream(

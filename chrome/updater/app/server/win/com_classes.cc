@@ -9,6 +9,7 @@
 #include <wrl/implements.h>
 
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -31,7 +32,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace {
 
 // Maximum string length for COM strings.
@@ -300,7 +300,7 @@ class StateChangeCallbackFilter {
     task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(&IUpdaterObserver::OnStateChange, observer_,
-                       Microsoft::WRL::Make<UpdateStateImpl>(update_state)),
+                       MakeComObjectOrCrash<UpdateStateImpl>(update_state)),
         base::BindOnce([](HRESULT hr) {
           VLOG(4) << "IUpdaterObserver::OnStateChange returned " << std::hex
                   << hr;
@@ -352,7 +352,7 @@ HRESULT UpdaterImpl::CheckForUpdate(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::Update "
@@ -412,7 +412,7 @@ HRESULT UpdaterImpl::Update(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::Update "
@@ -454,7 +454,7 @@ HRESULT UpdaterImpl::UpdateAll(IUpdaterObserver* observer) {
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::UpdateAll "
@@ -553,7 +553,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(1) << "UpdaterImpl::Install "
@@ -657,7 +657,7 @@ HRESULT UpdaterImpl::RunInstaller(const wchar_t* app_id,
                           FROM_HERE,
                           base::BindOnce(
                               &IUpdaterObserver::OnComplete, observer,
-                              Microsoft::WRL::Make<CompleteStatusImpl>(
+                              MakeComObjectOrCrash<CompleteStatusImpl>(
                                   static_cast<int>(result), L"")),
                           base::BindOnce([](HRESULT hr) {
                             VLOG(2) << "UpdaterImpl::RunInstaller "

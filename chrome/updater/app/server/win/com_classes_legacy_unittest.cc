@@ -26,6 +26,7 @@
 #include "chrome/updater/util/unittest_util.h"
 #include "chrome/updater/util/unittest_util_win.h"
 #include "chrome/updater/util/util.h"
+#include "chrome/updater/util/win_util.h"
 #include "chrome/updater/win/setup/setup_util.h"
 #include "chrome/updater/win/test/test_executables.h"
 #include "chrome/updater/win/test/test_strings.h"
@@ -58,16 +59,15 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 
   void TearDown() override { DeleteAppClientKey(GetTestScope(), kAppId1); }
 
-  HRESULT CreateAppCommandWeb(
+  [[nodiscard]] HRESULT CreateAppCommandWeb(
       const std::wstring& app_id,
       const std::wstring& command_id,
       const std::wstring& command_line_format,
       Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl>& app_command_web) {
     CreateAppCommandRegistry(GetTestScope(), app_id, command_id,
                              command_line_format);
-
-    return Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
-        &app_command_web, GetTestScope(), app_id, command_id);
+    return MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
+        app_command_web, GetTestScope(), app_id, command_id);
   }
 
   void WaitForUpdateCompletion(
@@ -85,18 +85,15 @@ class LegacyAppCommandWebImplTest : public testing::Test {
 
 TEST_F(LegacyAppCommandWebImplTest, NoApp) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
-  EXPECT_HRESULT_FAILED(
-      Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
-          &app_command_web, GetTestScope(), kAppId1, kCmdId1));
+  EXPECT_HRESULT_FAILED(MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
+      app_command_web, GetTestScope(), kAppId1, kCmdId1));
 }
 
 TEST_F(LegacyAppCommandWebImplTest, NoCmd) {
   Microsoft::WRL::ComPtr<LegacyAppCommandWebImpl> app_command_web;
   CreateAppCommandRegistry(GetTestScope(), kAppId1, kCmdId1, kCmdLineValid);
-
-  EXPECT_HRESULT_FAILED(
-      Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
-          &app_command_web, GetTestScope(), kAppId1, kCmdId2));
+  EXPECT_HRESULT_FAILED(MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
+      app_command_web, GetTestScope(), kAppId1, kCmdId2));
 }
 
 TEST_F(LegacyAppCommandWebImplTest, Execute) {

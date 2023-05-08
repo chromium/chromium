@@ -6,6 +6,7 @@
 #define CHROME_UPDATER_UTIL_WIN_UTIL_H_
 
 #include <windows.h>
+#include <wrl/client.h>
 #include <wrl/implements.h>
 
 #include <cstdint>
@@ -13,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -381,6 +383,26 @@ void ForEachServiceWithPrefix(
 // Logs CLSID entries in HKLM and HKCU under both the 64-bit and 32-bit hives
 // for the given CLSID.
 void LogClsidEntries(REFCLSID clsid);
+
+template <typename T, typename... TArgs>
+Microsoft::WRL::ComPtr<T> MakeComObjectOrCrash(TArgs&&... args) {
+  auto obj = Microsoft::WRL::Make<T>(std::forward<TArgs>(args)...);
+  CHECK(obj);
+  return obj;
+}
+
+template <typename T, typename I, typename... TArgs>
+[[nodiscard]] HRESULT MakeAndInitializeComObject(I** obj, TArgs&&... args) {
+  return Microsoft::WRL::MakeAndInitialize<T>(obj,
+                                              std::forward<TArgs>(args)...);
+}
+
+template <typename T, typename I, typename... TArgs>
+[[nodiscard]] HRESULT MakeAndInitializeComObject(Microsoft::WRL::ComPtr<I>& obj,
+                                                 TArgs&&... args) {
+  return MakeAndInitializeComObject<T>(static_cast<I**>(&obj),
+                                       std::forward<TArgs>(args)...);
+}
 
 }  // namespace updater
 

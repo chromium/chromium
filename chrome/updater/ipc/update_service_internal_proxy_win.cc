@@ -115,7 +115,7 @@ class UpdateServiceInternalProxyImpl
       return;
     }
     auto callback_wrapper =
-        Microsoft::WRL::Make<UpdaterInternalCallback>(std::move(callback));
+        MakeComObjectOrCrash<UpdaterInternalCallback>(std::move(callback));
     HRESULT hr = get_interface()->Run(callback_wrapper.Get());
     if (FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdaterInternal::Run" << std::hex << hr;
@@ -131,7 +131,7 @@ class UpdateServiceInternalProxyImpl
       return;
     }
     auto callback_wrapper =
-        Microsoft::WRL::Make<UpdaterInternalCallback>(std::move(callback));
+        MakeComObjectOrCrash<UpdaterInternalCallback>(std::move(callback));
     HRESULT hr = get_interface()->Hello(callback_wrapper.Get());
     if (FAILED(hr)) {
       VLOG(2) << "Failed to call IUpdaterInternal::Hello" << std::hex << hr;

@@ -474,7 +474,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       return E_FAIL;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<AppVersionWebImpl>(
+    return MakeAndInitializeComObject<AppVersionWebImpl>(
         current, base::ASCIIToWide(result->current_version->GetString()));
   }
 
@@ -485,12 +485,12 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
       return E_FAIL;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<AppVersionWebImpl>(
+    return MakeAndInitializeComObject<AppVersionWebImpl>(
         next, base::ASCIIToWide(state_update_->next_version.GetString()));
   }
 
   IFACEMETHODIMP get_command(BSTR command_id, IDispatch** command) override {
-    return Microsoft::WRL::MakeAndInitialize<LegacyAppCommandWebImpl>(
+    return MakeAndInitializeComObject<LegacyAppCommandWebImpl>(
         command, GetUpdaterScope(), base::UTF8ToWide(app_id_), command_id);
   }
 
@@ -583,7 +583,7 @@ class AppWebImpl : public IDispatchImpl<IAppWeb> {
           (result_.value() == UpdateService::Result::kSuccess) ? 0 : -1;
     }
 
-    return Microsoft::WRL::MakeAndInitialize<CurrentStateImpl>(
+    return MakeAndInitializeComObject<CurrentStateImpl>(
         current_state, state_value, available_version, bytes_downloaded,
         total_bytes_to_download,
         /*download_time_remaining_ms=*/-1,
@@ -669,8 +669,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     is_install_ = true;
-    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
-        &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
+    return MakeAndInitializeComObject<AppWebImpl>(
+        app_web_, app_id, UpdateService::PolicySameVersionUpdate::kAllowed);
   }
 
   IFACEMETHODIMP createInstalledApp(BSTR app_id) override {
@@ -681,8 +681,8 @@ class AppBundleWebImpl : public IDispatchImpl<IAppBundleWeb> {
     }
 
     is_install_ = false;
-    return Microsoft::WRL::MakeAndInitialize<AppWebImpl>(
-        &app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
+    return MakeAndInitializeComObject<AppWebImpl>(
+        app_web_, app_id, UpdateService::PolicySameVersionUpdate::kNotAllowed);
   }
 
   IFACEMETHODIMP createAllInstalledApps() override {
@@ -792,8 +792,7 @@ LegacyOnDemandImpl::~LegacyOnDemandImpl() = default;
 STDMETHODIMP LegacyOnDemandImpl::createAppBundleWeb(
     IDispatch** app_bundle_web) {
   CHECK(app_bundle_web);
-
-  return Microsoft::WRL::MakeAndInitialize<AppBundleWebImpl>(app_bundle_web);
+  return MakeAndInitializeComObject<AppBundleWebImpl>(app_bundle_web);
 }
 
 LegacyProcessLauncherImpl::LegacyProcessLauncherImpl() = default;
@@ -1386,10 +1385,10 @@ PolicyStatusValueImpl::PolicyStatusValueImpl()
 PolicyStatusValueImpl::~PolicyStatusValueImpl() = default;
 
 template <typename T>
-HRESULT PolicyStatusValueImpl::Create(
+[[nodiscard]] HRESULT PolicyStatusValueImpl::Create(
     const T& value,
     IPolicyStatusValue** policy_status_value) {
-  return Microsoft::WRL::MakeAndInitialize<PolicyStatusValueImpl>(
+  return MakeAndInitializeComObject<PolicyStatusValueImpl>(
       policy_status_value,
       value.effective_policy() ? value.effective_policy()->source : "",
       value.effective_policy()
