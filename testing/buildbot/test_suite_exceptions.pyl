@@ -2620,6 +2620,12 @@
       'Linux TSan Tests': {
         # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
+          'dimension_sets': [
+            {
+               # TODO(crbug.com/1412588): Move the remainder to Jammy.
+              'os': 'Ubuntu-22.04',
+            },
+          ],
           'shards': 32, # Adjusted for testing, see https://crbug.com/1179567
         },
       },
