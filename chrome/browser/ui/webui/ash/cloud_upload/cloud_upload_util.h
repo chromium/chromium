@@ -17,6 +17,14 @@ class Profile;
 
 namespace ash::cloud_upload {
 
+// Type of the source location from which a given file is being uploaded.
+enum class SourceType {
+  LOCAL = 0,
+  READ_ONLY = 1,
+  CLOUD = 2,
+  kMaxValue = CLOUD,
+};
+
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,
@@ -29,6 +37,11 @@ void CreateDirectoryOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,
     storage::FileSystemURL destination_folder_url,
     base::OnceCallback<void(base::File::Error)> complete_callback);
+
+// Returns the type of the source location from which the file is getting
+// uploaded (see SourceType values).
+SourceType GetSourceType(Profile* profile,
+                         const storage::FileSystemURL& source_path);
 
 // Returns the operation type (move or copy) for the upload flow based on the
 // source path of the file to upload.

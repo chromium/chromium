@@ -127,6 +127,7 @@ class CloudOpenTask : public BrowserListObserver,
 
  private:
   friend class RefCounted<CloudOpenTask>;  // Allow destruction by RefCounted<>.
+  friend class CloudOpenTaskBrowserTest;
 
   CloudOpenTask(Profile* profile,
                 std::vector<storage::FileSystemURL> file_urls,
@@ -145,6 +146,7 @@ class CloudOpenTask : public BrowserListObserver,
                              const file_system_provider::Actions& actions,
                              base::File::Error result);
 
+  bool ShouldShowConfirmationDialog();
   void ConfirmMoveOrStartUpload();
   void StartUpload();
 

@@ -132,9 +132,21 @@ void CloudUploadPageHandler::SetOfficeAsDefaultHandler() {
   file_manager::file_tasks::SetOfficeSetupComplete(profile_);
 }
 
+void CloudUploadPageHandler::GetAlwaysMoveOfficeFilesToDrive(
+    GetAlwaysMoveOfficeFilesToDriveCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::GetAlwaysMoveOfficeFilesToDrive(profile_));
+}
+
 void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToDrive(bool always_move) {
   file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile_,
                                                             always_move);
+}
+
+void CloudUploadPageHandler::GetAlwaysMoveOfficeFilesToOneDrive(
+    GetAlwaysMoveOfficeFilesToOneDriveCallback callback) {
+  std::move(callback).Run(
+      file_manager::file_tasks::GetAlwaysMoveOfficeFilesToOneDrive(profile_));
 }
 
 void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToOneDrive(
@@ -143,21 +155,11 @@ void CloudUploadPageHandler::SetAlwaysMoveOfficeFilesToOneDrive(
                                                                always_move);
 }
 
-void CloudUploadPageHandler::SetOfficeMoveConfirmationShownForDriveTrue() {
-  file_manager::file_tasks::SetOfficeMoveConfirmationShownForDrive(profile_,
-                                                                   true);
-}
-
 void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForDrive(
     GetOfficeMoveConfirmationShownForDriveCallback callback) {
   std::move(callback).Run(
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
           profile_));
-}
-
-void CloudUploadPageHandler::SetOfficeMoveConfirmationShownForOneDriveTrue() {
-  file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive(profile_,
-                                                                      true);
 }
 
 void CloudUploadPageHandler::GetOfficeMoveConfirmationShownForOneDrive(

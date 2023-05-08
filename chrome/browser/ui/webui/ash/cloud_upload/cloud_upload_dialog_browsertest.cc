@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_parser.h"
@@ -53,6 +54,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/constants.h"
+#include "storage/browser/file_system/external_mount_points.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ash::cloud_upload {
@@ -968,20 +970,103 @@ IN_PROC_BROWSER_TEST_F(FixUpFlowBrowserTest,
       *profile()->GetPrefs(), kDocMimeType, kDocFileExtension, &default_task));
 }
 
-// Tests that the preference |kOfficeMoveConfirmationShown| is False before the
-// `kMoveConfirmationOneDrive` and `kMoveConfirmationGoogleDrive` dialogs and
-// True afterwards.
-class MoveConfirmationDialogBrowserTest : public InProcessBrowserTest {
+class CloudOpenTaskBrowserTest : public InProcessBrowserTest {
  public:
-  MoveConfirmationDialogBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kUploadOfficeToCloud);
+  CloudOpenTaskBrowserTest() {
+    EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
+    my_files_dir_ = temp_dir_.GetPath().Append("myfiles");
+    read_only_dir_ = temp_dir_.GetPath().Append("readonly");
+    smb_dir_ = temp_dir_.GetPath().Append("smb");
   }
 
-  MoveConfirmationDialogBrowserTest(const MoveConfirmationDialogBrowserTest&) =
-      delete;
-  MoveConfirmationDialogBrowserTest& operator=(
-      const MoveConfirmationDialogBrowserTest&) = delete;
+  CloudOpenTaskBrowserTest(const CloudOpenTaskBrowserTest&) = delete;
+  CloudOpenTaskBrowserTest& operator=(const CloudOpenTaskBrowserTest&) = delete;
+
+  void SetUpLocalToDriveTask() {
+    SetUpMyFiles();
+
+    source_files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        my_files_dir_.AppendASCII("file.docx")));
+
+    upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+        profile(), source_files_,
+        ash::cloud_upload::CloudProvider::kGoogleDrive, nullptr));
+  }
+
+  void SetUpCloudToDriveTask() {
+    SetUpCloudLocation();
+
+    source_files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        smb_dir_.AppendASCII("file.docx")));
+
+    upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+        profile(), source_files_,
+        ash::cloud_upload::CloudProvider::kGoogleDrive, nullptr));
+  }
+
+  void SetUpReadOnlyToDriveTask() {
+    SetUpReadOnlyLocation();
+
+    source_files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        read_only_dir_.AppendASCII("file.docx")));
+
+    upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+        profile(), source_files_,
+        ash::cloud_upload::CloudProvider::kGoogleDrive, nullptr));
+  }
+
+  void SetUpLocalToOneDriveTask() {
+    SetUpMyFiles();
+
+    source_files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        my_files_dir_.AppendASCII("file.docx")));
+
+    upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+        profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
+        nullptr));
+  }
+
+  void SetUpCloudToOneDriveTask() {
+    SetUpCloudLocation();
+
+    source_files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        smb_dir_.AppendASCII("file.docx")));
+
+    upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+        profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
+        nullptr));
+  }
+
+  void SetUpReadOnlyToOneDriveTask() {
+    SetUpReadOnlyLocation();
+
+    source_files_.push_back(FilePathToFileSystemURL(
+        profile(),
+        file_manager::util::GetFileManagerFileSystemContext(profile()),
+        read_only_dir_.AppendASCII("file.docx")));
+
+    upload_task_ = base::WrapRefCounted(new ash::cloud_upload::CloudOpenTask(
+        profile(), source_files_, ash::cloud_upload::CloudProvider::kOneDrive,
+        nullptr));
+  }
+
+  bool ShouldShowConfirmationDialog() {
+    return upload_task_->ShouldShowConfirmationDialog();
+  }
+
+  void OnDialogComplete(const std::string& user_response) {
+    upload_task_->OnDialogComplete(user_response);
+  }
 
   Profile* profile() { return browser()->profile(); }
 
@@ -994,56 +1079,340 @@ class MoveConfirmationDialogBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  // Creates mount point for My files and registers local filesystem.
+  void SetUpMyFiles() {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::CreateDirectory(my_files_dir_));
+    }
+    std::string mount_point_name =
+        file_manager::util::GetDownloadsMountPointName(profile());
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        mount_point_name);
+    CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+        mount_point_name, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), my_files_dir_));
+    file_manager::VolumeManager::Get(profile())
+        ->RegisterDownloadsDirectoryForTesting(my_files_dir_);
+  }
+
+  // Creates a new SMB filesystem, which we use in tests as an example of cloud
+  // location.
+  void SetUpCloudLocation() {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::CreateDirectory(smb_dir_));
+    }
+    std::string mount_point_name = "smb";
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        mount_point_name);
+    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+        mount_point_name, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), smb_dir_));
+    file_manager::VolumeManager::Get(profile())->AddVolumeForTesting(
+        smb_dir_, file_manager::VOLUME_TYPE_SMB, ash::DeviceType::kUnknown,
+        /*read_only=*/false);
+  }
+
+  // Creates a new filesystem which represents a read-only location, files
+  // cannot be moved from it.
+  void SetUpReadOnlyLocation() {
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::CreateDirectory(read_only_dir_));
+    }
+    std::string mount_point_name = "readonly";
+    storage::ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(
+        mount_point_name);
+    EXPECT_TRUE(profile()->GetMountPoints()->RegisterFileSystem(
+        mount_point_name, storage::kFileSystemTypeLocal,
+        storage::FileSystemMountOption(), read_only_dir_));
+    file_manager::VolumeManager::Get(profile())->AddVolumeForTesting(
+        read_only_dir_, file_manager::VOLUME_TYPE_TESTING,
+        ash::DeviceType::kUnknown, /*read_only=*/true);
+  }
+
+  base::ScopedTempDir temp_dir_;
+  base::FilePath my_files_dir_;
+  base::FilePath read_only_dir_;
+  base::FilePath smb_dir_;
+  std::vector<storage::FileSystemURL> source_files_;
+  scoped_refptr<CloudOpenTask> upload_task_;
 };
 
-// Tests that the preference |kOfficeMoveConfirmationShownForDrive| is False
-// before the `kMoveConfirmationGoogleDrive` dialog and True afterwards.
-IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
-                       MoveConfirmationGoogleDriveSetsPref) {
-  ASSERT_FALSE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
-      profile()));
-  {
-    base::RunLoop run_loop;
-    PrefChangeRegistrar change_observer;
-    change_observer.Init(profile()->GetPrefs());
-    change_observer.Add(prefs::kOfficeMoveConfirmationShownForDrive,
-                        run_loop.QuitClosure());
-    mojom::DialogArgsPtr args = mojom::DialogArgs::New();
-    args->dialog_page = mojom::DialogPage::kMoveConfirmationGoogleDrive;
-    CloudUploadDialog* dialog = new CloudUploadDialog(
-        std::move(args), base::DoNothing(),
-        mojom::DialogPage::kMoveConfirmationGoogleDrive, false);
-    dialog->ShowSystemDialog();
+// Tests that when moving files from a local location to Drive, the preferences
+// |kOfficeFilesAlwaysMoveToDrive| and
+// |kOfficeMoveConfirmationShownForLocalToDrive| control whether the
+// confirmation dialog is going to be shown or not.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       ShowConfirmationForLocalToDrive) {
+  SetUpLocalToDriveTask();
 
-    // Wait for preference change.
-    run_loop.Run();
-  }
+  // Check that if |kOfficeMoveConfirmationShownForLocalToDrive| is false, we
+  // always show the confirmation dialog, whether
+  // |kOfficeFilesAlwaysMoveToDrive| is true or false.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(
+      profile(), false);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), true);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToDrive| is true, we
+  // only show the confirmation dialog depending on the value of
+  // |kOfficeFilesAlwaysMoveToDrive|.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(
+      profile(), true);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), true);
+  ASSERT_FALSE(ShouldShowConfirmationDialog());
 }
 
-// Tests that the preference |kOfficeMoveConfirmationShownForOneDrive| is False
-// before the `kMoveConfirmationOneDrive` dialog and True afterwards.
-IN_PROC_BROWSER_TEST_F(MoveConfirmationDialogBrowserTest,
-                       MoveConfirmationOneDriveSetsPref) {
+// Tests that when moving files from a cloud location to Drive, the preferences
+// |kOfficeFilesAlwaysMoveToDrive| and
+// |kOfficeMoveConfirmationShownForCloudToDrive| control whether the
+// confirmation dialog is going to be shown or not.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       ShowConfirmationForCloudToDrive) {
+  SetUpCloudToDriveTask();
+
+  // Check that if |kOfficeMoveConfirmationShownForCloudToDrive| is false, we
+  // always show the confirmation dialog, whether
+  // |kOfficeFilesAlwaysMoveToDrive| is true or false.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
+      profile(), false);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), true);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToDrive| is true, we
+  // only show the confirmation dialog depending on the value of
+  // |kOfficeFilesAlwaysMoveToDrive|.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
+      profile(), true);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), true);
+  ASSERT_FALSE(ShouldShowConfirmationDialog());
+}
+
+// Tests that when moving files from a read-only location to Drive, the
+// preferences |kOfficeFilesAlwaysMoveToDrive|,
+// |kOfficeMoveConfirmationShownForLocalToDrive| and
+// |kOfficeMoveConfirmationShownForCloudToDrive| control whether the
+// confirmation dialog is going to be shown or not.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       ShowConfirmationForReadOnlyToDrive) {
+  SetUpReadOnlyToDriveTask();
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToDrive| and
+  // |kOfficeMoveConfirmationShownForCloudToDrive| are both false, we always
+  // show the confirmation dialog, whether |kOfficeFilesAlwaysMoveToDrive| is
+  // true or false.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive(
+      profile(), false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
+      profile(), false);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), true);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+
+  // Check that if at least one of |kOfficeMoveConfirmationShownForLocalToDrive|
+  // and |kOfficeMoveConfirmationShownForCloudToDrive| is true, we only show the
+  // confirmation dialog depending on the value of
+  // |kOfficeFilesAlwaysMoveToDrive|.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive(
+      profile(), true);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToDrive(profile(), true);
+  ASSERT_FALSE(ShouldShowConfirmationDialog());
+}
+
+// Tests that when moving files from a local location to OneDrive, the
+// preferences |kOfficeFilesAlwaysMoveToOneDrive| and
+// |kOfficeMoveConfirmationShownForLocalToOneDrive| control whether the
+// confirmation dialog is going to be shown or not.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       ShowConfirmationForLocalToOneDrive) {
+  SetUpLocalToOneDriveTask();
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToOneDrive| is false, we
+  // always show the confirmation dialog, whether
+  // |kOfficeFilesAlwaysMoveToOneDrive| is true or false.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToOneDrive(
+      profile(), false);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(),
+                                                               false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(), true);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToOneDrive| is true, we
+  // only show the confirmation dialog depending on the value of
+  // |kOfficeFilesAlwaysMoveToOneDrive|.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToOneDrive(
+      profile(), true);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(),
+                                                               false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(), true);
+  ASSERT_FALSE(ShouldShowConfirmationDialog());
+}
+
+// Tests that when moving files from a cloud location to OneDrive, the
+// preferences |kOfficeFilesAlwaysMoveToOneDrive| and
+// |kOfficeMoveConfirmationShownForCloudToOneDrive| control whether the
+// confirmation dialog is going to be shown or not.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       ShowConfirmationForCloudToOneDrive) {
+  SetUpCloudToOneDriveTask();
+
+  // Check that if |kOfficeMoveConfirmationShownForCloudToOneDrive| is false, we
+  // always show the confirmation dialog, whether
+  // |kOfficeFilesAlwaysMoveToOneDrive| is true or false.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToOneDrive(
+      profile(), false);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(),
+                                                               false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(), true);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToOneDrive| is true, we
+  // only show the confirmation dialog depending on the value of
+  // |kOfficeFilesAlwaysMoveToOneDrive|.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToOneDrive(
+      profile(), true);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(),
+                                                               false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(), true);
+  ASSERT_FALSE(ShouldShowConfirmationDialog());
+}
+
+// Tests that when moving files from a read-only location to OneDrive, the
+// preferences |kOfficeFilesAlwaysMoveToOneDrive|,
+// |kOfficeMoveConfirmationShownForLocalToOneDrive| and
+// |kOfficeMoveConfirmationShownForCloudToOneDrive| control whether the
+// confirmation dialog is going to be shown or not.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       ShowConfirmationForReadOnlyToOneDrive) {
+  SetUpReadOnlyToOneDriveTask();
+
+  // Check that if |kOfficeMoveConfirmationShownForLocalToOneDrive| and
+  // |kOfficeMoveConfirmationShownForCloudToOneDrive| are both false, we always
+  // show the confirmation dialog, whether |kOfficeFilesAlwaysMoveToOneDrive| is
+  // true or false.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToOneDrive(
+      profile(), false);
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToOneDrive(
+      profile(), false);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(),
+                                                               false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(), true);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+
+  // Check that if at least one of
+  // |kOfficeMoveConfirmationShownForLocalToOneDrive| and
+  // |kOfficeMoveConfirmationShownForCloudToOneDrive| is true, we only show the
+  // confirmation dialog depending on the value of
+  // |kOfficeFilesAlwaysMoveToOneDrive|.
+  file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToOneDrive(
+      profile(), true);
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(),
+                                                               false);
+  ASSERT_TRUE(ShouldShowConfirmationDialog());
+  file_manager::file_tasks::SetAlwaysMoveOfficeFilesToOneDrive(profile(), true);
+  ASSERT_FALSE(ShouldShowConfirmationDialog());
+}
+
+// Tests that the preferences |kOfficeMoveConfirmationShownForDrive| and
+// |kOfficeMoveConfirmationShownForLocalToDrive| is are both set to true once
+// the user has confirmed the upload of a file to Drive.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       SetPrefsAfterConfirmationShownForLocalToDrive) {
+  SetUpLocalToDriveTask();
+  ASSERT_FALSE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+      profile()));
+  ASSERT_FALSE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForLocalToDrive(
+          profile()));
+
+  OnDialogComplete(kUserActionUploadToGoogleDrive);
+
+  ASSERT_TRUE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+      profile()));
+  ASSERT_TRUE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForLocalToDrive(
+          profile()));
+}
+
+// Tests that the preferences |kOfficeMoveConfirmationShownForDrive| and
+// |kOfficeMoveConfirmationShownForCloudToDrive| is are both set to true once
+// the user has confirmed the upload of a file to Drive.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       SetPrefsAfterConfirmationShownForCloudToDrive) {
+  SetUpCloudToDriveTask();
+  ASSERT_FALSE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+      profile()));
+  ASSERT_FALSE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForCloudToDrive(
+          profile()));
+
+  OnDialogComplete(kUserActionUploadToGoogleDrive);
+
+  ASSERT_TRUE(file_manager::file_tasks::GetOfficeMoveConfirmationShownForDrive(
+      profile()));
+  ASSERT_TRUE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForCloudToDrive(
+          profile()));
+}
+
+// Tests that the preferences |kOfficeMoveConfirmationShownForOneDrive| and
+// |kOfficeMoveConfirmationShownForLocalToOneDrive| is are both set to true once
+// the user has confirmed the upload of a file to OneDrive.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       SetPrefsAfterConfirmationShownForLocalToOneDrive) {
+  SetUpLocalToOneDriveTask();
   ASSERT_FALSE(
       file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
           profile()));
-  {
-    base::RunLoop run_loop;
-    PrefChangeRegistrar change_observer;
-    change_observer.Init(profile()->GetPrefs());
-    change_observer.Add(prefs::kOfficeMoveConfirmationShownForOneDrive,
-                        run_loop.QuitClosure());
-    mojom::DialogArgsPtr args = mojom::DialogArgs::New();
-    args->dialog_page = mojom::DialogPage::kMoveConfirmationOneDrive;
-    CloudUploadDialog* dialog = new CloudUploadDialog(
-        std::move(args), base::DoNothing(),
-        mojom::DialogPage::kMoveConfirmationOneDrive, false);
-    dialog->ShowSystemDialog();
+  ASSERT_FALSE(file_manager::file_tasks::
+                   GetOfficeMoveConfirmationShownForLocalToOneDrive(profile()));
 
-    // Wait for preference change.
-    run_loop.Run();
-  }
+  OnDialogComplete(kUserActionUploadToOneDrive);
+
+  ASSERT_TRUE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+          profile()));
+  ASSERT_TRUE(file_manager::file_tasks::
+                  GetOfficeMoveConfirmationShownForLocalToOneDrive(profile()));
+}
+
+// Tests that the preferences |kOfficeMoveConfirmationShownForOneDrive| and
+// |kOfficeMoveConfirmationShownForCloudToOneDrive| is are both set to true once
+// the user has confirmed the upload of a file to OneDrive.
+IN_PROC_BROWSER_TEST_F(CloudOpenTaskBrowserTest,
+                       SetPrefsAfterConfirmationShownForCloudToOneDrive) {
+  SetUpCloudToOneDriveTask();
+  ASSERT_FALSE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+          profile()));
+  ASSERT_FALSE(file_manager::file_tasks::
+                   GetOfficeMoveConfirmationShownForCloudToOneDrive(profile()));
+
+  OnDialogComplete(kUserActionUploadToOneDrive);
+
+  ASSERT_TRUE(
+      file_manager::file_tasks::GetOfficeMoveConfirmationShownForOneDrive(
+          profile()));
+  ASSERT_TRUE(file_manager::file_tasks::
+                  GetOfficeMoveConfirmationShownForCloudToOneDrive(profile()));
 }
 
 }  // namespace ash::cloud_upload

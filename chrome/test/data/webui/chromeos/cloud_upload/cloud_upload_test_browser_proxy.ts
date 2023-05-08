@@ -14,6 +14,8 @@ export interface ProxyOptions {
   dialogPage: DialogPage;
   localTasks?: DialogTask[]|null;
   firstTimeSetup?: boolean|null;
+  alwaysMoveOfficeFilesToDrive?: boolean|null;
+  alwaysMoveOfficeFilesToOneDrive?: boolean|null;
   officeMoveConfirmationShownForDrive?: boolean|null;
   officeMoveConfirmationShownForOneDrive?: boolean|null;
   operationType: OperationType;
@@ -51,6 +53,12 @@ export class CloudUploadTestBrowserProxy implements CloudUploadBrowserProxy {
         'installOfficeWebApp', {installed: options.installOfficeWebAppResult});
     this.handler.setResultFor('isODFSMounted', {mounted: options.odfsMounted});
     this.handler.setResultFor('signInToOneDrive', {success: true});
+    this.handler.setResultFor('getAlwaysMoveOfficeFilesToDrive', {
+      alwaysMove: options.alwaysMoveOfficeFilesToDrive,
+    });
+    this.handler.setResultFor('getAlwaysMoveOfficeFilesToOneDrive', {
+      alwaysMove: options.alwaysMoveOfficeFilesToOneDrive,
+    });
     this.handler.setResultFor('getOfficeMoveConfirmationShownForDrive', {
       moveConfirmationShown: options.officeMoveConfirmationShownForDrive,
     });

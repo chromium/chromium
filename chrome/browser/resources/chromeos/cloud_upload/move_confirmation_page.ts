@@ -46,6 +46,18 @@ export class MoveConfirmationPageElement extends HTMLElement {
   async setDialogAttributes(
       numFiles: number, operationType: OperationType,
       cloudProvider: CloudProvider) {
+    const [
+      {moveConfirmationShown: officeMoveConfirmationShownForDrive},
+      {alwaysMove: alwaysMoveToDrive},
+      {moveConfirmationShown: officeMoveConfirmationShownForOneDrive},
+      {alwaysMove: alwaysMoveToOneDrive},
+    ] = await Promise.all([
+      this.proxy.handler.getOfficeMoveConfirmationShownForDrive(),
+      this.proxy.handler.getAlwaysMoveOfficeFilesToDrive(),
+      this.proxy.handler.getOfficeMoveConfirmationShownForOneDrive(),
+      this.proxy.handler.getAlwaysMoveOfficeFilesToOneDrive(),
+    ]);
+
     this.cloudProvider = cloudProvider;
 
     const operationTypeText =
@@ -74,34 +86,28 @@ export class MoveConfirmationPageElement extends HTMLElement {
           'Microsoft 365 requires files to be stored in OneDrive. ' +
           'You can move files to OneDrive at any time.';
 
-      const {moveConfirmationShown: officeMoveConfirmationShownForOneDrive} =
-          await this.proxy.handler.getOfficeMoveConfirmationShownForOneDrive();
-
       // Only show checkbox if the confirmation has been shown before for
       // OneDrive.
       if (officeMoveConfirmationShownForOneDrive) {
         checkbox.innerText =
             `${operationTypeText} to ${shortName} without asking each time`;
+        checkbox.checked = alwaysMoveToOneDrive;
       } else {
         checkbox!.remove();
-        this.proxy.handler.setOfficeMoveConfirmationShownForOneDriveTrue();
       }
     } else {
       bodyText.innerText =
           'Google Docs, Sheets, and Slides require files to be stored in ' +
           'Google Drive. You can move files to Google Drive at any time.';
 
-      const {moveConfirmationShown: officeMoveConfirmationShownForDrive} =
-          await this.proxy.handler.getOfficeMoveConfirmationShownForDrive();
-
       // Only show checkbox if the confirmation has been shown before for
       // Drive.
       if (officeMoveConfirmationShownForDrive) {
         checkbox.innerText =
             `${operationTypeText} to ${name} without asking each time`;
+        checkbox.checked = alwaysMoveToDrive;
       } else {
         checkbox!.remove();
-        this.proxy.handler.setOfficeMoveConfirmationShownForDriveTrue();
       }
     }
 

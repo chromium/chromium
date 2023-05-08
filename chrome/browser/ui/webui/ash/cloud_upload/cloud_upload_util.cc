@@ -29,9 +29,8 @@ storage::FileSystemURL FilePathToFileSystemURL(
   return file_system_context->CrackURLInFirstPartyContext(url);
 }
 
-file_manager::io_task::OperationType GetOperationTypeForUpload(
-    Profile* profile,
-    const storage::FileSystemURL& source_url) {
+SourceType GetSourceType(Profile* profile,
+                         const storage::FileSystemURL& source_url) {
   file_manager::VolumeManager* volume_manager =
       file_manager::VolumeManager::Get(profile);
   base::WeakPtr<file_manager::Volume> source_volume =
@@ -39,21 +38,21 @@ file_manager::io_task::OperationType GetOperationTypeForUpload(
   DCHECK(source_volume)
       << "Unable to find source volume (source path filesystem_id: "
       << source_url.filesystem_id() << ")";
+  // Local by default.
   if (!source_volume) {
-    return file_manager::io_task::OperationType::kMove;
+    return SourceType::LOCAL;
   }
-  // If the source volume is read-only, always copy.
+  // First, look at whether the filesystem is read-only.
   if (source_volume->is_read_only()) {
-    return file_manager::io_task::OperationType::kCopy;
+    return SourceType::READ_ONLY;
   }
-  // For certain types of volumes (generally associated with cloud filesystems),
-  // always copy.
+  // Some volume types are generally associated with cloud filesystems.
   if (source_volume->type() == file_manager::VOLUME_TYPE_GOOGLE_DRIVE ||
       source_volume->type() == file_manager::VOLUME_TYPE_SMB ||
       source_volume->type() == file_manager::VOLUME_TYPE_DOCUMENTS_PROVIDER) {
-    return file_manager::io_task::OperationType::kCopy;
+    return SourceType::CLOUD;
   }
-  // For provided file systems, copy only if the file system's source data is
+  // For provided file systems, check whether file system's source data is
   // retrieved over the network.
   if (source_volume->type() == file_manager::VOLUME_TYPE_PROVIDED) {
     const base::FilePath source_path = source_url.path();
@@ -65,14 +64,24 @@ file_manager::io_task::OperationType GetOperationTypeForUpload(
       if (file_system.mount_path().IsParent(source_path)) {
         return file_system.source() ==
                        extensions::FileSystemProviderSource::SOURCE_NETWORK
-                   ? file_manager::io_task::OperationType::kCopy
-                   : file_manager::io_task::OperationType::kMove;
+                   ? SourceType::CLOUD
+                   : SourceType::LOCAL;
       }
     }
-    return file_manager::io_task::OperationType::kMove;
+    // Local if unable to find the provided file system.
+    return SourceType::LOCAL;
   }
-  // Move in all other cases.
-  return file_manager::io_task::OperationType::kMove;
+  // Local by default.
+  return SourceType::LOCAL;
+}
+
+file_manager::io_task::OperationType GetOperationTypeForUpload(
+    Profile* profile,
+    const storage::FileSystemURL& source_url) {
+  SourceType source_type = GetSourceType(profile, source_url);
+  return source_type == SourceType::LOCAL
+             ? file_manager::io_task::OperationType::kMove
+             : file_manager::io_task::OperationType::kCopy;
 }
 
 }  // namespace ash::cloud_upload

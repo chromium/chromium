@@ -322,22 +322,72 @@ void CloudOpenTask::OpenODFSUrls() {
   }
 }
 
-void CloudOpenTask::ConfirmMoveOrStartUpload() {
+// Returns True if the confirmation dialog should be shown before uploading a
+// file to a cloud location and opening it.
+bool CloudOpenTask::ShouldShowConfirmationDialog() {
+  bool force_show_confirmation_dialog = false;
+  SourceType source_type = GetSourceType(profile_, file_urls_[0]);
+
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
-    if (file_manager::file_tasks::GetAlwaysMoveOfficeFilesToDrive(profile_)) {
-      // No dialog required.
-      StartUpload();
-    } else {
-      InitAndShowDialog(mojom::DialogPage::kMoveConfirmationGoogleDrive);
+    switch (source_type) {
+      case SourceType::READ_ONLY:
+        force_show_confirmation_dialog =
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForLocalToDrive(profile_) &&
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForCloudToDrive(profile_);
+        break;
+      case SourceType::LOCAL:
+        force_show_confirmation_dialog =
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForLocalToDrive(profile_);
+        break;
+      case SourceType::CLOUD:
+        force_show_confirmation_dialog =
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForCloudToDrive(profile_);
+        break;
     }
+    return force_show_confirmation_dialog ||
+           !file_manager::file_tasks::GetAlwaysMoveOfficeFilesToDrive(profile_);
   } else if (cloud_provider_ == CloudProvider::kOneDrive) {
-    if (file_manager::file_tasks::GetAlwaysMoveOfficeFilesToOneDrive(
-            profile_)) {
-      // No dialog required.
-      StartUpload();
-    } else {
-      InitAndShowDialog(mojom::DialogPage::kMoveConfirmationOneDrive);
+    switch (source_type) {
+      case SourceType::READ_ONLY:
+        force_show_confirmation_dialog =
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForLocalToOneDrive(profile_) &&
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForCloudToOneDrive(profile_);
+        break;
+      case SourceType::LOCAL:
+        force_show_confirmation_dialog =
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForLocalToOneDrive(profile_);
+        break;
+      case SourceType::CLOUD:
+        force_show_confirmation_dialog =
+            !file_manager::file_tasks::
+                GetOfficeMoveConfirmationShownForCloudToOneDrive(profile_);
+        break;
     }
+    return force_show_confirmation_dialog ||
+           !file_manager::file_tasks::GetAlwaysMoveOfficeFilesToOneDrive(
+               profile_);
+  }
+  NOTREACHED();
+  return true;
+}
+
+void CloudOpenTask::ConfirmMoveOrStartUpload() {
+  bool show_confirmation_dialog = ShouldShowConfirmationDialog();
+  if (show_confirmation_dialog) {
+    mojom::DialogPage dialog_page =
+        cloud_provider_ == CloudProvider::kGoogleDrive
+            ? mojom::DialogPage::kMoveConfirmationGoogleDrive
+            : mojom::DialogPage::kMoveConfirmationOneDrive;
+    InitAndShowDialog(dialog_page);
+  } else {
+    StartUpload();
   }
 }
 
@@ -697,6 +747,14 @@ void CloudOpenTask::OnBrowserAdded(Browser* browser) {
 // necessary to make sure that we delete CloudOpenTask when we're done.
 void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
   using file_manager::file_tasks::SetExcelFileHandlerToFilesSWA;
+  using file_manager::file_tasks::SetOfficeMoveConfirmationShownForCloudToDrive;
+  using file_manager::file_tasks::
+      SetOfficeMoveConfirmationShownForCloudToOneDrive;
+  using file_manager::file_tasks::SetOfficeMoveConfirmationShownForDrive;
+  using file_manager::file_tasks::SetOfficeMoveConfirmationShownForLocalToDrive;
+  using file_manager::file_tasks::
+      SetOfficeMoveConfirmationShownForLocalToOneDrive;
+  using file_manager::file_tasks::SetOfficeMoveConfirmationShownForOneDrive;
   using file_manager::file_tasks::SetOfficeSetupComplete;
   using file_manager::file_tasks::SetPowerPointFileHandlerToFilesSWA;
   using file_manager::file_tasks::SetWordFileHandlerToFilesSWA;
@@ -726,13 +784,40 @@ void CloudOpenTask::OnDialogComplete(const std::string& user_response) {
     SetOfficeSetupComplete(profile_);
     OpenOrMoveFiles();
   } else if (user_response == kUserActionConfirmOrUploadToOneDrive) {
+    SetOfficeSetupComplete(profile_);
     // Default handlers have already been set by this point for
     // Office/OneDrive.
     OpenOrMoveFiles();
   } else if (user_response == kUserActionUploadToGoogleDrive) {
     cloud_provider_ = CloudProvider::kGoogleDrive;
+    SetOfficeMoveConfirmationShownForDrive(profile_, true);
+    SourceType source_type = GetSourceType(profile_, file_urls_[0]);
+    switch (source_type) {
+      case SourceType::LOCAL:
+        SetOfficeMoveConfirmationShownForLocalToDrive(profile_, true);
+        break;
+      case SourceType::CLOUD:
+        SetOfficeMoveConfirmationShownForCloudToDrive(profile_, true);
+        break;
+      case SourceType::READ_ONLY:
+        // TODO (jboulic): Clarify UX.
+        break;
+    }
     StartUpload();
   } else if (user_response == kUserActionUploadToOneDrive) {
+    SetOfficeMoveConfirmationShownForOneDrive(profile_, true);
+    SourceType source_type = GetSourceType(profile_, file_urls_[0]);
+    switch (source_type) {
+      case SourceType::LOCAL:
+        SetOfficeMoveConfirmationShownForLocalToOneDrive(profile_, true);
+        break;
+      case SourceType::CLOUD:
+        SetOfficeMoveConfirmationShownForCloudToOneDrive(profile_, true);
+        break;
+      case SourceType::READ_ONLY:
+        // TODO (jboulic): Clarify UX.
+        break;
+    }
     StartUpload();
   } else if (user_response == kUserActionSetUpOneDrive) {
     cloud_provider_ = CloudProvider::kOneDrive;
