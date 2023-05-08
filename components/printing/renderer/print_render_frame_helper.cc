@@ -2568,7 +2568,6 @@ bool PrintRenderFrameHelper::RenderPagesForPrint(blink::WebLocalFrame* frame,
   return true;
 }
 
-#if !BUILDFLAG(IS_APPLE)
 void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
                                                uint32_t page_number,
                                                uint32_t page_count,
@@ -2613,7 +2612,6 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   bool ret = metafile->FinishPage();
   DCHECK(ret);
 }
-#endif  // !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 void PrintRenderFrameHelper::ShowScriptedPrintPreview() {
