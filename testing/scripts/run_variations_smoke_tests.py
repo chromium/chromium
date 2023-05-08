@@ -23,7 +23,7 @@ from pkg_resources import packaging
 from threading import Thread
 
 import pkg_resources
-from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
+from skia_gold_common.skia_gold_properties import SkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_utils
 
 import variations_seed_access_helper as seed_helper
@@ -325,7 +325,7 @@ def main_run(args):
   parser = argparse.ArgumentParser()
   parser.add_argument('--isolated-script-test-output', type=str)
   parser.add_argument('--isolated-script-test-filter', type=str)
-  FinchSkiaGoldProperties.AddCommandLineArguments(parser)
+  SkiaGoldProperties.AddCommandLineArguments(parser)
   args, rest = parser.parse_known_args()
 
   temp_dir = tempfile.mkdtemp()

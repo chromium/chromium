@@ -70,8 +70,9 @@ from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.servers import apache_http
 from blinkpy.web_tests.servers import pywebsocket
 from blinkpy.web_tests.servers import wptserve
-from blinkpy.web_tests.skia_gold import blink_skia_gold_properties as sgp
 from blinkpy.web_tests.skia_gold import blink_skia_gold_session_manager as sgsm
+
+from skia_gold_common import skia_gold_properties as sgp
 
 _log = logging.getLogger(__name__)
 
@@ -427,8 +428,7 @@ class Port(object):
 
     def skia_gold_properties(self):
         if not self._skia_gold_properties:
-            self._skia_gold_properties = sgp.BlinkSkiaGoldProperties(
-                self._options)
+            self._skia_gold_properties = sgp.SkiaGoldProperties(self._options)
         return self._skia_gold_properties
 
     def skia_gold_session_manager(self):

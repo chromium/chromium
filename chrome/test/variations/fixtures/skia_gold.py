@@ -38,17 +38,6 @@ class _VariationsSkiaGoldSessionManager(sgsm.SkiaGoldSessionManager):
   def GetSessionClass():
     return omsgs.OutputManagerlessSkiaGoldSession
 
-class _VariationsSkiaGoldProperties(sgp.SkiaGoldProperties):
-  @staticmethod
-  def _GetGitOriginMainHeadSha1():
-    try:
-      return subprocess.check_output(
-          ['git', 'rev-parse', 'origin/main'],
-          shell=(sys.platform == 'win32'),
-          cwd=SRC_DIR).strip()
-    except subprocess.CalledProcessError:
-      return None
-
 
 @attr.attrs()
 class VariationsSkiaGoldUtil:
@@ -99,7 +88,7 @@ def skia_gold_util(
   skia_tmp_dir = tmp_path_factory.mktemp('skia_gold', True)
   skia_img_dir = tmp_path_factory.mktemp('skia_img', True)
 
-  skia_gold_properties = _VariationsSkiaGoldProperties(
+  skia_gold_properties = sgp.SkiaGoldProperties(
     args=_get_skia_gold_args())
   skia_gold_session_manager = _VariationsSkiaGoldSessionManager(
     skia_tmp_dir,

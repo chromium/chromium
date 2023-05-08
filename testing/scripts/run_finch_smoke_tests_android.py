@@ -77,7 +77,7 @@ from pylib.local.device import local_device_environment
 from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 from scripts import common
-from skia_gold_infra.finch_skia_gold_properties import FinchSkiaGoldProperties
+from skia_gold_common.skia_gold_properties import SkiaGoldProperties
 from skia_gold_infra import finch_skia_gold_session_manager
 from skia_gold_infra import finch_skia_gold_utils
 from run_wpt_tests import get_device
@@ -335,7 +335,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
     self._skia_gold_tmp_dir = tempfile.mkdtemp()
     self._skia_gold_session_manager = (
         finch_skia_gold_session_manager.FinchSkiaGoldSessionManager(
-            self._skia_gold_tmp_dir, FinchSkiaGoldProperties(self.options)))
+            self._skia_gold_tmp_dir, SkiaGoldProperties(self.options)))
     return self
 
   def __exit__(self, exc_type, exc_val, exc_tb):
@@ -499,7 +499,7 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
                         help='Number of emulator to run.')
     common.add_emulator_args(parser)
     # Add arguments used by Skia Gold.
-    FinchSkiaGoldProperties.AddCommandLineArguments(parser)
+    SkiaGoldProperties.AddCommandLineArguments(parser)
 
   def _add_extra_arguments(self):
     parser = self._parser
