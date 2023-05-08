@@ -13,22 +13,33 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 
-FedCmModalDialogView::FedCmModalDialogView(content::WebContents* web_contents,
-                                           const GURL& url)
-    : web_contents_(web_contents), curr_origin_(url::Origin::Create(url)) {
+FedCmModalDialogView::FedCmModalDialogView(
+    content::WebContents* web_contents,
+    const GURL& url,
+    FedCmModalDialogView::Observer* observer)
+    : web_contents_(web_contents),
+      observer_(observer),
+      curr_origin_(url::Origin::Create(url)) {
   SetModalType(ui::MODAL_TYPE_CHILD);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   Init(url);
 }
 
-FedCmModalDialogView::~FedCmModalDialogView() = default;
+FedCmModalDialogView::~FedCmModalDialogView() {
+  // Let the observer know that this object is being destroyed.
+  if (observer_) {
+    observer_->OnFedCmModalDialogViewDestroyed();
+  }
+}
 
 // static
 FedCmModalDialogView* FedCmModalDialogView::ShowFedCmModalDialog(
     content::WebContents* web_contents,
-    const GURL& url) {
+    const GURL& url,
+    FedCmModalDialogView::Observer* observer) {
   // This dialog owns itself. DialogDelegateView will delete |dialog| instance.
-  FedCmModalDialogView* dialog = new FedCmModalDialogView(web_contents, url);
+  FedCmModalDialogView* dialog =
+      new FedCmModalDialogView(web_contents, url, observer);
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
   return dialog;
 }
@@ -40,6 +51,10 @@ void FedCmModalDialogView::CloseFedCmModalDialog() {
 content::WebContents* FedCmModalDialogView::GetWebViewWebContents() {
   DCHECK(web_view_);
   return web_view_->GetWebContents();
+}
+
+void FedCmModalDialogView::RemoveObserver() {
+  observer_ = nullptr;
 }
 
 void FedCmModalDialogView::Init(const GURL& url) {

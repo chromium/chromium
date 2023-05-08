@@ -20,7 +20,7 @@ class FedCmModalDialogViewBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     FedCmModalDialogView::ShowFedCmModalDialog(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        GURL(u"https://example.com"));
+        GURL(u"https://example.com"), /*observer=*/nullptr);
   }
 
  private:

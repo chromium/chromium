@@ -23,7 +23,16 @@ class FedCmModalDialogView : public views::DialogDelegateView,
                              public ChromeWebModalDialogManagerDelegate {
  public:
   METADATA_HEADER(FedCmModalDialogView);
-  FedCmModalDialogView(content::WebContents* web_contents, const GURL& url);
+
+  class Observer {
+   public:
+    // Tells observers that their references to the view are becoming invalid.
+    virtual void OnFedCmModalDialogViewDestroyed() = 0;
+  };
+
+  FedCmModalDialogView(content::WebContents* web_contents,
+                       const GURL& url,
+                       FedCmModalDialogView::Observer* observer);
   FedCmModalDialogView(const FedCmModalDialogView&) = delete;
   FedCmModalDialogView& operator=(const FedCmModalDialogView&) = delete;
   ~FedCmModalDialogView() override;
@@ -33,10 +42,13 @@ class FedCmModalDialogView : public views::DialogDelegateView,
   // with an identity provider.
   static FedCmModalDialogView* ShowFedCmModalDialog(
       content::WebContents* web_contents,
-      const GURL& url);
+      const GURL& url,
+      FedCmModalDialogView::Observer* observer);
   void CloseFedCmModalDialog();
 
   content::WebContents* GetWebViewWebContents();
+
+  void RemoveObserver();
 
  private:
   views::View* PopulateSheetHeaderView(views::View* container, const GURL& url);
@@ -49,6 +61,7 @@ class FedCmModalDialogView : public views::DialogDelegateView,
   raw_ptr<views::View> contents_wrapper_;
   raw_ptr<views::WebView> web_view_;
   raw_ptr<views::Label> origin_label_;
+  raw_ptr<Observer> observer_;
   url::Origin curr_origin_;
 
   base::WeakPtrFactory<FedCmModalDialogView> weak_ptr_factory_{this};
