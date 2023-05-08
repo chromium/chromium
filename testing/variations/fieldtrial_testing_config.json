@@ -11022,6 +11022,21 @@
             ]
         }
     ],
+    "ReduceToolbarUpdatesForSameDocNavigations": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ReduceToolbarUpdatesForSameDocNavigations"
+                    ]
+                }
+            ]
+        }
+    ],
     "ReduceUserAgentAndroidVersionDeviceModel": [
         {
             "platforms": [
