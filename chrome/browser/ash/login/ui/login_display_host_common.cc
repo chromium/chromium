@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
+#include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
@@ -721,11 +722,13 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
             profile);
     DCHECK(service);
 
+    bool is_resume_after_update = g_browser_process->local_state()->GetBoolean(
+        quick_start::prefs::kShouldResumeQuickStartAfterReboot);
     bootstrap_controller_ =
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
             quick_start::TargetDeviceConnectionBrokerFactory::Create(
                 service->GetNearbyConnectionsManager(),
-                service->GetQuickStartDecoder(), false));
+                service->GetQuickStartDecoder(), is_resume_after_update));
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }
