@@ -135,6 +135,12 @@ BASE_FEATURE(kEnablePreferencesAccountStorage,
              "EnablePreferencesAccountStorage",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+BASE_FEATURE(kSyncIgnoreSyncRequestedPreference,
+             "SyncIgnoreSyncRequestedPreference",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
 BASE_FEATURE(kSyncPollImmediatelyOnEveryStartup,
              "SyncPollImmediatelyOnEveryStartup",
              base::FEATURE_DISABLED_BY_DEFAULT);

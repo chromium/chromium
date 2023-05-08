@@ -6,10 +6,12 @@
 #include "components/sync/driver/sync_service_impl.h"
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/test/fake_data_type_controller.h"
@@ -72,7 +74,12 @@ class SyncServiceImplStartupTest : public testing::Test {
             start_behavior, std::move(sync_client)));
   }
 
-  void SimulateTestUserSignin() {
+  void SimulateTestUserSigninWithoutSyncFeature() {
+    sync_service_impl_bundle_.identity_test_env()->MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
+  }
+
+  void SimulateTestUserSigninAndEnableSyncFeature() {
     sync_service_impl_bundle_.identity_test_env()->MakePrimaryAccountAvailable(
         kEmail, signin::ConsentLevel::kSync);
   }
@@ -91,7 +98,7 @@ class SyncServiceImplStartupTest : public testing::Test {
     sync_service_impl_bundle_.identity_test_env()->WaitForRefreshTokensLoaded();
   }
 
-  void SimulateTestUserSigninWithoutRefreshToken() {
+  void SimulateTestUserSigninAndEnableSyncFeatureWithoutRefreshToken() {
     // Set the primary account *without* providing an OAuth token.
     sync_service_impl_bundle_.identity_test_env()->SetPrimaryAccount(
         kEmail, signin::ConsentLevel::kSync);
@@ -181,24 +188,16 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
   EXPECT_EQ(base::Time(), sync_service()->GetLastSyncedTimeForDebugging());
   EXPECT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
-  // This tells the SyncServiceImpl that setup is now in progress, which
-  // causes it to try starting up the engine. We're not signed in yet though, so
-  // that won't work.
+  // Sign in and turn sync on, without marking the first setup as complete.
+  SimulateTestUserSigninAndEnableSyncFeature();
   sync_service()->SetSyncFeatureRequested();
   std::unique_ptr<SyncSetupInProgressHandle> sync_blocker =
       sync_service()->GetSetupInProgressHandle();
-  EXPECT_FALSE(sync_service()->IsEngineInitialized());
-  EXPECT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_NOT_SIGNED_IN),
-      sync_service()->GetDisableReasons());
-  EXPECT_EQ(SyncService::TransportState::DISABLED,
-            sync_service()->GetTransportState());
 
-  SimulateTestUserSignin();
   base::RunLoop().RunUntilIdle();
 
-  // Now we're signed in, so the engine can start. Engine initialization is
-  // immediate in this test, so we bypass the INITIALIZING state.
+  // The engine can start, and engine initialization is immediate in this test,
+  // so we bypass the INITIALIZING state.
   EXPECT_TRUE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::DisableReasonSet(),
             sync_service()->GetDisableReasons());
@@ -237,7 +236,7 @@ TEST_F(SyncServiceImplStartupTest, StartFirstTime) {
 TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
   // We're already signed in, but don't have a refresh token.
   SimulateRefreshTokensNotLoadedYet();
-  SimulateTestUserSigninWithoutRefreshToken();
+  SimulateTestUserSigninAndEnableSyncFeatureWithoutRefreshToken();
   sync_prefs()->SetFirstSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
@@ -256,7 +255,7 @@ TEST_F(SyncServiceImplStartupTest, StartNoCredentials) {
 TEST_F(SyncServiceImplStartupTest, WebSignoutBeforeInitialization) {
   // There is a primary account, but it's in a "web signout" aka sync-paused
   // state.
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   SimulateWebSignout();
   sync_prefs()->SetFirstSetupComplete();
 
@@ -273,7 +272,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutDuringDeferredStartup) {
   // There is a primary account. It is theoretically in the "web signout" aka
   // sync-paused error state, but the identity code hasn't detected that yet
   // (because auth errors are not persisted).
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetFirstSetupComplete();
 
   // Note: Deferred startup is only enabled if SESSIONS is among the preferred
@@ -313,7 +312,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
   // automatic issuing of tokens.
   DisableAutomaticIssueOfAccessTokens();
 
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetFirstSetupComplete();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
@@ -350,7 +349,7 @@ TEST_F(SyncServiceImplStartupTest, WebSignoutAfterInitialization) {
 }
 
 TEST_F(SyncServiceImplStartupTest, StartInvalidCredentials) {
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
 
@@ -381,7 +380,7 @@ TEST_F(SyncServiceImplStartupTest, StartCrosNoCredentials) {
   // On ChromeOS, the user is always immediately signed in, but a refresh token
   // isn't necessarily available yet.
   SimulateRefreshTokensNotLoadedYet();
-  SimulateTestUserSigninWithoutRefreshToken();
+  SimulateTestUserSigninAndEnableSyncFeatureWithoutRefreshToken();
 
   CreateSyncService(SyncServiceImpl::AUTO_START);
 
@@ -403,7 +402,7 @@ TEST_F(SyncServiceImplStartupTest, StartCrosFirstTime) {
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
   // There is already a signed-in user.
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
 
   // Sync should become active, even though IsFirstSetupComplete wasn't set yet,
   // due to AUTO_START.
@@ -418,7 +417,7 @@ TEST_F(SyncServiceImplStartupTest, StartNormal) {
   // We have previously completed the initial Sync setup, and the user is
   // already signed in.
   sync_prefs()->SetFirstSetupComplete();
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
 
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
@@ -437,7 +436,7 @@ TEST_F(SyncServiceImplStartupTest, StartNormal) {
 TEST_F(SyncServiceImplStartupTest, DisableSync) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
@@ -480,7 +479,7 @@ TEST_F(SyncServiceImplStartupTest, StartRecoverDatatypePrefs) {
 
   sync_prefs()->SetFirstSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
 
   sync_service()->Initialize();
 
@@ -499,7 +498,7 @@ TEST_F(SyncServiceImplStartupTest, StartDontRecoverDatatypePrefs) {
 
   sync_prefs()->SetFirstSetupComplete();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
 
   sync_service()->Initialize();
 
@@ -513,7 +512,7 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
 
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   sync_service()->Initialize();
@@ -528,11 +527,30 @@ TEST_F(SyncServiceImplStartupTest, ManagedStartup) {
   EXPECT_FALSE(engine());
 }
 
-TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
+class SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature
+    : public SyncServiceImplStartupTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature() {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    scoped_feature_list_.InitWithFeatureState(
+        kSyncIgnoreSyncRequestedPreference, GetParam());
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  }
+
+  ~SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
+       SwitchManaged) {
   // Sync starts out fully set up and enabled.
   sync_prefs()->SetSyncRequested(true);
   sync_prefs()->SetFirstSetupComplete();
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   CreateSyncService(SyncServiceImpl::MANUAL_START);
 
   // Initialize() should be enough to kick off Sync startup (which is instant in
@@ -571,24 +589,43 @@ TEST_F(SyncServiceImplStartupTest, SwitchManaged) {
   pref_service()->SetBoolean(prefs::kSyncManaged, false);
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(
-      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
-      sync_service()->GetDisableReasons());
-
   EXPECT_TRUE(sync_service()->IsEngineInitialized());
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             sync_service()->GetTransportState());
-  // Sync-the-feature is still considered off because disabling Sync through
-  // policy also reset the sync-requested and first-setup-complete flags.
+
+  // On ChromeOS Ash, DISABLE_REASON_USER_CHOICE stays even after the policy is
+  // removed, for historic reasons. It is unclear if this behavior is optional,
+  // because it is indistinguishable from the sync-reset-via-dashboard case.
+  // It can be resolved by invoking SetSyncFeatureRequested().
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_EQ(
+      SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
+      sync_service()->GetDisableReasons());
+#else
+  if (GetParam()) {
+    EXPECT_EQ(SyncService::DisableReasonSet(),
+              sync_service()->GetDisableReasons());
+  } else {
+    EXPECT_EQ(
+        SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
+        sync_service()->GetDisableReasons());
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   EXPECT_FALSE(sync_service()->GetUserSettings()->IsFirstSetupComplete());
   EXPECT_FALSE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(sync_service()->IsSyncFeatureActive());
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    SyncIgnoreSyncRequestedPreference,
+    SyncServiceImplStartupTestWithIgnoreSyncRequestedFeature,
+    ::testing::Values(false, true));
+
 TEST_F(SyncServiceImplStartupTest, StartDownloadFailed) {
   sync_prefs()->SetSyncRequested(true);
   CreateSyncService(SyncServiceImpl::MANUAL_START);
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   ASSERT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
   // Prevent automatic (and successful) completion of engine initialization.
@@ -635,7 +672,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
   // explicit user event, deferred startup is bypassed.
   // Sync-the-feature still doesn't start until the user says they want it.
   component_factory()->AllowFakeEngineInitCompletion(false);
-  SimulateTestUserSignin();
+  SimulateTestUserSigninWithoutSyncFeature();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       SyncService::DisableReasonSet(SyncService::DISABLE_REASON_USER_CHOICE),
@@ -647,6 +684,7 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
 
   // Initiate Sync (the feature) setup before the engine initializes itself in
   // transport mode.
+  SimulateTestUserSigninAndEnableSyncFeature();
   sync_service()->SetSyncFeatureRequested();
   std::unique_ptr<SyncSetupInProgressHandle> setup_in_progress_handle =
       sync_service()->GetSetupInProgressHandle();
@@ -694,11 +732,11 @@ TEST_F(SyncServiceImplStartupTest, FullStartupSequenceFirstTime) {
             sync_service()->GetTransportState());
   EXPECT_TRUE(sync_service()->IsSyncFeatureActive());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(SyncServiceImplStartupTest, FullStartupSequenceNthTime) {
   // The user is already signed in and has completed Sync setup before.
-  SimulateTestUserSignin();
+  SimulateTestUserSigninAndEnableSyncFeature();
   sync_prefs()->SetFirstSetupComplete();
   sync_prefs()->SetSyncRequested(true);
 

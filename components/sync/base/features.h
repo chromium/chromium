@@ -174,6 +174,14 @@ BASE_DECLARE_FEATURE(kSyncEnforcePreferencesAllowlist);
 // have any effect for signed-in non-syncing users!)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Influences how precisely SyncServiceImpl determines whether Sync-the-feature
+// is enabled. If the feature is on, the new approach is used, which leans on
+// the state reported by IdentityManager. If false, the legacy approach is used,
+// which is based on preference prefs::kSyncRequested.
+BASE_DECLARE_FEATURE(kSyncIgnoreSyncRequestedPreference);
+#endif  // BUILDFLAG(!IS_CHROMEOS_ASH)
+
 // If enabled, Sync will send a poll GetUpdates request on every browser
 // startup. This is a temporary hack; see crbug.com/1425026.
 // TODO(crbug.com/1425071): Remove this.
