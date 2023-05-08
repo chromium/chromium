@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_requests.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "crypto/random.h"
@@ -101,11 +102,14 @@ void Connection::RequestWifiCredentials(
   // Build the Wifi Credential Request payload
   std::string shared_secret_str(secondary_shared_secret_.begin(),
                                 secondary_shared_secret_.end());
-  SendMessage(
-      requests::BuildRequestWifiCredentialsMessage(session_id,
-                                                   shared_secret_str),
-      base::BindOnce(&Connection::OnRequestWifiCredentialsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  ConnectionResponseCallback on_response_received =
+      base::BindOnce(&Connection::DecodeData<mojom::WifiCredentials>,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     &mojom::QuickStartDecoder::DecodeWifiCredentialsResponse,
+                     std::move(callback));
+  SendMessage(requests::BuildRequestWifiCredentialsMessage(session_id,
+                                                           shared_secret_str),
+              std::move(on_response_received));
 }
 
 void Connection::NotifySourceOfUpdate(int32_t session_id,
@@ -144,34 +148,6 @@ void Connection::RequestAccountTransferAssertion(
 
   // Call into SetBootstrapOptions, starting the chain of callbacks.
   SendMessage(requests::BuildBootstrapOptionsRequest(), std::move(get_info));
-}
-
-void Connection::OnRequestWifiCredentialsResponse(
-    RequestWifiCredentialsCallback callback,
-    absl::optional<std::vector<uint8_t>> response_bytes) {
-  if (!response_bytes.has_value()) {
-    QS_LOG(ERROR) << "No response bytes received for wifi credentials request";
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  auto parse_mojo_response_callback =
-      base::BindOnce(&Connection::ParseWifiCredentialsResponse,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback));
-
-  decoder_->DecodeWifiCredentialsResponse(
-      response_bytes.value(), std::move(parse_mojo_response_callback));
-}
-
-void Connection::ParseWifiCredentialsResponse(
-    RequestWifiCredentialsCallback callback,
-    ::ash::quick_start::mojom::GetWifiCredentialsResponsePtr response) {
-  if (!response->is_credentials()) {
-    std::move(callback).Run(absl::nullopt);
-    return;
-  }
-
-  std::move(callback).Run(response->get_credentials()->Clone());
 }
 
 void Connection::OnNotifySourceOfUpdateResponse(
@@ -261,6 +237,40 @@ void Connection::InitiateHandshake(const std::string& authentication_token,
       authentication_token, shared_secret_, nonce));
 
   // TODO(b/234655072): Read response from phone and run callback.
+}
+
+template <typename T>
+void Connection::DecodeData(DecoderMethod<T> decoder_method,
+                            OnDecodingCompleteCallback<T> on_decoding_complete,
+                            absl::optional<std::vector<uint8_t>> data) {
+  if (!data.has_value()) {
+    QS_LOG(ERROR) << "No data received from phone.";
+    std::move(on_decoding_complete).Run(absl::nullopt);
+    return;
+  }
+
+  // Setup a callback to handle the decoder's response. If an error was
+  // reported, return empty. If not, run the success callback with the
+  // decoded data.
+  DecoderResponseCallback<T> decoder_callback = base::BindOnce(
+      [](OnDecodingCompleteCallback<T> on_decoding_complete,
+         mojo::InlinedStructPtr<T> data,
+         absl::optional<mojom::QuickStartDecoderError> error) {
+        if (error.has_value()) {
+          // TODO(b/281052191): Log error code here
+          QS_LOG(ERROR) << "Error decoding data.";
+          std::move(on_decoding_complete).Run(absl::nullopt);
+          return;
+        }
+
+        std::move(on_decoding_complete).Run(*std::move(data));
+      },
+      std::move(on_decoding_complete));
+
+  // Run the decoder
+  base::BindOnce(decoder_method, decoder_, data.value(),
+                 std::move(decoder_callback))
+      .Run();
 }
 
 void Connection::SendPayload(const base::Value::Dict& message_payload) {

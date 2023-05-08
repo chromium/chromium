@@ -27,9 +27,6 @@ namespace {
 using CBOR = cbor::Value;
 using GetAssertionStatus = mojom::GetAssertionResponse::GetAssertionStatus;
 
-using GetWifiCredentialsFailureReason = mojom::GetWifiCredentialsFailureReason;
-using GetWifiCredentialsResponse = mojom::GetWifiCredentialsResponse;
-
 constexpr char kCredentialIdKey[] = "id";
 constexpr char kEntitiyIdMapKey[] = "id";
 constexpr char kDeviceDetailsKey[] = "deviceDetails";
@@ -231,49 +228,54 @@ void QuickStartDecoder::DecodeBootstrapConfigurations(
 void QuickStartDecoder::DecodeWifiCredentialsResponse(
     const std::vector<uint8_t>& data,
     DecodeWifiCredentialsResponseCallback callback) {
-  std::move(callback).Run(DoDecodeWifiCredentialsResponse(data));
+  DoDecodeWifiCredentialsResponse(data, std::move(callback));
 }
 
-mojom::GetWifiCredentialsResponsePtr
-QuickStartDecoder::DoDecodeWifiCredentialsResponse(
-    const std::vector<uint8_t>& data) {
+void QuickStartDecoder::DoDecodeWifiCredentialsResponse(
+    const std::vector<uint8_t>& data,
+    DecodeWifiCredentialsResponseCallback callback) {
   std::unique_ptr<ash::quick_start::QuickStartMessage> message =
       QuickStartMessage::ReadMessage(data,
                                      QuickStartMessageType::kQuickStartPayload);
 
   if (!message) {
     LOG(ERROR) << "Message cannot be parsed as a JSON Dictionary.";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kFailedToDecodeMessage);
+    std::move(callback).Run(nullptr,
+                            mojom::QuickStartDecoderError::kUnableToReadAsJSON);
+    return;
   }
 
   base::Value::Dict* wifi_network_information =
       message->GetPayload()->FindDict(kWifiNetworkInformationKey);
   if (!wifi_network_information) {
     LOG(ERROR) << "Wifi Network information not present in payload";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiInformation);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   std::string* ssid = wifi_network_information->FindString(kWifiNetworkSsidKey);
   if (!ssid) {
     LOG(ERROR) << "SSID cannot be found within WifiCredentialsResponse.";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiSSID);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   if (ssid->length() == 0) {
     LOG(ERROR) << "SSID has a length of 0.";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kEmptyWifiSSID);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   std::string* password =
       wifi_network_information->FindString(kWifiNetworkPasswordKey);
   if (!password) {
     LOG(ERROR) << "Password cannot be found within WifiCredentialsResponse";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiPassword);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   std::string* security_type_string =
@@ -281,8 +283,9 @@ QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   if (!security_type_string) {
     LOG(ERROR)
         << "Security Type cannot be found within WifiCredentialsResponse";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiSecurityType);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
   absl::optional<mojom::WifiSecurityType> security_type =
@@ -291,8 +294,9 @@ QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   if (!security_type.has_value()) {
     {
       LOG(ERROR) << "Security type was not a valid value.";
-      return GetWifiCredentialsResponse::NewFailureReason(
-          GetWifiCredentialsFailureReason::kInvalidWifiSecurityType);
+      std::move(callback).Run(
+          nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+      return;
     }
   }
 
@@ -301,12 +305,15 @@ QuickStartDecoder::DoDecodeWifiCredentialsResponse(
   if (!is_hidden.has_value()) {
     LOG(ERROR)
         << "Wifi Hide Status cannot be found within WifiCredentialsResponse";
-    return GetWifiCredentialsResponse::NewFailureReason(
-        GetWifiCredentialsFailureReason::kMissingWifiHiddenStatus);
+    std::move(callback).Run(
+        nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
+    return;
   }
 
-  return GetWifiCredentialsResponse::NewCredentials(mojom::WifiCredentials::New(
-      *ssid, security_type.value(), is_hidden.value(), *password));
+  std::move(callback).Run(
+      mojom::WifiCredentials::New(*ssid, security_type.value(),
+                                  is_hidden.value(), *password),
+      absl::nullopt);
 }
 
 void QuickStartDecoder::DecodeGetAssertionResponse(

@@ -50,7 +50,7 @@ class TargetDeviceConnectionBroker {
   class AuthenticatedConnection {
    public:
     using RequestWifiCredentialsCallback =
-        base::OnceCallback<void(absl::optional<mojom::WifiCredentialsPtr>)>;
+        base::OnceCallback<void(absl::optional<mojom::WifiCredentials>)>;
     // The ack_successful bool indicates whether the ack was successfully
     // received by the source device. If true, then the target device will
     // prepare to resume the Quick Start connection after it updates.

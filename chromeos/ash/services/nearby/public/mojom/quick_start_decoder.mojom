@@ -24,7 +24,7 @@ interface QuickStartDecoder {
   // Decode a D2D response to a request for Wifi Credentials
   // This response is JSON, with a Base64 encoded JSON payload
   DecodeWifiCredentialsResponse(array<uint8> data) => (
-    GetWifiCredentialsResponse response);
+    WifiCredentials? credentials, QuickStartDecoderError? error);
 
   // Decode a simple ack response to a message notifying the source device
   // that the target device will update and reboot. This response is JSON,

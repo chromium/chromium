@@ -5,6 +5,7 @@
 #include "fake_quick_start_decoder.h"
 
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
 
@@ -27,7 +28,7 @@ void FakeQuickStartDecoder::DecodeBootstrapConfigurations(
 void FakeQuickStartDecoder::DecodeWifiCredentialsResponse(
     const std::vector<uint8_t>& data,
     DecodeWifiCredentialsResponseCallback callback) {
-  std::move(callback).Run(std::move(wifi_credentials_response_));
+  std::move(callback).Run(std::move(credentials_), error_);
 }
 
 void FakeQuickStartDecoder::DecodeGetAssertionResponse(
@@ -69,8 +70,10 @@ void FakeQuickStartDecoder::SetAssertionResponse(
 }
 
 void FakeQuickStartDecoder::SetWifiCredentialsResponse(
-    mojom::GetWifiCredentialsResponsePtr response) {
-  wifi_credentials_response_ = std::move(response);
+    mojom::WifiCredentialsPtr credentials,
+    absl::optional<mojom::QuickStartDecoderError> error) {
+  credentials_ = std::move(credentials);
+  error_ = error;
 }
 
 void FakeQuickStartDecoder::SetNotifySourceOfUpdateResponse(

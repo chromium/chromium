@@ -156,11 +156,11 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   int32_t session_id = 1;
 
   fake_quick_start_decoder_->SetWifiCredentialsResponse(
-      mojom::GetWifiCredentialsResponse::NewCredentials(
-          mojom::WifiCredentials::New("ssid", mojom::WifiSecurityType::kPSK,
-                                      true, "password")));
+      mojom::WifiCredentials::New("ssid", mojom::WifiSecurityType::kPSK, true,
+                                  "password"),
+      absl::nullopt);
 
-  base::test::TestFuture<absl::optional<mojom::WifiCredentialsPtr>> future;
+  base::test::TestFuture<absl::optional<mojom::WifiCredentials>> future;
 
   authenticated_connection_->RequestWifiCredentials(session_id,
                                                     future.GetCallback());
@@ -203,13 +203,13 @@ TEST_F(ConnectionTest, RequestWifiCredentials) {
   EXPECT_EQ(*wifi_request_payload.FindString("shared_secret"),
             shared_secret_base64);
 
-  const absl::optional<mojom::WifiCredentialsPtr>& credentials = future.Get();
+  const absl::optional<mojom::WifiCredentials>& credentials = future.Get();
   EXPECT_TRUE(credentials.has_value());
-  EXPECT_EQ(credentials.value()->ssid, "ssid");
-  EXPECT_EQ(credentials.value()->password, "password");
-  EXPECT_EQ(credentials.value()->security_type,
+  EXPECT_EQ(credentials.value().ssid, "ssid");
+  EXPECT_EQ(credentials.value().password, "password");
+  EXPECT_EQ(credentials.value().security_type,
             ash::quick_start::mojom::WifiSecurityType::kPSK);
-  EXPECT_TRUE(credentials.value()->is_hidden);
+  EXPECT_TRUE(credentials.value().is_hidden);
 }
 
 TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
@@ -217,10 +217,9 @@ TEST_F(ConnectionTest, RequestWifiCredentialsReturnsEmptyOnFailure) {
   // Random Session ID for testing
   int32_t session_id = 1;
   fake_quick_start_decoder_->SetWifiCredentialsResponse(
-      mojom::GetWifiCredentialsResponse::NewFailureReason(
-          mojom::GetWifiCredentialsFailureReason::kMissingWifiHiddenStatus));
+      nullptr, mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
 
-  base::test::TestFuture<absl::optional<mojom::WifiCredentialsPtr>> future;
+  base::test::TestFuture<absl::optional<mojom::WifiCredentials>> future;
 
   authenticated_connection_->RequestWifiCredentials(session_id,
                                                     future.GetCallback());
