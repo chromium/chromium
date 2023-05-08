@@ -359,11 +359,13 @@ void DevToolsDataSource::StartFileRequest(const std::string& path,
 void DevToolsDataSource::OnLoadComplete(
     std::list<PendingRequest>::iterator request_iter,
     std::unique_ptr<std::string> response_body) {
-  std::move(request_iter->callback)
-      .Run(response_body ? base::MakeRefCounted<base::RefCountedString>(
-                               std::move(*response_body))
-                         : CreateNotFoundResponse());
+  GotDataCallback callback = std::move(request_iter->callback);
   pending_requests_.erase(request_iter);
+  std::move(callback).Run(response_body
+                              ? base::MakeRefCounted<base::RefCountedString>(
+                                    std::move(*response_body))
+                              : CreateNotFoundResponse());
+  // `this` might no longer be valid after `callback` has run.
 }
 
 DevToolsDataSource::PendingRequest::PendingRequest() = default;
