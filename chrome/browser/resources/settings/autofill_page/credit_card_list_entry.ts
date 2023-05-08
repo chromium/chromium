@@ -23,7 +23,7 @@ import {getTemplate} from './credit_card_list_entry.html.js';
 
 const SettingsCreditCardListEntryElementBase = I18nMixin(PolymerElement);
 
-class SettingsCreditCardListEntryElement extends
+export class SettingsCreditCardListEntryElement extends
     SettingsCreditCardListEntryElementBase {
   static get is() {
     return 'settings-credit-card-list-entry';
@@ -65,6 +65,10 @@ class SettingsCreditCardListEntryElement extends
   creditCard: chrome.autofillPrivate.CreditCardEntry;
   private readonly showExpirationAsSecondaryLabelEnabled_: boolean;
   private readonly virtualCardEnrollmentEnabled_: boolean;
+
+  get dotsMenu(): HTMLElement|null {
+    return this.shadowRoot!.getElementById('creditCardMenu');
+  }
 
   /**
    * Opens the credit card action menu.

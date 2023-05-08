@@ -43,6 +43,18 @@ TEST_F('CrSettingsPaymentsSectionInteractiveTest', 'All', function() {
   mocha.run();
 });
 
+var CrSettingsPaymentsSectionFocusTest =
+    class extends CrSettingsInteractiveUITest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/payments_section_focus_test.js';
+  }
+};
+
+TEST_F('CrSettingsPaymentsSectionFocusTest', 'All', function() {
+  mocha.run();
+});
+
 var CrSettingsSyncPageTest = class extends CrSettingsInteractiveUITest {
   /** @override */
   get browsePreload() {

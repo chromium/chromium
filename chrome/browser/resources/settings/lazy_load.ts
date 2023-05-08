@@ -117,7 +117,9 @@ export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.j
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
+export {SettingsCreditCardListEntryElement} from './autofill_page/credit_card_list_entry.js';
 export {SettingsIbanEditDialogElement} from './autofill_page/iban_edit_dialog.js';
+export {SettingsIbanListEntryElement} from './autofill_page/iban_list_entry.js';
 // <if expr="is_win or is_macosx">
 export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
 export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';

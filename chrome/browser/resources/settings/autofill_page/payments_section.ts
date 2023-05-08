@@ -25,7 +25,6 @@ import './virtual_card_unenroll_dialog.js';
 
 import {SettingsToggleButtonElement} from '/shared/settings/controls/settings_toggle_button.js';
 import {AnchorAlignment, CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -38,6 +37,7 @@ import {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_di
 
 import {PersonalDataChangedListener} from './autofill_manager_proxy.js';
 import {DotsIbanMenuClickEvent} from './iban_list_entry.js';
+import {SettingsPaymentsListElement} from './payments_list.js';
 import {PaymentsManagerImpl, PaymentsManagerProxy} from './payments_manager_proxy.js';
 import {getTemplate} from './payments_section.html.js';
 
@@ -65,7 +65,7 @@ export interface SettingsPaymentsSectionElement {
     menuAddVirtualCard: HTMLElement,
     menuRemoveVirtualCard: HTMLElement,
     migrateCreditCards: HTMLElement,
-    paymentsList: HTMLElement,
+    paymentsList: SettingsPaymentsListElement,
   };
 }
 
@@ -214,7 +214,6 @@ export class SettingsPaymentsSectionElement extends
   private removeCardExpirationAndTypeTitlesEnabled_: boolean;
   private virtualCardEnrollmentEnabled_: boolean;
   private deviceAuthAvailable_: boolean;
-  private activeDialogAnchor_: HTMLElement|null = null;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
@@ -319,7 +318,6 @@ export class SettingsPaymentsSectionElement extends
     this.activeCreditCard_ = e.detail.creditCard;
 
     this.$.creditCardSharedMenu.showAt(e.detail.anchorElement);
-    this.activeDialogAnchor_ = e.detail.anchorElement;
   }
 
   /**
@@ -328,7 +326,6 @@ export class SettingsPaymentsSectionElement extends
   private onDotsIbanMenuClick_(e: DotsIbanMenuClickEvent) {
     // Copy item so dialog won't update model on cancel.
     this.activeIban_ = e.detail.iban;
-    this.activeDialogAnchor_ = e.detail.anchorElement;
 
     this.$.ibanSharedActionMenu.get().showAt(e.detail.anchorElement);
   }
@@ -345,9 +342,6 @@ export class SettingsPaymentsSectionElement extends
       expirationYear: date.getFullYear().toString(),
     };
     this.showCreditCardDialog_ = true;
-    this.activeDialogAnchor_ = this.shadowRoot!.querySelector<CrButtonElement>(
-        this.showIbanSettingsEnabled_ ? '#addPaymentMethods' :
-                                        '#addCreditCard');
     if (this.showIbanSettingsEnabled_) {
       const menu = this.shadowRoot!
                        .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
@@ -359,9 +353,6 @@ export class SettingsPaymentsSectionElement extends
 
   private onCreditCardDialogClose_() {
     this.showCreditCardDialog_ = false;
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeDialogAnchor_ = null;
     this.activeCreditCard_ = null;
   }
 
@@ -371,8 +362,6 @@ export class SettingsPaymentsSectionElement extends
   private onAddIbanClick_(e: Event) {
     e.preventDefault();
     this.showIbanDialog_ = true;
-    this.activeDialogAnchor_ =
-        this.shadowRoot!.querySelector<CrButtonElement>('#addPaymentMethods');
     const menu = this.shadowRoot!
                      .querySelector<CrLazyRenderElement<CrActionMenuElement>>(
                          '#paymentMethodsActionMenu')!.get();
@@ -382,9 +371,6 @@ export class SettingsPaymentsSectionElement extends
 
   private onIbanDialogClose_() {
     this.showIbanDialog_ = false;
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeDialogAnchor_ = null;
     this.activeIban_ = null;
   }
 
@@ -418,14 +404,16 @@ export class SettingsPaymentsSectionElement extends
     if (confirmationDialog.wasConfirmed()) {
       assert(this.activeCreditCard_);
       assert(this.activeCreditCard_.guid);
+      const index = this.creditCards.findIndex(
+          (card) => card.guid === this.activeCreditCard_!.guid);
+      if (!this.$.paymentsList.updateFocusBeforeCreditCardRemoval(index)) {
+        this.focusHeaderControls_();
+      }
       this.paymentsManager_.removeCreditCard(this.activeCreditCard_.guid);
       this.activeCreditCard_ = null;
     }
 
     this.showLocalCreditCardRemoveConfirmationDialog_ = false;
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeDialogAnchor_ = null;
   }
 
   /**
@@ -455,14 +443,16 @@ export class SettingsPaymentsSectionElement extends
     if (confirmationDialog.wasConfirmed()) {
       assert(this.activeIban_);
       assert(this.activeIban_.guid);
+      const index =
+          this.ibans.findIndex((iban) => iban.guid === this.activeIban_!.guid);
+      if (!this.$.paymentsList.updateFocusBeforeIbanRemoval(index)) {
+        this.focusHeaderControls_();
+      }
       this.paymentsManager_.removeIban(this.activeIban_.guid);
       this.activeIban_ = null;
     }
 
     this.showLocalIbanRemoveConfirmationDialog_ = false;
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeDialogAnchor_ = null;
   }
 
   /**
@@ -497,9 +487,6 @@ export class SettingsPaymentsSectionElement extends
 
   private onVirtualCardUnenrollDialogClose_() {
     this.showVirtualCardUnenrollDialog_ = false;
-    assert(this.activeDialogAnchor_);
-    focusWithoutInk(this.activeDialogAnchor_);
-    this.activeDialogAnchor_ = null;
     this.activeCreditCard_ = null;
   }
 
@@ -624,6 +611,14 @@ export class SettingsPaymentsSectionElement extends
       mandatoryReauthToggleEnabled: boolean): boolean {
     return creditCardEnabled &&
         (deviceAuthAvailable || mandatoryReauthToggleEnabled);
+  }
+
+  private focusHeaderControls_(): void {
+    const element =
+        this.shadowRoot!.querySelector<HTMLElement>('.header-aligned-button');
+    if (element) {
+      focusWithoutInk(element);
+    }
   }
 }
 
