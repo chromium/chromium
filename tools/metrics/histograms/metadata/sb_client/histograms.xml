@@ -576,6 +576,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientPhishing.ApplyTfliteTime.Classify" units="ms"
+    expires_after="2024-05-05">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration of running the TfLite classification, which is one step
+    in applying the TfLite model for phishing detection. This model is applied
+    roughly once per navigation.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
     enum="BooleanReady" expires_after="2023-07-24">
   <owner>andysjlim@chromium.org</owner>
