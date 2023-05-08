@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.features.start_surface;
+package org.chromium.chrome.browser.tasks.tab_management;
 
 import static android.os.Build.VERSION_CODES.O_MR1;
 import static android.os.Build.VERSION_CODES.Q;
@@ -102,22 +102,12 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabGridThumbnailView;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
-import org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorTestingRobot;
-import org.chromium.chrome.browser.tasks.tab_management.TabSuggestionMessageService;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCoordinator;
-import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherLayout;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
-import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.LegacyTestParams;
 import org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.RefactorTestParams;
+import org.chromium.chrome.features.start_surface.TabSwitcherAndStartSurfaceLayout;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -428,7 +418,8 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/2000/cleanup-delay/10000"})
     @DisableIf.Build(message = "https://crbug.com/1365708", supported_abis_includes = "x86",
             sdk_is_greater_than = O_MR1, sdk_is_less_than = Q)
-    public void testTabToGridFromLiveTabWarm(boolean isStartSurfaceRefactorEnabled)
+    public void
+    testTabToGridFromLiveTabWarm(boolean isStartSurfaceRefactorEnabled)
             throws InterruptedException {
         assertFalse(
                 TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));

@@ -782,7 +782,7 @@ public class TabSwitcherAndStartSurfaceLayout extends Layout {
     }
 
     @VisibleForTesting
-    void setPerfListenerForTesting(PerfListener perfListener) {
+    public void setPerfListenerForTesting(PerfListener perfListener) {
         mPerfListenerForTesting = perfListener;
     }
 
