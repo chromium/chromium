@@ -7,9 +7,11 @@
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/logging.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/result.h"
 
 namespace segmentation_platform {
 
@@ -27,6 +29,10 @@ void CachedResultWriter::UpdatePrefsIfExpired(
       config->on_demand_execution) {
     return;
   }
+  VLOG(1) << "CachedResultWriter updating prefs with new result: "
+          << segmentation_platform::PredictionResultToDebugString(
+                 client_result.client_result())
+          << " for segmentation key: " << config->segmentation_key;
   UpdateNewClientResultToPrefs(config, client_result);
 }
 
@@ -54,7 +60,8 @@ bool CachedResultWriter::IsPrefUpdateRequiredForClient(
     stats::RecordSegmentSelectionFailure(
         *config, stats::SegmentationSelectionFailureReason::
                      kProtoPrefsUpdateNotRequired);
-    VLOG(1) << __func__ << ": previous client_result"
+    VLOG(1) << __func__ << ": previous client_result for segmentation_key: "
+            << config->segmentation_key
             << " has not yet expired. Expiration: " << expiration_time;
     return false;
   }

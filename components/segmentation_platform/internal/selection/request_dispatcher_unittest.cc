@@ -7,8 +7,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -57,7 +60,7 @@ class RequestDispatcherTest : public testing::Test {
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER));
     configs_.emplace_back(test_utils::CreateTestConfig(
         kAdaptiveToolbarClient,
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB));
+        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR));
 
     request_dispatcher_ =
         std::make_unique<RequestDispatcher>(configs_, nullptr);
@@ -102,7 +105,7 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitFailure) {
   PredictionOptions options;
   options.on_demand_execution = true;
 
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request handler will never be invoked if init fails.
   EXPECT_CALL(*request_handler1_, GetClassificationResult(_, _, _)).Times(0);
@@ -113,7 +116,7 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitFailure) {
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(),
                      ClassificationResult(PredictionStatus::kFailed)));
-  EXPECT_EQ(1, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Finish platform initialization with failure. The request queue is flushed
   // and callbacks are invoked with empty results.
@@ -123,15 +126,17 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitFailure) {
   request_dispatcher_->OnPlatformInitialized(false, &execution_service,
                                              std::move(result_providers));
   loop.Run();
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 }
 
-TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitSuccess) {
-  base::RunLoop loop;
+TEST_F(RequestDispatcherTest,
+       TestRequestQueuingWithInitSuccessAndNoModelsLoading) {
+  base::RunLoop run_loop_1;
+  base::RunLoop run_loop_2;
   PredictionOptions options;
   options.on_demand_execution = true;
 
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 1.
   ClassificationResult result1(PredictionStatus::kSucceeded);
@@ -146,8 +151,9 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitSuccess) {
   request_dispatcher_->GetClassificationResult(
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
-                     base::Unretained(this), loop.QuitClosure(), result1));
-  EXPECT_EQ(1, request_dispatcher_->get_pending_actions_size_for_testing());
+                     base::Unretained(this), run_loop_1.QuitClosure(),
+                     result1));
+  EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 2.
   ClassificationResult result2(PredictionStatus::kSucceeded);
@@ -162,21 +168,101 @@ TEST_F(RequestDispatcherTest, TestRequestQueuingWithInitSuccess) {
   request_dispatcher_->GetClassificationResult(
       kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
-                     base::Unretained(this), loop.QuitClosure(), result2));
-  EXPECT_EQ(2, request_dispatcher_->get_pending_actions_size_for_testing());
+                     base::Unretained(this), run_loop_2.QuitClosure(),
+                     result2));
+  EXPECT_EQ(2, request_dispatcher_->GetPendingActionCountForTesting());
 
-  // Finish platform initialization with success. The request queue is flushed,
-  // and the request handler is invoked.
+  // Finish platform initialization with success. The request queue shouldn't be
+  // cleared because the models for the queued segments haven't been
+  // initialized.
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
   ExecutionService execution_service;
   request_dispatcher_->OnPlatformInitialized(true, &execution_service,
                                              std::move(result_providers));
-  loop.Run();
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(2, request_dispatcher_->GetPendingActionCountForTesting());
+
+  // Run all pending tasks, this triggers a timeout to clear the request queue
+  // even if the models didn't load.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+
+  run_loop_1.Run();
+  run_loop_2.Run();
 }
 
-TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
+TEST_F(RequestDispatcherTest,
+       TestRequestQueuingWithInitSuccessAndAfterModelsLoaded) {
+  base::RunLoop run_loop_1;
+  base::RunLoop run_loop_2;
+  PredictionOptions options;
+  options.on_demand_execution = true;
+
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+
+  // Request from client 1.
+  ClassificationResult result1(PredictionStatus::kSucceeded);
+  result1.ordered_labels.emplace_back("test_label1");
+  EXPECT_CALL(*request_handler1_, GetClassificationResult(_, _, _))
+      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
+                                 scoped_refptr<InputContext> input_context,
+                                 ClassificationResultCallback callback) {
+        std::move(callback).Run(result1);
+      }));
+
+  request_dispatcher_->GetClassificationResult(
+      kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
+                     base::Unretained(this), run_loop_1.QuitClosure(),
+                     result1));
+  EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
+
+  // Request from client 2.
+  ClassificationResult result2(PredictionStatus::kSucceeded);
+  result2.ordered_labels.emplace_back("test_label2");
+  EXPECT_CALL(*request_handler2_, GetClassificationResult(_, _, _))
+      .WillRepeatedly(Invoke([&](const PredictionOptions& options,
+                                 scoped_refptr<InputContext> input_context,
+                                 ClassificationResultCallback callback) {
+        std::move(callback).Run(result2);
+      }));
+
+  request_dispatcher_->GetClassificationResult(
+      kAdaptiveToolbarClient, options, scoped_refptr<InputContext>(),
+      base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
+                     base::Unretained(this), run_loop_2.QuitClosure(),
+                     result2));
+  EXPECT_EQ(2, request_dispatcher_->GetPendingActionCountForTesting());
+
+  // Finish platform initialization with success. The request queue is posted,
+  // but no requests are dispatched because their models are still not yet
+  // loaded.
+  std::map<std::string, std::unique_ptr<SegmentResultProvider>>
+      result_providers;
+  ExecutionService execution_service;
+  request_dispatcher_->OnPlatformInitialized(true, &execution_service,
+                                             std::move(result_providers));
+  // Initialize platform, no requests should be executed.
+  EXPECT_EQ(2, request_dispatcher_->GetPendingActionCountForTesting());
+
+  // Set the device switcher model as initialized. Its request should be
+  // executed.
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER);
+  // The device switcher request should be dispatched and
+  // the other one gets enqueued again.
+  run_loop_1.Run();
+  EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
+
+  // Set the new tab model as initialized.
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR);
+  // The last request should be dispatched.
+  run_loop_2.Run();
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
+}
+
+TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccessAndModelsLoaded) {
   base::RunLoop loop;
   PredictionOptions options;
   options.on_demand_execution = true;
@@ -185,8 +271,15 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
       result_providers;
   ExecutionService execution_service;
+  // Set platform as initialized.
   request_dispatcher_->OnPlatformInitialized(true, &execution_service,
                                              std::move(result_providers));
+  // Set both models as initialized, now requests should be dispatched
+  // immediately without queueing.
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER);
+  request_dispatcher_->OnModelUpdated(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR);
 
   // Request from client 1.
   ClassificationResult result1(PredictionStatus::kSucceeded);
@@ -202,7 +295,7 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result1));
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Request from client 2.
   ClassificationResult result2(PredictionStatus::kSucceeded);
@@ -219,7 +312,7 @@ TEST_F(RequestDispatcherTest, TestRequestAfterInitSuccess) {
       base::BindOnce(&RequestDispatcherTest::OnGetClassificationResult,
                      base::Unretained(this), loop.QuitClosure(), result2));
   loop.Run();
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 }
 
 TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
@@ -241,7 +334,7 @@ TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
       kDeviceSwitcherClient, options, scoped_refptr<InputContext>(),
       base::BindOnce(&RequestDispatcherTest::OnGetAnnotatedNumericResult,
                      base::Unretained(this), loop.QuitClosure(), result1));
-  EXPECT_EQ(1, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(1, request_dispatcher_->GetPendingActionCountForTesting());
 
   // Init platform.
   std::map<std::string, std::unique_ptr<SegmentResultProvider>>
@@ -251,7 +344,7 @@ TEST_F(RequestDispatcherTest, TestAnnotatedNumericResultRequestWithWaiting) {
                                              std::move(result_providers));
 
   loop.Run();
-  EXPECT_EQ(0, request_dispatcher_->get_pending_actions_size_for_testing());
+  EXPECT_EQ(0, request_dispatcher_->GetPendingActionCountForTesting());
 }
 
 }  // namespace

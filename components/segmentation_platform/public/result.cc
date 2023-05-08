@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/public/result.h"
+#include <sstream>
 
 namespace segmentation_platform {
 
@@ -16,6 +17,29 @@ ClassificationResult::ClassificationResult(const ClassificationResult&) =
 
 ClassificationResult& ClassificationResult::operator=(
     const ClassificationResult&) = default;
+
+std::string ClassificationResult::ToDebugString() const {
+  std::stringstream debug_string;
+  debug_string << "Status: ";
+
+  switch (status) {
+    case segmentation_platform::PredictionStatus::kNotReady:
+      debug_string << "Not ready";
+      break;
+    case segmentation_platform::PredictionStatus::kFailed:
+      debug_string << "Failed";
+      break;
+    case segmentation_platform::PredictionStatus::kSucceeded:
+      debug_string << "Succeeded";
+      break;
+  }
+
+  for (unsigned i = 0; i < ordered_labels.size(); ++i) {
+    debug_string << " output " << i << ": " << ordered_labels.at(i);
+  }
+
+  return debug_string.str();
+}
 
 AnnotatedNumericResult::AnnotatedNumericResult(PredictionStatus status)
     : status(status) {}

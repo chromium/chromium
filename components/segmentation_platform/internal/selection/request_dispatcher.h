@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/segmentation_platform/public/result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -46,6 +47,10 @@ class RequestDispatcher {
       std::map<std::string, std::unique_ptr<SegmentResultProvider>>
           result_providers);
 
+  // Called when the model for |segment_id| has been initialized. Used to
+  // execute any queued requests that depend on that model.
+  void OnModelUpdated(proto::SegmentId segment_id);
+
   // Client API. See `SegmentationPlatformService::GetClassificationResult`.
   void GetClassificationResult(const std::string& segmentation_key,
                                const PredictionOptions& options,
@@ -58,7 +63,7 @@ class RequestDispatcher {
                                  AnnotatedNumericResultCallback callback);
 
   // For testing only.
-  int get_pending_actions_size_for_testing() { return pending_actions_.size(); }
+  int GetPendingActionCountForTesting();
   void set_request_handler_for_testing(
       const std::string& segmentation_key,
       std::unique_ptr<RequestHandler> request_handler) {
@@ -66,6 +71,10 @@ class RequestDispatcher {
   }
 
  private:
+  void OnModelInitializationTimeout();
+  void ExecuteAllPendingActions();
+  void ExecutePendingActionsForKey(const std::string& segmentation_key);
+
   template <typename ResultType, typename Request>
   void GetModelResult(const std::string& segmentation_key,
                       const PredictionOptions& options,
@@ -79,14 +88,32 @@ class RequestDispatcher {
   // Request handlers associated with the clients.
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
 
+  // List of segmentation keys whose models haven't been initialized. Used to
+  // enqueue requests that involve an uninitialized model. It gets populated
+  // when the platform initializes and each element gets removed when
+  // |OnModelUpdated| gets called with its corresponding segment ID. All
+  // elements get cleared after a timeout to avoid waiting for too long.
+  std::set<std::string> uninitialized_segmentation_keys_;
+
+  // List of segmentation keys with segment IDs that use the legacy output
+  // config (e.g. don't support multi-output models). Requests from these
+  // segmentation keys will be ignored.
+  std::set<std::string> legacy_output_segmentation_keys_;
+
   // Delegate to provide cached results for all clients, shared among clients.
   const raw_ptr<CachedResultProvider> cached_result_provider_;
 
   // Storage initialization status.
   absl::optional<bool> storage_init_status_;
 
+  // Map from segment ID to the segmentation key that makes use of it. Used
+  // to run all requests that use a segment ID once its model is available.
+  std::map<proto::SegmentId, std::string> segmentation_key_by_segment_id_;
+
   // For caching any method calls that were received before initialization.
-  base::circular_deque<base::OnceClosure> pending_actions_;
+  // Key is a segmentation key, value is a queue of actions that use that model.
+  std::map<std::string, base::circular_deque<base::OnceClosure>>
+      pending_actions_;
 
   base::WeakPtrFactory<RequestDispatcher> weak_ptr_factory_{this};
 };

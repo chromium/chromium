@@ -297,6 +297,7 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
   signal_handler_.OnSignalListUpdated();
 
   execution_service_.OnNewModelInfoReady(segment_info);
+  request_dispatcher_->OnModelUpdated(segment_info.segment_id());
 
   // Update the service status for proxy.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(

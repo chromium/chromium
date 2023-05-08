@@ -3,18 +3,33 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/selection/request_dispatcher.h"
+#include <set>
+#include <utility>
 
+#include "base/containers/circular_deque.h"
+#include "base/functional/callback_forward.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/prediction_options.h"
+#include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 
 namespace segmentation_platform {
 
 namespace {
+
+// Amount of time to wait for model initialization. During this period requests
+// for uninitialized models will be enqueued and processed either when the model
+// is ready or when this timeout expires. Time is 200ms to cover 80% of cases
+// (According to
+// OptimizationGuide.ModelHandler.HandlerCreatedToModelAvailable histogram).
+const int kModelInitializationTimeoutMs = 200;
 
 // Wrap callback to record metrics.
 template <typename ResultType>
@@ -38,7 +53,37 @@ base::OnceCallback<void(const ResultType&)> GetWrappedCallback(
 RequestDispatcher::RequestDispatcher(
     const std::vector<std::unique_ptr<Config>>& configs,
     CachedResultProvider* cached_result_provider)
-    : configs_(configs), cached_result_provider_(cached_result_provider) {}
+    : configs_(configs), cached_result_provider_(cached_result_provider) {
+  std::set<proto::SegmentId> found_segments;
+
+  // Individual models must be loaded from disk or fetched from network. Fill a
+  // list to keep track of which ones are still pending.
+  for (const auto& config : *configs_) {
+    // Ignore segmentation keys using legacy models.
+    if (metadata_utils::ConfigUsesLegacyOutput(config.get())) {
+      legacy_output_segmentation_keys_.insert(config->segmentation_key);
+    } else {
+      // Non legacy segment IDs must have a 1:1 relationship with segmentation
+      // keys. These checks ensure that.
+      CHECK(config->segments.size() <= 1)
+          << "segmentation_key: " << config->segmentation_key
+          << " must not have multiple segments.";
+
+      for (const auto& segment_id : config->segments) {
+        CHECK(!segmentation_key_by_segment_id_.contains(segment_id.first))
+            << "segment_id: " << proto::SegmentId_Name(segment_id.first)
+            << " was found in two segmentation keys: "
+            << segmentation_key_by_segment_id_.at(segment_id.first) << " and "
+            << config->segmentation_key;
+
+        segmentation_key_by_segment_id_.insert(
+            {segment_id.first, config->segmentation_key});
+      }
+
+      uninitialized_segmentation_keys_.insert(config->segmentation_key);
+    }
+  }
+}
 
 RequestDispatcher::~RequestDispatcher() = default;
 
@@ -58,13 +103,56 @@ void RequestDispatcher::OnPlatformInitialized(
     }
   }
 
-  // Run any method calls that were received during initialization.
+  // Set a timeout to execute all pending requests even if their models didn't
+  // initialize after |kModelInitializationTimeoutMs|. This is to avoid waiting
+  // for long periods of time when models need to be downloaded, and to avoid
+  // requests waiting forever when there's no model.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&RequestDispatcher::OnModelInitializationTimeout,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(kModelInitializationTimeoutMs));
+}
+
+void RequestDispatcher::ExecuteAllPendingActions() {
   while (!pending_actions_.empty()) {
-    auto callback = std::move(pending_actions_.front());
-    pending_actions_.pop_front();
+    ExecutePendingActionsForKey(pending_actions_.begin()->first);
+  }
+}
+
+void RequestDispatcher::ExecutePendingActionsForKey(
+    const std::string& segmentation_key) {
+  auto pending_actions_for_key = pending_actions_.find(segmentation_key);
+
+  if (pending_actions_for_key == pending_actions_.end()) {
+    return;
+  }
+
+  while (!pending_actions_for_key->second.empty()) {
+    auto callback = std::move(pending_actions_for_key->second.front());
+    pending_actions_for_key->second.pop_front();
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));
   }
+
+  pending_actions_.erase(segmentation_key);
+}
+
+void RequestDispatcher::OnModelUpdated(proto::SegmentId segment_id) {
+  auto key_for_updated_segment =
+      segmentation_key_by_segment_id_.find(segment_id);
+  if (key_for_updated_segment == segmentation_key_by_segment_id_.end()) {
+    return;
+  }
+  std::string segmentation_key = key_for_updated_segment->second;
+
+  uninitialized_segmentation_keys_.erase(segmentation_key);
+  ExecutePendingActionsForKey(segmentation_key);
+}
+
+void RequestDispatcher::OnModelInitializationTimeout() {
+  uninitialized_segmentation_keys_.clear();
+  ExecuteAllPendingActions();
 }
 
 template <typename ResultType, typename Request>
@@ -74,16 +162,21 @@ void RequestDispatcher::GetModelResult(
     scoped_refptr<InputContext> input_context,
     Request request,
     base::OnceCallback<void(const ResultType&)> callback) {
+  if (legacy_output_segmentation_keys_.contains(segmentation_key)) {
+    return;
+  }
+
   // TODO(ssid): Support cached results for all APIs.
   DCHECK(options.on_demand_execution);
 
   // For on-demand results, we need to run the models for which we need DB
   // initialization to be complete. Hence cache the request if platform
   // initialization isn't completed yet.
-  if (!storage_init_status_.has_value()) {
+  if (!storage_init_status_.has_value() ||
+      uninitialized_segmentation_keys_.contains(segmentation_key)) {
     // If the platform isn't fully initialized, cache the input arguments to
     // run later.
-    pending_actions_.push_back(base::BindOnce(
+    pending_actions_[segmentation_key].push_back(base::BindOnce(
         &RequestDispatcher::GetModelResult<ResultType, Request>,
         weak_ptr_factory_.GetWeakPtr(), segmentation_key, options,
         std::move(input_context), std::move(request), std::move(callback)));
@@ -149,6 +242,14 @@ void RequestDispatcher::GetAnnotatedNumericResult(
   GetModelResult(segmentation_key, options, input_context,
                  base::BindOnce(&RequestHandler::GetAnnotatedNumericResult),
                  std::move(callback));
+}
+
+int RequestDispatcher::GetPendingActionCountForTesting() {
+  int total_actions = 0;
+  for (auto& actions_for_key : pending_actions_) {
+    total_actions += actions_for_key.second.size();
+  }
+  return total_actions;
 }
 
 }  // namespace segmentation_platform

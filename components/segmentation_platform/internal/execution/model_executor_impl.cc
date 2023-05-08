@@ -184,11 +184,16 @@ void ModelExecutorImpl::OnModelExecutionComplete(
   stats::RecordModelExecutionDurationModel(
       state->segment_info.segment_id(), result.has_value(),
       clock_->Now() - state->model_execution_start_time);
-  // TODO(ritikagup): Change the use of this according to MultiOutputModel.
-  if (result.has_value()) {
-    VLOG(1) << "Segmentation model result: " << result.value().at(0)
-            << " for segment "
-            << proto::SegmentId_Name(state->segment_info.segment_id());
+  if (result.has_value() && result.value().size() > 0) {
+    if (VLOG_IS_ON(1)) {
+      std::stringstream log_output;
+      for (unsigned i = 0; i < result.value().size(); ++i) {
+        log_output << " output " << i << ": " << result.value().at(i);
+      }
+      VLOG(1) << "Segmentation model result: " << log_output.str()
+              << " for segment "
+              << proto::SegmentId_Name(state->segment_info.segment_id());
+    }
     const proto::SegmentationModelMetadata& model_metadata =
         state->segment_info.model_metadata();
     if (model_metadata.has_output_config()) {

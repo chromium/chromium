@@ -4,10 +4,12 @@
 
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
 
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/segmentation_platform/internal/post_processor/post_processor.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
+#include "components/segmentation_platform/public/constants.h"
 
 namespace segmentation_platform {
 
@@ -53,6 +55,12 @@ CachedResultProvider::~CachedResultProvider() = default;
 ClassificationResult CachedResultProvider::GetCachedResultForClient(
     const std::string& segmentation_key) {
   const auto iter = client_result_from_last_session_map_.find(segmentation_key);
+  if (VLOG_IS_ON(1) && iter != client_result_from_last_session_map_.end()) {
+    VLOG(1) << "CachedResultProvider loaded prefs with results from previous "
+               "session: "
+            << iter->second.ToDebugString() << " for segmentation key "
+            << segmentation_key;
+  }
   return iter == client_result_from_last_session_map_.end()
              ? ClassificationResult(PredictionStatus::kFailed)
              : iter->second;
