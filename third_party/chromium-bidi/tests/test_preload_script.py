@@ -224,7 +224,7 @@ async def test_addPreloadScript_loadedInNewIframes(websocket, context_id,
     if url_all_origins in [
             'https://example.com/', 'data:text/html,<h2>child page</h2>'
     ]:
-        pytest.skip(reason="fail")
+        pytest.skip(reason="TODO: fail")
     await subscribe(websocket, "log.entryAdded")
 
     await execute_command(
@@ -414,7 +414,7 @@ async def test_addPreloadScript_loadedInMultipleContexts(
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="fail")
+@pytest.mark.skip(reason="TODO: fail")
 async def test_addPreloadScriptGlobally_loadedInNewContexts(
         websocket, context_id, create_context, html):
     await execute_command(
@@ -481,7 +481,7 @@ async def test_addPreloadScriptGlobally_loadedInMultipleContexts_withIframes(
     if url_all_origins in [
             'https://example.com/', 'data:text/html,<h2>child page</h2>'
     ]:
-        pytest.skip(reason="fail")
+        pytest.skip(reason="TODO: fail")
     await execute_command(
         websocket, {
             "method": "script.addPreloadScript",

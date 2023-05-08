@@ -164,7 +164,7 @@ function createBidiServer(selfTargetId: string) {
       );
 
       if (channel) {
-        // TODO: get rid of any, same code existed in BidiServer.
+        // XXX: get rid of any, same code existed in BidiServer.
         this.sendMessage({
           ...errorResponse,
           channel,
@@ -189,7 +189,7 @@ function createBidiServer(selfTargetId: string) {
       errorCode: Message.ErrorCode,
       errorMessage: string
     ): Message.OutgoingMessage {
-      // TODO: this is bizarre per spec. We reparse the payload and
+      // XXX: this is bizarre per spec. We reparse the payload and
       // extract the ID, regardless of what kind of value it was.
       let messageId;
       try {
@@ -206,7 +206,7 @@ function createBidiServer(selfTargetId: string) {
         id: messageId,
         error: errorCode,
         message: errorMessage,
-        // TODO: optional stacktrace field.
+        // XXX: optional stacktrace field.
       };
     }
 

@@ -16,11 +16,10 @@
  */
 
 /**
- * The entry point to the BiDi Mapper namespace.
+ * @fileoverview The entry point to the BiDi Mapper namespace.
  * Other modules should only access exports defined in this file.
- * TODO: eslint rule for this.
+ * XXX: eslint rule for this.
  */
-
 export {CdpConnection, CdpClient} from './CdpConnection.js';
 export {BidiServer} from './BidiServer.js';
 export {BidiTransport} from './BidiTransport.js';

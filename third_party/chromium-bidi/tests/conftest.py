@@ -102,7 +102,7 @@ def url_same_origin():
     return 'about:blank'
 
 
-# TODO(sadym): make offline.
+# TODO: make offline.
 @pytest.fixture(params=[
     'https://example.com/',  # Another domain: Cross-origin
     'data:text/html,<h2>child page</h2>',  # Data URL: Cross-origin
@@ -112,7 +112,7 @@ def url_cross_origin(request):
     return request.param
 
 
-# TODO(sadym): make offline.
+# TODO: make offline.
 @pytest.fixture(params=[
     'about:blank',  # Same-origin
     'https://example.com/',  # Another domain: Cross-origin

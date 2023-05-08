@@ -197,7 +197,7 @@ export class BrowsingContextProcessor {
   #handleDetachedFromTargetEvent(
     params: Protocol.Target.DetachedFromTargetEvent
   ) {
-    // TODO: params.targetId is deprecated. Update this class to track using
+    // XXX: params.targetId is deprecated. Update this class to track using
     // params.sessionId instead.
     // https://github.com/GoogleChromeLabs/chromium-bidi/issues/60
     const contextId = params.targetId!;

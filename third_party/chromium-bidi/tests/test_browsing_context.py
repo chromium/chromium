@@ -207,7 +207,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
     } == result
 
 
-# TODO(sadym): make offline.
+# TODO: make offline.
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
         websocket, context_id, html, iframe):
@@ -733,26 +733,26 @@ async def test_browsingContext_navigateSameDocumentNavigation_waitComplete_navig
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_type_textTyped():
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_navigateWithShortTimeout_timeoutOccurredAndEventPageLoadEmitted(
 ):
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_waitForSelector_success():
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_waitForSelector_success_slow():
     # 1. Wait for element which is not on the page.
     # 2. Assert element not found.
@@ -763,26 +763,26 @@ async def test_browsingContext_waitForSelector_success_slow():
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_waitForHiddenSelector_success():
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_waitForSelectorWithMinimumTimeout_failedWithTimeout(
 ):
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_waitForSelectorWithMissingElement_failedWithTimeout_slow(
 ):
     pass
 
 
 @pytest.mark.asyncio
-@pytest.mark.skip(reason="TODO: Not implemented yet.")
+@pytest.mark.skip(reason="TODO: Not implemented")
 async def test_browsingContext_clickElement_clickProcessed():
     pass

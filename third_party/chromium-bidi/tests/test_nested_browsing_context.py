@@ -298,7 +298,7 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
     } == result
 
 
-# TODO(sadym): make offline.
+# TODO: make offline.
 @pytest.mark.asyncio
 async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOriginContexts_contextsReturned(
         websocket, iframe_id, html, iframe):

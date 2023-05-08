@@ -243,7 +243,7 @@ async def test_network_network_response_completed_event_emitted(
     }
 
 
-# TODO(sadym): make offline.
+# TODO: make offline.
 @pytest.mark.asyncio
 async def test_network_bad_ssl(websocket, context_id):
     BAD_SSL_URL = "https://expired.badssl.com/"

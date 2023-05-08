@@ -195,7 +195,7 @@ DEBUG=* npm run server -- --verbose
 
 ### Starting on Linux and Mac
 
-TODO: verify if it works on Windows.
+TODO: verify it works on Windows.
 
 You can also run the server by using script `./runBiDiServer.sh`. It will write
 output to the file `log.txt`:

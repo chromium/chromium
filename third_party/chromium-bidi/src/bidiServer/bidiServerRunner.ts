@@ -204,7 +204,7 @@ export class BidiServerRunner {
     errorCode: string,
     errorMessage: string
   ) {
-    // TODO: this is bizarre per spec. We reparse the payload and
+    // XXX: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
     let commandId;
     try {
@@ -218,7 +218,7 @@ export class BidiServerRunner {
       id: commandId,
       error: errorCode,
       message: errorMessage,
-      // TODO: optional stacktrace field.
+      // XXX: optional stacktrace field.
     };
   }
 }
