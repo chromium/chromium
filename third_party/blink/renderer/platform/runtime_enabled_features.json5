@@ -351,6 +351,7 @@
       // This is not going into origin trial, "origin_trial_feature_name" is
       // required for using the "implied_by" behaviour.
       origin_trial_feature_name: "AttributionReportingInterface",
+      origin_trial_allows_third_party: true,
       implied_by: ["AttributionReporting", "AttributionReportingCrossAppWeb"],
       base_feature: "none",
     },
