@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+#include <map>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -10,12 +11,18 @@
 
 struct S {};
 
+// Expected rewrite: using VECTOR = std::vector<raw_ptr<S>>;
+using VECTOR = std::vector<raw_ptr<S>>;
+
 struct obj {
   // Expected rewrite: const std::vector<raw_ptr<S>>& get();
   const std::vector<raw_ptr<S>>& get() { return member; }
 
   // Expected rewrite: std::vector<raw_ptr<S>> member;
   std::vector<raw_ptr<S>> member;
+
+  typedef std::map<int, VECTOR> MAP;
+  MAP member2;
 };
 
 // Expected rewrite: std::vector<raw_ptr<S>> get_value();
@@ -33,8 +40,53 @@ std::vector<S*> unrelated_fct() {
   return {};
 }
 
+// Expected rewrite: void call_on_vector(std::vector<raw_ptr<S>>* v)
+void call_on_vector(std::vector<raw_ptr<S>>* v) {}
+
 void fct() {
   obj o;
+
+  {
+    // Expected rewrite: std::map<int, std::vector<raw_ptr<S>>> m;
+    std::map<int, std::vector<raw_ptr<S>>> m;
+    m[0] = o.member;
+  }
+
+  {
+    // Expected rewrite: o.member2.emplace(0, std::vector<raw_ptr<S>>{});
+    o.member2.emplace(0, std::vector<raw_ptr<S>>{});
+  }
+
+  {
+    // Expected rewrite: std::vector<raw_ptr<S>> temp;
+    std::vector<raw_ptr<S>> temp;
+    temp = (*o.member2.begin()).second;
+  }
+
+  {
+    // Expected rewrite: std::map<int, std::vector<raw_ptr<S>>>::iterator it;
+    std::map<int, std::vector<raw_ptr<S>>>::iterator it;
+    it = o.member2.begin();
+  }
+
+  {
+    // Expected rewrite: std::map<int, std::vector<raw_ptr<S>>>::iterator it;
+    std::map<int, std::vector<raw_ptr<S>>>::iterator it;
+    it = o.member2.find(0);
+  }
+
+  {
+    for (auto& p : o.member2) {
+      // call_on_vector signature will be rewritten due to this call.
+      call_on_vector(&(p.second));
+    }
+  }
+
+  {
+    std::vector<raw_ptr<S>> temp;
+    // Expected rewrite: std::vector<raw_ptr<S>> temp;
+    temp = o.member2.find(0)->second;
+  }
 
   {
     // create a link with a member to propagate the rewrite.
