@@ -2271,7 +2271,7 @@
     ],
 
     'chromeos_js_coverage_reclient': [
-      'chromeos_with_codecs', 'release_bot_reclient', 'also_build_lacros_chrome', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
+      'chromeos_with_codecs', 'release_bot_reclient', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_dchecks': [
