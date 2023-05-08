@@ -25686,6 +25686,7 @@ Called by update_debug_scenarios.py.-->
   <int value="2" label="Close Incognito tabs"/>
   <int value="3" label="Cookies in use dialog"/>
   <int value="4" label="Site settings page"/>
+  <int value="5" label="History Page Entries"/>
   <int value="6" label="Quick delete"/>
   <int value="7" label="Page info permission reset"/>
 </enum>
