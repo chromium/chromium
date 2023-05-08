@@ -148,6 +148,10 @@ export class CrosImageCapture {
    * @return Promise for the operation.
    */
   async addMetadataObserver(): Promise<void> {
+    if (this.metadataObserver !== null) {
+      return;
+    }
+
     const deviceOperator = DeviceOperator.getInstance();
     if (deviceOperator === null) {
       return;

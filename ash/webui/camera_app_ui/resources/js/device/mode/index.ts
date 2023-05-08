@@ -316,7 +316,7 @@ export class Modes {
   async updateMode(factory: ModeFactory): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
-      await this.disableSaveMetadata();
+      this.disableSaveMetadata();
     }
     this.current = factory.produce();
     await this.updateSaveMetadata();
@@ -328,7 +328,7 @@ export class Modes {
   async clear(): Promise<void> {
     if (this.current !== null) {
       await this.current.clear();
-      await this.disableSaveMetadata();
+      this.disableSaveMetadata();
     }
     this.captureParams = null;
     this.current = null;
@@ -343,7 +343,7 @@ export class Modes {
     if (expert.isEnabled(expert.ExpertOption.SAVE_METADATA)) {
       await this.enableSaveMetadata();
     } else {
-      await this.disableSaveMetadata();
+      this.disableSaveMetadata();
     }
   }
 
@@ -360,12 +360,10 @@ export class Modes {
 
   /**
    * Disables save metadata of subsequent photos in the current mode.
-   *
-   * @return Promise for the operation.
    */
-  private async disableSaveMetadata(): Promise<void> {
+  private disableSaveMetadata(): void {
     if (this.current !== null) {
-      await this.current.removeMetadataObserver();
+      this.current.removeMetadataObserver();
     }
   }
 }
