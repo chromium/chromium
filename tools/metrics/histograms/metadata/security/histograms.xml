@@ -814,7 +814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2023-05-09">
+    expires_after="2023-11-08">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -833,7 +833,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2023-05-09">
+    units="processes" expires_after="2023-11-08">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -848,7 +848,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
-    units="processes" expires_after="2023-05-09">
+    units="processes" expires_after="2023-11-08">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
