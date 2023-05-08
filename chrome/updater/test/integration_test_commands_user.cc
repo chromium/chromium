@@ -212,6 +212,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::DeleteUpdaterDirectory(updater_scope_);
   }
 
+  void DeleteFile(const base::FilePath& path) const override {
+    updater::test::DeleteFile(updater_scope_, path);
+  }
+
   void InstallApp(const std::string& app_id) const override {
     updater::test::InstallApp(updater_scope_, app_id);
   }

@@ -471,6 +471,10 @@ void DeleteUpdaterDirectory(UpdaterScope scope) {
   ASSERT_TRUE(base::DeletePathRecursively(*install_dir));
 }
 
+void DeleteFile(UpdaterScope /*scope*/, const base::FilePath& path) {
+  ASSERT_TRUE(base::DeleteFile(path));
+}
+
 void SetupFakeUpdaterPrefs(UpdaterScope scope, const base::Version& version) {
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
   ASSERT_TRUE(global_prefs) << "No global prefs.";

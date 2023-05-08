@@ -90,6 +90,7 @@ class IntegrationTestCommands
                       const std::string& install_data_index) const = 0;
   virtual void UpdateAll() const = 0;
   virtual void DeleteUpdaterDirectory() const = 0;
+  virtual void DeleteFile(const base::FilePath& path) const = 0;
   virtual void PrintLog() const = 0;
   virtual base::FilePath GetDifferentUserPath() const = 0;
   [[nodiscard]] virtual bool WaitForUpdaterExit() const = 0;

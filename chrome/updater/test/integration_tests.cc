@@ -10,6 +10,7 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
@@ -322,6 +323,10 @@ class IntegrationTest : public ::testing::Test {
   void UpdateAll() { test_commands_->UpdateAll(); }
 
   void DeleteUpdaterDirectory() { test_commands_->DeleteUpdaterDirectory(); }
+
+  void DeleteFile(const base::FilePath& path) {
+    test_commands_->DeleteFile(path);
+  }
 
   base::FilePath GetDifferentUserPath() {
     return test_commands_->GetDifferentUserPath();
@@ -907,10 +912,8 @@ TEST_F(IntegrationTest, RotateLog) {
 // test need not run on Windows.
 #if BUILDFLAG(IS_MAC)
 TEST_F(IntegrationTest, UnregisterUnownedApp) {
-  if (GetTestScope() == UpdaterScope::kSystem) {
-    // TODO(crbug.com/1441082): Re-enable this test.
-    return;
-  }
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(ExpectVersionActive(kUpdaterVersion));
@@ -919,13 +922,22 @@ TEST_F(IntegrationTest, UnregisterUnownedApp) {
   ASSERT_NO_FATAL_FAILURE(InstallApp("test2"));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  ASSERT_NO_FATAL_FAILURE(
-      SetExistenceCheckerPath("test1", GetDifferentUserPath()));
+  ASSERT_NO_FATAL_FAILURE(SetExistenceCheckerPath(
+      "test1", IsSystemInstall(GetTestScope()) ? temp_dir.GetPath()
+                                               : GetDifferentUserPath()));
 
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
+  // Since the updater may have chowned the temp dir, we may need to elevate to
+  // delete it.
+  ASSERT_NO_FATAL_FAILURE(DeleteFile(temp_dir.GetPath()));
+
+  if (IsSystemInstall(GetTestScope())) {
+    ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test1"));
+  } else {
+    ASSERT_NO_FATAL_FAILURE(ExpectNotRegistered("test1"));
+  }
 
   ASSERT_NO_FATAL_FAILURE(ExpectRegistered("test2"));
 

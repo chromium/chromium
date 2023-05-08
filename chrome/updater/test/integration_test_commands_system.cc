@@ -234,6 +234,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("delete_updater_directory", {});
   }
 
+  void DeleteFile(const base::FilePath& path) const override {
+    RunCommand("delete_file", {Param("path", path.MaybeAsASCII())});
+  }
+
   void InstallApp(const std::string& app_id) const override {
     RunCommand("install_app", {Param("app_id", app_id)});
   }
@@ -306,13 +310,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
 #endif  // BUILDFLAG(IS_WIN)
 
   base::FilePath GetDifferentUserPath() const override {
-#if BUILDFLAG(IS_MAC)
-    // The updater_tests executable is owned by non-root.
-    return base::PathService::CheckedGet(base::FILE_EXE);
-#else
+    // On POSIX, the path may be chowned; so do not use a file not owned by the
+    // test, nor the test executable itself.
     NOTREACHED() << __func__ << ": not implemented.";
     return base::FilePath();
-#endif
   }
 
   void StressUpdateService() const override {
