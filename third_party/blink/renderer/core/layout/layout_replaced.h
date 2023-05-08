@@ -202,6 +202,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const LayoutSize size,
       const NGPhysicalBoxStrut& border_padding) const;
 
+  // ReplacedPainter doesn't support CompositeBackgroundAttachmentFixed yet.
+  bool ComputeCanCompositeBackgroundAttachmentFixed() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+
  private:
   // Computes a rect, relative to the element's content's natural size, that
   // should be used as the content source when rendering this element. This
