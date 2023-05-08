@@ -32,6 +32,7 @@ export class XfIcon extends XfBase {
     return {
       EXTRA_SMALL: 'extra_small',
       SMALL: 'small',
+      MEDIUM: 'medium',
       LARGE: 'large',
     } as const;
   }
@@ -140,6 +141,10 @@ function getCSS() {
       width: 16px;
     }
 
+    :host([size="extra_small"]) span:not(.keep-color) {
+      -webkit-mask-size: 16px;
+    }
+
     :host([size="small"]) span {
       height: 20px;
       width: 20px;
@@ -149,8 +154,13 @@ function getCSS() {
       -webkit-mask-size: 20px;
     }
 
-    :host([size="small"]) span.keep-color {
-      background-size: 20px;
+    :host([size="medium"]) span {
+      height: 32px;
+      width: 32px;
+    }
+
+    :host([size="medium"]) span:not(.keep-color) {
+      -webkit-mask-size: 32px;
     }
 
     :host([size="large"]) span {
@@ -160,10 +170,6 @@ function getCSS() {
 
     :host([size="large"]) span:not(.keep-color) {
       -webkit-mask-size: 48px;
-    }
-
-    :host([size="large"]) span.keep-color {
-      background-size: 48px;
     }
 
     :host([type="android_files"]) span {
