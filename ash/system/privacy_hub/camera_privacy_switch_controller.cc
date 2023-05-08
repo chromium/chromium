@@ -56,23 +56,7 @@ void VCDPrivacyAdapter::SetCameraSWPrivacySwitch(
 }  // namespace
 
 CameraPrivacySwitchController::CameraPrivacySwitchController()
-    : switch_api_(std::make_unique<VCDPrivacyAdapter>()),
-      turn_sw_switch_on_notification_(
-          kPrivacyHubHWCameraSwitchOffSWCameraSwitchOnNotificationId,
-          NotificationCatalogName::kPrivacyHubHWCameraSwitchOffSWCameraSwitchOn,
-          PrivacyHubNotificationDescriptor{
-              SensorDisabledNotificationDelegate::SensorSet{},
-              IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_TITLE,
-              std::vector<int>{IDS_PRIVACY_HUB_TURN_OFF_CAMERA_ACTION_BUTTON},
-              std::vector<int>{
-                  IDS_PRIVACY_HUB_WANT_TO_TURN_OFF_CAMERA_NOTIFICATION_MESSAGE},
-              base::MakeRefCounted<PrivacyHubNotificationClickDelegate>(
-                  base::BindRepeating([]() {
-                    PrivacyHubNotificationController::
-                        SetAndLogSensorPreferenceFromNotification(
-                            SensorDisabledNotificationDelegate::Sensor::kCamera,
-                            false);
-                  }))}) {
+    : switch_api_(std::make_unique<VCDPrivacyAdapter>()) {
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -112,8 +96,6 @@ void CameraPrivacySwitchController::OnPreferenceChanged(
   const CameraSWPrivacySwitchSetting pref_val = GetUserSwitchPreference();
   switch_api_->SetCameraSWPrivacySwitch(pref_val);
 
-  turn_sw_switch_on_notification_.Hide();
-
   // Always remove the sensor disabled notification if the sensor was unmuted.
   if (pref_val == CameraSWPrivacySwitchSetting::kEnabled) {
     PrivacyHubNotificationController::Get()->RemoveSoftwareSwitchNotification(
@@ -140,27 +122,6 @@ void CameraPrivacySwitchController::SetCameraPrivacySwitchAPIForTest(
     std::unique_ptr<CameraPrivacySwitchAPI> switch_api) {
   DCHECK(switch_api);
   switch_api_ = std::move(switch_api);
-}
-
-void CameraPrivacySwitchController::OnCameraHWPrivacySwitchStateChanged(
-    const std::string& device_id,
-    cros::mojom::CameraPrivacySwitchState state) {
-  if (features::IsVideoConferenceEnabled() ||
-      features::IsPrivacyIndicatorsEnabled()) {
-    return;
-  }
-
-  // Issue a notification if camera is disabled by HW switch, but not by the SW
-  // switch and there are multiple cameras.
-  if (state == cros::mojom::CameraPrivacySwitchState::ON &&
-      GetUserSwitchPreference() == CameraSWPrivacySwitchSetting::kEnabled &&
-      camera_count_ > 1) {
-    turn_sw_switch_on_notification_.Show();
-  }
-  if (state == cros::mojom::CameraPrivacySwitchState::OFF) {
-    // Clear the notification that might have been displayed earlier
-    turn_sw_switch_on_notification_.Hide();
-  }
 }
 
 void CameraPrivacySwitchController::OnCameraSWPrivacySwitchStateChanged(
