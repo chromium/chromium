@@ -539,6 +539,12 @@ bool WebAppBrowserController::IsUrlInAppScope(const GURL& url) const {
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  size_t app_extended_scope_score =
+      registrar().GetAppExtendedScopeScore(url, app_id());
+  if (app_extended_scope_score > 0) {
+    return true;
+  }
+
   GURL app_scope = registrar().GetAppScope(app_id());
   if (!app_scope.is_valid())
     return false;
