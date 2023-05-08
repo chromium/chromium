@@ -239,6 +239,9 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
       "History.ClearBrowsingData.UserDeletedCookieOrCacheFromDialog", choice,
       content::BrowsingDataRemover::MAX_CHOICE_VALUE);
 
+  browsing_data::RecordDeleteBrowsingDataAction(
+      browsing_data::DeleteBrowsingDataAction::kClearBrowsingDataDialog);
+
   // Record the circumstances under which passwords are deleted.
   if (data_types.find(BrowsingDataType::PASSWORDS) != data_types.end()) {
     static const BrowsingDataType other_types[] = {
