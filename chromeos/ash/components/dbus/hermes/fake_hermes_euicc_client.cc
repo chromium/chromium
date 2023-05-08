@@ -516,8 +516,12 @@ void FakeHermesEuiccClient::DoRefreshSmdxProfiles(
     return;
   }
 
-  // TODO(b/271854446): Update this method to be able to have test profile paths
-  // able to be returned.
+  // Configure a single profile that uses the activation code that was provided
+  // and immediately return the path to this profile.
+  profile_paths.push_back(AddFakeCarrierProfile(
+      euicc_path, hermes::profile::State::kPending, activation_code,
+      AddCarrierProfileBehavior::kAddProfileWithService));
+
   std::move(callback).Run(HermesResponseStatus::kSuccess, profile_paths);
 }
 

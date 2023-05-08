@@ -468,7 +468,8 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
       const DeviceState* cellular_device =
           network_state_handler->GetDeviceState(network->device_path());
       bool sim_is_primary =
-          cellular_device && IsSimPrimary(network->iccid(), cellular_device);
+          cellular_device &&
+          cellular_utils::IsSimPrimary(network->iccid(), cellular_device);
       cellular->sim_lock_enabled =
           sim_is_primary && cellular_device->sim_lock_enabled();
       cellular->sim_locked = sim_is_primary && cellular_device->IsSimLocked();
@@ -537,7 +538,8 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
 std::vector<mojom::SIMInfoPtr> CellularSIMInfosToMojo(
     const DeviceState* device) {
   std::vector<mojom::SIMInfoPtr> sim_info_mojos;
-  for (const auto& sim_slot : GetSimSlotInfosWithUpdatedEid(device)) {
+  for (const auto& sim_slot :
+       cellular_utils::GetSimSlotInfosWithUpdatedEid(device)) {
     auto sim_info_mojo = mojom::SIMInfo::New();
     sim_info_mojo->slot_id = sim_slot.slot_id;
     sim_info_mojo->iccid = sim_slot.iccid;
@@ -591,6 +593,8 @@ mojom::InhibitReason GetInhibitReason(
       return mojom::InhibitReason::kResettingEuiccMemory;
     case CellularInhibitor::InhibitReason::kDisablingProfile:
       return mojom::InhibitReason::kDisablingProfile;
+    case CellularInhibitor::InhibitReason::kRequestingAvailableProfiles:
+      return mojom::InhibitReason::kRequestingAvailableProfiles;
   }
 }
 

@@ -58,6 +58,9 @@ int GetAddESimTooltipMessageId() {
       return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM;
     case chromeos::network_config::mojom::InhibitReason::kDisablingProfile:
       return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE;
+    case chromeos::network_config::mojom::InhibitReason::
+        kRequestingAvailableProfiles:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REQUESTING_AVAILABLE_PROFILES;
   }
 }
 

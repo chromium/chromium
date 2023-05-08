@@ -18,6 +18,8 @@ namespace ash {
 
 class CellularESimProfile;
 
+namespace cellular_utils {
+
 // Generates a list of CellularESimProfile objects for all Hermes esim profile
 // objects available through its dbus clients. Note that this function returns
 // an empty array if CellularESimProfileHandler::RefreshProfileList has not
@@ -50,6 +52,12 @@ bool IsStubCellularServicePath(const std::string& service_path);
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 absl::optional<dbus::ObjectPath> GetCurrentEuiccPath();
 
+// Returns the activation codes that should be used to scan for profiles that
+// are available for installation.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+std::vector<std::string> GetSmdsActivationCodes();
+
+}  // namespace cellular_utils
 }  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_CELLULAR_UTILS_H_

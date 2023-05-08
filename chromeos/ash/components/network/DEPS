@@ -9,6 +9,7 @@ include_rules = [
   "+chromeos/ash/components/dbus",
   "+chromeos/ash/services/hotspot_config/public",
   "+chromeos/ash/services/network_config/public",
+  "+chromeos/ash/services/cellular_setup/public",
   "+chromeos/components/onc",
   "+chromeos/dbus",
   "+chromeos/services/network_config/public",

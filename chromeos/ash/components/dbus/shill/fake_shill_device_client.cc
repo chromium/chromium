@@ -97,6 +97,14 @@ void FakeShillDeviceClient::SetProperty(const dbus::ObjectPath& device_path,
                                         const base::Value& value,
                                         base::OnceClosure callback,
                                         ErrorCallback error_callback) {
+  if (set_property_error_name_.has_value()) {
+    std::move(error_callback)
+        .Run(set_property_error_name_.value(),
+             /*error_message=*/std::string());
+    set_property_error_name_ = absl::nullopt;
+    return;
+  }
+
   if (property_change_delay_.has_value()) {
     // Return callback immediately and set property after delay.
     std::move(callback).Run();
@@ -447,6 +455,11 @@ void FakeShillDeviceClient::SetSimulateInhibitScanning(
 void FakeShillDeviceClient::SetPropertyChangeDelay(
     absl::optional<base::TimeDelta> time_delay) {
   property_change_delay_ = time_delay;
+}
+
+void FakeShillDeviceClient::SetErrorForNextSetPropertyAttempt(
+    const std::string& error_name) {
+  set_property_error_name_ = error_name;
 }
 
 // Private Methods -------------------------------------------------------------

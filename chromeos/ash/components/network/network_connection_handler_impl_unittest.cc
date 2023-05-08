@@ -1205,7 +1205,7 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_StubToShillBacked) {
 
   // Connect to a stub path. Internally, this should wait until a connectable
   // Shill-backed service is created.
-  Connect(GenerateStubCellularServicePath(kTestIccid));
+  Connect(cellular_utils::GenerateStubCellularServicePath(kTestIccid));
 
   // Now, create a non-stub service and make it connectable.
   AddNonConnectableESimService();
@@ -1217,14 +1217,15 @@ TEST_F(NetworkConnectionHandlerImplTest, ESimProfile_StubToShillBacked) {
 
   // A connection was requested to the stub service path, not the actual one.
   EXPECT_TRUE(network_connection_observer()->GetRequested(
-      GenerateStubCellularServicePath(kTestIccid)));
+      cellular_utils::GenerateStubCellularServicePath(kTestIccid)));
   EXPECT_FALSE(
       network_connection_observer()->GetRequested(kTestCellularServicePath));
 
   // However, the connection success was part of the actual service path, not
   // the stub one.
-  EXPECT_EQ(std::string(), network_connection_observer()->GetResult(
-                               GenerateStubCellularServicePath(kTestIccid)));
+  EXPECT_EQ(std::string(),
+            network_connection_observer()->GetResult(
+                cellular_utils::GenerateStubCellularServicePath(kTestIccid)));
   EXPECT_EQ(kSuccessResult,
             network_connection_observer()->GetResult(kTestCellularServicePath));
 }
@@ -1285,7 +1286,7 @@ TEST_F(NetworkConnectionHandlerImplTest,
 
   // Connect to a stub path. Internally, this should wait until a connectable
   // Shill-backed service is created.
-  Connect(GenerateStubCellularServicePath(kTestIccid));
+  Connect(cellular_utils::GenerateStubCellularServicePath(kTestIccid));
 
   // Now, Create a shill backed service for the same network.
   ShillManagerClient::Get()->GetTestInterface()->SetInteractiveDelay(

@@ -75,6 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
     kRefreshingProfileList,
     kResettingEuiccMemory,
     kDisablingProfile,
+    kRequestingAvailableProfiles,
   };
   friend std::ostream& operator<<(std::ostream& stream,
                                   const InhibitReason& state);

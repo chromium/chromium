@@ -101,7 +101,7 @@ bool StubCellularNetworksProvider::GetStubNetworkMetadata(
     if (iccid_eid_pair.first != iccid)
       continue;
 
-    *service_path_out = GenerateStubCellularServicePath(iccid);
+    *service_path_out = cellular_utils::GenerateStubCellularServicePath(iccid);
     *guid_out = GetGuidForStubIccid(iccid);
     return true;
   }

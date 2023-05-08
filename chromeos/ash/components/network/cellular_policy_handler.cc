@@ -153,7 +153,8 @@ void CellularPolicyHandler::AttemptInstallESim() {
     return;
   }
 
-  absl::optional<dbus::ObjectPath> euicc_path = GetCurrentEuiccPath();
+  absl::optional<dbus::ObjectPath> euicc_path =
+      cellular_utils::GetCurrentEuiccPath();
   if (!euicc_path) {
     // Hermes may not be ready and available euicc list is empty. Wait for
     // AvailableEuiccListChanged notification to continue with installation.

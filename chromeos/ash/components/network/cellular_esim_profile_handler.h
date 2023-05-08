@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "components/prefs/pref_service.h"
 
 class PrefService;
@@ -53,6 +54,12 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   using RefreshProfilesCallback =
       base::OnceCallback<void(std::unique_ptr<CellularInhibitor::InhibitLock>)>;
 
+  // Callback which returns the result of requesting available profiles and all
+  // available profiles that were discovered.
+  using RequestAvailableProfilesCallback =
+      base::OnceCallback<void(cellular_setup::mojom::ESimOperationResult,
+                              std::vector<CellularESimProfile>)>;
+
   // Refreshes the list of installed profiles from Hermes. This operation
   // requires the Cellular Device to be inhibited. If |inhibit_lock| is passed
   // by the client, it will be used; otherwise, this function will acquire one
@@ -68,6 +75,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       const dbus::ObjectPath& euicc_path,
       RefreshProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr);
+
+  // Requests the list of profiles that are available for installation from
+  // known SM-DS servers. This operation will cause the cellular device to
+  // become inhibited. The operation result provided to the callback indicates
+  // whether this function was able to successfully inhibit the cellular device.
+  virtual void RequestAvailableProfiles(
+      const dbus::ObjectPath& euicc_path,
+      RequestAvailableProfilesCallback callback);
 
   // Returns a list of the known cellular eSIM profiles fetched from Hermes.
   // Note that this function returns cached values if an eSIM slot is not active
@@ -109,6 +124,26 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   virtual void InitInternal() {}
 
  private:
+  // Requesting profiles available to install requires performing operations
+  // that must be done in serial. This struct is used to contain all of the
+  // information necessary to perform these operations, collect the results
+  // of each operation as it is completed, and to hold the callback that should
+  // be invoked once all of the operations have been completed.
+  struct RequestAvailableProfilesInfo {
+    RequestAvailableProfilesInfo();
+    ~RequestAvailableProfilesInfo();
+
+    // The list of SM-DS activation codes that should be used to scan for
+    // available profiles.
+    std::vector<std::string> smds_activation_codes;
+
+    // The list of available profiles found from scanning with activation codes
+    // from |smds_activation_codes|.
+    std::vector<CellularESimProfile> profile_list;
+
+    RequestAvailableProfilesCallback callback;
+  };
+
   // HermesManagerClient::Observer:
   void OnAvailableEuiccListChanged() override;
 
@@ -126,7 +161,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       bool restore_slot,
       RefreshProfilesCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock = nullptr);
-  void OnInhibited(
+  void OnInhibitedForRefreshProfileList(
       const dbus::ObjectPath& euicc_path,
       bool restore_slot,
       RefreshProfilesCallback callback,
@@ -138,6 +173,20 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void OnRequestInstalledProfilesResult(base::TimeTicks start_time,
                                         HermesResponseStatus status);
+  void OnInhibitedForRequestAvailableProfiles(
+      const dbus::ObjectPath& euicc_path,
+      std::unique_ptr<RequestAvailableProfilesInfo> info,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void PerformRequestAvailableProfiles(
+      const dbus::ObjectPath& euicc_path,
+      std::unique_ptr<RequestAvailableProfilesInfo> info,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRequestAvailableProfiles(
+      const dbus::ObjectPath& euicc_path,
+      std::unique_ptr<RequestAvailableProfilesInfo> info,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status,
+      const std::vector<dbus::ObjectPath>& profile_paths);
 
   raw_ptr<CellularInhibitor, ExperimentalAsh> cellular_inhibitor_ = nullptr;
 

@@ -2441,7 +2441,8 @@ TEST_F(NetworkStateHandlerTest,
   EXPECT_EQ(2u, network_list.size());
   EXPECT_EQ(1u, test_observer_->network_list_changed_count());
   EXPECT_EQ(1u, test_observer_->service_path_transitions().size());
-  EXPECT_EQ(GenerateStubCellularServicePath(kTestCellularServiceIccid2),
+  EXPECT_EQ(cellular_utils::GenerateStubCellularServicePath(
+                kTestCellularServiceIccid2),
             test_observer_->service_path_transitions()[0].first);
   EXPECT_EQ(kTestCellularServicePath2,
             test_observer_->service_path_transitions()[0].second);

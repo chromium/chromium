@@ -3109,6 +3109,9 @@ Connect your device to power.
       <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE" desc="Tooltip message for disabled add cellular button, indicating cellular network profile is being disabled.">
        Disabling profile. Wait a few minutes.
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REQUESTING_AVAILABLE_PROFILES" desc="Tooltip message for disabled add cellular button, indicating cellular device is requesting profiles available to install.">
+        Requesting available profiles. Wait a few minutes.
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR" desc="Message for the status area when initializing the cellular device.">
         Initializing...
       </message>

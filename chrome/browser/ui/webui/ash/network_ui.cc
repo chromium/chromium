@@ -137,7 +137,8 @@ absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
     NET_LOG(ERROR) << "Couldn't reset EUICC in guest mode.";
     return absl::nullopt;
   }
-  absl::optional<dbus::ObjectPath> euicc_path = GetCurrentEuiccPath();
+  absl::optional<dbus::ObjectPath> euicc_path =
+      cellular_utils::GetCurrentEuiccPath();
   if (!euicc_path) {
     NET_LOG(ERROR) << "No current EUICC. Unable to reset EUICC";
     return absl::nullopt;

@@ -243,7 +243,7 @@ void CellularESimProfileHandlerImpl::UpdateProfilesFromHermes() {
   DCHECK(device_prefs_);
 
   std::vector<CellularESimProfile> profiles_from_hermes =
-      GenerateProfilesFromHermes();
+      cellular_utils::GenerateProfilesFromHermes();
 
   // Skip updating if there are profiles that haven't received ICCID updates
   // yet. This is required because property updates to eSIM profile objects

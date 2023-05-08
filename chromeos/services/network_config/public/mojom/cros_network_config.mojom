@@ -156,7 +156,10 @@ enum InhibitReason {
   // Inhibited because the EUICC memory is being reset.
   kResettingEuiccMemory,
   // Inhibited because an eSIM profile is being disabled.
-  kDisablingProfile
+  kDisablingProfile,
+  // Inhibited because SM-DS scans are being performed to discover profiles
+  // available for this device.
+  kRequestingAvailableProfiles,
 };
 
 // Always-on VPN operating mode.

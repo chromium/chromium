@@ -67,6 +67,10 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
     // change.
     virtual void SetPropertyChangeDelay(
         absl::optional<base::TimeDelta> time_delay) = 0;
+    // Sets a SetProperty error. If set, the next SetProperty call will
+    // fail with the given |error_name|
+    virtual void SetErrorForNextSetPropertyAttempt(
+        const std::string& error_name) = 0;
 
    protected:
     virtual ~TestInterface() = default;

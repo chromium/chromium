@@ -224,7 +224,7 @@ void OtaActivatorImpl::AttemptToDiscoverSim() {
   // SIM slots and SIM cards in external dongles.
   bool has_psim_slots = false;
   for (const CellularSIMSlotInfo& sim_slot_info :
-       GetSimSlotInfosWithUpdatedEid(cellular_device)) {
+       cellular_utils::GetSimSlotInfosWithUpdatedEid(cellular_device)) {
     if (sim_slot_info.eid.empty()) {
       has_psim_slots = true;
       iccid_ = sim_slot_info.iccid;

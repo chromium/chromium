@@ -198,6 +198,8 @@ TEST_F(NetworkListMobileHeaderViewTest, CellularInhibitState) {
        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RESETTING_ESIM},
       {CellularInhibitor::InhibitReason::kDisablingProfile,
        IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_DISABLING_PROFILE},
+      {CellularInhibitor::InhibitReason::kRequestingAvailableProfiles,
+       IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REQUESTING_AVAILABLE_PROFILES},
   };
 
   for (auto cases : kTestCases) {

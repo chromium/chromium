@@ -95,7 +95,7 @@ bool FakeStubCellularNetworksProvider::GetStubNetworkMetadata(
   if (!base::Contains(stub_iccid_and_eid_pairs_, iccid, &IccidEidPair::first))
     return false;
 
-  *service_path_out = GenerateStubCellularServicePath(iccid);
+  *service_path_out = cellular_utils::GenerateStubCellularServicePath(iccid);
   *guid_out = GetGuidForStubIccid(iccid);
   return true;
 }

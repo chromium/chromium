@@ -380,6 +380,9 @@ std::ostream& operator<<(
     case CellularInhibitor::InhibitReason::kDisablingProfile:
       stream << "[Disabling profile]";
       break;
+    case CellularInhibitor::InhibitReason::kRequestingAvailableProfiles:
+      stream << "[Requesting available profiles]";
+      break;
   }
   return stream;
 }
