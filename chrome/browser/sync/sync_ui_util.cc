@@ -220,9 +220,10 @@ SyncStatusLabels GetSyncStatusLabels(
 }
 
 SyncStatusLabels GetSyncStatusLabels(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager);
   return GetSyncStatusLabels(
       SyncServiceFactory::GetForProfile(profile), identity_manager,
       ChromeSigninClientFactory::GetForProfile(profile)
