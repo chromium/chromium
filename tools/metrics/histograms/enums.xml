@@ -79465,6 +79465,22 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Change password automatically"/>
 </enum>
 
+<enum name="PasswordCheckInteractionIOS">
+  <int value="0" label="Change password"/>
+  <int value="1" label="Edit password"/>
+  <int value="2" label="Remove password"/>
+  <int value="3" label="Show password"/>
+  <int value="4" label="Mute warning"/>
+  <int value="5" label="Unmute warning"/>
+  <int value="6" label="Show list of warnings"/>
+</enum>
+
+<enum name="PasswordCheckInteractionIOSWithoutContext">
+  <int value="0" label="Check started automatically"/>
+  <int value="1" label="Check started manually"/>
+  <int value="2" label="Open password checkup homepage"/>
+</enum>
+
 <enum name="PasswordCheckReferrer">
   <int value="0" label="Safety Check"/>
   <int value="1" label="Password Settings"/>

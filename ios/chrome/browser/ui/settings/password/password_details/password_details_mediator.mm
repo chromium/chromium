@@ -12,23 +12,23 @@
 #import "base/containers/cxx20_erase.h"
 #import "base/containers/flat_set.h"
 #import "base/memory/raw_ptr.h"
-#import "base/metrics/histogram_functions.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_features_util.h"
-#import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/base/features.h"
 #import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/passwords/password_check_observer_bridge.h"
+#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -205,11 +205,12 @@ bool ShouldDisplayCredentialAsCompromised(
 }
 
 - (void)removeCredential:(PasswordDetails*)password {
-  if (password.compromised) {
-    base::UmaHistogramEnumeration(
-        "PasswordManager.BulkCheck.UserAction",
-        password_manager::metrics_util::PasswordCheckInteraction::
-            kRemovePassword);
+  // When details was opened from the Password Manager, only log password
+  // check actions if the password is compromised.
+  if (password_manager::ShouldRecordPasswordCheckUserAction(
+          _context, password.compromised)) {
+    password_manager::LogDeletePassword(
+        password_manager::GetWarningTypeForDetailsContext(_context));
   }
 
   // Map from PasswordDetails to CredentialUIEntry. Should support blocklists.

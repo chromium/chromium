@@ -1141,7 +1141,47 @@ chromium-metrics-reviews@google.com.
     enum="PasswordCheckInteraction" expires_after="2023-09-10">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
-  <summary>User actions performed on the Password Check settings page.</summary>
+  <summary>
+    User actions performed on the Password Check settings page. Replaced on IOS
+    by PasswordManager.BulkCheck.UserAction.IOS.* in M114.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.UserAction.IOS.General"
+    enum="PasswordCheckInteractionIOSWithoutContext" expires_after="2023-10-28">
+  <owner>eic@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <summary>
+    User actions performed on the Password Check UI inside the Password Manager.
+    After M114, the Password Check UI on iOS was divided into multiple views to
+    display each type of password check warning: compromised passwords, reused
+    passwords, and weak passwords. User actions taken in the Password Check UI
+    while viewing a specific type of warning are logged in
+    PasswordManager.BulkCheck.UserAction.IOS{Context}. The actions logged are
+    done from Password Check UI not specific to a type of warning.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.BulkCheck.UserAction.IOS{Context}"
+    enum="PasswordCheckInteractionIOS" expires_after="2023-10-28">
+  <owner>eic@google.com</owner>
+  <owner>noemies@google.com</owner>
+  <summary>
+    User actions performed on the Password Check UI inside the Password Manager.
+    After M114, the Password Check UI on iOS was divided into multiple views to
+    display each type of password check warning: compromised passwords, reused
+    passwords, and weak passwords. This histogram represents actions taken in
+    the Password Check UI while viewing a specific type of warning. See
+    PasswordManager.BulkCheck.UserAction.IOS.General for actions not specific to
+    a type of warning.
+  </summary>
+  <token key="Context">
+    <variant name="" summary="Aggregated across all breakdowns"/>
+    <variant name=".Compromised"/>
+    <variant name=".MutedCompromised"/>
+    <variant name=".Reused"/>
+    <variant name=".Weak"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.BulkCheck.UserActionAndroid"

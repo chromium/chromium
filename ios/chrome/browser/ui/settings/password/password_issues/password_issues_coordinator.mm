@@ -99,6 +99,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
 - (void)start {
   [super start];
+
   ChromeBrowserState* browserState = self.browser->GetBrowserState();
   self.mediator = [[PasswordIssuesMediator alloc]
         initForWarningType:_warningType
@@ -112,7 +113,7 @@ DetailsContext ComputeDetailsContextFromWarningType(WarningType warning_type) {
 
   PasswordIssuesTableViewController* passwordIssuesTableViewController =
       [[PasswordIssuesTableViewController alloc]
-          initWithStyle:ChromeTableViewStyle()];
+          initWithWarningType:_warningType];
   passwordIssuesTableViewController.imageDataSource = self.mediator;
   self.viewController = passwordIssuesTableViewController;
 

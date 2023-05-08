@@ -7,8 +7,11 @@
 #import <UIKit/UIKit.h>
 #import "base/mac/foundation_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/passwords/password_checkup_metrics.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue_content_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issues_presenter.h"
@@ -22,6 +25,7 @@
 #error "This file requires ARC support."
 #endif
 
+using password_manager::WarningType;
 using password_manager::features::IsPasswordCheckupEnabled;
 
 namespace {
@@ -66,11 +70,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Text displayed in the button for presenting dismissed compromised
   // credential warnings. When nil, no button is displayed.
   NSString* _dismissedWarningsButtonText;
+  // Type of insecure credentials displayed in the page.
+  WarningType _warningType;
 }
 
 @end
 
 @implementation PasswordIssuesTableViewController
+
+- (instancetype)initWithWarningType:(WarningType)warningType {
+  self = [super initWithStyle:ChromeTableViewStyle()];
+
+  if (self) {
+    _warningType = warningType;
+  }
+
+  return self;
+}
 
 #pragma mark - UIViewController
 
@@ -257,10 +273,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
       break;
     }
     case ItemTypeDismissedCredentialsButton:
+      password_manager::LogOpenPasswordIssuesList(
+          WarningType::kDismissedWarningsWarning);
       [self.presenter presentDismissedCompromisedCredentials];
       break;
 
     case ItemTypeChangePassword:
+      password_manager::LogChangePasswordOnWebsite(_warningType);
       CrURL* changePasswordURL =
           [self changePasswordURLForPasswordInSection:indexPath.section];
       [self.presenter dismissAndOpenURL:changePasswordURL];

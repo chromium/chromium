@@ -188,6 +188,16 @@ source_set("public") {
   deps = [ "//base" ]
 }
 
+source_set("password_checkup_metrics") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "password_checkup_metrics.h",
+    "password_checkup_metrics.mm",
+  ]
+  public_deps = [ ":password_checkup_utils" ]
+  deps = [ "//base" ]
+}
+
 source_set("password_checkup_utils") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [

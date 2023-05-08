@@ -10,6 +10,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/passwords/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/settings/password/password_issues/password_issue.h"
@@ -96,7 +97,8 @@ class PasswordIssuesTableViewControllerTest
   ChromeTableViewController* InstantiateController() override {
     PasswordIssuesTableViewController* controller =
         [[PasswordIssuesTableViewController alloc]
-            initWithStyle:UITableViewStylePlain];
+            initWithWarningType:password_manager::WarningType::
+                                    kCompromisedPasswordsWarning];
     controller.presenter = presenter_;
     return controller;
   }
