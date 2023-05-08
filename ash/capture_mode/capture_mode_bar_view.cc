@@ -17,8 +17,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
@@ -44,20 +42,11 @@ namespace ash {
 
 namespace {
 
-// Full size of capture mode bar view, the width of which will be
-// adjusted in projector mode.
-constexpr gfx::Size kFullBarSize{376, 64};
-
 constexpr auto kBarPadding = gfx::Insets::VH(14, 16);
 
 constexpr int kBorderRadius = 20;
 
 constexpr int kSeparatorHeight = 20;
-
-// Distance from the bottom of the bar to the bottom of the display, top of the
-// hotseat or top of the shelf depending on the shelf alignment or hotseat
-// visibility.
-constexpr int kDistanceFromShelfOrHotseatTopDp = 16;
 
 }  // namespace
 
@@ -124,39 +113,6 @@ CaptureModeBarView::CaptureModeBarView(CaptureModeBehavior* active_behavior)
 }
 
 CaptureModeBarView::~CaptureModeBarView() = default;
-
-// static
-gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root,
-                                        CaptureModeBehavior* active_behavior) {
-  DCHECK(root);
-
-  auto bounds = root->GetBoundsInScreen();
-  int bar_y = bounds.bottom();
-  Shelf* shelf = Shelf::ForWindow(root);
-  if (shelf->IsHorizontalAlignment()) {
-    // Get the widget which has the shelf icons. This is the hotseat widget if
-    // the hotseat is extended, shelf widget otherwise.
-    const bool hotseat_extended =
-        shelf->shelf_layout_manager()->hotseat_state() ==
-        HotseatState::kExtended;
-    views::Widget* shelf_widget =
-        hotseat_extended ? static_cast<views::Widget*>(shelf->hotseat_widget())
-                         : static_cast<views::Widget*>(shelf->shelf_widget());
-    bar_y = shelf_widget->GetWindowBoundsInScreen().y();
-  }
-
-  gfx::Size bar_size = kFullBarSize;
-  CHECK(active_behavior);
-  if (!active_behavior->ShouldImageCaptureTypeBeAllowed()) {
-    bar_size.set_width(kFullBarSize.width() -
-                       capture_mode::kButtonSize.width() -
-                       capture_mode::kSpaceBetweenCaptureModeTypeButtons);
-  }
-  bar_y -= (kDistanceFromShelfOrHotseatTopDp + bar_size.height());
-  bounds.ClampToCenteredSize(bar_size);
-  bounds.set_y(bar_y);
-  return bounds;
-}
 
 void CaptureModeBarView::OnCaptureSourceChanged(CaptureModeSource new_source) {
   capture_source_view_->OnCaptureSourceChanged(new_source);

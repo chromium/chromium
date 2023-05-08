@@ -6,7 +6,6 @@
 #define ASH_CAPTURE_MODE_CAPTURE_MODE_BAR_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -18,9 +17,10 @@ class Separator;
 
 namespace ash {
 
-class IconButton;
+class CaptureModeBehavior;
 class CaptureModeSourceView;
 class CaptureModeTypeView;
+class IconButton;
 class SystemShadow;
 
 // A view that acts as the content view of the capture mode bar widget.
@@ -61,12 +61,6 @@ class ASH_EXPORT CaptureModeBarView : public views::View {
   }
   IconButton* settings_button() const { return settings_button_; }
   IconButton* close_button() const { return close_button_; }
-
-  // Gets the ideal bounds in screen coordinates of the bar of widget on the
-  // given `root` window. The `image_toggle_button` will not be shown in the bar
-  // The width of the bar will be adjusted based on the current active behavior
-  static gfx::Rect GetBounds(aura::Window* root,
-                             CaptureModeBehavior* active_behavior);
 
   // Called when either the capture mode source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);

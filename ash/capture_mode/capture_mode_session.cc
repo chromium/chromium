@@ -498,7 +498,8 @@ void CaptureModeSession::Initialize() {
   ClampCaptureRegionToRootWindowSize();
 
   capture_mode_bar_widget_->Init(CreateWidgetParams(
-      parent, CaptureModeBarView::GetBounds(current_root_, active_behavior_),
+      parent,
+      capture_mode_util::GetCaptureBarBounds(current_root_, active_behavior_),
       "CaptureModeBarWidget"));
   capture_mode_bar_view_ = capture_mode_bar_widget_->SetContentsView(
       std::make_unique<CaptureModeBarView>(active_behavior_));
@@ -1570,7 +1571,7 @@ void CaptureModeSession::RefreshBarWidgetBounds() {
   // The sequence matters here since settings bounds depend on capture bar
   // bounds.
   capture_mode_bar_widget_->SetBounds(
-      CaptureModeBarView::GetBounds(current_root_, active_behavior_));
+      capture_mode_util::GetCaptureBarBounds(current_root_, active_behavior_));
   MaybeUpdateSettingsBounds();
   if (user_nudge_controller_)
     user_nudge_controller_->Reposition();
