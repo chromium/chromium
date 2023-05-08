@@ -1312,13 +1312,6 @@
       },
     },
   },
-  'cc_unittests eve': {
-    'modifications': {
-      'lacros-amd64-generic-rel': {
-        'ci_only': True,
-      },
-    },
-  },
   'check_static_initializers': {
     'modifications': {
       'Mac Builder': {
@@ -2765,13 +2758,6 @@
       },
     },
   },
-  'lacros_all_tast_tests eve': {
-    'modifications': {
-      'lacros-amd64-generic-rel': {
-        'ci_only': True,
-      },
-    },
-  },
   'lacros_all_tast_tests jacuzzi': {
     'modifications': {
       'lacros-arm-generic-rel': {
@@ -3150,13 +3136,6 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
         ],
-      },
-    },
-  },
-  'ozone_unittests eve': {
-    'modifications': {
-      'lacros-amd64-generic-rel': {
-        'ci_only': True,
       },
     },
   },
