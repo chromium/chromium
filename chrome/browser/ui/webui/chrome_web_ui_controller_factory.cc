@@ -188,7 +188,6 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/color_internals/url_constants.h"
-#include "ash/webui/file_manager/file_manager_ui.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/files_internals/url_constants.h"
@@ -220,7 +219,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
@@ -759,10 +757,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ConflictsUI>;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (url.host_piece() == ash::file_manager::kChromeUIFileManagerHost) {
-    return &NewComponentUI<ash::file_manager::FileManagerUI,
-                           ChromeFileManagerUIDelegate>;
-  }
   if (url.host_piece() == ash::kChromeUIHelpAppHost)
     return &NewComponentUI<ash::HelpAppUI, ash::ChromeHelpAppUIDelegate>;
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
