@@ -38,7 +38,7 @@ constexpr int kFirstValidNegativeId = -2;
 
 ui::AXNodeID next_negative_node_id{kFirstValidNegativeId};
 
-// TODO(crbug.com/1278249): Check if this max count will cover different cases.
+// TODO(crbug.com/1443341): Check if this max count will cover different cases.
 constexpr int kUmaMaxNodesCount = 500;
 
 // Returns the next valid negative ID that can be used for identifying
@@ -80,7 +80,7 @@ bool SerializePredictedType(
   DCHECK_EQ(out_data.role, ax::mojom::Role::kUnknown);
   switch (predicted_type.type_of_case()) {
     case chrome_screen_ai::UIComponent::PredictedType::kEnumType:
-      // TODO(https://crbug.com/1278249): We do not actually need an enum. All
+      // TODO(https://crbug.com/1443341): We do not actually need an enum. All
       // predicted types could be strings. We could easily map from a string to
       // an `ax::mojom::Role`. Then, we won't need to keep the enums synced.
       out_data.role = static_cast<ax::mojom::Role>(predicted_type.enum_type());
@@ -199,7 +199,7 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
   DCHECK_NE(inline_text_box.id, ui::kInvalidAXNodeID);
   // The boundaries of each `inline_text_box` is computed as the union of the
   // boundaries of all `word_box`es that are inside.
-  // TODO(crbug.com/1278249): What if the angles of orientation are different?
+  // TODO(crbug.com/1443341): What if the angles of orientation are different?
   // Do we need to apply the related transform, or is the fact that the
   // transform is the same between line and word boxes results in no difference?
   inline_text_box.relative_bounds.bounds.Union(gfx::RectF(
@@ -207,7 +207,8 @@ void SerializeWordBox(const chrome_screen_ai::WordBox& word_box,
       word_box.bounding_box().width(), word_box.bounding_box().height()));
 
   std::vector<int32_t> character_offsets;
-  // TODO(nektar): Handle writing directions other than LEFT_TO_RIGHT.
+  // TODO(crbug.com/1443341): Handle writing directions other than
+  // LEFT_TO_RIGHT.
   int32_t line_offset =
       base::ClampRound(inline_text_box.relative_bounds.bounds.x());
   ranges::transform(word_box.symbols(), std::back_inserter(character_offsets),
@@ -310,8 +311,8 @@ size_t SerializeWordBoxes(const google::protobuf::RepeatedPtrField<
   std::string language;
   if (static_text_node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                           &language)) {
-    // TODO(nektar): Only set language if different from parent node (i.e. the
-    // static text node), in order to minimize memory usage.
+    // TODO(crbug.com/1443341): Only set language if different from parent node
+    // (i.e. the static text node), in order to minimize memory usage.
     inline_text_box_node.AddStringAttribute(
         ax::mojom::StringAttribute::kLanguage, language);
   }
@@ -374,8 +375,8 @@ size_t SerializeLineBox(const chrome_screen_ai::LineBox& line_box,
   // role.
   line_box_node.SetNameChecked(line_box.utf8_string());
   if (!line_box.language().empty()) {
-    // TODO(nektar): Only set language if different from parent node (i.e. the
-    // page node), in order to minimize memory usage.
+    // TODO(crbug.com/1443341): Only set language if different from parent node
+    // (i.e. the page node), in order to minimize memory usage.
     line_box_node.AddStringAttribute(ax::mojom::StringAttribute::kLanguage,
                                      line_box.language());
   }
@@ -397,8 +398,8 @@ void ResetNodeIDForTesting() {
   next_negative_node_id = kFirstValidNegativeId;
 }
 
-// TODO(nektar): Change return value to `std::vector<ui::AXNodeData>` as other
-// fields in `AXTreeUpdate` are unused.
+// TODO(crbug.com/1443341): Change return value to `std::vector<ui::AXNodeData>`
+// as other fields in `AXTreeUpdate` are unused.
 ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
     const chrome_screen_ai::VisualAnnotation& visual_annotation,
     const gfx::Rect& image_rect) {
@@ -407,7 +408,7 @@ ui::AXTreeUpdate VisualAnnotationToAXTreeUpdate(
   DCHECK(visual_annotation.lines_size() == 0 ||
          visual_annotation.ui_component_size() == 0);
 
-  // TODO(https://crbug.com/1278249): Create an AXTreeSource and create the
+  // TODO(https://crbug.com/1443341): Create an AXTreeSource and create the
   // update using AXTreeSerializer.
 
   // Each `UIComponent`, `LineBox`, as well as every `WordBox` that results in a

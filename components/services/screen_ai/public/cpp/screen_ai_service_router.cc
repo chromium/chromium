@@ -17,7 +17,7 @@
 
 namespace {
 
-// TODO(https://crbug.com/1278249): Move file names into a shared constants
+// TODO(https://crbug.com/1443341): Move file names into a shared constants
 // file before adding more files.
 class ComponentModelFiles {
  public:
@@ -108,7 +108,7 @@ void ScreenAIServiceRouter::LaunchIfNotRunning() {
     return;
   }
 
-  // TODO(https://crbug.com/1278249): Make sure the library is sandboxed and
+  // TODO(https://crbug.com/1443341): Make sure the library is sandboxed and
   // loaded from the same folder and component updater doesn't download a new
   // version during sandbox creation.
   content::ServiceProcessHost::Launch(

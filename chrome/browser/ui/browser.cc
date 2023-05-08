@@ -3219,7 +3219,7 @@ BackgroundContents* Browser::CreateBackgroundContents(
 }
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// TODO(https://1278249): Update function name (and trigger chain) when usage
+// TODO(crbug.com/1443349): Update function name (and trigger chain) when usage
 // is finalized.
 void Browser::RunScreenAIAnnotator() {
   screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(profile())

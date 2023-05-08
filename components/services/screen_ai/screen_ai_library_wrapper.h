@@ -73,7 +73,7 @@ class ScreenAILibraryWrapper {
   // Initializes the pipeline for OCR.
   // |models_folder| is a null terminated string pointing to the
   // folder that includes model files for OCR.
-  // TODO(http://crbug.com/1278249): Replace |models_folder| with file
+  // TODO(http://crbug.com/1443341): Replace |models_folder| with file
   // handle(s).
   typedef bool (*InitOCRFn)(const char* /*models_folder*/);
   InitOCRFn init_ocr_ = nullptr;
