@@ -122,8 +122,7 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
     absl::optional<PrefetchStatus> old_prefetch_status,
     PrefetchStatus new_prefetch_status) {
   if (old_prefetch_status &&
-      (old_prefetch_status.value() == PrefetchStatus::kPrefetchUsedNoProbe ||
-       old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed)) {
+      old_prefetch_status.value() == PrefetchStatus::kPrefetchResponseUsed) {
     // Skip this update if the triggering outcome has already been updated
     // to kSuccess.
     return;
@@ -149,7 +148,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
         }
         attempt->SetTriggeringOutcome(PreloadingTriggeringOutcome::kReady);
         break;
-      case PrefetchStatus::kPrefetchUsedNoProbe:
       case PrefetchStatus::kPrefetchResponseUsed:
         if (old_prefetch_status && old_prefetch_status.value() !=
                                        PrefetchStatus::kPrefetchSuccessful) {
@@ -199,7 +197,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
         // heldback. This is covered by attempt's holdback status. For these two
         // reasons this PrefetchStatus does not fire a `SetTriggeringOutcome`.
         break;
-      case PrefetchStatus::kPrefetchNotEligibleGoogleDomain:
       case PrefetchStatus::kPrefetchNotEligibleUserHasServiceWorker:
       case PrefetchStatus::kPrefetchNotEligibleSchemeIsNotHttps:
       case PrefetchStatus::kPrefetchNotEligibleNonDefaultStoragePartition:
@@ -213,22 +210,6 @@ void SetTriggeringOutcomeAndFailureReasonFromStatus(
       case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
       case PrefetchStatus::kPrefetchIsStale:
       case PrefetchStatus::kPrefetchNotUsedProbeFailed:
-      case PrefetchStatus::kNavigatedToLinkNotOnSRP:
-      case PrefetchStatus::kPrefetchUsedNoProbeWithNSP:
-      case PrefetchStatus::kPrefetchUsedProbeSuccessWithNSP:
-      case PrefetchStatus::kPrefetchNotUsedProbeFailedWithNSP:
-      case PrefetchStatus::kPrefetchUsedNoProbeNSPAttemptDenied:
-      case PrefetchStatus::kPrefetchUsedProbeSuccessNSPAttemptDenied:
-      case PrefetchStatus::kPrefetchNotUsedProbeFailedNSPAttemptDenied:
-      case PrefetchStatus::kPrefetchUsedNoProbeNSPNotStarted:
-      case PrefetchStatus::kPrefetchUsedProbeSuccessNSPNotStarted:
-      case PrefetchStatus::kPrefetchNotUsedProbeFailedNSPNotStarted:
-      case PrefetchStatus::kPrefetchIsStaleWithNSP:
-      case PrefetchStatus::kPrefetchIsStaleNSPAttemptDenied:
-      case PrefetchStatus::kPrefetchIsStaleNSPNotStarted:
-      case PrefetchStatus::kSubresourceThrottled:
-      case PrefetchStatus::kPrefetchPositionIneligible:
-      case PrefetchStatus::kPrefetchFailedRedirectsDisabled_DEPRECATED:
       case PrefetchStatus::
           kPrefetchNotEligibleSameSiteCrossOriginPrefetchRequiredProxy:
         NOTIMPLEMENTED();
