@@ -690,10 +690,6 @@ bool FakeChromeUserManager::IsEnterpriseManaged() const {
   return is_enterprise_managed_;
 }
 
-void FakeChromeUserManager::PerformPostUserListLoadingActions() {
-  NOTREACHED();
-}
-
 void FakeChromeUserManager::PerformPostUserLoggedInActions(
     bool browser_restart) {
   NOTREACHED();

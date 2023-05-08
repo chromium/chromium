@@ -51,6 +51,15 @@ class USER_MANAGER_EXPORT UserManager {
     // Called when the local state preferences is changed.
     virtual void LocalStateChanged(UserManager* user_manager);
 
+    // Called when the user list is loaded.
+    virtual void OnUserListLoaded();
+
+    // Called when the device local user list is updated.
+    virtual void OnDeviceLocalUserListUpdated();
+
+    // Called when the user is logged in.
+    virtual void OnUserLoggedIn(const User& user);
+
     // Called when the image of the given user is changed.
     virtual void OnUserImageChanged(const User& user);
 
@@ -58,6 +67,9 @@ class USER_MANAGER_EXPORT UserManager {
     virtual void OnUserImageIsEnterpriseManagedChanged(
         const User& user,
         bool is_enterprise_managed);
+
+    // Called when the Profile instance for the user is created.
+    virtual void OnUserProfileCreated(const User& user);
 
     // Called when the profile image download for the given user fails or
     // user has the default profile image or no porfile image at all.

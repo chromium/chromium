@@ -219,9 +219,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   virtual void NotifyUserAddedToSession(const User* added_user,
                                         bool user_switch_pending);
 
-  // Performs any additional actions after user list is loaded.
-  virtual void PerformPostUserListLoadingActions() = 0;
-
   // Performs any additional actions after UserLoggedIn() execution has been
   // completed.
   // |browser_restart| is true when reloading Chrome after crash to distinguish
@@ -298,6 +295,8 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   virtual const AccountId& GetPendingUserSwitchID() const;
   virtual void SetPendingUserSwitchId(const AccountId& account_id);
+
+  base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
 
   // The logged-in user that is currently active in current session.
   // NULL until a user has logged in, then points to one
@@ -402,8 +401,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   mutable base::OnceCallbackList<void(const AccountId&)>
       pending_owner_callbacks_;
-
-  base::ObserverList<UserManager::Observer>::Unchecked observer_list_;
 
   // TODO(nkostylev): Merge with session state refactoring CL.
   base::ObserverList<UserManager::UserSessionStateObserver>::Unchecked

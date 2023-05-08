@@ -1043,7 +1043,9 @@ void UserManagerBase::EnsureUsersLoaded() {
   }
   user_loading_stage_ = STAGE_LOADED;
 
-  PerformPostUserListLoadingActions();
+  for (auto& observer : observer_list_) {
+    observer.OnUserListLoaded();
+  }
 }
 
 UserList& UserManagerBase::GetUsersAndModify() {
@@ -1146,6 +1148,9 @@ void UserManagerBase::NotifyActiveUserChanged(User* active_user) {
 
 void UserManagerBase::NotifyOnLogin() {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(active_user_);
+
+  // TODO(b/278643115): Call Observer::OnUserLoggedIn() from here.
 
   NotifyActiveUserChanged(active_user_);
   CallUpdateLoginState();

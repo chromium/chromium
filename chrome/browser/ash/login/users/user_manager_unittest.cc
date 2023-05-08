@@ -119,11 +119,15 @@ class UserManagerTest : public testing::Test {
     command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
 
     UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
+    UserImageManagerImpl::SkipProfileImageDownloadForTesting();
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
     // Populate the stub DeviceSettingsProvider with valid values.
     SetDeviceSettings(false, "", false);
+
+    // Instantiate ProfileHelper.
+    ash::ProfileHelper::Get();
 
     // Register an in-memory local settings instance.
     local_state_ = std::make_unique<ScopedTestingLocalState>(

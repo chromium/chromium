@@ -9,6 +9,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
+#include "components/user_manager/user_manager.h"
 
 class AccountId;
 
@@ -23,12 +25,12 @@ class UserImageManager;
 // UserImageManger is per user. This manages the mapping from each user
 // identified by AccountId to UserImageManager.
 // This is effectively a singleton in production.
-class UserImageManagerRegistry {
+class UserImageManagerRegistry : public user_manager::UserManager::Observer {
  public:
   explicit UserImageManagerRegistry(user_manager::UserManager* user_manager);
   UserImageManagerRegistry(const UserImageManagerRegistry&) = delete;
   UserImageManagerRegistry operator=(UserImageManagerRegistry&) = delete;
-  ~UserImageManagerRegistry();
+  ~UserImageManagerRegistry() override;
 
   // Returns the manager for the given avator.
   // If it is not instantiated, the call lazily creates the instance,
@@ -38,9 +40,19 @@ class UserImageManagerRegistry {
   // Shuts down all UserImageManager this instance holds.
   void Shutdown();
 
+  // user_manager::UserManager::Observer:
+  void OnUserListLoaded() override;
+  void OnDeviceLocalUserListUpdated() override;
+  void OnUserLoggedIn(const user_manager::User& user) override;
+  void OnUserProfileCreated(const user_manager::User& user) override;
+
  private:
   const base::raw_ptr<user_manager::UserManager, ExperimentalAsh> user_manager_;
   std::map<AccountId, std::unique_ptr<UserImageManager>> map_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      observation_{this};
 };
 
 }  // namespace ash

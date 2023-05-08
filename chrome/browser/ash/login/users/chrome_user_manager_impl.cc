@@ -695,12 +695,6 @@ void ChromeUserManagerImpl::LoadDeviceLocalAccounts(
   }
 }
 
-void ChromeUserManagerImpl::PerformPostUserListLoadingActions() {
-  for (user_manager::User* user : users_) {
-    GetUserImageManager(user->GetAccountId())->LoadUserImage();
-  }
-}
-
 void ChromeUserManagerImpl::PerformPostUserLoggedInActions(
     bool browser_restart) {
   // Initialize the session length limiter and start it only if
@@ -802,7 +796,10 @@ void ChromeUserManagerImpl::RegularUserLoggedIn(
 
   MaybeStartBluetoothLogging(account_id);
 
-  GetUserImageManager(account_id)->UserLoggedIn(IsCurrentUserNew(), false);
+  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 
   // Make sure that new data is persisted to Local State.
@@ -815,7 +812,10 @@ void ChromeUserManagerImpl::RegularUserLoggedInAsEphemeral(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ChromeUserManager::RegularUserLoggedInAsEphemeral(account_id, user_type);
 
-  GetUserImageManager(account_id)->UserLoggedIn(IsCurrentUserNew(), false);
+  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
@@ -824,10 +824,10 @@ void ChromeUserManagerImpl::PublicAccountUserLoggedIn(
   SetIsCurrentUserNew(true);
   active_user_ = user;
 
-  // The UserImageManager chooses a random avatar picture when a user logs in
-  // for the first time. Tell the UserImageManager that this user is not new to
-  // prevent the avatar from getting changed.
-  GetUserImageManager(user->GetAccountId())->UserLoggedIn(false, true);
+  // TODO(b/278643115): Move this into UserManagerBase::NotifyOnLogin.
+  for (auto& observer : observer_list_) {
+    observer.OnUserLoggedIn(*active_user_);
+  }
 
   // For public account, it's possible that the user-policy controlled wallpaper
   // was fetched/cleared at the login screen (while for a regular user it was
@@ -1054,11 +1054,8 @@ bool ChromeUserManagerImpl::UpdateAndCleanUpDeviceLocalAccounts(
     }
   }
 
-  for (user_manager::UserList::iterator
-           ui = users_.begin(),
-           ue = users_.begin() + device_local_accounts.size();
-       ui != ue; ++ui) {
-    GetUserImageManager((*ui)->GetAccountId())->LoadUserImage();
+  for (auto& observer : observer_list_) {
+    observer.OnDeviceLocalUserListUpdated();
   }
 
   // Remove data belonging to device local accounts that are no longer found on
@@ -1142,8 +1139,9 @@ void ChromeUserManagerImpl::OnProfileAdded(Profile* profile) {
   if (user) {
     user->SetProfileIsCreated();
 
-    if (user->HasGaiaAccount())
-      GetUserImageManager(user->GetAccountId())->UserProfileCreated();
+    for (auto& observer : observer_list_) {
+      observer.OnUserProfileCreated(*user);
+    }
 
     // Managed Guest Sessions can be lockable if launched via the chrome.login
     // extension API.
