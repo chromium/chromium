@@ -17,6 +17,6 @@ BASE_FEATURE(kForceCrdAdminRemoteAccess,
 
 BASE_FEATURE(kEnableFrameSinkDesktopCapturerInCrd,
              "EnableFrameSinkDesktopCapturerInCrd",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace remoting::features
