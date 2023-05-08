@@ -138,10 +138,10 @@ IN_PROC_BROWSER_TEST_F(RegisterProtocolHandlerBrowserTest,
 
   // Attempt to add an entry.
   ProtocolHandlerChangeWaiter waiter(registry);
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents(),
-      "navigator.registerProtocolHandler('web+"
-      "search', 'test.html?%s', 'test');"));
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   waiter.Wait();
 
   // Verify the registration is ignored if no user gesture involved.

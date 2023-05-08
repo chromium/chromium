@@ -165,7 +165,8 @@ class DownloadFramePolicyBrowserTest
     if (initiate_with_gesture) {
       EXPECT_TRUE(ExecJs(adapter, script));
     } else {
-      EXPECT_TRUE(ExecuteScriptWithoutUserGesture(adapter, script));
+      EXPECT_TRUE(
+          ExecJs(adapter, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     }
   }
 
@@ -548,7 +549,8 @@ IN_PROC_BROWSER_TEST_P(OtherFrameNavigationDownloadBrowserTest_AdFrame,
     if (initiate_with_gesture) {
       EXPECT_TRUE(ExecJs(web_contents(), script));
     } else {
-      EXPECT_TRUE(ExecuteScriptWithoutUserGesture(web_contents(), script));
+      EXPECT_TRUE(ExecJs(web_contents(), script,
+                         content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     }
   }
 

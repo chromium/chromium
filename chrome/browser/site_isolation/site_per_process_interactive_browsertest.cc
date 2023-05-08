@@ -1577,8 +1577,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // later when it sends messages from its focus/blur events.
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_TRUE(
-      ExecuteScriptWithoutUserGesture(web_contents, "window.name = 'main'"));
+  EXPECT_TRUE(ExecJs(web_contents, "window.name = 'main'",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Open a popup for a cross-site page.
   GURL popup_url =

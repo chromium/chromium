@@ -737,7 +737,7 @@ bool BeginNavigateIframeToURL(WebContents* web_contents,
       "var iframes = document.getElementById('%s');iframes.src='%s';"
       "\",0)",
       iframe_id.c_str(), url.spec().c_str());
-  return ExecuteScriptWithoutUserGesture(web_contents, script);
+  return ExecJs(web_contents, script, EXECUTE_SCRIPT_NO_USER_GESTURE);
 }
 
 void NavigateToURLBlockUntilNavigationsComplete(
@@ -1442,12 +1442,6 @@ bool ExecuteScript(const ToRenderFrameHost& adapter,
                       RenderFrameHost::LifecycleState::kPrerendering;
   return ExecuteScriptWithUserGestureControl(adapter.render_frame_host(),
                                              script, user_gesture);
-}
-
-bool ExecuteScriptWithoutUserGesture(const ToRenderFrameHost& adapter,
-                                     const std::string& script) {
-  return ExecuteScriptWithUserGestureControl(adapter.render_frame_host(),
-                                             script, false);
 }
 
 void ExecuteScriptAsync(const ToRenderFrameHost& adapter,

@@ -38,7 +38,8 @@ void AppBannerManagerBrowserTestBase::ExecuteScript(Browser* browser,
   if (with_gesture)
     EXPECT_TRUE(content::ExecuteScript(web_contents, script));
   else
-    EXPECT_TRUE(content::ExecuteScriptWithoutUserGesture(web_contents, script));
+    EXPECT_TRUE(content::ExecJs(web_contents, script,
+                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 GURL AppBannerManagerBrowserTestBase::GetBannerURLWithAction(

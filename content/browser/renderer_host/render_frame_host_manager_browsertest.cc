@@ -1630,9 +1630,9 @@ IN_PROC_BROWSER_TEST_P(
   // The attacker page requests a navigation to a new document while the
   // browser-initiated navigation hasn't committed yet.
   TestNavigationManager attack_navigation(shell()->web_contents(), kAttackURL);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      shell()->web_contents(),
-      "location.href = \"" + kAttackURL.spec() + "\";"));
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     "location.href = \"" + kAttackURL.spec() + "\";",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
   EXPECT_TRUE(attack_navigation.WaitForRequestStart());
 
   // This deletes the speculative RenderFrameHost that was supposed to commit

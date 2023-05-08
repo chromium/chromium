@@ -104,8 +104,9 @@ class UnifiedAutoplayBrowserTest : public InProcessBrowserTest {
   bool NavigateInRenderer(content::WebContents* web_contents, const GURL& url) {
     content::TestNavigationObserver observer(web_contents);
 
-    bool result = content::ExecuteScriptWithoutUserGesture(
-        web_contents, "window.location = '" + url.spec() + "';");
+    bool result =
+        content::ExecJs(web_contents, "window.location = '" + url.spec() + "';",
+                        content::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
     if (result)
       observer.Wait();

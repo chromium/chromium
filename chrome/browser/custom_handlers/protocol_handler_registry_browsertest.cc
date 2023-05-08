@@ -222,10 +222,10 @@ IN_PROC_BROWSER_TEST_F(ChromeRegisterProtocolHandlerBrowserTest,
   ASSERT_TRUE(content_settings->pending_protocol_handler().IsEmpty());
 
   // Attempt to add an entry.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      web_contents,
-      "navigator.registerProtocolHandler('web+"
-      "search', 'test.html?%s', 'test');"));
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "navigator.registerProtocolHandler('web+"
+                              "search', 'test.html?%s', 'test');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Verify the registration is ignored if no user gesture involved.
   ASSERT_EQ(0u, registry->GetHandlersFor(url.scheme()).size());

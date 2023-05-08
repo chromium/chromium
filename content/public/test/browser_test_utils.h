@@ -570,12 +570,6 @@ RenderFrameHost* ConvertToRenderFrameHost(WebContents* web_contents);
 [[nodiscard]] bool ExecuteScript(const ToRenderFrameHost& adapter,
                                  const std::string& script);
 
-// Same as content::ExecuteScript but doesn't send a user gesture to the
-// renderer.
-[[nodiscard]] bool ExecuteScriptWithoutUserGesture(
-    const ToRenderFrameHost& adapter,
-    const std::string& script);
-
 // Similar to ExecuteScript above, but
 // - Doesn't modify the |script|.
 // - Kicks off execution of the |script| in the specified frame and returns

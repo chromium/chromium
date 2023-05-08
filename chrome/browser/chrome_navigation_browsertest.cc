@@ -1649,8 +1649,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(main_contents);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      main_contents, "location = '" + redirected_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "location = '" + redirected_url.spec() + "';",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   EXPECT_EQ(redirected_url, main_contents->GetLastCommittedURL());
 
@@ -1692,8 +1693,9 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     content::WebContents* main_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::TestNavigationObserver observer(main_contents);
-    EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-        main_contents, "location = '" + redirected_url.spec() + "';"));
+    EXPECT_TRUE(ExecJs(main_contents,
+                       "location = '" + redirected_url.spec() + "';",
+                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     observer.Wait();
     EXPECT_EQ(redirected_url, main_contents->GetLastCommittedURL());
   }
@@ -1947,8 +1949,9 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   // Navigate to a new document from the renderer without a user gesture.
   GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
   content::TestNavigationManager manager(main_contents, redirected_url);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      main_contents, "location = '" + redirected_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "location = '" + redirected_url.spec() + "';",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   ASSERT_EQ(redirected_url, main_contents->GetLastCommittedURL());
   ASSERT_EQ(2, main_contents->GetController().GetEntryCount());
@@ -1977,8 +1980,9 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   // Navigate to a new document from the renderer without a user gesture.
   GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
   content::TestNavigationManager manager(main_contents, redirected_url);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      main_contents, "location = '" + redirected_url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents,
+                     "location = '" + redirected_url.spec() + "';",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(manager.WaitForNavigationFinished());
   ASSERT_EQ(redirected_url, main_contents->GetLastCommittedURL());
   ASSERT_EQ(3, main_contents->GetController().GetEntryCount());
@@ -2035,8 +2039,8 @@ IN_PROC_BROWSER_TEST_F(HistoryManipulationInterventionBrowserTest,
   content::WebContents* main_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(main_contents);
-  EXPECT_TRUE(ExecuteScriptWithoutUserGesture(
-      main_contents, "location = '" + url.spec() + "';"));
+  EXPECT_TRUE(ExecJs(main_contents, "location = '" + url.spec() + "';",
+                     content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
   EXPECT_EQ(url, main_contents->GetLastCommittedURL());
 

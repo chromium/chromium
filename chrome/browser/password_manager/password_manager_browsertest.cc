@@ -513,8 +513,9 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, NoPromptForNavigation) {
   // Don't fill the password form, just navigate away. Shouldn't prompt.
   PasswordsNavigationObserver observer(WebContents());
   BubbleObserver prompt_observer(WebContents());
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(), "window.location.href = 'done.html';"));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(),
+                              "window.location.href = 'done.html';",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(observer.Wait());
   EXPECT_FALSE(prompt_observer.IsSavePromptShownAutomatically());
 }
@@ -1648,8 +1649,8 @@ IN_PROC_BROWSER_TEST_F(
       embedded_test_server()->GetURL("/password/simple_password.html"));
   std::string attacker_redirect =
       "window.location.href = '" + http_url.spec() + "';";
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       attacker_redirect));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), attacker_redirect,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   PasswordsNavigationObserver attacker_observer(WebContents());
   attacker_observer.SetPathToWaitFor("/password/simple_password.html");
@@ -2218,8 +2219,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "abc.foo.com", "/password/crossite_iframe_content.html");
   std::string create_iframe =
       base::StringPrintf("create_iframe('%s');", iframe_url.spec().c_str());
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       create_iframe));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), create_iframe,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(iframe_observer.Wait());
 
   // Store a password for autofill later.
@@ -2242,8 +2243,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   PasswordsNavigationObserver iframe_observer_2(WebContents());
   iframe_observer_2.SetPathToWaitFor("/password/crossite_iframe_content.html");
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       create_iframe));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), create_iframe,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(iframe_observer_2.Wait());
 
   // Simulate the user interaction in the iframe which should trigger autofill.
@@ -2280,8 +2281,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       "www.bar.com", "/password/crossite_iframe_content.html");
   std::string create_iframe =
       base::StringPrintf("create_iframe('%s');", iframe_url.spec().c_str());
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       create_iframe));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), create_iframe,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(iframe_observer.Wait());
 
   // Store a password for autofill later.
@@ -2304,8 +2305,8 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
 
   PasswordsNavigationObserver iframe_observer_2(WebContents());
   iframe_observer_2.SetPathToWaitFor("/password/crossite_iframe_content.html");
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(RenderFrameHost(),
-                                                       create_iframe));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(), create_iframe,
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(iframe_observer_2.Wait());
 
   // Simulate the user interaction in the iframe which should trigger autofill.
@@ -3690,11 +3691,12 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
       embedded_test_server()->GetURL("www.foo.com", "/password/done.html");
   PasswordsNavigationObserver observer_done(WebContents());
   observer_done.SetPathToWaitFor("/password/done.html");
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
+  ASSERT_TRUE(content::ExecJs(
       RenderFrameHost(),
       "document.getElementById('new_p').value = 'new password';"
       "document.getElementById('conf_p').value = 'new password';"
-      "document.getElementById('testform').submit();"));
+      "document.getElementById('testform').submit();",
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   ASSERT_TRUE(observer_done.Wait());
 
   // Check that the password for origin A was not updated automatically and the
@@ -3792,18 +3794,18 @@ IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest, FormDynamicallyChanged) {
 
   // Simulate that a script removes username/password elements and adds the
   // elements identical to them.
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGesture(
-      RenderFrameHost(),
-      "function replaceElement(id) {"
-      "  var elem = document.getElementById(id);"
-      "  var parent = elem.parentElement;"
-      "  var cloned_elem = elem.cloneNode();"
-      "  cloned_elem.value = '';"
-      "  parent.removeChild(elem);"
-      "  parent.appendChild(cloned_elem);"
-      "}"
-      "replaceElement('username_field');"
-      "replaceElement('password_field');"));
+  ASSERT_TRUE(content::ExecJs(RenderFrameHost(),
+                              "function replaceElement(id) {"
+                              "  var elem = document.getElementById(id);"
+                              "  var parent = elem.parentElement;"
+                              "  var cloned_elem = elem.cloneNode();"
+                              "  cloned_elem.value = '';"
+                              "  parent.removeChild(elem);"
+                              "  parent.appendChild(cloned_elem);"
+                              "}"
+                              "replaceElement('username_field');"
+                              "replaceElement('password_field');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   // Let the user interact with the page, so that DOM gets modification events,
   // needed for autofilling fields.

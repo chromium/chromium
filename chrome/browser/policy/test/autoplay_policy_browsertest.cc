@@ -49,7 +49,8 @@ class AutoplayPolicyTest : public PolicyTest {
         "\",0)",
         origin2.spec().c_str());
     content::TestNavigationObserver load_observer(GetWebContents());
-    EXPECT_TRUE(ExecuteScriptWithoutUserGesture(GetWebContents(), script));
+    EXPECT_TRUE(ExecJs(GetWebContents(), script,
+                       content::EXECUTE_SCRIPT_NO_USER_GESTURE));
     load_observer.Wait();
   }
 
