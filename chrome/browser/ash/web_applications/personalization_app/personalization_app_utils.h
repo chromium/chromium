@@ -12,9 +12,11 @@
 
 namespace ash::personalization_app {
 
-// Creates the PersonalizationAppUI to be registered in
-// ChromeWebUIControllerFactory.
-PersonalizationAppUI* CreatePersonalizationAppUI(content::WebUI* web_ui);
+// Creates a PersonalizationAppUI. Used as a callback by
+// PersonalizationAppUIConfig.
+std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
+    content::WebUI* web_ui,
+    const GURL& url);
 
 // In general, by the time this function is called, it is already guaranteed
 // that there is a valid profile and user that has opened personalization app.

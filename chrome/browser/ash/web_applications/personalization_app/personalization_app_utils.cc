@@ -19,7 +19,9 @@
 
 namespace ash::personalization_app {
 
-PersonalizationAppUI* CreatePersonalizationAppUI(content::WebUI* web_ui) {
+std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
+    content::WebUI* web_ui,
+    const GURL& url) {
   auto ambient_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppAmbientProviderImpl>(web_ui);
   auto keyboard_backlight_provider =
@@ -34,7 +36,7 @@ PersonalizationAppUI* CreatePersonalizationAppUI(content::WebUI* web_ui) {
       ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
       web_ui,
       std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
-  return new ash::personalization_app::PersonalizationAppUI(
+  return std::make_unique<ash::personalization_app::PersonalizationAppUI>(
       web_ui, std::move(ambient_provider),
       std::move(keyboard_backlight_provider), std::move(theme_provider),
       std::move(user_provider), std::move(wallpaper_provider));

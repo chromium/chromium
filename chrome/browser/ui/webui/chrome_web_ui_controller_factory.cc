@@ -204,8 +204,6 @@
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
 #include "ash/webui/os_feedback_ui/url_constants.h"
-#include "ash/webui/personalization_app/personalization_app_ui.h"
-#include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
@@ -229,7 +227,6 @@
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/webui/ash/account_manager/account_manager_error_ui.h"
@@ -492,13 +489,6 @@ WebUIController* NewWebUI<ash::printing::printing_manager::PrintManagementUI>(
   return new ash::printing::printing_manager::PrintManagementUI(
       web_ui,
       base::BindRepeating(&BindPrintManagement, Profile::FromWebUI(web_ui)));
-}
-
-template <>
-WebUIController* NewWebUI<ash::personalization_app::PersonalizationAppUI>(
-    WebUI* web_ui,
-    const GURL& url) {
-  return ash::personalization_app::CreatePersonalizationAppUI(web_ui);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -791,10 +781,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
-  if (url.host_piece() ==
-      ash::personalization_app::kChromeUIPersonalizationAppHost) {
-    return &NewWebUI<ash::personalization_app::PersonalizationAppUI>;
-  }
   if (base::FeatureList::IsEnabled(net::features::kKerberosInBrowserRedirect) &&
       url.host_piece() == chrome::kChromeUIKerberosInBrowserHost) {
     return &NewWebUI<ash::KerberosInBrowserUI>;

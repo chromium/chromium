@@ -28,6 +28,7 @@
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
 #include "ash/webui/os_feedback_ui/os_feedback_ui.h"
+#include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/scanning/scanning_ui.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/files_internals_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/web_applications/projector_app/trusted_projector_ui_config.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -262,6 +264,10 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::PasswordChangeUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::reporting::EnterpriseReportingUIConfig>());
+  map.AddWebUIConfig(
+      std::make_unique<ash::personalization_app::PersonalizationAppUIConfig>(
+          base::BindRepeating(
+              ash::personalization_app::CreatePersonalizationAppUI)));
   map.AddWebUIConfig(std::make_unique<ash::PowerUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<ash::multidevice::ProximityAuthUIConfig>());
