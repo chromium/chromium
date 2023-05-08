@@ -121,7 +121,8 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
   const base::Uuid tab_guid = saved_group()->GetTab(tab_id)->saved_tab_guid();
 
   web_contents_to_tab_id_map_.erase(web_contents);
-  model_->RemoveTabFromGroup(saved_guid_, tab_guid);
+  model_->RemoveTabFromGroup(saved_guid_, tab_guid,
+                             /*update_tab_positions=*/true);
 
   return model_->Contains(saved_guid_) ? Liveness::kGroupExists
                                        : Liveness::kGroupDeleted;
