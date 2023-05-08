@@ -3842,18 +3842,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledGroupOnlyBlueDotPromoEnabled2023_02_09",
+                    "name": "EnabledGroupAllDBPromosEnabled2023_05_08",
                     "params": {
-                        "user-group": "only-blue-dot-promo-enabled"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserBlueDotPromo"
-                    ]
-                },
-                {
-                    "name": "ControlGroupAllDBPromosDisabled2023_02_09",
-                    "params": {
-                        "user-group": "all-db-promos-disabled"
+                        "user-group": "all-db-promos-enabled"
                     },
                     "enable_features": [
                         "DefaultBrowserBlueDotPromo"
