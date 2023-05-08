@@ -92,7 +92,9 @@ bool Partitions::InitializeOnce() {
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr) &&
       (brp_mode == base::features::BackupRefPtrMode::kEnabled ||
-       brp_mode == base::features::BackupRefPtrMode::kEnabledWithoutZapping) &&
+       brp_mode == base::features::BackupRefPtrMode::kEnabledWithoutZapping ||
+       brp_mode ==
+           base::features::BackupRefPtrMode::kEnabledWithMemoryReclaimer) &&
       process_affected_by_brp_flag;
 #else  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   const bool process_affected_by_brp_flag = false;
