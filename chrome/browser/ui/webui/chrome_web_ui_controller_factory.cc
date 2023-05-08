@@ -188,9 +188,6 @@
 #include "ash/webui/camera_app_ui/url_constants.h"
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/color_internals/url_constants.h"
-#include "ash/webui/eche_app_ui/eche_app_manager.h"
-#include "ash/webui/eche_app_ui/eche_app_ui.h"
-#include "ash/webui/eche_app_ui/url_constants.h"
 #include "ash/webui/face_ml_app_ui/face_ml_app_ui.h"
 #include "ash/webui/face_ml_app_ui/url_constants.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
@@ -217,7 +214,6 @@
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
@@ -496,93 +492,6 @@ WebUIController* NewWebUI<ash::printing::printing_manager::PrintManagementUI>(
   return new ash::printing::printing_manager::PrintManagementUI(
       web_ui,
       base::BindRepeating(&BindPrintManagement, Profile::FromWebUI(web_ui)));
-}
-
-void BindEcheSignalingMessageExchanger(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::SignalingMessageExchanger>
-        receiver) {
-  if (manager) {
-    manager->BindSignalingMessageExchangerInterface(std::move(receiver));
-  }
-}
-
-void BindSystemInfoProvider(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::SystemInfoProvider> receiver) {
-  if (manager) {
-    manager->BindSystemInfoProviderInterface(std::move(receiver));
-  }
-}
-
-void BindEcheAccessibilityProvider(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::AccessibilityProvider>
-        receiver) {
-  if (manager) {
-    manager->BindAccessibilityProviderInterface(std::move(receiver));
-  }
-}
-
-void BindEcheUidGenerator(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::UidGenerator> receiver) {
-  if (manager) {
-    manager->BindUidGeneratorInterface(std::move(receiver));
-  }
-}
-
-void BindEcheNotificationGenerator(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::NotificationGenerator>
-        receiver) {
-  if (manager) {
-    manager->BindNotificationGeneratorInterface(std::move(receiver));
-  }
-}
-
-void BindEcheDisplayStreamHandler(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::DisplayStreamHandler>
-        receiver) {
-  if (manager) {
-    manager->BindDisplayStreamHandlerInterface(std::move(receiver));
-  }
-}
-
-void BindEcheStreamOrientationObserver(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::StreamOrientationObserver>
-        receiver) {
-  if (manager) {
-    manager->BindStreamOrientationObserverInterface(std::move(receiver));
-  }
-}
-
-void BindEcheConnectionStatusHandler(
-    ash::eche_app::EcheAppManager* manager,
-    mojo::PendingReceiver<ash::eche_app::mojom::ConnectionStatusObserver>
-        receiver) {
-  if (manager) {
-    manager->BindConnectionStatusObserverInterface(std::move(receiver));
-  }
-}
-
-template <>
-WebUIController* NewWebUI<ash::eche_app::EcheAppUI>(WebUI* web_ui,
-                                                    const GURL& url) {
-  Profile* profile = Profile::FromWebUI(web_ui);
-  ash::eche_app::EcheAppManager* manager =
-      ash::eche_app::EcheAppManagerFactory::GetForProfile(profile);
-  return new ash::eche_app::EcheAppUI(
-      web_ui, base::BindRepeating(&BindEcheSignalingMessageExchanger, manager),
-      base::BindRepeating(&BindSystemInfoProvider, manager),
-      base::BindRepeating(&BindEcheAccessibilityProvider, manager),
-      base::BindRepeating(&BindEcheUidGenerator, manager),
-      base::BindRepeating(&BindEcheNotificationGenerator, manager),
-      base::BindRepeating(&BindEcheDisplayStreamHandler, manager),
-      base::BindRepeating(&BindEcheStreamOrientationObserver, manager),
-      base::BindRepeating(&BindEcheConnectionStatusHandler, manager));
 }
 
 template <>
@@ -882,10 +791,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<ash::printing::printing_manager::PrintManagementUI>;
   if (url.host_piece() == ash::kChromeUIMediaAppHost)
     return &NewComponentUI<ash::MediaAppUI, ChromeMediaAppUIDelegate>;
-  if (url.host_piece() == ash::eche_app::kChromeUIEcheAppHost &&
-      base::FeatureList::IsEnabled(ash::features::kEcheSWA)) {
-    return &NewWebUI<ash::eche_app::EcheAppUI>;
-  }
   if (url.host_piece() ==
       ash::personalization_app::kChromeUIPersonalizationAppHost) {
     return &NewWebUI<ash::personalization_app::PersonalizationAppUI>;

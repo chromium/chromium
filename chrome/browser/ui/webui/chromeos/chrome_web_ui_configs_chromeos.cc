@@ -23,6 +23,7 @@
 #include "ash/webui/color_internals/color_internals_ui.h"
 #include "ash/webui/connectivity_diagnostics/connectivity_diagnostics_ui.h"
 #include "ash/webui/diagnostics_ui/diagnostics_ui.h"
+#include "ash/webui/eche_app_ui/eche_app_ui.h"
 #include "ash/webui/files_internals/files_internals_ui.h"
 #include "ash/webui/firmware_update_ui/firmware_update_app_ui.h"
 #include "ash/webui/guest_os_installer/guest_os_installer_ui.h"
@@ -31,6 +32,7 @@
 #include "ash/webui/shimless_rma/shimless_rma.h"
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/system_extensions_internals_ui/system_extensions_internals_ui.h"
+#include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/guest_os/public/installer_delegate_factory.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
@@ -180,6 +182,20 @@ std::unique_ptr<content::WebUIConfig> MakeDiagnosticsUIConfig() {
       create_controller_func);
 }
 
+std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
+  CreateWebUIControllerFunc create_controller_func = base::BindRepeating(
+      [](content::WebUI* web_ui,
+         const GURL& url) -> std::unique_ptr<content::WebUIController> {
+        Profile* profile = Profile::FromWebUI(web_ui);
+        ash::eche_app::EcheAppManager* manager =
+            ash::eche_app::EcheAppManagerFactory::GetForProfile(profile);
+        return std::make_unique<ash::eche_app::EcheAppUI>(web_ui, manager);
+      });
+
+  return std::make_unique<ash::eche_app::EcheAppUIConfig>(
+      create_controller_func);
+}
+
 void RegisterAshChromeWebUIConfigs() {
   // Add `WebUIConfig`s for Ash ChromeOS to the list here.
   auto& map = content::WebUIConfigMap::GetInstance();
@@ -208,6 +224,7 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ash::CryptohomeUIConfig>());
   map.AddWebUIConfig(MakeDiagnosticsUIConfig());
   map.AddWebUIConfig(std::make_unique<ash::DriveInternalsUIConfig>());
+  map.AddWebUIConfig(MakeEcheAppUIConfig());
   map.AddWebUIConfig(std::make_unique<ash::EmojiUIConfig>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<ash::FilesInternalsUIConfig,
