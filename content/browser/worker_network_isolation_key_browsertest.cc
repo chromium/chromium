@@ -148,6 +148,19 @@ class WorkerImportScriptsAndFetchRequestNetworkIsolationKeyBrowserTest
     : public WorkerNetworkIsolationKeyBrowserTest,
       public ::testing::WithParamInterface<
           std::tuple<bool /* test_same_network_isolation_key */, WorkerType>> {
+ public:
+  WorkerImportScriptsAndFetchRequestNetworkIsolationKeyBrowserTest() {
+    // This test was written assuming that iframes/workers corresponding to
+    // different cross-origin frames (same top-level site) would not share an
+    // HTTP cache partition, but this is not the case when the experiment to
+    // replace the frame origin with an "is-cross-site" bit in the Network
+    // Isolation Key is active. Therefore, disable it for this test.
+    feature_list_.InitAndDisableFeature(
+        net::features::kEnableCrossSiteFlagNetworkIsolationKey);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that network isolation key is filled in correctly for service/shared
