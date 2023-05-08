@@ -227,8 +227,6 @@ static_library("browser") {
     "on_device_head_provider.h",
     "on_device_model_update_listener.cc",
     "on_device_model_update_listener.h",
-    "on_device_tail_model_observer.cc",
-    "on_device_tail_model_observer.h",
     "on_device_tail_tokenizer.cc",
     "on_device_tail_tokenizer.h",
     "open_tab_provider.cc",
@@ -653,6 +651,8 @@ static_library("test_support") {
     "//components/bookmarks/test",
     "//components/history/core/browser",
     "//components/history/core/test",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
     "//components/query_tiles/test:test_support",
     "//components/resources",
@@ -670,6 +670,13 @@ static_library("test_support") {
   if (toolkit_views) {
     # Needed to get the TOOLKIT_VIEWS define.
     deps += [ "//ui/views" ]
+  }
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "fake_on_device_tail_model_service.cc",
+      "fake_on_device_tail_model_service.h",
+    ]
   }
 }
 

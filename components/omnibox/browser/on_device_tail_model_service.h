@@ -22,15 +22,6 @@ class OnDeviceTailModelService
   using ResultCallback = base::OnceCallback<void(
       std::vector<OnDeviceTailModelExecutor::Prediction>)>;
 
-  // TODO(crbug.com/1372112): move this struct into model executor class.
-  struct OnDeviceTailModelInput {
-    std::string sanitized_input;
-    std::string previous_query;
-    size_t max_num_suggestions;
-    size_t max_num_step;
-    float probability_threshold;
-  };
-
   explicit OnDeviceTailModelService(
       optimization_guide::OptimizationGuideModelProvider* model_provider);
   ~OnDeviceTailModelService() override;
@@ -45,14 +36,22 @@ class OnDeviceTailModelService
       const optimization_guide::ModelInfo& model_info) override;
 
   // Calls the model executor to generate predictions for the input.
-  void GetPredictionsForInput(const OnDeviceTailModelInput& input,
-                              ResultCallback result_callback);
+  void GetPredictionsForInput(
+      const OnDeviceTailModelExecutor::ModelInput& input,
+      ResultCallback result_callback);
 
  private:
   friend class OnDeviceTailModelServiceTest;
+  friend class FakeOnDeviceTailModelService;
+
+  // The default constructor used with tests only, which will create nullptrs
+  // for all private members such that tests can initialize members later on
+  // demand.
+  OnDeviceTailModelService();
 
   // The task runner to run tail model executor.
-  scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> model_executor_task_runner_ =
+      nullptr;
 
   using ExecutorUniquePtr =
       std::unique_ptr<OnDeviceTailModelExecutor, base::OnTaskRunnerDeleter>;

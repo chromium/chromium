@@ -53,14 +53,12 @@ void InitializeTailModelExecutor(
 
 std::vector<OnDeviceTailModelExecutor::Prediction> RunTailModelExecutor(
     OnDeviceTailModelExecutor* executor,
-    const OnDeviceTailModelService::OnDeviceTailModelInput& input) {
+    const OnDeviceTailModelExecutor::ModelInput& input) {
   std::vector<OnDeviceTailModelExecutor::Prediction> predictions;
   if (executor == nullptr || !executor->IsReady()) {
     return predictions;
   }
-  predictions = executor->GenerateSuggestionsForPrefix(
-      input.sanitized_input, input.previous_query, input.max_num_suggestions,
-      input.max_num_step, input.probability_threshold);
+  predictions = executor->GenerateSuggestionsForPrefix(input);
   return predictions;
 }
 
@@ -81,6 +79,9 @@ OnDeviceTailModelService::OnDeviceTailModelService(
         /* model_metadata= */ absl::nullopt, this);
   }
 }
+
+OnDeviceTailModelService::OnDeviceTailModelService()
+    : tail_model_executor_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
 OnDeviceTailModelService::~OnDeviceTailModelService() {
   if (model_provider_) {
@@ -115,7 +116,6 @@ void OnDeviceTailModelService::OnModelUpdated(
     DVLOG(1) << "Failed to fetch metadata for Omnibox on device tail model";
     return;
   }
-
   model_executor_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&InitializeTailModelExecutor, tail_model_executor_.get(),
@@ -125,10 +125,16 @@ void OnDeviceTailModelService::OnModelUpdated(
 }
 
 void OnDeviceTailModelService::GetPredictionsForInput(
-    const OnDeviceTailModelInput& input,
+    const OnDeviceTailModelExecutor::ModelInput& input,
     ResultCallback result_callback) {
-  model_executor_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&RunTailModelExecutor, tail_model_executor_.get(), input),
-      std::move(result_callback));
+  if (model_executor_task_runner_) {
+    model_executor_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&RunTailModelExecutor, tail_model_executor_.get(),
+                       input),
+        std::move(result_callback));
+  } else {
+    std::move(result_callback)
+        .Run(std::vector<OnDeviceTailModelExecutor::Prediction>());
+  }
 }

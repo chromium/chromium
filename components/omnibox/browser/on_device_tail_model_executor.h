@@ -35,6 +35,24 @@ class OnDeviceTailModelExecutor {
     float probability;
   };
 
+  // The struct holds the input parameters needed to generate predictions from
+  // the model.
+  struct ModelInput {
+    ModelInput();
+    ModelInput(std::string prefix,
+               std::string previous_query,
+               size_t max_num_suggestions,
+               size_t max_rnn_steps,
+               float probability_threshold);
+    ~ModelInput();
+
+    std::string prefix;
+    std::string previous_query;
+    size_t max_num_suggestions;
+    size_t max_rnn_steps;
+    float probability_threshold;
+  };
+
   using ModelMetadata =
       optimization_guide::proto::OnDeviceTailSuggestModelMetadata;
 
@@ -56,12 +74,7 @@ class OnDeviceTailModelExecutor {
   // with minimum probability `probability_threshold` for the given `prefix` and
   // `previous_query`. The given prefix will only be extended at most
   // `max_rnn_steps` times.
-  std::vector<Prediction> GenerateSuggestionsForPrefix(
-      const std::string& prefix,
-      const std::string& previous_query,
-      size_t max_num_suggestions,
-      size_t max_rnn_steps,
-      float probability_threshold);
+  std::vector<Prediction> GenerateSuggestionsForPrefix(const ModelInput& input);
 
  private:
   friend class OnDeviceTailModelExecutorPublic;

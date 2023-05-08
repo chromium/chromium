@@ -61,6 +61,21 @@ std::ostream& operator<<(std::ostream& os,
 
 }  // namespace
 
+OnDeviceTailModelExecutor::ModelInput::ModelInput() = default;
+
+OnDeviceTailModelExecutor::ModelInput::ModelInput(std::string prefix,
+                                                  std::string previous_query,
+                                                  size_t max_num_suggestions,
+                                                  size_t max_rnn_steps,
+                                                  float probability_threshold)
+    : prefix(std::move(prefix)),
+      previous_query(std::move(previous_query)),
+      max_num_suggestions(max_num_suggestions),
+      max_rnn_steps(max_rnn_steps),
+      probability_threshold(probability_threshold) {}
+
+OnDeviceTailModelExecutor::ModelInput::~ModelInput() = default;
+
 OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates() = default;
 
 OnDeviceTailModelExecutor::RnnCellStates::RnnCellStates(size_t num_layer,
@@ -508,39 +523,35 @@ float OnDeviceTailModelExecutor::GetLogProbability(float probability) {
 
 std::vector<OnDeviceTailModelExecutor::Prediction>
 OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
-    const std::string& prefix,
-    const std::string& previous_query,
-    size_t max_num_suggestions,
-    size_t max_rnn_steps,
-    float probability_threshold) {
+    const ModelInput& input) {
   DCHECK(IsReady());
   std::vector<Prediction> predictions;
 
-  if (prefix.empty()) {
+  if (input.prefix.empty()) {
     return predictions;
   }
 
   OnDeviceTailTokenizer::Tokenization input_tokenization;
-  tokenizer_->CreatePrefixTokenization(prefix, &input_tokenization);
+  tokenizer_->CreatePrefixTokenization(input.prefix, &input_tokenization);
 
   OnDeviceTailTokenizer::TokenIds prev_query_token_ids;
-  tokenizer_->TokenizePrevQuery(previous_query, &prev_query_token_ids);
+  tokenizer_->TokenizePrevQuery(input.previous_query, &prev_query_token_ids);
 
   std::vector<float> prev_query_encoding;
   BeamNode root_beam;
   if (!GetRootBeamNode(input_tokenization, prev_query_token_ids,
                        &prev_query_encoding, &root_beam)) {
-    DVLOG(1) << "Failed to get root beam node for prefix [" << prefix << "]["
-             << previous_query << "]";
+    DVLOG(1) << "Failed to get root beam node for prefix [" << input.prefix
+             << "][" << input.previous_query << "]";
     return predictions;
   }
 
   OnDeviceTailModelExecutor::CandidateQueue partial_candidates,
       completed_candidates;
   partial_candidates.emplace(std::move(root_beam));
-  float log_prob_threshold = GetLogProbability(probability_threshold);
+  float log_prob_threshold = GetLogProbability(input.probability_threshold);
 
-  for (size_t i = 0; i < max_rnn_steps; ++i) {
+  for (size_t i = 0; i < input.max_rnn_steps; ++i) {
     if (partial_candidates.empty()) {
       break;
     }
@@ -555,7 +566,7 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
       RnnStepOutput rnn_step_output;
       if (RunRnnStep(beam.rnn_step_cache_key, beam.token_ids.back(),
                      prev_query_encoding, beam.states, &rnn_step_output)) {
-        CreateNewBeams(rnn_step_output, beam, max_num_suggestions,
+        CreateNewBeams(rnn_step_output, beam, input.max_num_suggestions,
                        log_prob_threshold, &partial_candidates,
                        &completed_candidates);
 
@@ -593,7 +604,7 @@ OnDeviceTailModelExecutor::GenerateSuggestionsForPrefix(
     }
 
     // Remove echo suggestion.
-    if (suggestion == prefix) {
+    if (suggestion == input.prefix) {
       continue;
     }
 

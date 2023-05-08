@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/test/task_environment.h"
+#include "components/omnibox/browser/on_device_tail_model_executor.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -94,13 +95,7 @@ TEST_F(OnDeviceTailModelServiceTest, OnModelUpdated) {
 TEST_F(OnDeviceTailModelServiceTest, GetPredictionsForInput) {
   std::vector<OnDeviceTailModelExecutor::Prediction> results;
 
-  OnDeviceTailModelService::OnDeviceTailModelInput input;
-  input.sanitized_input = "faceb";
-  input.previous_query = "";
-  input.max_num_suggestions = 5;
-  input.max_num_step = 20;
-  input.probability_threshold = 0.05;
-
+  OnDeviceTailModelExecutor::ModelInput input("faceb", "", 5, 20, 0.05);
   OnDeviceTailModelService::ResultCallback callback = base::BindOnce(
       [](std::vector<OnDeviceTailModelExecutor::Prediction>* results,
          std::vector<OnDeviceTailModelExecutor::Prediction> predictions) {
