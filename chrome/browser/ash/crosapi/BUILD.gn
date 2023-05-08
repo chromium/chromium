@@ -288,6 +288,7 @@ source_set("crosapi") {
     "//chrome/common:channel_info",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/cros_disks",

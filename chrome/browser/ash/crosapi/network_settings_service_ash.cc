@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -35,11 +36,21 @@ const char kPrefExtensionCanDisabledKey[] = "can_be_disabled_key";
 PrefService* GetPrimaryLoggedInUserProfilePrefs() {
   // Check login state first.
   if (!user_manager::UserManager::IsInitialized() ||
-      !user_manager::UserManager::Get()->IsUserLoggedIn() ||
-      ProfileManager::GetPrimaryUserProfile() == nullptr) {
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
     return nullptr;
   }
-  return ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+
+  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!primary_user) {
+    return nullptr;
+  }
+
+  auto* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(primary_user));
+  if (!profile) {
+    return nullptr;
+  }
+  return profile->GetPrefs();
 }
 
 }  // namespace
