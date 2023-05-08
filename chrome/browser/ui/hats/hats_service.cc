@@ -375,7 +375,8 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
           permissions::kPermissionsPromptSurveyRequestTypeKey,
           permissions::kPermissionsPromptSurveyReleaseChannelKey,
           permissions::kPermissionsPromptSurveyDisplayTimeKey,
-          permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey});
+          permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+          permissions::kPermissionPromptSurveyUrlKey});
 
   // Performance Controls surveys.
   survey_configs.emplace_back(

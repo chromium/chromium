@@ -52,10 +52,11 @@ class PermissionHatsTriggerHelper {
         permissions::PermissionPromptDispositionReason
             prompt_disposition_reason,
         permissions::PermissionRequestGestureType gesture_type,
-        std::string channel,
-        std::string survey_display_time,
+        const std::string& channel,
+        const std::string& survey_display_time,
         absl::optional<base::TimeDelta> prompt_display_duration,
-        OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket);
+        OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
+        const GURL& gurl);
     PromptParametersForHaTS(const PromptParametersForHaTS& other);
     ~PromptParametersForHaTS();
 
@@ -68,6 +69,7 @@ class PermissionHatsTriggerHelper {
     std::string survey_display_time;
     absl::optional<base::TimeDelta> prompt_display_duration;
     OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket;
+    std::string url;
   };
 
   struct SurveyProductSpecificData {

@@ -15,7 +15,7 @@
 
 class PermissionHatsTriggerUnitTest : public testing::Test {
  public:
-  PermissionHatsTriggerUnitTest() = default;
+  PermissionHatsTriggerUnitTest() { trigger_gurl = GURL("https://test.url"); }
 
   PermissionHatsTriggerUnitTest(const PermissionHatsTriggerUnitTest&) = delete;
   PermissionHatsTriggerUnitTest& operator=(
@@ -53,6 +53,9 @@ class PermissionHatsTriggerUnitTest : public testing::Test {
 
   base::test::ScopedFeatureList* feature_list() { return &feature_list_; }
 
+  // Represents the url on which the survey was triggered
+  GURL trigger_gurl;
+
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -82,7 +85,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // // Wrong action, should not trigger
   EXPECT_FALSE(
@@ -97,7 +101,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // // Wrong request type, should not trigger
   EXPECT_FALSE(
@@ -112,7 +117,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong prompt disposition, should not trigger
   EXPECT_FALSE(
@@ -127,7 +133,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong prompt disposition reason, should not trigger
   EXPECT_FALSE(
@@ -142,7 +149,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // No gesture, should not trigger
   EXPECT_FALSE(
@@ -157,7 +165,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::NO_GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong channel, should not trigger
   EXPECT_FALSE(
@@ -172,7 +181,8 @@ TEST_F(PermissionHatsTriggerUnitTest, SingleValuedFiltersTriggerCorrectly) {
                   permissions::PermissionRequestGestureType::NO_GESTURE,
                   "stable", permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
@@ -203,7 +213,8 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Matching call, should trigger
   EXPECT_TRUE(
@@ -218,7 +229,8 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Matching call, should trigger
   EXPECT_TRUE(
@@ -233,7 +245,8 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Matching call, should trigger
   EXPECT_TRUE(
@@ -248,7 +261,8 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Matching call, should trigger
   EXPECT_TRUE(
@@ -263,7 +277,8 @@ TEST_F(PermissionHatsTriggerUnitTest, EmptyFiltersShouldAlwaysTrigger) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
@@ -292,7 +307,8 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_4_5)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_4_5,
+                  trigger_gurl)));
 
   // Matching call, should trigger
   EXPECT_TRUE(
@@ -307,7 +323,8 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong action, should not trigger
   EXPECT_FALSE(
@@ -322,7 +339,8 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong action, should not trigger
   EXPECT_FALSE(
@@ -337,7 +355,8 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong action, should not trigger
   EXPECT_FALSE(
@@ -352,7 +371,8 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Wrong one time prompt count bucket, should not trigger
   EXPECT_FALSE(
@@ -367,7 +387,8 @@ TEST_F(PermissionHatsTriggerUnitTest, CSVFiltersTriggerForAllConfiguredValues) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_6_10)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_6_10,
+                  trigger_gurl)));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
@@ -396,7 +417,8 @@ TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // Matching call, should trigger
   EXPECT_TRUE(
@@ -411,7 +433,8 @@ TEST_F(PermissionHatsTriggerUnitTest, FilterConfigurationHandlesEdgeCases) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
@@ -434,7 +457,8 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
               permissions::PermissionRequestGestureType::GESTURE, "beta",
               permissions::kOnPromptResolved, base::Minutes(1),
               permissions::PermissionHatsTriggerHelper::
-                  OneTimePermissionPromptsDecidedBucket::BUCKET_6_10));
+                  OneTimePermissionPromptsDecidedBucket::BUCKET_6_10,
+              trigger_gurl));
 
   EXPECT_EQ(survey_data.survey_bits_data.at(
                 permissions::kPermissionsPromptSurveyHadGestureKey),
@@ -459,6 +483,9 @@ TEST_F(PermissionHatsTriggerUnitTest, ProductSpecificFieldsAreReported) {
       survey_data.survey_string_data.at(
           permissions::kPermissionPromptSurveyOneTimePromptsDecidedBucketKey),
       "6_10");
+  EXPECT_EQ(survey_data.survey_string_data.at(
+                permissions::kPermissionPromptSurveyUrlKey),
+            trigger_gurl);
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {
@@ -486,7 +513,8 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(5),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 
   // The safeguard is active, and the display time is higher than the configured
   // value. Thus, this should not trigger.
@@ -502,7 +530,8 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyIgnoreSafeguardFunctionality) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(15),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, VerifyUnconfiguredFiltersSafeguard) {
@@ -530,7 +559,8 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyUnconfiguredFiltersSafeguard) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 }
 
 TEST_F(PermissionHatsTriggerUnitTest, VerifyMisconfiguredFiltersSafeguard) {
@@ -556,5 +586,6 @@ TEST_F(PermissionHatsTriggerUnitTest, VerifyMisconfiguredFiltersSafeguard) {
                   permissions::PermissionRequestGestureType::GESTURE, "beta",
                   permissions::kOnPromptResolved, base::Minutes(1),
                   permissions::PermissionHatsTriggerHelper::
-                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1)));
+                      OneTimePermissionPromptsDecidedBucket::BUCKET_0_1,
+                  trigger_gurl)));
 }

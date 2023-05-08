@@ -81,7 +81,9 @@ GetKeyToValueFilterPairMap(
             GetOneTimePromptsDecidedBucketString(
                 prompt_parameters.one_time_prompts_decided_bucket),
         permissions::feature_params::
-            kPermissionPromptSurveyOneTimePromptsDecidedBucket.Get()}}};
+            kPermissionPromptSurveyOneTimePromptsDecidedBucket.Get()}},
+      {permissions::kPermissionPromptSurveyUrlKey,
+       {prompt_parameters.url, ""}}};
 }
 
 // Typos in the gcl configuration cannot be verified and may be missed by
@@ -118,10 +120,11 @@ PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     permissions::PermissionPromptDisposition prompt_disposition,
     permissions::PermissionPromptDispositionReason prompt_disposition_reason,
     permissions::PermissionRequestGestureType gesture_type,
-    std::string channel,
-    std::string survey_display_time,
+    const std::string& channel,
+    const std::string& survey_display_time,
     absl::optional<base::TimeDelta> prompt_display_duration,
-    OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket)
+    OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
+    const GURL& gurl)
     : request_type(request_type),
       action(action),
       prompt_disposition(prompt_disposition),
@@ -130,7 +133,8 @@ PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
       channel(channel),
       survey_display_time(survey_display_time),
       prompt_display_duration(prompt_display_duration),
-      one_time_prompts_decided_bucket(one_time_prompts_decided_bucket) {}
+      one_time_prompts_decided_bucket(one_time_prompts_decided_bucket),
+      url(gurl.spec()) {}
 
 PermissionHatsTriggerHelper::PromptParametersForHaTS::PromptParametersForHaTS(
     const PromptParametersForHaTS& other) = default;
@@ -158,7 +162,8 @@ PermissionHatsTriggerHelper::SurveyProductSpecificData::PopulateFrom(
       kPermissionsPromptSurveyRequestTypeKey,
       kPermissionsPromptSurveyReleaseChannelKey,
       kPermissionsPromptSurveyDisplayTimeKey,
-      kPermissionPromptSurveyOneTimePromptsDecidedBucketKey};
+      kPermissionPromptSurveyOneTimePromptsDecidedBucketKey,
+      kPermissionPromptSurveyUrlKey};
   auto key_to_value_filter_pair = GetKeyToValueFilterPairMap(prompt_parameters);
 
   std::map<std::string, bool> bits_data;
