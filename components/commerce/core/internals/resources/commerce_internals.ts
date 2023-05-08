@@ -31,8 +31,14 @@ function createLiElement(factor: string, entry: EligibleEntry) {
 
 function seeEligibleDetails() {
   getProxy().getShoppingListEligibleDetails().then(({detail}) => {
-    const ul = document.createElement('ul');
+    const element = getRequiredElement('shopping-list-eligible-details');
+    getRequiredElement('shopping-list-eligible-see-details-btn').innerText =
+        'Refresh';
+    while (element.hasChildNodes()) {
+      element.removeChild(element.firstElementChild!);
+    }
 
+    const ul = document.createElement('ul');
     ul.appendChild(createLiElement(
         'IsRegionLockedFeatureEnabled', detail.isRegionLockedFeatureEnabled));
     ul.appendChild(createLiElement(
@@ -51,7 +57,7 @@ function seeEligibleDetails() {
     ul.appendChild(createLiElement(
         'IsSubjectToParentalControls', detail.isSubjectToParentalControls));
 
-    document.getElementById('shopping-list-eligible-details')!.appendChild(ul);
+    element.appendChild(ul);
   });
 }
 
