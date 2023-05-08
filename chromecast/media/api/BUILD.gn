@@ -23,6 +23,7 @@ cast_source_set("api") {
   public_deps = [
     "//base",
     "//chromecast/public/media",
+    "//chromecast/external_mojo/external_service_support:external_service",
   ]
 
   assert_no_deps = [ "//media" ]
@@ -35,6 +36,8 @@ cast_source_set("test_support") {
     "test/mock_cast_sounds_manager.h",
     "test/mock_cma_backend.cc",
     "test/mock_cma_backend.h",
+    "test/mock_cma_backend_factory.cc",
+    "test/mock_cma_backend_factory.h",
     "test/mock_sound_player.cc",
     "test/mock_sound_player.h",
   ]

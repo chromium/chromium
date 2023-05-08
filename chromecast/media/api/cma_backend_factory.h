@@ -9,10 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-
-namespace service_manager {
-class Connector;
-}  // namespace service_manager
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 
 namespace chromecast {
 namespace media {
@@ -26,7 +23,7 @@ class CmaBackendFactory {
  public:
   static std::unique_ptr<CmaBackendFactory> Create(
       MediaPipelineBackendManager* media_pipeline_backend_manager,
-      std::unique_ptr<service_manager::Connector> connector);
+      std::unique_ptr<external_service_support::ExternalConnector> connector);
 
   virtual ~CmaBackendFactory() = default;
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_TEST_MOCK_CMA_BACKEND_FACTORY_H_
-#define CHROMECAST_MEDIA_CMA_TEST_MOCK_CMA_BACKEND_FACTORY_H_
+#ifndef CHROMECAST_MEDIA_API_TEST_MOCK_CMA_BACKEND_FACTORY_H_
+#define CHROMECAST_MEDIA_API_TEST_MOCK_CMA_BACKEND_FACTORY_H_
 
 #include <memory>
 
@@ -29,4 +29,4 @@ class MockCmaBackendFactory : public CmaBackendFactory {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_TEST_MOCK_CMA_BACKEND_FACTORY_H_
+#endif  // CHROMECAST_MEDIA_API_TEST_MOCK_CMA_BACKEND_FACTORY_H_

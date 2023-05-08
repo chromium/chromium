@@ -21,8 +21,6 @@ cast_source_set("test_support") {
     "test/frame_generator_for_test.h",
     "test/frame_segmenter_for_test.cc",
     "test/frame_segmenter_for_test.h",
-    "test/mock_cma_backend_factory.cc",
-    "test/mock_cma_backend_factory.h",
     "test/mock_frame_consumer.cc",
     "test/mock_frame_consumer.h",
     "test/mock_frame_provider.cc",
