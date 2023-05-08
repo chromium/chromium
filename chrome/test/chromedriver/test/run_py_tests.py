@@ -6119,7 +6119,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     resp = conn.WaitForResponse(cmd_id)
-    shared_id = resp['result']['result']['value']['sharedId']
+    shared_id = resp['result']['result']['sharedId']
     self.assertRegex(shared_id, '\\w+_element_\\w',
                      msg='Shared id format is incorrect')
     pos = shared_id.rfind('_')
@@ -6179,7 +6179,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
       }
     })
     resp = conn.WaitForResponse(cmd_id)
-    node_id = resp['result']['result']['value']['sharedId']
+    node_id = resp['result']['result']['sharedId']
     div = webelement.WebElement(self._driver, node_id)
     div.Click()
     self.assertEqual(1, len(self._driver.FindElements('tag name', 'br')))
