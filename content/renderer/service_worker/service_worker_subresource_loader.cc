@@ -515,18 +515,10 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   // request is not dispatched. OnFallback doesn't delete the instance and flip
   // the status. Those are handled in the process of RaceNetworkRequest
   // handling.
-  // TODO(crbug.com/1432075) Fallback response should be handled as a fallback.
+  // TODO(crbug.com/1432075) Fallback response shoudld be handled as a fallback.
   // The response from RaceNetworkRequest is currently handled by the code path
   // for the non-fallback case.
   if (fetch_response_from() == FetchResponseFrom::kWithoutServiceWorker) {
-    return;
-  }
-  // If the RaceNetworkRequest is triggered but the response is not handled yet,
-  // ask its URLLoaderClient to handle the response regardless of the response
-  // status not to dispatch additional network request for fallback.
-  if (did_start_race_network_request_) {
-    DCHECK(race_network_request_loader_client_);
-    race_network_request_loader_client_->NotifyFetchHandlerFallback();
     return;
   }
 

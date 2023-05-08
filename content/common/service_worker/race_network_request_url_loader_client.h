@@ -38,12 +38,6 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClient
 
   static net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag();
 
-  // When the fetch handler result is fallback, the browser tries to use the
-  // RaceNetworkRequest response rather than dispatching another network
-  // request. This method tells the client to handle the response regardless of
-  // the result.
-  void NotifyFetchHandlerFallback();
-
   // network::mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
@@ -59,15 +53,10 @@ class ServiceWorkerRaceNetworkRequestURLLoaderClient
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
  private:
-  // Commit the head and body through |owner_|'s Commit methods.
-  // This method does not complete the commit process.
-  void CommitResponse(mojo::ScopedDataPipeConsumerHandle response_body,
-                      absl::optional<mojo_base::BigBuffer> cached_metadata);
   mojo::Receiver<network::mojom::URLLoaderClient> receiver_{this};
   const network::ResourceRequest request_;
   base::WeakPtr<ServiceWorkerResourceLoader> owner_;
   network::mojom::URLResponseHeadPtr head_;
-  bool is_fetch_handler_response_fallback_ = false;
 };
 }  // namespace content
 
