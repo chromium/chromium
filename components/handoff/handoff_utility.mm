@@ -4,6 +4,10 @@
 
 #include "components/handoff/handoff_utility.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace handoff {
 
 NSString* const kChromeHandoffActivityType = @"com.google.chrome.handoff";
