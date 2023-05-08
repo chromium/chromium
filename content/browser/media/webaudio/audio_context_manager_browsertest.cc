@@ -61,23 +61,19 @@ class AudioContextManagerTest : public content::ContentBrowserTest {
     Waiter waiter(shell()->web_contents());
     testing::NiceMock<content::MockWebContentsObserver> mock_observer(
         shell()->web_contents());
+    EXPECT_CALL(mock_observer, AudioContextPlaybackStarted(testing::_))
+        .Times(1);
+    EXPECT_CALL(mock_observer, AudioContextPlaybackStopped(testing::_))
+        .Times(1);
 
     // Set gain to 1 to start audible audio and verify we got the
     // playback started message.
     ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 1;"));
-    EXPECT_CALL(mock_observer, AudioContextPlaybackStarted(testing::_))
-        .Times(1);
-    EXPECT_CALL(mock_observer, AudioContextPlaybackStopped(testing::_))
-        .Times(0);
     waiter.Wait();
 
     // Set gain to 0 to stop audible audio and verify we got the
     // playback stopped message.
     ASSERT_TRUE(ExecJs(shell()->web_contents(), "gain.gain.value = 0;"));
-    EXPECT_CALL(mock_observer, AudioContextPlaybackStarted(testing::_))
-        .Times(0);
-    EXPECT_CALL(mock_observer, AudioContextPlaybackStopped(testing::_))
-        .Times(1);
     waiter.Wait();
   }
 };
