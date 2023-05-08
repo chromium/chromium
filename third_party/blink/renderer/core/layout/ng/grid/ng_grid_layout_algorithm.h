@@ -114,11 +114,9 @@ class CORE_EXPORT NGGridLayoutAlgorithm
 
   // Determines the major/minor alignment baselines for each row/column based on
   // each item in |grid_items|, and stores the results in |track_collection|.
-  void CalculateAlignmentBaselines(
-      const NGGridSizingSubtree& sizing_subtree,
-      GridTrackSizingDirection track_direction,
-      SizingConstraint sizing_constraint,
-      bool* opt_needs_additional_pass = nullptr) const;
+  void CalculateAlignmentBaselines(const NGGridSizingSubtree& sizing_subtree,
+                                   GridTrackSizingDirection track_direction,
+                                   SizingConstraint sizing_constraint) const;
 
   std::unique_ptr<NGGridLayoutTrackCollection> CreateSubgridTrackCollection(
       const NGSubgriddedItemData& subgrid_data,

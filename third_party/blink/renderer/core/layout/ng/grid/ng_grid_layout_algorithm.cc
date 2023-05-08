@@ -1498,8 +1498,7 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
 void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     const NGGridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
-    SizingConstraint sizing_constraint,
-    bool* needs_additional_pass) const {
+    SizingConstraint sizing_constraint) const {
   auto& sizing_data = sizing_subtree.SubtreeRootData();
 
   auto& track_collection =
@@ -1520,16 +1519,11 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     const auto space = CreateConstraintSpaceForLayout(
         grid_item, sizing_data.layout_data, &unused_grid_area);
 
-    // We cannot apply some of the baseline alignment rules for synthesized
-    // baselines until layout has been performed. However, layout cannot
-    // be performed in certain scenarios. So force an additional pass in
-    // these cases and skip layout for now.
+    // Skip this item if we aren't able to resolve our inline size.
     const auto& item_style = grid_item.node.Style();
     if (InlineLengthUnresolvable(space, item_style.LogicalWidth()) ||
         InlineLengthUnresolvable(space, item_style.LogicalMinWidth()) ||
         InlineLengthUnresolvable(space, item_style.LogicalMaxWidth())) {
-      if (needs_additional_pass)
-        *needs_additional_pass = true;
       continue;
     }
 
@@ -1770,7 +1764,7 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 
   // Cache baselines, as these contributions can influence track sizing
   CalculateAlignmentBaselines(sizing_subtree, track_direction,
-                              sizing_constraint, opt_needs_additional_pass);
+                              sizing_constraint);
 
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
   if (track_collection.HasIntrinsicTrack()) {
