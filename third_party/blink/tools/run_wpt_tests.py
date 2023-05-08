@@ -29,7 +29,7 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBVIEW,
     CHROME_ANDROID,
 )
-from blinkpy.web_tests.port.base import Port
+from blinkpy.web_tests.port.base import ARTIFACTS_SUB_DIR, Port
 
 path_finder.add_testing_dir_to_sys_path()
 path_finder.add_build_android_to_sys_path()
@@ -308,11 +308,6 @@ class WPTAdapter:
         if not self.fs.isdir(output_dir):
             raise ValueError("'--target' must be a directory under //out")
         self.port.set_option_default('target', options.target)
-        if options.results_directory:
-            self.port.set_option_default('results_directory',
-                                         options.results_directory)
-        else:
-            options.results_directory = self.port.results_directory()
         if options.log_chromium == '' or options.show_results:
             options.log_chromium = self.fs.join(output_dir, 'results.json')
         if options.log_wptreport == '':
@@ -471,18 +466,6 @@ class WPTAdapter:
             logger.debug('Using WPT tools from %s', tools_root)
             self._create_extra_run_info(options)
 
-            if options.clobber_old_results:
-                self.port.clobber_old_results()
-            elif self.port._filesystem.exists(self.port.artifacts_directory()):
-                self.port.limit_archived_results_count()
-
-                # Rename the existing results folder for archiving.
-                self.port.rename_results_folder()
-
-            # Create the output directory if it doesn't already exist.
-            self.port.host.filesystem.maybe_make_directory(
-                self.port.artifacts_directory())
-
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
             self.fs.chdir(self.path_finder.web_tests_dir())
@@ -529,8 +512,18 @@ class WPTAdapter:
             json.dump(run_info, file_handle)
 
     @contextlib.contextmanager
-    def process_and_upload_results(self, options):
-        artifacts_dir = self.port.artifacts_directory()
+    def process_and_upload_results(
+            self,
+            options,
+            layout_test_results_subdir: str = ARTIFACTS_SUB_DIR,
+    ):
+        if options.log_chromium:
+            artifacts_dir = self.fs.join(
+                self.fs.dirname(options.log_chromium[0].name),
+                layout_test_results_subdir)
+        else:
+            artifacts_dir = self.path_from_output_dir(
+                options.target, layout_test_results_subdir)
         processor = WPTResultsProcessor(self.host.filesystem,
                                         self.port,
                                         artifacts_dir=artifacts_dir)
@@ -703,9 +696,6 @@ class WPTAdapter:
             help=('Log a wptreport as newline-delimited JSON objects '
                   '(default: //out/<target>/'
                   'wpt_reports_<product>_<shard-index>.json)'))
-        group.add_argument('--clobber-old-results',
-                           action='store_true',
-                           help='Clobbers test results from previous runs.'),
         group.add_argument('-v',
                            '--verbose',
                            action='count',

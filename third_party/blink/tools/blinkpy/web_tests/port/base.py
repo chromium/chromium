@@ -127,8 +127,6 @@ VALID_FILE_NAME_REGEX = re.compile(r'^[\w\-=]+$')
 # contain all the disc artifacts created by web tests
 ARTIFACTS_SUB_DIR = 'layout-test-results'
 
-ARCHIVED_RESULTS_LIMIT = 25
-
 ENABLE_THREADED_COMPOSITING_FLAG = '--enable-threaded-compositing'
 
 
@@ -2122,68 +2120,6 @@ class Port(object):
 
     def default_configuration(self):
         return 'Release'
-
-    def _delete_dirs(self, dir_list):
-        for dir_path in dir_list:
-            self._filesystem.rmtree(dir_path)
-
-    def rename_results_folder(self):
-        try:
-            timestamp = time.strftime(
-                "%Y-%m-%d-%H-%M-%S",
-                time.localtime(
-                    self._filesystem.mtime(
-                        self._filesystem.join(self.artifacts_directory(),
-                                              'results.html'))))
-        except OSError as error:
-            # It might be possible that results.html was not generated in previous run, because the test
-            # run was interrupted even before testing started. In those cases, don't archive the folder.
-            # Simply override the current folder contents with new results.
-            import errno
-            if error.errno in (errno.EEXIST, errno.ENOENT):
-                _log.info(
-                    'No results.html file found in previous run, skipping it.')
-            return None
-        archived_name = ''.join(
-            (self._filesystem.basename(self.artifacts_directory()), '_',
-             timestamp))
-        archived_path = self._filesystem.join(
-            self._filesystem.dirname(self.artifacts_directory()),
-            archived_name)
-        self._filesystem.move(self.artifacts_directory(), archived_path)
-
-    def _get_artifact_directories(self, artifacts_directory_path):
-        results_directory_path = self._filesystem.dirname(
-            artifacts_directory_path)
-        file_list = self._filesystem.listdir(results_directory_path)
-        results_directories = []
-        for name in file_list:
-            file_path = self._filesystem.join(results_directory_path, name)
-            if (artifacts_directory_path in file_path
-                    and self._filesystem.isdir(file_path)):
-                results_directories.append(file_path)
-        results_directories.sort(key=self._filesystem.mtime)
-        return results_directories
-
-    def limit_archived_results_count(self):
-        _log.info('Clobbering excess archived results in %s' %
-                  self._filesystem.dirname(self.artifacts_directory()))
-        results_directories = self._get_artifact_directories(
-            self.artifacts_directory())
-        self._delete_dirs(results_directories[:-ARCHIVED_RESULTS_LIMIT])
-
-    def clobber_old_results(self):
-        dir_above_results_path = self._filesystem.dirname(
-            self.artifacts_directory())
-        _log.info('Clobbering old results in %s.' % dir_above_results_path)
-        if not self._filesystem.exists(dir_above_results_path):
-            return
-        results_directories = self._get_artifact_directories(
-            self.artifacts_directory())
-        self._delete_dirs(results_directories)
-
-        # Port specific clean-up.
-        self.clobber_old_port_specific_results()
 
     def clobber_old_port_specific_results(self):
         pass

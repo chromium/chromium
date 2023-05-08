@@ -29,7 +29,6 @@
 import mock
 import operator
 import optparse
-import time
 import unittest
 
 from blinkpy.common.host_mock import MockHost
@@ -1710,56 +1709,6 @@ class PortTest(LoggingTestCase):
         # A results directory can be given as an option, and it is relative to current working directory.
         self.assertEqual(port.host.filesystem.cwd, '/')
         self.assertEqual(port.results_directory(), '/some-directory/results')
-
-    def _make_fake_test_result(self, host, results_directory):
-        host.filesystem.maybe_make_directory(results_directory)
-        host.filesystem.write_binary_file(results_directory + '/results.html',
-                                          'This is a test results file')
-
-    def test_rename_results_folder(self):
-        host = MockHost()
-        port = host.port_factory.get('test-mac-mac10.10')
-
-        self._make_fake_test_result(port.host, '/tmp/layout-test-results')
-        self.assertTrue(
-            port.host.filesystem.exists('/tmp/layout-test-results'))
-        timestamp = time.strftime(
-            '%Y-%m-%d-%H-%M-%S',
-            time.localtime(
-                port.host.filesystem.mtime(
-                    '/tmp/layout-test-results/results.html')))
-        archived_file_name = '/tmp/layout-test-results' + '_' + timestamp
-        port.rename_results_folder()
-        self.assertFalse(
-            port.host.filesystem.exists('/tmp/layout-test-results'))
-        self.assertTrue(port.host.filesystem.exists(archived_file_name))
-
-    def test_clobber_old_results(self):
-        host = MockHost()
-        port = host.port_factory.get('test-mac-mac10.10')
-
-        self._make_fake_test_result(port.host, '/tmp/layout-test-results')
-        self.assertTrue(
-            port.host.filesystem.exists('/tmp/layout-test-results'))
-        port.clobber_old_results()
-        self.assertFalse(
-            port.host.filesystem.exists('/tmp/layout-test-results'))
-
-    def test_limit_archived_results_count(self):
-        host = MockHost()
-        port = host.port_factory.get('test-mac-mac10.10')
-
-        for x in range(1, 31):
-            dir_name = '/tmp/layout-test-results' + '_' + str(x)
-            self._make_fake_test_result(port.host, dir_name)
-        port.limit_archived_results_count()
-        deleted_dir_count = 0
-        for x in range(1, 6):
-            dir_name = '/tmp/layout-test-results' + '_' + str(x)
-            self.assertFalse(port.host.filesystem.exists(dir_name))
-        for x in range(6, 31):
-            dir_name = '/tmp/layout-test-results' + '_' + str(x)
-            self.assertTrue(port.host.filesystem.exists(dir_name))
 
     def _assert_config_file_for_platform(self, port, platform, config_file):
         port.host.platform = MockPlatformInfo(os_name=platform)
