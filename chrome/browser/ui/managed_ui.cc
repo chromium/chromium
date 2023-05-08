@@ -153,9 +153,7 @@ absl::optional<std::string> GetDeviceManagerIdentity() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->IsActiveDirectoryManaged()
-             ? connector->GetRealm()
-             : connector->GetEnterpriseDomainManager();
+  return connector->GetEnterpriseDomainManager();
 #else
   // The device is managed as
   // `policy::ManagementServiceFactory::GetForPlatform()->IsManaged()` returned
