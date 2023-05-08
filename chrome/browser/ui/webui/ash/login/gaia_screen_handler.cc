@@ -229,12 +229,6 @@ std::string GetSSOProfile() {
   return connector->GetSSOProfile();
 }
 
-std::string GetRealm() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  return connector->GetRealm();
-}
-
 std::string GetChromeType() {
   switch (chromeos::GetDeviceType()) {
     case chromeos::DeviceType::kChromebox:
@@ -434,11 +428,6 @@ void GaiaScreenHandler::LoadGaiaWithPartitionAndVersionAndConsent(
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   if (!app_locale.empty())
     params.Set("hl", app_locale);
-
-  std::string realm(GetRealm());
-  if (!realm.empty()) {
-    params.Set("realm", realm);
-  }
 
   const std::string enterprise_enrollment_domain(
       GetEnterpriseEnrollmentDomain());
