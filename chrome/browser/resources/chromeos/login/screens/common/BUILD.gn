@@ -495,7 +495,7 @@ js_library("os_trial") {
 
   externs_list = [
     "$externs_path/webview_tag.js",
-    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
+    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 
@@ -646,7 +646,7 @@ js_library("user_creation") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [
-    "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js",
+    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
     "//ui/webui/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
   extra_deps = [ ":web_components" ]

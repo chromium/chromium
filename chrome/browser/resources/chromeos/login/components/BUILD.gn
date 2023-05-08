@@ -200,8 +200,9 @@ js_library("oobe_cr_lottie") {
     "behaviors:oobe_i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  externs_list =
-      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
+  externs_list = [
+    "//third_party/cros-components/externs/cros_lottie_renderer_externs.js",
+  ]
   extra_deps = [ ":web_components" ]
 }
 

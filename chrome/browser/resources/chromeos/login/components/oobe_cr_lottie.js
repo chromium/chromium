@@ -7,7 +7,7 @@
  */
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/cr_lottie/cr_lottie.js';
+import '//resources/cros_components/lottie_renderer/lottie-renderer.js';
 import './oobe_icons.html.js';
 
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -25,7 +25,7 @@ const OobeCrLottieBase = mixinBehaviors([OobeI18nBehavior], PolymerElement);
 
 /**
  * @typedef {{
- *   animation:  CrLottieElement,
+ *   animation: LottieRenderer,
  * }}
  */
 OobeCrLottieBase.$;
@@ -71,8 +71,14 @@ export class OobeCrLottie extends OobeCrLottieBase {
   }
 
   onPlayingChanged_() {
-    if (this.$) {
-      this.$.animation.setPlay(this.playing);
+    if (!this.$) {
+      return;
+    }
+
+    if (this.playing) {
+      this.$.animation.play();
+    } else {
+      this.$.animation.pause();
     }
   }
 
