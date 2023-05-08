@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_bubble_view.h"
 #include "chrome/browser/ui/views/performance_controls/high_efficiency_chip_view.h"
+#include "chrome/browser/ui/views/performance_controls/high_efficiency_resource_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/webui_url_constants.h"
@@ -127,6 +128,33 @@ class HighEfficiencyInteractiveTest : public InteractiveBrowserTest {
       performance_manager::user_tuning::UserPerformanceTuningManager::
           GetInstance()
               ->DiscardPageForTesting(GetWebContentsAt(tab_index));
+    }));
+  }
+
+  auto ForceRefreshMemoryMetrics() {
+    return Do(base::BindLambdaForTesting([]() {
+      performance_manager::user_tuning::UserPerformanceTuningManager* manager =
+          performance_manager::user_tuning::UserPerformanceTuningManager::
+              GetInstance();
+
+      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+      QuitRunLoopOnMemoryMetricsRefreshObserver observer(
+          run_loop.QuitClosure());
+      base::ScopedObservation<
+          performance_manager::user_tuning::UserPerformanceTuningManager,
+          QuitRunLoopOnMemoryMetricsRefreshObserver>
+          memory_metrics_observer(&observer);
+      memory_metrics_observer.Observe(manager);
+
+      performance_manager::PerformanceManager::CallOnGraph(
+          FROM_HERE,
+          base::BindLambdaForTesting([](performance_manager::Graph* graph) {
+            auto* metrics_decorator = graph->GetRegisteredObjectAs<
+                performance_manager::ProcessMetricsDecorator>();
+            metrics_decorator->RefreshMetricsForTesting();
+          }));
+
+      run_loop.Run();
     }));
   }
 
@@ -349,33 +377,6 @@ class HighEfficiencyChipInteractiveTest : public HighEfficiencyInteractiveTest {
         base::BindOnce([](size_t index, TabStrip* tab_strip)
                            -> views::View* { return tab_strip->tab_at(index); },
                        index));
-  }
-
-  auto ForceRefreshMemoryMetrics() {
-    return Do(base::BindLambdaForTesting([]() {
-      performance_manager::user_tuning::UserPerformanceTuningManager* manager =
-          performance_manager::user_tuning::UserPerformanceTuningManager::
-              GetInstance();
-
-      base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-      QuitRunLoopOnMemoryMetricsRefreshObserver observer(
-          run_loop.QuitClosure());
-      base::ScopedObservation<
-          performance_manager::user_tuning::UserPerformanceTuningManager,
-          QuitRunLoopOnMemoryMetricsRefreshObserver>
-          memory_metrics_observer(&observer);
-      memory_metrics_observer.Observe(manager);
-
-      performance_manager::PerformanceManager::CallOnGraph(
-          FROM_HERE,
-          base::BindLambdaForTesting([](performance_manager::Graph* graph) {
-            auto* metrics_decorator = graph->GetRegisteredObjectAs<
-                performance_manager::ProcessMetricsDecorator>();
-            metrics_decorator->RefreshMetricsForTesting();
-          }));
-
-      run_loop.Run();
-    }));
   }
 
  private:
@@ -751,3 +752,44 @@ std::vector<FaviconScreenShotTestConfig> HighEfficiencyTestConfig() {
 INSTANTIATE_TEST_SUITE_P(All,
                          HighEfficiencyFaviconTreatmentTest,
                          testing::ValuesIn(HighEfficiencyTestConfig()));
+
+// Tests the new memory savings reporting improvements on the high efficiency
+// dialog.
+class HighEfficiencyMemorySavingsReportingImprovmentsTest
+    : public HighEfficiencyInteractiveTest {
+ public:
+  HighEfficiencyMemorySavingsReportingImprovmentsTest() = default;
+  ~HighEfficiencyMemorySavingsReportingImprovmentsTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        performance_manager::features::kMemorySavingsReportingImprovements);
+
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
+    HighEfficiencyInteractiveTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      animation_mode_reset_;
+};
+
+// The high efficiency chip dialog renders a gauge style visualization that
+// must be rendered correctly.
+IN_PROC_BROWSER_TEST_F(HighEfficiencyMemorySavingsReportingImprovmentsTest,
+                       RenderVisualizationInDialog) {
+  RunTestSequence(
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kSkipPixelTestsReason),
+      InstrumentTab(kFirstTabContents, 0),
+      NavigateWebContents(kFirstTabContents, GetURL("/title1.html")),
+      AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
+      ForceRefreshMemoryMetrics(), DiscardAndSelectTab(0, kFirstTabContents),
+      PressButton(kHighEfficiencyChipElementId),
+      WaitForShow(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId),
+      Screenshot(HighEfficiencyBubbleView::kHighEfficiencyDialogBodyElementId,
+                 "HighEfficiencyResourceView", "4497874"));
+}
