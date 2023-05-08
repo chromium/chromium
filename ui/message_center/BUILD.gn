@@ -137,6 +137,7 @@ component("message_center") {
         "//ui/views",
       ]
       if (is_mac) {
+        configs += [ "//build/config/compiler:enable_arc" ]
         frameworks = [ "Foundation.framework" ]
       }
       if (is_chromeos) {
