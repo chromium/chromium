@@ -40,6 +40,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_util.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -555,6 +556,74 @@ IN_PROC_BROWSER_TEST_P(
       kSiteEngagementHeuristicAccumulatedHostCountHistogram, 0, 0);
   histograms()->ExpectBucketCount(
       kSiteEngagementHeuristicAccumulatedHostCountHistogram, 1, 1);
+}
+
+// Regression test for crbug.com/1441276. Sequence of events:
+// 1. Loads http://example.com. This gets upgraded to https://example.com.
+// 2. https://example.com has an iframe for https://nonexistentsite.com. It
+//    navigates away immediately to http://example.com.
+// 3. This causes a crash in
+//    HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse() for
+//    nonexistentsite.com.
+IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
+                       LoadIFrameAndNavigateAway_ShouldNotCrash) {
+  // This test is only interesting for HTTPS-Upgrades and HTTPS-First Mode.
+  if (!IsHttpUpgradingEnabled()) {
+    return;
+  }
+
+  // Disable the testing port configuration, as this test doesn't use the
+  // EmbeddedTestServer.
+  HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+  HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+
+  bool navigated_once = false;
+  auto url_loader_interceptor = std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [&navigated_once](
+              content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url == GURL("https://example.com")) {
+              if (!navigated_once) {
+                // Load an iframe that will result in an error and immediately
+                // navigate away.
+                content::URLLoaderInterceptor::WriteResponse(
+                    "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                    "<html>"
+                    "<iframe src='https://nonexistentsite.com'></iframe>"
+                    "<script>window.location.href = "
+                    "'http://example.com';</script></html>",
+                    params->client.get());
+                navigated_once = true;
+                return true;
+              }
+              // Return a normal response the second time this is called,
+              // otherwise the test will timeout due to navigating back and
+              // forth between http and https URLs.
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                  "<html>Done</html>", params->client.get());
+              return true;
+            }
+
+            if (params->url_request.url == GURL("http://example.com")) {
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                  "<html>Test</html>", params->client.get());
+              return true;
+            }
+
+            if (params->url_request.url.host() == "nonexistentsite.com") {
+              // This request must fail for the bug to trigger.
+              params->client->OnComplete(network::URLLoaderCompletionStatus(
+                  net::ERR_CONNECTION_RESET));
+              return true;
+            }
+            return false;
+          }));
+
+  GURL http_url("http://example.com");
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  NavigateAndWaitForFallback(contents, http_url);
 }
 
 // If the user triggers an HTTPS-Only Mode interstitial for a host and then
