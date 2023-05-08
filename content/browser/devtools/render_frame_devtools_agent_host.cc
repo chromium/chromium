@@ -219,7 +219,8 @@ void RenderFrameDevToolsAgentHost::AddAllAgentHosts(
 void RenderFrameDevToolsAgentHost::AttachToWebContents(
     WebContents* web_contents) {
   if (ShouldForceCreation()) {
-    // Force agent host.
+    // Force agent hosts.
+    DevToolsAgentHost::GetOrCreateForTab(web_contents);
     DevToolsAgentHost::GetOrCreateFor(web_contents);
   }
 }

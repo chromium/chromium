@@ -198,6 +198,12 @@ var TestRunner = class {
     return this._browserSession.protocol;
   }
 
+  async attachFullBrowserSession() {
+    const bp = this._browserSession.protocol;
+    const browserSessionId = (await bp.Target.attachToBrowserTarget()).result.sessionId;
+    return new TestRunner.Session(this, browserSessionId);
+  }
+
   async createPage(options) {
     options = options || {};
     const browserProtocol = this._browserSession.protocol;

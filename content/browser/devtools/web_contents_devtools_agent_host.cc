@@ -158,7 +158,16 @@ WebContentsDevToolsAgentHost::WebContentsDevToolsAgentHost(WebContents* wc)
 
 void WebContentsDevToolsAgentHost::InnerAttach(WebContents* wc) {
   CHECK(!web_contents());
-  bool inserted =
+  // With ConnectWebContents(), we may be attaching to a WC that has
+  // a different host created.
+  // TODO(caseq): find a better solution. See also a similar comment in
+  // RenderFrameDevToolsAgentHost::SetFrameTreeNode();
+  auto prev_entry = g_agent_host_instances.Get().find(wc);
+  if (prev_entry != g_agent_host_instances.Get().end()) {
+    CHECK_NE(prev_entry->second, this);
+    prev_entry->second->InnerDetach();
+  }
+  const bool inserted =
       g_agent_host_instances.Get().insert(std::make_pair(wc, this)).second;
   CHECK(inserted);
   auto_attacher_->SetWebContents(wc);

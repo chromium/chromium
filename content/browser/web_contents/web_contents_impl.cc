@@ -1373,14 +1373,18 @@ void WebContentsImpl::SetDelegate(WebContentsDelegate* delegate) {
   // TODO(cbentzel): remove this debugging code?
   if (delegate == delegate_)
     return;
-  if (delegate_)
+  const bool had_delegate = !!delegate_;
+  if (had_delegate) {
     delegate_->Detach(this);
+  }
   delegate_ = delegate;
   if (delegate_) {
     delegate_->Attach(this);
     // RenderFrameDevToolsAgentHost should not be told about the WebContents
     // until there is a `delegate_`.
-    RenderFrameDevToolsAgentHost::AttachToWebContents(this);
+    if (!had_delegate) {
+      RenderFrameDevToolsAgentHost::AttachToWebContents(this);
+    }
   }
 
   // Re-read values from the new delegate and apply them.

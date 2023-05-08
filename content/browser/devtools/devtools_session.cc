@@ -336,9 +336,18 @@ void DevToolsSession::DispatchProtocolMessage(
 void DevToolsSession::DispatchProtocolMessageInternal(
     crdtp::Dispatchable dispatchable,
     base::span<const uint8_t> message) {
-  if (!runtime_resume_.is_null() &&
-      crdtp::SpanEquals(crdtp::SpanFrom(kResumeMethod), dispatchable.Method()))
-    std::move(runtime_resume_).Run();
+  if ((browser_only_ || runtime_resume_) &&
+      crdtp::SpanEquals(crdtp::SpanFrom(kResumeMethod),
+                        dispatchable.Method())) {
+    if (runtime_resume_) {
+      std::move(runtime_resume_).Run();
+    }
+    if (browser_only_) {
+      DispatchProtocolMessageToClient(
+          crdtp::CreateResponse(dispatchable.CallId(), nullptr)->Serialize());
+      return;
+    }
+  }
 
   DevToolsManagerDelegate* delegate =
       DevToolsManager::GetInstance()->delegate();
