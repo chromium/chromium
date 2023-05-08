@@ -478,6 +478,7 @@ bool ServiceWorkerRegistrationObjectHost::CanServeRegistrationObjectHostMethods(
   std::vector<GURL> urls = {container_host_->url(), registration_->scope()};
   if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
           urls)) {
+    base::debug::Alias(&urls);
     receivers_.ReportBadMessage(
         ServiceWorkerConsts::kBadMessageImproperOrigins);
     return false;
