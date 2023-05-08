@@ -86,6 +86,24 @@ function platformTasks(platform) {
 
   const tasks = [buildTask];
 
+  if (platform == "macOS") {
+    const buildARMTask = newTask(
+      `Build Chromium ${platform} ARM`,
+      {
+        kind: "BuildRuntime",
+        runtime: "chromium",
+        revision: chromiumRevision,
+        branch: branchName,
+        branchSlot: slot,
+        driverRevision,
+        clobber,
+        useARM: true,
+      },
+      platform
+    );
+    tasks.push(buildARMTask);
+  }
+
   if (numStaticTests) {
     const testStaticTask = newTask(
       `Chromium Static Tests ${platform}`,

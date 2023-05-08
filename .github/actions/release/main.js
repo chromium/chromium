@@ -30,5 +30,21 @@ function platformTasks(platform) {
     },
     platform
   );
-  return [releaseTask];
+  const tasks = [releaseTask];
+
+  if (platform == "macOS") {
+    const releaseARMTask = newTask(
+      `Release Chromium ${platform} ARM`,
+      {
+        kind: "ReleaseRuntime",
+        runtime: "chromium",
+        revision,
+        useARM: true,
+      },
+      platform
+    );
+    tasks.push(releaseARMTask);
+  }
+
+  return tasks;
 }
