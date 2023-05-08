@@ -34,18 +34,18 @@ TEST_F(SwapConfigurationPressureThreshold, NoArcDefault) {
   feature_list_.InitAndEnableFeature(kCrOSMemoryPressureSignalStudyNonArc);
   ConfigureSwap(/*arc_enabled=*/false);
 
-  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 1500u);
+  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 520u);
   EXPECT_EQ(resourced_client_->get_moderate_margin_bps(), 4000u);
 }
 
 TEST_F(SwapConfigurationPressureThreshold, NoArcCustom) {
   feature_list_.InitAndEnableFeatureWithParameters(
       kCrOSMemoryPressureSignalStudyNonArc,
-      {{kCrOSMemoryPressureSignalStudyNonArcCriticalBps.name, "1700"},
+      {{kCrOSMemoryPressureSignalStudyNonArcCriticalBps.name, "1500"},
        {kCrOSMemoryPressureSignalStudyNonArcModerateBps.name, "6000"}});
   ConfigureSwap(/*arc_enabled=*/false);
 
-  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 1700u);
+  EXPECT_EQ(resourced_client_->get_critical_margin_bps(), 1500u);
   EXPECT_EQ(resourced_client_->get_moderate_margin_bps(), 6000u);
 }
 
