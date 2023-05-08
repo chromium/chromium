@@ -30,17 +30,17 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.settings.SettingsActivityUnitTest.ShadowProfileManagerUtils;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.PaddedDividerItemDecoration;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -56,6 +56,8 @@ public class SettingsActivityUnitTest {
         protected static void flushPersistentDataForAllProfiles() {}
     }
 
+    @Rule
+    public Features.JUnitProcessor featuresRule = new Features.JUnitProcessor();
     @Rule
     public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -93,9 +95,8 @@ public class SettingsActivityUnitTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY)
     public void testBackPress() throws TimeoutException {
-        CachedFeatureFlags.setFeaturesForTesting(
-                Map.of(ChromeFeatureList.BACK_GESTURE_REFACTOR_ACTIVITY, true));
         launchSettingsActivity(TestSettingsFragment.class.getName());
         assertTrue("SettingsActivity is using a wrong fragment.",
                 mSettingsActivity.getMainFragment() instanceof TestSettingsFragment);
