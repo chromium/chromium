@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Range.cloneContents should invoke constructor in tree order assert_array_equals: expected property 0 to be "root-0" but got "root-0-0" (expected array ["root-0", "root-0-0", "root-1"] got ["root-0-0", "root-0", "root-1"])
-FAIL Range.extractContents should invoke constructor in tree order assert_array_equals: expected property 0 to be "root-0" but got "root-0-0" (expected array ["root-0", "root-0-0"] got ["root-0-0", "root-0"])
-Harness: the test ran to completion.
-

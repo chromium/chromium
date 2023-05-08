@@ -718,14 +718,25 @@ Node* Range::ProcessAncestorsAndTheirSiblings(
       break;
     ancestors.push_back(runner);
   }
+  // Both https://dom.spec.whatwg.org/#concept-range-clone and
+  // https://dom.spec.whatwg.org/#concept-range-extract specify (in various
+  // ways) that nodes are to be processed in tree order. But the algorithm below
+  // processes in depth first order instead. So clone the nodes first here,
+  // in reverse order, so upgrades happen in the proper order.
+  HeapVector<Member<Node>> cloned_ancestors(ancestors.size(), nullptr);
+  auto clone_ptr = cloned_ancestors.rbegin();
+  for (auto it = ancestors.rbegin(); it != ancestors.rend(); ++it) {
+    *(clone_ptr++) = (*it)->cloneNode(false);
+  }
 
   Node* first_child_in_ancestor_to_process =
       direction == kProcessContentsForward ? container->nextSibling()
                                            : container->previousSibling();
-  for (const auto& ancestor : ancestors) {
+  for (wtf_size_t i = 0; i < ancestors.size(); ++i) {
+    const auto& ancestor = ancestors[i];
     if (action == kExtractContents || action == kCloneContents) {
       // Might have been removed already during mutation event.
-      if (Node* cloned_ancestor = ancestor->cloneNode(false)) {
+      if (auto cloned_ancestor = cloned_ancestors[i]) {
         cloned_ancestor->appendChild(cloned_container, exception_state);
         cloned_container = cloned_ancestor;
       }
