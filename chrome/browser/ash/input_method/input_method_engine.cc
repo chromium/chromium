@@ -725,7 +725,8 @@ bool InputMethodEngine::AcceptSuggestionCandidate(
   }
 
   if (delete_previous_utf16_len) {
-    DeleteSurroundingText(context_id_, -delete_previous_utf16_len,
+    DeleteSurroundingText(context_id_,
+                          -static_cast<int>(delete_previous_utf16_len),
                           delete_previous_utf16_len, error);
   }
 
@@ -938,8 +939,8 @@ bool InputMethodEngine::AcceptSuggestion(int context_id, std::string* error) {
     }
     size_t confirmed_length = aw_handler->GetConfirmedLength();
     if (confirmed_length > 0) {
-      DeleteSurroundingText(context_id_, -confirmed_length, confirmed_length,
-                            error);
+      DeleteSurroundingText(context_id_, -static_cast<int>(confirmed_length),
+                            confirmed_length, error);
     }
     CommitText(context_id_, suggestion_text, error);
     aw_handler->HideSuggestion();
