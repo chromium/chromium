@@ -55253,6 +55253,7 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="7" label="Section not supported"/>
   <int value="8" label="Krb5 failed to parse"/>
   <int value="9" label="Too many nested groups"/>
+  <int value="10" label="Line too long"/>
 </enum>
 
 <enum name="KerberosEncryptionTypes">

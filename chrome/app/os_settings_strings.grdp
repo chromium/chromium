@@ -4312,7 +4312,10 @@ Press an assigned switch or key to remove assignment.
     Failed to parse configuration
   </message>
   <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_TOO_MANY_NESTED_GROUPS" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains too many nested groups. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
-    Too many nested groups: <ph name="ERROR_LINE">$1<ex>[appdefaults]</ex></ph>
+    Too many nested groups: <ph name="ERROR_LINE">$1<ex>A{ (after many opening curly braces that haven't been closed yet)</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_KERBEROS_CONFIG_ERROR_LINE_TOO_LONG" desc="Error message displayed in the Kerberos configuration dialog when the user tries to save a configuration that contains a line that is too long. See https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.">
+    Line is too long: <ph name="ERROR_LINE">$1<ex># A very long comment line...</ex></ph>
   </message>
   <message name="IDS_SETTINGS_ADD_KERBEROS_ACCOUNT_REFRESH_BUTTON_LABEL" desc="Label of the action button on the 'Refresh a Kerberos tickets' dialog.">
     Refresh
