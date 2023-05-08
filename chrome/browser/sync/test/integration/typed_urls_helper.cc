@@ -149,9 +149,36 @@ class GetVisitsTask : public history::HistoryDBTask {
  private:
   ~GetVisitsTask() override = default;
 
-  history::URLID id_;
-  raw_ptr<history::VisitVector> visits_;
-  raw_ptr<base::WaitableEvent> wait_event_;
+  const history::URLID id_;
+  const raw_ptr<history::VisitVector> visits_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
+};
+
+class GetAnnotatedVisitsTask : public history::HistoryDBTask {
+ public:
+  GetAnnotatedVisitsTask(history::URLID id,
+                         std::vector<history::AnnotatedVisit>* visits,
+                         base::WaitableEvent* event)
+      : id_(id), annotated_visits_(visits), wait_event_(event) {}
+
+  bool RunOnDBThread(history::HistoryBackend* backend,
+                     history::HistoryDatabase* db) override {
+    // Fetch the visits.
+    history::VisitVector basic_visits;
+    backend->GetVisitsForURL(id_, &basic_visits);
+    *annotated_visits_ = backend->ToAnnotatedVisits(basic_visits);
+    wait_event_->Signal();
+    return true;
+  }
+
+  void DoneRunOnMainThread() override {}
+
+ private:
+  ~GetAnnotatedVisitsTask() override = default;
+
+  const history::URLID id_;
+  const raw_ptr<std::vector<history::AnnotatedVisit>> annotated_visits_;
+  const raw_ptr<base::WaitableEvent> wait_event_;
 };
 
 class GetRedirectChainTask : public history::HistoryDBTask {
@@ -343,6 +370,23 @@ history::VisitVector GetVisitsFromHistoryService(
   return visits;
 }
 
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsFromHistoryService(
+    history::HistoryService* service,
+    history::URLID id) {
+  base::CancelableTaskTracker tracker;
+  base::WaitableEvent wait_event(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  std::vector<history::AnnotatedVisit> visits;
+  service->ScheduleDBTask(
+      FROM_HERE,
+      std::unique_ptr<history::HistoryDBTask>(
+          new GetAnnotatedVisitsTask(id, &visits, &wait_event)),
+      &tracker);
+  wait_event.Wait();
+  return visits;
+}
+
 history::VisitVector GetRedirectChainFromHistoryService(
     history::HistoryService* service,
     history::VisitRow final_visit) {
@@ -440,6 +484,24 @@ history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url) {
     return history::VisitVector();
   }
   return GetVisitsFromHistoryService(service, url_row.id());
+}
+
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsFromClient(
+    int index,
+    history::URLID id) {
+  history::HistoryService* service = GetHistoryServiceFromClient(index);
+  return GetAnnotatedVisitsFromHistoryService(service, id);
+}
+
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsForURLFromClient(
+    int index,
+    const GURL& url) {
+  history::HistoryService* service = GetHistoryServiceFromClient(index);
+  history::URLRow url_row;
+  if (!GetUrlFromHistoryService(service, url, &url_row)) {
+    return std::vector<history::AnnotatedVisit>();
+  }
+  return GetAnnotatedVisitsFromHistoryService(service, url_row.id());
 }
 
 history::VisitVector GetRedirectChainFromClient(int index,

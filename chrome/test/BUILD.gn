@@ -10710,6 +10710,7 @@ if (!is_android) {
       "//components/browser_sync",
       "//components/consent_auditor",
       "//components/favicon/core",
+      "//components/history/content/browser",
       "//components/history/core/common",
       "//components/power_bookmarks/common:test_support",
       "//components/power_bookmarks/core",

@@ -46,6 +46,14 @@ history::VisitVector GetVisitsFromClient(int index, history::URLID id);
 // by GetUrlFromClient().
 history::VisitVector GetVisitsForURLFromClient(int index, const GURL& url);
 
+// As above, but return `AnnotatedVisit` instead of just `VisitRow`.
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsFromClient(
+    int index,
+    history::URLID id);
+std::vector<history::AnnotatedVisit> GetAnnotatedVisitsForURLFromClient(
+    int index,
+    const GURL& url);
+
 history::VisitVector GetRedirectChainFromClient(int index,
                                                 history::VisitRow final_visit);
 
