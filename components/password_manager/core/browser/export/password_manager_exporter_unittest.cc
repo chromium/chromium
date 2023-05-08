@@ -14,7 +14,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/test_password_store.h"
@@ -123,7 +123,7 @@ class PasswordManagerExporterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  MockAffiliationService affiliation_service_;
+  FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   base::MockCallback<base::RepeatingCallback<void(const PasswordExportInfo&)>>
