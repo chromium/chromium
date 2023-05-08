@@ -67,12 +67,19 @@ void ProxyMain::InitializeOnImplThread(
     int id,
     const LayerTreeSettings* settings,
     RenderingStatsInstrumentation* rendering_stats_instrumentation) {
+  recordreplay::Assert("[RUN-1881] ProxyMain::InitializeOnImplThread");
+
   DCHECK(task_runner_provider_->IsImplThread());
   DCHECK(!proxy_impl_);
   proxy_impl_ = std::make_unique<ProxyImpl>(
       weak_factory_.GetWeakPtr(), layer_tree_host_, id, settings,
       rendering_stats_instrumentation, task_runner_provider_);
+
+  recordreplay::Assert("[RUN-1881] ProxyMain::InitializeOnImplThread #1");
+
   completion_event->Signal();
+
+  recordreplay::Assert("[RUN-1881] ProxyMain::InitializeOnImplThread Done");
 }
 
 void ProxyMain::DestroyProxyImplOnImplThread(

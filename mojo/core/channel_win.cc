@@ -90,7 +90,8 @@ class ChannelWin : public Channel,
         base::MessagePumpForIO::IOHandler(FROM_HERE),
         is_untrusted_process_(connection_params.is_untrusted_process()),
         self_(this),
-        io_task_runner_(io_task_runner) {
+        io_task_runner_(io_task_runner),
+        write_lock_("ChannelWin.write_lock_") {
     if (connection_params.server_endpoint().is_valid()) {
       handle_ = connection_params.TakeServerEndpoint()
                     .TakePlatformHandle()

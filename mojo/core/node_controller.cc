@@ -322,10 +322,7 @@ void NodeController::ClosePort(const ports::PortRef& port) {
 int NodeController::SendUserMessage(
     const ports::PortRef& port,
     std::unique_ptr<ports::UserMessageEvent> message) {
-  recordreplay::Assert("[RUN-1816] NodeController::SendUserMessage Start");
-  int rv = node_->SendUserMessage(port, std::move(message));
-  recordreplay::Assert("[RUN-1816] NodeController::SendUserMessage Done %d", rv);
-  return rv;
+  return node_->SendUserMessage(port, std::move(message));
 }
 
 void NodeController::MergePortIntoInviter(const std::string& name,

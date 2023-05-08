@@ -118,20 +118,45 @@ ForEachV8API(DefineFunction)
 ForEachV8APIVoid(DefineFunctionVoid)
 #undef DefineFunctionVoid
 
+static void InitializationError(const char* format, ...) {
+  {
+    va_list args;
+    va_start(args, format);
+    vfprintf(stderr, format, args);
+    va_end(args);
+  }
+
+#if BUILDFLAG(IS_WIN)
+  // Additionally write the message to a new file. Capturing the output written to
+  // stderr by browser subprocesses on windows is surprisingly difficult.
+  const char* dir = getenv("RECORD_REPLAY_LOG_DIRECTORY");
+  char file[1024];
+  snprintf(file, sizeof(file), "%s\\record_replay_initialization_error.txt", dir ? dir : ".");
+  FILE* f = fopen(file, "w");
+  if (f) {
+    va_list args;
+    va_start(args, format);
+    vfprintf(f, format, args);
+    va_end(args);
+    fclose(f);
+  }
+#endif
+
+  CHECK(0);
+}
+
 void InitBindings() {
   HMODULE module;
   if (!GetModuleHandleExA(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
 			  reinterpret_cast<LPCSTR>(InitBindings),
 			  &module)) {
-    fprintf(stderr, "GetModuleHandleExA failed %d, crashing...\n", (int)GetLastError());
-    CHECK(0);
+    InitializationError("GetModuleHandleExA failed %d, crashing...\n", (int)GetLastError());
   }
 
 #define LoadFunction(Name, Formals, Args, ReturnType, DefaultValue)           \
   g##Name = reinterpret_cast<ReturnType(*)Formals>(GetProcAddress(module, #Name)); \
   if (!g##Name) {                                                             \
-    fprintf(stderr, "Could not find V8 export %s, crashing...\n", #Name);     \
-    CHECK(0);                                                                 \
+    InitializationError("Could not find V8 export %s, crashing...\n", #Name); \
   }
 ForEachV8API(LoadFunction)
 #undef LoadFunction
@@ -139,8 +164,7 @@ ForEachV8API(LoadFunction)
 #define LoadFunctionVoid(Name, Formals, Args)                                 \
   g##Name = reinterpret_cast<void(*)Formals>(GetProcAddress(module, #Name)); \
   if (!g##Name) {                                                             \
-    fprintf(stderr, "Could not find V8 export %s, crashing...\n", #Name);     \
-    CHECK(0);                                                                 \
+    InitializationError("Could not find V8 export %s, crashing...\n", #Name); \
   }
 ForEachV8APIVoid(LoadFunctionVoid)
 #undef LoadFunctionVoid
