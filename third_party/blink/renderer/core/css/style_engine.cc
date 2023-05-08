@@ -127,6 +127,54 @@ CSSFontSelector* CreateCSSFontSelectorFor(Document& document) {
   return MakeGarbageCollected<CSSFontSelector>(document);
 }
 
+enum RuleSetFlags {
+  kFontFaceRules = 1 << 0,
+  kKeyframesRules = 1 << 1,
+  kFullRecalcRules = 1 << 2,
+  kPropertyRules = 1 << 3,
+  kCounterStyleRules = 1 << 4,
+  kLayerRules = 1 << 5,
+  kFontPaletteValuesRules = 1 << 6,
+  kPositionFallbackRules = 1 << 7,
+  kFontFeatureValuesRules = 1 << 8
+};
+
+const unsigned kRuleSetFlagsAll = ~0u;
+
+unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
+  unsigned flags = 0;
+  for (auto& rule_set : rule_sets) {
+    if (!rule_set->KeyframesRules().empty()) {
+      flags |= kKeyframesRules;
+    }
+    if (!rule_set->FontFaceRules().empty()) {
+      flags |= kFontFaceRules;
+    }
+    if (!rule_set->FontPaletteValuesRules().empty()) {
+      flags |= kFontPaletteValuesRules;
+    }
+    if (!rule_set->FontFeatureValuesRules().empty()) {
+      flags |= kFontFeatureValuesRules;
+    }
+    if (rule_set->NeedsFullRecalcForRuleSetInvalidation()) {
+      flags |= kFullRecalcRules;
+    }
+    if (!rule_set->PropertyRules().empty()) {
+      flags |= kPropertyRules;
+    }
+    if (!rule_set->CounterStyleRules().empty()) {
+      flags |= kCounterStyleRules;
+    }
+    if (rule_set->HasCascadeLayers()) {
+      flags |= kLayerRules;
+    }
+    if (!rule_set->PositionFallbackRules().empty()) {
+      flags |= kPositionFallbackRules;
+    }
+  }
+  return flags;
+}
+
 }  // namespace
 
 StyleEngine::StyleEngine(Document& document)
@@ -440,7 +488,6 @@ void StyleEngine::DocumentRulesSelectorsChanged() {
       global_rule_set_->DocumentRulesSelectorsRuleSet();
   DCHECK_NE(old_rule_set, new_rule_set);
 
-  const unsigned changed_rule_flags = 0;
   HeapHashSet<Member<RuleSet>> changed_rule_sets;
   if (old_rule_set) {
     changed_rule_sets.insert(old_rule_set);
@@ -449,6 +496,7 @@ void StyleEngine::DocumentRulesSelectorsChanged() {
     changed_rule_sets.insert(new_rule_set);
   }
 
+  const unsigned changed_rule_flags = GetRuleSetFlags(changed_rule_sets);
   InvalidateForRuleSetChanges(GetDocument(), changed_rule_sets,
                               changed_rule_flags, kInvalidateAllScopes);
 
@@ -2243,58 +2291,6 @@ void StyleEngine::ViewportStyleSettingChanged() {
         style_change_reason::kActiveStylesheetsUpdate));
   }
 }
-
-namespace {
-
-enum RuleSetFlags {
-  kFontFaceRules = 1 << 0,
-  kKeyframesRules = 1 << 1,
-  kFullRecalcRules = 1 << 2,
-  kPropertyRules = 1 << 3,
-  kCounterStyleRules = 1 << 4,
-  kLayerRules = 1 << 5,
-  kFontPaletteValuesRules = 1 << 6,
-  kPositionFallbackRules = 1 << 7,
-  kFontFeatureValuesRules = 1 << 8
-};
-
-const unsigned kRuleSetFlagsAll = ~0u;
-
-unsigned GetRuleSetFlags(const HeapHashSet<Member<RuleSet>> rule_sets) {
-  unsigned flags = 0;
-  for (auto& rule_set : rule_sets) {
-    if (!rule_set->KeyframesRules().empty()) {
-      flags |= kKeyframesRules;
-    }
-    if (!rule_set->FontFaceRules().empty()) {
-      flags |= kFontFaceRules;
-    }
-    if (!rule_set->FontPaletteValuesRules().empty()) {
-      flags |= kFontPaletteValuesRules;
-    }
-    if (!rule_set->FontFeatureValuesRules().empty()) {
-      flags |= kFontFeatureValuesRules;
-    }
-    if (rule_set->NeedsFullRecalcForRuleSetInvalidation()) {
-      flags |= kFullRecalcRules;
-    }
-    if (!rule_set->PropertyRules().empty()) {
-      flags |= kPropertyRules;
-    }
-    if (!rule_set->CounterStyleRules().empty()) {
-      flags |= kCounterStyleRules;
-    }
-    if (rule_set->HasCascadeLayers()) {
-      flags |= kLayerRules;
-    }
-    if (!rule_set->PositionFallbackRules().empty()) {
-      flags |= kPositionFallbackRules;
-    }
-  }
-  return flags;
-}
-
-}  // namespace
 
 void StyleEngine::InvalidateForRuleSetChanges(
     TreeScope& tree_scope,

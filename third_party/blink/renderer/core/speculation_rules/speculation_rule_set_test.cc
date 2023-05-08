@@ -3741,6 +3741,19 @@ TEST_F(DocumentRulesTest, DisplayLockedContainerTracking) {
       });
 }
 
+// Regression test, since the universal select sets rule set flags indicating
+// that the rule set potentially invalidates all elements.
+TEST_F(DocumentRulesTest, UniversalSelector) {
+  ScopedSpeculationRulesDocumentRulesSelectorMatchesForTest
+      enable_selector_matches{true};
+  DummyPageHolder page_holder;
+  page_holder.GetFrame().GetSettings()->SetScriptEnabled(true);
+  StubSpeculationHost speculation_host;
+  InsertSpeculationRules(
+      page_holder.GetDocument(),
+      R"({"prefetch": [{"source":"document", "where":{"selector_matches":"*"}}]})");
+}
+
 TEST_F(SpeculationRuleSetTest, EagernessRuntimeEnabledFlag) {
   ScopedSpeculationRulesEagernessForTest enable_eagerness{false};
 
