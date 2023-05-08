@@ -1176,11 +1176,6 @@ TEST(AutofillProfileTest, Compare) {
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   EXPECT_EQ(0, a.Compare(b));
 
-  // Origins don't count.
-  a.set_origin("apple");
-  b.set_origin("banana");
-  EXPECT_EQ(0, a.Compare(b));
-
   // Different values produce non-zero results.
   test::SetProfileInfo(&a, "Jimmy", nullptr, nullptr, nullptr, nullptr, nullptr,
                        nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);

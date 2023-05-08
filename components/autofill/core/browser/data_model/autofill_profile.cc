@@ -561,7 +561,6 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
   // Some fields should not got overwritten by empty values; back-up the
   // values.
   std::string language_code_value = language_code();
-  std::string origin_value = origin();
 
   // Structured names should not be simply overwritten but it should be
   // attempted to merge the names.
@@ -573,8 +572,6 @@ void AutofillProfile::OverwriteDataFrom(const AutofillProfile& profile) {
 
   *this = profile;
 
-  if (origin().empty())
-    set_origin(origin_value);
   if (language_code().empty())
     set_language_code(language_code_value);
 
@@ -678,10 +675,6 @@ bool AutofillProfile::MergeDataFrom(const AutofillProfile& profile,
 
 bool AutofillProfile::SaveAdditionalInfo(const AutofillProfile& profile,
                                          const std::string& app_locale) {
-  // If both profiles are verified, do not merge them.
-  if (IsVerified() && profile.IsVerified())
-    return false;
-
   AutofillProfileComparator comparator(app_locale);
 
   // SaveAdditionalInfo should not have been called if the profiles were not

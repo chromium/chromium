@@ -1390,40 +1390,6 @@ TEST_F(PersonalDataManagerTest, UpdateUnverifiedCreditCards) {
               testing::UnorderedElementsAre(Pointee(credit_card)));
 }
 
-// Test that updating a verified profile with another profile whose only
-// difference is the origin, would not change the old profile, and thus it would
-// remain verified.
-TEST_F(PersonalDataManagerTest, UpdateVerifiedProfilesOrigin) {
-  // Start with verified data.
-  AutofillProfile profile;
-  profile.set_origin(kSettingsOrigin);
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  ASSERT_TRUE(profile.IsVerified());
-  AddProfileToPersonalDataManager(profile);
-
-  const std::vector<AutofillProfile*>& profiles1 =
-      personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles1.size());
-  EXPECT_EQ(0, profile.Compare(*profiles1[0]));
-
-  // Try to update with just the origin changed to a non-setting origin.
-  AutofillProfile new_profile(profile);
-  new_profile.set_origin("");
-  ASSERT_FALSE(new_profile.IsVerified());
-
-  UpdateProfileOnPersonalDataManager(profile);
-
-  // Verified profile origin should not be overwritten.
-  const std::vector<AutofillProfile*>& profiles2 =
-      personal_data_->GetProfiles();
-  ASSERT_EQ(1U, profiles2.size());
-  EXPECT_EQ(profile.origin(), profiles2[0]->origin());
-  EXPECT_NE(new_profile.origin(), profiles2[0]->origin());
-  EXPECT_TRUE(profiles2[0]->IsVerified());
-}
-
 // Test that ensure local data is not lost on sign-in.
 // Clearing/changing the primary account is not supported on CrOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1686,43 +1652,6 @@ TEST_F(PersonalDataManagerTest, Refresh) {
   results = personal_data_->GetProfiles();
   ASSERT_EQ(1U, results.size());
   EXPECT_EQ(profile0, *results[0]);
-}
-
-// Ensure that verified profiles can be saved via SaveImportedProfile,
-// overwriting existing unverified profiles.
-TEST_F(PersonalDataManagerTest, SaveImportedProfileWithVerifiedData) {
-  // Start with an unverified profile.
-  AutofillProfile profile;
-  test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
-                       "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
-                       "Hollywood", "CA", "91601", "US", "12345678910");
-  EXPECT_FALSE(profile.IsVerified());
-
-  AddProfileToPersonalDataManager(profile);
-
-  // Make sure everything is set up correctly.
-  EXPECT_EQ(1U, personal_data_->GetProfiles().size());
-
-  AutofillProfile new_verified_profile = profile;
-  new_verified_profile.set_guid(
-      base::Uuid::GenerateRandomV4().AsLowercaseString());
-  new_verified_profile.set_origin(kSettingsOrigin);
-  new_verified_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"1 234 567-8910");
-  EXPECT_TRUE(new_verified_profile.IsVerified());
-
-  SaveImportedProfileToPersonalDataManager(new_verified_profile);
-
-  // The new profile should be merged into the existing one.
-  const std::vector<AutofillProfile*>& results = personal_data_->GetProfiles();
-  ASSERT_EQ(1U, results.size());
-  AutofillProfile expected(new_verified_profile);
-  // The full name was missing in |profile| and was formatted from its
-  // components.
-  expected.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"Marion Mitchell Morrison", VerificationStatus::kFormatted);
-  expected.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+1 234-567-8910");
-  EXPECT_EQ(0, expected.Compare(*results[0]))
-      << "result = {" << *results[0] << "} | expected = {" << expected << "}";
 }
 
 // Ensure that verified credit cards can be saved via
