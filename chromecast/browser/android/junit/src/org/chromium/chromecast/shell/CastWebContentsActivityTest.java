@@ -87,10 +87,12 @@ public class CastWebContentsActivityTest {
         private boolean mInPipMode;
         private MotionEvent mLastTouchEvent;
 
+        @Override
         public boolean getTurnScreenOn() {
             return mTurnScreenOn;
         }
 
+        @Override
         public boolean getShowWhenLocked() {
             return mShowWhenLocked;
         }
@@ -106,11 +108,13 @@ public class CastWebContentsActivityTest {
         }
 
         @Implementation
+        @Override
         public void setTurnScreenOn(boolean turnScreenOn) {
             mTurnScreenOn = turnScreenOn;
         }
 
         @Implementation
+        @Override
         public void setShowWhenLocked(boolean showWhenLocked) {
             mShowWhenLocked = showWhenLocked;
         }

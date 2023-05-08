@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:2@2.14.0.cr1
+# cipd create --pkg-def cipd.yaml -tag version:2@2.18.0.cr1
 package: chromium/third_party/android_deps/libs/com_google_errorprone_error_prone_annotations
 description: "error-prone annotations"
 data:
-- file: error_prone_annotations-2.14.0.jar
+- file: error_prone_annotations-2.18.0.jar

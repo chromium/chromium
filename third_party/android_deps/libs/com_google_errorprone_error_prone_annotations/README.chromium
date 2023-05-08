@@ -1,7 +1,7 @@
 Name: error-prone annotations
 Short Name: error_prone_annotations
 URL: https://errorprone.info/
-Version: 2.14.0
+Version: 2.18.0
 License: Apache 2.0
 License File: LICENSE
 CPEPrefix: unknown
