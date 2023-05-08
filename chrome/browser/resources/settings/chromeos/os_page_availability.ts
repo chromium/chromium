@@ -19,44 +19,26 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 export interface OsPageAvailability {
   a11y: boolean;
-  advancedSettings: boolean;
-  appearance: {
-    bookmarksBar: boolean,
-    homeButton: boolean,
-    pageZoom: boolean,
-    setTheme: boolean,
-    setWallpaper: boolean,
-  };
-  autofill: boolean;
+  apps: boolean;
   bluetooth: boolean;
+  crostini: boolean;
   dateTime: boolean;
   device: boolean;
-  downloads: {
-    googleDrive: boolean,
-    smbShares: boolean,
-  };
-  extensions: boolean;
+  files: boolean;
   internet: boolean;
   kerberos: boolean;
-  languages: {
-    manageInputMethods: boolean,
-    inputMethodsList: boolean,
-  };
+  languages: boolean;
   multidevice: boolean;
   onStartup: boolean;
   people: boolean|{
     googleAccounts: boolean,
     lockScreen: boolean,
-    manageUsers: boolean,
   };
+  personalization: boolean;
   printing: boolean;
-  privacy: {
-    contentProtectionAttestation: boolean,
-    networkPrediction: boolean,
-    searchPrediction: boolean,
-    wakeOnWifi: boolean,
-  };
+  privacy: boolean;
   reset: boolean;
+  search: boolean;
 }
 
 const isGuestMode = loadTimeData.getBoolean('isGuest');
@@ -66,87 +48,50 @@ const isAccountManagerEnabled =
 const isKerberosEnabled = loadTimeData.valueExists('isKerberosEnabled') &&
     loadTimeData.getBoolean('isKerberosEnabled');
 
-let osPageAvailability: OsPageAvailability;
+export let osPageAvailability: OsPageAvailability;
 if (isGuestMode) {
   osPageAvailability = {
     a11y: true,
-    advancedSettings: true,
-    appearance: {
-      setWallpaper: false,
-      setTheme: false,
-      homeButton: false,
-      bookmarksBar: false,
-      pageZoom: false,
-    },
-    autofill: false,
+    apps: true,
     bluetooth: true,
+    crostini: true,
     dateTime: true,
     device: true,
-    downloads: {
-      googleDrive: false,
-      smbShares: false,
-    },
-    extensions: false,
+    files: false,
     internet: true,
     kerberos: isKerberosEnabled,
-    languages: {
-      manageInputMethods: true,
-      inputMethodsList: true,
-    },
+    languages: true,
     multidevice: false,
     onStartup: false,
     people: false,
+    personalization: false,
     printing: true,
-    privacy: {
-      contentProtectionAttestation: true,
-      searchPrediction: false,
-      networkPrediction: false,
-      wakeOnWifi: true,
-    },
+    privacy: true,
     reset: false,
+    search: true,
   };
 } else {
   osPageAvailability = {
     a11y: true,
-    advancedSettings: true,
-    appearance: {
-      setWallpaper: true,
-      setTheme: true,
-      homeButton: true,
-      bookmarksBar: true,
-      pageZoom: true,
-    },
-    autofill: true,
+    apps: true,
     bluetooth: true,
+    crostini: true,
     dateTime: true,
     device: true,
-    downloads: {
-      googleDrive: true,
-      smbShares: true,
-    },
-    extensions: true,
+    files: true,
     internet: true,
     kerberos: isKerberosEnabled,
-    languages: {
-      manageInputMethods: true,
-      inputMethodsList: true,
-    },
+    languages: true,
     multidevice: true,
     onStartup: true,
     people: {
-      lockScreen: true,
       googleAccounts: isAccountManagerEnabled,
-      manageUsers: true,
+      lockScreen: true,
     },
+    personalization: true,
     printing: true,
-    privacy: {
-      contentProtectionAttestation: true,
-      searchPrediction: true,
-      networkPrediction: true,
-      wakeOnWifi: true,
-    },
+    privacy: true,
     reset: true,
+    search: true,
   };
 }
-
-export {osPageAvailability};
