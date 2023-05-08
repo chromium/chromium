@@ -21,6 +21,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_images/annotation_storage.h"
+#include "chrome/browser/ash/app_list/search/local_images/search_utils.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -183,8 +184,10 @@ void ImageAnnotationWorker::ConnectToImageAnnotator() {
       base::BindOnce(
           [](bool* model_callback_done,
              const chromeos::machine_learning::mojom::LoadModelResult result) {
-            DCHECK_EQ(result,
-                      chromeos::machine_learning::mojom::LoadModelResult::OK);
+            LOG_IF(ERROR,
+                   result !=
+                       chromeos::machine_learning::mojom::LoadModelResult::OK)
+                << "Could not load ICA.";
             *model_callback_done = true;
             DVLOG(1) << "Bind is done.";
           },
@@ -350,9 +353,10 @@ void ImageAnnotationWorker::OnPerformOcr(
   for (const auto& text_line : visual_annotation->lines) {
     for (const auto& word : text_line->words) {
       DVLOG(1) << word->word;
-      // TODO(b/279852430): Implement a proper word filter.
-      if (word->word.size() >= 3) {
-        image_info.annotations.insert(word->word);
+      auto lower_case_word = base::ToLowerASCII(word->word);
+      if (lower_case_word.size() > 3 && !IsStopWord(lower_case_word) &&
+          base::IsAsciiAlpha(lower_case_word[0])) {
+        image_info.annotations.insert(std::move(lower_case_word));
       }
     }
   }
