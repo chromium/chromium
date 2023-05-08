@@ -93,7 +93,8 @@ std::unique_ptr<QuickStartMessage> QuickStartMessage::ReadMessage(
 
     std::string json_payload;
     bool base64_decoding_succeeded =
-        base::Base64Decode(*base64_encoded_payload, &json_payload);
+        base::Base64Decode(*base64_encoded_payload, &json_payload,
+                           base::Base64DecodePolicy::kForgiving);
     if (!base64_decoding_succeeded) {
       LOG(ERROR) << "Message does not contain a valid base64 encoded payload";
       return nullptr;
