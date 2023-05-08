@@ -135,14 +135,14 @@
 <template is="dom-if"
     if="[[doesAccountHaveSavedPrinters_(savedPrinters_)]]" restamp>
   <div id="savedPrintersContainer">
-    <div class="padded first">
+    <div class="settings-box first">
       <div class="start">
         <span aria-label$="[[savedPrintersAriaLabel_]]">
           $i18n{savedPrintersTitle}
         </span>
-      </div>
-      <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]">
-        $i18n{savedPrintersSubtext}
+        <div class="secondary" hidden="[[!isPrinterSettingsRevampEnabled_]]">
+          $i18n{savedPrintersSubtext}
+        </div>
       </div>
     </div>
 
