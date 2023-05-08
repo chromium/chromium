@@ -421,10 +421,14 @@ def _WriteBundlePathmap(module_pathmap_paths, module_names,
 
 
 def _GetManifestForModule(bundle_path, module_name):
-  return ElementTree.fromstring(
-      bundletool.RunBundleTool([
-          'dump', 'manifest', '--bundle', bundle_path, '--module', module_name
-      ]))
+  data = bundletool.RunBundleTool(
+      ['dump', 'manifest', '--bundle', bundle_path, '--module', module_name])
+  try:
+    return ElementTree.fromstring(data)
+  except ElementTree.ParseError:
+    sys.stderr.write('Failed to parse:\n')
+    sys.stderr.write(data)
+    raise
 
 
 def _GetComponentNames(manifest, tag_name):
