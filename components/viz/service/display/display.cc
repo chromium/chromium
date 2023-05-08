@@ -614,12 +614,23 @@ void DebugDrawFrame(const AggregatedFrame& frame) {
       continue;
     }
 
+    DBG_DRAW_RECT_OPT("frame.render_pass.output_rect", DBG_OPT_BLUE,
+                      render_pass->output_rect);
     DBG_DRAW_RECT_OPT("frame.render_pass.damage", DBG_OPT_RED,
                       render_pass->damage_rect);
 
-    DBG_LOG_OPT("frame.render_pass.numquads", DBG_OPT_BLUE,
-                "Num render pass quads=%d",
-                static_cast<int>(render_pass->quad_list.size()));
+    DBG_LOG_OPT("frame.render_pass.meta", DBG_OPT_BLUE,
+                "Render pass id=%" PRIu64
+                ", output_rect=(%s), damage_rect=(%s), "
+                "quad_list.size=%zu",
+                render_pass->id.value(),
+                render_pass->output_rect.ToString().c_str(),
+                render_pass->damage_rect.ToString().c_str(),
+                render_pass->quad_list.size());
+    DBG_LOG_OPT(
+        "frame.render_pass.transform_to_root_target", DBG_OPT_BLUE,
+        "Render pass transform=%s",
+        render_pass->transform_to_root_target.ToDecomposedString().c_str());
 
     for (auto* quad : render_pass->quad_list) {
       auto* sqs = quad->shared_quad_state;

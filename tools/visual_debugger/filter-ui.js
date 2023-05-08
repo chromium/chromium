@@ -433,6 +433,11 @@ function isDuplicate(filter1, filter2) {
 
 const defaultFilters = [
     {
+      selector_: { filename: "", func: "", anno: "frame.render_pass.meta" },
+      action_: { skipDraw: false },
+      enabled_: false
+    },
+    {
       selector_: { filename: "", func: "", anno: "frame.render_pass.quad" },
       action_: { skipDraw: false, color: '#000000', alpha: "10" },
       enabled_: true
@@ -441,6 +446,15 @@ const defaultFilters = [
       selector_: { filename: "", func: "", anno: "frame.render_pass.damage" },
       action_: { skipDraw: false, color: '#FF0000', alpha: "20" },
       enabled_: true
+    },
+    {
+      selector_: {
+        filename: "",
+        func: "",
+        anno: "frame.render_pass.output_rect",
+      },
+      action_: { skipDraw: false },
+      enabled_: false,
     },
     {
       selector_: { filename: "", func: "", anno: "overlay.selected.rect" },

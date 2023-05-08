@@ -137,7 +137,7 @@ class DrawFrame {
       (this.submissionCount() - 1);
   }
 
-  updateCanvasSize(canvas, scale, orientationDeg) {
+  updateCanvasSize(canvas, context, scale, orientationDeg) {
     // Swap canvas width/height for 90 or 270 deg rotations
     if (orientationDeg === 90 || orientationDeg === 270) {
       canvas.width = this.size_.height * scale;
@@ -153,6 +153,17 @@ class DrawFrame {
     const padding = 20;
     canvas.width += padding * 2;
     canvas.height += padding * 2;
+
+    // Fill the actual frame bounds to an opaque color.
+    context.save();
+    context.fillStyle = "white";
+    context.fillRect(
+      padding,
+      padding,
+      canvas.width - padding * 2,
+      canvas.height - padding * 2
+    );
+    context.restore();
   }
 
   getFilter(source_index) {
@@ -390,7 +401,10 @@ class Viewer {
   redrawCurrentFrame_() {
     const frame = this.getCurrentFrame();
     if (!frame) return;
-    frame.updateCanvasSize(this.canvas_, this.viewScale, this.viewOrientation);
+    frame.updateCanvasSize(this.canvas_,
+                           this.drawContext_,
+                           this.viewScale,
+                           this.viewOrientation);
     frame.draw(this.canvas_,
                this.drawContext_,
                this.viewScale,
