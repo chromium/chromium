@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
@@ -835,6 +836,10 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       if (!layout_result) {
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(
             child, max_content_contribution, phase);
+        absl::optional<NGDisableSideEffectsScope> disable_side_effects;
+        if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
+          disable_side_effects.emplace();
+        }
         layout_result = child.Layout(child_space, /* break_token */ nullptr);
         DCHECK(layout_result);
       }
