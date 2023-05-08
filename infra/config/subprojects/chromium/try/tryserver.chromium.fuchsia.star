@@ -59,6 +59,7 @@ try_.orchestrator_builder(
         "weetbix.enable_weetbix_exonerations": 100,
     },
     main_list_view = "try",
+    service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     tryjob = try_.job(
         location_filters = [
             # Covers //fuchsia_web and //fuchsia changes, including
