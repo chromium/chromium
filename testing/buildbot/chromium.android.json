@@ -3476,8 +3476,7 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb",
-          "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/generic_playstore_android30.textpb"
+          "--git-revision=${got_revision}"
         ],
         "merge": {
           "args": [
@@ -3512,14 +3511,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_playstore_android30",
-              "path": ".android_emulator/generic_playstore_android30"
+              "name": "generic_android30",
+              "path": ".android_emulator/generic_android30"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_playstore_android30"
+                "caches": "generic_android30"
               }
             ]
           },
@@ -7440,10 +7439,8 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb",
-          "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/generic_playstore_android31.textpb"
+          "--git-revision=${got_revision}"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
@@ -7477,14 +7474,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_playstore_android31",
-              "path": ".android_emulator/generic_playstore_android31"
+              "name": "generic_android31",
+              "path": ".android_emulator/generic_android31"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_playstore_android31"
+                "caches": "generic_android31"
               }
             ]
           },
@@ -33267,10 +33264,8 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
-          "--git-revision=${got_revision}",
-          "--avd-config=../../tools/android/avd/proto/generic_playstore_android28.textpb"
+          "--git-revision=${got_revision}"
         ],
-        "ci_only": true,
         "merge": {
           "args": [
             "--bucket",
@@ -33304,14 +33299,14 @@
           ],
           "named_caches": [
             {
-              "name": "generic_playstore_android28",
-              "path": ".android_emulator/generic_playstore_android28"
+              "name": "generic_android28",
+              "path": ".android_emulator/generic_android28"
             }
           ],
           "optional_dimensions": {
             "60": [
               {
-                "caches": "generic_playstore_android28"
+                "caches": "generic_android28"
               }
             ]
           },
