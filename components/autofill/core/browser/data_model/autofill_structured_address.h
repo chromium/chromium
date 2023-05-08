@@ -217,6 +217,13 @@ class SortingCodeNode : public AddressComponent {
   ~SortingCodeNode() override;
 };
 
+// Stores the landmark of an address profile.
+class LandmarkNode : public AddressComponent {
+ public:
+  explicit LandmarkNode(AddressComponent* parent);
+  ~LandmarkNode() override;
+};
+
 // Stores the overall Address that contains the StreetAddress, the PostalCode
 // the City, the State and the CountryCode.
 class AddressNode : public AddressComponent {
@@ -241,6 +248,7 @@ class AddressNode : public AddressComponent {
   CityNode city_{this};
   StateNode state_{this};
   CountryCodeNode country_code_{this};
+  LandmarkNode landmark_code_{this};
 };
 
 }  // namespace autofill

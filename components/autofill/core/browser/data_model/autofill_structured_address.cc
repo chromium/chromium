@@ -380,6 +380,13 @@ SortingCodeNode::SortingCodeNode(AddressComponent* parent)
 
 SortingCodeNode::~SortingCodeNode() = default;
 
+LandmarkNode::LandmarkNode(AddressComponent* parent)
+    : AddressComponent(ADDRESS_HOME_LANDMARK,
+                       parent,
+                       MergeMode::kReplaceEmpty | kReplaceSubset) {}
+
+LandmarkNode::~LandmarkNode() = default;
+
 AddressNode::AddressNode() : AddressNode(nullptr) {}
 
 AddressNode::AddressNode(const AddressNode& other) : AddressNode() {

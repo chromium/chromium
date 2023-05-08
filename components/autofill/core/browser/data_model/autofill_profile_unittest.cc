@@ -1226,6 +1226,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
       ADDRESS_HOME_ZIP,
       ADDRESS_HOME_SORTING_CODE,
       ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_LANDMARK,
       ADDRESS_HOME_HOUSE_NUMBER,
       ADDRESS_HOME_STREET_NAME,
       ADDRESS_HOME_DEPENDENT_STREET_NAME,
@@ -1273,11 +1274,13 @@ TEST(AutofillProfileTest, IsPresentButInvalid) {
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
   EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_LANDMARK));
 
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"US");
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
   EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
+  EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_LANDMARK));
 
   profile.SetRawInfo(ADDRESS_HOME_STATE, u"C");
   EXPECT_TRUE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
@@ -1325,6 +1328,13 @@ TEST(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
   AutofillProfile profile;
   profile.SetRawInfo(EMAIL_ADDRESS, u"\tuser@example.com    ");
   EXPECT_EQ(u"\tuser@example.com    ", profile.GetRawInfo(EMAIL_ADDRESS));
+}
+
+TEST(AutofillProfileTest, SetRawInfoWorksForLandmark) {
+  AutofillProfile profile;
+
+  profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+  EXPECT_EQ(u"Red tree", profile.GetRawInfo(ADDRESS_HOME_LANDMARK));
 }
 
 TEST(AutofillProfileTest, SetInfoTrimsWhitespace) {

@@ -25,6 +25,7 @@
 using autofill::ADDRESS_HOME_CITY;
 using autofill::ADDRESS_HOME_COUNTRY;
 using autofill::ADDRESS_HOME_DEPENDENT_LOCALITY;
+using autofill::ADDRESS_HOME_LANDMARK;
 using autofill::ADDRESS_HOME_LINE1;
 using autofill::ADDRESS_HOME_LINE2;
 using autofill::ADDRESS_HOME_LINE3;
@@ -190,6 +191,13 @@ class AutofillProfileComparatorTest : public testing::Test {
     return profile;
   }
 
+  AutofillProfile CreateProfileWithLandmark(const char* landmark) {
+    AutofillProfile profile;
+    profile.SetRawInfo(autofill::ADDRESS_HOME_LANDMARK,
+                       base::UTF8ToUTF16(landmark));
+    return profile;
+  }
+
   AutofillProfile CopyAndModify(
       const AutofillProfile& profile,
       const std::vector<std::pair<ServerFieldType, const char16_t*>>& updates) {
@@ -302,6 +310,8 @@ class AutofillProfileComparatorTest : public testing::Test {
               actual.GetInfo(AutofillType(ADDRESS_HOME_ZIP), kLocale));
     EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale),
               actual.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale));
+    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LANDMARK), kLocale),
+              actual.GetInfo(AutofillType(ADDRESS_HOME_LANDMARK), kLocale));
 
     if (check_structured_address_tokens) {
       EXPECT_EQ(expected.GetInfo(
@@ -1178,6 +1188,16 @@ TEST_F(AutofillProfileComparatorTest, MergeBirthdates) {
   for (ServerFieldType component : Birthdate::GetRawComponents()) {
     EXPECT_EQ(expected.GetRawInfo(component), actual.GetRawInfo(component));
   }
+}
+
+TEST_F(AutofillProfileComparatorTest, MergeLandmarks) {
+  AutofillProfile empty = CreateProfileWithLandmark("");
+  AutofillProfile profile2 = CreateProfileWithLandmark("Red tree");
+
+  Address expected;
+  expected.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Red tree");
+
+  MergeAddressesAndExpect(empty, profile2, expected);
 }
 
 // Checks for various scenarios for determining mergeability of profiles w.r.t.
