@@ -36,7 +36,10 @@ class DIPSStorage {
                     network::mojom::ClearDataFilterPtr filter,
                     const DIPSEventRemovalType type);
 
+  // Delete all DB rows for |sites|.
   void RemoveRows(const std::vector<std::string>& sites);
+  // Delete all DB rows for |sites| without eligible user interactions.
+  void RemoveRowsWithoutInteraction(const std::set<std::string>& sites);
 
   // DIPS Helper Method Impls --------------------------------------------------
 

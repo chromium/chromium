@@ -242,10 +242,9 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Enabled) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(url, bounce, false);
+  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
+                                       GURL("https://final.com"), bounce,
+                                       false);
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(url).has_value());
 
@@ -293,10 +292,9 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(url, bounce, false);
+  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
+                                       GURL("https://final.com"), bounce,
+                                       false);
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(url).has_value());
 
@@ -326,14 +324,13 @@ TEST_F(DIPSServiceStateRemovalTest, BrowsingDataDeletion_Disabled) {
 }
 
 TEST_F(DIPSServiceStateRemovalTest,
-       BrowsingDataDeletion_Respects3PCExceptions) {
+       BrowsingDataDeletion_Respects3PExceptionsFor3PC) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
       dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
 
   GURL excepted_3p_url("https://excepted-as-3p.com");
-  GURL excepted_1p_url("https://excepted-as-1p.com");
   GURL non_excepted_url("https://not-excepted.com");
 
   HostContentSettingsMap* map =
@@ -346,13 +343,6 @@ TEST_F(DIPSServiceStateRemovalTest,
       ContentSettingsPattern::Wildcard(), ContentSettingsType::COOKIES,
       ContentSetting::CONTENT_SETTING_ALLOW);
 
-  // Add exception to third-party cookie blocking rule for third-parties
-  // embedded by 'excepted_1p_url'.
-  map->SetContentSettingCustomScope(
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsPattern::FromString("[*.]" + excepted_1p_url.host()),
-      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
-
   // Verify settings.
   EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCookieSettings()->GetCookieSetting(
                                        excepted_3p_url, GURL(),
@@ -361,30 +351,16 @@ TEST_F(DIPSServiceStateRemovalTest,
                                        GURL(), excepted_3p_url,
                                        net::CookieSettingOverrides(), nullptr));
 
-  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetCookieSettings()->GetCookieSetting(
-                                       excepted_1p_url, GURL(),
-                                       net::CookieSettingOverrides(), nullptr));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCookieSettings()->GetCookieSetting(
-                                       GURL(), excepted_1p_url,
-                                       net::CookieSettingOverrides(), nullptr));
-
   // Record bounces for sites.
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(excepted_3p_url, bounce, false);
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(excepted_1p_url, bounce, false);
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(non_excepted_url, bounce, false);
+  GetService()->RecordBounceForTesting(
+      excepted_3p_url, GURL("https://initial.com"), GURL("https://final.com"),
+      bounce, false);
+  GetService()->RecordBounceForTesting(
+      non_excepted_url, GURL("https://initial.com"), GURL("https://final.com"),
+      bounce, false);
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(excepted_3p_url).has_value());
-  EXPECT_TRUE(GetDIPSState(excepted_1p_url).has_value());
   EXPECT_TRUE(GetDIPSState(non_excepted_url).has_value());
 
   auto filter_builder = content::BrowsingDataFilterBuilder::Create(
@@ -409,19 +385,90 @@ TEST_F(DIPSServiceStateRemovalTest,
   // Because this test fixture uses a MockBrowsingDataRemoverDelegate the DIPS
   // entry should not actually be removed. However, in practice it would be.
   EXPECT_TRUE(GetDIPSState(non_excepted_url).has_value());
-  // The DIPS entries for 'excepted_3p_url' and 'excepted_1p_url' should be
+  // The DIPS entries for 'excepted_3p_url' should be
   // removed, since only DIPS state is cleared for sites with a cookie exception
   // and the BrowsingDataRemover(Delegate) isn't relied on for that kind of
   // deletion.
   EXPECT_FALSE(GetDIPSState(excepted_3p_url).has_value());
-  EXPECT_FALSE(GetDIPSState(excepted_1p_url).has_value());
 
   // All 3 sites should be reported to UKM. It doesn't matter whether the URL
   // was excepted or not.
   EXPECT_THAT(ukm_recorder,
               EntryUrlsAre("DIPS.Deletion", {"http://excepted-as-3p.com/",
-                                             "http://excepted-as-1p.com/",
                                              "http://not-excepted.com/"}));
+}
+
+TEST_F(DIPSServiceStateRemovalTest,
+       BrowsingDataDeletion_Respects1PExceptionsFor3PC) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      dips::kFeature, {{"delete", "true"}, {"triggering_action", "bounce"}});
+
+  GURL excepted_1p_url("https://excepted-as-1p.com");
+  GURL non_excepted_url("https://not-excepted.com");
+  GURL redirect_url_1("https://redirect-1.com");
+  GURL redirect_url_2("https://redirect-2.com");
+  GURL redirect_url_3("https://redirect-3.com");
+
+  HostContentSettingsMap* map =
+      HostContentSettingsMapFactory::GetForProfile(GetProfile());
+
+  // Add exception to third-party cookie blocking rule for third-parties
+  // embedded by 'excepted_1p_url'.
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::Wildcard(),
+      ContentSettingsPattern::FromString("[*.]" + excepted_1p_url.host()),
+      ContentSettingsType::COOKIES, ContentSetting::CONTENT_SETTING_ALLOW);
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, GetCookieSettings()->GetCookieSetting(
+                                       excepted_1p_url, GURL(),
+                                       net::CookieSettingOverrides(), nullptr));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, GetCookieSettings()->GetCookieSetting(
+                                       GURL(), excepted_1p_url,
+                                       net::CookieSettingOverrides(), nullptr));
+
+  base::Time bounce = base::Time::FromDoubleT(2);
+  // Record a bounce through redirect_url_1 that starts on an excepted
+  // URL.
+  GetService()->RecordBounceForTesting(redirect_url_1, excepted_1p_url,
+                                       non_excepted_url, bounce, false);
+  // Record a bounce through redirect_url_1 that ends on an excepted
+  // URL.
+  GetService()->RecordBounceForTesting(redirect_url_1, non_excepted_url,
+                                       excepted_1p_url, bounce, false);
+  // Record a bounce through redirect_url_2 that does not start or
+  // end on an excepted URL.
+  GetService()->RecordBounceForTesting(redirect_url_2, non_excepted_url,
+                                       non_excepted_url, bounce, false);
+  // Record a bounce through redirect_url_3 that does not start or
+  // end on an excepted URL. Record an interaction on this URL as well.
+  GetService()->RecordBounceForTesting(redirect_url_3, non_excepted_url,
+                                       non_excepted_url, bounce, false);
+  GetService()
+      ->storage()
+      ->AsyncCall(&DIPSStorage::RecordInteraction)
+      .WithArgs(redirect_url_3, bounce, GetService()->GetCookieMode());
+  WaitOnStorage();
+
+  // Expect no recorded DIPSState for redirect_url_1, since every
+  // recorded bounce started or ended on an excepted site.
+  EXPECT_FALSE(GetDIPSState(redirect_url_1).has_value());
+  EXPECT_TRUE(GetDIPSState(redirect_url_2).has_value());
+  EXPECT_TRUE(GetDIPSState(redirect_url_3).has_value());
+
+  // Record a bounce through redirect_url_2 that starts on an
+  // excepted URL. This should clear the DB entry for redirect_url_2.
+  GetService()->RecordBounceForTesting(redirect_url_2, excepted_1p_url,
+                                       non_excepted_url, bounce, false);
+  EXPECT_FALSE(GetDIPSState(redirect_url_2).has_value());
+
+  // Record a bounce through redirect_url_3 that starts on an
+  // excepted URL. This should not clear the DB entry for redirect_url_3 as it
+  // has a recorded interaction.
+  GetService()->RecordBounceForTesting(redirect_url_3, excepted_1p_url,
+                                       non_excepted_url, bounce, false);
+  EXPECT_TRUE(GetDIPSState(redirect_url_3).has_value());
 }
 
 TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
@@ -433,10 +480,9 @@ TEST_F(DIPSServiceStateRemovalTest, ImmediateEnforcement) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = Now();
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(url, bounce, false);
+  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
+                                       GURL("https://final.com"), bounce,
+                                       false);
   WaitOnStorage();
   EXPECT_TRUE(GetDIPSState(url).has_value());
 
@@ -502,10 +548,9 @@ TEST_F(DIPSServiceHistogramTest, DeletionLatency) {
   // Record a bounce.
   GURL url("https://example.com");
   base::Time bounce = base::Time::FromDoubleT(2);
-  GetService()
-      ->storage()
-      ->AsyncCall(&DIPSStorage::RecordBounce)
-      .WithArgs(url, bounce, false);
+  GetService()->RecordBounceForTesting(url, GURL("https://initial.com"),
+                                       GURL("https://final.com"), bounce,
+                                       false);
   WaitOnStorage();
 
   // Set the current time to just after the bounce happened.

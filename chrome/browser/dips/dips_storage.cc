@@ -149,6 +149,17 @@ void DIPSStorage::RemoveRows(const std::vector<std::string>& sites) {
   db_->RemoveRows(sites);
 }
 
+void DIPSStorage::RemoveRowsWithoutInteraction(
+    const std::set<std::string>& sites) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_);
+
+  std::set<std::string> filtered_sites = FilterSitesWithoutInteraction(sites);
+
+  RemoveRows(
+      std::vector<std::string>(filtered_sites.begin(), filtered_sites.end()));
+}
+
 // DIPSTabHelper Function Impls ------------------------------------------------
 
 void DIPSStorage::RecordStorage(const GURL& url,

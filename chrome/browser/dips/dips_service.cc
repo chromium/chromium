@@ -237,27 +237,20 @@ bool DIPSService::ShouldBlockThirdPartyCookies() const {
   return cookie_settings_->ShouldBlockThirdPartyCookies();
 }
 
-bool DIPSService::HasCookieException(const std::string& site) const {
+bool DIPSService::Has3PCExceptionAs3P(const std::string& site) const {
   DCHECK(!IsShuttingDown());
   GURL url("https://" + site);
 
-  // Checks whether there is an exception allowing all third-parties embedded
-  // under |site| to use cookies.
-  if (cookie_settings_->IsFullCookieAccessAllowed(
-          GURL(), net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
-          net::CookieSettingOverrides())) {
-    return true;
-  }
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      url, net::SiteForCookies(), absl::nullopt, net::CookieSettingOverrides());
+}
 
-  // Checks whether there is an exception allowing |site| to use cookies when
-  // embedded by any other site.
-  if (cookie_settings_->IsFullCookieAccessAllowed(
-          url, net::SiteForCookies(), absl::nullopt,
-          net::CookieSettingOverrides())) {
-    return true;
-  }
+bool DIPSService::Has3PCExceptionAs1P(const GURL& url) const {
+  DCHECK(!IsShuttingDown());
 
-  return false;
+  return cookie_settings_->IsFullCookieAccessAllowed(
+      GURL(), net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
+      net::CookieSettingOverrides());
 }
 
 DIPSCookieMode DIPSService::GetCookieMode() const {
@@ -347,8 +340,24 @@ void DIPSService::GotState(std::vector<DIPSRedirectInfoPtr> redirects,
 }
 
 void DIPSService::RecordBounce(const GURL& url,
+                               const GURL& initial_url,
+                               const GURL& final_url,
                                base::Time time,
                                bool stateful) {
+  // If the initial or final URL has a 1P exception for all embedded 3PCs (e.g.
+  // Chrome Guard) then clear the tracking site from the DIPS DB, to avoid
+  // deleting its storage. The exemption overrides any bounces from non-exempted
+  // sites.
+  if (Has3PCExceptionAs1P(initial_url) || Has3PCExceptionAs1P(final_url)) {
+    const std::set<std::string> site_to_clear{GetSiteForDIPS(url)};
+    // Don't clear the row if the tracker has interaction history, since we
+    // should preserve that context for future bounces.
+    storage_.AsyncCall(&DIPSStorage::RemoveRowsWithoutInteraction)
+        .WithArgs(site_to_clear);
+
+    return;
+  }
+
   storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
 }
 
@@ -386,7 +395,7 @@ void DIPSService::HandleRedirect(const DIPSRedirectInfo& redirect,
   // Record this bounce in the DIPS database.
   if (redirect.access_type != SiteDataAccessType::kUnknown) {
     record_bounce.Run(
-        redirect.url, redirect.time,
+        redirect.url, chain.initial_url, chain.final_url, redirect.time,
         /*stateful=*/redirect.access_type > SiteDataAccessType::kRead);
   }
 
@@ -449,7 +458,7 @@ void DIPSService::DeleteDIPSEligibleState(
     std::vector<std::string> non_excepted_sites;
 
     for (const auto& site : sites_to_clear) {
-      if (HasCookieException(site)) {
+      if (Has3PCExceptionAs3P(site)) {
         excepted_sites.push_back(site);
       } else {
         non_excepted_sites.push_back(site);
