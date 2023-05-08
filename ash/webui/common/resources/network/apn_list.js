@@ -110,6 +110,13 @@ export class ApnList extends ApnListBase {
    * @private
    */
   shouldShowErrorMessage_() {
+    // In some instances, there can be an |errorState| and also a connected APN.
+    // Don't show the error message as the network is actually connected.
+    if (this.managedCellularProperties &&
+        this.managedCellularProperties.connectedApn) {
+      return false;
+    }
+
     return this.errorState === SHILL_INVALID_APN_ERROR;
   }
 
