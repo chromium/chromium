@@ -295,6 +295,24 @@ void RemoveCertOnWorkerThread(crypto::ScopedPK11Slot slot,
   std::move(callback).Run({});
 }
 
+void SetKeyNicknameOnWorkerThread(crypto::ScopedPK11Slot slot,
+                                  PrivateKeyHandle key,
+                                  std::string nickname,
+                                  Kcer::StatusCallback callback) {
+  base::expected<crypto::ScopedSECKEYPrivateKey, Error> private_key =
+      GetSECKEYPrivateKey(slot, key);
+  if (!private_key.has_value()) {
+    return std::move(callback).Run(base::unexpected(private_key.error()));
+  }
+
+  if (PK11_SetPrivateKeyNickname(private_key.value().get(), nickname.c_str()) !=
+      SECSuccess) {
+    return std::move(callback).Run(
+        base::unexpected(Error::kFailedToWriteAttribute));
+  }
+  return std::move(callback).Run({});
+}
+
 scoped_refptr<const Cert> BuildKcerCert(
     Token token,
     const net::ScopedCERTCertificate& nss_cert) {
@@ -570,7 +588,25 @@ void KcerTokenImplNss::SetKeyNickname(PrivateKeyHandle key,
                                       std::string nickname,
                                       Kcer::StatusCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  // TODO(244408716): Implement.
+
+  if (UNLIKELY(state_ == State::kInitializationFailed)) {
+    return HandleInitializationFailed(std::move(callback));
+  } else if (is_blocked_) {
+    return task_queue_.push(base::BindOnce(
+        &KcerTokenImplNss::SetKeyNickname, weak_factory_.GetWeakPtr(),
+        std::move(key), std::move(nickname), std::move(callback)));
+  }
+
+  // Block task queue, attach unblocking task to the callback.
+  auto unblocking_callback = std::move(callback).Then(BlockQueueGetUnblocker());
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&SetKeyNicknameOnWorkerThread,
+                     crypto::ScopedPK11Slot(PK11_ReferenceSlot(slot_.get())),
+                     std::move(key), std::move(nickname),
+                     std::move(unblocking_callback)));
 }
 
 void KcerTokenImplNss::SetKeyPermissions(PrivateKeyHandle key,

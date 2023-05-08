@@ -102,9 +102,25 @@ class KcerImpl : public Kcer {
       base::OnceCallback<void(base::expected<absl::optional<Token>, Error>)>
           callback);
 
-  void DoesPrivateKeyExistWithKeyToken(
+  // Attempts to find the token for the `key` (guessing is allowed). Returns a
+  // PrivateKeyHandle with the token populated on success, an error on failure.
+  void PopulateTokenForKey(
+      PrivateKeyHandle key,
+      base::OnceCallback<void(base::expected<PrivateKeyHandle, Error>)>
+          callback);
+  void PopulateTokenForKeyWithToken(
+      PrivateKeyHandle key,
+      base::OnceCallback<void(base::expected<PrivateKeyHandle, Error>)>
+          callback,
+      base::expected<absl::optional<Token>, Error> find_key_result);
+
+  void DoesPrivateKeyExistWithToken(
       DoesKeyExistCallback callback,
       base::expected<absl::optional<Token>, Error> find_key_result);
+
+  void SetKeyNicknameWithToken(std::string nickname,
+                               StatusCallback callback,
+                               base::expected<PrivateKeyHandle, Error> key);
 
   // Task runner for the tokens. Can be nullptr if no tokens are available
   // to the current Kcer instance.

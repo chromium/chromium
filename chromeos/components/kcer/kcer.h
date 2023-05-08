@@ -60,6 +60,7 @@ enum class COMPONENT_EXPORT(KCER) Error {
   kFailedToRemoveCertificate = 11,
   kKeyNotFound = 12,
   kFailedToGetKeyId = 13,
+  kFailedToWriteAttribute = 14,
 };
 
 // Handles for tokens on ChromeOS.

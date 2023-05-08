@@ -288,6 +288,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
   base::test::TestFuture<base::expected<bool, Error>> does_key_exist_waiter;
   kcer->DoesPrivateKeyExist(PrivateKeyHandle(PublicKeySpki()),
                             does_key_exist_waiter.GetCallback());
+  base::test::TestFuture<base::expected<void, Error>> set_nickname_waiter;
+  kcer->SetKeyNickname(PrivateKeyHandle(PublicKeySpki()), "new_nickname",
+                       set_nickname_waiter.GetCallback());
   // Close the list with one more GenerateRsaKey, so all methods are tested
   // with other methods before and after them.
   base::test::TestFuture<base::expected<PublicKey, Error>>
@@ -321,6 +324,9 @@ TEST_F(KcerNssTest, QueueTasksFailInitializationThenGetErrors) {
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(does_key_exist_waiter.Get().has_value());
   EXPECT_EQ(does_key_exist_waiter.Get().error(),
+            Error::kTokenInitializationFailed);
+  ASSERT_FALSE(set_nickname_waiter.Get().has_value());
+  EXPECT_EQ(set_nickname_waiter.Get().error(),
             Error::kTokenInitializationFailed);
   ASSERT_FALSE(generate_rsa_waiter_2.Get().has_value());
   EXPECT_EQ(generate_rsa_waiter_2.Get().error(),
