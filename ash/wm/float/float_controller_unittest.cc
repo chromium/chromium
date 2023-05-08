@@ -319,7 +319,8 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
       Shell::Get()->accelerator_controller();
 
   // Snap Left.
-  acc_controller->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT, {});
+  acc_controller->PerformActionIfEnabled(
+      AcceleratorAction::kWindowCycleSnapLeft, {});
   ASSERT_EQ(chromeos::WindowStateType::kPrimarySnapped,
             window_state2->GetStateType());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -332,7 +333,8 @@ TEST_F(WindowFloatTest, WindowFloatingResize) {
             window_state2->GetStateType());
 
   // Snap Right.
-  acc_controller->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_RIGHT, {});
+  acc_controller->PerformActionIfEnabled(
+      AcceleratorAction::kWindowCycleSnapRight, {});
   ASSERT_EQ(chromeos::WindowStateType::kSecondarySnapped,
             WindowState::Get(window2.get())->GetStateType());
   PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
@@ -833,7 +835,8 @@ TEST_F(WindowFloatTest, PinnedWindow) {
   EXPECT_FALSE(floated_window->IsVisible());
 
   // Unpin the window.
-  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(UNPIN, {});
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kUnpin, {});
   EXPECT_TRUE(floated_window->IsVisible());
 
   // Trusted pin the window.

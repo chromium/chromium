@@ -115,7 +115,7 @@ class ChromeAppListModelUpdaterTest : public extensions::ExtensionBrowserTest {
 
   void ShowAppList() {
     ash::AcceleratorController::Get()->PerformActionIfEnabled(
-        ash::TOGGLE_APP_LIST, {});
+        ash::AcceleratorAction::kToggleAppList, {});
     app_list_test_api_.WaitForBubbleWindow(
         /*wait_for_opening_animation=*/false);
   }

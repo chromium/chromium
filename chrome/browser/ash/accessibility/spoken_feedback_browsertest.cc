@@ -387,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
     // Press the accelerator that toggles the notification center.
     sm_.Call([this]() {
       EXPECT_TRUE(PerformAcceleratorAction(
-          AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
+          AcceleratorAction::kToggleMessageCenterBubble));
     });
 
     // Verify the spoken feedback text.
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_P(NotificationCenterSpokenFeedbackTest,
 
   sm_.Call([this]() {
     EXPECT_TRUE(PerformAcceleratorAction(
-        AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE));
+        AcceleratorAction::kToggleMessageCenterBubble));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, FocusShelf) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
@@ -601,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfIconFocusForward) {
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -709,7 +709,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SpeakingTextUnderMouseForShelfItem) {
 
     // Focus on the Shelf because voice text for focusing on Shelf is fixed.
     // Wait until voice announcements are finished.
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
 
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ShelfNotificationBadgeAnnouncement) {
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -803,7 +803,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -891,7 +891,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
 
   // Focus on the shelf.
   sm_.Call(
-      [this]() { PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF); });
+      [this]() { PerformAcceleratorAction(AcceleratorAction::kFocusShelf); });
   sm_.ExpectSpeech("Launcher");
   sm_.ExpectSpeech("Button");
   sm_.ExpectSpeech("Shelf");
@@ -938,7 +938,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
 
   sm_.Call([this]() {
     EXPECT_TRUE(
-        PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
+        PerformAcceleratorAction(AcceleratorAction::kToggleSystemTrayBubble));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -953,7 +953,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_SYSTEM_TRAY_BUBBLE));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleSystemTrayBubble));
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
@@ -1009,12 +1009,12 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_ScreenBrightness) {
   EnableChromeVox();
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::BRIGHTNESS_UP));
+    (PerformAcceleratorAction(AcceleratorAction::kBrightnessUp));
   });
   sm_.ExpectSpeechPattern("Brightness * percent");
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::BRIGHTNESS_DOWN));
+    (PerformAcceleratorAction(AcceleratorAction::kBrightnessDown));
   });
   sm_.ExpectSpeechPattern("Brightness * percent");
 
@@ -1027,8 +1027,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, VolumeSlider) {
   sm_.Call([this]() {
     // Volume slider does not fire valueChanged event on first key press because
     // it has no widget.
-    PerformAcceleratorAction(AcceleratorAction::VOLUME_UP);
-    PerformAcceleratorAction(AcceleratorAction::VOLUME_UP);
+    PerformAcceleratorAction(AcceleratorAction::kVolumeUp);
+    PerformAcceleratorAction(AcceleratorAction::kVolumeUp);
   });
   sm_.ExpectSpeechPattern("* percent*");
   sm_.Replay();
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OverviewMode) {
   sm_.ExpectSpeech("Click me");
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
   });
 
   sm_.ExpectSpeech(
@@ -1171,7 +1171,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
   });
 
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
   });
 
   EnableChromeVox();
@@ -2186,7 +2186,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
 
   // Enter overview first. This is how we reach the desk templates UI.
   sm_.Call([this]() {
-    (PerformAcceleratorAction(AcceleratorAction::TOGGLE_OVERVIEW));
+    (PerformAcceleratorAction(AcceleratorAction::kToggleOverview));
   });
 
   sm_.ExpectSpeech(

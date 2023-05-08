@@ -335,10 +335,10 @@ AccessibilityPrivatePerformAcceleratorActionFunction::Run() {
   ash::AcceleratorAction accelerator_action;
   switch (params->accelerator_action) {
     case accessibility_private::ACCELERATOR_ACTION_FOCUSPREVIOUSPANE:
-      accelerator_action = ash::FOCUS_PREVIOUS_PANE;
+      accelerator_action = ash::AcceleratorAction::kFocusPreviousPane;
       break;
     case accessibility_private::ACCELERATOR_ACTION_FOCUSNEXTPANE:
-      accelerator_action = ash::FOCUS_NEXT_PANE;
+      accelerator_action = ash::AcceleratorAction::kFocusNextPane;
       break;
     case accessibility_private::ACCELERATOR_ACTION_NONE:
       NOTREACHED();

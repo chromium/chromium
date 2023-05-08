@@ -509,7 +509,8 @@ bool CanPerformMagnifierZoom() {
 }
 
 bool CanScreenshot(bool take_screenshot) {
-  // |TAKE_SCREENSHOT| is allowed when user session is blocked.
+  // |AcceleratorAction::kTakeScreenshot| is allowed when user session is
+  // blocked.
   return take_screenshot ||
          !Shell::Get()->session_controller()->IsUserSessionBlocked();
 }
@@ -629,9 +630,9 @@ void ActivateDesk(bool activate_left) {
 }
 
 void ActivateDeskAtIndex(AcceleratorAction action) {
-  DCHECK_GE(action, DESKS_ACTIVATE_0);
-  DCHECK_LE(action, DESKS_ACTIVATE_7);
-  const size_t target_index = action - DESKS_ACTIVATE_0;
+  DCHECK_GE(action, AcceleratorAction::kDesksActivate0);
+  DCHECK_LE(action, AcceleratorAction::kDesksActivate7);
+  const size_t target_index = action - AcceleratorAction::kDesksActivate0;
   auto* desks_controller = DesksController::Get();
   // Only 1 desk animation can occur at a time so ignore this action if there's
   // an ongoing desk animation.
@@ -1635,7 +1636,7 @@ void WindowSnap(AcceleratorAction action) {
   Shell* shell = Shell::Get();
   const bool in_tablet = shell->tablet_mode_controller()->InTabletMode();
   const bool in_overview = shell->overview_controller()->InOverviewSession();
-  if (action == WINDOW_CYCLE_SNAP_LEFT) {
+  if (action == AcceleratorAction::kWindowCycleSnapLeft) {
     if (in_tablet) {
       RecordWindowSnapAcceleratorAction(
           WindowSnapAcceleratorAction::kCycleLeftSnapInTablet);
@@ -1659,8 +1660,9 @@ void WindowSnap(AcceleratorAction action) {
     }
   }
   const WindowSnapWMEvent event(
-      action == WINDOW_CYCLE_SNAP_LEFT ? WM_EVENT_CYCLE_SNAP_PRIMARY
-                                       : WM_EVENT_CYCLE_SNAP_SECONDARY,
+      action == AcceleratorAction::kWindowCycleSnapLeft
+          ? WM_EVENT_CYCLE_SNAP_PRIMARY
+          : WM_EVENT_CYCLE_SNAP_SECONDARY,
       WindowSnapActionSource::kKeyboardShortcutToSnap);
   aura::Window* window = GetTargetWindow();
   DCHECK(window);

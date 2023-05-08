@@ -205,7 +205,7 @@ class SpokenFeedbackAppListBaseTest : public LoggedInSpokenFeedbackTest {
   int MoveToFirstTestApp() {
     // Focus the shelf. This selects the launcher button.
     sm_.Call([this]() {
-      EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+      EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
     });
     sm_.ExpectSpeechPattern("Launcher");
     sm_.ExpectSpeech("Button");
@@ -340,7 +340,7 @@ class SpokenFeedbackAppListSearchTest
     } else {
       // Focus the home button and press it to open the bubble launcher.
       sm_.Call([this]() {
-        EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+        EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
       });
       sm_.ExpectSpeechPattern("Launcher");
       sm_.ExpectSpeech("Button");
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_P(NotificationSpokenFeedbackAppListTest,
 
   // Focus the shelf. This selects the launcher button.
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   // Focus the shelf. This selects the launcher button.
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
 
   // Focus the shelf. This selects the launcher button.
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest, ClamshellLauncher) {
 
   // Focus the shelf. This selects the launcher button.
   sm_.Call([this]() {
-    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::FOCUS_SHELF));
+    EXPECT_TRUE(PerformAcceleratorAction(AcceleratorAction::kFocusShelf));
   });
   sm_.ExpectSpeechPattern("Launcher");
   sm_.ExpectSpeech("Button");

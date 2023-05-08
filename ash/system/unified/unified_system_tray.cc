@@ -504,7 +504,7 @@ const char* UnifiedSystemTray::GetClassName() const {
 
 absl::optional<AcceleratorAction> UnifiedSystemTray::GetAcceleratorAction()
     const {
-  return absl::make_optional(TOGGLE_SYSTEM_TRAY_BUBBLE);
+  return absl::make_optional(AcceleratorAction::kToggleSystemTrayBubble);
 }
 
 void UnifiedSystemTray::OnAnyBubbleVisibilityChanged(

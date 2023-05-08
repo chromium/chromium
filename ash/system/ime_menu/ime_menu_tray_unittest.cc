@@ -351,7 +351,7 @@ TEST_P(ImeMenuTrayTest, TestAccelerator) {
   ASSERT_FALSE(IsTrayBackgroundActive());
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      TOGGLE_IME_MENU_BUBBLE, {});
+      AcceleratorAction::kToggleImeMenuBubble, {});
   EXPECT_TRUE(IsTrayBackgroundActive());
   EXPECT_TRUE(IsBubbleShown());
 

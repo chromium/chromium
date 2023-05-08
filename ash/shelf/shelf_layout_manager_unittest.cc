@@ -618,8 +618,8 @@ TEST_F(ShelfLayoutManagerTest, VisibleWhenLockScreenShowing) {
             GetShelfWidget()->GetBackgroundType());
 }
 
-// Verifies that the hidden shelf shows after triggering the FOCUS_SHELF
-// accelerator (https://crbug.com/1111426).
+// Verifies that the hidden shelf shows after triggering the
+// AcceleratorAction::kFocusShelf accelerator (https://crbug.com/1111426).
 TEST_F(ShelfLayoutManagerTest, ShowHiddenShelfByFocusShelfAccelerator) {
   // Open a window so that the shelf will auto-hide.
   std::unique_ptr<aura::Window> window(CreateTestWindow());
@@ -630,8 +630,8 @@ TEST_F(ShelfLayoutManagerTest, ShowHiddenShelfByFocusShelfAccelerator) {
   EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
 
   // Focus on the shelf by accelerator.
-  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(FOCUS_SHELF,
-                                                                 {});
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kFocusShelf, {});
 
   // Shelf should be visible.
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
@@ -1979,7 +1979,7 @@ TEST_F(ShelfLayoutManagerTest, ShelfFlickerOnTrayActivation) {
 
   // Show the status menu. That should make the shelf visible again.
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      TOGGLE_SYSTEM_TRAY_BUBBLE, {});
+      AcceleratorAction::kToggleSystemTrayBubble, {});
   GetAppListTestHelper()->WaitUntilIdle();
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
@@ -4188,7 +4188,7 @@ TEST_F(ShelfLayoutManagerTest, VerifyAutoHideBehaviorOnMultipleDisplays) {
 
   // Show the system tray on the secondary display.
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      TOGGLE_SYSTEM_TRAY_BUBBLE, {});
+      AcceleratorAction::kToggleSystemTrayBubble, {});
   Shelf* secondary_shelf =
       RootWindowController::ForWindow(secondary_root_window)->shelf();
   ASSERT_TRUE(secondary_shelf->status_area_widget()->IsMessageBubbleShown());

@@ -172,9 +172,10 @@ TEST_F(ScreenPinningControllerTest, TrustedPinnedWithAccelerator) {
   window_util::PinWindow(w1, /* trusted */ true);
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
 
-  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(UNPIN, {});
-  // The UNPIN accelerator key is disabled for trusted pinned and the window
-  // must be still pinned.
+  Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
+      AcceleratorAction::kUnpin, {});
+  // The AcceleratorAction::kUnpin accelerator key is disabled for trusted
+  // pinned and the window must be still pinned.
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
 }
 

@@ -1844,8 +1844,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   window_state->Maximize();
 
   // Use keyboard to snap a window.
-  AcceleratorController::Get()->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT,
-                                                       {});
+  AcceleratorController::Get()->PerformActionIfEnabled(
+      AcceleratorAction::kWindowCycleSnapLeft, {});
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kKeyboardShortcutToSnap,
                                1);
@@ -1884,8 +1884,8 @@ TEST_F(WindowStateTest, WindowSnapActionSourceUmaMetrics) {
   EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
   // Use keyboard to snap the window in tablet mode.
-  AcceleratorController::Get()->PerformActionIfEnabled(WINDOW_CYCLE_SNAP_LEFT,
-                                                       {});
+  AcceleratorController::Get()->PerformActionIfEnabled(
+      AcceleratorAction::kWindowCycleSnapLeft, {});
   histograms.ExpectBucketCount(kWindowSnapActionSourceHistogram,
                                WindowSnapActionSource::kKeyboardShortcutToSnap,
                                2);

@@ -57,26 +57,26 @@ using HiddenAcceleratorMap =
 // accelerators and hide them from display.
 const HiddenAcceleratorMap& GetHiddenAcceleratorMap() {
   static auto hiddenAcceleratorMap = base::NoDestructor<HiddenAcceleratorMap>(
-      {{TOGGLE_APP_LIST,
+      {{AcceleratorAction::kToggleAppList,
         {ui::Accelerator(ui::VKEY_BROWSER_SEARCH, ui::EF_SHIFT_DOWN,
                          ui::Accelerator::KeyState::PRESSED),
          ui::Accelerator(ui::VKEY_LWIN, ui::EF_SHIFT_DOWN,
                          ui::Accelerator::KeyState::RELEASED)}},
-       {SHOW_SHORTCUT_VIEWER,
+       {AcceleratorAction::kShowShortcutViewer,
         {ui::Accelerator(ui::VKEY_F14, ui::EF_NONE,
                          ui::Accelerator::KeyState::PRESSED),
          ui::Accelerator(
              ui::VKEY_OEM_2,
              ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
              ui::Accelerator::KeyState::PRESSED)}},
-       {OPEN_GET_HELP,
+       {AcceleratorAction::kOpenGetHelp,
         {ui::Accelerator(ui::VKEY_OEM_2,
                          ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN,
                          ui::Accelerator::KeyState::PRESSED)}},
-       {TOGGLE_FULLSCREEN,
+       {AcceleratorAction::kToggleFullscreen,
         {ui::Accelerator(ui::VKEY_ZOOM, ui::EF_SHIFT_DOWN,
                          ui::Accelerator::KeyState::PRESSED)}},
-       {SWITCH_TO_LAST_USED_IME,
+       {AcceleratorAction::kSwitchToLastUsedIme,
         {ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
                          ui::Accelerator::KeyState::RELEASED)}}});
   return *hiddenAcceleratorMap;

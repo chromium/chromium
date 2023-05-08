@@ -775,7 +775,7 @@ TEST_F(TabletModeMultitaskMenuEventHandlerTest, HidesWhenMinimized) {
   ShowMultitaskMenu(*window);
 
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      WINDOW_MINIMIZE, {});
+      AcceleratorAction::kWindowMinimize, {});
   ASSERT_TRUE(WindowState::Get(window.get())->IsMinimized());
   EXPECT_FALSE(GetMultitaskMenu());
 }

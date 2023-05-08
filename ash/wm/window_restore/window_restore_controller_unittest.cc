@@ -389,7 +389,7 @@ TEST_F(WindowRestoreControllerTest, WindowStateChanged) {
   window_state->Restore();
   EXPECT_EQ(7, GetSaveWindowsCount(window.get()));
 
-  PerformAcceleratorAction(WINDOW_CYCLE_SNAP_LEFT, {});
+  PerformAcceleratorAction(AcceleratorAction::kWindowCycleSnapLeft, {});
   EXPECT_EQ(8, GetSaveWindowsCount(window.get()));
 }
 
@@ -407,7 +407,7 @@ TEST_F(WindowRestoreControllerTest, WindowMovedDesks) {
   // Move the window to the desk on the right. Test that we save the window in
   // the database.
   PerformAcceleratorAction(
-      DESKS_MOVE_ACTIVE_ITEM_RIGHT,
+      AcceleratorAction::kDesksMoveActiveItemRight,
       {ui::VKEY_OEM_6, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN});
   ASSERT_NE(previous_parent, window->parent());
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));
@@ -444,7 +444,8 @@ TEST_F(WindowRestoreControllerTest, WindowMovedDisplay) {
 
   // Move the window to the next display. Test that we save the window in
   // the database.
-  PerformAcceleratorAction(MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS, {});
+  PerformAcceleratorAction(AcceleratorAction::kMoveActiveWindowBetweenDisplays,
+                           {});
   ASSERT_TRUE(
       gfx::Rect(801, 0, 800, 800).Contains(window->GetBoundsInScreen()));
   EXPECT_EQ(1, GetSaveWindowsCount(window.get()));

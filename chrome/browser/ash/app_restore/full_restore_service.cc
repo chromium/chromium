@@ -346,12 +346,12 @@ void FullRestoreService::OnAppTerminating() {
 
 void FullRestoreService::OnActionPerformed(AcceleratorAction action) {
   switch (action) {
-    case NEW_INCOGNITO_WINDOW:
-    case NEW_TAB:
-    case NEW_WINDOW:
-    case OPEN_CROSH:
-    case OPEN_DIAGNOSTICS:
-    case RESTORE_TAB:
+    case AcceleratorAction::kNewIncognitoWindow:
+    case AcceleratorAction::kNewTab:
+    case AcceleratorAction::kNewWindow:
+    case AcceleratorAction::kOpenCrosh:
+    case AcceleratorAction::kOpenDiagnostics:
+    case AcceleratorAction::kRestoreTab:
       MaybeCloseNotification();
       return;
     default:

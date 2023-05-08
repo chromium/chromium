@@ -130,33 +130,33 @@ constexpr char kEcheTrayTabletModeNotSupportedId[] =
 // AcceleratorsActions which should be handled by the AcceleratorController, not
 // the eche tray.
 constexpr AcceleratorAction kLocallyProcessedAcceleratorActions[] = {
-    AcceleratorAction::OPEN_FEEDBACK_PAGE,            // Shift + Alt + I
-    AcceleratorAction::EXIT,                          // Shift + Ctrl + Q
-    AcceleratorAction::SHOW_SHORTCUT_VIEWER,          // Ctrl + Alt + /
-    AcceleratorAction::TOGGLE_CAPS_LOCK,              // Alt + Search
-    AcceleratorAction::NEW_WINDOW,                    // Ctrl + N
-    AcceleratorAction::NEW_INCOGNITO_WINDOW,          // Shift + Ctrl + N
-    AcceleratorAction::NEW_TAB,                       // Ctrl + T
-    AcceleratorAction::OPEN_FILE_MANAGER,             // Shift + Alt + M
-    AcceleratorAction::LAUNCH_APP_0,                  // Alt + 1
-    AcceleratorAction::LAUNCH_APP_1,                  // Alt + 2
-    AcceleratorAction::LAUNCH_APP_2,                  // Alt + 3
-    AcceleratorAction::LAUNCH_APP_3,                  // Alt + 4
-    AcceleratorAction::LAUNCH_APP_4,                  // Alt + 5
-    AcceleratorAction::LAUNCH_APP_5,                  // Alt + 6
-    AcceleratorAction::LAUNCH_APP_6,                  // Alt + 7
-    AcceleratorAction::LAUNCH_APP_7,                  // Alt + 8
-    AcceleratorAction::LAUNCH_LAST_APP,               // Alt + 9
-    AcceleratorAction::TOGGLE_MESSAGE_CENTER_BUBBLE,  // Shift + Alt + N
-    AcceleratorAction::SCALE_UI_UP,                   // Shift + Ctrl + "+"
-    AcceleratorAction::SCALE_UI_DOWN,                 // Shift + Ctrl + "-"
-    AcceleratorAction::SCALE_UI_RESET,                // Shift + Ctrl + 0
-    AcceleratorAction::ROTATE_SCREEN,                 // Shift + Ctrl + Refresh
-    AcceleratorAction::TOGGLE_SPOKEN_FEEDBACK,        // Ctrl + Alt + Z
-    AcceleratorAction::FOCUS_SHELF,                   // Shift + Alt + L
-    AcceleratorAction::FOCUS_NEXT_PANE,               // Ctrl + Back
-    AcceleratorAction::FOCUS_PREVIOUS_PANE,           // Ctrl + Forward
-    AcceleratorAction::TOGGLE_APP_LIST                // Launcher(Search)
+    AcceleratorAction::kOpenFeedbackPage,           // Shift + Alt + I
+    AcceleratorAction::kExit,                       // Shift + Ctrl + Q
+    AcceleratorAction::kShowShortcutViewer,         // Ctrl + Alt + /
+    AcceleratorAction::kToggleCapsLock,             // Alt + Search
+    AcceleratorAction::kNewWindow,                  // Ctrl + N
+    AcceleratorAction::kNewIncognitoWindow,         // Shift + Ctrl + N
+    AcceleratorAction::kNewTab,                     // Ctrl + T
+    AcceleratorAction::kOpenFileManager,            // Shift + Alt + M
+    AcceleratorAction::kLaunchApp0,                 // Alt + 1
+    AcceleratorAction::kLaunchApp1,                 // Alt + 2
+    AcceleratorAction::kLaunchApp2,                 // Alt + 3
+    AcceleratorAction::kLaunchApp3,                 // Alt + 4
+    AcceleratorAction::kLaunchApp4,                 // Alt + 5
+    AcceleratorAction::kLaunchApp5,                 // Alt + 6
+    AcceleratorAction::kLaunchApp6,                 // Alt + 7
+    AcceleratorAction::kLaunchApp7,                 // Alt + 8
+    AcceleratorAction::kLaunchLastApp,              // Alt + 9
+    AcceleratorAction::kToggleMessageCenterBubble,  // Shift + Alt + N
+    AcceleratorAction::kScaleUiUp,                  // Shift + Ctrl + "+"
+    AcceleratorAction::kScaleUiDown,                // Shift + Ctrl + "-"
+    AcceleratorAction::kScaleUiReset,               // Shift + Ctrl + 0
+    AcceleratorAction::kRotateScreen,               // Shift + Ctrl + Refresh
+    AcceleratorAction::kToggleSpokenFeedback,       // Ctrl + Alt + Z
+    AcceleratorAction::kFocusShelf,                 // Shift + Alt + L
+    AcceleratorAction::kFocusNextPane,              // Ctrl + Back
+    AcceleratorAction::kFocusPreviousPane,          // Ctrl + Forward
+    AcceleratorAction::kToggleAppList               // Launcher(Search)
 };
 
 // Creates a button with the given callback, icon, and tooltip text.
@@ -917,7 +917,7 @@ bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
   // upper in the chain and perform the minimize by reacting to
   // ToggleMinimized().
   if (accelerator_controller->DoesAcceleratorMatchAction(
-          accelerator, AcceleratorAction::WINDOW_MINIMIZE)) {
+          accelerator, AcceleratorAction::kWindowMinimize)) {
     CloseBubble();
     return true;
   }
@@ -960,7 +960,7 @@ bool EcheTray::ProcessAcceleratorKeys(ui::KeyEvent* event) {
       if (!is_only_control_down)
         return false;
       // Please note that ctrl+w does not have a global accelerator action
-      // similar to AcceleratorAction::WINDOW_MINIMIZE that was used above.
+      // similar to AcceleratorAction::kWindowMinimize that was used above.
       //
       // TODO(https://crbug/1338650): See if we can just leave this to be
       // handled upper in the chain.

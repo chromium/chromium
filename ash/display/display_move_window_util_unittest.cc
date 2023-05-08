@@ -61,7 +61,7 @@ views::Widget* CreateTestWidgetWithParent(views::Widget::InitParams::Type type,
 
 void PerformMoveWindowAccel() {
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
-      MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS, {});
+      AcceleratorAction::kMoveActiveWindowBetweenDisplays, {});
 }
 
 }  // namespace

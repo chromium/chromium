@@ -487,8 +487,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopHitTestIframe) {
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopFocusViews) {
   AutomationManagerAura::GetInstance()->Enable();
   // Trigger the shelf subtree to be computed.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
-                                                            {});
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::AcceleratorAction::kFocusShelf, {});
 
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.extension_url = "focus_views.html"}))
@@ -512,8 +512,8 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopActions) {
   AutomationManagerAura::GetInstance()->Enable();
   // Trigger the shelf subtree to be computed.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(ash::FOCUS_SHELF,
-                                                            {});
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::AcceleratorAction::kFocusShelf, {});
 
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.extension_url = "actions.html"}))
