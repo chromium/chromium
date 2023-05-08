@@ -538,6 +538,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
                network::features::kAttributionReportingCrossAppWeb);
   }
 
+  if (trial_name == "ComputePressure") {
+    return base::FeatureList::IsEnabled(features::kComputePressure);
+  }
+
   return true;
 }
 
