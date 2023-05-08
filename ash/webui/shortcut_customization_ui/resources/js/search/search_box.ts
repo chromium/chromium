@@ -13,6 +13,7 @@ import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_element
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -143,9 +144,12 @@ export class SearchBoxElement extends SearchBoxElementBase implements
   override connectedCallback(): void {
     super.connectedCallback();
 
-    this.searchInputElement =
-        strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement)
-            .getSearchInput();
+    const searchFieldElement =
+        strictQuery('#search', this.shadowRoot, CrToolbarSearchFieldElement);
+    searchFieldElement.addEventListener(
+        'transitionend', this.onSearchFieldTransitionEnd.bind(this));
+
+    this.searchInputElement = searchFieldElement.getSearchInput();
 
     // Focus the search bar when the app opens.
     afterNextRender(this, () => {
@@ -254,6 +258,18 @@ export class SearchBoxElement extends SearchBoxElementBase implements
       // Select all search input text once the initial state is set.
       afterNextRender(this, () => this.searchInputElement.select());
     }
+  }
+
+  private onSearchFieldTransitionEnd(): void {
+    // Cast to IronDropdownElement since the interface cannot be used as a
+    // value.
+    const ironDropdown =
+        (strictQuery('iron-dropdown', this.shadowRoot, HTMLElement) as
+         IronDropdownElement);
+
+    // Resize the dropdown once the search bar has finishing resizing to avoid
+    // misalignment when the window resizes.
+    ironDropdown.notifyResize();
   }
 
   private onKeyDown(e: KeyboardEvent): void {
