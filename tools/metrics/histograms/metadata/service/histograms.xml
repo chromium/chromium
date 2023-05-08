@@ -1483,9 +1483,8 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform 'match' operations of type {MatchType} on the Cache
-    object in the ServiceWorker Cache API. This histogram was temporarily
-    disabled from M96 through early 12/2021.
+    Histogram for the ServiceWorker Cache API. {MatchType} This histogram was
+    temporarily disabled from M96 through early 12/2021.
   </summary>
   <token key="ServiceWorkerCacheProcessType"
       variants="ServiceWorkerCacheProcessType"/>
@@ -1510,9 +1509,8 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform the {ProcessOps} operation on the Cache object in the
-    ServiceWorker Cache API. This histogram was temporarily disabled from M96
-    through early 12/2021.
+    Histogram for the ServiceWorker Cache API. {ProcessOps} This histogram was
+    temporarily disabled from M96 through early 12/2021.
   </summary>
   <token key="ServiceWorkerCacheProcessType"
       variants="ServiceWorkerCacheProcessType"/>
@@ -1555,9 +1553,8 @@ chromium-metrics-reviews@google.com.
   <owner>ayui@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
-    The time to perform the {ProcessOps} operations on the CacheStorage object
-    in the ServiceWorker Cache API. This histogram was temporarily disabled from
-    M96 through early 12/2021.
+    Histogram for the ServiceWorker Cache API. {ProcessOps} This histogram was
+    temporarily disabled from M96 through early 12/2021.
   </summary>
   <token key="ServiceWorkerCacheProcessType"
       variants="ServiceWorkerCacheProcessType"/>
