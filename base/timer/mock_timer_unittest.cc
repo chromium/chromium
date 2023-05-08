@@ -51,6 +51,19 @@ TEST(MockTimerTest, Stops) {
   EXPECT_FALSE(timer.IsRunning());
 }
 
+TEST(MockOneShotTimerTest, FireNow) {
+  int calls = 0;
+  base::MockOneShotTimer timer;
+  base::TimeDelta delay = base::Seconds(2);
+  timer.Start(FROM_HERE, delay,
+              base::BindOnce(&CallMeMaybe, base::Unretained(&calls)));
+  EXPECT_EQ(delay, timer.GetCurrentDelay());
+  EXPECT_TRUE(timer.IsRunning());
+  timer.FireNow();
+  EXPECT_FALSE(timer.IsRunning());
+  EXPECT_EQ(1, calls);
+}
+
 class HasWeakPtr : public base::SupportsWeakPtr<HasWeakPtr> {
  public:
   HasWeakPtr() = default;

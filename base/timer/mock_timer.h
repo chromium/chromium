@@ -24,6 +24,10 @@ class MockOneShotTimer : public OneShotTimer {
   // Testing method.
   void Fire();
 
+  // OneShotTimer::FireNow requires no task runner is set. Override FireNow to
+  // bypass the check.
+  void FireNow() override;
+
  private:
   // Timer implementation.
   // MockOneShotTimer doesn't support SetTaskRunner. Do not use this.
