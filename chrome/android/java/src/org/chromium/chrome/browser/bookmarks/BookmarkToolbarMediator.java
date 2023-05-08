@@ -65,7 +65,7 @@ class BookmarkToolbarMediator implements BookmarkUiObserver, DragListener,
 
         final @BookmarkRowDisplayPref int pref = mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         if (BookmarkFeatures.isAndroidImprovedBookmarksEnabled()) {
-            mModel.set(BookmarkToolbarProperties.CHECKED_SORT_MENU_ID,
+            mModel.set(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID,
                     pref == BookmarkRowDisplayPref.COMPACT ? R.id.compact_view : R.id.visual_view);
         }
         bookmarkDelegateSupplier.onAvailable((bookmarkDelegate) -> {

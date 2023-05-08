@@ -21,6 +21,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -41,6 +42,9 @@ import org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
@@ -59,10 +63,12 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(LooperMode.Mode.LEGACY)
+@EnableFeatures(ChromeFeatureList.ANDROID_IMPROVED_BOOKMARKS)
 public class BookmarkToolbarMediatorTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -91,7 +97,7 @@ public class BookmarkToolbarMediatorTest {
 
     BookmarkToolbarMediator mMediator;
     PropertyModel mModel;
-    OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
+    OneshotSupplierImpl<BookmarkDelegate> mBookmarkDelegateSupplier;
 
     @Before
     public void setUp() {
@@ -104,6 +110,10 @@ public class BookmarkToolbarMediatorTest {
         doReturn(mBookmarkItem).when(mBookmarkModel).getBookmarkById(any());
         doReturn(mBookmarkId).when(mBookmarkItem).getId();
 
+        initModelAndMediator();
+    }
+
+    private void initModelAndMediator() {
         mModel = new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS)
                          .with(BookmarkToolbarProperties.BOOKMARK_MODEL, mBookmarkModel)
                          .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
@@ -115,7 +125,7 @@ public class BookmarkToolbarMediatorTest {
                                  mOpenSearchUiRunnable)
                          .with(BookmarkToolbarProperties.OPEN_FOLDER_CALLBACK, mOpenFolderCallback)
                          .build();
-
+        mBookmarkDelegateSupplier = new OneshotSupplierImpl<>();
         mMediator = new BookmarkToolbarMediator(mContext, mModel,
                 mDragReorderableRecyclerViewAdapter, mBookmarkDelegateSupplier, mSelectionDelegate,
                 mBookmarkModel, mBookmarkOpener, mBookmarkUiPrefs);
@@ -335,5 +345,18 @@ public class BookmarkToolbarMediatorTest {
         Assert.assertEquals(
                 R.id.compact_view, mModel.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
         verify(mBookmarkUiPrefs).setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
+    }
+
+    @Test
+    public void testInitialization_viewOptions() {
+        doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        initModelAndMediator();
+        Assert.assertEquals(
+                R.id.compact_view, mModel.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
+
+        doReturn(BookmarkRowDisplayPref.VISUAL).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();
+        initModelAndMediator();
+        Assert.assertEquals(
+                R.id.visual_view, mModel.get(BookmarkToolbarProperties.CHECKED_VIEW_MENU_ID));
     }
 }
