@@ -89,7 +89,7 @@ message_center::Notification CreateNearbyNotification(const std::string& id) {
       /*delegate=*/nullptr);
 
   if (chromeos::features::IsJellyEnabled()) {
-    notification.set_accent_color_id(cros_tokens::kCrosSysOnPrimary);
+    notification.set_accent_color_id(cros_tokens::kCrosSysPrimary);
   } else {
     notification.set_accent_color(ash::kSystemNotificationColorNormal);
   }

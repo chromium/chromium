@@ -231,7 +231,7 @@ void CupsPrintJobNotification::UpdateNotificationIcon() {
     case CupsPrintJob::State::STATE_SUSPENDED:
     case CupsPrintJob::State::STATE_RESUMED: {
       if (chromeos::features::IsJellyEnabled()) {
-        notification_->set_accent_color_id(cros_tokens::kCrosSysOnPrimary);
+        notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
       } else {
         notification_->set_accent_color(kSystemNotificationColorNormal);
       }
@@ -240,7 +240,7 @@ void CupsPrintJobNotification::UpdateNotificationIcon() {
     }
     case CupsPrintJob::State::STATE_DOCUMENT_DONE: {
       if (chromeos::features::IsJellyEnabled()) {
-        notification_->set_accent_color_id(cros_tokens::kCrosSysOnPrimary);
+        notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
       } else {
         notification_->set_accent_color(kSystemNotificationColorNormal);
       }

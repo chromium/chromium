@@ -72,7 +72,7 @@ CrostiniPackageNotification::CrostiniPackageNotification(
   rich_notification_data.vector_small_image = &ash::kNotificationLinuxIcon;
   rich_notification_data.never_timeout = true;
   if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysOnPrimary;
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
   } else {
     rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
   }

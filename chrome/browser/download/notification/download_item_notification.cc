@@ -609,10 +609,10 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   }
   SkColor notification_color = GetNotificationIconColor();
   if (chromeos::features::IsJellyEnabled()) {
-    ui::ColorId color_id = cros_tokens::kCrosSysOnPrimary;
+    ui::ColorId color_id = cros_tokens::kCrosSysPrimary;
     switch (notification_color) {
       case ash::kSystemNotificationColorNormal:
-        color_id = cros_tokens::kCrosSysOnPrimary;
+        color_id = cros_tokens::kCrosSysPrimary;
         break;
       case ash::kSystemNotificationColorWarning:
         color_id = cros_tokens::kCrosSysWarning;

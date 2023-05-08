@@ -43,7 +43,7 @@ PluginVmUninstallerNotification::PluginVmUninstallerNotification(
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.vector_small_image = &kNotificationPluginVmIcon;
   if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysOnPrimary;
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
   } else {
     rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
   }

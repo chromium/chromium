@@ -64,7 +64,7 @@ CrostiniExportImportNotificationController::
   rich_notification_data.vector_small_image = &ash::kNotificationLinuxIcon;
 
   if (chromeos::features::IsJellyEnabled()) {
-    rich_notification_data.accent_color_id = cros_tokens::kCrosSysOnPrimary;
+    rich_notification_data.accent_color_id = cros_tokens::kCrosSysPrimary;
   } else {
     rich_notification_data.accent_color = ash::kSystemNotificationColorNormal;
   }
@@ -114,7 +114,7 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
 
   notification_->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   if (chromeos::features::IsJellyEnabled()) {
-    notification_->set_accent_color_id(cros_tokens::kCrosSysOnPrimary);
+    notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
   } else {
     notification_->set_accent_color(ash::kSystemNotificationColorNormal);
   }
@@ -143,7 +143,7 @@ void CrostiniExportImportNotificationController::SetStatusCancellingUI() {
 
   notification_->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   if (chromeos::features::IsJellyEnabled()) {
-    notification_->set_accent_color_id(cros_tokens::kCrosSysOnPrimary);
+    notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
   } else {
     notification_->set_accent_color(ash::kSystemNotificationColorNormal);
   }
@@ -174,7 +174,7 @@ void CrostiniExportImportNotificationController::SetStatusDoneUI() {
 
   notification_->set_type(message_center::NOTIFICATION_TYPE_SIMPLE);
   if (chromeos::features::IsJellyEnabled()) {
-    notification_->set_accent_color_id(cros_tokens::kCrosSysOnPrimary);
+    notification_->set_accent_color_id(cros_tokens::kCrosSysPrimary);
   } else {
     notification_->set_accent_color(ash::kSystemNotificationColorNormal);
   }

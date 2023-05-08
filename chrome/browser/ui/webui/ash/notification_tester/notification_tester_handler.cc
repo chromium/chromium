@@ -117,11 +117,11 @@ void NotificationTesterHandler::HandleGenerateNotificationForm(
       base::UTF8ToUTF16(*display_source), origin_url, notifier_id,
       optional_fields, delegate);
 
-  ui::ColorId color_id = cros_tokens::kCrosSysOnPrimary;
+  ui::ColorId color_id = cros_tokens::kCrosSysPrimary;
   if (chromeos::features::IsJellyEnabled()) {
     switch (warning_level) {
       case message_center::SystemNotificationWarningLevel::NORMAL:
-        color_id = cros_tokens::kCrosSysOnPrimary;
+        color_id = cros_tokens::kCrosSysPrimary;
         break;
       case message_center::SystemNotificationWarningLevel::WARNING:
         color_id = cros_tokens::kCrosSysWarning;

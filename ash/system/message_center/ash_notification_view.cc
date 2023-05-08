@@ -1723,6 +1723,9 @@ void AshNotificationView::UpdateAppIconView(
 
   SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kInvertedButtonLabelColor);
+  if (chromeos::features::IsJellyEnabled() && GetWidget()) {
+    icon_color = GetColorProvider()->GetColor(cros_tokens::kCrosSysOnPrimary);
+  }
   SkColor icon_background_color = CalculateIconAndButtonsColor(notification);
 
   // TODO(crbug.com/768748): figure out if this has a performance impact and
