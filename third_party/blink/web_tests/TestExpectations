@@ -6788,6 +6788,8 @@ crbug.com/1441416 [ Linux ] external/wpt/js-self-profiling/max-buffer-size.windo
 # Sheriff 2023-05-02
 crbug.com/1441166 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 crbug.com/1441166 [ Linux ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
+# Sheriff 2023-05-08
+crbug.com/1441166 [ Win ] http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
 # Sheriff 2023-05-04
 crbug.com/1434164 http/tests/streams/chromium/transferable-streams-optimization.html [ Crash Failure Pass ]
