@@ -185,36 +185,37 @@ ui::ColorId GetFocusColorId(bool use_jelly_colors) {
 
 }  // namespace
 
-class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
+class SearchBoxView::FocusRingLayer : public ui::LayerOwner, ui::LayerDelegate {
  public:
-  FocusRingLayer() : Layer(ui::LAYER_TEXTURED) {
-    SetName("search_box/FocusRing");
-    SetFillsBoundsOpaquely(false);
-    set_delegate(this);
+  FocusRingLayer()
+      : LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)) {
+    layer()->SetName("search_box/FocusRing");
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->set_delegate(this);
   }
   FocusRingLayer(const FocusRingLayer&) = delete;
   FocusRingLayer& operator=(const FocusRingLayer&) = delete;
-  ~FocusRingLayer() override {}
+  ~FocusRingLayer() override = default;
 
   void SetColor(SkColor color) {
     if (color == color_) {
       return;
     }
     color_ = color;
-    SchedulePaint(gfx::Rect(size()));
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
  private:
   // views::LayerDelegate:
   void OnPaintLayer(const ui::PaintContext& context) override {
-    ui::PaintRecorder recorder(context, bounds().size());
+    ui::PaintRecorder recorder(context, layer()->size());
     gfx::Canvas* canvas = recorder.canvas();
 
     // When using strokes to draw a rect, the bounds set is the center of the
     // rect, which means that setting draw bounds to `bounds()` will leave half
     // of the border outside the layer that may not be painted. Shrink the draw
     // bounds by half of the width to solve this problem.
-    gfx::Rect draw_bounds(bounds().size());
+    gfx::Rect draw_bounds(layer()->size());
     draw_bounds.Inset(kSearchBoxFocusRingWidth / 2);
 
     cc::PaintFlags flags;
@@ -226,7 +227,7 @@ class SearchBoxView::FocusRingLayer : public ui::Layer, ui::LayerDelegate {
   }
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                   float new_device_scale_factor) override {
-    SchedulePaint(gfx::Rect(size()));
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
   }
 
   SkColor color_ = gfx::kPlaceholderColor;
@@ -524,7 +525,7 @@ void SearchBoxView::OnThemeChanged() {
 
 void SearchBoxView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   if (focus_ring_layer_)
-    focus_ring_layer_->SetBounds(bounds());
+    focus_ring_layer_->layer()->SetBounds(bounds());
 }
 
 void SearchBoxView::AddedToWidget() {
@@ -534,8 +535,8 @@ void SearchBoxView::AddedToWidget() {
     focus_ring_layer_ = std::make_unique<FocusRingLayer>();
     focus_ring_layer_->SetColor(
         GetColorProvider()->GetColor(GetFocusColorId(is_jelly_enabled_)));
-    layer()->parent()->Add(focus_ring_layer_.get());
-    layer()->parent()->StackAtBottom(focus_ring_layer_.get());
+    layer()->parent()->Add(focus_ring_layer_->layer());
+    layer()->parent()->StackAtBottom(focus_ring_layer_->layer());
     UpdateSearchBoxFocusPaint();
   }
 }
@@ -580,9 +581,9 @@ void SearchBoxView::UpdateSearchBoxFocusPaint() {
   // Paints the focus ring if the search box is focused.
   if (search_box()->HasFocus() && !is_search_box_active() &&
       view_delegate_->KeyboardTraversalEngaged()) {
-    focus_ring_layer_->SetVisible(true);
+    focus_ring_layer_->layer()->SetVisible(true);
   } else {
-    focus_ring_layer_->SetVisible(false);
+    focus_ring_layer_->layer()->SetVisible(false);
   }
 }
 
