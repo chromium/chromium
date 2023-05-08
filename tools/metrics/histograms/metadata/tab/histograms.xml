@@ -526,6 +526,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.SavedTabGroupCount" units="groups"
+    expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once an hour once the SavedTabGroupKeyedService is instantiated.
+    Tracks the total number of groups saved in the profile.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SavedTabGroupTabCount" units="tabs"
+    expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once an hour once the SavedTabGroupKeyedService is instantiated.
+    Tracks the number of tabs in a SavedTabGroup.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SessionsPerGroup" units="sessions"
     expires_after="2023-10-22">
   <owner>yusufo@chromium.org</owner>
@@ -555,6 +575,26 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time a tab group spends in the expanded state before the group is either
     collapsed or closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UnsavedTabGroupCount" units="groups"
+    expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once an hour once the SavedTabGroupKeyedService is instantiated.
+    Tracks the number of unsaved TabGroups.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UnsavedTabGroupTabCount" units="tabs"
+    expires_after="2023-12-27">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records once an hour once the SavedTabGroupKeyedService is instantiated.
+    Tracks the number of tabs in an unsaved TabGroup.
   </summary>
 </histogram>
 

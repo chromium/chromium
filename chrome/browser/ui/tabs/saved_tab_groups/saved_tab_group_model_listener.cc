@@ -20,6 +20,27 @@ namespace content {
 class WebContents;
 }
 
+SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
+
+SavedTabGroupModelListener::SavedTabGroupModelListener(
+    SavedTabGroupModel* model,
+    Profile* profile)
+    : model_(model), profile_(profile) {
+  DCHECK(model);
+  DCHECK(profile);
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserAdded(browser);
+  }
+  BrowserList::GetInstance()->AddObserver(this);
+}
+
+SavedTabGroupModelListener::~SavedTabGroupModelListener() {
+  BrowserList::GetInstance()->RemoveObserver(this);
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    OnBrowserRemoved(browser);
+  }
+}
+
 void SavedTabGroupModelListener::OnTabGroupChanged(
     const TabGroupChange& change) {
   const TabStripModel* tab_strip_model = change.model;
@@ -101,27 +122,6 @@ void SavedTabGroupModelListener::WillCloseAllTabs(
     if (local_tab_group_listeners_.contains(group_id)) {
       DisconnectLocalTabGroup(group_id);
     }
-  }
-}
-
-SavedTabGroupModelListener::SavedTabGroupModelListener() = default;
-
-SavedTabGroupModelListener::SavedTabGroupModelListener(
-    SavedTabGroupModel* model,
-    Profile* profile)
-    : model_(model), profile_(profile) {
-  DCHECK(model);
-  DCHECK(profile);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserAdded(browser);
-  }
-  BrowserList::GetInstance()->AddObserver(this);
-}
-
-SavedTabGroupModelListener::~SavedTabGroupModelListener() {
-  BrowserList::GetInstance()->RemoveObserver(this);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    OnBrowserRemoved(browser);
   }
 }
 

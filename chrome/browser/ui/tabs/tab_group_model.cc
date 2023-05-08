@@ -20,7 +20,7 @@
 TabGroupModel::TabGroupModel(TabGroupController* controller)
     : controller_(controller) {}
 
-TabGroupModel::~TabGroupModel() {}
+TabGroupModel::~TabGroupModel() = default;
 
 TabGroup* TabGroupModel::AddTabGroup(
     const tab_groups::TabGroupId& id,

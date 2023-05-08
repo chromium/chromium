@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/bookmarks/url_and_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -29,6 +33,7 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
+constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Hours(1);
 
 std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor>
 CreateChangeProcessor() {
@@ -45,6 +50,11 @@ SavedTabGroupKeyedService::SavedTabGroupKeyedService(Profile* profile)
       listener_(model(), profile),
       bridge_(model(), GetStoreFactory(), CreateChangeProcessor()) {
   model()->AddObserver(this);
+
+  metrics_timer_.Start(
+      FROM_HERE, kDelayBeforeMetricsLogged,
+      base::BindRepeating(&SavedTabGroupKeyedService::RecordMetrics,
+                          base::Unretained(this)));
 }
 
 SavedTabGroupKeyedService::~SavedTabGroupKeyedService() {
@@ -356,4 +366,56 @@ void SavedTabGroupKeyedService::UpdateGroupVisualData(
                                              saved_group->color(),
                                              /*is_collapsed=*/false);
   tab_group->SetVisualData(visual_data, /*is_customized=*/true);
+}
+
+void SavedTabGroupKeyedService::RecordMetrics() {
+  RecordSavedTabGroupMetrics();
+  RecordTabGroupMetrics();
+  metrics_timer_.Reset();
+}
+
+void SavedTabGroupKeyedService::RecordSavedTabGroupMetrics() {
+  base::UmaHistogramCounts10000("TabGroups.SavedTabGroupCount",
+                                model()->Count());
+
+  for (const SavedTabGroup& group : model()->saved_tab_groups()) {
+    base::UmaHistogramCounts10000("TabGroups.SavedTabGroupTabCount",
+                                  group.saved_tabs().size());
+  }
+}
+
+void SavedTabGroupKeyedService::RecordTabGroupMetrics() {
+  int total_unsaved_groups = 0;
+
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (profile_ != browser->profile()) {
+      continue;
+    }
+
+    const TabStripModel* const tab_strip_model = browser->tab_strip_model();
+    if (!tab_strip_model->SupportsTabGroups()) {
+      return;
+    }
+
+    const TabGroupModel* group_model = tab_strip_model->group_model();
+    CHECK(group_model);
+
+    std::vector<tab_groups::TabGroupId> group_ids =
+        group_model->ListTabGroups();
+
+    for (tab_groups::TabGroupId group_id : group_ids) {
+      if (model()->Contains(group_id)) {
+        continue;
+      }
+
+      const TabGroup* const group = group_model->GetTabGroup(group_id);
+      base::UmaHistogramCounts10000("TabGroups.UnsavedTabGroupTabCount",
+                                    group->tab_count());
+      ++total_unsaved_groups;
+    }
+  }
+
+  // Record total number of non-saved tab groups in all browsers.
+  base::UmaHistogramCounts10000("TabGroups.UnsavedTabGroupCount",
+                                total_unsaved_groups);
 }
