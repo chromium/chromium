@@ -1739,10 +1739,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
   variations::VariationsService* variations_service =
       browser_process_->variations_service();
-  // Only call PerformPreMainMessageLoopStartup() on VariationsService outside
-  // of integration (browser) tests.
-  if (!is_integration_test())
-    variations_service->PerformPreMainMessageLoopStartup();
+  variations_service->PerformPreMainMessageLoopStartup();
 
 #if BUILDFLAG(IS_ANDROID)
   // The profile picker is never shown on Android.
