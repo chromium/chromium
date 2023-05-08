@@ -46,7 +46,7 @@ bool ShellFederatedPermissionContext::ShouldCompleteRequestImmediately() const {
 }
 
 // FederatedIdentityAutoReauthnPermissionContextDelegate
-bool ShellFederatedPermissionContext::HasAutoReauthnContentSetting() {
+bool ShellFederatedPermissionContext::IsAutoReauthnSettingEnabled() {
   return auto_reauthn_permission_;
 }
 

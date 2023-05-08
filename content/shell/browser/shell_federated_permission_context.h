@@ -41,7 +41,7 @@ class ShellFederatedPermissionContext
   bool ShouldCompleteRequestImmediately() const override;
 
   // FederatedIdentityAutoReauthnPermissionContextDelegate
-  bool HasAutoReauthnContentSetting() override;
+  bool IsAutoReauthnSettingEnabled() override;
   bool IsAutoReauthnEmbargoed(
       const url::Origin& relying_party_embedder) override;
   base::Time GetAutoReauthnEmbargoStartTime(

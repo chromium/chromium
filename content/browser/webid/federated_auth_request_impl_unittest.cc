@@ -1515,7 +1515,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnEmbargo) {
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1554,7 +1554,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1610,7 +1610,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1666,7 +1666,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1704,7 +1704,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForZeroReturningUsers) {
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1768,7 +1768,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend that auto re-authn is not disabled in settings.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
 
   // Pretend that auto re-authn is not in embargo state.
@@ -1780,6 +1780,45 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               RequiresUserMediation(GURL(kRpUrl)))
       .WillOnce(Return(true));
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
+
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
+}
+
+// Test that auto re-authn with multiple accounts and a single returning user
+// sets the sign-in mode to kExplicit if "auto sign-in" is disabled.
+TEST_F(FederatedAuthRequestImplTest,
+       AutoReauthnForSingleReturningUserWithAutoSigninDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
+
+  // Pretend the sharing permission has been granted for this account.
+  EXPECT_CALL(
+      *test_permission_delegate_,
+      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                           OriginFromString(kProviderUrlFull),
+                           Optional(std::string(kAccountId))))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  // Pretend that auto re-authn is not in embargo state.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+
+  // Pretend that re-authn does not require user mediation.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              RequiresUserMediation(GURL(kRpUrl)))
+      .WillOnce(Return(false));
+
+  // Pretend that auto re-authn is disabled in settings.
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(false));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
               kConfigurationValid);
@@ -1807,7 +1846,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1833,7 +1872,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnForFirstTimeUser) {
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1864,7 +1903,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been blocked for this account.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(false));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
@@ -1896,7 +1935,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnWithCooldown) {
 
   // Pretend the auto re-authn permission has been granted for this account.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   // Pretend that auto re-authn is embargoed.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
@@ -1939,9 +1978,9 @@ TEST_F(FederatedAuthRequestImplTest,
                   OriginFromString(kProviderUrlFull), Eq(absl::nullopt)))
       .WillOnce(Return(false));
 
-  // Pretend the auto re-authn permission has been granted.
+  // Pretend the auto re-authn is disabled in settings.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
@@ -1975,8 +2014,9 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
+
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .WillOnce(Return(true));
@@ -2001,7 +2041,7 @@ TEST_F(FederatedAuthRequestImplTest,
   list.InitAndEnableFeature(features::kFedCmAutoReauthn);
 
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
   EXPECT_CALL(*test_permission_delegate_,
               HasSharingPermission(
@@ -2014,6 +2054,40 @@ TEST_F(FederatedAuthRequestImplTest,
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               RequiresUserMediation(GURL(kRpUrl)))
       .WillOnce(Return(true));
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      {FederatedAuthRequestResult::kError},
+      /*selected_idp_config_url=*/absl::nullopt};
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.mediation_requirement = MediationRequirement::kSilent;
+
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+
+  EXPECT_FALSE(DidFetchAnyEndpoint());
+}
+
+// Test that no network request is sent if `mediation: silent` is used and user
+// has disabled "auto sign-in".
+TEST_F(FederatedAuthRequestImplTest,
+       AutoReauthnMediationSilentFailWithPasswordManagerAutoSigninDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutoReauthn);
+
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .WillOnce(Return(false));
+  EXPECT_CALL(*test_permission_delegate_,
+              HasSharingPermission(
+                  OriginFromString(kRpUrl), OriginFromString(kRpUrl),
+                  OriginFromString(kProviderUrlFull), Eq(absl::nullopt)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
+      .WillOnce(Return(false));
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              RequiresUserMediation(GURL(kRpUrl)))
+      .WillOnce(Return(false));
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -2068,7 +2142,7 @@ TEST_F(FederatedAuthRequestImplTest,
 
   // Pretend the auto re-authn permission has been granted.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              HasAutoReauthnContentSetting())
+              IsAutoReauthnSettingEnabled())
       .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,

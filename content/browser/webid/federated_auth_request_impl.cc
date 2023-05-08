@@ -1094,13 +1094,13 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       IsFedCmAutoReauthnEnabled();
 
   bool auto_reauthn = auto_reauthn_enabled;
-  bool has_auto_reauthn_content_setting = false;
+  bool is_auto_reauthn_setting_enabled = false;
   bool is_auto_reauthn_embargoed = false;
   absl::optional<base::TimeDelta> time_from_embargo;
   if (auto_reauthn_enabled) {
-    has_auto_reauthn_content_setting =
-        auto_reauthn_permission_delegate_->HasAutoReauthnContentSetting();
-    auto_reauthn &= has_auto_reauthn_content_setting;
+    is_auto_reauthn_setting_enabled =
+        auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
+    auto_reauthn &= is_auto_reauthn_setting_enabled;
     is_auto_reauthn_embargoed =
         auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
             GetEmbeddingOrigin());
@@ -1132,7 +1132,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
         mediation_requirement_ == MediationRequirement::kSilent) {
       fedcm_metrics_->RecordAutoReauthnMetrics(
           has_single_returning_account, auto_reauthn_account, auto_reauthn,
-          !has_auto_reauthn_content_setting, is_auto_reauthn_embargoed,
+          !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
           time_from_embargo);
 
       // By this moment we know that the user has granted permission in the past
@@ -1199,7 +1199,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   if (auto_reauthn_enabled) {
     fedcm_metrics_->RecordAutoReauthnMetrics(
         has_single_returning_account, auto_reauthn_account, auto_reauthn,
-        !has_auto_reauthn_content_setting, is_auto_reauthn_embargoed,
+        !is_auto_reauthn_setting_enabled, is_auto_reauthn_embargoed,
         time_from_embargo);
   }
 }
@@ -2018,8 +2018,8 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
     return false;
   }
 
-  bool has_auto_reauthn_content_setting =
-      auto_reauthn_permission_delegate_->HasAutoReauthnContentSetting();
+  bool is_auto_reauthn_setting_enabled =
+      auto_reauthn_permission_delegate_->IsAutoReauthnSettingEnabled();
 
   bool is_auto_reauthn_embargoed =
       auto_reauthn_permission_delegate_->IsAutoReauthnEmbargoed(
@@ -2030,8 +2030,8 @@ bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
           origin(), GetEmbeddingOrigin(), url::Origin::Create(config_url),
           absl::nullopt);
 
-  return !has_auto_reauthn_content_setting || is_auto_reauthn_embargoed ||
-         !has_sharing_permission_for_any_account || RequiresUserMediation();
+  return RequiresUserMediation() || !is_auto_reauthn_setting_enabled ||
+         is_auto_reauthn_embargoed || !has_sharing_permission_for_any_account;
 }
 
 bool FederatedAuthRequestImpl::RequiresUserMediation() {

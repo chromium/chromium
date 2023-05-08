@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/webid/federated_identity_auto_reauthn_permission_context_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -24,14 +25,18 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
       FederatedIdentityAutoReauthnPermissionContextTest&) = delete;
 
   void SetUp() override {
+    profile_ = TestingProfile::Builder()
+                   .AddTestingFactory(SyncServiceFactory::GetInstance(),
+                                      SyncServiceFactory::GetDefaultFactory())
+                   .Build();
     context_ =
         FederatedIdentityAutoReauthnPermissionContextFactory::GetForProfile(
-            &profile_);
+            profile());
     host_content_settings_map_ =
-        HostContentSettingsMapFactory::GetForProfile(&profile_);
+        HostContentSettingsMapFactory::GetForProfile(profile());
   }
 
-  Profile* profile() { return &profile_; }
+  Profile* profile() { return profile_.get(); }
 
  protected:
   raw_ptr<FederatedIdentityAutoReauthnPermissionContext> context_;
@@ -50,14 +55,14 @@ class FederatedIdentityAutoReauthnPermissionContextTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 };
 
 // Test that FedCM auto re-authn is opt-in by default.
 TEST_F(FederatedIdentityAutoReauthnPermissionContextTest,
        AutoReauthnEnabledByDefault) {
   GURL rp_url("https://rp.com");
-  EXPECT_TRUE(context_->HasAutoReauthnContentSetting());
+  EXPECT_TRUE(context_->IsAutoReauthnSettingEnabled());
   EXPECT_FALSE(context_->IsAutoReauthnEmbargoed(url::Origin::Create(rp_url)));
 }
 
