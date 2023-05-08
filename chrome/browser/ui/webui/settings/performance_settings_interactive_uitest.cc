@@ -317,8 +317,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       HighEfficiencySendFeedbackDialogOpens) {
+                       DISABLED_HighEfficiencySendFeedbackDialogOpens) {
   const DeepQuery high_efficiency_feedback = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-section#performanceSettingsSection", "cr-icon-button#feedback"};
@@ -331,8 +332,9 @@ IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
       InAnyContext(WaitForShow(FeedbackDialog::kFeedbackDialogForTesting)));
 }
 
+// TODO(http://b/281528238): reenable the test.
 IN_PROC_BROWSER_TEST_F(PerformanceSettingsInteractiveTest,
-                       BatterySaverSendFeedbackDialogOpens) {
+                       DISABLED_BatterySaverSendFeedbackDialogOpens) {
   const DeepQuery battery_saver_feedback = {
       "settings-ui", "settings-main", "settings-basic-page",
       "settings-section#batterySettingsSection", "cr-icon-button#feedback"};
