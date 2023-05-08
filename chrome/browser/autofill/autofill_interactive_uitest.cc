@@ -218,8 +218,8 @@ std::vector<FieldValue> GetFieldValues(
   std::vector<FieldValue> fields;
 
   for (const base::Value& field : r.value.GetList()) {
-    fields.push_back({.id = *field.FindStringKey("id"),
-                      .value = *field.FindStringKey("value")});
+    fields.push_back({.id = *field.GetDict().FindString("id"),
+                      .value = *field.GetDict().FindString("value")});
   }
   return fields;
 }
