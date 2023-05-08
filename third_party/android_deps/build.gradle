@@ -192,7 +192,7 @@ dependencies {
     // Depended on by downstream guava_java rewrite.
     androidTestCompile "org.checkerframework:checker-qual:3.25.0"
 
-    String robolectricVersion = '4.8.1'
+    String robolectricVersion = '4.10.2'
     // Use testCompile to avoid having support_android = true set on
     // robolectric dependencies.
     testCompile "org.robolectric:robolectric:${robolectricVersion}"
