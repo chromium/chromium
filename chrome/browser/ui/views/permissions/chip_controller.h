@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <memory>
+
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/timer/timer.h"
@@ -36,7 +37,8 @@ class BubbleOwnerDelegate {
 // be long-lived.
 class ChipController : public permissions::PermissionRequestManager::Observer,
                        public views::WidgetObserver,
-                       public BubbleOwnerDelegate {
+                       public BubbleOwnerDelegate,
+                       public OmniboxChipButton::Observer {
  public:
   ChipController(Browser* browser_, OmniboxChipButton* chip_view);
 
@@ -66,6 +68,11 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // OmniboxChipButton::Observer
+  void OnChipVisibilityChanged(bool is_visible) override;
+  void OnExpandAnimationEnded() override;
+  void OnCollapseAnimationEnded() override;
 
   // Initializes the permission prompt model as well as the permission request
   // manager and observes the prompt bubble.
@@ -133,8 +140,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
  private:
   bool ShouldWaitForConfirmationToComplete();
-  void AnimateExpand(
-      base::RepeatingCallback<void()> expand_anmiation_ended_callback);
+  void AnimateExpand();
 
   // Confirmation chip.
   void HandleConfirmation(permissions::PermissionAction permission_action);
@@ -159,8 +165,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void OnPromptBubbleDismissed();
   void OnPromptExpired();
   void OnRequestChipButtonPressed();
-  void OnExpandAnimationEnded();
-  void OnChipVisibilityChanged();
 
   // Updates chip icon, text and theme with model.
   void SyncChipWithModel();
@@ -188,6 +192,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   LocationBarView* GetLocationBarView();
 
   bool is_confirmation_showing_ = false;
+  bool is_waiting_for_confirmation_collapse = false;
 
   // The chip view this controller modifies.
   raw_ptr<OmniboxChipButton> chip_;
@@ -219,6 +224,9 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   views::ViewTracker bubble_tracker_;
 
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
+
+  base::ScopedObservation<OmniboxChipButton, OmniboxChipButton::Observer>
+      observation_{this};
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };
