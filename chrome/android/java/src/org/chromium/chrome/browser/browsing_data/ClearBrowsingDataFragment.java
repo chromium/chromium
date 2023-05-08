@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.historyreport.AppIndexingReporter;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -426,10 +425,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
         Activity activity = getActivity();
 
         List<TimePeriodSpinnerOption> options = new ArrayList<>();
-        if (QuickDeleteController.isQuickDeleteEnabled()) {
-            options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_15_MINUTES,
-                    activity.getString(R.string.clear_browsing_data_tab_period_15_minutes)));
-        }
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_HOUR,
                 activity.getString(R.string.clear_browsing_data_tab_period_hour)));
         options.add(new TimePeriodSpinnerOption(TimePeriod.LAST_DAY,
