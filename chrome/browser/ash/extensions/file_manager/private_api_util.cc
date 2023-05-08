@@ -452,10 +452,9 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
   }
 
   if (metadata->shortcut_details) {
-    // Only surface shortcut parameter if the shortcut is accessible.
     properties_->shortcut =
-        (metadata->shortcut_details->target_lookup_status ==
-         drivefs::mojom::ShortcutDetails::LookupStatus::kOk);
+        (metadata->shortcut_details->target_lookup_status !=
+         drivefs::mojom::ShortcutDetails::LookupStatus::kUnknown);
   } else {
     properties_->shortcut = false;
   }
