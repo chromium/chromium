@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/connectivity_services.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
@@ -21,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -78,6 +80,7 @@ constexpr char kGetEthernetEAP[] = "getShillEthernetEAP";
 constexpr char kOpenCellularActivationUi[] = "openCellularActivationUi";
 constexpr char kResetESimCache[] = "resetESimCache";
 constexpr char kResetEuicc[] = "resetEuicc";
+constexpr char kResetApnMigrator[] = "resetApnMigrator";
 constexpr char kShowNetworkDetails[] = "showNetworkDetails";
 constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kShowAddNewWifiNetworkDialog[] = "showAddNewWifi";
@@ -267,6 +270,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
         base::BindRepeating(&NetworkConfigMessageHandler::ResetEuicc,
                             base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
+        kResetApnMigrator,
+        base::BindRepeating(&NetworkConfigMessageHandler::ResetApnMigrator,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
                             base::Unretained(this)));
@@ -439,6 +446,11 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     handler->ResetEuiccMemory(
         *euicc_path, base::BindOnce(&NetworkConfigMessageHandler::OnEuiccReset,
                                     base::Unretained(this)));
+  }
+
+  void ResetApnMigrator(const base::Value::List& arg_list) {
+    NET_LOG(EVENT) << "Executing reset ApnMigrator";
+    g_browser_process->local_state()->ClearPref(prefs::kApnMigratedIccids);
   }
 
   void OnEuiccReset(bool success) {
@@ -822,6 +834,9 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set(
       "resetEuiccLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_RESET_EUICC_LABEL));
+  localized_strings.Set(
+      "resetApnMigratorLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_RESET_APN_MIGRATOR_LABEL));
 
   localized_strings.Set(
       "addNewWifiLabel",
