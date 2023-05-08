@@ -61,6 +61,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADDRESS:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_FLOOR:
+    case ADDRESS_HOME_LANDMARK:
       return FieldTypeGroup::kAddressHome;
 
     case CREDIT_CARD_NAME_FULL:

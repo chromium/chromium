@@ -94,7 +94,16 @@ TEST(AutofillShadowPredictionComparisonTest, ComparisonContainsAllTypes) {
   // If this test fails after adding a type, update
   // `AutofillPredictionsComparisonResult` in tools/metrics/histograms/enums.xml
   // and set `last_known_type` to the last entry in the enum.
-  constexpr ServerFieldType last_known_type = ONE_TIME_CODE;
+  ServerFieldType last_known_type = MAX_VALID_FIELD_TYPE;
+  for (int type_int = MAX_VALID_FIELD_TYPE - 1; type_int >= NO_SERVER_DATA;
+       type_int--) {
+    auto type = ToSafeServerFieldType(type_int, MAX_VALID_FIELD_TYPE);
+    if (type != MAX_VALID_FIELD_TYPE) {
+      last_known_type = type;
+      break;
+    }
+  }
+
   int max_comparison =
       GetShadowPrediction(last_known_type, NAME_FIRST, {NAME_LAST});
 

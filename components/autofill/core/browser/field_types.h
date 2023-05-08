@@ -361,7 +361,11 @@ enum ServerFieldType {
   // One-time code used for verifying user identity.
   ONE_TIME_CODE = 129,
 
-  // Reserved for a server-side-only use: 130-153
+  // A well-known object or feature of the landscape that can easily be
+  // recognized to understand where the building is situated.
+  ADDRESS_HOME_LANDMARK = 136,
+
+  // Reserved for a server-side-only use: 130-153. Except 136.
 
   // No new types can be added without a corresponding change to the Autofill
   // server.
