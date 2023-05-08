@@ -13,6 +13,8 @@ static_library("mac") {
     "//components/device_signals/core/common/",
   ]
 
+  configs += [ "//build/config/compiler:enable_arc" ]
+
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -27,4 +29,5 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
