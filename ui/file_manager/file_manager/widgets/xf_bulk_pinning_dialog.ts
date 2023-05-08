@@ -90,7 +90,7 @@ export class XfBulkPinningDialog extends XfBase {
     return html`
       <cr-dialog>
         <div slot="title">
-          <xf-icon type="drive_logo" size="large"></xf-icon>
+          <xf-icon type="drive_logo" size="medium"></xf-icon>
           <div class="title">
             ${str('BULK_PINNING_TITLE')}
           </div>
@@ -143,16 +143,44 @@ export class XfBulkPinningDialog extends XfBase {
 
   static override get styles() {
     return css`
+      cr-dialog {
+        --cr-dialog-background-color: var(--cros-sys-dialog_container);
+        --cr-dialog-body-padding-horizontal: 0;
+        --cr-dialog-button-container-padding-bottom: 0;
+        --cr-dialog-button-container-padding-horizontal: 0;
+        --cr-dialog-title-slot-padding-bottom: 16px;
+        --cr-dialog-title-slot-padding-end: 0;
+        --cr-dialog-title-slot-padding-start: 0;
+        --cr-dialog-title-slot-padding-top: 0;
+        --cr-primary-text-color: var(--cros-sys-on_surface);
+        --cr-secondary-text-color: var(--cros-sys-on_surface_variant);
+      }
+
+      cr-dialog::part(dialog) {
+        border-radius: 20px;
+      }
+
+      cr-dialog::part(dialog)::backdrop {
+        background-color: var(--cros-sys-scrim);
+      }
+
+      cr-dialog::part(wrapper) {
+        padding: 32px;
+        padding-bottom: 28px;
+      }
+
       cr-dialog [slot="body"] {
-        color: var(--cros-sys-on_surface_variant);
         display: flex;
         flex-direction: column;
         font: var(--cros-body-1-font);
       }
 
+      cr-dialog [slot="button-container"] {
+        padding-top: 32px;
+      }
+
       cr-dialog [slot="title"] {
         align-items: center;
-        color: var(--cros-sys-on_surface);
         display: flex;
         font: var(--cros-display-7-font);
       }
