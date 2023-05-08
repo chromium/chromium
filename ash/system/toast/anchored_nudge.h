@@ -7,11 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
-class View;
 class Widget;
 }  // namespace views
 
@@ -26,7 +26,7 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AnchoredNudge);
 
-  explicit AnchoredNudge(views::View* anchor);
+  explicit AnchoredNudge(AnchoredNudgeData nudge_data);
   AnchoredNudge(const AnchoredNudge&) = delete;
   AnchoredNudge& operator=(const AnchoredNudge&) = delete;
   ~AnchoredNudge() override;

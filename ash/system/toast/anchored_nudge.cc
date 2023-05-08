@@ -30,26 +30,16 @@ views::BubbleBorder::Arrow GetArrowAlignmentFromShelf(
 
 }  // namespace
 
-AnchoredNudge::AnchoredNudge(views::View* anchor)
-    : views::BubbleDialogDelegateView(anchor,
-                                      views::BubbleBorder::BOTTOM_CENTER,
+AnchoredNudge::AnchoredNudge(AnchoredNudgeData nudge_data)
+    : views::BubbleDialogDelegateView(nudge_data.anchor,
+                                      nudge_data.arrow,
                                       views::BubbleBorder::NO_SHADOW) {
   SetButtons(ui::DIALOG_BUTTON_NONE);
   set_color(SK_ColorTRANSPARENT);
   set_margins(gfx::Insets());
   SetLayoutManager(std::make_unique<views::FlexLayout>());
-
-  // Temporary placeholder texts.
-  // TODO(b/279653685): Pass this data through `AnchoredNudgeData` parameter.
-  std::u16string multiline_text =
-      u"Meet wants to use the camera. Turn on your device's physical camera "
-      u"switch.";
-  std::u16string text = u"Meet wants to use the camera.";
-  std::u16string empty_dismiss_text = std::u16string();
-  std::u16string dismiss_text = u"Learn more";
-
   toast_contents_view_ = AddChildView(std::make_unique<SystemToastStyle>(
-      /*dismiss_callback=*/base::DoNothing(), text, empty_dismiss_text));
+      nudge_data.dismiss_callback, nudge_data.text, nudge_data.dismiss_text));
 }
 
 AnchoredNudge::~AnchoredNudge() = default;
