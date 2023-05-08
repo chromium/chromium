@@ -1513,10 +1513,10 @@ The bot specs should be in sync with <a href="https://ci.chromium.org/p/chromium
 
 def build_perf_builder(**kwargs):
     kwargs.setdefault("executable", "recipe:chrome_build/build_perf")
+    kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
     kwargs.setdefault("use_clang_coverage", True)
     return ci.builder(
-        reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         # rely on the builder dimension for the bot selection.
         builderless = False,
@@ -1631,6 +1631,7 @@ This builder measures build performance for Android developer builds, by simulat
         category = "buildperf",
         short_name = "anddev",
     ),
+    reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
     use_clang_coverage = None,
 )
@@ -1717,6 +1718,7 @@ This builder measures build performance for Linux developer builds, by simulatin
         category = "buildperf",
         short_name = "lnxdev",
     ),
+    reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 5120,
     use_clang_coverage = None,
 )
@@ -1803,6 +1805,7 @@ This builder measures build performance for Windows developer builds, by simulat
         category = "buildperf",
         short_name = "windev",
     ),
+    reclient_instance = reclient.instance.DEVELOPER,
     reclient_jobs = 1000,
     use_clang_coverage = None,
 )
