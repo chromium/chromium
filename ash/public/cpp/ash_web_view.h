@@ -51,6 +51,10 @@ class ASH_PUBLIC_EXPORT AshWebView : public views::View {
     // If enabled, AshWebView fixes its zoom level to 1 (100%) for this
     // AshWebView. This uses zoom level 1 regardless of default zoom level.
     bool fix_zoom_level_to_one = false;
+
+    // Enables AshWebView to hold wake locks, for example, to keep the screen on
+    // while playing video. Passed as an param to init WebContents.
+    bool enable_wake_locks = true;
   };
 
   // An observer which receives AshWebView events.

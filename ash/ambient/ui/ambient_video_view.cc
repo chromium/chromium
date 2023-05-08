@@ -47,8 +47,12 @@ AmbientVideoView::AmbientVideoView(const base::FilePath& video_path,
   DCHECK(!html_path.empty());
   DCHECK(AshWebViewFactory::Get());
   SetUseDefaultFillLayout(true);
+  AshWebView::InitParams web_view_params;
+  // Disables wake locks so the video doesn't stop the device from going to
+  // sleep.
+  web_view_params.enable_wake_locks = false;
   AshWebView* ash_web_view =
-      AddChildView(AshWebViewFactory::Get()->Create(AshWebView::InitParams()));
+      AddChildView(AshWebViewFactory::Get()->Create(web_view_params));
   ash_web_view->SetID(kAmbientVideoWebView);
   ash_web_view->SetUseDefaultFillLayout(true);
   GURL ambient_video_url = net::AppendQueryParameter(

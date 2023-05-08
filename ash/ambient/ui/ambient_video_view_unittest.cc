@@ -31,6 +31,7 @@ TEST_F(AmbientVideoViewTest, NavigatesToCorrectURL) {
   const TestAshWebView* web_view = static_cast<const TestAshWebView*>(
       view.GetViewByID(kAmbientVideoWebView));
   ASSERT_THAT(web_view, NotNull());
+  EXPECT_FALSE(web_view->init_params_for_testing().enable_wake_locks);
   EXPECT_TRUE(web_view->current_url().SchemeIsFile());
   EXPECT_THAT(web_view->current_url().path(), Eq("/path/to/html"));
   std::string video_path_requested;
