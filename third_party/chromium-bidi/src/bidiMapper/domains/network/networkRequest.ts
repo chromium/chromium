@@ -55,8 +55,10 @@ export class NetworkRequest {
     requestWillBeSentEvent: Protocol.Network.RequestWillBeSentEvent
   ) {
     if (this.#requestWillBeSentEvent !== undefined) {
-      throw new Error('RequestWillBeSentEvent is already set');
+      // TODO: Handle redirect event, requestId is same for the redirect chain
+      return;
     }
+
     this.#requestWillBeSentEvent = requestWillBeSentEvent;
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
       this.#beforeRequestSentDeferred.resolve();
@@ -68,7 +70,8 @@ export class NetworkRequest {
     requestWillBeSentExtraInfoEvent: Protocol.Network.RequestWillBeSentExtraInfoEvent
   ) {
     if (this.#requestWillBeSentExtraInfoEvent !== undefined) {
-      throw new Error('RequestWillBeSentExtraInfoEvent is already set');
+      // TODO: Handle redirect event, requestId is same for the redirect chain
+      return;
     }
     this.#requestWillBeSentExtraInfoEvent = requestWillBeSentExtraInfoEvent;
     if (this.#requestWillBeSentEvent !== undefined) {
@@ -80,7 +83,8 @@ export class NetworkRequest {
     responseReceivedEvent: Protocol.Network.ResponseReceivedEvent
   ) {
     if (this.#responseReceivedEvent !== undefined) {
-      throw new Error('ResponseReceivedEvent is already set');
+      // TODO: Handle redirect event, requestId is same for the redirect chain
+      return;
     }
     this.#responseReceivedEvent = responseReceivedEvent;
     if (
@@ -102,7 +106,8 @@ export class NetworkRequest {
     responseReceivedExtraInfoEvent: Protocol.Network.ResponseReceivedExtraInfoEvent
   ) {
     if (this.#responseReceivedExtraInfoEvent !== undefined) {
-      throw new Error('ResponseReceivedExtraInfoEvent is already set');
+      // TODO: Handle redirect event, requestId is same for the redirect chain
+      return;
     }
     this.#responseReceivedExtraInfoEvent = responseReceivedExtraInfoEvent;
     if (this.#responseReceivedEvent !== undefined) {
