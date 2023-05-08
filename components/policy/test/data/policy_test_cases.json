@@ -22954,5 +22954,80 @@
   },
   "AnonymousSearchEnabled": {
     "reason_for_missing_test": "TODO(b/275929724): Feature not yet implemented"
+  },
+  "ReportAppInventory": {
+    "os": [ "chromeos_ash" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_inventory": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportAppInventory": [ "chrome_apps_and_extensions" ]
+        },
+        "prefs": {
+          "reporting.report_app_inventory": {
+            "value": [ "chrome_apps_and_extensions" ]
+          }
+        }
+      }
+    ]
+  },
+  "ReportAppUsage": {
+    "os": [ "chromeos_ash" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_usage": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple list value.",
+        "policies": {
+          "ReportAppUsage": [ "chrome_apps_and_extensions" ]
+        },
+        "prefs": {
+          "reporting.report_app_usage": {
+            "value": [ "chrome_apps_and_extensions" ]
+          }
+        }
+      }
+    ]
+  },
+  "ReportAppUsageCollectionRateMs": {
+    "os": [ "chromeos_ash" ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set).",
+        "policies": {},
+        "prefs": {
+          "reporting.report_app_usage_collection_rate_ms": {
+            "default_value": 900000
+          }
+        }
+      },
+      {
+        "note": "Simple value.",
+        "policies": {
+          "ReportAppUsageCollectionRateMs": 300000
+        },
+        "prefs": {
+          "reporting.report_app_usage_collection_rate_ms": {
+            "value": 300000
+          }
+        }
+      }
+    ]
   }
 }

@@ -168,6 +168,7 @@
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/policy/handlers/lacros_availability_policy_handler.h"
 #include "chrome/browser/ash/policy/handlers/lacros_selection_policy_handler.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/metric_reporting_prefs.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 #include "chrome/browser/policy/device_login_screen_geolocation_access_level_policy_handler.h"
@@ -1425,6 +1426,15 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kShowDisplaySizeScreenEnabled,
     ash::prefs::kShowDisplaySizeScreenEnabled,
     base::Value::Type::BOOLEAN },
+  { key::kReportAppInventory,
+    ash::reporting::kReportAppInventory,
+    base::Value::Type::LIST },
+  { key::kReportAppUsage,
+    ash::reporting::kReportAppUsage,
+    base::Value::Type::LIST },
+  { key::kReportAppUsageCollectionRateMs,
+    ash::reporting::kReportAppUsageCollectionRateMs,
+    base::Value::Type::INTEGER },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_LINUX)

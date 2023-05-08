@@ -9,6 +9,10 @@
 
 namespace reporting::metrics {
 
+// Default app telemetry collection rate.
+constexpr base::TimeDelta kDefaultAppUsageTelemetryCollectionRate =
+    base::Minutes(15);
+
 // Default audio telemetry collection rate.
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
     base::Minutes(15);

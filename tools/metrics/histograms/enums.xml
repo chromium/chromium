@@ -32739,6 +32739,9 @@ Called by update_document_policy_enum.py.-->
   <int value="1099" label="ShowDisplaySizeScreenEnabled"/>
   <int value="1100" label="AnonymousSearchEnabled"/>
   <int value="1101" label="LegacyTechReportAllowlist"/>
+  <int value="1102" label="ReportAppInventory"/>
+  <int value="1103" label="ReportAppUsage"/>
+  <int value="1104" label="ReportAppUsageCollectionRateMs"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

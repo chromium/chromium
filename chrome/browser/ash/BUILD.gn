@@ -2532,6 +2532,8 @@ source_set("ash") {
     "policy/reporting/metrics_reporting/device_activity/device_activity_sampler.h",
     "policy/reporting/metrics_reporting/metric_reporting_manager.cc",
     "policy/reporting/metrics_reporting/metric_reporting_manager.h",
+    "policy/reporting/metrics_reporting/metric_reporting_prefs.cc",
+    "policy/reporting/metrics_reporting/metric_reporting_prefs.h",
     "policy/reporting/metrics_reporting/mojo_service_events_observer_base.h",
     "policy/reporting/metrics_reporting/network/fake_network_diagnostics_util.cc",
     "policy/reporting/metrics_reporting/network/fake_network_diagnostics_util.h",
