@@ -36,9 +36,26 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() {
     return false;
   }
 
-  return !IsDeviceCloudManaged() &&
-         user_prefs_->GetBoolean(
-             prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
+  bool consent_required_by_specific_policy =
+      !IsDeviceCloudManaged() &&
+      user_prefs_->GetBoolean(prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
+
+  bool consent_required_by_dependent_policy = false;
+  std::set<policy::PolicyScope> scopes =
+      user_delegate_->GetPolicyScopesNeedingSignals();
+  if (scopes.find(policy::POLICY_SCOPE_USER) != scopes.end()) {
+    if (IsDeviceCloudManaged()) {
+      // Managed device, only trigger the consent flow if the user is
+      // unaffiliated.
+      consent_required_by_dependent_policy = !user_delegate_->IsAffiliated();
+    } else {
+      // Unmanaged device.
+      consent_required_by_dependent_policy = true;
+    }
+  }
+
+  return consent_required_by_specific_policy ||
+         consent_required_by_dependent_policy;
 }
 
 UserPermission UserPermissionServiceImpl::CanUserCollectSignals(
