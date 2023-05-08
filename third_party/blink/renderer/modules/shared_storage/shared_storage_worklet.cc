@@ -87,10 +87,14 @@ ScriptPromise SharedStorageWorklet::addModule(ScriptState* script_state,
                 ScriptState* script_state = resolver->GetScriptState();
 
                 if (!success) {
-                  ScriptState::Scope scope(script_state);
-                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                      script_state->GetIsolate(),
-                      DOMExceptionCode::kOperationError, error_message));
+                  if (IsInParallelAlgorithmRunnable(
+                          resolver->GetExecutionContext(), script_state)) {
+                    ScriptState::Scope scope(script_state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        script_state->GetIsolate(),
+                        DOMExceptionCode::kOperationError, error_message));
+                  }
+
                   LogSharedStorageWorkletError(
                       SharedStorageWorkletErrorType::kAddModuleWebVisible);
                   return;

@@ -126,10 +126,13 @@ void OnVoidOperationFinished(ScriptPromiseResolver* resolver,
   ScriptState* script_state = resolver->GetScriptState();
 
   if (!success) {
-    ScriptState::Scope scope(script_state);
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-        error_message));
+    if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                      script_state)) {
+      ScriptState::Scope scope(script_state);
+      resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+          script_state->GetIsolate(), DOMExceptionCode::kOperationError,
+          error_message));
+    }
     if (caller == blink::SharedStorageVoidOperation::kRun) {
       LogSharedStorageWorkletError(
           SharedStorageWorkletErrorType::kRunWebVisible);
@@ -420,10 +423,13 @@ ScriptPromise SharedStorage::get(ScriptState* script_state,
                 ScriptState* script_state = resolver->GetScriptState();
 
                 if (status == mojom::blink::SharedStorageGetStatus::kError) {
-                  ScriptState::Scope scope(script_state);
-                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                      script_state->GetIsolate(),
-                      DOMExceptionCode::kOperationError, error_message));
+                  if (IsInParallelAlgorithmRunnable(
+                          resolver->GetExecutionContext(), script_state)) {
+                    ScriptState::Scope scope(script_state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        script_state->GetIsolate(),
+                        DOMExceptionCode::kOperationError, error_message));
+                  }
                   return;
                 }
 
@@ -471,10 +477,13 @@ ScriptPromise SharedStorage::length(ScriptState* script_state,
             ScriptState* script_state = resolver->GetScriptState();
 
             if (!success) {
-              ScriptState::Scope scope(script_state);
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  error_message));
+              if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                                script_state)) {
+                ScriptState::Scope scope(script_state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    script_state->GetIsolate(),
+                    DOMExceptionCode::kOperationError, error_message));
+              }
               return;
             }
 
@@ -543,10 +552,13 @@ ScriptPromise SharedStorage::remainingBudget(ScriptState* script_state,
             ScriptState* script_state = resolver->GetScriptState();
 
             if (!success) {
-              ScriptState::Scope scope(script_state);
-              resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                  script_state->GetIsolate(), DOMExceptionCode::kOperationError,
-                  error_message));
+              if (IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
+                                                script_state)) {
+                ScriptState::Scope scope(script_state);
+                resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                    script_state->GetIsolate(),
+                    DOMExceptionCode::kOperationError, error_message));
+              }
               return;
             }
 
@@ -808,10 +820,13 @@ ScriptPromise SharedStorage::selectURL(
                 ScriptState* script_state = resolver->GetScriptState();
 
                 if (!success) {
-                  ScriptState::Scope scope(script_state);
-                  resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-                      script_state->GetIsolate(),
-                      DOMExceptionCode::kOperationError, error_message));
+                  if (IsInParallelAlgorithmRunnable(
+                          resolver->GetExecutionContext(), script_state)) {
+                    ScriptState::Scope scope(script_state);
+                    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+                        script_state->GetIsolate(),
+                        DOMExceptionCode::kOperationError, error_message));
+                  }
                   LogSharedStorageWorkletError(
                       SharedStorageWorkletErrorType::kSelectURLWebVisible);
                   return;
