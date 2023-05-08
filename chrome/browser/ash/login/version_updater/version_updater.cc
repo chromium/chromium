@@ -174,6 +174,11 @@ void VersionUpdater::RequestUpdateCheck() {
 
 void VersionUpdater::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
+  // Ignore any signals that relate to DLC installs.
+  if (status.is_install()) {
+    return;
+  }
+
   update_info_.status = status;
 
   if (update_info_.is_checking_for_update &&
