@@ -1162,6 +1162,10 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
               ->GetGraphicsResetStatusKHR() == GL_NO_ERROR)
     return shared_main_thread_contexts_;
 
+  if (is_context_result_fatal_) {
+    return nullptr;
+  }
+
   scoped_refptr<gpu::GpuChannelHost> gpu_channel_host(
       EstablishGpuChannelSync());
   if (!gpu_channel_host) {
@@ -1180,6 +1184,7 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
   // Enable automatic flushes to improve canvas throughput.
   // See https://crbug.com/880901
   bool automatic_flushes = true;
+
   // We use kGpuStreamIdDefault here, the same as in
   // PepperVideoDecodeContextProvider, so we don't need to handle
   // synchronization between the pepper context and the shared main thread
@@ -1192,8 +1197,11 @@ RenderThreadImpl::SharedMainThreadContextProvider() {
       viz::command_buffer_metrics::ContextType::RENDERER_MAIN_THREAD,
       kGpuStreamIdDefault, kGpuStreamPriorityDefault);
   auto result = shared_main_thread_contexts_->BindToCurrentSequence();
-  if (result != gpu::ContextResult::kSuccess)
+  if (result != gpu::ContextResult::kSuccess) {
     shared_main_thread_contexts_ = nullptr;
+    is_context_result_fatal_ = result == gpu::ContextResult::kFatalFailure;
+  }
+
   return shared_main_thread_contexts_;
 }
 

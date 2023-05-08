@@ -588,6 +588,8 @@ class CONTENT_EXPORT RenderThreadImpl
 
   int32_t client_id_;
 
+  bool is_context_result_fatal_ = false;
+
   // A mojo connection to the CompositingModeReporter service.
   mojo::Remote<viz::mojom::CompositingModeReporter> compositing_mode_reporter_;
   // The class is a CompositingModeWatcher, which is bound to mojo through
