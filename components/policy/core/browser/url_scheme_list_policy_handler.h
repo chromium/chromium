@@ -29,8 +29,11 @@ class POLICY_EXPORT URLSchemeListPolicyHandler
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
+ protected:
+  virtual size_t max_items();
+  virtual bool ValidatePolicyEntry(const std::string* policy);
+
  private:
-  bool ValidatePolicyEntry(const std::string* policy);
   const char* pref_path_;
 
   FRIEND_TEST_ALL_PREFIXES(URLSchemeListPolicyHandlerTest, ValidatePolicyEntry);

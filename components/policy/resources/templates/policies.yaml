@@ -1099,7 +1099,7 @@ policies:
   1098: SafeBrowsingExtensionProtectionAllowed
   1099: ShowDisplaySizeScreenEnabled
   1100: AnonymousSearchEnabled
-
+  1101: LegacyTechReportAllowlist
 atomic_groups:
   1: Homepage
   2: RemoteAccess

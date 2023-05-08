@@ -32688,14 +32688,15 @@ Called by update_document_policy_enum.py.-->
   <int value="1056" label="KioskTroubleshootingToolsEnabled"/>
   <int value="1057" label="ForceEnablePepperVideoDecoderDevAPI"/>
   <int value="1058" label="DomainReliabilityAllowed"/>
-  <int value="1059" label="ScreensaverEnabled"/>
-  <int value="1060" label="ScreensaverIdleTimeoutSeconds"/>
-  <int value="1061" label="ScreensaverImageDisplayIntervalSeconds"/>
-  <int value="1062" label="ScreensaverImages"/>
-  <int value="1063" label="DeviceScreensaverEnabled"/>
-  <int value="1064" label="DeviceScreensaverIdleTimeoutSeconds"/>
-  <int value="1065" label="DeviceScreensaverImageDisplayIntervalSeconds"/>
-  <int value="1066" label="DeviceScreensaverImages"/>
+  <int value="1059" label="ScreensaverLockScreenEnabled"/>
+  <int value="1060" label="ScreensaverLockScreenIdleTimeoutSeconds"/>
+  <int value="1061" label="ScreensaverLockScreenImageDisplayIntervalSeconds"/>
+  <int value="1062" label="ScreensaverLockScreenImages"/>
+  <int value="1063" label="DeviceScreensaverLoginScreenEnabled"/>
+  <int value="1064" label="DeviceScreensaverLoginScreenIdleTimeoutSeconds"/>
+  <int value="1065"
+      label="DeviceScreensaverLoginScreenImageDisplayIntervalSeconds"/>
+  <int value="1066" label="DeviceScreensaverLoginScreenImages"/>
   <int value="1067" label="DefaultWindowManagementSetting"/>
   <int value="1068" label="WindowManagementAllowedForUrls"/>
   <int value="1069" label="WindowManagementBlockedForUrls"/>
@@ -32733,6 +32734,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1098" label="SafeBrowsingExtensionProtectionAllowed"/>
   <int value="1099" label="ShowDisplaySizeScreenEnabled"/>
   <int value="1100" label="AnonymousSearchEnabled"/>
+  <int value="1101" label="LegacyTechReportAllowlist"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

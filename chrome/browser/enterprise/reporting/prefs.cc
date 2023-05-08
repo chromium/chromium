@@ -20,6 +20,9 @@ const char kLastUploadVersion[] = "enterprise_reporting.last_upload_version";
 const char kCloudExtensionRequestUploadedIds[] =
     "enterprise_reporting.extension_request.pending.ids";
 
+const char kCloudLegacyTechReportAllowlist[] =
+    "enterprise_reporting.legachy_tech.urls";
+
 const base::TimeDelta kDefaultReportFrequency = base::Hours(24);
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -47,6 +50,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
   registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  registry->RegisterListPref(kCloudLegacyTechReportAllowlist);
 }
 
 }  // namespace enterprise_reporting
