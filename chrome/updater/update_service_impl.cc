@@ -284,10 +284,10 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
 
   // The installer should make an updater registration, but in case it halts
   // before it does, synthesize a registration if necessary here.
-  if (!base::Contains(persisted_data_->GetAppIds(),
-                      base::ToLowerASCII(kUpdaterAppId),
-                      static_cast<std::string (*)(base::StringPiece)>(
-                          &base::ToLowerASCII))) {
+  const base::Version registered_updater_version =
+      persisted_data_->GetProductVersion(kUpdaterAppId);
+  if (!registered_updater_version.IsValid() ||
+      base::Version(kUpdaterVersion) > registered_updater_version) {
     RegistrationRequest updater_request;
     updater_request.app_id = kUpdaterAppId;
     updater_request.version = base::Version(kUpdaterVersion);

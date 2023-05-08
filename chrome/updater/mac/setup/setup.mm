@@ -128,7 +128,8 @@ int DoSetup(UpdaterScope scope) {
   // If there is no Current symlink, create one now.
   base::FilePath current_symlink = install_dir->Append("Current");
   if (!base::PathExists(current_symlink)) {
-    if (symlink(kUpdaterVersion, current_symlink.value().c_str())) {
+    if (base::DeleteFile(current_symlink) &&
+        symlink(kUpdaterVersion, current_symlink.value().c_str())) {
       return kErrorFailedToLinkLauncher;
     }
   }
