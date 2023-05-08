@@ -2,6 +2,7 @@ include_rules = [
   "+base/test/android",
   "+chrome/android",
   "+chrome/browser/flags/android",
+  "+chrome/browser/ui/android/layouts",
   "+chrome/test/android",
   "+content/public/android/java/src/org/chromium/content_public",
   "+content/public/test/android",

@@ -576,6 +576,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mHistoricalTabModelObserver =
                     new HistoricalTabModelObserver(mTabModelSelector.getModel(false));
 
+            // Defer initialization of this helper so it triggers after TabModelFilter
+            // observers.
+            UndoRefocusHelper.initialize(
+                    this, mTabModelSelector, getLayoutManagerSupplier(), isTablet());
+
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(this)) {
                 mTabModelSelector.addObserver(new TabModelSelectorObserver() {
                     @Override
@@ -1852,8 +1857,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         mInactivityTracker = new ChromeInactivityTracker(
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
         TabUsageTracker.initialize(this.getLifecycleDispatcher(), tabModelSelector);
-        UndoRefocusHelper.initialize(
-                this, tabModelSelector, getLayoutManagerSupplier(), isTablet());
 
         assert getActivityTabStartupMetricsTracker() != null;
         boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();

@@ -117,21 +117,31 @@ public class TabModelImpl extends TabModelJniBridge {
                             WebContents webContents = tab.getWebContents();
                             if (webContents != null) webContents.setAudioMuted(false);
 
-                            boolean activeModel = isActiveModel();
-
-                            if (mIndex == INVALID_TAB_INDEX) {
-                                // If we're the active model call setIndex to actually select this
-                                // tab, otherwise just set mIndex but don't kick off everything that
-                                // happens when calling setIndex().
-                                if (activeModel) {
-                                    TabModelUtils.setIndex(TabModelImpl.this, insertIndex, false,
-                                            TabSelectionType.FROM_UNDO);
-                                } else {
-                                    mIndex = insertIndex;
-                                }
+                            // Start by setting a valid index to the restored tab if not already
+                            // valid. This ensures getting the current index is valid for any
+                            // observers.
+                            boolean wasInvalidIndex = mIndex == INVALID_TAB_INDEX;
+                            if (wasInvalidIndex) {
+                                mIndex = insertIndex;
                             }
 
+                            // Alert observers the tab closure was undone before calling
+                            // setIndex if necessary as
+                            // * Observers may rely on this signal to re-introduce the tab to
+                            //   their visibility if it is selected before this it may not exist
+                            //   for those observers.
+                            // * UndoRefocusHelper may update the index out-of-band.
                             for (TabModelObserver obs : mObservers) obs.tabClosureUndone(tab);
+
+                            // If the mIndex we set earlier is still in use then trigger a proper
+                            // index update and notify any observers.
+                            if (wasInvalidIndex && isActiveModel() && mIndex == insertIndex) {
+                                // Reset the index first so the event is raised properly as a index
+                                // change and not re-using the current index.
+                                mIndex = INVALID_TAB_INDEX;
+                                TabModelUtils.setIndex(TabModelImpl.this, insertIndex, false,
+                                        TabSelectionType.FROM_UNDO);
+                            }
                         }
 
                         @Override
