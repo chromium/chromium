@@ -574,6 +574,37 @@ TEST(CreditCardTest, SetMetadata_NotMatchingId) {
   EXPECT_NE(full_metadata.use_date, full_card.use_date());
 }
 
+// Test that if one of the two compared cards is masked server card,
+// `HasSameNumberAs` returns true if the last four are the same. For all the
+// other comparing card types (none of them is masked server card),
+// `HasSameNumberAs` returns true if the full card number are the same.
+TEST(CreditCardTest, HasSameNumberAs) {
+  // Creates three types (local card, masked server card and full server card)
+  // of credit cards with the same number.
+  CreditCard local_card = test::GetCreditCard();
+  CreditCard masked_server_card = test::GetMaskedServerCardVisa();
+  CreditCard full_server_card = test::GetFullServerCard();
+
+  // Verify that card number is the same for all combinations of card type.
+  EXPECT_TRUE(local_card.HasSameNumberAs(local_card));
+  EXPECT_TRUE(local_card.HasSameNumberAs(masked_server_card));
+  EXPECT_TRUE(local_card.HasSameNumberAs(full_server_card));
+  EXPECT_TRUE(masked_server_card.HasSameNumberAs(masked_server_card));
+  EXPECT_TRUE(masked_server_card.HasSameNumberAs(full_server_card));
+  EXPECT_TRUE(full_server_card.HasSameNumberAs(full_server_card));
+
+  // Update the local card and full server card number to a different number but
+  // all the three credit cards are with same last four.
+  local_card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111 1111 0006 1111");
+  full_server_card.SetRawInfo(CREDIT_CARD_NUMBER, u"4111 1111 2226 1111");
+
+  // Verify that only last 4 is compared if one of the compared cards is a
+  // masked server card; for all other types, full card number is compared.
+  EXPECT_TRUE(local_card.HasSameNumberAs(masked_server_card));
+  EXPECT_FALSE(local_card.HasSameNumberAs(full_server_card));
+  EXPECT_TRUE(masked_server_card.HasSameNumberAs(full_server_card));
+}
+
 struct SetExpirationYearFromStringTestCase {
   std::string expiration_year;
   int expected_year;

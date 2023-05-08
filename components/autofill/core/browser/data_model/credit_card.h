@@ -235,6 +235,13 @@ class CreditCard : public AutofillDataModel {
   // four digits and expiration dates.
   [[nodiscard]] bool MatchingCardDetails(const CreditCard& other) const;
 
+  // Returns true based on the following criteria:
+  // 1) If `this` or `other` is a masked server card, this function returns true
+  //    if `other` has the same last four digits as `this`.
+  // 2) Otherwise, this function returns true if `other` has the same full card
+  //    number as `this`.
+  [[nodiscard]] bool HasSameNumberAs(const CreditCard& other) const;
+
   // Equality operators compare GUIDs, origins, and the contents.
   // Usage metadata (use count, use date, modification date) are NOT compared.
   bool operator==(const CreditCard& credit_card) const;

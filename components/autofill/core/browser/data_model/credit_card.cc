@@ -868,7 +868,7 @@ bool CreditCard::MatchingCardDetails(const CreditCard& other) const {
   // cards matches.
   if (record_type() == MASKED_SERVER_CARD ||
       other.record_type() == MASKED_SERVER_CARD) {
-    bool last_four_digits_match = LastFourDigits() == other.LastFourDigits();
+    bool last_four_digits_match = HasSameNumberAs(other);
 
     bool months_match = expiration_month() == other.expiration_month() ||
                         expiration_month() == 0 ||
@@ -878,6 +878,15 @@ bool CreditCard::MatchingCardDetails(const CreditCard& other) const {
                        expiration_year() == 0 || other.expiration_year() == 0;
 
     return last_four_digits_match && months_match && years_match;
+  }
+
+  return HasSameNumberAs(other);
+}
+
+bool CreditCard::HasSameNumberAs(const CreditCard& other) const {
+  if (record_type() == CreditCard::MASKED_SERVER_CARD ||
+      other.record_type() == CreditCard::MASKED_SERVER_CARD) {
+    return LastFourDigits() == other.LastFourDigits();
   }
 
   return StripSeparators(number_) == StripSeparators(other.number_);
