@@ -71,6 +71,19 @@ absl::optional<base::Value::Dict> ParseDistributionPreferences(
 
 namespace installer {
 
+#if !BUILDFLAG(IS_MAC)
+// static
+base::FilePath InitialPreferences::Path(const base::FilePath& dir,
+                                        bool for_read) {
+  base::FilePath initial_prefs = dir.AppendASCII("initial_preferences");
+  if (!for_read || base::PathIsReadable(initial_prefs)) {
+    return initial_prefs;
+  }
+
+  return dir.AppendASCII("master_preferences");
+}
+#endif  // !BUILDFLAG(IS_MAC)
+
 InitialPreferences::InitialPreferences() {
   InitializeFromCommandLine(*base::CommandLine::ForCurrentProcess());
 }

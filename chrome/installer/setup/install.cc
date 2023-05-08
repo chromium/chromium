@@ -158,9 +158,9 @@ void AddChromeToMediaPlayerList() {
 // only on the first install of Chrome.
 void CopyPreferenceFileForFirstRun(const InstallerState& installer_state,
                                    const base::FilePath& prefs_source_path) {
-  base::FilePath prefs_dest_path(
-      installer_state.target_path().AppendASCII(kLegacyInitialPrefs));
-  if (!base::CopyFile(prefs_source_path, prefs_dest_path)) {
+  if (!base::CopyFile(prefs_source_path,
+                      InitialPreferences::Path(installer_state.target_path(),
+                                               /*for_read=*/false))) {
     VLOG(1) << "Failed to copy initial preferences from:"
             << prefs_source_path.value() << " gle: " << ::GetLastError();
   }
@@ -635,7 +635,7 @@ void HandleOsUpgradeForBrowser(const InstallerState& installer_state,
 
   RunShortcutCreationInChildProc(
       installer_state, setup_path,
-      installer_state.target_path().AppendASCII(kLegacyInitialPrefs), level,
+      InitialPreferences::Path(installer_state.target_path()), level,
       INSTALL_SHORTCUT_REPLACE_EXISTING);
 
   // Adapt Chrome registrations to this new OS.
@@ -706,10 +706,9 @@ void HandleActiveSetupForBrowser(const InstallerState& installer_state,
   // Use the initial preferences copied beside chrome.exe at install for the
   // sake of creating/updating shortcuts.
   const base::FilePath installation_root = installer_state.target_path();
-  RunShortcutCreationInChildProc(
-      installer_state, setup_path,
-      installation_root.AppendASCII(kLegacyInitialPrefs), CURRENT_USER,
-      install_operation);
+  RunShortcutCreationInChildProc(installer_state, setup_path,
+                                 InitialPreferences::Path(installation_root),
+                                 CURRENT_USER, install_operation);
 
   UpdateDefaultBrowserBeaconForPath(installation_root.Append(kChromeExe));
 
