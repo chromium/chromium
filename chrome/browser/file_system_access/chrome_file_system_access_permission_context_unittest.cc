@@ -423,6 +423,54 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 #endif
 }
 
+#if BUILDFLAG(IS_MAC)
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_DontBlockAllChildren_Overlapping) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+
+  // Home directory itself should not be allowed.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, home_dir,
+                HandleType::kDirectory, UserAction::kOpen));
+  // $HOME/Library should be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII("Library"), HandleType::kDirectory,
+                UserAction::kOpen));
+  // $HOME/Library/Mobile Documents should be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAbort,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII("Library/Mobile Documents"),
+                HandleType::kDirectory, UserAction::kOpen));
+  // Paths within $HOME/Library/Mobile Documents should not be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII("Library/Mobile Documents/foo"),
+                HandleType::kDirectory, UserAction::kOpen));
+  // Except for $HOME/Library/Mobile Documents/com~apple~CloudDocs, which should
+  // be blocked.
+  EXPECT_EQ(
+      SensitiveDirectoryResult::kAbort,
+      ConfirmSensitiveEntryAccessSync(
+          permission_context(), PathType::kLocal,
+          home_dir.AppendASCII("Library/Mobile Documents/com~apple~CloudDocs"),
+          HandleType::kDirectory, UserAction::kOpen));
+  // Paths within $HOME/Library/Mobile Documents/com~apple~CloudDocs should not
+  // be blocked.
+  EXPECT_EQ(SensitiveDirectoryResult::kAllowed,
+            ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal,
+                home_dir.AppendASCII(
+                    "Library/Mobile Documents/com~apple~CloudDocs/foo"),
+                HandleType::kDirectory, UserAction::kOpen));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_UNCPath) {

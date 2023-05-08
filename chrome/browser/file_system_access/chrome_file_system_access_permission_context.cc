@@ -309,8 +309,12 @@ const struct {
     // https://crbug.com/984641#c22.
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/Containers"),
      kDontBlockChildren},
-    // Allow access to iCloud files.
+    // Allow access to iCloud files...
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
+     kDontBlockChildren},
+    // ... which may also appear at this directory.
+    {base::DIR_HOME,
+     FILE_PATH_LITERAL("Library/Mobile Documents/com~apple~CloudDocs"),
      kDontBlockChildren},
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
