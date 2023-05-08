@@ -276,6 +276,7 @@ if (use_system_harfbuzz) {
       "src/src/hb-subset-cff2.hh",
       "src/src/hb-subset-input.cc",
       "src/src/hb-subset-input.hh",
+      "src/src/hb-subset-plan-member-list.hh",
       "src/src/hb-subset-plan.cc",
       "src/src/hb-subset-plan.hh",
       "src/src/hb-subset-repacker.cc",
