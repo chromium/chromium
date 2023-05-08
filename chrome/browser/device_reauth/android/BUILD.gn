@@ -14,7 +14,6 @@ android_library("java") {
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/device_reauth:device_reauth_java_enums",
     "//content/public/android:content_main_dex_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]

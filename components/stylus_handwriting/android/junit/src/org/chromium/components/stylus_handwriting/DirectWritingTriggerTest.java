@@ -22,9 +22,10 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.SystemClock;
-import android.support.annotation.RequiresApi;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+
+import androidx.annotation.RequiresApi;
 
 import org.junit.After;
 import org.junit.Before;

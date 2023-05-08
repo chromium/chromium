@@ -13,7 +13,6 @@ android_library("java") {
     "//chrome/browser/android/browserservices/intents:java",
     "//chrome/browser/ui/android/searchactivityutils:java",
     "//components/embedder_support/android:util_java",
-    "//third_party/android_deps:com_android_support_support_annotations_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]
