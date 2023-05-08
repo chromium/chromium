@@ -2910,9 +2910,6 @@ extern const char kArcSwitchToKeyMintOnTDesc[];
 extern const char kArcSyncInstallPriorityName[];
 extern const char kArcSyncInstallPriorityDescription[];
 
-extern const char kArcUpdateO4CListViaA2C2Name[];
-extern const char kArcUpdateO4CListViaA2C2Desc[];
-
 extern const char kArcVmmSwapName[];
 extern const char kArcVmmSwapDesc[];
 

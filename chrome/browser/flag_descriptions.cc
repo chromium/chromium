@@ -5065,10 +5065,6 @@ const char kArcSyncInstallPriorityDescription[] =
     "priority to Play instead of using default install priority specified "
     "in Play";
 
-const char kArcUpdateO4CListViaA2C2Name[] = "Update the O4C list via A2C2";
-const char kArcUpdateO4CListViaA2C2Desc[] =
-    "When enabled, the O4C list is allowed to be updated via A2C2.";
-
 const char kArcVmmSwapName[] = "Vmm swap support for ARCVM";
 const char kArcVmmSwapDesc[] =
     "When enabled, the ARCVM will be launched with vmm swap feature.";
