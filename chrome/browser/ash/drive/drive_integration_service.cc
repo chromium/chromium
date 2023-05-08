@@ -1675,6 +1675,17 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
                                                            std::move(callback));
 }
 
+void DriveIntegrationService::ImmediatelyUpload(
+    const base::FilePath& path,
+    drivefs::mojom::DriveFs::ImmediatelyUploadCallback callback) {
+  if (!IsMounted() || !GetDriveFsInterface()) {
+    std::move(callback).Run(drive::FILE_ERROR_SERVICE_UNAVAILABLE);
+    return;
+  }
+
+  GetDriveFsInterface()->ImmediatelyUpload(path, std::move(callback));
+}
+
 void DriveIntegrationService::GetReadOnlyAuthenticationToken(
     GetReadOnlyAuthenticationTokenCallback callback) {
   if (!auth_service_) {

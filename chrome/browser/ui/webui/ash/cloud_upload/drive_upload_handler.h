@@ -60,6 +60,9 @@ class DriveUploadHandler
   // Ends upload and runs Upload callback.
   void OnEndUpload(GURL hosted_url, std::string error_message = "");
 
+  // Callback for when ImmediatelyUpload() is called on DriveFS.
+  void ImmediatelyUploadDone(drive::FileError error);
+
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;

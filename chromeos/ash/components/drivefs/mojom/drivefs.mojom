@@ -147,6 +147,9 @@ interface DriveFs {
   // Unpins all currently pinned items and force evicts them from the cache.
   // NOTE: Force eviction does not work for hosted documents.
   ClearOfflineFiles() => (FileError error);
+
+  // Uploads a file by skipping any remaining queue time, if possible.
+  ImmediatelyUpload(mojo_base.mojom.FilePath path) => (FileError error);
 };
 
 // Implemented by Chrome, used from DriveFS.
