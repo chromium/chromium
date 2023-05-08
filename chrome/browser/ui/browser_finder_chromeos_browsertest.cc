@@ -122,7 +122,36 @@ IN_PROC_BROWSER_TEST_F(BrowserFinderWithDesksTest, FindTabbedBrowser) {
   Browser* browser_2 = CreateTestBrowser();
   EXPECT_EQ(browser_2, chrome::FindTabbedBrowser(browser()->profile(), true));
 
+  // Switch to desk_3, and expect there is no tabbed browser.
   ash::ActivateDesk(desk_3);
   EXPECT_TRUE(desk_3->is_active());
   EXPECT_FALSE(chrome::FindTabbedBrowser(browser()->profile(), true));
+
+  // Create a browser on desk_3
+  Browser* browser_3 = CreateTestBrowser();
+
+  // Since browser_3 is not closing, FindTabbedBrowser with
+  // ignore_closing_browsers=true should return it.
+  EXPECT_EQ(browser_3,
+            chrome::FindTabbedBrowser(browser()->profile(), true,
+                                      display::kInvalidDisplayId, true));
+  // FindTabbedBrowser with ignore_closing_browsers=false should also return
+  // browser_3.
+  EXPECT_EQ(browser_3,
+            chrome::FindTabbedBrowser(browser()->profile(), true,
+                                      display::kInvalidDisplayId, false));
+
+  // Start closing the browser
+  CloseBrowserAsynchronously(browser_3);
+
+  // Since browser_3 is closing at this point, FindTabbedBrowser with
+  // ignore_closing_browsers=true should return nullptr.
+  EXPECT_EQ(nullptr,
+            chrome::FindTabbedBrowser(browser()->profile(), true,
+                                      display::kInvalidDisplayId, true));
+  // FindTabbedBrowser with ignore_closing_browsers=false should return
+  // browser_3.
+  EXPECT_EQ(browser_3,
+            chrome::FindTabbedBrowser(browser()->profile(), true,
+                                      display::kInvalidDisplayId, false));
 }
