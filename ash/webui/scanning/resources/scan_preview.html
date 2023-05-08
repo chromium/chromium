@@ -14,6 +14,15 @@
                             0 8px 12px 1px var(--cros-shadow-color-ambient);
   }
 
+  :host-context(body.jelly-enabled) #cancelingText,
+  :host-context(body.jelly-enabled) #progressText {
+    font: var(--cros-body-0-font);
+  }
+
+  :host-context(body.jelly-enabled) #helperText {
+    font: var(--cros-body-2-font);
+  }
+
   :host-context(body.jelly-enabled) #helpOrProgress {
     background-color: var(--cros-sys-app_base);
   }

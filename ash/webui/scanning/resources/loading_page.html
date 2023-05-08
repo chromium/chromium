@@ -1,4 +1,12 @@
 <style include="scanning-fonts scanning-shared">
+  :host-context(body.jelly-enabled) #noScannersSubtext {
+    font: var(--cros-body-1-font);
+  }
+
+  :host-context(body.jelly-enabled) h1 {
+    font: var(--cros-display-6-font);
+  }
+
   #loadingContainer {
     align-items: center;
     display: flex;

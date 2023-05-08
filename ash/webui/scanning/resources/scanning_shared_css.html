@@ -22,6 +22,15 @@
       --md-select-bg-color: var(--cros-sys-app_base_shaded);
       --md-select-focus-shadow-color: var(--cros-sys-focus_ring);
       --md-select-option-bg-color: var(--cros-sys-app_base_shaded);
+      font: var(--cros-button-2-font);
+    }
+
+    :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+      font: var(--cros-body-1-font);
+    }
+
+    :host-context(body.jelly-enabled) cr-dialog [slot=title] {
+      font: var(--cros-display-7-font);
     }
 
     paper-progress {

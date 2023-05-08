@@ -3,6 +3,10 @@
     background-color: var(--cros-sys-secondary_container);
   }
 
+  :host-context(body.jelly-enabled) #pageNumbers {
+    font: var(--cros-button-2-font);
+  }
+
   :host-context(body:not(.jelly-enabled)) cr-icon-button {
     --cr-icon-button-fill-color: var(--google-grey-200);
     --cr-icon-button-hover-background-color:
