@@ -162,6 +162,6 @@ BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
 // for details.
 BASE_FEATURE(kWebviewTagMPArchBehavior,
              "WebviewTagMPArchBehavior",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace extensions_features
