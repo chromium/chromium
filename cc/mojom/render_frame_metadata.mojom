@@ -4,7 +4,6 @@
 
 module cc.mojom;
 
-import "mojo/public/mojom/base/time.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/vertical_scroll_direction.mojom";
@@ -80,14 +79,6 @@ struct RenderFrameMetadata {
   float top_controls_shown_ratio;
 
   viz.mojom.VerticalScrollDirection new_vertical_scroll_direction;
-
-  // The cumulative time spent performing visual updates since the last commit.
-  // Tracked for all `local_surface_id` before this one.
-  mojo_base.mojom.TimeDelta previous_surfaces_visual_update_duration;
-
-  // The cumulative time spend performing visual updates for the current
-  // `local_surface_id` since the last commit.
-  mojo_base.mojom.TimeDelta current_surface_visual_update_duration;
 
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.

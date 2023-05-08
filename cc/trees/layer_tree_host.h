@@ -896,8 +896,6 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return base::AutoReset<bool>(&syncing_deltas_for_test_, true);
   }
 
-  void IncrementVisualUpdateDuration(base::TimeDelta visual_update_duration);
-
  protected:
   LayerTreeHost(InitParams params, CompositorMode mode);
 
