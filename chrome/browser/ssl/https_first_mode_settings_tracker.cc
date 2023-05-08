@@ -25,6 +25,21 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Minimum score of an HTTPS origin to enable HFM on its hostname.
+const base::FeatureParam<int> kHttpsAddThreshold{
+    &features::kHttpsFirstModeV2ForEngagedSites, "https-add-threshold", 40};
+
+// Maximum score of an HTTP origin to enable HFM on its hostname.
+const base::FeatureParam<int> kHttpsRemoveThreshold{
+    &features::kHttpsFirstModeV2ForEngagedSites, "https-remove-threshold", 30};
+
+// If HTTPS score goes below kHttpsRemoveThreshold or HTTP score goes above
+// kHttpRemoveThreshold, disable HFM on this hostname.
+const base::FeatureParam<int> kHttpAddThreshold{
+    &features::kHttpsFirstModeV2ForEngagedSites, "http-add-threshold", 5};
+const base::FeatureParam<int> kHttpRemoveThreshold{
+    &features::kHttpsFirstModeV2ForEngagedSites, "http-remove-threshold", 10};
+
 namespace {
 
 using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
@@ -34,18 +49,6 @@ const char kHttpsFirstModeSyntheticFieldTrialName[] =
     "HttpsFirstModeClientSetting";
 const char kHttpsFirstModeSyntheticFieldTrialEnabledGroup[] = "Enabled";
 const char kHttpsFirstModeSyntheticFieldTrialDisabledGroup[] = "Disabled";
-
-// Minimum score of an HTTPS origin to enable HFM on its hostname.
-// TODO(crbug.com/1435222): Convert these into feature params.
-constexpr double kHttpsAddThreshold = 40;
-
-// Maximum score of an HTTP origin to enable HFM on its hostname.
-constexpr double kHttpAddThreshold = 5;
-
-// If HTTPS score goes below kHttpsRemoveThreshold or HTTP score goes above
-// kHttpRemoveThreshold, disable HFM on this hostname.
-constexpr double kHttpsRemoveThreshold = 30;
-constexpr double kHttpRemoveThreshold = 10;
 
 // Returns the HTTP URL from `http_url` using the test port numbers, if any.
 // TODO(crbug.com/1435222): Refactor and merge with UpgradeUrlToHttps().
@@ -177,11 +180,17 @@ void HttpsFirstModeService::OnAdvancedProtectionStatusChanged(bool enabled) {
 
 void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
                                                             const GURL& url) {
+  // Ideal parameter order is kHttpsAddThreshold > kHttpsRemoveThreshold >
+  // kHttpRemoveThreshold > kHttpAddThreshold.
+  if (!(kHttpsAddThreshold.Get() > kHttpsRemoveThreshold.Get() &&
+        kHttpsRemoveThreshold.Get() > kHttpRemoveThreshold.Get() &&
+        kHttpRemoveThreshold.Get() > kHttpAddThreshold.Get())) {
+    return;
+  }
+
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
           profile_->GetSSLHostStateDelegate());
-  static_assert(kHttpsAddThreshold > kHttpsRemoveThreshold);
-  static_assert(kHttpAddThreshold < kHttpRemoveThreshold);
 
   // StatefulSSLHostStateDelegate can be null during tests. In that case, we
   // can't save the site setting.
@@ -198,8 +207,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
 
   double https_score = engagement_svc->GetScore(https_url);
   double http_score = engagement_svc->GetScore(http_url);
-  bool should_enable =
-      https_score >= kHttpsAddThreshold && http_score <= kHttpAddThreshold;
+  bool should_enable = https_score >= kHttpsAddThreshold.Get() &&
+                       http_score <= kHttpAddThreshold.Get();
   if (!enforced && should_enable) {
     state->SetHttpsEnforcementForHost(url.host(),
                                       /*enforced=*/true,
@@ -207,8 +216,8 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForUrl(Profile* profile,
     return;
   }
 
-  bool should_disable = https_score <= kHttpsRemoveThreshold ||
-                        http_score >= kHttpRemoveThreshold;
+  bool should_disable = https_score <= kHttpsRemoveThreshold.Get() ||
+                        http_score >= kHttpRemoveThreshold.Get();
   if (enforced && should_disable) {
     state->SetHttpsEnforcementForHost(url.host(),
                                       /*enforced=*/false,
