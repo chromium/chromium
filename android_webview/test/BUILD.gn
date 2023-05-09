@@ -590,6 +590,7 @@ test("android_webview_unittests") {
     "//components/flags_ui:flags_ui",
     "//components/metrics",
     "//components/metrics:component_metrics",
+    "//components/metrics:content",
     "//components/optimization_guide/core:bloomfilter",
     "//components/policy/core/browser:test_support",
     "//components/prefs:prefs",

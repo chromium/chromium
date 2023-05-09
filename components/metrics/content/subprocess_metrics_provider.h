@@ -5,10 +5,9 @@
 #ifndef COMPONENTS_METRICS_CONTENT_SUBPROCESS_METRICS_PROVIDER_H_
 #define COMPONENTS_METRICS_CONTENT_SUBPROCESS_METRICS_PROVIDER_H_
 
+#include <map>
 #include <memory>
-#include <set>
 
-#include "base/containers/id_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/statistics_recorder.h"
@@ -30,6 +29,7 @@ namespace metrics {
 // memory segments between processes. Merging occurs when a process exits,
 // when metrics are being collected for upload, or when something else needs
 // combined metrics (such as the chrome://histograms page).
+// TODO(crbug/1293026): Do not inherit MetricsProvider.
 class SubprocessMetricsProvider
     : public MetricsProvider,
       public base::StatisticsRecorder::HistogramProvider,
@@ -37,13 +37,21 @@ class SubprocessMetricsProvider
       public content::RenderProcessHostCreationObserver,
       public content::RenderProcessHostObserver {
  public:
-  SubprocessMetricsProvider();
-
   SubprocessMetricsProvider(const SubprocessMetricsProvider&) = delete;
   SubprocessMetricsProvider& operator=(const SubprocessMetricsProvider&) =
       delete;
 
+  // This should never be deleted, as it handles subprocess metrics for the
+  // whole lifetime of the browser process. However, it may be deleted in tests.
+  // Also temporarily while testing the effects of making this leaky.
+  // TODO(crbug/1293026): Make this private.
   ~SubprocessMetricsProvider() override;
+
+  // Creates the global instance. Returns false if the instance already exists.
+  static bool CreateInstance();
+
+  // Returns the global instance.
+  static SubprocessMetricsProvider* GetInstance();
 
   // Merge histograms for all subprocesses. This is used by tests that don't
   // have access to the internal instance of this class.
@@ -53,10 +61,8 @@ class SubprocessMetricsProvider
   friend class SubprocessMetricsProviderTest;
   friend class SubprocessMetricsProviderBrowserTest;
 
-  // Registers the existing render processes by calling
-  // OnRenderProcessHostCreated() and RenderProcessReady() according to its
-  // state.
-  void RegisterExistingRenderProcesses();
+  // The global instance should be accessed through Get().
+  SubprocessMetricsProvider();
 
   // Indicates subprocess to be monitored with unique id for later reference.
   // Metrics reporting will read histograms from it and upload them to UMA.
@@ -68,14 +74,7 @@ class SubprocessMetricsProvider
   // allocator it was using.
   void DeregisterSubprocessAllocator(int id);
 
-  // Merge all histograms of a given allocator to the global StatisticsRecorder.
-  // This is called periodically during UMA metrics collection (if enabled) and
-  // possibly on-demand for other purposes.
-  void MergeHistogramDeltasFromAllocator(
-      int id,
-      base::PersistentHistogramAllocator* allocator);
-
-  // MetricsProvider:
+  // base::StatisticsRecorder::HistogramProvider:
   void MergeHistogramDeltas() override;
 
   // content::BrowserChildProcessObserver:
@@ -91,8 +90,7 @@ class SubprocessMetricsProvider
       const content::ChildProcessTerminationInfo& info) override;
 
   // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(
-      content::RenderProcessHost* process_host) override;
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   // content::RenderProcessHostObserver:
   void RenderProcessReady(content::RenderProcessHost* host) override;
@@ -105,7 +103,7 @@ class SubprocessMetricsProvider
 
   // All of the shared-persistent-allocators for known sub-processes.
   using AllocatorByIdMap =
-      base::IDMap<std::unique_ptr<base::PersistentHistogramAllocator>, int>;
+      std::map<int, std::unique_ptr<base::PersistentHistogramAllocator>>;
   AllocatorByIdMap allocators_by_id_;
 
   // Track all observed render processes to un-observe them on exit.

@@ -17,6 +17,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/metrics/clean_exit_beacon.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -158,6 +159,8 @@ class AndroidMetricsServiceClientTest : public testing::Test {
         task_runner_(new base::TestSimpleTaskRunner) {
     // Required by MetricsService.
     base::SetRecordActionTaskRunner(task_runner_);
+    // Needed because RegisterMetricsProvidersAndInitState() checks for this.
+    metrics::SubprocessMetricsProvider::CreateInstance();
   }
 
   AndroidMetricsServiceClientTest(const AndroidMetricsServiceClientTest&) =
@@ -538,6 +541,11 @@ TEST_F(AndroidMetricsServiceClientTest,
   for (const auto& test : test_cases) {
     auto prefs = CreateTestPrefs();
     prefs->SetString(metrics::prefs::kMetricsClientID, test.client_uuid);
+    // Needed because RegisterMetricsProvidersAndInitState() checks for this.
+    // TODO(crbug/1293026): Remove this and only keep the one in ctor/SetUp.
+    // This is currently needed because |client| will own the provider and
+    // destroy it when it goes out of scope, so need to re-create the provider.
+    metrics::SubprocessMetricsProvider::CreateInstance();
     auto client = std::make_unique<SampleBucketValueTestClient>();
     client->SetHaveMetricsConsent(/*user_consent=*/true, /*app_consent=*/true);
     client->Initialize(prefs.get());

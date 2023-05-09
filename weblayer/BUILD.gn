@@ -731,6 +731,7 @@ source_set("weblayer_lib_base") {
       "//components/location/android:settings",
       "//components/media_router/browser",
       "//components/metrics",
+      "//components/metrics:content",
       "//components/minidump_uploader",
       "//components/navigation_interception",
       "//components/page_info/android",

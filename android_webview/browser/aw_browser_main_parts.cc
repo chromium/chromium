@@ -41,6 +41,7 @@
 #include "components/embedder_support/android/metrics/memory_metrics_logger.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 #include "components/heap_profiling/multi_process/supervisor.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_service.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/user_prefs/user_prefs.h"
@@ -132,6 +133,7 @@ int AwBrowserMainParts::PreCreateThreads() {
 
   crash_reporter::InitializeCrashKeys();
   variations::InitCrashKeys();
+  CHECK(metrics::SubprocessMetricsProvider::CreateInstance());
 
   RegisterSyntheticTrials();
 

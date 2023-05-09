@@ -85,6 +85,7 @@
 #include "components/metrics/demographics/demographic_metrics_provider.h"
 #include "components/metrics/drive_metrics_provider.h"
 #include "components/metrics/entropy_state_provider.h"
+#include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_reporting_default_state.h"
@@ -745,8 +746,14 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   PrefService* local_state = g_browser_process->local_state();
 
   // Gets access to persistent metrics shared by sub-processes.
-  metrics_service_->RegisterMetricsProvider(
-      std::make_unique<metrics::SubprocessMetricsProvider>());
+  CHECK(metrics::SubprocessMetricsProvider::GetInstance());
+  if (!base::FeatureList::IsEnabled(
+          metrics::features::kSubprocessMetricsProviderLeaky)) {
+    // Hacky way to make MetricsService own the subprocess provider.
+    // TODO(crbug/1293026): Remove this.
+    metrics_service_->RegisterMetricsProvider(
+        base::WrapUnique(metrics::SubprocessMetricsProvider::GetInstance()));
+  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   metrics_service_->RegisterMetricsProvider(
