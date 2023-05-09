@@ -1310,7 +1310,7 @@ config("compiler_cpu_abi") {
         ldflags += [ "-m64" ]
       }
     } else if (current_cpu == "riscv64") {
-      if (is_clang) {
+      if (is_clang && !is_android) {
         cflags += [ "--target=riscv64-linux-gnu" ]
         ldflags += [ "--target=riscv64-linux-gnu" ]
       }
