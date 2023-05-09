@@ -147,6 +147,7 @@ class WptReportUploader(object):
         url = "https://%s/api/results/upload" % fqdn
 
         with open(path_to_report, 'rb') as fp:
+            params = {'labels': 'master'}
             files = {'result_file': fp}
             if self._dry_run:
                 _log.info("Dry run, no report uploaded.")
@@ -154,7 +155,7 @@ class WptReportUploader(object):
             session = requests.Session()
             password = self.get_password()
             session.auth = (username, password)
-            res = session.post(url=url, files=files)
+            res = session.post(url=url, params=params, files=files)
             if res.status_code == 200:
                 _log.info("Successfully uploaded wpt report with response: " + res.text.strip())
                 report_id = res.text.split()[1]
