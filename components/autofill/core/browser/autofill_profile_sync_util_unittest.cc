@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
@@ -91,6 +92,9 @@ AutofillProfile ConstructCompleteProfile() {
                                            VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"US",
+                                           VerificationStatus::kObserved);
+
+  profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK, u"Red tree",
                                            VerificationStatus::kObserved);
 
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_SORTING_CODE, u"CEDEX",
@@ -250,6 +254,10 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_country_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
 
+  specifics.set_address_home_landmark("Red tree");
+  specifics.set_address_home_landmark_status(
+      sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
+
   specifics.set_address_home_sorting_code("CEDEX");
   specifics.set_address_home_sorting_code_status(
       sync_pb::AutofillProfileSpecifics_VerificationStatus_OBSERVED);
@@ -274,10 +282,13 @@ class AutofillProfileSyncUtilTest : public testing::Test {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
     test_clock_.SetNow(kJune2017);
     CountryNames::SetLocaleString(kLocaleString);
+    features_.InitAndEnableFeature(
+        features::kAutofillEnableSupportForExtraSettingsVisibleFields);
   }
 
  private:
   autofill::TestAutofillClock test_clock_;
+  base::test::ScopedFeatureList features_;
 };
 
 // Ensure that all profile fields are able to be synced up from the client to

@@ -184,6 +184,15 @@ BASE_FEATURE(kAutofillEnableSelectMenu,
              "AutofillEnableSelectMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, autofill will support the following field types:
+//   - ADDRESS_HOME_LANDMARK
+//   - ADDRESS_HOME_BETWEEN_STREETS
+//   - ADDRESS_HOME_ADMIN_LEVEL2
+// TODO(crbug.com/1441904) Remove once launched.
+BASE_FEATURE(kAutofillEnableSupportForExtraSettingsVisibleFields,
+             "AutofillEnableSupportForExtraSettingsVisibleFields",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls if the heuristic field parsing utilizes shared labels.
 // TODO(crbug.com/1165780): Remove once shared labels are launched.
 BASE_FEATURE(kAutofillEnableSupportForParsingWithSharedLabels,

@@ -178,6 +178,11 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_DEPENDENT_LOCALITY))));
   specifics->set_address_home_country(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_COUNTRY))));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForExtraSettingsVisibleFields)) {
+    specifics->set_address_home_landmark(
+        TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_LANDMARK))));
+  }
   specifics->set_address_home_street_address(
       TruncateUTF8(UTF16ToUTF8(entry.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS))));
   specifics->set_address_home_line1(
@@ -218,6 +223,12 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
   specifics->set_address_home_country_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_COUNTRY)));
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForExtraSettingsVisibleFields)) {
+    specifics->set_address_home_landmark_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ADDRESS_HOME_LANDMARK)));
+  }
   specifics->set_address_home_street_address_status(
       ConvertProfileToSpecificsVerificationStatus(
           entry.GetVerificationStatus(ADDRESS_HOME_STREET_ADDRESS)));
@@ -423,6 +434,14 @@ std::unique_ptr<AutofillProfile> CreateAutofillProfileFromSpecifics(
       ADDRESS_HOME_COUNTRY, UTF8ToUTF16(country_code),
       ConvertSpecificsToProfileVerificationStatus(
           specifics.address_home_country_status()));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForExtraSettingsVisibleFields)) {
+    profile->SetRawInfoWithVerificationStatus(
+        ADDRESS_HOME_LANDMARK, UTF8ToUTF16(specifics.address_home_landmark()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.address_home_landmark_status()));
+  }
 
   // Set either the deprecated subparts (line1 & line2) or the full address
   // (street_address) if it is present. This is needed because all the address
