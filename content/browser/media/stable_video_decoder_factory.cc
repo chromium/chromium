@@ -183,8 +183,11 @@ void LaunchStableVideoDecoderFactory(
   // For LaCrOS, we need to use crosapi to establish a
   // StableVideoDecoderFactory connection to ash-chrome.
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service && lacros_service->IsStableVideoDecoderFactoryAvailable())
+  if (lacros_service &&
+      lacros_service
+          ->IsSupported<media::stable::mojom::StableVideoDecoderFactory>()) {
     lacros_service->BindStableVideoDecoderFactory(std::move(receiver));
+  }
 #endif
 }
 

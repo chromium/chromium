@@ -293,7 +293,8 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
   // For requests for fake (including file) video capture device factory, we
   // don't need to forward the request to Ash-Chrome.
   if (!media::ShouldUseFakeVideoCaptureDeviceFactory() && lacros_service &&
-      lacros_service->IsVideoCaptureDeviceFactoryAvailable()) {
+      lacros_service
+          ->IsSupported<crosapi::mojom::VideoCaptureDeviceFactory>()) {
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
         device_factory_ash;
     lacros_service->BindVideoCaptureDeviceFactory(

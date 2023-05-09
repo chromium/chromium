@@ -35,7 +35,9 @@ class LacrosMediaSessionServiceImpl
       mojo::PendingReceiver<media_session::mojom::AudioFocusManager> receiver)
       override {
     auto* lacros_service = chromeos::LacrosService::Get();
-    if (lacros_service && lacros_service->IsMediaSessionAudioFocusAvailable()) {
+    if (lacros_service &&
+        lacros_service
+            ->IsSupported<media_session::mojom::AudioFocusManager>()) {
       lacros_service->BindAudioFocusManager(std::move(receiver));
     }
   }
@@ -45,7 +47,8 @@ class LacrosMediaSessionServiceImpl
           receiver) override {
     auto* lacros_service = chromeos::LacrosService::Get();
     if (lacros_service &&
-        lacros_service->IsMediaSessionAudioFocusDebugAvailable()) {
+        lacros_service
+            ->IsSupported<media_session::mojom::AudioFocusManagerDebug>()) {
       lacros_service->BindAudioFocusManagerDebug(std::move(receiver));
     }
   }
@@ -54,7 +57,9 @@ class LacrosMediaSessionServiceImpl
       mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
           receiver) override {
     auto* lacros_service = chromeos::LacrosService::Get();
-    if (lacros_service && lacros_service->IsMediaSessionControllerAvailable()) {
+    if (lacros_service &&
+        lacros_service
+            ->IsSupported<media_session::mojom::MediaControllerManager>()) {
       lacros_service->BindMediaControllerManager(std::move(receiver));
     }
   }
@@ -68,9 +73,12 @@ media_session::MediaSessionService& GetMediaSessionService() {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service && lacros_service->IsMediaSessionControllerAvailable() &&
-      lacros_service->IsMediaSessionAudioFocusDebugAvailable() &&
-      lacros_service->IsMediaSessionAudioFocusAvailable()) {
+  if (lacros_service &&
+      lacros_service
+          ->IsSupported<media_session::mojom::MediaControllerManager>() &&
+      lacros_service
+          ->IsSupported<media_session::mojom::AudioFocusManagerDebug>() &&
+      lacros_service->IsSupported<media_session::mojom::AudioFocusManager>()) {
     static base::NoDestructor<LacrosMediaSessionServiceImpl> service;
     return *service;
   }

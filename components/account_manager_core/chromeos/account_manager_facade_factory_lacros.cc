@@ -22,7 +22,8 @@ mojo::Remote<crosapi::mojom::AccountManager> GetAccountManagerRemote() {
 
   auto* lacros_chrome_service_impl = chromeos::LacrosService::Get();
   DCHECK(lacros_chrome_service_impl);
-  if (!lacros_chrome_service_impl->IsAccountManagerAvailable()) {
+  if (!lacros_chrome_service_impl
+           ->IsSupported<crosapi::mojom::AccountManager>()) {
     LOG(WARNING) << "Connected to an older version of ash. Account "
                     "consistency will not be available";
     return remote;

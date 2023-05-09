@@ -34,8 +34,10 @@ bool BindSensorHalClient(mojo::PendingRemote<mojom::SensorHalClient> remote) {
     return false;
   }
 
-  if (!lacros_service->IsSensorHalClientAvailable())
+  if (!lacros_service
+           ->IsSupported<chromeos::sensors::mojom::SensorHalClient>()) {
     return false;
+  }
 
   lacros_service->BindSensorHalClient(std::move(remote));
   return true;

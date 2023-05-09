@@ -95,7 +95,7 @@ void CdmFactoryDaemonProxyLacros::EstablishAshConnection(
   }
 
   auto* service = LacrosService::Get();
-  if (!service || !service->IsBrowserCdmFactoryAvailable()) {
+  if (!service || !service->IsSupported<cdm::mojom::BrowserCdmFactory>()) {
     std::move(callback).Run();
     return;
   }
