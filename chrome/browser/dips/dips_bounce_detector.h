@@ -241,7 +241,8 @@ class DIPSBounceDetector {
 
 // A thin wrapper around DIPSBounceDetector to use it as a WebContentsObserver.
 class DIPSWebContentsObserver
-    : public content::WebContentsObserver,
+    : public content_settings::PageSpecificContentSettings::SiteDataObserver,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<DIPSWebContentsObserver>,
       public DIPSBounceDetectorDelegate {
  public:
@@ -299,23 +300,10 @@ class DIPSWebContentsObserver
       content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
-  class DIPSSiteDataObserver
-      : public content_settings::PageSpecificContentSettings::SiteDataObserver {
-   public:
-    DIPSSiteDataObserver(content::WebContents* web_contents,
-                         DIPSWebContentsObserver* dips_web_contents_observer);
-
-    DIPSSiteDataObserver(const DIPSSiteDataObserver&) = delete;
-    DIPSSiteDataObserver& operator=(const DIPSSiteDataObserver&) = delete;
-
-   private:
-    // Start SiteDataObserver overrides:
-    void OnSiteDataAccessed(
-        const content_settings::AccessDetails& access_details) override;
-    // End SiteDataObserver overrides.
-
-    raw_ptr<DIPSWebContentsObserver> dips_web_contents_observer_;
-  };
+  // Start SiteDataObserver overrides:
+  void OnSiteDataAccessed(
+      const content_settings::AccessDetails& access_details) override;
+  // End SiteDataObserver overrides.
 
   // raw_ptr<> is safe here because DIPSService is a KeyedService, associated
   // with the BrowserContext/Profile which will outlive the WebContents that
@@ -323,7 +311,6 @@ class DIPSWebContentsObserver
   raw_ptr<DIPSService> dips_service_;
   DIPSBounceDetector detector_;
   DIPSIssueReportingCallback issue_reporting_callback_;
-  std::unique_ptr<DIPSSiteDataObserver> dips_site_data_observer_;
 
   base::WeakPtrFactory<DIPSWebContentsObserver> weak_factory_{this};
 

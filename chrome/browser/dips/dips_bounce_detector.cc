@@ -26,6 +26,7 @@
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -78,7 +79,9 @@ void DIPSWebContentsObserver::MaybeCreateForWebContents(
 DIPSWebContentsObserver::DIPSWebContentsObserver(
     content::WebContents* web_contents,
     DIPSService* dips_service)
-    : content::WebContentsObserver(web_contents),
+    : content_settings::PageSpecificContentSettings::SiteDataObserver(
+          web_contents),
+      content::WebContentsObserver(web_contents),
       content::WebContentsUserData<DIPSWebContentsObserver>(*web_contents),
       dips_service_(dips_service),
       detector_(this,
@@ -86,41 +89,9 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
                 base::DefaultClock::GetInstance()) {
   issue_reporting_callback_ = base::BindRepeating(
       &DIPSWebContentsObserver::EmitDIPSIssue, weak_factory_.GetWeakPtr());
-  dips_site_data_observer_ =
-      std::make_unique<DIPSSiteDataObserver>(web_contents, this);
 }
 
 DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
-
-DIPSWebContentsObserver::DIPSSiteDataObserver::DIPSSiteDataObserver(
-    content::WebContents* web_contents,
-    DIPSWebContentsObserver* dips_web_contents_observer)
-    : content_settings::PageSpecificContentSettings::SiteDataObserver(
-          web_contents),
-      dips_web_contents_observer_(dips_web_contents_observer) {}
-
-void DIPSWebContentsObserver::DIPSSiteDataObserver::OnSiteDataAccessed(
-    const content_settings::AccessDetails& access_details) {
-  // NOTE: The current implementation is only acting on all site data types
-  // collapsed under `content_settings::SiteDataType::kStorage` with the
-  // exception of WebLocks (not monitored by the
-  // `content_settings::PageSpecificContentSettings`) as it's not persistent.
-  if (access_details.site_data_type !=
-      content_settings::SiteDataType::kStorage) {
-    return;
-  }
-
-  DCHECK(access_details.render_frame_host);
-
-  // TODO(crbug.com/1434764): handle same-site iframes.
-  if (!access_details.render_frame_host->IsInPrimaryMainFrame() ||
-      access_details.blocked_by_policy) {
-    return;
-  }
-
-  dips_web_contents_observer_->detector_.OnClientSiteDataAccessed(
-      access_details.url, ToCookieOperation(access_details.access_type));
-}
 
 const base::TimeDelta DIPSBounceDetector::kTimestampUpdateInterval =
     base::Minutes(1);
@@ -466,6 +437,29 @@ void DIPSBounceDetector::DidStartNavigation(
           client_detection_state_->last_activation_time.has_value());
 }
 
+void DIPSWebContentsObserver::OnSiteDataAccessed(
+    const content_settings::AccessDetails& access_details) {
+  // NOTE: The current implementation is only acting on all site data types
+  // collapsed under `content_settings::SiteDataType::kStorage` with the
+  // exception of WebLocks (not monitored by the
+  // `content_settings::PageSpecificContentSettings`) as it's not persistent.
+  if (access_details.site_data_type !=
+      content_settings::SiteDataType::kStorage) {
+    return;
+  }
+
+  DCHECK(access_details.render_frame_host);
+
+  // TODO(crbug.com/1434764): handle same-site iframes.
+  if (!access_details.render_frame_host->IsInPrimaryMainFrame() ||
+      access_details.blocked_by_policy) {
+    return;
+  }
+
+  detector_.OnClientSiteDataAccessed(
+      access_details.url, ToCookieOperation(access_details.access_type));
+}
+
 void DIPSBounceDetector::OnClientSiteDataAccessed(const GURL& url,
                                                   CookieOperation op) {
   auto now = clock_->Now();
@@ -663,7 +657,6 @@ bool DIPSBounceDetector::ShouldUpdateTimestamp(
 }
 
 void DIPSWebContentsObserver::WebContentsDestroyed() {
-  dips_site_data_observer_.reset();
   detector_.BeforeDestruction();
 }
 

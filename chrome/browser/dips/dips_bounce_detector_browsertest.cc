@@ -177,7 +177,8 @@ void AppendSitesInReport(std::vector<std::string>* reports,
 // Keeps a log of DidStartNavigation, OnCookiesAccessed, and DidFinishNavigation
 // executions.
 class WCOCallbackLogger
-    : public content::WebContentsObserver,
+    : public content_settings::PageSpecificContentSettings::SiteDataObserver,
+      public content::WebContentsObserver,
       public content::WebContentsUserData<WCOCallbackLogger> {
  public:
   WCOCallbackLogger(const WCOCallbackLogger&) = delete;
@@ -197,39 +198,23 @@ class WCOCallbackLogger
   void OnCookiesAccessed(NavigationHandle* navigation_handle,
                          const content::CookieAccessDetails& details) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-  void WebContentsDestroyed() override;
   // End WebContentsObserver overrides.
 
-  class DIPSSiteDataObserver
-      : public content_settings::PageSpecificContentSettings::SiteDataObserver {
-   public:
-    DIPSSiteDataObserver(content::WebContents* web_contents,
-                         WCOCallbackLogger* dips_web_contents_observer);
-
-    DIPSSiteDataObserver(const DIPSSiteDataObserver&) = delete;
-    DIPSSiteDataObserver& operator=(const DIPSSiteDataObserver&) = delete;
-
-   private:
-    // Start SiteDataObserver overrides:
-    void OnSiteDataAccessed(
-        const content_settings::AccessDetails& access_details) override;
-    // End SiteDataObserver overrides.
-
-    raw_ptr<WCOCallbackLogger> wco_callback_logger_;
-  };
+  // Start SiteDataObserver overrides:
+  void OnSiteDataAccessed(
+      const content_settings::AccessDetails& access_details) override;
+  // End SiteDataObserver overrides.
 
   std::vector<std::string> log_;
-  std::unique_ptr<DIPSSiteDataObserver> dips_site_data_observer_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 WCOCallbackLogger::WCOCallbackLogger(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {
-  dips_site_data_observer_ =
-      std::make_unique<DIPSSiteDataObserver>(web_contents, this);
-}
+    : content_settings::PageSpecificContentSettings::SiteDataObserver(
+          web_contents),
+      content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WCOCallbackLogger>(*web_contents) {}
 
 void WCOCallbackLogger::DidStartNavigation(
     NavigationHandle* navigation_handle) {
@@ -275,17 +260,6 @@ void WCOCallbackLogger::DidFinishNavigation(
                          FormatURL(navigation_handle->GetURL()).c_str()));
 }
 
-void WCOCallbackLogger::WebContentsDestroyed() {
-  dips_site_data_observer_.reset();
-}
-
-WCOCallbackLogger::DIPSSiteDataObserver::DIPSSiteDataObserver(
-    content::WebContents* web_contents,
-    WCOCallbackLogger* wco_callback_logger)
-    : content_settings::PageSpecificContentSettings::SiteDataObserver(
-          web_contents),
-      wco_callback_logger_(wco_callback_logger) {}
-
 inline std::string SiteDataTypeToString(
     const content_settings::SiteDataType& type) {
   switch (type) {
@@ -319,7 +293,7 @@ inline std::string AccessTypeToString(content_settings::AccessType type) {
   }
 }
 
-void WCOCallbackLogger::DIPSSiteDataObserver::OnSiteDataAccessed(
+void WCOCallbackLogger::OnSiteDataAccessed(
     const content_settings::AccessDetails& access_details) {
   // Avoids logging notification from the PSCS that are due to cookie accesses,
   // in order not to impact the other cookie access notification logs from the
@@ -329,7 +303,7 @@ void WCOCallbackLogger::DIPSSiteDataObserver::OnSiteDataAccessed(
     return;
   }
 
-  wco_callback_logger_->log_.push_back(base::StringPrintf(
+  log_.push_back(base::StringPrintf(
       "OnSiteDataAccessed(AccessDetails, %s: %s: %s)",
       SiteDataTypeToString(access_details.site_data_type).c_str(),
       AccessTypeToString(access_details.access_type).c_str(),
