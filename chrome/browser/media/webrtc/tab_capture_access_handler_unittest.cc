@@ -110,7 +110,7 @@ TEST_F(TabCaptureAccessHandlerTest, PermissionGiven) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, /*extension_name=*/"", web_contents());
+      GURL(kOrigin), source, web_contents());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;
@@ -145,7 +145,7 @@ TEST_F(TabCaptureAccessHandlerTest, DlpRestricted) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, /*extension_name=*/"", web_contents());
+      GURL(kOrigin), source, web_contents());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;
@@ -177,7 +177,7 @@ TEST_F(TabCaptureAccessHandlerTest, DlpNotRestricted) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, /*extension_name=*/"", web_contents());
+      GURL(kOrigin), source, web_contents());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;
@@ -210,7 +210,7 @@ TEST_F(TabCaptureAccessHandlerTest, DlpWebContentsDestroyed) {
 
   extensions::TabCaptureRegistry::Get(profile())->AddRequest(
       web_contents(), /*extension_id=*/"", /*is_anonymous=*/false,
-      GURL(kOrigin), source, /*extension_name=*/"", web_contents());
+      GURL(kOrigin), source, web_contents());
 
   blink::mojom::MediaStreamRequestResult result = kInvalidResult;
   blink::mojom::StreamDevices devices;

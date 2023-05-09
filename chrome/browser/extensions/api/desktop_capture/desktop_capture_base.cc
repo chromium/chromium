@@ -201,7 +201,7 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults(
   if (source.type != DesktopMediaID::TYPE_NONE) {
     result = content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
         render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
-        url::Origin::Create(origin), source, extension()->name(),
+        url::Origin::Create(origin), source,
         content::kRegistryStreamTypeDesktop);
   }
 

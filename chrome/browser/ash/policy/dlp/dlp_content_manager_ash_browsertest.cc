@@ -901,7 +901,6 @@ class DlpContentManagerAshScreenShareBrowserTest
             web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
             web_contents->GetPrimaryMainFrame()->GetRoutingID(),
             url::Origin::Create(GURL(kExampleUrl)), media_id,
-            /*extension_name=*/"",
             content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
 
     MaybeStartScreenShare(
@@ -931,8 +930,7 @@ class DlpContentManagerAshScreenShareBrowserTest
             web_contents->GetPrimaryMainFrame()->GetRoutingID()));
     extensions::TabCaptureRegistry::Get(browser()->profile())
         ->AddRequest(web_contents, /*extension_id=*/"", /*is_anonymous=*/false,
-                     GURL(kExampleUrl), media_id, /*extension_name=*/"",
-                     web_contents);
+                     GURL(kExampleUrl), media_id, web_contents);
 
     MaybeStartScreenShare(
         std::make_unique<TabCaptureAccessHandler>(), web_contents,

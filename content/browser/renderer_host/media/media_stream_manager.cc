@@ -2803,7 +2803,7 @@ DesktopMediaID MediaStreamManager::ResolveTabCaptureDeviceIdOnUIThread(
   // Resolve DesktopMediaID for the specified device id.
   return DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
       capture_device_id, requesting_process_id, requesting_frame_id,
-      url::Origin::Create(origin), nullptr, kRegistryStreamTypeTab);
+      url::Origin::Create(origin), kRegistryStreamTypeTab);
 }
 
 void MediaStreamManager::FinishTabCaptureRequestSetupWithDeviceId(

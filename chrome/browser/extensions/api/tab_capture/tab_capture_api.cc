@@ -190,9 +190,9 @@ ExtensionFunction::ResponseAction TabCaptureCaptureFunction::Run() {
   DesktopMediaID source =
       BuildDesktopMediaID(target_contents, &params->options);
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
-  std::string device_id = registry->AddRequest(
-      target_contents, extension_id, false, extension()->url(), source,
-      extension()->name(), extension_web_contents);
+  std::string device_id =
+      registry->AddRequest(target_contents, extension_id, false,
+                           extension()->url(), source, extension_web_contents);
   if (device_id.empty()) {
     return RespondNow(Error(kCapturingSameTab));
   }
@@ -255,7 +255,6 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
 
   // |consumer_contents| is the WebContents for which the stream is created.
   content::WebContents* consumer_contents = nullptr;
-  std::string consumer_name;
   GURL origin;
   if (params->options && params->options->consumer_tab_id) {
     if (!ExtensionTabUtil::GetTabById(*(params->options->consumer_tab_id),
@@ -273,20 +272,16 @@ ExtensionFunction::ResponseAction TabCaptureGetMediaStreamIdFunction::Run() {
     if (!network::IsUrlPotentiallyTrustworthy(origin)) {
       return RespondNow(Error(kTabUrlNotSecure));
     }
-
-    consumer_name = net::GetHostAndOptionalPort(origin);
   } else {
     origin = extension()->url();
-    consumer_name = extension()->name();
     consumer_contents = GetSenderWebContents();
   }
   EXTENSION_FUNCTION_VALIDATE(consumer_contents);
 
   DesktopMediaID source = BuildDesktopMediaID(target_contents, nullptr);
   TabCaptureRegistry* registry = TabCaptureRegistry::Get(browser_context());
-  std::string device_id =
-      registry->AddRequest(target_contents, extension_id, false, origin, source,
-                           consumer_name, consumer_contents);
+  std::string device_id = registry->AddRequest(
+      target_contents, extension_id, false, origin, source, consumer_contents);
   if (device_id.empty()) {
     return RespondNow(Error(kCapturingSameTab));
   }
