@@ -418,6 +418,9 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #else
   trials.emplace("DanglingPointerDetector", "Disabled");
 #endif
+  // This value is not surrounded by build flags as it is meant to be updated
+  // manually in binary experiment patches.
+  trials.emplace("VectorRawPtrExperiment", "Disabled");
 
   return trials;
 }
