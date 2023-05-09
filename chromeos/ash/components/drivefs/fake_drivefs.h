@@ -99,6 +99,18 @@ class FakeDriveFs : public drivefs::mojom::DriveFs,
                drivefs::mojom::DriveFs::ImmediatelyUploadCallback callback),
               (override));
 
+  MOCK_METHOD(void,
+              UpdateFromPairedDoc,
+              (const base::FilePath& path,
+               drivefs::mojom::DriveFs::UpdateFromPairedDocCallback callback),
+              (override));
+
+  MOCK_METHOD(void,
+              GetItemFromCloudStore,
+              (const base::FilePath& path,
+               drivefs::mojom::DriveFs::GetItemFromCloudStoreCallback callback),
+              (override));
+
   const base::FilePath& mount_path() { return mount_path_; }
 
   absl::optional<bool> IsItemPinned(const std::string& path);

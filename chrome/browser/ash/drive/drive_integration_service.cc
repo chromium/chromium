@@ -1669,9 +1669,28 @@ void DriveIntegrationService::ForceReSyncFile(const base::FilePath& local_path,
     return;
   }
 
-  // TODO(b/234921400): Replace this with a call to DriveFS once implemented.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                           std::move(callback));
+  GetDriveFsInterface()->UpdateFromPairedDoc(
+      drive_path,
+      base::BindOnce(&DriveIntegrationService::OnUpdateFromPairedDocComplete,
+                     weak_ptr_factory_.GetWeakPtr(), drive_path,
+                     std::move(callback)));
+}
+
+void DriveIntegrationService::OnUpdateFromPairedDocComplete(
+    const base::FilePath& drive_path,
+    base::OnceClosure callback,
+    drive::FileError error) {
+  if (error != drive::FileError::FILE_ERROR_OK) {
+    LOG(ERROR) << "Error in UpdateFromPairedDoc: " << error;
+    std::move(callback).Run();
+    return;
+  }
+
+  GetDriveFsInterface()->GetItemFromCloudStore(
+      drive_path, base::BindOnce([](drive::FileError error) {
+                    LOG_IF(ERROR, error != drive::FileError::FILE_ERROR_OK)
+                        << "Error in GetItemFromCloudStore: " << error;
+                  }).Then(std::move(callback)));
 }
 
 void DriveIntegrationService::ImmediatelyUpload(

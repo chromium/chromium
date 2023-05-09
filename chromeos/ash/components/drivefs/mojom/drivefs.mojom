@@ -150,6 +150,14 @@ interface DriveFs {
 
   // Uploads a file by skipping any remaining queue time, if possible.
   ImmediatelyUpload(mojo_base.mojom.FilePath path) => (FileError error);
+
+  // Forces the server to export any pending paired doc content into a new
+  // revision.
+  UpdateFromPairedDoc(mojo_base.mojom.FilePath path) => (FileError error);
+
+  // Pulls the updated file content from the server into the cache, if a newer
+  // revision is available.
+  GetItemFromCloudStore(mojo_base.mojom.FilePath path) => (FileError error);
 };
 
 // Implemented by Chrome, used from DriveFS.

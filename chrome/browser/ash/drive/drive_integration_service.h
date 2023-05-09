@@ -431,6 +431,10 @@ class DriveIntegrationService : public KeyedService,
       drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback,
       bool exists);
 
+  void OnUpdateFromPairedDocComplete(const base::FilePath& drive_path,
+                                     base::OnceClosure callback,
+                                     drive::FileError error);
+
   friend class DriveIntegrationServiceFactory;
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
