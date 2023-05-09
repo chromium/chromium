@@ -50,6 +50,7 @@
         const objectStore = db.createObjectStore("test-store");
         objectStore.add("test-data", "test-key");
         resolve('key-value pair added successfully');
+        db.close();
       };
     })
   `);
@@ -84,6 +85,7 @@
         const store = db.transaction(['test-store'],'readwrite').objectStore('test-store');
         store.add("one-more-test-data", "one-more-test-key");
         resolve("one more key-value pair added");
+        db.close();
       };
     })
   `);
