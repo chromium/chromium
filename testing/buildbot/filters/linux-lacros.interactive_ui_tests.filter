@@ -30,8 +30,10 @@
 -SameSiteSubframe/DragAndDropBrowserTest.DragSameOriginImageBetweenFrames/0
 -SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
 # The following tests are flaky.
+-CrossSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
 -MenuItemViewTestInsertWithSubmenu1.InsertItemWithSubmenu1
 -MenuViewDragAndDropTestNestedDrag.MenuViewDragAndDropNestedDrag
+-SameSiteSubframe/DragAndDropBrowserTest.CrossSiteDrag/0
 -TouchMode/InteractionTestUtilMouseUiTest.Drag/0
 
 # TODO(crbug.com/1195712): Implement the feature for Wayland.
