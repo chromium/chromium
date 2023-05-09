@@ -23,9 +23,15 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="UiSurface">
+  <variant name="ATX"/>
   <variant name="CQ"/>
+  <variant name="PageEntities"/>
   <variant name="PH"/>
   <variant name="RegionSearch"/>
+  <variant name="RelQr"/>
+  <variant name="RelQs"/>
+  <variant name="SearchBox"/>
+  <variant name="VQ"/>
 </variants>
 
 <histogram name="Companion.CQ.TextHighlight.Success" enum="BooleanSuccess"

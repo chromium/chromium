@@ -6676,17 +6676,15 @@ be describing additional metrics about the same event.
     navigates away. For most of the UI surfaces, only the last event (e.g.
     displayed or clicked) is recorded.
   </summary>
-  <metric name="CQ.ChildElementCount">
-    <summary>
-      The number of child elements shown within the CQ suface, e.g. the number
-      of related queries in the related queries component. Clamped to a max
-      value of 10.
-    </summary>
-  </metric>
   <metric name="CQ.ClickPosition">
     <summary>
       The position of the CQ element that was clicked with respect to its parent
       list.
+    </summary>
+  </metric>
+  <metric name="CQ.ComponentPosition">
+    <summary>
+      The position of the CQ surface in the page.
     </summary>
   </metric>
   <metric name="CQ.LastEvent" enum="Companion.UiEvent">
@@ -6694,9 +6692,26 @@ be describing additional metrics about the same event.
       The last event on the CQ surface.
     </summary>
   </metric>
+  <metric name="CQ.NumEntriesAvailable">
+    <summary>
+      The number of child elements available within the CQ suface after
+      eligibility check after text finder API. Clamped to a max value of 10.
+    </summary>
+  </metric>
+  <metric name="CQ.NumEntriesShown">
+    <summary>
+      The number of child elements actually shown within the CQ suface after
+      eligibility check through text finder API. Clamped to a max value of 10.
+    </summary>
+  </metric>
   <metric name="OpenTrigger" enum="Companion.OpenTrigger">
     <summary>
       The UI location from which the companion page was opened.
+    </summary>
+  </metric>
+  <metric name="PH.ComponentPosition">
+    <summary>
+      The position of the PH surface in the page.
     </summary>
   </metric>
   <metric name="PH.Feedback" enum="Companion.PhFeedback">

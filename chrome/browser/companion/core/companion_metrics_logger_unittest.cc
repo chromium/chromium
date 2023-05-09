@@ -85,13 +85,17 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
   base::HistogramTester histogram_tester;
 
   // Show two surfaces, user clicks one.
-  logger_->RecordUiSurfaceShown(UiSurface::kPH, /*child_element_count=*/0);
-  logger_->RecordUiSurfaceShown(UiSurface::kCQ, /*child_element_count=*/3);
+  logger_->RecordUiSurfaceShown(UiSurface::kPH, /*ui_surface_position=*/2,
+                                /*child_element_available_count=*/-1,
+                                /*child_element_shown_count=*/-1);
+  logger_->RecordUiSurfaceShown(UiSurface::kCQ, /*ui_surface_position=*/4,
+                                /*child_element_available_count=*/8,
+                                /*child_element_shown_count=*/3);
   logger_->RecordUiSurfaceClicked(UiSurface::kCQ, /*click_position=*/2);
 
   // Verify histograms for click and shown events.
   histogram_tester.ExpectBucketCount("Companion.PH.Shown",
-                                     /*sample=*/true, /*expected_count=*/0);
+                                     /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.CQ.Shown",
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.CQ.Clicked",
@@ -102,12 +106,20 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
 
+  // PH metrics.
   ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_LastEventName,
                  static_cast<int>(UiEvent::kShown));
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kPH_ComponentPositionName,
+                 2);
+
+  // CQ metrics.
   ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_LastEventName,
                  static_cast<int>(UiEvent::kClicked));
-  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_ChildElementCountName,
-                 3);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_NumEntriesAvailableName,
+                 8);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_NumEntriesShownName, 3);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_ComponentPositionName,
+                 4);
   ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_ClickPositionName, 2);
 }
 

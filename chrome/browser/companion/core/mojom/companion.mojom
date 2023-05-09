@@ -114,6 +114,12 @@ enum UiSurface {
   kPH = 1,
   kCQ = 2,
   kRegionSearch = 3,
+  kSearchBox = 4,
+  kVQ = 5,
+  kRelQr = 6,
+  kRelQs = 7,
+  kPageEntities = 8,
+  kATX = 9,
 };
 
 // Factory method for creating a new WebUI page handler.
@@ -148,7 +154,14 @@ interface CompanionPageHandler {
   // the companion page. Additionally indicates the number of child elements
   // shown within the surface, e.g. the number of related queries shown in
   // the related queries component.
-  RecordUiSurfaceShown(UiSurface ui_surface, uint32 child_element_count);
+  // `ui_surface_position` indicates the position of this UI surface within the
+  // page.
+  // `child_element_available_count` is the number of candidate children that
+  // were considered to be shown in the page.
+  // 'child_element_shown_count` is the number of children that were actually
+  // shown.
+  RecordUiSurfaceShown(UiSurface ui_surface, uint32 ui_surface_position,
+      uint32 child_element_available_count, uint32 child_element_shown_count);
 
   // For metrics only. Called to record that the user clicked on the given UI
   // surface on the companion page. These clicks are actual clicks on the

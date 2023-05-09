@@ -168,8 +168,12 @@ void CompanionPageHandler::OnOpenInNewTabButtonURLChanged(
 
 void CompanionPageHandler::RecordUiSurfaceShown(
     side_panel::mojom::UiSurface ui_surface,
-    uint32_t child_element_count) {
-  metrics_logger_->RecordUiSurfaceShown(ui_surface, child_element_count);
+    uint32_t ui_surface_position,
+    uint32_t child_element_available_count,
+    uint32_t child_element_shown_count) {
+  metrics_logger_->RecordUiSurfaceShown(ui_surface, ui_surface_position,
+                                        child_element_available_count,
+                                        child_element_shown_count);
 }
 
 void CompanionPageHandler::RecordUiSurfaceClicked(

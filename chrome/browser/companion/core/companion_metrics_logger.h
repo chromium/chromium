@@ -17,8 +17,9 @@ using side_panel::mojom::UiSurface;
 
 namespace companion {
 
-// Invalid position inside a list.
+// Invalid values.
 const int32_t kInvalidPosition = -1;
+const int32_t kInvalidNumChildren = -1;
 
 // Types of events on the UI surfaces. Keep in sync with Companion.UiEvent in
 // enums.xml.
@@ -63,9 +64,16 @@ struct UiSurfaceMetrics {
   // Events on the surface. The last event wins and gets recorded.
   UiEvent last_event = UiEvent::kNotAvailable;
 
+  // The position of the UI surface relative to the companion page.
+  size_t ui_surface_position = kInvalidPosition;
+
+  // The number of child elements that were considered to be shown within the
+  // surface, e.g. number of candidate queries inside related queries component.
+  size_t child_element_available_count = kInvalidNumChildren;
+
   // The number of child elements shown within the surface, e.g. number of
   // related queries inside related queries component.
-  size_t child_element_count = 0;
+  size_t child_element_shown_count = kInvalidNumChildren;
 
   // The number of times user clicked on the surface.
   size_t click_count = 0;
@@ -104,9 +112,24 @@ class CompanionMetricsLogger {
   ~CompanionMetricsLogger();
 
   void RecordOpenTrigger(OpenTrigger open_trigger);
-  void RecordUiSurfaceShown(UiSurface ui_surface, uint32_t child_element_count);
+
+  // For the following methods, please refer CompanionPageHandler in
+  // companion.mojom for detailed documentation.
+
+  // Logging method corresponding to `RecordUiSurfaceShown` in companion.mojom.
+  void RecordUiSurfaceShown(UiSurface ui_surface,
+                            uint32_t ui_surface_position,
+                            uint32_t child_element_available_count,
+                            uint32_t child_element_shown_count);
+
+  // Logging method corresponding to `RecordUiSurfaceClicked` in
+  // companion.mojom.
   void RecordUiSurfaceClicked(UiSurface ui_surface, int32_t click_position);
+
+  // Logging method corresponding to `OnPromoAction` in companion.mojom.
   void OnPromoAction(PromoType promo_type, PromoAction promo_action);
+
+  // Logging method corresponding to `OnPhFeedback` in companion.mojom.
   void OnPhFeedback(PhFeedback ph_feedback);
 
  private:

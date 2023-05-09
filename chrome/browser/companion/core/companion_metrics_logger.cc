@@ -30,10 +30,16 @@ const int kMaxNumChildElements = 10;
 bool IsListSurface(UiSurface ui_surface) {
   switch (ui_surface) {
     case UiSurface::kUnknown:
+    case UiSurface::kSearchBox:
     case UiSurface::kRegionSearch:
+    case UiSurface::kATX:
+    case UiSurface::kPH:
       return false;
     case UiSurface::kCQ:
-    case UiSurface::kPH:
+    case UiSurface::kVQ:
+    case UiSurface::kRelQr:
+    case UiSurface::kRelQs:
+    case UiSurface::kPageEntities:
       return true;
   }
 }
@@ -43,12 +49,24 @@ std::string UiSurfaceToHistogramVariant(UiSurface ui_surface) {
     case UiSurface::kUnknown:
       NOTREACHED();
       return "Unknown";
-    case UiSurface::kCQ:
-      return "CQ";
     case UiSurface::kPH:
       return "PH";
+    case UiSurface::kCQ:
+      return "CQ";
     case UiSurface::kRegionSearch:
       return "RegionSearch";
+    case UiSurface::kSearchBox:
+      return "SearchBox";
+    case UiSurface::kVQ:
+      return "VQ";
+    case UiSurface::kRelQr:
+      return "RelQr";
+    case UiSurface::kRelQs:
+      return "RelQs";
+    case UiSurface::kPageEntities:
+      return "PageEntities";
+    case UiSurface::kATX:
+      return "ATX";
     default:
       NOTREACHED();
       return "Unknown";
@@ -107,18 +125,23 @@ void CompanionMetricsLogger::RecordOpenTrigger(OpenTrigger open_trigger) {
 
 void CompanionMetricsLogger::RecordUiSurfaceShown(
     UiSurface ui_surface,
-    uint32_t child_element_count) {
+    uint32_t ui_surface_position,
+    uint32_t child_element_available_count,
+    uint32_t child_element_shown_count) {
   UiSurfaceMetrics& surface = ui_surface_metrics_[ui_surface];
   surface.last_event = UiEvent::kShown;
   // Clamped to record as having max 10 child elements.
-  surface.child_element_count = std::clamp(
-      child_element_count, 0u, static_cast<unsigned int>(kMaxNumChildElements));
+  surface.ui_surface_position = ui_surface_position;
+  surface.child_element_available_count =
+      std::clamp(child_element_available_count, 0u,
+                 static_cast<unsigned int>(kMaxNumChildElements));
+  surface.child_element_shown_count =
+      std::clamp(child_element_shown_count, 0u,
+                 static_cast<unsigned int>(kMaxNumChildElements));
 
-  if (child_element_count > 0) {
-    base::UmaHistogramBoolean(
-        "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown",
-        true);
-  }
+  DCHECK(!IsListSurface(ui_surface) || child_element_shown_count > 0);
+  base::UmaHistogramBoolean(
+      "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown", true);
 }
 
 void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface,
@@ -163,7 +186,10 @@ void CompanionMetricsLogger::FlushStats() {
   auto iter = ui_surface_metrics_.find(UiSurface::kCQ);
   if (iter != ui_surface_metrics_.end()) {
     ukm_builder.SetCQ_LastEvent(static_cast<int64_t>(iter->second.last_event));
-    ukm_builder.SetCQ_ChildElementCount(iter->second.child_element_count);
+    ukm_builder.SetCQ_ComponentPosition(iter->second.ui_surface_position);
+    ukm_builder.SetCQ_NumEntriesAvailable(
+        iter->second.child_element_available_count);
+    ukm_builder.SetCQ_NumEntriesShown(iter->second.child_element_shown_count);
 
     auto click_position = iter->second.click_position;
     if (click_position != kInvalidPosition) {
@@ -174,6 +200,7 @@ void CompanionMetricsLogger::FlushStats() {
   // PH surface.
   iter = ui_surface_metrics_.find(UiSurface::kPH);
   if (iter != ui_surface_metrics_.end()) {
+    ukm_builder.SetPH_ComponentPosition(iter->second.ui_surface_position);
     ukm_builder.SetPH_LastEvent(static_cast<int64_t>(iter->second.last_event));
   }
 

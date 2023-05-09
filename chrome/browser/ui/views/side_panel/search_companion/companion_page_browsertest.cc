@@ -63,10 +63,12 @@ struct CompanionScriptBuilder {
   absl::optional<PromoAction> promo_action;
   absl::optional<bool> is_exps_opted_in;
   absl::optional<UiSurface> ui_surface;
-  absl::optional<size_t> child_element_count;
+  absl::optional<int> ui_surface_position;
+  absl::optional<int> child_element_available_count;
+  absl::optional<int> child_element_shown_count;
   absl::optional<std::string> text_directive;
   absl::optional<std::vector<std::string>> cq_text_directives;
-  absl::optional<size_t> click_position;
+  absl::optional<int> click_position;
 
   // Useful in case chrome sends a postmessage in response. Companion waits for
   // the message in response and resolves the promise that was sent back to
@@ -106,9 +108,19 @@ struct CompanionScriptBuilder {
          << ";";
     }
 
-    if (child_element_count.has_value()) {
-      ss << "message['childElementCount'] = "
-         << base::NumberToString(child_element_count.value()) << ";";
+    if (ui_surface_position.has_value()) {
+      ss << "message['uiSurfacePosition'] = "
+         << base::NumberToString(ui_surface_position.value()) << ";";
+    }
+
+    if (child_element_available_count.has_value()) {
+      ss << "message['childElementAvailableCount'] = "
+         << base::NumberToString(child_element_available_count.value()) << ";";
+    }
+
+    if (child_element_shown_count.has_value()) {
+      ss << "message['childElementShownCount'] = "
+         << base::NumberToString(child_element_shown_count.value()) << ";";
     }
 
     if (text_directive.has_value()) {
@@ -356,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
-                       PostMessageForUiSurfaceMetrics) {
+                       UiSurfaceShownAndClickedForListSurfaces) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Load a page on the active tab.
@@ -375,7 +387,9 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   // Post message for showing CQ surface. Verify histograms.
   CompanionScriptBuilder builder(MethodType::kRecordUiSurfaceShown);
   builder.ui_surface = UiSurface::kCQ;
-  builder.child_element_count = 8;
+  builder.ui_surface_position = 3;
+  builder.child_element_available_count = 8;
+  builder.child_element_shown_count = 5;
   EXPECT_TRUE(ExecJs(builder.Build()));
 
   WaitForHistogram("Companion.CQ.Shown");
@@ -395,12 +409,72 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
                                        /*sample=*/3,
                                        /*expected_count=*/1);
 
+  // Close side panel and verify UKM.
   side_panel_coordinator()->Close();
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kCQ_LastEventName,
                  static_cast<int>(companion::UiEvent::kClicked));
   ExpectUkmEntry(&ukm_recorder,
                  ukm::builders::Companion_PageView::kCQ_ClickPositionName, 3);
+
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kCQ_ComponentPositionName,
+                 3);
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kCQ_NumEntriesAvailableName,
+                 8);
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kCQ_NumEntriesShownName, 5);
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kCQ_ClickPositionName, 3);
+}
+
+IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
+                       UiSurfaceShownAndClickedForNonListSurfaces) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  // Load a page on the active tab.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), CreateUrl(kHost, kRelativeUrl1)));
+  ASSERT_EQ(side_panel_coordinator()->GetCurrentEntryId(), absl::nullopt);
+
+  // Open companion companion via toolbar entry point.
+  side_panel_coordinator()->Show(SidePanelEntry::Id::kSearchCompanion);
+  EXPECT_TRUE(side_panel_coordinator()->IsSidePanelShowing());
+
+  WaitForCompanionToBeLoaded();
+  EXPECT_EQ(side_panel_coordinator()->GetCurrentEntryId(),
+            SidePanelEntry::Id::kSearchCompanion);
+
+  // Post message for showing PH surface. Verify histograms.
+  CompanionScriptBuilder builder(MethodType::kRecordUiSurfaceShown);
+  builder.ui_surface = UiSurface::kPH;
+  builder.ui_surface_position = 3;
+  EXPECT_TRUE(ExecJs(builder.Build()));
+
+  WaitForHistogram("Companion.PH.Shown");
+  histogram_tester_->ExpectBucketCount("Companion.PH.Shown",
+                                       /*sample=*/true, /*expected_count=*/1);
+
+  // Post message for click metrics. Verify histograms.
+  CompanionScriptBuilder builder2(MethodType::kRecordUiSurfaceClicked);
+  builder2.ui_surface = UiSurface::kPH;
+  EXPECT_TRUE(ExecJs(builder2.Build()));
+  WaitForHistogram("Companion.PH.Clicked");
+  histogram_tester_->ExpectBucketCount("Companion.PH.Clicked",
+                                       /*sample=*/true,
+                                       /*expected_count=*/1);
+  histogram_tester_->ExpectTotalCount("Companion.PH.ClickPosition", 0);
+
+  // Close side panel and verify UKM.
+  side_panel_coordinator()->Close();
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kPH_LastEventName,
+                 static_cast<int>(companion::UiEvent::kClicked));
+
+  ExpectUkmEntry(&ukm_recorder,
+                 ukm::builders::Companion_PageView::kPH_ComponentPositionName,
+                 3);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest, PostMessageForPromoEvents) {
