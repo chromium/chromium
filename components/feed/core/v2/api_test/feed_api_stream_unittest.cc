@@ -983,84 +983,6 @@ TEST_F(FeedApiTest, LoadStreamAfterEulaIsAccepted) {
   EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
 }
 
-TEST_F(FeedApiTest, ForceSignedOutRequestAfterHistoryIsDeleted) {
-  stream_->OnAllHistoryDeleted();
-
-  const std::string kSessionId = "session-id";
-
-  // This test injects response post translation/parsing. We have to configure
-  // the response data that should come out of the translator, which should
-  // mark the request/response as having been made from the signed-out state.
-  StreamModelUpdateRequestGenerator model_generator;
-  model_generator.signed_in = false;
-
-  // Advance the clock, but not past the end of the forced-signed-out period.
-  task_environment_.FastForwardBy(kSuppressRefreshDuration - base::Seconds(1));
-
-  // Refresh the feed, queuing up a signed-out response.
-  response_translator_.InjectResponse(model_generator.MakeFirstPage(),
-                                      kSessionId);
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  // Validate that the network request was sent as signed out.
-  ASSERT_EQ(1, network_.send_query_call_count);
-  EXPECT_EQ(AccountInfo{}, network_.last_account_info);
-  EXPECT_TRUE(network_.query_request_sent->feed_request()
-                  .client_info()
-                  .chrome_client_info()
-                  .session_id()
-                  .empty());
-
-  // Validate the downstream consumption of the response.
-  EXPECT_EQ("loading -> 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
-  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
-
-  // Advance the clock beyond the forced signed out period.
-  task_environment_.FastForwardBy(base::Seconds(2));
-  EXPECT_FALSE(stream_->GetModel(surface.GetStreamType())->signed_in());
-
-  // Requests for subsequent pages continue the use existing session.
-  // Subsequent responses may omit the session id.
-  response_translator_.InjectResponse(model_generator.MakeNextPage());
-  stream_->LoadMore(surface, base::DoNothing());
-  WaitForIdleTaskQueue();
-
-  // Validate that the network request was sent as signed out and
-  // contained the session id.
-  ASSERT_EQ(2, network_.send_query_call_count);
-  EXPECT_EQ(AccountInfo{}, network_.last_account_info);
-  EXPECT_EQ(kSessionId, stream_->GetMetadata().session_id().token());
-  EXPECT_EQ(network_.query_request_sent->feed_request()
-                .client_info()
-                .chrome_client_info()
-                .session_id(),
-            kSessionId);
-
-  // The model should still be in the signed-out state.
-  EXPECT_FALSE(stream_->GetModel(StreamType(StreamKind::kForYou))->signed_in());
-
-  // Force a refresh of the feed by clearing the cache. The request for the
-  // first page should revert back to signed-in. The response data will denote
-  // a signed-in response with no session_id.
-  model_generator.signed_in = true;
-  response_translator_.InjectResponse(model_generator.MakeFirstPage());
-  stream_->OnCacheDataCleared();
-  WaitForIdleTaskQueue();
-
-  // Validate that a signed-in request was sent.
-  ASSERT_EQ(3, network_.send_query_call_count);
-  EXPECT_NE(AccountInfo{}, network_.last_account_info);
-
-  // The model should now be in the signed-in state.
-  EXPECT_TRUE(stream_->GetModel(StreamType(StreamKind::kForYou))->signed_in());
-  EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
-
-  EXPECT_EQ("2 slices +spinner -> 4 slices -> loading -> [user@foo] 2 slices",
-            surface.DescribeUpdates());
-}
-
 TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
   // WebFeed stream is only fetched when there's a subscription.
   network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
@@ -1073,18 +995,6 @@ TEST_F(FeedApiTest, WebFeedUsesSignedInRequestAfterHistoryIsDeleted) {
 
   ASSERT_EQ(1, network_.send_query_call_count);
   EXPECT_NE(AccountInfo{}, network_.last_account_info);
-}
-
-TEST_F(FeedApiTest, AllowSignedInRequestAfterHistoryIsDeletedAfterDelay) {
-  stream_->OnAllHistoryDeleted();
-  task_environment_.FastForwardBy(kSuppressRefreshDuration + base::Seconds(1));
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestForYouSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_NE(AccountInfo{}, network_.last_account_info);
-  EXPECT_TRUE(stream_->GetMetadata().session_id().token().empty());
 }
 
 TEST_F(FeedApiTest, ShouldMakeFeedQueryRequestConsumesQuota) {

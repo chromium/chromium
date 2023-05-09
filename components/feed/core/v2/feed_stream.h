@@ -268,11 +268,6 @@ class FeedStream : public FeedApi,
                                           LoadType load_type,
                                           bool consume_quota = true);
 
-  // Returns true if a FeedQuery request made right now should be made without
-  // user credentials.
-  bool ShouldForceSignedOutFeedQueryRequest(
-      const StreamType& stream_type) const;
-
   // Returns the Chrome sign in status
   feedwire::ChromeSignInStatus::SignInStatus GetSignInStatus() const;
 
@@ -463,7 +458,6 @@ class FeedStream : public FeedApi,
 
   // Mutable state.
   RequestThrottler request_throttler_;
-  base::TimeTicks signed_out_for_you_refreshes_until_;
 
   BooleanPrefMember has_stored_data_;
   BooleanPrefMember snippets_enabled_by_policy_;

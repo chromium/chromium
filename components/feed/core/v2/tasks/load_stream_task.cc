@@ -301,10 +301,7 @@ void LoadStreamTask::SendFeedQueryRequest() {
       request_metadata, stream_->GetMetadata().consistency_token(),
       options_.single_feed_entry_point);
 
-  bool force_signed_out_request =
-      stream_->ShouldForceSignedOutFeedQueryRequest(options_.stream_type);
-  const AccountInfo account_info =
-      force_signed_out_request ? AccountInfo{} : stream_->GetAccountInfo();
+  const AccountInfo account_info = stream_->GetAccountInfo();
   stream_->GetMetricsReporter().NetworkRefreshRequestStarted(
       options_.stream_type, request_metadata.content_order);
 

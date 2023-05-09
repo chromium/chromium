@@ -980,12 +980,6 @@ LaunchResult FeedStream::ShouldMakeFeedQueryRequest(
           feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
 }
 
-bool FeedStream::ShouldForceSignedOutFeedQueryRequest(
-    const StreamType& stream_type) const {
-  return stream_type.IsForYou() &&
-         base::TimeTicks::Now() < signed_out_for_you_refreshes_until_;
-}
-
 feedwire::ChromeSignInStatus::SignInStatus FeedStream::GetSignInStatus() const {
   if (IsSyncOn()) {
     return feedwire::ChromeSignInStatus::SYNCED;
@@ -1050,9 +1044,8 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
     // The request is for the first page of the feed. Use client_instance_id
     // for signed in requests and session_id token (if any, and not expired)
     // for signed-out.
-    result = GetCommonRequestMetadata(
-        IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest(stream_type),
-        /*allow_expired_session_id =*/false);
+    result = GetCommonRequestMetadata(IsSignedIn(),
+                                      /*allow_expired_session_id =*/false);
   }
 
   result.content_order = GetContentOrder(stream_type);
@@ -1081,10 +1074,6 @@ void FeedStream::OnEulaAccepted() {
 }
 
 void FeedStream::OnAllHistoryDeleted() {
-  // Give sync the time to propagate the changes in history to the server.
-  // In the interim, only send signed-out FeedQuery requests.
-  signed_out_for_you_refreshes_until_ =
-      base::TimeTicks::Now() + kSuppressRefreshDuration;
   // We don't really need to delete StreamType(StreamKind::kFollowing) data
   // here, but clearing all data because it's easy.
   ClearAll();

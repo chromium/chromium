@@ -371,7 +371,6 @@ class TestFeedNetwork : public FeedNetwork {
   AccountInfo last_account_info;
   // The consistency token to use when constructing default network responses.
   std::string consistency_token;
-  bool forced_signed_out_request = false;
   net::HttpStatusCode http_status_code = net::HttpStatusCode::HTTP_OK;
   net::Error error = net::Error::OK;
 

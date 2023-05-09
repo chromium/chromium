@@ -78,8 +78,7 @@ void LoadMoreTask::UploadActionsComplete(UploadActionsTask::Result result) {
   // Determine whether the load more request should be forced signed-out
   // regardless of the live sign-in state of the client.
   //
-  // The signed-in state of the model is used instead of using
-  // FeedStream#ShouldForceSignedOutFeedQueryRequest because the load more
+  // The signed-in state of the model is used because the load more
   // requests should be in the same signed-in state as the prior requests that
   // filled the model to have consistent data.
   //
