@@ -4,9 +4,6 @@
 
 -dontwarn org.mockito.**
 
-# Can possibly get rid of after updating past 5.1.1. (1413507)
--dontwarn java.lang.StackWalker**
-
 # Mockito loads some things by reflection. Prevent proguard from
 # obfuscating or removing anything to ensure that doesn't break.
 -keep class org.mockito.** {
