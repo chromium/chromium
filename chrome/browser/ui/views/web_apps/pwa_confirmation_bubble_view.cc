@@ -147,6 +147,8 @@ PWAConfirmationBubbleView::PWAConfirmationBubbleView(
         web_app::mojom::UserDisplayMode::kTabbed);
   }
 
+  SetDefaultButton(ui::DIALOG_BUTTON_CANCEL);
+
   SetHighlightedButton(highlight_icon_button_);
 
   if (g_dont_close_on_deactivate) {
