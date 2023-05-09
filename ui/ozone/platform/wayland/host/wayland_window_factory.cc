@@ -31,7 +31,7 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
               properties.parent_widget)) {
         window = std::make_unique<WaylandPopup>(delegate, connection, parent);
       } else {
-        DLOG(WARNING) << "Failed to determine for menu/popup window.";
+        DLOG(WARNING) << "Failed to determine parent for menu/popup window.";
         window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       }
       break;

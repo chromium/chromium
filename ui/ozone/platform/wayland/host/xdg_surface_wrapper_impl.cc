@@ -64,6 +64,9 @@ bool XDGSurfaceWrapperImpl::IsConfigured() {
 
 void XDGSurfaceWrapperImpl::SetWindowGeometry(const gfx::Rect& bounds) {
   DCHECK(xdg_surface_);
+  CHECK(!bounds.IsEmpty()) << "The xdg-shell protocol specification forbids "
+                              "empty bounds (zero width or height). bounds="
+                           << bounds.ToString();
   xdg_surface_set_window_geometry(xdg_surface_.get(), bounds.x(), bounds.y(),
                                   bounds.width(), bounds.height());
 }
