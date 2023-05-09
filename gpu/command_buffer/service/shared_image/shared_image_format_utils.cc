@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
+#include "third_party/skia/include/gpu/graphite/TextureInfo.h"
 
 namespace gpu {
 
@@ -250,6 +251,54 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
 
 WGPUTextureFormat ToWGPUFormat(viz::SharedImageFormat format) {
   return static_cast<WGPUTextureFormat>(ToDawnFormat(format));
+}
+
+skgpu::graphite::TextureInfo GetGraphiteTextureInfo(
+    GrContextType gr_context_type,
+    viz::SharedImageFormat format,
+    int plane_index,
+    bool mipmapped) {
+  if (gr_context_type == GrContextType::kGraphiteMetal) {
+#if BUILDFLAG(SKIA_USE_METAL)
+    MTLPixelFormat mtl_pixel_format =
+        static_cast<MTLPixelFormat>(ToMTLPixelFormat(format, plane_index));
+    if (mtl_pixel_format != MTLPixelFormatInvalid) {
+      // Must match CreateMetalTexture in iosurface_image_backing.mm.
+      // TODO(sunnyps): Move constants to a common utility header.
+      skgpu::graphite::MtlTextureInfo mtl_texture_info;
+      mtl_texture_info.fSampleCount = 1;
+      mtl_texture_info.fFormat = mtl_pixel_format;
+      mtl_texture_info.fUsage =
+          MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
+#if BUILDFLAG(IS_IOS)
+      mtl_texture_info.fStorageMode = MTLStorageModeShared;
+#else
+      mtl_texture_info.fStorageMode = MTLStorageModePrivate;
+#endif
+      mtl_texture_info.fMipmapped =
+          mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
+      return mtl_texture_info;
+    }
+#endif
+  } else {
+    CHECK_EQ(gr_context_type, GrContextType::kGraphiteDawn);
+#if BUILDFLAG(SKIA_USE_DAWN)
+    wgpu::TextureFormat wgpu_format = ToDawnFormat(format, plane_index);
+    if (wgpu_format != wgpu::TextureFormat::Undefined) {
+      skgpu::graphite::DawnTextureInfo dawn_texture_info;
+      dawn_texture_info.fSampleCount = 1;
+      dawn_texture_info.fFormat = wgpu_format;
+      // TODO(sunnyps): Revisit this when implementing wrapped graphite backings
+      // for render passes - do we also need CopySrc and/or CopyDst?
+      dawn_texture_info.fUsage = wgpu::TextureUsage::RenderAttachment |
+                                 wgpu::TextureUsage::TextureBinding;
+      dawn_texture_info.fMipmapped =
+          mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
+      return dawn_texture_info;
+    }
+#endif
+  }
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace gpu

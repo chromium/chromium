@@ -87,7 +87,8 @@ enum class SharedImageBackingType {
   kIOSurface = 15,
   kDCompSurface = 16,
   kDXGISwapChain = 17,
-  kMaxValue = kDXGISwapChain
+  kWrappedGraphiteTexture = 18,
+  kMaxValue = kWrappedGraphiteTexture
 };
 
 #if BUILDFLAG(IS_WIN)

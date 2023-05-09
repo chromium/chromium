@@ -59,8 +59,10 @@ const char* BackingTypeToString(SharedImageBackingType type) {
       return "DCompSurface";
     case SharedImageBackingType::kDXGISwapChain:
       return "DXGISwapChain";
+    case SharedImageBackingType::kWrappedGraphiteTexture:
+      return "WrappedGraphiteTexture";
   }
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 }  // namespace

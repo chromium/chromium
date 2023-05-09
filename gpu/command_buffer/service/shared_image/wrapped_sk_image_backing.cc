@@ -246,9 +246,9 @@ bool WrappedSkImageBacking::Initialize(const std::string& debug_label) {
   return true;
 }
 
-bool WrappedSkImageBacking::InitializeWithData(const std::string& debug_label,
-                                               base::span<const uint8_t> pixels,
-                                               size_t stride) {
+bool WrappedSkImageBacking::InitializeWithData(
+    const std::string& debug_label,
+    base::span<const uint8_t> pixels) {
   DCHECK(format().is_single_plane());
   DCHECK(pixels.data());
 
@@ -268,10 +268,7 @@ bool WrappedSkImageBacking::InitializeWithData(const std::string& debug_label,
             GrMipMapped::kNo, GrProtected::kNo);
   } else {
     auto info = AsSkImageInfo();
-    if (!stride) {
-      stride = info.minRowBytes();
-    }
-    SkPixmap pixmap(info, pixels.data(), stride);
+    SkPixmap pixmap(info, pixels.data(), info.minRowBytes());
     textures_[0].backend_texture =
         context_state_->gr_context()->createBackendTexture(
             pixmap, GrRenderable::kYes, GrProtected::kNo, nullptr, nullptr,

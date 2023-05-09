@@ -466,7 +466,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintCurrentFrame() {
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(size_), color_type_,
                           kPremul_SkAlphaType, sk_color_space_);
-    skgpu::graphite::TextureInfo texture_info = GetGraphiteTextureInfo(format_);
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format_);
     CHECK(texture_info.isValid());
     current_paint_.emplace(graphite_recorder_, image_info, texture_info);
   } else {
@@ -539,13 +540,16 @@ sk_sp<SkImage> SkiaOutputSurfaceImpl::MakePromiseSkImageFromYUV(
     for (auto* context : contexts) {
       // NOTE: We don't have promises for individual planes, but still need
       // texture info for fallback.
-      context->SetImage(nullptr, {GetGraphiteTextureInfo(context->format())});
+      context->SetImage(
+          nullptr, {gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(),
+                                                context->format())});
     }
     // TODO(crbug.com/1434131): Make Graphite YUVA promise image once that's
     // supported by Skia.
     auto y_format = y_context->format();
-    skgpu::graphite::TextureInfo texture_info = GetGraphiteTextureInfo(
-        y_format, /*plane_index=*/0, /*mipmapped=*/false);
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), y_format,
+                                    /*plane_index=*/0, /*mipmapped=*/false);
     SkColorType color_type = ToClosestSkColorType(/*gpu_compositing=*/true,
                                                   y_format, /*plane_index=*/0);
     SkColorInfo color_info(color_type, y_context->alpha_type(),
@@ -598,8 +602,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageSinglePlane(
   SkColorType color_type =
       ToClosestSkColorType(/*gpu_compositing=*/true, format);
   if (graphite_recorder_) {
-    skgpu::graphite::TextureInfo texture_info =
-        GetGraphiteTextureInfo(format, /*plane_index=*/0, mipmap);
+    skgpu::graphite::TextureInfo texture_info = gpu::GetGraphiteTextureInfo(
+        dependency_->gr_context_type(), format, /*plane_index=*/0, mipmap);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
                            image_context->color_space());
     auto image = SkImage::MakeGraphitePromiseTexture(
@@ -641,7 +645,8 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
     // TODO(crbug.com/1434131): Make Graphite YUVA promise image once that's
     // supported by Skia.
     skgpu::graphite::TextureInfo texture_info =
-        GetGraphiteTextureInfo(format, /*plane_index=*/0, /*mipmapped=*/false);
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format,
+                                    /*plane_index=*/0, /*mipmapped=*/false);
     SkColorType color_type = ToClosestSkColorType(/*gpu_compositing=*/true,
                                                   format, /*plane_index=*/0);
     SkColorInfo color_info(color_type, image_context->alpha_type(),
@@ -801,7 +806,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
     SkImageInfo image_info =
         SkImageInfo::Make(gfx::SizeToSkISize(surface_size), color_type,
                           kPremul_SkAlphaType, color_space);
-    skgpu::graphite::TextureInfo texture_info = GetGraphiteTextureInfo(format);
+    skgpu::graphite::TextureInfo texture_info =
+        gpu::GetGraphiteTextureInfo(dependency_->gr_context_type(), format);
     if (!texture_info.isValid()) {
       DLOG(ERROR) << "BeginPaintRenderPass: invalid Graphite TextureInfo";
       return nullptr;
@@ -1451,53 +1457,6 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
 
     return GrBackendFormat::MakeGL(texture_storage_format, gl_texture_target);
   }
-}
-
-skgpu::graphite::TextureInfo SkiaOutputSurfaceImpl::GetGraphiteTextureInfo(
-    SharedImageFormat format,
-    int plane_index,
-    bool mipmapped) {
-  if (dependency_->gr_context_type() == gpu::GrContextType::kGraphiteMetal) {
-#if BUILDFLAG(SKIA_USE_METAL)
-    MTLPixelFormat mtl_pixel_format =
-        static_cast<MTLPixelFormat>(gpu::ToMTLPixelFormat(format));
-    if (mtl_pixel_format != MTLPixelFormatInvalid) {
-      // Must match CreateMetalTexture in iosurface_image_backing.mm.
-      // TODO(sunnyps): Move constants to a common utility header.
-      skgpu::graphite::MtlTextureInfo mtl_texture_info;
-      mtl_texture_info.fSampleCount = 1;
-      mtl_texture_info.fFormat = mtl_pixel_format;
-      mtl_texture_info.fUsage =
-          MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead;
-#if BUILDFLAG(IS_IOS)
-      mtl_texture_info.fStorageMode = MTLStorageModeShared;
-#else
-      mtl_texture_info.fStorageMode = MTLStorageModePrivate;
-#endif
-      mtl_texture_info.fMipmapped =
-          mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
-      return mtl_texture_info;
-    }
-#endif
-  } else {
-    CHECK_EQ(dependency_->gr_context_type(), gpu::GrContextType::kGraphiteDawn);
-#if BUILDFLAG(SKIA_USE_DAWN)
-    wgpu::TextureFormat wgpu_format = gpu::ToDawnFormat(format);
-    if (wgpu_format != wgpu::TextureFormat::Undefined) {
-      skgpu::graphite::DawnTextureInfo dawn_texture_info;
-      dawn_texture_info.fSampleCount = 1;
-      dawn_texture_info.fFormat = wgpu_format;
-      // TODO(sunnyps): Revisit this when implementing wrapped graphite backings
-      // for render passes - do we also need CopySrc and/or CopyDst?
-      dawn_texture_info.fUsage = wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::TextureBinding;
-      dawn_texture_info.fMipmapped =
-          mipmapped ? skgpu::Mipmapped::kYes : skgpu::Mipmapped::kNo;
-      return dawn_texture_info;
-    }
-#endif
-  }
-  NOTREACHED_NORETURN();
 }
 
 bool SkiaOutputSurfaceImpl::IsDisplayedAsOverlayPlane() const {

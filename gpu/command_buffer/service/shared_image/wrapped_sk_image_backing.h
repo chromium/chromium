@@ -27,8 +27,8 @@ namespace gpu {
 
 class WrappedSkImageBackingFactory;
 
-// Backing type which holds a Skia allocated image. Can only be accessed by
-// Skia.
+// Holds a Skia Ganesh allocated GrBackendTextures and SkPromiseImageTextures.
+// Can only be accessed by Skia Ganesh backend.
 class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
  public:
   WrappedSkImageBacking(base::PassKey<WrappedSkImageBackingFactory>,
@@ -50,15 +50,11 @@ class WrappedSkImageBacking : public ClearTrackingSharedImageBacking {
   // Initializes without pixel data.
   bool Initialize(const std::string& debug_label);
 
-  // Initializes with pixel data that is uploaded to texture. If pixel data is
-  // provided and the image format is not ETC1 then |stride| is used. If
-  // |stride| is non-zero then it's used as the stride, otherwise it will create
-  // SkImageInfo from size() and format() and then SkImageInfo::minRowBytes() is
-  // used for the stride. For ETC1 textures pixel data must be provided since
-  // updating compressed textures is not supported.
+  // Initializes with pixel data that is uploaded to texture. For ETC1 textures
+  // pixel data must be provided since updating compressed textures is not
+  // supported.
   bool InitializeWithData(const std::string& debug_label,
-                          base::span<const uint8_t> pixels,
-                          size_t stride);
+                          base::span<const uint8_t> pixels);
 
   // SharedImageBacking implementation.
   SharedImageBackingType GetType() const override;
