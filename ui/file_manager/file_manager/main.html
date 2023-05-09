@@ -402,9 +402,12 @@ found in the LICENSE file.
                 </cr-input>
               </div>
             </div>
-            <cr-button id="cloud-button" class="icon-button menu-button" tabindex="0" hidden
+            <cr-button id="cloud-button" class="icon-button menu-button"
+                    hidden
+                    tabindex="0"
+                    aria-haspopup="true"
                     aria-label="Cloud Placeholder"
-                    command="#cloud" has-tooltip>
+                    has-tooltip>
               <xf-icon type="cloud" slot="prefix-icon"></xf-icon>
               <xf-icon slot="suffix-icon"></xf-icon>
             </cr-button>

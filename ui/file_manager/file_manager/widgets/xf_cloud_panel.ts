@@ -101,6 +101,7 @@ export class XfCloudPanel extends XfBase {
   static get events() {
     return {
       DRIVE_SETTINGS_CLICKED: 'drive_settings_clicked',
+      PANEL_CLOSED: 'panel_closed',
     } as const;
   }
 
@@ -119,7 +120,7 @@ export class XfCloudPanel extends XfBase {
    * Show the element relative to the cloud icon that was clicked.
    */
   showAt(el: HTMLElement) {
-    this.$panel_!.showAt(el, {top: el.offsetTop + el.offsetHeight + 8});
+    this.$panel_!.showAt(el, {top: el.offsetTop + el.offsetHeight + 20});
   }
 
   /**
@@ -129,6 +130,21 @@ export class XfCloudPanel extends XfBase {
     if (this.open) {
       this.$panel_!.close();
     }
+  }
+
+  /**
+   * Refires the close event to ensure it's a known `XfCloudPanel` event to
+   * subscribe to.
+   */
+  override async connectedCallback() {
+    super.connectedCallback();
+    await this.updateComplete;
+    this.$panel_!.addEventListener('close', () => {
+      this.dispatchEvent(new CustomEvent(XfCloudPanel.events.PANEL_CLOSED, {
+        bubbles: true,
+        composed: true,
+      }));
+    });
   }
 
   /**
@@ -226,6 +242,7 @@ function getCSS() {
     }
 
     .body {
+      background-color: var(--cros-sys-base_elevated);
       display: flex;
       flex-direction: column;
       margin: -8px 0;
@@ -328,9 +345,12 @@ function getCSS() {
 
 export type CloudPanelSettingsClickEvent = CustomEvent;
 
+export type CloudPanelCloseEvent = CustomEvent;
+
 declare global {
   interface HTMLElementEventMap {
     [XfCloudPanel.events.DRIVE_SETTINGS_CLICKED]: CloudPanelSettingsClickEvent;
+    [XfCloudPanel.events.PANEL_CLOSED]: CloudPanelCloseEvent;
   }
 
   interface HTMLElementTagNameMap {

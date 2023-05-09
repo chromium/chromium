@@ -12,6 +12,7 @@ import {State} from '../../externs/ts/state.js';
 import {Store} from '../../externs/ts/store.js';
 import {VolumeManager} from '../../externs/volume_manager.js';
 import {getStore} from '../../state/store.js';
+import {XfCloudPanel} from '../../widgets/xf_cloud_panel.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
@@ -286,8 +287,15 @@ export class ToolbarController {
 
     if (util.isDriveFsBulkPinningEnabled()) {
       const cloudPanel = queryRequiredElement('xf-cloud-panel');
-      this.cloudButton_.addEventListener(
-          'click', () => cloudPanel.showAt(this.cloudButton_));
+      this.cloudButton_.addEventListener('click', () => {
+        this.cloudButton_.toggleAttribute('menu-shown', true);
+        this.cloudButton_.toggleAttribute('aria-expanded', true);
+        cloudPanel.showAt(this.cloudButton_);
+      });
+      cloudPanel.addEventListener(XfCloudPanel.events.PANEL_CLOSED, () => {
+        this.cloudButton_.toggleAttribute('menu-shown', false);
+        this.cloudButton_.toggleAttribute('aria-expanded', false);
+      });
       /** @type {?boolean} */
       this.bulkPinningPref_ = null;
     }
