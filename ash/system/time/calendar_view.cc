@@ -11,6 +11,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
@@ -169,6 +170,14 @@ constexpr char kUpNextViewOpenEventListAnimationHistogram[] =
 
 constexpr char kShowUpNextViewAnimationHistogram[] =
     "Ash.CalendarView.ShowUpNextView.AnimationSmoothness";
+
+constexpr char kSmoothScrollMonthViewWhenShowingTodaysDateCell[] =
+    "Ash.CalendarView.SmoothScrollToTodaysDateCell.MonthView."
+    "AnimationSmoothness";
+
+constexpr char kSmoothScrollLabelViewWhenShowingTodaysDateCell[] =
+    "Ash.CalendarView.SmoothScrollToTodaysDateCell.LabelView."
+    "AnimationSmoothness";
 
 std::unique_ptr<views::Label> HeaderView(const std::u16string& month) {
   return views::Builder<views::Label>(
@@ -1415,6 +1424,7 @@ void CalendarView::ScrollOneMonthAndAutoScroll(bool scroll_up) {
 }
 
 void CalendarView::ScrollOneMonthWithAnimation(bool scroll_up) {
+  user_has_scrolled_ = true;
   is_scrolling_up_ = scroll_up;
 
   if (event_list_view_) {
@@ -1752,6 +1762,8 @@ void CalendarView::OnContentsScrolled() {
     return;
   }
 
+  user_has_scrolled_ = true;
+
   base::AutoReset<bool> disable_header_animation(&should_header_animate_,
                                                  false);
 
@@ -2062,6 +2074,10 @@ void CalendarView::MaybeShowUpNextView() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnAborted(base::BindOnce(&CalendarView::OnShowUpNextAnimationEnded,
+                                weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&CalendarView::OnShowUpNextAnimationEnded,
+                              weak_factory_.GetWeakPtr()))
       .Once()
       .SetOpacity(up_next_view_, 0.f)
       .At(base::Milliseconds(0))
@@ -2070,6 +2086,27 @@ void CalendarView::MaybeShowUpNextView() {
       .SetInterpolatedTransform(calendar_sliding_surface_,
                                 std::move(up_next_sliding_up),
                                 gfx::Tween::FAST_OUT_SLOW_IN_2);
+}
+
+void CalendarView::OnShowUpNextAnimationEnded() {
+  // If todays date cell is null or the user has scrolled at all, then don't
+  // auto scroll.
+  if (!calendar_view_controller_->todays_date_cell_view() ||
+      user_has_scrolled_) {
+    return;
+  }
+
+  // If todays date cell is not visible in the `scroll_view_`, i.e. it's hidden
+  // behind the up next view, then smooth scroll to it.
+  if (!scroll_view_->GetBoundsInScreen().Intersects(
+          calendar_view_controller_->todays_date_cell_view()
+              ->GetBoundsInScreen())) {
+    const int offset = calendar_view_controller_->todays_date_cell_view()
+                           ->GetBoundsInScreen()
+                           .bottom() -
+                       calendar_sliding_surface_->GetBoundsInScreen().y();
+    AnimateScrollByOffset(offset);
+  }
 }
 
 void CalendarView::RemoveUpNextView() {
@@ -2118,6 +2155,60 @@ void CalendarView::ClipScrollViewHeight(ScrollViewState state_to_change_to) {
       scroll_view_->ClipHeightTo(0, calendar_view_controller_->row_height());
       break;
   }
+}
+
+void CalendarView::AnimateScrollByOffset(int offset) {
+  if (offset == 0) {
+    return;
+  }
+
+  if (IsAnimating()) {
+    RestoreMonthStatus();
+    scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                   scroll_view_->GetVisibleRect().y() + offset);
+    return;
+  }
+
+  SetShouldMonthsAnimateAndScrollEnabled(false);
+  gfx::Vector2dF moving_up_location = gfx::Vector2dF(0, -offset);
+  gfx::Transform month_moving;
+  month_moving.Translate(moving_up_location);
+
+  auto month_reporter = calendar_metrics::CreateAnimationReporter(
+      current_month_, kSmoothScrollMonthViewWhenShowingTodaysDateCell);
+  auto label_reporter = calendar_metrics::CreateAnimationReporter(
+      current_label_, kSmoothScrollLabelViewWhenShowingTodaysDateCell);
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(base::BindOnce(&CalendarView::OnAnimateScrollByOffsetComplete,
+                              weak_factory_.GetWeakPtr(), offset))
+      .OnAborted(base::BindOnce(&CalendarView::OnAnimateScrollByOffsetComplete,
+                                weak_factory_.GetWeakPtr(), offset))
+      .Once()
+      .SetDuration(kAnimationDurationForClosingEvents)
+      .SetTransform(current_month_, month_moving,
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(current_label_, month_moving,
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(next_label_, month_moving, gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(next_month_, month_moving, gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(next_next_label_, month_moving,
+                    gfx::Tween::ACCEL_20_DECEL_100)
+      .SetTransform(next_next_month_, month_moving,
+                    gfx::Tween::ACCEL_20_DECEL_100);
+}
+
+void CalendarView::OnAnimateScrollByOffsetComplete(int offset) {
+  if (is_destroying_) {
+    return;
+  }
+
+  SetShouldMonthsAnimateAndScrollEnabled(true);
+  RestoreMonthStatus();
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 scroll_view_->GetVisibleRect().y() + offset);
 }
 
 BEGIN_METADATA(CalendarView, views::View)
