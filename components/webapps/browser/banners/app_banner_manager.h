@@ -137,9 +137,6 @@ class AppBannerManager : public content::WebContentsObserver,
   // Fast-forwards the current time for testing.
   static void SetTimeDeltaForTesting(int days);
 
-  // Sets the total engagement required for triggering the banner in testing.
-  static void SetTotalEngagementToTrigger(double engagement);
-
   // TODO(https://crbug.com/930612): Move |GetInstallableAppName| and
   // |IsExternallyInstalledWebApp| out into a more general purpose
   // installability check class.

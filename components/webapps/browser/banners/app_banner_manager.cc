@@ -177,11 +177,6 @@ void AppBannerManager::SetTimeDeltaForTesting(int days) {
   gTimeDeltaInDaysForTesting = days;
 }
 
-// static
-void AppBannerManager::SetTotalEngagementToTrigger(double engagement) {
-  AppBannerSettingsHelper::SetTotalEngagementToTrigger(engagement);
-}
-
 void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
   DCHECK_EQ(State::INACTIVE, state_);
 

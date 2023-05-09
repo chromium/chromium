@@ -389,8 +389,9 @@ void AppBannerSettingsHelper::SetTotalEngagementToTrigger(
   gTotalEngagementToTrigger = total_engagement;
 }
 
-void AppBannerSettingsHelper::SetDefaultParameters() {
-  SetTotalEngagementToTrigger(kDefaultTotalEngagementToTrigger);
+base::AutoReset<double> AppBannerSettingsHelper::ScopeTotalEngagementForTesting(
+    double total_engagement) {
+  return base::AutoReset<double>(&gTotalEngagementToTrigger, total_engagement);
 }
 
 void AppBannerSettingsHelper::UpdateFromFieldTrial() {

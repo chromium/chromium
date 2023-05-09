@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/prefs/testing_pref_service.h"
@@ -52,7 +53,6 @@ class AppBannerSettingsHelperTest
     site_engagement::SiteEngagementService::RegisterProfilePrefs(
         prefs_.registry());
     site_engagement::SiteEngagementService::SetServiceProvider(this);
-    AppBannerSettingsHelper::SetDefaultParameters();
   }
 
   void TearDown() override {
@@ -261,7 +261,8 @@ TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
 }
 
 TEST_F(AppBannerSettingsHelperTest, ShouldShowWithHigherTotal) {
-  AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
+  base::AutoReset<double> total_engagement =
+      AppBannerSettingsHelper::ScopeTotalEngagementForTesting(10);
   GURL url(kTestURL);
   site_engagement::SiteEngagementService* service =
       site_engagement::SiteEngagementService::Get(browser_context());

@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/auto_reset.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -158,9 +159,8 @@ class AppBannerSettingsHelper {
   // Set the total engagement weight required to trigger a banner.
   static void SetTotalEngagementToTrigger(double total_engagement);
 
-  // Resets the engagement weights, minimum minutes, and total engagement to
-  // trigger to their default values.
-  static void SetDefaultParameters();
+  static base::AutoReset<double> ScopeTotalEngagementForTesting(
+      double total_engagement);
 
   // Updates all values from field trial.
   static void UpdateFromFieldTrial();

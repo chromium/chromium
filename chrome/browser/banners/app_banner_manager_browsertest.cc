@@ -220,14 +220,15 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
  public:
   AppBannerManagerBrowserTest()
       : disable_banner_trigger_(&test::g_disable_banner_triggering_for_testing,
-                                true) {}
+                                true),
+        total_engagement_(
+            AppBannerSettingsHelper::ScopeTotalEngagementForTesting(10)) {}
 
   AppBannerManagerBrowserTest(const AppBannerManagerBrowserTest&) = delete;
   AppBannerManagerBrowserTest& operator=(const AppBannerManagerBrowserTest&) =
       delete;
 
   void SetUpOnMainThread() override {
-    AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
 
     AppBannerManagerBrowserTestBase::SetUpOnMainThread();
@@ -317,6 +318,7 @@ class AppBannerManagerBrowserTest : public AppBannerManagerBrowserTestBase {
  private:
   // Disable the banners in the browser so it won't interfere with the test.
   base::AutoReset<bool> disable_banner_trigger_;
+  base::AutoReset<double> total_engagement_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
@@ -580,7 +582,8 @@ IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTest,
                        WebAppBannerNeedsEngagement) {
-  AppBannerSettingsHelper::SetTotalEngagementToTrigger(1);
+  base::AutoReset<double> scoped_engagement =
+      AppBannerSettingsHelper::ScopeTotalEngagementForTesting(1);
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
   base::HistogramTester histograms;
@@ -785,6 +788,9 @@ class AppBannerManagerBrowserTestWithChromeBFCache
 
 IN_PROC_BROWSER_TEST_F(AppBannerManagerBrowserTestWithChromeBFCache,
                        VerifyBFCacheBehavior) {
+  base::AutoReset<double> scoped_engagement =
+      AppBannerSettingsHelper::ScopeTotalEngagementForTesting(1);
+
   ASSERT_TRUE(embedded_test_server()->Start());
   std::unique_ptr<AppBannerManagerTest> manager(
       CreateAppBannerManager(browser()));
