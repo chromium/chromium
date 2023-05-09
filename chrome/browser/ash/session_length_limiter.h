@@ -47,6 +47,10 @@ class SessionLengthLimiter : public ui::UserActivityObserver {
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
 
+  void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
+
  private:
   // Attempt to restore the session start time and the flag indicating user
   // activity from local state. Return |true| if the restore is successful.

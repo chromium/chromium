@@ -122,6 +122,9 @@ class ChromeUserManagerImpl
   void OnDeviceLocalAccountsChanged() override;
 
   void StopPolicyObserverForTesting();
+  SessionLengthLimiter* GetSessionLengthLimiterForTesting() {
+    return session_length_limiter_.get();
+  }
 
   // policy::MinimumVersionPolicyHandler::Observer:
   void OnMinimumVersionStateChanged() override;
