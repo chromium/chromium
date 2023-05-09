@@ -31,6 +31,10 @@ constexpr char kApiResponseParentKey[] = "parent";
 constexpr char kApiResponseStatusKey[] = "status";
 constexpr char kApiResponseTitleKey[] = "title";
 constexpr char kApiResponseUpdatedKey[] = "updated";
+constexpr char kApiResponseLinksKey[] = "links";
+constexpr char kApiResponseLinkTypeKey[] = "type";
+
+constexpr char kLinkTypeEmail[] = "email";
 
 constexpr char kTaskStatusCompleted[] = "completed";
 constexpr char kTaskStatusNeedsAction[] = "needsAction";
@@ -52,6 +56,12 @@ bool ConvertTaskDueDate(base::StringPiece input,
     return false;
   }
   *output = due;
+  return true;
+}
+
+bool ConvertTaskLinkType(base::StringPiece input, TaskLink::Type* output) {
+  *output = input == kLinkTypeEmail ? TaskLink::Type::kEmail
+                                    : TaskLink::Type::kUnknown;
   return true;
 }
 
@@ -96,6 +106,14 @@ std::unique_ptr<TaskLists> TaskLists::CreateFrom(const base::Value& value) {
   return task_lists;
 }
 
+// ----- TaskLink -----
+
+// static
+void TaskLink::RegisterJSONConverter(JSONValueConverter<TaskLink>* converter) {
+  converter->RegisterCustomField<Type>(kApiResponseLinkTypeKey,
+                                       &TaskLink::type_, &ConvertTaskLinkType);
+}
+
 // ----- Task -----
 
 Task::Task() = default;
@@ -110,6 +128,8 @@ void Task::RegisterJSONConverter(JSONValueConverter<Task>* converter) {
   converter->RegisterStringField(kApiResponseParentKey, &Task::parent_id_);
   converter->RegisterCustomField<absl::optional<base::Time>>(
       kApiResponseDueKey, &Task::due_, &ConvertTaskDueDate);
+  converter->RegisterRepeatedMessage<TaskLink>(kApiResponseLinksKey,
+                                               &Task::links_);
 }
 
 // static
