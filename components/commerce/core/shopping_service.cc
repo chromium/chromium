@@ -67,6 +67,8 @@ const long kToMicroCurrency = 1e6;
 
 const char kImageAvailabilityHistogramName[] =
     "Commerce.ShoppingService.ProductInfo.ImageAvailability";
+const char kProductInfoJavascriptTime[] =
+    "Commerce.ShoppingService.ProductInfo.JavascriptExecutionTime";
 
 const uint64_t kProductInfoJavascriptDelayMs = 2000;
 
@@ -275,6 +277,7 @@ void ShoppingService::TryRunningJavascriptForProductInfo(
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_QUERY_SHOPPING_META_JS);
 
+    it->second->javascript_execution_start_time = base::Time::Now();
     web->RunJavascript(
         base::UTF8ToUTF16(script),
         base::BindOnce(&ShoppingService::OnProductInfoJavascriptResult,
@@ -289,6 +292,16 @@ void ShoppingService::OnProductInfoJavascriptResult(const GURL url,
   if (!result.is_string()) {
     return;
   }
+
+  // Look up the entry again in case it was deleted (ex. by navigation).
+  auto it = product_info_cache_.find(url.spec());
+  if (it == product_info_cache_.end()) {
+    return;
+  }
+
+  base::UmaHistogramTimes(
+      kProductInfoJavascriptTime,
+      base::Time::Now() - it->second->javascript_execution_start_time);
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       result.GetString(),

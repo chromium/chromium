@@ -77,6 +77,7 @@ extern const char kOgTypeProductItem[];
 extern const long kToMicroCurrency;
 
 extern const char kImageAvailabilityHistogramName[];
+extern const char kProductInfoJavascriptTime[];
 
 // The amount of time to wait after the last "stopped loading" event to run the
 // on-page extraction for product info.
@@ -154,6 +155,10 @@ struct ProductInfoCacheEntry {
 
   // Whether the fallback javascript needs to run for page.
   bool needs_javascript_run{false};
+
+  // The time that the javascript execution started. This is primarily used for
+  // metrics.
+  base::Time javascript_execution_start_time;
 
   std::unique_ptr<base::CancelableOnceClosure> run_javascript_task;
 

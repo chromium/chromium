@@ -304,4 +304,24 @@ TEST_F(ShoppingServiceMetricsTest,
   histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 0);
 }
 
+TEST_F(ShoppingServiceMetricsTest, TestProductInfoJsExecutionTime) {
+  test_features_.InitWithFeatures({kShoppingList}, {});
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+  // The content of the javascript result only needs to be json for this text,
+  // the actual fields don't matter.
+  base::Value js_result("{\"success\": true}");
+  web.SetMockJavaScriptResult(&js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue,
+                          og_response_no_image_);
+
+  DidNavigatePrimaryMainFrame(&web);
+  DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
+
+  histogram_tester_->ExpectTotalCount(kProductInfoJavascriptTime, 1);
+}
+
 }  // namespace commerce

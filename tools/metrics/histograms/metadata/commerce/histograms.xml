@@ -536,6 +536,22 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.ShoppingService.ProductInfo.JavascriptExecutionTime"
+    units="ms" expires_after="2023-11-15">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the amount of time spent executing the on-page javascript for
+    extracting product info. This metric will only be recorded if the javascript
+    executes successfully and the page that ran for is still in an active tab.
+    This metric will help us identify possible performance regressions as we
+    improve the extraction heuristics. This metric is recorded from the browser
+    side which means it includes compiling and the other prep work done before
+    the script is actually run on the page.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.SignIn.AccountWaaStatus"
     enum="AccountWaaStatusForCommerce" expires_after="2023-06-25">
   <obsolete>
