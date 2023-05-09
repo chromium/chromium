@@ -41,6 +41,8 @@ class AbortableTaskList {
 
   void AbortAll();
 
+  AbortableTask* GetFirstTaskForTesting();
+
  private:
   void AddInternal(std::unique_ptr<AbortableTask> task);
   void RemoveFinishedTasks();

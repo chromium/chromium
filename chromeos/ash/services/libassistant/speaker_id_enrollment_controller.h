@@ -10,6 +10,7 @@
 #include "chromeos/ash/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/ash/services/libassistant/public/mojom/audio_input_controller.mojom-forward.h"
 #include "chromeos/ash/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
+#include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash::libassistant {
@@ -43,6 +44,15 @@ class SpeakerIdEnrollmentController
   // AssistantClientObserver implementation:
   void OnAssistantClientStarted(AssistantClient* assistant_client) override;
   void OnDestroyingAssistantClient(AssistantClient* assistant_client) override;
+
+  bool IsSpeakerIdEnrollmentInProgressForTesting() const {
+    return !!active_enrollment_session_;
+  }
+
+  void OnGrpcMessageForTesting(
+      const ::assistant::api::OnSpeakerIdEnrollmentEventRequest& request);
+
+  void SendGetStatusResponseForTesting(bool user_model_exists);
 
  private:
   class EnrollmentSession;

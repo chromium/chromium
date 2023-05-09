@@ -74,6 +74,11 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
     return display_controller_;
   }
 
+  SpeakerIdEnrollmentController&
+  speaker_id_enrollment_controller_for_testing() {
+    return speaker_id_enrollment_controller_;
+  }
+
  private:
   mojo::Receiver<mojom::LibassistantService> receiver_;
   mojo::Remote<mojom::PlatformDelegate> platform_delegate_;

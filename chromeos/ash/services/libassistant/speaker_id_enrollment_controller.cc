@@ -59,6 +59,10 @@ class SpeakerIdEnrollmentController::GetStatusWaiter : public AbortableTask {
   bool IsFinished() override { return callback_.is_null(); }
   void Abort() override { SendErrorResponse(); }
 
+  void SendResponseForTesting(bool user_model_exists) {
+    SendResponse(user_model_exists);
+  }
+
  private:
   void SendErrorResponse() { SendResponse(false); }
 
@@ -224,6 +228,19 @@ void SpeakerIdEnrollmentController::OnDestroyingAssistantClient(
   active_enrollment_session_ = nullptr;
   assistant_client_ = nullptr;
   pending_response_waiters_.AbortAll();
+}
+
+void SpeakerIdEnrollmentController::OnGrpcMessageForTesting(
+    const ::assistant::api::OnSpeakerIdEnrollmentEventRequest& request) {
+  active_enrollment_session_->OnGrpcMessage(std::move(request));
+}
+
+void SpeakerIdEnrollmentController::SendGetStatusResponseForTesting(
+    bool user_model_exists) {
+  auto* waiter =
+      reinterpret_cast<SpeakerIdEnrollmentController::GetStatusWaiter*>(
+          pending_response_waiters_.GetFirstTaskForTesting());
+  waiter->SendResponseForTesting(user_model_exists);
 }
 
 }  // namespace ash::libassistant
