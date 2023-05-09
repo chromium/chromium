@@ -38,33 +38,6 @@ const char* kAllowedDomainAndPathsForEmojiSuggester[][2] = {
     {"voice.google.com", ""},    {"mail.google.com", "/chat"},
 };
 
-// The default denylist of domains and paths that will turn off multi word
-// suggestion.
-const char* kDeniedDomainsForMultiwordSuggester[] = {
-    "amazon",
-    "b.corp.google",
-    "buganizer.corp.google",
-    "cider.corp.google",
-    "classroom.google",
-    "desmos",
-    "docs.google",
-    "facebook",
-    "instagram",
-    "mail.google",
-    "outlook.live",
-    "outlook.office",
-    "quizlet",
-    // TODO(b/209696920): remove web.skype.com from the list after compatibility
-    // issues are solved.
-    "web.skype",
-    "whatsapp",
-    "youtube",
-};
-
-// exceptions where multi word suggestion is enabled.
-const char* kAllowedDomainsAndPathsForMultiwordSuggester[][2] = {
-    {"mail.google", "/chat"}};
-
 const char* kTestUrls[] = {
     "e14s-test",
     "simple_textarea.html",
@@ -300,9 +273,7 @@ void ReturnEnabledSuggestions(
 
   // Deny-list (will block if matched, otherwise allow)
   bool multi_word_suggestions_allowed =
-      (!IsMatchedSubDomain(kDeniedDomainsForMultiwordSuggester, current_url) ||
-       IsMatchedSubDomainWithPathPrefix(
-           kAllowedDomainsAndPathsForMultiwordSuggester, current_url)) &&
+      !IsAssistiveInputDisabled(current_url) &&
       !IsMatchedApp(kDeniedAppsForMultiwordSuggester, window_properties) &&
       !IsMatchedExactUrl(kDeniedUrlsForMultiwordSuggester, current_url);
 

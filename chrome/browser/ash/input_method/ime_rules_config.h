@@ -11,7 +11,7 @@ namespace ash {
 namespace input_method {
 
 // Runs the rule check against contextual info.
-bool IsAutoCorrectDisabled(const TextFieldContextualInfo& info);
+bool IsAssistiveInputDisabled(const absl::optional<GURL>& current_url);
 
 // Runs the rule check against url
 bool IsMultiWordSuggestDisabled(const GURL& url);

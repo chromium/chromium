@@ -9,14 +9,6 @@
 
 namespace ash {
 namespace input_method {
-namespace {
-
-TextFieldContextualInfo FakeTextFieldContextualInfo(GURL url) {
-  TextFieldContextualInfo info;
-  info.tab_url = url;
-  return info;
-}
-}  // namespace
 
 class ImeRulesConfigAutoCorrectDisabledTest
     : public testing::TestWithParam<std::string> {
@@ -55,8 +47,7 @@ INSTANTIATE_TEST_SUITE_P(
         "http://www.abc.smile.amazon.com.au/abc+com+au/some/other/text"));
 
 TEST_P(ImeRulesConfigAutoCorrectDisabledTest, IsAutoCorrectDisabled) {
-  EXPECT_TRUE(
-      IsAutoCorrectDisabled(FakeTextFieldContextualInfo(GURL(GetParam()))));
+  EXPECT_TRUE(IsAssistiveInputDisabled(GURL(GetParam())));
 }
 
 class ImeRulesConfigAutoCorrectEnabledTest
@@ -84,8 +75,7 @@ INSTANTIATE_TEST_SUITE_P(
                     "http://.com/test"));
 
 TEST_P(ImeRulesConfigAutoCorrectEnabledTest, IsAutoCorrectEnabled) {
-  EXPECT_FALSE(
-      IsAutoCorrectDisabled(FakeTextFieldContextualInfo(GURL(GetParam()))));
+  EXPECT_FALSE(IsAssistiveInputDisabled(GURL(GetParam())));
 }
 }  // namespace input_method
 }  // namespace ash
