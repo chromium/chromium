@@ -55,9 +55,7 @@ class PLATFORM_EXPORT CachingWordShapeIterator final {
     // fall back on shaping the entire run.
     shape_by_word_ = font_->CanShapeWordByWord();
 
-    // SVG sets SpacingDisabled because it handles spacing by themselves.
-    if (!run.SpacingDisabled())
-      spacing_.SetSpacingAndExpansion(font->GetFontDescription());
+    spacing_.SetSpacingAndExpansion(font->GetFontDescription());
   }
   CachingWordShapeIterator(const CachingWordShapeIterator&) = delete;
   CachingWordShapeIterator& operator=(const CachingWordShapeIterator&) = delete;

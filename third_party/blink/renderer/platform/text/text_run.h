@@ -51,7 +51,6 @@ class PLATFORM_EXPORT TextRun final {
         is_8bit_(true),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        disable_spacing_(false),
         normalize_space_(false) {
     data_.characters8 = c;
   }
@@ -65,7 +64,6 @@ class PLATFORM_EXPORT TextRun final {
         is_8bit_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        disable_spacing_(false),
         normalize_space_(false) {
     data_.characters16 = c;
   }
@@ -77,7 +75,6 @@ class PLATFORM_EXPORT TextRun final {
         len_(string.length()),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
-        disable_spacing_(false),
         normalize_space_(false) {
     if (!characters_length_) {
       is_8bit_ = true;
@@ -197,9 +194,6 @@ class PLATFORM_EXPORT TextRun final {
   bool Rtl() const { return Direction() == TextDirection::kRtl; }
   bool Ltr() const { return Direction() == TextDirection::kLtr; }
   bool DirectionalOverride() const { return directional_override_; }
-  bool SpacingDisabled() const { return disable_spacing_; }
-
-  void DisableSpacing() { disable_spacing_ = true; }
   void SetDirection(TextDirection direction) {
     direction_ = static_cast<unsigned>(direction);
   }
@@ -227,7 +221,6 @@ class PLATFORM_EXPORT TextRun final {
   unsigned direction_ : 1;
   // Was this direction set by an override character.
   unsigned directional_override_ : 1;
-  unsigned disable_spacing_ : 1;
   unsigned text_justify_ : 2;
   unsigned normalize_space_ : 1;
 };

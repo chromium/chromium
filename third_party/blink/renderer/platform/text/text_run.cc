@@ -36,7 +36,7 @@ struct SameSizeAsTextRun {
   DISALLOW_NEW();
   const void* pointer;
   int integers[2];
-  uint32_t bitfields : 7;
+  uint32_t bitfields : 6;
 };
 
 ASSERT_SIZE(TextRun, SameSizeAsTextRun);
