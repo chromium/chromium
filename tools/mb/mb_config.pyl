@@ -2273,7 +2273,7 @@
     ],
 
     'chromeos_js_coverage_reclient': [
-      'chromeos_with_codecs', 'release_bot_reclient', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
+      'chromeos_with_codecs', 'release_bot_reclient', 'use_javascript_coverage', 'optimize_webui_off',
     ],
 
     'chromeos_kevin_include_unwind_tables_official_dchecks': [
@@ -2995,7 +2995,7 @@
     ],
 
     'js_coverage_reclient': [
-      'release_bot_reclient', 'clang',  'no_symbols', 'use_javascript_coverage', 'enable_webui_inline_sourcemaps_on', 'optimize_webui_off',
+      'release_bot_reclient', 'clang',  'no_symbols', 'use_javascript_coverage', 'optimize_webui_off',
     ],
 
     'lacros_on_linux_clang_code_coverage_reclient': [
@@ -4190,10 +4190,6 @@
 
     'enable_vulkan': {
       'gn_args': 'enable_vulkan=true',
-    },
-
-    'enable_webui_inline_sourcemaps_on': {
-      'gn_args': 'enable_webui_inline_sourcemaps=true',
     },
 
     # This mixin is used to force configs that use it to fail. It

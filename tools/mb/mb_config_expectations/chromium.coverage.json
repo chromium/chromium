@@ -60,7 +60,6 @@
   "chromeos-js-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_webui_inline_sourcemaps": true,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -124,7 +123,6 @@
   "linux-js-code-coverage": {
     "gn_args": {
       "dcheck_always_on": false,
-      "enable_webui_inline_sourcemaps": true,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
