@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/companion/text_finder/text_finder.h"
 #include "chrome/browser/companion/text_finder/text_finder_manager.h"
+#include "chrome/browser/companion/text_finder/text_highlighter_manager.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -82,6 +83,21 @@ TextFragmentLookupStateTracker::ExtractAllowedTextDirectives(
     return std::vector<std::string>(text_directives.begin(),
                                     text_directives.begin() + allowed_num);
   }
+}
+
+void TextFragmentLookupStateTracker::FindScrollAndHighlight(
+    const std::string& text_directive) const {
+  CHECK(base::FeatureList::IsEnabled(
+      chrome::android::kCCTTextFragmentLookupApiEnabled));
+
+  // Create and attach a `TextHighlighterManager` to the primary page.
+  content::Page& page = web_contents()->GetPrimaryPage();
+  companion::TextHighlighterManager* text_highlighter_manager =
+      companion::TextHighlighterManager::GetOrCreateForPage(page);
+  DCHECK(text_highlighter_manager);
+
+  text_highlighter_manager->CreateTextHighlighterAndRemoveExistingInstance(
+      text_directive);
 }
 
 void TextFragmentLookupStateTracker::PrimaryPageChanged(content::Page& page) {
