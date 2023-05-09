@@ -1296,24 +1296,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CalendarView.SmoothScrollToTodaysDateCell.{CalendarChildView}.AnimationSmoothness"
-    units="%" expires_after="2024-05-04">
-  <owner>newcomer@google.com</owner>
-  <owner>samcackett@google.com</owner>
-  <owner>cros-status-area-eng@google.com</owner>
-  <summary>
-    Animation smoothness recorded on the {CalendarChildView} when the Calendar
-    scroll view is auto-scrolled (note this is actually done via layer
-    transforms to give the appearance of smooth scrolling) to reveal todays date
-    cell, when covered by the up next view.
-  </summary>
-  <token key="CalendarChildView">
-    <variant name="LabelView" summary="label view"/>
-    <variant name="MonthView" summary="month view"/>
-  </token>
-</histogram>
-
-<histogram
     name="Ash.CalendarView.{Animation}.{CalendarChildView}.AnimationSmoothness"
     units="%" expires_after="2023-09-18">
   <owner>newcomer@google.com</owner>
