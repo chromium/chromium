@@ -6,6 +6,7 @@
 
 #include "ash/capture_mode/camera_video_frame_handler.h"
 #include "ash/capture_mode/camera_video_frame_renderer.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
 #include "ash/capture_mode/capture_mode_camera_preview_view.h"
 #include "ash/capture_mode/capture_mode_controller.h"
@@ -154,10 +155,15 @@ void CaptureModeTestApi::ResetRecordingServiceClientReceiver() {
 
 RecordingOverlayController*
 CaptureModeTestApi::GetRecordingOverlayController() {
-  DCHECK(controller_->is_recording_in_progress());
-  DCHECK(controller_->video_recording_watcher_->is_in_projector_mode());
-  return controller_->video_recording_watcher_->recording_overlay_controller_
-      .get();
+  CHECK(controller_->is_recording_in_progress());
+  VideoRecordingWatcher* video_recording_watcher =
+      controller_->video_recording_watcher_.get();
+  CHECK(video_recording_watcher);
+  CaptureModeBehavior* active_behavior =
+      video_recording_watcher->active_behavior();
+  CHECK(active_behavior);
+  CHECK(active_behavior->ShouldCreateRecordingOverlayController());
+  return video_recording_watcher->recording_overlay_controller_.get();
 }
 
 void CaptureModeTestApi::SimulateOpeningFolderSelectionDialog() {
@@ -227,6 +233,11 @@ views::Widget* CaptureModeTestApi::GetCameraPreviewWidget() {
 void CaptureModeTestApi::SetType(bool for_video) {
   controller_->SetType(for_video ? CaptureModeType::kVideo
                                  : CaptureModeType::kImage);
+}
+
+CaptureModeBehavior* CaptureModeTestApi::GetBehavior(
+    BehaviorType behavior_type) {
+  return controller_->GetBehavior(behavior_type);
 }
 
 }  // namespace ash

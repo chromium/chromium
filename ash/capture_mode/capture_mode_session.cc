@@ -28,7 +28,6 @@
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/projector/projector_controller_impl.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
@@ -435,13 +434,11 @@ class CaptureModeSession::ParentContainerObserver
 // CaptureModeSession:
 
 CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
-                                       CaptureModeBehavior* active_behavior,
-                                       bool projector_mode)
+                                       CaptureModeBehavior* active_behavior)
     : controller_(controller),
       active_behavior_(active_behavior),
       current_root_(capture_mode_util::GetPreferredRootWindow()),
       magnifier_glass_(kMagnifierParams),
-      is_in_projector_mode_(projector_mode),
       cursor_setter_(std::make_unique<CursorSetter>()),
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
       capture_toast_controller_(this) {
@@ -779,7 +776,7 @@ void CaptureModeSession::ReportSessionHistograms() {
 
   if (source == CaptureModeSource::kRegion) {
     RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_,
-                                           is_in_projector_mode_);
+                                           active_behavior_);
     const auto region_in_root = controller_->user_capture_region();
     if (is_stopping_to_start_video_recording_ &&
         recording_type == RecordingType::kGif && !region_in_root.IsEmpty()) {
@@ -795,7 +792,7 @@ void CaptureModeSession::ReportSessionHistograms() {
       controller_->type(), source, recording_type,
       /*audio_on=*/controller_->GetEffectiveAudioRecordingMode() !=
           AudioRecordingMode::kOff,
-      is_in_projector_mode_);
+      active_behavior_);
 }
 
 void CaptureModeSession::StartCountDown(

@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -76,6 +75,11 @@ class CaptureModeBehavior {
       base::OnceCallback<void(const base::FilePath& capture_file_full_path)>;
   virtual void CreateCaptureFolder(OnCaptureFolderCreatedCallback callback);
   virtual std::vector<RecordingType> GetSupportedRecordingTypes() const;
+
+  // Returns the client specific string component to be inserted to a histogram
+  // in order to differentiate the metrics for example "Projector." is used to
+  // indicate the histogram is for a projector-initiated capture mode session.
+  virtual const char* GetClientMetricComponent() const;
 
  protected:
   explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);

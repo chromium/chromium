@@ -120,6 +120,7 @@ class ProjectorBehavior : public CaptureModeBehavior {
   std::vector<RecordingType> GetSupportedRecordingTypes() const override {
     return std::vector<RecordingType>{RecordingType::kWebM};
   }
+  const char* GetClientMetricComponent() const override { return "Projector."; }
 
  private:
   // Called when the Projector controller creates the DriveFS folder that will
@@ -278,6 +279,10 @@ std::vector<RecordingType> CaptureModeBehavior::GetSupportedRecordingTypes()
     supported_recording_types.push_back(RecordingType::kGif);
   }
   return supported_recording_types;
+}
+
+const char* CaptureModeBehavior::GetClientMetricComponent() const {
+  return "";
 }
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/public/cpp/system_tray_observer.h"
 #include "base/functional/callback_forward.h"
@@ -32,6 +33,7 @@ class Rect;
 namespace ash {
 
 class CameraPreviewView;
+class CaptureModeBehavior;
 class CaptureModeDelegate;
 
 // The ID used internally in capture mode to identify the camera.
@@ -221,7 +223,7 @@ class ASH_EXPORT CaptureModeCameraController
   // http://b/230917107#comment12 for more details).
   void OnCaptureSessionStarted();
 
-  void OnRecordingStarted(bool is_in_projector_mode);
+  void OnRecordingStarted(CaptureModeBehavior* active_behavior);
   void OnRecordingEnded();
 
   // Called when the `CameraVideoFrameHandler` of the current

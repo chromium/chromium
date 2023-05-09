@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_CAPTURE_MODE_CAPTURE_MODE_TEST_API_H_
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -156,6 +157,8 @@ class ASH_EXPORT CaptureModeTestApi {
 
   // Returns the camera preview widget if exists and nullptr otherwise.
   views::Widget* GetCameraPreviewWidget();
+
+  CaptureModeBehavior* GetBehavior(BehaviorType behavior_type);
 
  private:
   // Sets the capture mode type to a video capture if |for_video| is true, or

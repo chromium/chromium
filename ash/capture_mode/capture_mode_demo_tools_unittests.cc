@@ -1052,8 +1052,7 @@ TEST_F(CaptureModeDemoToolsTest, OnScreenKeyboardKeyEventTest) {
 TEST_F(CaptureModeDemoToolsTest,
        DemoToolsEnabledOnRecordingStartHistogramTest) {
   base::HistogramTester histogram_tester;
-  constexpr char kHistogramNameBase[] =
-      "Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart";
+  constexpr char kHistogramNameBase[] = "DemoToolsEnabledOnRecordingStart";
 
   struct {
     bool enable_tablet_mode;
@@ -1073,7 +1072,9 @@ TEST_F(CaptureModeDemoToolsTest,
       EXPECT_FALSE(Shell::Get()->IsInTabletMode());
     }
 
-    const auto histogram_name = GetCaptureModeHistogramName(kHistogramNameBase);
+    const auto histogram_name =
+        BuildHistogramName(kHistogramNameBase, /*behavior=*/nullptr,
+                           /*append_ui_mode_suffix=*/true);
     histogram_tester.ExpectBucketCount(histogram_name,
                                        test_case.enable_demo_tools, 0);
     auto* controller = StartCaptureSession(CaptureModeSource::kFullscreen,
@@ -1341,8 +1342,6 @@ TEST_F(ProjectorCaptureModeDemoToolsTest, EnableDemoToolsByDefault) {
   capture_mode_controller->Stop();
   StartProjectorModeSession();
   EXPECT_TRUE(capture_mode_controller->IsActive());
-  EXPECT_TRUE(
-      capture_mode_controller->capture_mode_session()->is_in_projector_mode());
   EXPECT_TRUE(capture_mode_controller->enable_demo_tools());
 
   capture_mode_controller->Stop();
@@ -1361,8 +1360,6 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
   capture_mode_controller->SetSource(CaptureModeSource::kFullscreen);
   StartProjectorModeSession();
   EXPECT_TRUE(capture_mode_controller->enable_demo_tools());
-  EXPECT_TRUE(
-      capture_mode_controller->capture_mode_session()->is_in_projector_mode());
   StartVideoRecordingImmediately();
   EXPECT_TRUE(capture_mode_controller->is_recording_in_progress());
   auto* demo_tools_controller = GetCaptureModeDemoToolsController();
@@ -1423,8 +1420,7 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
 TEST_F(ProjectorCaptureModeDemoToolsTest,
        ProjectorDemoToolsEnabledOnRecordingStartHistogramTest) {
   base::HistogramTester histogram_tester;
-  constexpr char kHistogramNameBase[] =
-      "Ash.CaptureModeController.Projector.DemoToolsEnabledOnRecordingStart";
+  constexpr char kHistogramNameBase[] = "DemoToolsEnabledOnRecordingStart";
 
   struct {
     bool enable_tablet_mode;
@@ -1444,7 +1440,10 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
       EXPECT_FALSE(Shell::Get()->IsInTabletMode());
     }
 
-    const auto histogram_name = GetCaptureModeHistogramName(kHistogramNameBase);
+    const std::string histogram_name = BuildHistogramName(
+        kHistogramNameBase,
+        CaptureModeTestApi().GetBehavior(BehaviorType::kProjector),
+        /*append_ui_mode_suffix=*/true);
     histogram_tester.ExpectBucketCount(histogram_name,
                                        test_case.enable_demo_tools, 0);
     auto* controller = CaptureModeController::Get();
@@ -1457,7 +1456,6 @@ TEST_F(ProjectorCaptureModeDemoToolsTest,
     EXPECT_TRUE(controller->enable_demo_tools());
     controller->EnableDemoTools(test_case.enable_demo_tools);
     EXPECT_TRUE(controller->IsActive());
-    EXPECT_TRUE(controller->capture_mode_session()->is_in_projector_mode());
 
     StartVideoRecordingImmediately();
     EXPECT_TRUE(controller->is_recording_in_progress());
