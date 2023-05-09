@@ -1713,8 +1713,6 @@ source_set("ash") {
     "login/saml/saml_profile_prefs.h",
     "login/screen_manager.cc",
     "login/screen_manager.h",
-    "login/screens/active_directory_login_screen.cc",
-    "login/screens/active_directory_login_screen.h",
     "login/screens/active_directory_password_change_screen.cc",
     "login/screens/active_directory_password_change_screen.h",
     "login/screens/app_downloading_screen.cc",

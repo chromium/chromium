@@ -4012,8 +4012,6 @@ if (!is_android) {
         "../browser/ash/login/shill_profile_loading_browsertest.cc",
         "../browser/ash/login/signin/device_id_browsertest.cc",
         "../browser/ash/login/signin/oauth2_browsertest.cc",
-        "../browser/ash/login/test/active_directory_login_mixin.cc",
-        "../browser/ash/login/test/active_directory_login_mixin.h",
         "../browser/ash/login/test/enrollment_helper_mixin.cc",
         "../browser/ash/login/test/enrollment_helper_mixin.h",
         "../browser/ash/login/test/enrollment_ui_mixin.cc",

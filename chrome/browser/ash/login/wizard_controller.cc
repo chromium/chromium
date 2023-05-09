@@ -51,7 +51,6 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/active_directory_password_change_screen.h"
 #include "chrome/browser/ash/login/screens/app_downloading_screen.h"
 #include "chrome/browser/ash/login/screens/arc_vm_data_migration_screen.h"
@@ -132,7 +131,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/login/active_directory_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_downloading_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h"
@@ -811,12 +809,6 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnUserCreationScreenExit,
                           weak_factory_.GetWeakPtr())));
 
-  append(std::make_unique<ActiveDirectoryLoginScreen>(
-      oobe_ui->GetView<ActiveDirectoryLoginScreenHandler>()->AsWeakPtr(),
-      oobe_ui->GetErrorScreen(),
-      base::BindRepeating(&WizardController::OnActiveDirectoryLoginScreenExit,
-                          weak_factory_.GetWeakPtr())));
-
   append(std::make_unique<EduCoexistenceLoginScreen>(
       base::BindRepeating(&WizardController::OnEduCoexistenceLoginScreenExit,
                           weak_factory_.GetWeakPtr())));
@@ -1385,11 +1377,6 @@ void WizardController::OnPasswordChangeScreenExit(
   }
 }
 
-void WizardController::OnActiveDirectoryLoginScreenExit() {
-  OnScreenExit(ActiveDirectoryLoginView::kScreenId, kDefaultExitReason);
-  LoginDisplayHost::default_host()->HideOobeDialog();
-}
-
 void WizardController::OnEduCoexistenceLoginScreenExit(
     EduCoexistenceLoginScreen::Result result) {
   OnScreenExit(EduCoexistenceLoginScreen::kScreenId,
@@ -1649,15 +1636,9 @@ void WizardController::OnScreenExit(OobeScreenId screen,
 }
 
 void WizardController::AdvanceToSigninScreen() {
-  if (g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetDeviceMode() == policy::DEVICE_MODE_ENTERPRISE_AD) {
-    AdvanceToScreen(ActiveDirectoryLoginView::kScreenId);
-  } else {
-    // Reset Gaia.
-    GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
-    AdvanceToScreen(GaiaView::kScreenId);
-  }
+  // Reset Gaia.
+  GetScreen<GaiaScreen>()->LoadOnline(EmptyAccountId());
+  AdvanceToScreen(GaiaView::kScreenId);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2505,7 +2486,6 @@ void WizardController::AdvanceToScreen(OobeScreenId screen_id) {
              screen_id == FamilyLinkNoticeView::kScreenId ||
              screen_id == GaiaView::kScreenId ||
              screen_id == UserCreationView::kScreenId ||
-             screen_id == ActiveDirectoryLoginView::kScreenId ||
              screen_id == SignInFatalErrorView::kScreenId ||
              screen_id == LocaleSwitchView::kScreenId ||
              screen_id == RecoveryEligibilityView::kScreenId ||
