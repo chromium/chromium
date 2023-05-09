@@ -147,10 +147,6 @@ void MultideviceHandler::RegisterMessages() {
       base::BindRepeating(&MultideviceHandler::HandleSetUpAndroidSms,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSmartLockSignInAllowed",
-      base::BindRepeating(&MultideviceHandler::HandleGetSmartLockSignInAllowed,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getAndroidSmsInfo",
       base::BindRepeating(&MultideviceHandler::HandleGetAndroidSmsInfo,
                           base::Unretained(this)));
@@ -250,11 +246,6 @@ void MultideviceHandler::OnJavascriptAllowed() {
         browser_tabs_model_provider_.get());
   }
 
-  pref_change_registrar_.Add(
-      multidevice_setup::kSmartLockSigninAllowedPrefName,
-      base::BindRepeating(
-          &MultideviceHandler::NotifySmartLockSignInAllowedChanged,
-          base::Unretained(this)));
   if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
           Profile::FromWebUI(web_ui()))) {
     pref_change_registrar_.Add(
@@ -471,16 +462,6 @@ void MultideviceHandler::HandleRetryPendingHostSetup(
 void MultideviceHandler::HandleSetUpAndroidSms(const base::Value::List& args) {
   DCHECK(args.empty());
   android_sms_app_manager_->SetUpAndLaunchAndroidSmsApp();
-}
-
-void MultideviceHandler::HandleGetSmartLockSignInAllowed(
-    const base::Value::List& args) {
-  const base::Value& callback_id = args[0];
-  CHECK(callback_id.is_string());
-
-  bool sign_in_allowed =
-      prefs_->GetBoolean(multidevice_setup::kSmartLockSigninAllowedPrefName);
-  ResolveJavascriptCallback(callback_id, base::Value(sign_in_allowed));
 }
 
 base::Value::Dict MultideviceHandler::GenerateAndroidSmsInfo() {
@@ -883,13 +864,6 @@ base::Value::Dict MultideviceHandler::GeneratePageContentDataDictionary() {
   }
 
   return page_content_dictionary;
-}
-
-void MultideviceHandler::NotifySmartLockSignInAllowedChanged() {
-  bool sign_in_allowed =
-      prefs_->GetBoolean(multidevice_setup::kSmartLockSigninAllowedPrefName);
-  FireWebUIListener("smart-lock-signin-allowed-changed",
-                    base::Value(sign_in_allowed));
 }
 
 bool MultideviceHandler::IsAuthTokenValid(const std::string& auth_token) {

@@ -12132,39 +12132,7 @@
     ]
   },
   "SmartLockSigninAllowed": {
-    "os": [
-      "chromeos_ash"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "smart_lock_signin.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SmartLockSigninAllowed": false
-        },
-        "prefs": {
-          "smart_lock_signin.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SmartLockSigninAllowed": true
-        },
-        "prefs": {
-          "smart_lock_signin.allowed": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "InstantTetheringAllowed": {
     "os": [

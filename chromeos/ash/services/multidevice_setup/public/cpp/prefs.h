@@ -29,9 +29,6 @@ enum class EcheSupportReceivedFromPhoneHub {
 extern const char kInstantTetheringAllowedPrefName[];
 extern const char kMessagesAllowedPrefName[];
 extern const char kSmartLockAllowedPrefName[];
-// TODO(b/227674947): Deprecate kSmartLockSigninAllowedPrefName and its
-// corresponding policy.
-extern const char kSmartLockSigninAllowedPrefName[];
 extern const char kPhoneHubAllowedPrefName[];
 extern const char kPhoneHubCameraRollAllowedPrefName[];
 extern const char kPhoneHubNotificationsAllowedPrefName[];

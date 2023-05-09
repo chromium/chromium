@@ -142,9 +142,6 @@ class MultideviceHandler
   void HandleRemoveHostDevice(const base::Value::List& args);
   void HandleRetryPendingHostSetup(const base::Value::List& args);
   void HandleSetUpAndroidSms(const base::Value::List& args);
-  // TODO(b/227674947):Now that Sign in with Smart Lock is deprecated, delete
-  // this method.
-  void HandleGetSmartLockSignInAllowed(const base::Value::List& args);
   void HandleGetAndroidSmsInfo(const base::Value::List& args);
   void HandleAttemptNotificationSetup(const base::Value::List& args);
   void HandleCancelNotificationSetup(const base::Value::List& args);
@@ -159,10 +156,6 @@ class MultideviceHandler
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);
-
-  // TODO(b/227674947):Now that Sign in with Smart Lock is deprecated, delete
-  // this methods.
-  void NotifySmartLockSignInAllowedChanged();
 
   // Generate android sms info dictionary containing the messages for web
   // content settings origin url and messages feature state.

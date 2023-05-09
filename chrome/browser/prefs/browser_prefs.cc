@@ -803,6 +803,11 @@ const char kLastChromadMigrationAttemptTime[] =
     "chromad.last_migration_attempt_time";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kSmartLockSigninAllowed[] = "smart_lock_signin.allowed";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1097,6 +1102,11 @@ void RegisterProfilePrefsForMigration(
 // Deprecated 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kProximityAuthIsChromeOSLoginEnabled, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Deprecated 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kSmartLockSigninAllowed, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -2128,6 +2138,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 // Added 04/2023.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kProximityAuthIsChromeOSLoginEnabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Added 05/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kSmartLockSigninAllowed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

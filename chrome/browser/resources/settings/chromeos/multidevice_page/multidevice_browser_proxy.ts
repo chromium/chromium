@@ -39,12 +39,6 @@ export interface MultiDeviceBrowserProxy {
   setUpAndroidSms(): void;
 
   /**
-   * Returns the value of the preference controlling whether Smart Lock
-   * sign-in is allowed.
-   */
-  getSmartLockSignInAllowed(): Promise<boolean>;
-
-  /**
    * Returns android messages info with messages feature state
    * and messages for web permissions origin.
    */
@@ -161,10 +155,6 @@ export class MultiDeviceBrowserProxyImpl implements MultiDeviceBrowserProxy {
 
   setUpAndroidSms(): void {
     chrome.send('setUpAndroidSms');
-  }
-
-  getSmartLockSignInAllowed(): Promise<boolean> {
-    return sendWithPromise('getSmartLockSignInAllowed');
   }
 
   getAndroidSmsInfo(): Promise<AndroidSmsInfo> {
