@@ -77,8 +77,16 @@ template("build_webui") {
     # Files that are passed as input to html_to_wrapper().
     html_files = []
     if (defined(invoker.web_component_files)) {
-      foreach(f, invoker.web_component_files) {
+      web_component_ts_files =
+          filter_include(invoker.web_component_files, [ "*.ts" ])
+      foreach(f, web_component_ts_files) {
         html_files += [ string_replace(f, ".ts", ".html") ]
+      }
+
+      web_component_js_files =
+          filter_include(invoker.web_component_files, [ "*.js" ])
+      foreach(f, web_component_js_files) {
+        html_files += [ string_replace(f, ".js", ".html") ]
       }
     }
     if (defined(invoker.icons_html_files)) {
