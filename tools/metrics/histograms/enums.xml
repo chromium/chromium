@@ -16290,6 +16290,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="7" label="kDiskReadError"/>
   <int value="8" label="kDiskWriteError"/>
   <int value="9" label="kRootPartitionUnexpectedSize"/>
+  <int value="10" label="kMigrationNotAllowed"/>
 </enum>
 
 <enum name="ChromeOSSamlApiUsed">
