@@ -614,8 +614,6 @@ void OmniboxViewIOS::OnDeleteBackward() {
       // never sets the input-in-progress flag.
       if (model())
         model()->SetInputInProgress(YES);
-    } else {
-      RemoveQueryRefinementChip();
     }
   }
 }
@@ -625,11 +623,8 @@ void OmniboxViewIOS::ClearText() {
   // user can start typing a new query.
   if (![field_ isFirstResponder])
     [field_ becomeFirstResponder];
-  if (field_.text.length == 0) {
-    // If `field_` is empty, remove the query refinement chip.
-    RemoveQueryRefinementChip();
-  } else {
-    // Otherwise, just remove the text in the omnibox.
+  if (field_.text.length != 0) {
+    // Remove the text in the omnibox.
     // Calling -[UITextField setText:] does not trigger
     // -[id<UITextFieldDelegate> textDidChange] so it must be called explicitly.
     OnClear();
@@ -639,10 +634,6 @@ void OmniboxViewIOS::ClearText() {
   // Calling OnDidChange() can trigger a scroll event, which removes focus from
   // the omnibox.
   [field_ becomeFirstResponder];
-}
-
-void OmniboxViewIOS::RemoveQueryRefinementChip() {
-  edit_model_delegate_->OnChanged();
 }
 
 void OmniboxViewIOS::EndEditing() {
