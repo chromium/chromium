@@ -35,7 +35,7 @@ namespace blink {
 struct SameSizeAsTextRun {
   DISALLOW_NEW();
   const void* pointer;
-  int integers[2];
+  int integer;
   uint32_t bitfields : 6;
 };
 

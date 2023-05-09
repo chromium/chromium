@@ -286,7 +286,6 @@ bool Font::DrawBidiText(cc::PaintCanvas* canvas,
                                                      run.Direction());
     TextRun run_with_override = run_info.run;
     run_with_override.SetText(text_with_override);
-    run_with_override.SetCharactersLength(text_with_override.length());
     run_with_override.SetDirectionalOverride(false);
     return DrawBidiText(canvas, TextRunPaintInfo(run_with_override), point,
                         custom_font_not_ready_action, flags, draw_type);

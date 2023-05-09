@@ -46,8 +46,7 @@ class PLATFORM_EXPORT TextRun final {
           unsigned len,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
-      : characters_length_(len),
-        len_(len),
+      : len_(len),
         is_8bit_(true),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
@@ -59,8 +58,7 @@ class PLATFORM_EXPORT TextRun final {
           unsigned len,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
-      : characters_length_(len),
-        len_(len),
+      : len_(len),
         is_8bit_(false),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
@@ -71,12 +69,11 @@ class PLATFORM_EXPORT TextRun final {
   TextRun(const StringView& string,
           TextDirection direction = TextDirection::kLtr,
           bool directional_override = false)
-      : characters_length_(string.length()),
-        len_(string.length()),
+      : len_(string.length()),
         direction_(static_cast<unsigned>(direction)),
         directional_override_(directional_override),
         normalize_space_(false) {
-    if (!characters_length_) {
+    if (!len_) {
       is_8bit_ = true;
       data_.characters8 = nullptr;
     } else if (string.Is8Bit()) {
@@ -166,7 +163,6 @@ class PLATFORM_EXPORT TextRun final {
 
   bool Is8Bit() const { return is_8bit_; }
   unsigned length() const { return len_; }
-  unsigned CharactersLength() const { return characters_length_; }
 
   bool NormalizeSpace() const { return normalize_space_; }
   void SetNormalizeSpace(bool normalize_space) {
@@ -184,9 +180,6 @@ class PLATFORM_EXPORT TextRun final {
     is_8bit_ = false;
   }
   void SetText(const String&);
-  void SetCharactersLength(unsigned characters_length) {
-    characters_length_ = characters_length;
-  }
 
   TextDirection Direction() const {
     return static_cast<TextDirection>(direction_);
@@ -213,8 +206,6 @@ class PLATFORM_EXPORT TextRun final {
     const UChar* characters16;
     const void* bytes_;
   } data_;
-  // Marks the end of the characters buffer.  Default equals to m_len.
-  unsigned characters_length_;
   unsigned len_;
 
   unsigned is_8bit_ : 1;
