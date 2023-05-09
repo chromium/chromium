@@ -685,6 +685,55 @@ public class CronetUrlRequestContextTest {
 
     @Test
     @SmallTest
+    // TODO: the Java implementation currently fails this test - it incorrectly
+    // increments the count on the second start.
+    @OnlyRunNativeCronet
+    public void testGetActiveRequestCountOnDoubleStart() throws Exception {
+        CronetEngine cronetEngine = mTestRule.startCronetTestFramework().mCronetEngine;
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        callback.setAutoAdvance(false);
+        UrlRequest request =
+                cronetEngine.newUrlRequestBuilder(mUrl, callback, callback.getExecutor()).build();
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+        request.start();
+        assertEquals(1, cronetEngine.getActiveRequestCount());
+        boolean threwException = false;
+        try {
+            request.start();
+        } catch (Exception e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        assertEquals(1, cronetEngine.getActiveRequestCount());
+        callback.setAutoAdvance(true);
+        callback.blockForDone();
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+    }
+
+    @Test
+    @SmallTest
+    // Only native Cronet has code paths that throw exceptions directly from start() on invalid
+    // requests.
+    @OnlyRunNativeCronet
+    public void testGetActiveRequestCountOnInvalidRequest() throws Exception {
+        CronetEngine cronetEngine = mTestRule.startCronetTestFramework().mCronetEngine;
+        TestUrlRequestCallback callback = new TestUrlRequestCallback();
+        UrlRequest request = cronetEngine.newUrlRequestBuilder("", callback, callback.getExecutor())
+                                     .setHttpMethod("")
+                                     .build();
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+        boolean threwException = false;
+        try {
+            request.start();
+        } catch (Exception e) {
+            threwException = true;
+        }
+        assertTrue(threwException);
+        assertEquals(0, cronetEngine.getActiveRequestCount());
+    }
+
+    @Test
+    @SmallTest
     public void testGetActiveRequestCountWithCancel() throws Exception {
         final CronetTestFramework testFramework = mTestRule.startCronetTestFramework();
         CronetEngine cronetEngine = testFramework.mCronetEngine;
