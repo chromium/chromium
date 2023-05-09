@@ -81,12 +81,12 @@ bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
   return pair1.second.timestamp() > pair2.second.timestamp();
 }
 
-absl::optional<base::Value> JSONToDictionary(int resource_id) {
-  absl::optional<base::Value> value = base::JSONReader::Read(
+base::Value::Dict JSONToDictionary(int resource_id) {
+  absl::optional<base::Value::Dict> value = base::JSONReader::ReadDict(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id));
-  DCHECK(value && value.has_value() && value->is_dict());
-  return value;
+  CHECK(value);
+  return std::move(*value);
 }
 
 const re2::RE2& GetSkipCartExtractionPattern() {
@@ -993,7 +993,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
       commerce_heuristics::CommerceHeuristicsData::GetInstance()
           .GetMerchantName(domain);
   std::string* merchant_name_from_resource =
-      domain_name_mapping_->FindStringKey(domain);
+      domain_name_mapping_.FindString(domain);
   if (merchant_name_from_component.has_value()) {
     proto.set_merchant(*merchant_name_from_component);
     CommerceHeuristicsDataMetricsHelper::RecordMerchantNameSource(
@@ -1013,7 +1013,7 @@ void CartService::OnAddCart(const GURL& navigation_url,
         commerce_heuristics::CommerceHeuristicsData::GetInstance()
             .GetMerchantCartURL(domain);
     std::string* fallback_url_from_resource =
-        domain_cart_url_mapping_->FindStringKey(domain);
+        domain_cart_url_mapping_.FindString(domain);
     if (fallback_url_from_component.has_value()) {
       proto.set_merchant_cart_url(*fallback_url_from_component);
     } else if (fallback_url_from_resource) {

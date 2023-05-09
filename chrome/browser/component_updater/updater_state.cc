@@ -64,8 +64,8 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
                 kMaxPrefsFileSize)) {
           return nullptr;
         }
-        absl::optional<base::Value> parsed_json =
-            base::JSONReader::Read(contents);
+        absl::optional<base::Value::Dict> parsed_json =
+            base::JSONReader::ReadDict(contents);
         return parsed_json ? std::make_unique<StateReaderChromiumUpdater>(
                                  std::move(*parsed_json))
                            : nullptr;
@@ -88,13 +88,12 @@ std::unique_ptr<UpdaterState::StateReader> UpdaterState::StateReader::Create(
 }
 
 UpdaterState::StateReaderChromiumUpdater::StateReaderChromiumUpdater(
-    base::Value parsed_json)
+    base::Value::Dict parsed_json)
     : parsed_json_(std::move(parsed_json)) {}
 
 base::Time UpdaterState::StateReaderChromiumUpdater::FindTimeKey(
     base::StringPiece key) const {
-  return base::ValueToTime(parsed_json_.GetDict().Find(key))
-      .value_or(base::Time());
+  return base::ValueToTime(parsed_json_.Find(key)).value_or(base::Time());
 }
 
 std::string UpdaterState::StateReaderChromiumUpdater::GetUpdaterName() const {
@@ -103,8 +102,7 @@ std::string UpdaterState::StateReaderChromiumUpdater::GetUpdaterName() const {
 
 base::Version UpdaterState::StateReaderChromiumUpdater::GetUpdaterVersion(
     bool /*is_machine*/) const {
-  const std::string* val =
-      parsed_json_.FindStringKey(kUpdaterPrefsActiveVersion);
+  const std::string* val = parsed_json_.FindString(kUpdaterPrefsActiveVersion);
   return val ? base::Version(*val) : base::Version();
 }
 

@@ -76,13 +76,12 @@ std::vector<AppActivity::ActiveTime> AppActiveTimesFromList(
   }
 
   for (const auto& value : *list) {
-    if (!value.is_dict()) {
+    auto* dict = value.GetIfDict();
+    if (!dict) {
       VLOG(1) << "Value is not a dictionary";
       continue;
     }
-
-    absl::optional<AppActivity::ActiveTime> entry =
-        AppActivityFromDict(value.GetDict());
+    absl::optional<AppActivity::ActiveTime> entry = AppActivityFromDict(*dict);
     if (!entry)
       continue;
     active_times.push_back(entry.value());

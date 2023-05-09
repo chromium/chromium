@@ -352,15 +352,14 @@ class CartServiceTest : public testing::Test {
   }
 
   std::string getDomainName(base::StringPiece domain) {
-    std::string* res = service_->domain_name_mapping_->FindStringKey(domain);
+    std::string* res = service_->domain_name_mapping_.FindString(domain);
     if (!res)
       return "";
     return *res;
   }
 
   std::string getDomainCartURL(base::StringPiece domain) {
-    std::string* res =
-        service_->domain_cart_url_mapping_->FindStringKey(domain);
+    std::string* res = service_->domain_cart_url_mapping_.FindString(domain);
     if (!res)
       return "";
     return *res;

@@ -99,8 +99,8 @@ class AppUsageCollectorTest : public ::apps::AppPlatformMetricsServiceTestBase {
     const auto& usage_dict_pref =
         GetPrefService()->GetDict(::apps::kAppUsageTime);
     ASSERT_THAT(usage_dict_pref.Find(instance_id.ToString()), NotNull());
-    EXPECT_THAT(*usage_dict_pref.Find(instance_id.ToString())
-                     ->FindStringKey(::apps::kUsageTimeAppIdKey),
+    EXPECT_THAT(*usage_dict_pref.FindDict(instance_id.ToString())
+                     ->FindString(::apps::kUsageTimeAppIdKey),
                 StrEq(kTestAppId));
     EXPECT_THAT(base::ValueToTimeDelta(
                     usage_dict_pref.FindDict(instance_id.ToString())

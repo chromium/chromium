@@ -497,9 +497,9 @@ std::string ShortcutIdFromContainerId(Profile* profile,
 }
 
 base::flat_map<std::string, std::string> ExtrasFromShortcutId(
-    const base::Value& shortcut) {
+    const base::Value::Dict& shortcut) {
   base::flat_map<std::string, std::string> extras;
-  for (const auto it : shortcut.GetDict()) {
+  for (const auto it : shortcut) {
     if (it.second.is_string()) {
       extras[it.first] = it.second.GetString();
     }
@@ -583,13 +583,14 @@ void AddTerminalMenuShortcuts(
 bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
                                         const std::string& shortcut_id,
                                         int64_t display_id) {
-  auto shortcut = base::JSONReader::Read(shortcut_id);
-  if (!shortcut || !shortcut->is_dict()) {
+  absl::optional<base::Value::Dict> shortcut =
+      base::JSONReader::ReadDict(shortcut_id);
+  if (!shortcut) {
     return false;
   }
-  const std::string* shortcut_value = shortcut->FindStringKey(kShortcutKey);
+  const std::string* shortcut_value = shortcut->FindString(kShortcutKey);
   if (shortcut_value && *shortcut_value == kShortcutValueSSH) {
-    const std::string* profileId = shortcut->FindStringKey(kProfileIdKey);
+    const std::string* profileId = shortcut->FindString(kProfileIdKey);
     if (!profileId) {
       return false;
     }
@@ -618,7 +619,7 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     return false;
   }
   auto intent = std::make_unique<apps::Intent>(apps_util::kIntentActionView);
-  intent->extras = ExtrasFromShortcutId(std::move(*shortcut));
+  intent->extras = ExtrasFromShortcutId(*shortcut);
   LaunchTerminalWithIntent(profile, display_id, std::move(intent),
                            base::DoNothing());
   return true;

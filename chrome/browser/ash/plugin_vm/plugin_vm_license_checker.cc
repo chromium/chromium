@@ -101,14 +101,15 @@ bool ResponseIndicatesValidLicense(int response_code,
 
   // Expected response body:
   // { "status": "ACTIVE", ...}
-  absl::optional<base::Value> response = base::JSONReader::Read(response_body);
-  if (!response || !response->is_dict()) {
+  absl::optional<base::Value::Dict> response =
+      base::JSONReader::ReadDict(response_body);
+  if (!response) {
     LOG(ERROR) << "response_body was of unexpected format.";
     return false;
   }
 
-  std::string* status = response->FindStringKey("status");
-  if (status == nullptr) {
+  std::string* status = response->FindString("status");
+  if (!status) {
     LOG(ERROR) << "response_body did not contain status.";
     return false;
   }
