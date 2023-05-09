@@ -80,7 +80,7 @@ class ResponseAdapter {
 
   virtual content::WebContents::Getter GetWebContentsGetter() const = 0;
   virtual bool IsOutermostMainFrame() const = 0;
-  virtual GURL GetURL() const = 0;
+  virtual GURL GetUrl() const = 0;
   virtual const net::HttpResponseHeaders* GetHeaders() const = 0;
   virtual void RemoveHeader(const std::string& name) = 0;
 

@@ -425,7 +425,7 @@ void ProcessDiceHeader(
 // child/route id. Must be called on IO thread.
 void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
                                          bool is_off_the_record) {
-  CHECK(gaia::HasGaiaSchemeHostPort(response->GetURL()));
+  CHECK(gaia::HasGaiaSchemeHostPort(response->GetUrl()));
 
   if (!response->IsOutermostMainFrame())
     return;
@@ -475,7 +475,7 @@ void ProcessMirrorResponseHeaderIfExists(ResponseAdapter* response,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProcessDiceResponseHeaderIfExists(ResponseAdapter* response,
                                        bool is_off_the_record) {
-  CHECK(gaia::HasGaiaSchemeHostPort(response->GetURL()));
+  CHECK(gaia::HasGaiaSchemeHostPort(response->GetUrl()));
 
   if (is_off_the_record)
     return;
@@ -536,7 +536,7 @@ std::string ParseGaiaIdFromRemoveLocalAccountResponseHeader(
 
 void ProcessRemoveLocalAccountResponseHeaderIfExists(ResponseAdapter* response,
                                                      bool is_off_the_record) {
-  CHECK(gaia::HasGaiaSchemeHostPort(response->GetURL()));
+  CHECK(gaia::HasGaiaSchemeHostPort(response->GetUrl()));
 
   if (is_off_the_record)
     return;
@@ -651,8 +651,9 @@ void FixAccountConsistencyRequestHeader(
 void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
                                               const GURL& redirect_url,
                                               bool is_off_the_record) {
-  if (!gaia::HasGaiaSchemeHostPort(response->GetURL()))
+  if (!gaia::HasGaiaSchemeHostPort(response->GetUrl())) {
     return;
+  }
 
 #if BUILDFLAG(ENABLE_MIRROR)
   // See if the response contains the X-Chrome-Manage-Accounts header. If so

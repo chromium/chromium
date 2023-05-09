@@ -285,7 +285,7 @@ class ProxyingURLLoaderFactory::InProgressRequest::ProxyResponseAdapter
     return in_progress_request_->is_outermost_main_frame_;
   }
 
-  GURL GetURL() const override { return in_progress_request_->response_url_; }
+  GURL GetUrl() const override { return in_progress_request_->response_url_; }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;

@@ -217,7 +217,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
   // the redirect is received and again for the redirect response.
   EXPECT_CALL(*delegate, ProcessResponse(_, _))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(kTestURL, adapter->GetURL());
+        EXPECT_EQ(kTestURL, adapter->GetUrl());
         EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         adapter->SetUserData(kResponseUserDataKey,
@@ -233,7 +233,7 @@ TEST_F(ChromeSigninProxyingURLLoaderFactoryTest, ModifyHeaders) {
         EXPECT_EQ(kTestRedirectURL, redirect_url);
       }))
       .WillOnce(Invoke([&](ResponseAdapter* adapter, const GURL& redirect_url) {
-        EXPECT_EQ(kTestRedirectURL, adapter->GetURL());
+        EXPECT_EQ(kTestRedirectURL, adapter->GetUrl());
         EXPECT_TRUE(adapter->IsOutermostMainFrame());
 
         EXPECT_EQ(response_user_data_ptr,

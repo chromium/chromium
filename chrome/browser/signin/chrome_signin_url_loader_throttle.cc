@@ -79,7 +79,7 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
     return throttle_->is_outermost_main_frame_;
   }
 
-  GURL GetURL() const override { return throttle_->request_url_; }
+  GURL GetUrl() const override { return throttle_->request_url_; }
 
   const net::HttpResponseHeaders* GetHeaders() const override {
     return headers_;
