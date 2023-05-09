@@ -252,18 +252,12 @@ void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {
 }
 
 void AmbientAshTestBase::DisableJitter() {
-  JitterCalculator::Config kZeroJitterConfig = {/*step_size=*/0};
-  auto* photo_view = GetPhotoView();
-  if (photo_view != nullptr) {
-    photo_view->GetJitterCalculatorForTesting()->SetConfigForTesting(
-        kZeroJitterConfig);
-  }
-
-  auto* ambient_animation_view = GetAmbientAnimationView();
-  if (ambient_animation_view != nullptr) {
-    ambient_animation_view->GetJitterCalculatorForTesting()
-        ->SetConfigForTesting(kZeroJitterConfig);
-  }
+  AmbientUiModel::Get()->set_jitter_config_for_testing(
+      {.step_size = 0,
+       .x_min_translation = 0,
+       .x_max_translation = 0,
+       .y_min_translation = 0,
+       .y_max_translation = 0});
 }
 
 void AmbientAshTestBase::SetAmbientShownAndWaitForWidgets() {

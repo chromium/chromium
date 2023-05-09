@@ -76,8 +76,6 @@ class ASH_EXPORT PhotoView : public views::View,
   // Image containers used for animation. Owned by view hierarchy.
   std::array<AmbientBackgroundImageView*, 2> image_views_{nullptr, nullptr};
 
-  const std::unique_ptr<JitterCalculator> glanceable_info_jitter_calculator_;
-
   // The index of |image_views_| to update the next image.
   int image_index_ = 0;
 

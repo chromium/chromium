@@ -44,10 +44,7 @@ void ReportSmoothness(int value) {
 // PhotoView ------------------------------------------------------------------
 PhotoView::PhotoView(AmbientViewDelegateImpl* delegate,
                      bool peripheral_ui_visible)
-    : peripheral_ui_visible_(peripheral_ui_visible),
-      delegate_(delegate),
-      glanceable_info_jitter_calculator_(
-          AmbientSlideshowPeripheralUi::CreateDefaultJitterCalculator()) {
+    : peripheral_ui_visible_(peripheral_ui_visible), delegate_(delegate) {
   DCHECK(delegate_);
   SetID(AmbientViewID::kAmbientPhotoView);
   Init();
@@ -81,8 +78,8 @@ void PhotoView::Init() {
     // glanceable info on screen does not shift too much at once when
     // transitioning between AmbientBackgroundImageViews in
     // StartTransitionAnimation().
-    image_view = AddChildView(std::make_unique<AmbientBackgroundImageView>(
-        delegate_, glanceable_info_jitter_calculator_.get()));
+    image_view =
+        AddChildView(std::make_unique<AmbientBackgroundImageView>(delegate_));
     // Each image view will be animated on its own layer.
     image_view->SetPaintToLayer();
     image_view->layer()->SetFillsBoundsOpaquely(false);
@@ -179,10 +176,6 @@ bool PhotoView::NeedToAnimateTransition() const {
 
 gfx::ImageSkia PhotoView::GetVisibleImageForTesting() {
   return image_views_.at(image_index_)->GetCurrentImage();
-}
-
-JitterCalculator* PhotoView::GetJitterCalculatorForTesting() {
-  return glanceable_info_jitter_calculator_.get();
 }
 
 BEGIN_METADATA(PhotoView, views::View)

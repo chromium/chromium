@@ -3774,8 +3774,7 @@ test("ash_unittests") {
 
 test("ash_pixeltests") {
   sources = [
-    "ambient/ui/ambient_info_view_pixeltest.cc",
-    "ambient/ui/media_string_view_pixeltest.cc",
+    "ambient/ui/ambient_slideshow_pixeltest.cc",
     "app_list/views/app_list_item_view_pixeltest.cc",
     "app_list/views/app_list_view_pixeltest.cc",
     "fullscreen_pixeltest.cc",

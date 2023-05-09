@@ -24,9 +24,11 @@
 #include "ash/ambient/ui/ambient_animation_shield_controller.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/glanceable_info_view.h"
+#include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
@@ -62,13 +64,6 @@ namespace {
 
 // How often to shift the animation slightly to prevent screen burn.
 constexpr base::TimeDelta kAnimationJitterPeriod = base::Minutes(2);
-
-constexpr JitterCalculator::Config kAnimationJitterConfig = {
-    /*step_size=*/2,
-    /*x_min_translation=*/-10,
-    /*x_max_translation=*/10,
-    /*y_min_translation=*/-10,
-    /*y_max_translation=*/10};
 
 constexpr base::TimeDelta kThroughputTrackerRestartPeriod = base::Seconds(30);
 
@@ -116,11 +111,10 @@ void OnCompositorThroughputReported(
 
 // Returns the maximum possible displacement in either dimension from the
 // original unshifted position when jitter is applied.
-int GetPaddingForAnimationJitter() {
-  return std::max({abs(kAnimationJitterConfig.x_min_translation),
-                   abs(kAnimationJitterConfig.x_max_translation),
-                   abs(kAnimationJitterConfig.y_min_translation),
-                   abs(kAnimationJitterConfig.y_max_translation)});
+int GetPaddingForAnimationJitter(const AmbientJitterConfig& config) {
+  return std::max({abs(config.x_min_translation), abs(config.x_max_translation),
+                   abs(config.y_min_translation),
+                   abs(config.y_max_translation)});
 }
 
 // When text with shadows requires X pixels of padding from the edges of its
@@ -191,7 +185,8 @@ AmbientAnimationView::AmbientAnimationView(
       frame_rate_controller_(frame_rate_controller),
       animation_photo_provider_(static_resources_.get(),
                                 view_delegate->GetAmbientBackendModel()),
-      animation_jitter_calculator_(kAnimationJitterConfig) {
+      animation_jitter_calculator_(
+          AmbientUiModel::Get()->GetAnimationJitterConfig()) {
   DCHECK(view_delegate_);
   DCHECK(frame_rate_controller_);
   SetID(AmbientViewID::kAmbientAnimationView);
@@ -340,8 +335,9 @@ void AmbientAnimationView::OnViewBoundsChanged(View* observed_view) {
   // so that its proper bounds become available (they are 0x0 initially) before
   // starting the animation playback.
   gfx::Rect previous_animation_bounds = animated_image_view_->GetImageBounds();
-  AmbientAnimationResizer::Resize(*animated_image_view_,
-                                  GetPaddingForAnimationJitter());
+  AmbientAnimationResizer::Resize(
+      *animated_image_view_,
+      GetPaddingForAnimationJitter(animation_jitter_calculator_.config()));
   AmbientAnimationAttributionTransformer::TransformTextBox(
       *animated_image_view_);
   // When the device is in portrait mode, the landscape version of the

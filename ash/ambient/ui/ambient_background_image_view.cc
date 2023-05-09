@@ -10,7 +10,6 @@
 #include "ash/ambient/ui/ambient_slideshow_peripheral_ui.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
-#include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
@@ -117,12 +116,9 @@ gfx::ImageSkia MaybeRotateImage(const gfx::ImageSkia& image,
 }  // namespace
 
 AmbientBackgroundImageView::AmbientBackgroundImageView(
-    AmbientViewDelegate* delegate,
-    JitterCalculator* glanceable_info_jitter_calculator)
-    : delegate_(delegate),
-      glanceable_info_jitter_calculator_(glanceable_info_jitter_calculator) {
+    AmbientViewDelegate* delegate)
+    : delegate_(delegate) {
   DCHECK(delegate_);
-  DCHECK(glanceable_info_jitter_calculator_);
   SetID(AmbientViewID::kAmbientBackgroundImageView);
   InitLayout();
 }
@@ -237,8 +233,7 @@ void AmbientBackgroundImageView::InitLayout() {
   observed_views_.AddObservation(related_image_view_.get());
 
   ambient_peripheral_ui_ =
-      AddChildView(std::make_unique<AmbientSlideshowPeripheralUi>(
-          delegate_, glanceable_info_jitter_calculator_));
+      AddChildView(std::make_unique<AmbientSlideshowPeripheralUi>(delegate_));
 }
 
 void AmbientBackgroundImageView::UpdateLayout() {
