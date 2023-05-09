@@ -93,6 +93,12 @@ class ASH_EXPORT CaptureModeController
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
   RecordingType recording_type() const { return recording_type_; }
+
+  // Returns the raw audio recording mode, without taking into account the
+  // `AudioCaptureAllowed` policy.
+  AudioRecordingMode audio_recording_mode() const {
+    return audio_recording_mode_;
+  }
   CaptureModeSession* capture_mode_session() const {
     return capture_mode_session_.get();
   }
@@ -306,17 +312,6 @@ class ASH_EXPORT CaptureModeController
  private:
   friend class CaptureModeTestApi;
   friend class VideoRecordingWatcher;
-
-  // Contains the cached normal capture mode configurations that will be used
-  // for configurations restoration when switching from the projector-initiated
-  // capture mode session if needed.
-  struct CaptureSessionConfigs {
-    CaptureModeType type;
-    CaptureModeSource source;
-    RecordingType recording_type;
-    AudioRecordingMode audio_recording_mode;
-    bool demo_tools_enabled;
-  };
 
   // Called by |video_recording_watcher_| when the display on which recording is
   // happening changes its bounds such as on display rotation or device scale
@@ -650,8 +645,6 @@ class ASH_EXPORT CaptureModeController
 
   // True in the scope of BeginVideoRecording().
   bool is_initializing_recording_ = false;
-
-  absl::optional<CaptureSessionConfigs> cached_normal_session_configs_;
 
   // Remember the user preference of whether to enable demo tools feature or
   // not in video recording mode, between sessions. Initially, this value is set

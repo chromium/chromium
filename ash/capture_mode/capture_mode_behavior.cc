@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
@@ -22,6 +23,25 @@ namespace ash {
 
 namespace {
 
+// Returns the current configs before been overwritten by the client-initiated
+// capture mode session
+CaptureModeSessionConfigs GetCaptureModeSessionConfigs() {
+  CaptureModeController* controller = CaptureModeController::Get();
+  CaptureModeSessionConfigs configs = CaptureModeSessionConfigs{
+      controller->type(), controller->source(), controller->recording_type(),
+      controller->audio_recording_mode(), controller->enable_demo_tools()};
+  return configs;
+}
+
+void SetCaptureModeSessionConfigs(const CaptureModeSessionConfigs& configs) {
+  CaptureModeController* controller = CaptureModeController::Get();
+  controller->SetType(configs.type);
+  controller->SetSource(configs.source);
+  controller->SetRecordingType(configs.recording_type);
+  controller->SetAudioRecordingMode(configs.audio_recording_mode);
+  controller->EnableDemoTools(configs.demo_tools_enabled);
+}
+
 // -----------------------------------------------------------------------------
 // DefaultBehavior:
 // Implements the `CaptureModeBehavior` interface with behavior defined for the
@@ -31,7 +51,7 @@ class DefaultBehavior : public CaptureModeBehavior {
   DefaultBehavior()
       : CaptureModeBehavior({CaptureModeType::kImage,
                              CaptureModeSource::kRegion, RecordingType::kWebM,
-                             /*audio_on=*/false,
+                             AudioRecordingMode::kOff,
                              /*demo_tools_enabled=*/false}) {}
 
   DefaultBehavior(const DefaultBehavior&) = delete;
@@ -46,16 +66,33 @@ class DefaultBehavior : public CaptureModeBehavior {
 class ProjectorBehavior : public CaptureModeBehavior {
  public:
   ProjectorBehavior()
-      : CaptureModeBehavior({CaptureModeType::kVideo,
-                             CaptureModeSource::kRegion, RecordingType::kWebM,
-                             /*audio_on=*/true,
-                             /*demo_tools_enabled=*/true}) {}
+      : CaptureModeBehavior(
+            {CaptureModeType::kVideo, CaptureModeSource::kFullscreen,
+             RecordingType::kWebM, AudioRecordingMode::kMicrophone,
+             /*demo_tools_enabled=*/true}) {}
 
   ProjectorBehavior(const ProjectorBehavior&) = delete;
   ProjectorBehavior& operator=(const ProjectorBehavior&) = delete;
   ~ProjectorBehavior() override = default;
 
   // CaptureModeBehavior:
+  void AttachToSession() override {
+    cached_configs_ = GetCaptureModeSessionConfigs();
+
+    // Overwrite the current capture mode session with the projector
+    // configurations.
+    SetCaptureModeSessionConfigs(capture_mode_configs_);
+  }
+
+  void DetachFromSession() override {
+    CHECK(cached_configs_);
+
+    // Restore the capture mode configurations after being overwritten with the
+    // projector-specific configurations.
+    SetCaptureModeSessionConfigs(cached_configs_.value());
+    cached_configs_.reset();
+  }
+
   bool ShouldImageCaptureTypeBeAllowed() const override { return false; }
   bool ShouldSaveToSettingsBeIncluded() const override { return false; }
   bool ShouldGifBeSupported() const override { return false; }
@@ -105,13 +142,15 @@ class ProjectorBehavior : public CaptureModeBehavior {
 // -----------------------------------------------------------------------------
 // GameDashboardBehavior:
 // Implements the `CaptureModeBehavior` interface with behaviors defined by the
-// game dashboard capture mode.
+// game dashboard-initiated capture mode.
 class GameDashboardBehavior : public CaptureModeBehavior {
  public:
   GameDashboardBehavior()
       : CaptureModeBehavior({CaptureModeType::kVideo,
                              CaptureModeSource::kWindow, RecordingType::kWebM,
-                             /*audio_on=*/true,
+                             features::IsCaptureModeAudioMixingEnabled()
+                                 ? AudioRecordingMode::kSystemAndMicrophone
+                                 : AudioRecordingMode::kMicrophone,
                              /*demo_tools_enabled=*/false}) {}
 
   GameDashboardBehavior(const GameDashboardBehavior&) = delete;
@@ -149,6 +188,10 @@ std::unique_ptr<CaptureModeBehavior> CaptureModeBehavior::Create(
       return std::make_unique<DefaultBehavior>();
   }
 }
+
+void CaptureModeBehavior::AttachToSession() {}
+
+void CaptureModeBehavior::DetachFromSession() {}
 
 bool CaptureModeBehavior::ShouldImageCaptureTypeBeAllowed() const {
   return true;

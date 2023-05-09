@@ -573,8 +573,9 @@ void CaptureModeController::SetSource(CaptureModeSource source) {
     return;
 
   source_ = source;
-  if (capture_mode_session_)
+  if (IsActive()) {
     capture_mode_session_->OnCaptureSourceChanged(source_);
+  }
 }
 
 void CaptureModeController::SetType(CaptureModeType type) {
@@ -588,8 +589,9 @@ void CaptureModeController::SetType(CaptureModeType type) {
     return;
 
   type_ = type;
-  if (capture_mode_session_)
+  if (IsActive()) {
     capture_mode_session_->OnCaptureTypeChanged(type_);
+  }
 }
 
 void CaptureModeController::SetRecordingType(RecordingType recording_type) {
@@ -597,8 +599,9 @@ void CaptureModeController::SetRecordingType(RecordingType recording_type) {
     return;
 
   recording_type_ = recording_type;
-  if (capture_mode_session_)
+  if (IsActive()) {
     capture_mode_session_->OnRecordingTypeChanged();
+  }
 }
 
 void CaptureModeController::Start(CaptureModeEntryType entry_type) {
@@ -952,18 +955,6 @@ void CaptureModeController::StartVideoRecordingImmediatelyForTesting() {
   DCHECK(IsActive());
   DCHECK_EQ(type_, CaptureModeType::kVideo);
   OnVideoRecordCountDownFinished();
-}
-
-void CaptureModeController::MaybeRestoreCachedCaptureConfigurations() {
-  if (!cached_normal_session_configs_)
-    return;
-
-  type_ = cached_normal_session_configs_->type;
-  source_ = cached_normal_session_configs_->source;
-  recording_type_ = cached_normal_session_configs_->recording_type;
-  audio_recording_mode_ = cached_normal_session_configs_->audio_recording_mode;
-  enable_demo_tools_ = cached_normal_session_configs_->demo_tools_enabled;
-  cached_normal_session_configs_.reset();
 }
 
 void CaptureModeController::AddObserver(CaptureModeObserver* observer) {
@@ -1691,15 +1682,14 @@ void CaptureModeController::BeginVideoRecording(
   LaunchRecordingServiceAndStartRecording(
       capture_params, std::move(cursor_overlay_receiver), effective_audio_mode);
 
-  // Intentionally record the metrics before
-  // `MaybeRestoreCachedCaptureConfigurations` as `enable_demo_tools_` may be
-  // overwritten otherwise.
+  // Intentionally record the metrics before `DetachFromSession()` as
+  // `enable_demo_tools_` may be overwritten otherwise.
   RecordRecordingStartsWithDemoTools(enable_demo_tools_, for_projector);
 
-  // Restore the capture mode configurations that include the `type_`, `source_`
-  // and `audio_recording_mode` after projector-inititated recording starts
-  // if any of them was overridden in projector-initiated capture mode session.
-  MaybeRestoreCachedCaptureConfigurations();
+  // Restore the cached capture mode configs when the capture mode session ends
+  // to start video recording in case another default capture mode session
+  // starts while video recording in progress.
+  active_behavior->DetachFromSession();
 
   capture_mode_util::SetStopRecordingButtonVisibility(root_window, true);
 
@@ -1877,27 +1867,15 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
   if (is_recording_in_progress()) {
     SetType(CaptureModeType::kImage);
   } else if (entry_type == CaptureModeEntryType::kProjector) {
-    DCHECK(features::IsProjectorEnabled());
-    DCHECK(!delegate_->IsAudioCaptureDisabledByPolicy())
+    CHECK(features::IsProjectorEnabled());
+    CHECK(!delegate_->IsAudioCaptureDisabledByPolicy())
         << "A projector session should not be allowed to begin if audio "
            "capture is disabled by policy.";
 
     for_projector = true;
     behavior_type = BehaviorType::kProjector;
-
-    // Cache the normal capture mode configurations that will be used for
-    // restoration when switching to the normal capture mode session if needed.
-    cached_normal_session_configs_ =
-        CaptureSessionConfigs{type_, source_, recording_type_,
-                              audio_recording_mode_, enable_demo_tools_};
-
-    audio_recording_mode_ = AudioRecordingMode::kMicrophone;
-    enable_demo_tools_ = true;
-    SetType(CaptureModeType::kVideo);
-    SetSource(CaptureModeSource::kFullscreen);
-    SetRecordingType(RecordingType::kWebM);
   } else if (entry_type == CaptureModeEntryType::kGameDashboard) {
-    DCHECK(features::IsGameDashboardEnabled());
+    CHECK(features::IsGameDashboardEnabled());
     // TODO(minch): Get the window from game dashboard and make sure the window
     // exists before starting the game capture session.
     auto windows =
@@ -1909,18 +1887,6 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     }
 
     behavior_type = BehaviorType::kGameDashboard;
-
-    // TODO(b/278638265): Remember the configs for each session, no matters it
-    // is a normal session, projector or game dashboard session.
-    cached_normal_session_configs_ =
-        CaptureSessionConfigs{type_, source_, recording_type_,
-                              audio_recording_mode_, enable_demo_tools_};
-
-    audio_recording_mode_ = AudioRecordingMode::kMicrophone;
-    enable_demo_tools_ = false;
-    SetType(CaptureModeType::kVideo);
-    SetSource(CaptureModeSource::kWindow);
-    SetRecordingType(RecordingType::kWebM);
   }
 
   RecordCaptureModeEntryType(entry_type);

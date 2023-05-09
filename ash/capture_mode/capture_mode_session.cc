@@ -446,6 +446,7 @@ CaptureModeSession::CaptureModeSession(CaptureModeController* controller,
       focus_cycler_(std::make_unique<CaptureModeSessionFocusCycler>(this)),
       capture_toast_controller_(this) {
   CHECK(current_root_);
+  active_behavior->AttachToSession();
 }
 
 CaptureModeSession::~CaptureModeSession() = default;
@@ -571,8 +572,15 @@ void CaptureModeSession::Shutdown() {
 
   // Close all widgets immediately to avoid having them show up in the captured
   // screenshots or video.
-  for (auto* widget : GetAvailableWidgets())
+  for (auto* widget : GetAvailableWidgets()) {
     widget->CloseNow();
+  }
+
+  // Clear all the contents view of all the widgets to avoid UAF.
+  capture_mode_bar_view_ = nullptr;
+  capture_mode_settings_view_ = nullptr;
+  capture_label_view_ = nullptr;
+  recording_type_menu_view_ = nullptr;
 
   if (a11y_alert_on_session_exit_) {
     capture_mode_util::TriggerAccessibilityAlert(
@@ -600,11 +608,11 @@ void CaptureModeSession::Shutdown() {
     // projector-initiated capture mode session.
     controller_->camera_controller()->MaybeRevertAutoCameraSelection();
 
-    // Restore the capture mode configurations that include the `type_`,
-    // `source_` and `enable_audio_recording_` when the projector-initiated
-    // session ends without starting a new recording, in case any of them were
-    // overwritten by projector.
-    controller_->MaybeRestoreCachedCaptureConfigurations();
+    // The session is about to end and recording won't start afterwards. The
+    // active behavior may have overwritten some of the configs, we need to
+    // restore them back to their original values so that future sessions are
+    // not affected.
+    active_behavior_->DetachFromSession();
   }
 
   Shell::Get()->RemoveShellObserver(this);

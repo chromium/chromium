@@ -65,6 +65,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
@@ -3291,14 +3292,13 @@ TEST_P(MediaSessionAcceleratorTest,
 class AcceleratorControllerGameDashboardTests
     : public AcceleratorControllerTest {
  public:
-  AcceleratorControllerGameDashboardTests() = default;
+  AcceleratorControllerGameDashboardTests()
+      : scoped_version_info_("CHROMEOS_RELEASE_TRACK=testimage-channel",
+                             base::SysInfo::GetLsbReleaseTime()) {}
   ~AcceleratorControllerGameDashboardTests() override = default;
 
   void SetUp() override {
     EXPECT_FALSE(features::IsGameDashboardEnabled());
-    base::SysInfo::SetChromeOSVersionInfoForTest(
-        "CHROMEOS_RELEASE_TRACK=testimage-channel",
-        base::SysInfo::GetLsbReleaseTime());
     scoped_feature_list_.InitAndEnableFeature(features::kGameDashboard);
     AcceleratorControllerTest::SetUp();
     EXPECT_TRUE(features::IsGameDashboardEnabled());
@@ -3306,6 +3306,7 @@ class AcceleratorControllerGameDashboardTests
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedChromeOSVersionInfo scoped_version_info_;
 };
 
 TEST_F(AcceleratorControllerGameDashboardTests,

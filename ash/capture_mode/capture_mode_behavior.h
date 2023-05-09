@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -22,7 +23,7 @@ struct CaptureModeSessionConfigs {
   CaptureModeType type;
   CaptureModeSource source;
   RecordingType recording_type;
-  bool audio_on;
+  AudioRecordingMode audio_recording_mode;
   bool demo_tools_enabled;
 };
 
@@ -42,6 +43,15 @@ class CaptureModeBehavior {
   const CaptureModeSessionConfigs& capture_mode_configs() const {
     return capture_mode_configs_;
   }
+
+  // Called when this behavior becomes the active behavior of a newly created
+  // capture session. Sub classes can choose to do any specific session
+  // initialization that they need.
+  virtual void AttachToSession();
+  // Called when this behavior is no longer attached to an active capture mode
+  // session, i.e. when its capture session ends and recording will not start,
+  // or when its session ends to start recording right after recording begins.
+  virtual void DetachFromSession();
 
   virtual bool ShouldImageCaptureTypeBeAllowed() const;
   virtual bool ShouldVideoCaptureTypeBeAllowed() const;
@@ -70,7 +80,13 @@ class CaptureModeBehavior {
  protected:
   explicit CaptureModeBehavior(const CaptureModeSessionConfigs& configs);
 
+  // Capture mode session configs to be used for the current capture mode
+  // session.
   CaptureModeSessionConfigs capture_mode_configs_;
+
+  // Can be used to cache the old capture mode session configs before this
+  // behavior is attached to a new session.
+  absl::optional<CaptureModeSessionConfigs> cached_configs_;
 };
 
 }  // namespace ash
