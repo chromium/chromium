@@ -1676,10 +1676,7 @@ component("base") {
     }
 
     if (is_posix && !is_ios) {
-      sources += [
-        "process/kill_posix.cc",
-        "process/process_posix.cc",
-      ]
+      sources += [ "process/process_posix.cc" ]
     }
 
     if (use_blink) {
@@ -1695,6 +1692,10 @@ component("base") {
         "process/process_iterator.cc",
         "process/process_iterator.h",
       ]
+
+      if (is_posix) {
+        sources += [ "process/kill_posix.cc" ]
+      }
     }
 
     if (is_linux || is_chromeos) {
