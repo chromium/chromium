@@ -530,8 +530,6 @@ void AutocompleteResult::SortAndCull(
         << debug_info;
   }
 #endif
-
-  TrimOmniboxActions();
 }
 
 void AutocompleteResult::TrimOmniboxActions() {

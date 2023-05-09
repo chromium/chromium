@@ -1128,6 +1128,7 @@ void AutocompleteController::AttachActions() {
                                  provider_client_->GetPrefs(), result_);
 #endif
   }
+  result_.TrimOmniboxActions();
 }
 
 void AutocompleteController::UpdateAssociatedKeywords(
