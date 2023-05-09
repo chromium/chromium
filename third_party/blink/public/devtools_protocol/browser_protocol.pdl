@@ -944,6 +944,8 @@ experimental domain Autofill
     parameters
       # Identifies a field that serves as an anchor for autofill.
       DOM.BackendNodeId fieldId
+      # Identifies the frame that field belongs to.
+      optional Page.FrameId frameId
       # Credit card information to fill out the form. Credit card data is not saved.
       CreditCard card
 
