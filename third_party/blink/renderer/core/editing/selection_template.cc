@@ -353,7 +353,8 @@ SelectionTemplate<Strategy>::Builder::SetBaseAndExtent(
     DCHECK(extent.IsNull()) << extent;
     return SetBaseAndExtent(EphemeralRangeTemplate<Strategy>());
   }
-  DCHECK(extent.IsNotNull());
+  // TODO(crbug.com/1423127): `extent` is not expected to be `IsNull` but it
+  // looks like there are such cases.
   return Collapse(base).Extend(extent);
 }
 
