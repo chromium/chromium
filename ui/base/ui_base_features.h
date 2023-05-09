@@ -41,11 +41,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kElasticOverscroll);
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kUseToastManager);
-
-// Causes the Tinted Resource cache to only be cleared when Chrome goes to the
-// background.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-BASE_DECLARE_FEATURE(kKeepAndroidTintedResources);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

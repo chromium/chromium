@@ -25,8 +25,6 @@ BASE_DECLARE_FEATURE(kDestroySystemProfiles);
 
 BASE_DECLARE_FEATURE(kDevToolsTabTarget);
 
-BASE_DECLARE_FEATURE(kKeepToolbarTexture);
-
 BASE_DECLARE_FEATURE(kNukeProfileBeforeCreateMultiAsync);
 
 BASE_DECLARE_FEATURE(kPromoBrowserCommands);
