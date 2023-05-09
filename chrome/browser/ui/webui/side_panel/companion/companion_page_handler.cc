@@ -147,7 +147,7 @@ void CompanionPageHandler::OnRegionSearchClicked() {
   CHECK(helper);
   helper->StartRegionSearch(web_contents(), /*use_fullscreen_capture=*/false);
   metrics_logger_->RecordUiSurfaceClicked(
-      side_panel::mojom::UiSurface::kRegionSearch);
+      side_panel::mojom::UiSurface::kRegionSearch, kInvalidPosition);
 }
 
 void CompanionPageHandler::OnExpsOptInStatusAvailable(bool is_exps_opted_in) {
@@ -173,8 +173,9 @@ void CompanionPageHandler::RecordUiSurfaceShown(
 }
 
 void CompanionPageHandler::RecordUiSurfaceClicked(
-    side_panel::mojom::UiSurface ui_surface) {
-  metrics_logger_->RecordUiSurfaceClicked(ui_surface);
+    side_panel::mojom::UiSurface ui_surface,
+    int32_t click_position) {
+  metrics_logger_->RecordUiSurfaceClicked(ui_surface, click_position);
 }
 
 void CompanionPageHandler::OnCqCandidatesAvailable(

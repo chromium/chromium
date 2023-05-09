@@ -152,8 +152,10 @@ interface CompanionPageHandler {
 
   // For metrics only. Called to record that the user clicked on the given UI
   // surface on the companion page. These clicks are actual clicks on the
-  // surface which exclude clicks on the feedback elements.
-  RecordUiSurfaceClicked(UiSurface ui_surface);
+  // surface which exclude clicks on the feedback elements. The
+  // `click_position` refers to the position of the surface within a
+  // list. Applicable only to certain UI surfaces. Pass -1 when not applicable.
+  RecordUiSurfaceClicked(UiSurface ui_surface, int32 click_position);
 
   // Called to notify the browser that the cq candidates are available.
   OnCqCandidatesAvailable(array<string> text_directives);

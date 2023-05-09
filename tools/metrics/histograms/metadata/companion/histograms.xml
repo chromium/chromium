@@ -57,6 +57,16 @@ chromium-metrics-reviews@google.com.
   <token key="UiSurface" variants="UiSurface"/>
 </histogram>
 
+<histogram name="Companion.{UiSurface}.ClickPosition" units="Index"
+    expires_after="2023-10-20">
+  <owner>shaktisahu@chromium.org</owner>
+  <summary>
+    Records the position of the UI element that was clicked with respect to its
+    parent list. Recorded as soon as the surface is clicked.
+  </summary>
+  <token key="UiSurface" variants="UiSurface"/>
+</histogram>
+
 <histogram name="Companion.{UiSurface}.Shown" enum="BooleanShown"
     expires_after="2023-10-20">
   <owner>shaktisahu@chromium.org</owner>

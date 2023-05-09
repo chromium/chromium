@@ -87,7 +87,7 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
   // Show two surfaces, user clicks one.
   logger_->RecordUiSurfaceShown(UiSurface::kPH, /*child_element_count=*/0);
   logger_->RecordUiSurfaceShown(UiSurface::kCQ, /*child_element_count=*/3);
-  logger_->RecordUiSurfaceClicked(UiSurface::kCQ);
+  logger_->RecordUiSurfaceClicked(UiSurface::kCQ, /*click_position=*/2);
 
   // Verify histograms for click and shown events.
   histogram_tester.ExpectBucketCount("Companion.PH.Shown",
@@ -96,6 +96,8 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
                                      /*sample=*/true, /*expected_count=*/1);
   histogram_tester.ExpectBucketCount("Companion.CQ.Clicked",
                                      /*sample=*/true, /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount("Companion.CQ.ClickPosition",
+                                     /*sample=*/2, /*expected_count=*/1);
 
   // Destroy the logger. Verify that UKM event is recorded.
   logger_.reset();
@@ -106,6 +108,7 @@ TEST_F(CompanionMetricsLoggerTest, RecordUiSurfaceShown) {
                  static_cast<int>(UiEvent::kClicked));
   ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_ChildElementCountName,
                  3);
+  ExpectUkmEntry(ukm::builders::Companion_PageView::kCQ_ClickPositionName, 2);
 }
 
 TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
@@ -130,9 +133,9 @@ TEST_F(CompanionMetricsLoggerTest, RecordPromoEvent) {
 TEST_F(CompanionMetricsLoggerTest, RegionSearchClicks) {
   base::HistogramTester histogram_tester;
 
-  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch);
-  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch);
-  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch);
+  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch, kInvalidPosition);
+  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch, kInvalidPosition);
+  logger_->RecordUiSurfaceClicked(UiSurface::kRegionSearch, kInvalidPosition);
 
   histogram_tester.ExpectBucketCount("Companion.RegionSearch.Clicked",
                                      /*sample=*/true, /*expected_count=*/3);
