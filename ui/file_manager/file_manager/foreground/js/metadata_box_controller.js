@@ -188,8 +188,6 @@ export class MetadataBoxController {
           .then(items => {
             this.metadataBox_.mediaMimeType = items[0][sniffMimeType] || '';
             this.metadataBox_.metadataRendered('mime');
-          })
-          .then(() => {
             this.metadataBox_.fileLocation = this.getFileLocationLabel_(entry);
             this.metadataBox_.metadataRendered('location');
           });
