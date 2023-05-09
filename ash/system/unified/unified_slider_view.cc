@@ -9,11 +9,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/quick_settings_catalogs.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/quick_settings_metrics_util.h"
 #include "ash/system/unified/quick_settings_slider.h"
 #include "base/check_op.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -173,13 +175,19 @@ void UnifiedSliderView::CreateToastLabel() {
     slider_->SetVisible(false);
   }
   toast_label_ = AddChildView(std::make_unique<views::Label>());
+  if (chromeos::features::IsJellyEnabled()) {
+    toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+    TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                          *toast_label_);
+    return;
+  }
   TrayPopupUtils::SetLabelFontList(toast_label_,
                                    TrayPopupUtils::FontStyle::kPodMenuHeader);
 }
 
 void UnifiedSliderView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  if (toast_label_) {
+  if (toast_label_ && !chromeos::features::IsJellyEnabled()) {
     toast_label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorPrimary));
   }

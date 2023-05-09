@@ -123,6 +123,10 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     int corner_radius = kBubbleCornerRadius;
     absl::optional<gfx::Insets> insets;
     absl::optional<gfx::Insets> margin;
+    // If the view has a large corner radius(e.g. slider bubble), we should
+    // paint the shadow on texture layer since `SystemShadowOnNinePatchLayer`
+    // has geometry limitations. See `SystemShadowOnTextureLayer` for details.
+    bool has_large_corner_radius = false;
     bool has_shadow = true;
     SystemShadow::Type shadow_type = kBubbleShadowType;
     // Use half opaque widget instead of fully opaque.

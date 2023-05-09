@@ -8,10 +8,12 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/typography.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/unified/unified_slider_view.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 
@@ -35,9 +37,15 @@ class UnifiedKeyboardBacklightToggleView
     model_->AddObserver(this);
 
     toast_label_ = AddChildView(std::make_unique<views::Label>());
-    toast_label_->SetEnabledColorId(kColorAshTextColorPrimary);
-    TrayPopupUtils::SetLabelFontList(toast_label_,
-                                     TrayPopupUtils::FontStyle::kPodMenuHeader);
+    if (chromeos::features::IsJellyEnabled()) {
+      toast_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+      TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
+                                            *toast_label_);
+    } else {
+      toast_label_->SetEnabledColorId(kColorAshTextColorPrimary);
+      TrayPopupUtils::SetLabelFontList(
+          toast_label_, TrayPopupUtils::FontStyle::kPodMenuHeader);
+    }
     slider()->SetVisible(false);
   }
 

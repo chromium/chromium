@@ -310,10 +310,16 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     set_color(SK_ColorTRANSPARENT);
   }
 
-  if (params_.has_shadow && features::IsSystemTrayShadowEnabled()) {
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-        this, params_.shadow_type);
-    shadow_->SetRoundedCornerRadius(params_.corner_radius);
+  if (params_.has_shadow) {
+    // Draws shadow on texture layer for large corner radius bubbles.
+    if (params_.has_large_corner_radius) {
+      shadow_ = SystemShadow::CreateShadowOnTextureLayer(params_.shadow_type);
+      shadow_->SetRoundedCornerRadius(params_.corner_radius);
+    } else if (features::IsSystemTrayShadowEnabled()) {
+      shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+          this, params_.shadow_type);
+      shadow_->SetRoundedCornerRadius(params_.corner_radius);
+    }
   }
 
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
@@ -342,6 +348,13 @@ TrayBubbleView::~TrayBubbleView() {
 void TrayBubbleView::InitializeAndShowBubble() {
   GetWidget()->Show();
   UpdateBubble();
+
+  // Manually sets the shadow position since `CreateShadowOnTextureLayer` only
+  // constructs the shadow but doesn't deal with shadow positioning.
+  if (params_.has_shadow && params_.has_large_corner_radius) {
+    AddLayerToRegion(shadow_->GetLayer(), views::LayerRegion::kBelow);
+    shadow_->SetContentBounds(layer()->bounds());
+  }
 
   if (IsAnchoredToStatusArea()) {
     tray_bubble_counter_.emplace(
