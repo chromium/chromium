@@ -725,23 +725,25 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
 
   base::HistogramTester histograms;
 
+  auto flicker_indicator = [](int number_of_flicker,
+                              base::test::TaskEnvironment* task_environment) {
+    // Makes the view flicker (show then hide) for `number_of_flicker` of times.
+    for (auto i = 0; i < number_of_flicker; i++) {
+      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
+                                     /*is_microphone_used=*/true);
+      UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
+                                     /*is_microphone_used=*/false);
+      task_environment->FastForwardBy(base::Milliseconds(80));
+    }
+    task_environment->FastForwardBy(base::Milliseconds(100));
+  };
+
   int expected_sample = 6;
-
-  // Makes the view flicker (show then hide) for `expected_sample` of times.
-  // Metric should be recorded for this repeated shows.
-  for (auto i = 0; i < expected_sample; i++) {
-    UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
-                                   /*is_microphone_used=*/true);
-    UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
-                                   /*is_microphone_used=*/false);
-    task_environment()->FastForwardBy(base::Milliseconds(80));
-  }
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-
+  flicker_indicator(expected_sample, task_environment());
   histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample, 1);
 
   // Makes one more flickering after 100ms. This flicker should not count
-  // towards the previous ones.
+  // towards the previous ones, but this will be counted in a bucket for 1 show.
   UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
                                  /*is_microphone_used=*/true);
   UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
@@ -750,22 +752,17 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordRepeatedShows) {
 
   histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample + 1,
                                0);
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 1);
 
   // Make sure it works again.
-  expected_sample = 8;
+  flicker_indicator(8, task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 8, 1);
 
-  // Makes the view flicker (show then hide) for `expected_sample` of times.
-  // Metric should be recorded for this repeated shows.
-  for (auto i = 0; i < expected_sample; i++) {
-    UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/true,
-                                   /*is_microphone_used=*/true);
-    UpdateCameraAndMicrophoneUsage(/*is_camera_used=*/false,
-                                   /*is_microphone_used=*/false);
-    task_environment()->FastForwardBy(base::Milliseconds(80));
-  }
-  task_environment()->FastForwardBy(base::Milliseconds(100));
+  flicker_indicator(2, task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 2, 1);
 
-  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, expected_sample, 1);
+  flicker_indicator(1, task_environment());
+  histograms.ExpectBucketCount(kRepeatedShowsHistogramName, 1, 2);
 }
 
 }  // namespace ash
