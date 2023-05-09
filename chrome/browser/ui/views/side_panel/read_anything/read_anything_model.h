@@ -35,8 +35,30 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   ReadAnythingFontModel& operator=(const ReadAnythingFontModel&) = delete;
   ~ReadAnythingFontModel() override;
 
+  // Enum for logging the user-chosen font.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ReadAnythingFont {
+    kPoppins = 0,
+    kSansSerif = 1,
+    kSerif = 2,
+    kComicNeue = 3,
+    kLexendDeca = 4,
+    kEbGaramond = 5,
+    kStixTwoText = 6,
+    kMaxValue = kStixTwoText,
+  };
+
+  // Simple struct to hold the various fonts to keep code cleaner.
+  struct FontInfo {
+    // The name of the font
+    std::u16string name;
+
+    // The enum value of the font.
+    ReadAnythingFontModel::ReadAnythingFont enum_value;
+  };
+
   std::string GetFontNameAt(size_t index);
-  bool IsValidFontName(const std::string& font_name);
   bool IsValidFontIndex(size_t index);
   void SetDefaultLanguage(const std::string& lang);
   size_t GetFontNameIndex(std::string font_name);
@@ -44,6 +66,9 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
   std::vector<std::string> GetLabelFontNameAt(size_t index) override;
   absl::optional<int> GetLabelFontSize() override;
   size_t GetSelectedIndex() { return selected_index_; }
+  ReadAnythingFont GetFontLoggingValue() {
+    return font_choices_[selected_index_].enum_value;
+  }
 
   absl::optional<ui::ColorId> GetDropdownForegroundColorIdAt(
       size_t index) const override;
@@ -76,7 +101,7 @@ class ReadAnythingFontModel : public ui::ComboboxModel {
 
  private:
   // Styled font names for the drop down options in front-end.
-  std::vector<std::u16string> font_choices_;
+  std::vector<FontInfo> font_choices_;
 
   size_t selected_index_ = 0;
 

@@ -1752,6 +1752,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.FontName"
+    enum="ReadAnythingFontName" expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the user-chosen font name for the Read Anything panel.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.FontScale" units="em"
     expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>

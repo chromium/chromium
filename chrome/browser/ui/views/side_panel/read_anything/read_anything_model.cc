@@ -75,8 +75,9 @@ void ReadAnythingModel::Init(const std::string& lang_code,
 
   // If this profile has previously selected choices that were saved to
   // prefs, check they are still a valid, and then assign if so.
-  if (font_model_->IsValidFontName(font_name)) {
-    font_model_->SetSelectedIndex(font_model_->GetFontNameIndex(font_name));
+  size_t font_index = font_model_->GetFontNameIndex(font_name);
+  if (font_model_->IsValidFontIndex(font_index)) {
+    font_model_->SetSelectedIndex(font_index);
   }
 
   font_scale_ = GetValidFontScale(font_scale);
@@ -217,27 +218,30 @@ ReadAnythingFontModel::ReadAnythingFontModel() {}
 
 void ReadAnythingFontModel::SetDefaultLanguage(const std::string& lang) {
   if (base::Contains(kLanguagesSupportedByPoppins, lang)) {
-    font_choices_.emplace_back(u"Poppins");
+    FontInfo kPoppins = {u"Poppins", ReadAnythingFont::kPoppins};
+    font_choices_.emplace_back(kPoppins);
   }
-  font_choices_.emplace_back(u"Sans-serif");
-  font_choices_.emplace_back(u"Serif");
+  FontInfo kSansSerif = {u"Sans-serif", ReadAnythingFont::kSansSerif};
+  FontInfo kSerif = {u"Serif", ReadAnythingFont::kSerif};
+  font_choices_.emplace_back(kSansSerif);
+  font_choices_.emplace_back(kSerif);
   if (base::Contains(kLanguagesSupportedByComicNeue, lang)) {
-    font_choices_.emplace_back(u"Comic Neue");
+    FontInfo kComicNeue = {u"Comic Neue", ReadAnythingFont::kComicNeue};
+    font_choices_.emplace_back(kComicNeue);
   }
   if (base::Contains(kLanguagesSupportedByLexendDeca, lang)) {
-    font_choices_.emplace_back(u"Lexend Deca");
+    FontInfo kLexendDeca = {u"Lexend Deca", ReadAnythingFont::kLexendDeca};
+    font_choices_.emplace_back(kLexendDeca);
   }
   if (base::Contains(kLanguagesSupportedByEbGaramond, lang)) {
-    font_choices_.emplace_back(u"EB Garamond");
+    FontInfo kEbGaramond = {u"EB Garamond", ReadAnythingFont::kEbGaramond};
+    font_choices_.emplace_back(kEbGaramond);
   }
   if (base::Contains(kLanguagesSupportedByStixTwoText, lang)) {
-    font_choices_.emplace_back(u"STIX Two Text");
+    FontInfo kStixTwoText = {u"STIX Two Text", ReadAnythingFont::kStixTwoText};
+    font_choices_.emplace_back(kStixTwoText);
   }
   font_choices_.shrink_to_fit();
-}
-
-bool ReadAnythingFontModel::IsValidFontName(const std::string& font_name) {
-  return base::Contains(font_choices_, base::UTF8ToUTF16(font_name));
 }
 
 bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
@@ -245,7 +249,10 @@ bool ReadAnythingFontModel::IsValidFontIndex(size_t index) {
 }
 
 size_t ReadAnythingFontModel::GetFontNameIndex(std::string font_name) {
-  auto it = base::ranges::find(font_choices_, base::UTF8ToUTF16(font_name));
+  auto it = base::ranges::find_if(
+      font_choices_, [font_name](const FontInfo& font_info) {
+        return base::UTF8ToUTF16(font_name) == font_info.name;
+      });
   return static_cast<size_t>(it - font_choices_.begin());
 }
 
@@ -273,12 +280,12 @@ std::u16string ReadAnythingFontModel::GetItemAt(size_t index) const {
 
 std::u16string ReadAnythingFontModel::GetDropDownTextAt(size_t index) const {
   DCHECK_LT(index, GetItemCount());
-  return font_choices_[index];
+  return font_choices_[index].name;
 }
 
 std::string ReadAnythingFontModel::GetFontNameAt(size_t index) {
   DCHECK_LT(index, GetItemCount());
-  return base::UTF16ToUTF8(font_choices_[index]);
+  return base::UTF16ToUTF8(font_choices_[index].name);
 }
 
 // This method uses the text from the drop down at |index| and constructs a

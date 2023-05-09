@@ -204,18 +204,6 @@ TEST_F(ReadAnythingModelTest, MaximumFontScaleIsEnforced) {
   EXPECT_NEAR(model_->GetFontScale(), 4.5, 0.01);
 }
 
-TEST_F(ReadAnythingModelTest, FontModelIsValidFontName) {
-  InitModel();
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Poppins"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Sans-serif"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Serif"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Comic Neue"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("Lexend Deca"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("EB Garamond"));
-  EXPECT_TRUE(GetFontModel()->IsValidFontName("STIX Two Text"));
-  EXPECT_FALSE(GetFontModel()->IsValidFontName("xxyyzz"));
-}
-
 TEST_F(ReadAnythingModelTest, FontModelGetFontNameEnglishOptions) {
   InitModel();
   EXPECT_EQ("Poppins", GetFontModel()->GetFontNameAt(0));

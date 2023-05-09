@@ -16,6 +16,7 @@ const char kLetterSpacingHistogramName[] =
 const char kLineSpacingHistogramName[] =
     "Accessibility.ReadAnything.LineSpacing";
 const char kColorHistogramName[] = "Accessibility.ReadAnything.Color";
+const char kFontNameHistogramName[] = "Accessibility.ReadAnything.FontName";
 const char kFontScaleHistogramName[] = "Accessibility.ReadAnything.FontScale";
 
 const std::set<std::string> GetNonSelectableUrls() {

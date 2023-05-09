@@ -88760,6 +88760,16 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Blue"/>
 </enum>
 
+<enum name="ReadAnythingFontName">
+  <int value="0" label="Poppins"/>
+  <int value="1" label="Sans-serif"/>
+  <int value="2" label="Serif"/>
+  <int value="3" label="Comic Neue"/>
+  <int value="4" label="Lexend Deca"/>
+  <int value="5" label="EB Garamond"/>
+  <int value="6" label="STIX Two Text"/>
+</enum>
+
 <enum name="ReadAnythingLetterSpacing">
   <int value="0" label="Tight (Deprecated)"/>
   <int value="1" label="Standard"/>

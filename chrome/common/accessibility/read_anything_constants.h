@@ -17,6 +17,7 @@ extern const char kReadAnythingDefaultFontName[];
 extern const char kLetterSpacingHistogramName[];
 extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];
+extern const char kFontNameHistogramName[];
 extern const char kFontScaleHistogramName[];
 
 extern const std::set<std::string> GetNonSelectableUrls();
