@@ -656,8 +656,9 @@ TEST_F(AppListBubblePresenterTest, ClosingBubbleAlsoCloseChildWidget) {
 
   // Close the bubble and reopen it.
   presenter->Dismiss();
-  presenter->Show(GetPrimaryDisplay().id());
+  base::RunLoop().RunUntilIdle();
 
+  presenter->Show(GetPrimaryDisplay().id());
   // The child widget is closed now.
   EXPECT_TRUE(presenter->IsShowing());
   EXPECT_FALSE(base::Contains(wm::GetTransientChildren(bubble_window),

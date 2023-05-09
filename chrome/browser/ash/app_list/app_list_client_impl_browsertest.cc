@@ -82,6 +82,7 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/native_window_tracker.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_change_observer.h"
 #include "ui/wm/public/activation_client.h"
@@ -211,6 +212,53 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   // The app list should not be dismissed when the dialog is shown.
   EXPECT_TRUE(client->app_list_visible());
   EXPECT_TRUE(client->GetAppListWindow());
+}
+
+IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
+                       HidingBubbleLauncherCancelsAppUninstall) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  const extensions::Extension* app = InstallPlatformApp("minimal");
+
+  // Show the app list and request app uninstall.
+  EXPECT_FALSE(client->GetAppListWindow());
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  // Open the uninstall dialog.
+  client->UninstallApp(profile(), app->id());
+  base::RunLoop().RunUntilIdle();
+
+  aura::Window* app_list_window = client->GetAppListWindow();
+  std::unique_ptr<views::NativeWindowTracker> app_list_tracker =
+      views::NativeWindowTracker::Create(app_list_window);
+  auto transient_children = wm::GetTransientChildren(app_list_window);
+  ASSERT_FALSE(transient_children.empty());
+
+  aura::Window* dialog_window = transient_children[0];
+  std::unique_ptr<views::NativeWindowTracker> dialog_tracker =
+      views::NativeWindowTracker::Create(dialog_window);
+
+  // Hide the app list, and verify that the dialog window was closed.
+  ASSERT_TRUE(client->app_list_visible());
+  client->DismissView();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(client->app_list_visible());
+
+  ASSERT_FALSE(app_list_tracker->WasNativeWindowDestroyed());
+  EXPECT_TRUE(wm::GetTransientChildren(app_list_window).empty());
+
+  EXPECT_TRUE(dialog_tracker->WasNativeWindowDestroyed());
+
+  // Reopen the app list, and verify that request to uninstall the app shows the
+  // uninstall dialog.
+  client->ShowAppList(ash::AppListShowSource::kSearchKey);
+  ash::AppListTestApi().WaitForBubbleWindow(
+      /*wait_for_opening_animation=*/false);
+  EXPECT_TRUE(client->GetAppListWindow());
+  client->UninstallApp(profile(), app->id());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(wm::GetTransientChildren(client->GetAppListWindow()).empty());
 }
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ShowAppInfo) {
