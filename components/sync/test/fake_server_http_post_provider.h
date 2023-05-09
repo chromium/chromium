@@ -36,7 +36,6 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override;
-  void SetAllowBatching(bool allow_batching) override;
   bool MakeSynchronousPost(int* net_error_code, int* http_status_code) override;
   void Abort() override;
   int GetResponseContentLength() const override;

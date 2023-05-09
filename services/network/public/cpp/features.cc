@@ -263,12 +263,6 @@ BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              "CorsNonWildcardRequestHeadersSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allow batching SimpleURLLoaders when the underlying network state is
-// inactive.
-BASE_FEATURE(kBatchSimpleURLLoader,
-             "BatchSimpleURLLoader",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kNetworkServiceMemoryCache,
              "NetworkServiceMemoryCache",
              base::FEATURE_DISABLED_BY_DEFAULT);

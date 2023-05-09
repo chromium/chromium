@@ -1874,28 +1874,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Radio.SimpleURLLoaderIsThrottled" enum="Boolean"
-    expires_after="2023-08-27">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records whether a SimpleURLLoader is throttled due to the default network
-    state (e.g. in low power state). Recorded when a SimpleURLLoader is going to
-    start.
-  </summary>
-</histogram>
-
-<histogram name="Network.Radio.SimpleURLLoaderThrottledTime" units="ms"
-    expires_after="2023-08-27">
-  <owner>bashi@chromium.org</owner>
-  <owner>blink-network-stack@google.com</owner>
-  <summary>
-    Records the time between a SimpleURLLoader request is made to the request
-    actually starts. Recorded only when the request is throttled due to the
-    default network state (e.g. in low power state).
-  </summary>
-</histogram>
-
 <histogram name="Network.RedirectFoundToOnlineTime" units="ms"
     expires_after="2023-09-18">
   <owner>stevenjb@chromium.org</owner>

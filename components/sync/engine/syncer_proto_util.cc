@@ -440,19 +440,10 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
 
   const base::Time start_time = base::Time::Now();
 
-  // User-initiated sync messages should not be batched. GET_UPDATES messages
-  // are mostly safe to consider non-user-initiated.
-  // TODO(https://crbug.com/1293657): Confirm that treating GET_UPDATES as
-  // non-user-initiated is reasonable. GET_UPDATES messages could be latency
-  // sensitive since these requests most commonly happen because of some
-  // user-initiated changes on a different device.
-  bool allow_batching =
-      msg.message_contents() == ClientToServerMessage::GET_UPDATES;
-
   // Fills in buffer_out.
   std::string buffer_out;
   HttpResponse http_response =
-      scm->PostBufferWithCachedAuth(buffer_in, allow_batching, &buffer_out);
+      scm->PostBufferWithCachedAuth(buffer_in, &buffer_out);
   if (http_response.server_status != HttpResponse::SERVER_CONNECTION_OK) {
     LOG(WARNING) << "Error posting from syncer:" << http_response;
     return false;

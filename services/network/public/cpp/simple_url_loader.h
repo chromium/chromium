@@ -45,7 +45,6 @@ class URLLoaderFactory;
 namespace network {
 
 class SimpleURLLoaderStreamConsumer;
-class SimpleURLLoaderThrottle;
 
 // Creates and wraps a URLLoader, and runs it to completion. It's recommended
 // that consumers use this class instead of URLLoader directly, due to the
@@ -355,13 +354,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // as much time as it wants.
   virtual void SetTimeoutDuration(base::TimeDelta timeout_duration) = 0;
 
-  // Allows this SimpleURLLoader to be batched when sending a network request
-  // impacts on battery consumption. This should be called before the request
-  // is started.
-  // NOTE: This is for an experimental use. Please contact bashi@chromium.org
-  // before starting using this function.
-  virtual void SetAllowBatching() = 0;
-
   // Returns the net::Error representing the final status of the request. May
   // only be called once the loader has informed the caller of completion.
   virtual int NetError() const = 0;
@@ -400,8 +392,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
 
   // Returns the number of times retry has been attempted.
   virtual int GetNumRetries() const = 0;
-
-  virtual SimpleURLLoaderThrottle* GetThrottleForTesting() = 0;
 
  protected:
   SimpleURLLoader();

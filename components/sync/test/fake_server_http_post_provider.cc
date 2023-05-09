@@ -67,8 +67,6 @@ void FakeServerHttpPostProvider::SetPostPayload(const char* content_type,
   request_content_.assign(content, content_length);
 }
 
-void FakeServerHttpPostProvider::SetAllowBatching(bool allow_batching) {}
-
 bool FakeServerHttpPostProvider::MakeSynchronousPost(int* net_error_code,
                                                      int* http_status_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
