@@ -1930,6 +1930,8 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      * inheriting classes the chance to update the button visuals as well.
      */
     private void updateButtonStatus() {
+        // TODO(crbug.com/1444110): Consider moving below to reduce updates.
+        onBackPressStateChanged();
         if (mLocationBarModel.shouldDoSameDocOptimzations()) {
             return;
         }
@@ -1939,7 +1941,6 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
 
         mToolbar.updateButtonVisibility();
         mToolbar.updateBackButtonVisibility(currentTab != null && currentTab.canGoBack());
-        onBackPressStateChanged();
         mToolbar.updateForwardButtonVisibility(currentTab != null && currentTab.canGoForward());
         updateReloadState(tabCrashed);
         updateBookmarkButtonStatus();
