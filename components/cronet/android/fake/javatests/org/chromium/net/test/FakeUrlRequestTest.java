@@ -22,7 +22,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetEngine;
 import org.chromium.net.CronetException;
 import org.chromium.net.InlineExecutionProhibitedException;
@@ -1422,12 +1421,13 @@ public class FakeUrlRequestTest {
     }
 
     /** This test uses a direct executor for callbacks, and non direct for upload */
-    @DisabledTest(message = "crbug/1412467")
     @Test
     @SmallTest
     public void testDirectExecutorProhibitedByDefault() throws Exception {
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
-        Executor myExecutor = new Executor() {
+        // Everything submitted to this executor will be executed immediately on the thread
+        // that submitted the Runnable (blocking it until the runnable completes)
+        Executor directExecutor = new Executor() {
             @Override
             public void execute(Runnable command) {
                 command.run();
@@ -1436,7 +1436,7 @@ public class FakeUrlRequestTest {
         String url = "url";
         FakeUrlRequest.Builder builder =
                 (FakeUrlRequest.Builder) mFakeCronetEngine.newUrlRequestBuilder(
-                        url, callback, myExecutor);
+                        url, callback, directExecutor);
         mFakeCronetController.addResponseMatcher(new EchoBodyResponseMatcher());
 
         TestUploadDataProvider dataProvider = new TestUploadDataProvider(
@@ -1448,10 +1448,8 @@ public class FakeUrlRequestTest {
         builder.addHeader("Content-Type", "useless/string");
         builder.build().start();
         callback.blockForDone();
-
         assertEquals(1, dataProvider.getNumReadCalls());
         assertEquals(0, dataProvider.getNumRewindCalls());
-
         assertContains("Exception posting task to executor", callback.mError.getMessage());
         assertContains("Inline execution is prohibited for this request",
                 callback.mError.getCause().getMessage());

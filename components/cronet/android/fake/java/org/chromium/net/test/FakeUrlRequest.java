@@ -678,13 +678,10 @@ final class FakeUrlRequest extends UrlRequestBase {
      */
     private void enterUploadErrorState(final Throwable error) {
         synchronized (mLock) {
-            mUserExecutor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    tryToFailWithException(new CronetExceptionImpl(
-                            "Exception received from UploadDataProvider", error));
-                }
-            });
+            executeCheckedRunnable(
+                    ()
+                            -> tryToFailWithException(new CronetExceptionImpl(
+                                    "Exception received from UploadDataProvider", error)));
         }
     }
 
