@@ -240,21 +240,9 @@ void RecordEnumerateDevicesLatency(base::TimeTicks start_time) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// Killswitch for remotely shutting off new functionality in case
-// anything goes wrong.
-// TODO(crbug.com/1382329): Remove this flag.
-BASE_FEATURE(kAllowCaptureControllerForGetUserMediaScreenCapture,
-             "AllowCaptureControllerForGetUserMediaScreenCapture",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
                                           ExceptionState& exception_state) {
   DCHECK(!exception_state.HadException());
-
-  if (!base::FeatureList::IsEnabled(
-          kAllowCaptureControllerForGetUserMediaScreenCapture)) {
-    return false;
-  }
 
   if (!options) {
     return false;
