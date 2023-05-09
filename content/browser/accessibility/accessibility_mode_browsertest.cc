@@ -120,8 +120,10 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddingModes) {
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents());
   web_contents()->AddAccessibilityMode(ui::kAXModeWebContentsOnly);
-  EXPECT_TRUE(web_contents()->GetAccessibilityMode() ==
-              ui::kAXModeWebContentsOnly);
+  auto accessibility_mode = web_contents()->GetAccessibilityMode();
+  // Strip off kNativeAPIs, which may be set in some situations.
+  accessibility_mode.set_mode(ui::AXMode::kNativeAPIs, false);
+  EXPECT_TRUE(accessibility_mode == ui::kAXModeWebContentsOnly);
   ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_EQ(nullptr, GetManager());
 
