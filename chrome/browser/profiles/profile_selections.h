@@ -195,36 +195,6 @@ class ProfileSelections {
   // behavior is described per experimental builder. The parameters force_* will
   // allow to have an easier transition when adapting to the experiment.
 
-  // Default implementation:
-  // Without any parameters explicitly set, this is equivalent to
-  // `ProfileSlections::Builder().Build()`, where the following selection
-  // happens:
-  // +---------+------------+------------+
-  // |         |  Original  |    OTR     |
-  // +---------+------------+------------+
-  // | Regular | self       | no profile |
-  // | Guest   | no profile | no profile |
-  // | System  | experiment*| no profile |
-  // | Ash Int.| self       | no profile |
-  // +---------+------------+------------+
-  //
-  // experiment*: System Profile default value is set through this constructor,
-  // however the default value is experiment dependant
-  // (`kSystemProfileSelectionDefaultNone`):
-  // - enabled (future behavior): no profile
-  // - disabled: self
-  //
-  // Parameters:
-  // - force_guest: if true, force Guest with `ProfileSelection::kOriginalOnly`,
-  // note* below. This is not recommended, consider using explicit
-  // `ProfileSlections::Builder::WithGuest()` instead.
-  // - force_system: if true, force System with
-  // `ProfileSelection::kOriginalOnly` to by pass the
-  // `kSystemProfileSelectionDefaultNone`. This is not recommended, use explicit
-  // `ProfileSlections::Builder::WithSystem()` instead.
-  static ProfileSelections BuildDefault(bool force_guest = false,
-                                        bool force_system = false);
-
   // Without the experiment:
   // - Returns Regular for Regular, incognito and other regular OTR profiles.
   // - Returns Guest Original for GuestOriginal  and GuestOTR (same as Regular).

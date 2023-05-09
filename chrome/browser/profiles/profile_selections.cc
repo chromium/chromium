@@ -127,16 +127,6 @@ ProfileSelections ProfileSelections::BuildRedirectedToOriginal() {
       .Build();
 }
 
-ProfileSelections ProfileSelections::BuildDefault(bool force_guest,
-                                                  bool force_system) {
-  Builder builder;
-  if (force_guest)
-    builder.WithGuest(ProfileSelection::kOriginalOnly);
-  if (force_system)
-    builder.WithSystem(ProfileSelection::kOriginalOnly);
-  return builder.Build();
-}
-
 ProfileSelections ProfileSelections::BuildRedirectedInIncognito(
     bool force_guest,
     bool force_system) {

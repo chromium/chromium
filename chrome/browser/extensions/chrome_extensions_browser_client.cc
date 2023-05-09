@@ -258,8 +258,14 @@ content::BrowserContext* ChromeExtensionsBrowserClient::GetRegularProfile(
     content::BrowserContext* context,
     bool force_guest_profile,
     bool force_system_profile) {
-  const ProfileSelections selections = ProfileSelections::BuildDefault(
-      force_guest_profile, force_system_profile);
+  ProfileSelections::Builder builder;
+  if (force_guest_profile) {
+    builder.WithGuest(ProfileSelection::kOriginalOnly);
+  }
+  if (force_system_profile) {
+    builder.WithSystem(ProfileSelection::kOriginalOnly);
+  }
+  ProfileSelections selections = builder.Build();
   return selections.ApplyProfileSelection(Profile::FromBrowserContext(context));
 }
 

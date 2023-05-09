@@ -8,7 +8,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 ProfileKeyedServiceFactory::ProfileKeyedServiceFactory(const char* name)
-    : ProfileKeyedServiceFactory(name, ProfileSelections::BuildDefault()) {}
+    : ProfileKeyedServiceFactory(name, ProfileSelections::Builder().Build()) {}
 
 ProfileKeyedServiceFactory::ProfileKeyedServiceFactory(
     const char* name,
