@@ -6593,7 +6593,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Provider.TerminateRoute.Result"
-    enum="MediaRouteProviderResult" expires_after="2023-06-18">
+    enum="MediaRouteProviderResult" expires_after="2024-05-01">
 <!-- Name completed by histogram_suffixes name="MediaRouteProvider" -->
 
   <owner>takumif@chromium.org</owner>
@@ -6762,7 +6762,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Android.DialogAction"
-    enum="MediaRouterAndroidDialogAction" expires_after="2023-06-18">
+    enum="MediaRouterAndroidDialogAction" expires_after="2024-05-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -6774,7 +6774,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="MediaRouter.Ui.Android.DialogType"
-    enum="MediaRouterAndroidDialogType" expires_after="2023-06-18">
+    enum="MediaRouterAndroidDialogType" expires_after="2024-05-01">
   <owner>muyaoxu@google.com</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
