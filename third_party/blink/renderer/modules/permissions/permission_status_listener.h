@@ -28,11 +28,19 @@ class PermissionStatusListener final
  public:
   class Observer : public GarbageCollectedMixin {
    public:
+    Observer() {
+      record_replay_id = recordreplay::NewIdAnyThread("PermissionStatusListener::Observer");
+    }
     virtual ~Observer() = default;
 
     virtual void OnPermissionStatusChange(MojoPermissionStatus) = 0;
 
     void Trace(Visitor* visitor) const override {}
+
+    int RecordReplayId() const { return record_replay_id; } 
+
+   private:
+    int record_replay_id;
   };
 
   static PermissionStatusListener* Create(Permissions&,
@@ -69,7 +77,7 @@ class PermissionStatusListener final
 
   MojoPermissionStatus status_;
   MojoPermissionDescriptor descriptor_;
-  HeapHashSet<WeakMember<Observer>> observers_;
+  HeapHashSet<WeakMember<Observer>, WTF::MemberHashRecordReplayId<Observer>> observers_;
   HeapMojoReceiver<mojom::blink::PermissionObserver, PermissionStatusListener>
       receiver_;
 };
