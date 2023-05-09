@@ -7185,6 +7185,10 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     return string_builder + " (detached)";
   }
 
+  if (AXObjectCache().HasBeenDisposed()) {
+    return string_builder + " (doc shutdown) #" + String::Number(AXObjectID());
+  }
+
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
     // Add useful HTML element info, like <div.myClass#myId>.
