@@ -157,21 +157,26 @@ ServiceTransferCache::~ServiceTransferCache() {
       this);
 }
 
-bool ServiceTransferCache::CreateLockedEntry(const EntryKey& key,
-                                             ServiceDiscardableHandle handle,
-                                             GrDirectContext* context,
-                                             base::span<uint8_t> data) {
+bool ServiceTransferCache::CreateLockedEntry(
+    const EntryKey& key,
+    ServiceDiscardableHandle handle,
+    GrDirectContext* context,
+    skgpu::graphite::Recorder* graphite_recorder,
+    base::span<uint8_t> data) {
   auto found = entries_.Peek(key);
-  if (found != entries_.end())
+  if (found != entries_.end()) {
     return false;
+  }
 
   std::unique_ptr<cc::ServiceTransferCacheEntry> entry =
       cc::ServiceTransferCacheEntry::Create(key.entry_type);
-  if (!entry)
+  if (!entry) {
     return false;
+  }
 
-  if (!entry->Deserialize(context, data))
+  if (!entry->Deserialize(context, graphite_recorder, data)) {
     return false;
+  }
 
   total_size_ += entry->CachedSize();
   if (key.entry_type == cc::TransferCacheEntryType::kImage) {

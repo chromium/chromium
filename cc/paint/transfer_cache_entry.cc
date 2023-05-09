@@ -43,7 +43,7 @@ bool ServiceTransferCacheEntry::SafeConvertToType(
 }
 
 // static
-bool ServiceTransferCacheEntry::UsesGrContext(TransferCacheEntryType type) {
+bool ServiceTransferCacheEntry::UsesGpuContext(TransferCacheEntryType type) {
   switch (type) {
     case TransferCacheEntryType::kRawMemory:
     case TransferCacheEntryType::kShader:

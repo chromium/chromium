@@ -33,7 +33,8 @@ void TransferCacheTestHelper::CreateEntryDirect(const EntryKey& key,
   if (!service_entry)
     return;
 
-  bool success = service_entry->Deserialize(context_, data);
+  bool success =
+      service_entry->Deserialize(context_, /*graphite_recorder=*/nullptr, data);
   if (!success)
     return;
 

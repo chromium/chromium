@@ -17,7 +17,8 @@ constexpr auto kEntryType = cc::TransferCacheEntryType::kRawMemory;
 std::unique_ptr<cc::ServiceTransferCacheEntry> CreateEntry(size_t size) {
   auto entry = std::make_unique<cc::ServiceRawMemoryTransferCacheEntry>();
   std::vector<uint8_t> data(size, 0u);
-  entry->Deserialize(nullptr, data);
+  entry->Deserialize(/*gr_context=*/nullptr, /*graphite_recorder=*/nullptr,
+                     data);
   return entry;
 }
 

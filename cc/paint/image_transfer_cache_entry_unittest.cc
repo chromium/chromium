@@ -85,6 +85,7 @@ bool CheckImageIsSolidColor(const sk_sp<SkImage>& image,
       image, expected_color, SkIRect::MakeWH(image->width(), image->height()));
 }
 
+// TODO(crbug.com/1442381): Implement test with Skia Graphite backend.
 class ImageTransferCacheEntryTest
     : public testing::TestWithParam<SkYUVAInfo::PlaneConfig> {
  public:
@@ -250,7 +251,8 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
   // Create service-side entry from the client-side serialize info
   auto entry(std::make_unique<ServiceImageTransferCacheEntry>());
   ASSERT_TRUE(entry->Deserialize(
-      gr_context(), base::make_span(static_cast<uint8_t*>(data.get()), size)));
+      gr_context(), /*graphite_recorder=*/nullptr,
+      base::make_span(static_cast<uint8_t*>(data.get()), size)));
   ASSERT_TRUE(entry->is_yuv());
 
   // Check color of pixels
@@ -401,6 +403,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
 
   ServiceImageTransferCacheEntry service_entry;
   service_entry.Deserialize(gr_context.get(),
+                            /*graphite_recorder=*/nullptr,
                             base::make_span(storage.get(), storage_size));
   ASSERT_TRUE(service_entry.image());
   auto pre_mip_image = service_entry.image();
@@ -430,6 +433,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
 
   ServiceImageTransferCacheEntry service_entry;
   service_entry.Deserialize(gr_context.get(),
+                            /*graphite_recorder=*/nullptr,
                             base::make_span(storage.get(), storage_size));
   ASSERT_TRUE(service_entry.image());
   auto pre_mip_image = service_entry.image();
@@ -526,6 +530,7 @@ TEST(ImageTransferCacheEntryTestHDR, Gainmap) {
 
     ServiceImageTransferCacheEntry service_entry;
     service_entry.Deserialize(gr_context,
+                              /*graphite_recorder=*/nullptr,
                               base::make_span(storage.data(), storage.size()));
     ASSERT_TRUE(service_entry.image());
     auto image = service_entry.image();

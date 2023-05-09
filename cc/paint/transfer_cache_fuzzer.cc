@@ -12,6 +12,7 @@
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
+// TODO(crbug.com/1442381): Implement fuzzer with Skia Graphite backend.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Align data. ImageTransferCacheEntry requires 16-byte.
   const uint8_t* aligned_data = base::bits::AlignUp(data, 16);
@@ -33,7 +34,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   base::span<const uint8_t> span(aligned_data, size - alignment_gap);
-  if (!entry->Deserialize(context_provider->GrContext(), span)) {
+  if (!entry->Deserialize(context_provider->GrContext(),
+                          /*graphite_recorder=*/nullptr, span)) {
     return 0;
   }
 

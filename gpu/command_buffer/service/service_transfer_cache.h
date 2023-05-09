@@ -59,6 +59,7 @@ class GPU_GLES2_EXPORT ServiceTransferCache
   bool CreateLockedEntry(const EntryKey& key,
                          ServiceDiscardableHandle handle,
                          GrDirectContext* context,
+                         skgpu::graphite::Recorder* graphite_recorder,
                          base::span<uint8_t> data);
   void CreateLocalEntry(const EntryKey& key,
                         std::unique_ptr<cc::ServiceTransferCacheEntry> entry);

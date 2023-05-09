@@ -558,6 +558,9 @@ class RasterDecoderImpl final : public RasterDecoder,
   GrDirectContext* gr_context() const {
     return shared_context_state_->gr_context();
   }
+  skgpu::graphite::Recorder* graphite_recorder() const {
+    return shared_context_state_->gpu_main_graphite_recorder();
+  }
   ServiceTransferCache* transfer_cache() {
     return shared_context_state_->transfer_cache();
   }
@@ -2968,13 +2971,13 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
 
   // If the entry is going to use skia during deserialization, make sure we
   // mark the context state dirty.
-  GrDirectContext* context_for_entry =
-      cc::ServiceTransferCacheEntry::UsesGrContext(entry_type) ? gr_context()
-                                                               : nullptr;
+  bool use_gpu = cc::ServiceTransferCacheEntry::UsesGpuContext(entry_type);
   if (!transfer_cache()->CreateLockedEntry(
           ServiceTransferCache::EntryKey(raster_decoder_id_, entry_type,
                                          entry_id),
-          handle, context_for_entry, base::make_span(data_memory, data_size))) {
+          handle, use_gpu ? gr_context() : nullptr,
+          use_gpu ? graphite_recorder() : nullptr,
+          base::make_span(data_memory, data_size))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCreateTransferCacheEntryINTERNAL",
                        "Failure to deserialize transfer cache entry.");
     return;
@@ -2983,8 +2986,9 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
   // The only entry using the GrContext are image transfer cache entries for
   // image uploads. Since this tends to a slow operation, yield to allow the
   // decoder to be pre-empted.
-  if (context_for_entry)
+  if (use_gpu) {
     ExitCommandProcessingEarly();
+  }
 }
 
 void RasterDecoderImpl::DoUnlockTransferCacheEntryINTERNAL(

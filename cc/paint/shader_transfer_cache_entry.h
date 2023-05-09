@@ -30,6 +30,7 @@ class CC_PAINT_EXPORT ServiceShaderTransferCacheEntry final
   ~ServiceShaderTransferCacheEntry() final;
   size_t CachedSize() const final;
   bool Deserialize(GrDirectContext* context,
+                   skgpu::graphite::Recorder* graphite_recorder,
                    base::span<const uint8_t> data) final;
 
   sk_sp<PaintShader> shader() const { return shader_; }

@@ -51,6 +51,7 @@ size_t ServiceRawMemoryTransferCacheEntry::CachedSize() const {
 
 bool ServiceRawMemoryTransferCacheEntry::Deserialize(
     GrDirectContext* context,
+    skgpu::graphite::Recorder* graphite_recorder,
     base::span<const uint8_t> data) {
   data_ = std::vector<uint8_t>(data.begin(), data.end());
   return true;
