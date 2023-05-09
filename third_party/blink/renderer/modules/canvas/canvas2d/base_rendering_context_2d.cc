@@ -295,9 +295,8 @@ void BaseRenderingContext2D::endLayer() {
     GetModifiablePath().Transform(GetState().GetTransform());
 
   // All saves performed since the last beginLayer are no-ops.
-  while (state_stack_.back() &&
-         state_stack_.back()->GetSaveType() ==
-             CanvasRenderingContext2DState::SaveType::kSaveRestore) {
+  while (state_stack_.back()->GetSaveType() ==
+         CanvasRenderingContext2DState::SaveType::kSaveRestore) {
     PopAndRestore();
   }
 
@@ -327,7 +326,6 @@ void BaseRenderingContext2D::PopAndRestore() {
     // If this is a ExtraState state, it means we have to restore twice, as we
     // added an extra state while doing a beginLayer.
     state_stack_.pop_back();
-    DCHECK(state_stack_.back());
     state_stack_.back()->ClearResolvedFilter();
 
     SetIsTransformInvertible(GetState().IsTransformInvertible());
@@ -359,10 +357,8 @@ void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   for (curr_state = state_stack_.begin(); curr_state < state_stack_.end();
        curr_state++) {
     c->setMatrix(SkM44());
-    if (curr_state->Get()) {
-      curr_state->Get()->PlaybackClips(c);
-      c->setMatrix(AffineTransformToSkM44(curr_state->Get()->GetTransform()));
-    }
+    curr_state->Get()->PlaybackClips(c);
+    c->setMatrix(AffineTransformToSkM44(curr_state->Get()->GetTransform()));
     c->save();
   }
   c->restore();
