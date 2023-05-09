@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
 #include "base/values.h"
+#include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -28,6 +29,12 @@ void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
 
 // Clears HttpAllowlist enterprise policy for testing.
 void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs);
+
+// Returns true if the HTTPS-First Mode interstitial is enabled globally by the
+// UI pref or for this site through Site Engagement heuristic.
+bool IsInterstitialEnabled(
+    const security_interstitials::https_only_mode::HttpInterstitialState&
+        state);
 
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
 // policy for testing and clears the allowlist when it goes out of scope.

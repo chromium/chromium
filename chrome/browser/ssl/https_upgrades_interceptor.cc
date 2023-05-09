@@ -284,7 +284,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
     // Potentially, these could fast-fail instead and skip directly to the
     // interstitial.
     if (base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
-        !interstitial_state_->enabled_by_pref) {
+        !IsInterstitialEnabled(*interstitial_state_)) {
       std::move(callback).Run({});
       return;
     }
@@ -353,7 +353,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Content" allowed in content settings. We treat this as a sign to not do
   // silent HTTPS Upgrades for the site overall. (HTTPS-First Mode ignores this
   // setting.)
-  if (!interstitial_state_->enabled_by_pref &&
+  if (!IsInterstitialEnabled(*interstitial_state_) &&
       DoesInsecureContentSettingDisableUpgrading(tentative_resource_request.url,
                                                  profile)) {
     RecordNavigationRequestSecurityLevel(
@@ -420,12 +420,11 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // disable HTTPS-Upgrades entirely. Abort if HFM is disabled and the
   // enterprise policy is set.
   if (!prefs->GetBoolean(prefs::kHttpsUpgradesEnabled) &&
-      !interstitial_state_->enabled_by_pref) {
+      !IsInterstitialEnabled(*interstitial_state_)) {
     RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted,
                                    *interstitial_state_);
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);
-
     std::move(callback).Run({});
     return;
   }
@@ -434,14 +433,13 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // navigations to HTTPS, with HTTPS-First Mode additionally enabling the
   // HTTP interstitial on fallback.
   if (!base::FeatureList::IsEnabled(features::kHttpsUpgrades) &&
-      !interstitial_state_->enabled_by_pref) {
+      !IsInterstitialEnabled(*interstitial_state_)) {
     // Don't upgrade the request and let the default loader continue, but record
     // that the request *would have* upgraded, had upgrading been enabled.
     RecordHttpsFirstModeNavigation(Event::kUpgradeNotAttempted,
                                    *interstitial_state_);
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kInsecure);
-
     std::move(callback).Run({});
     return;
   }
@@ -533,7 +531,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   // TODO(crbug.com/1394910): Move this to a helper function
   // `AddUrlToAllowlist()`, especially once this gets more complicated for
   // HFM vs. Upgrades.
-  if (!interstitial_state_->enabled_by_pref) {
+  if (!IsInterstitialEnabled(*interstitial_state_)) {
     // StatefulSSLHostStateDelegate can be null during tests.
     if (state) {
       state->AllowHttpForHost(

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ssl/https_upgrades_util.h"
 
+#include "base/feature_list.h"
 #include "base/values.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
@@ -47,6 +49,17 @@ void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
 void ClearHttpAllowlistForHostnamesForTesting(PrefService* prefs) {
   base::Value::List empty_list;
   prefs->SetList(prefs::kHttpAllowlist, std::move(empty_list));
+}
+
+bool IsInterstitialEnabled(
+    const security_interstitials::https_only_mode::HttpInterstitialState&
+        state) {
+  if (state.enabled_by_pref) {
+    return true;
+  }
+  return state.enabled_by_engagement_heuristic &&
+         base::FeatureList::IsEnabled(
+             features::kHttpsFirstModeV2ForEngagedSites);
 }
 
 ScopedAllowHttpForHostnamesForTesting::ScopedAllowHttpForHostnamesForTesting(

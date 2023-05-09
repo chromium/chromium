@@ -12,6 +12,7 @@
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/https_upgrades_navigation_throttle.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -126,10 +127,11 @@ HttpsUpgradesNavigationThrottle::WillStartRequest() {
   auto* handle = navigation_handle();
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
+
   if ((handle->GetPageTransition() & ui::PAGE_TRANSITION_FORWARD_BACK &&
        tab_helper->has_failed_upgrade(handle->GetURL())) &&
       !handle->GetURL().SchemeIsCryptographic()) {
-    if (interstitial_state_.enabled_by_pref) {
+    if (IsInterstitialEnabled(interstitial_state_)) {
       // Mark this as a fallback HTTP navigation and trigger the interstitial.
       tab_helper->set_is_navigation_fallback(true);
       std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
@@ -172,9 +174,10 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
   auto* handle = navigation_handle();
   auto* contents = handle->GetWebContents();
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(contents);
+
   if (tab_helper->is_navigation_fallback() &&
       !handle->GetURL().SchemeIsCryptographic()) {
-    if (interstitial_state_.enabled_by_pref) {
+    if (IsInterstitialEnabled(interstitial_state_)) {
       std::unique_ptr<security_interstitials::HttpsOnlyModeBlockingPage>
           blocking_page =
               blocking_page_factory_->CreateHttpsOnlyModeBlockingPage(
