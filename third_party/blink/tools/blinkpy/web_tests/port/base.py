@@ -70,9 +70,6 @@ from blinkpy.web_tests.port.factory import PortFactory
 from blinkpy.web_tests.servers import apache_http
 from blinkpy.web_tests.servers import pywebsocket
 from blinkpy.web_tests.servers import wptserve
-from blinkpy.web_tests.skia_gold import blink_skia_gold_session_manager as sgsm
-
-from skia_gold_common import skia_gold_properties as sgp
 
 _log = logging.getLogger(__name__)
 
@@ -288,15 +285,6 @@ class Port(object):
         self._virtual_test_suites = None
         self._used_expectation_files = None
 
-        self._skia_gold_temp_dir = None
-        self._skia_gold_session_manager = None
-        self._skia_gold_properties = None
-
-    def __del__(self):
-        if self._skia_gold_temp_dir:
-            self._filesystem.rmtree(self._skia_gold_temp_dir,
-                                    ignore_errors=True)
-
     def __str__(self):
         return 'Port{name=%s, version=%s, architecture=%s, test_configuration=%s}' % (
             self._name, self._version, self._architecture,
@@ -422,30 +410,6 @@ class Port(object):
             # Release with DCHECK is also slower than pure Release.
             return 2 * timeout_ms
         return timeout_ms
-
-    def skia_gold_temp_dir(self):
-        return self._skia_gold_temp_dir
-
-    def skia_gold_properties(self):
-        if not self._skia_gold_properties:
-            self._skia_gold_properties = sgp.SkiaGoldProperties(self._options)
-        return self._skia_gold_properties
-
-    def skia_gold_session_manager(self):
-        if not self._skia_gold_session_manager:
-            self._skia_gold_temp_dir = self._filesystem.mkdtemp()
-            self._skia_gold_session_manager = sgsm.BlinkSkiaGoldSessionManager(
-                str(self._skia_gold_temp_dir), self.skia_gold_properties())
-        return self._skia_gold_session_manager
-
-    def skia_gold_json_keys(self):
-        return {
-            'configuration': self._options.configuration.lower(),
-            'version': self._version,
-            'port': self.port_name,
-            'architecture': self._architecture,
-            'ignore': '1',
-        }
 
     @memoized
     def _build_args_gn_content(self):

@@ -1549,7 +1549,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -1582,7 +1581,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -1613,7 +1611,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -1641,7 +1638,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -1876,7 +1872,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -1904,7 +1899,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -1999,7 +1993,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -2029,7 +2022,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -2057,7 +2049,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -2113,7 +2104,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -2141,7 +2131,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -2734,7 +2723,6 @@
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
           'webgpu_cts',
-          'skia_gold_test',
         ],
       },
       'webgpu_blink_web_tests_with_backend_validation': {
@@ -2747,7 +2735,6 @@
         ],
         'mixins': [
           'webgpu_cts',
-          'skia_gold_test',
         ],
       },
     },
@@ -2761,7 +2748,6 @@
         ],
         'mixins': [
           'webgpu_cts',
-          'skia_gold_test',
         ],
       },
       'webgpu_swiftshader_blink_web_tests_with_backend_validation': {
@@ -2774,7 +2760,6 @@
         ],
         'mixins': [
           'webgpu_cts',
-          'skia_gold_test',
         ],
       },
     },
@@ -4399,7 +4384,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -4433,7 +4417,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -5290,7 +5273,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
@@ -5427,7 +5409,6 @@
           'blink_tests_write_run_histories',
           # TODO(crbug.com/1327314): Enable for blink web tests.
           'disable_check_flakiness_web_tests',
-          'skia_gold_test',
         ],
         'resultdb': {
           'enable': True,
