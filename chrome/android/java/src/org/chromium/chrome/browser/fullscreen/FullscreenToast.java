@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewPropertyAnimator;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.widget.TextView;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -95,9 +97,12 @@ interface FullscreenToast {
         private void showNotificationToast() {
             hideNotificationToast();
 
-            int resId = R.string.immersive_fullscreen_api_notification;
+            int toastTextId = R.string.immersive_fullscreen_api_notification;
+            if (BuildInfo.getInstance().isAutomotive) {
+                toastTextId = R.string.immersive_fullscreen_api_notification_automotive;
+            }
             mNotificationToast = Toast.makeTextWithPriority(
-                    mActivity, resId, Toast.LENGTH_LONG, ToastPriority.HIGH);
+                    mActivity, toastTextId, Toast.LENGTH_LONG, ToastPriority.HIGH);
             mNotificationToast.setGravity(Gravity.BOTTOM | Gravity.CENTER, 0, 0);
             mNotificationToast.show();
         }
@@ -258,6 +263,13 @@ interface FullscreenToast {
                 mNotificationToast = LayoutInflater.from(mActivity).inflate(
                         R.layout.fullscreen_notification, null);
                 addView = true;
+            }
+            if (BuildInfo.getInstance().isAutomotive) {
+                TextView toastTextView = mNotificationToast.findViewById(R.id.text);
+                if (toastTextView != null) {
+                    toastTextView.setText(
+                            R.string.immersive_fullscreen_api_notification_automotive);
+                }
             }
             mNotificationToast.setAlpha(0);
             mToastFadeAnimation = mNotificationToast.animate();
