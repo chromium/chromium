@@ -77,10 +77,6 @@ void DependentSignalCompositionManager::AddSourceSignal(AbortSignal& source) {
   }
 
   DCHECK(!source.IsCompositeSignal());
-  // Internal signals can add dependent signals after construction via
-  // AbortSignal::Follow, which would violate our assumptions for
-  // AbortSignal.any().
-  DCHECK_NE(source.GetSignalType(), AbortSignal::SignalType::kInternal);
   // Cycles are prevented by sources being specified only at creation time.
   DCHECK_NE(&GetSignal(), &source);
 
