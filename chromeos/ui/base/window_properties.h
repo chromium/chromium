@@ -38,6 +38,14 @@ extern const ui::ClassProperty<bool>* const kBlockedForAssistantSnapshotKey;
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)
 extern const ui::ClassProperty<bool>* const kEscHoldToExitFullscreen;
 
+// Do not exit fullscreen on a screen lock. Note that this property becomes
+// active only if `kUseOverviewToExitFullscreen` is true. Borealis apps set this
+// to avoid exiting fullscreen on a screen lock.
+// Do NOT use this property without consulting the security team for other use
+// cases.
+COMPONENT_EXPORT(CHROMEOS_UI_BASE)
+extern const ui::ClassProperty<bool>* const kNoExitFullscreenOnLock;
+
 // Whether to promote users to use Overview to exit fullscreen.
 // Borealis apps set this since they do not handle window size changes.
 COMPONENT_EXPORT(CHROMEOS_UI_BASE)

@@ -14,6 +14,7 @@
 #include "ash/wm/window_state.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/wm/fullscreen/pref_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -29,15 +30,23 @@ constexpr char kNonMatchingPattern[] = "google.com";
 constexpr char kMatchingPattern[] = "test.com";
 constexpr char kWildcardPattern[] = "*";
 
-class FullscreenControllerTest : public AshTestBase,
-                                 public testing::WithParamInterface<bool> {
+bool IsOfficialBuildWithoutDcheck() {
+#if defined(OFFICIAL_BUILD) && !DCHECK_IS_ON()
+  return true;
+#else
+  return false;
+#endif
+}
+
+class FullscreenControllerTestBase : public AshTestBase {
  public:
-  FullscreenControllerTest() {}
+  FullscreenControllerTestBase() = default;
 
-  FullscreenControllerTest(const FullscreenControllerTest&) = delete;
-  FullscreenControllerTest& operator=(const FullscreenControllerTest&) = delete;
+  FullscreenControllerTestBase(const FullscreenControllerTestBase&) = delete;
+  FullscreenControllerTestBase& operator=(const FullscreenControllerTestBase&) =
+      delete;
 
-  ~FullscreenControllerTest() override {}
+  ~FullscreenControllerTestBase() override = default;
 
   // AshTestBase:
   void SetUp() override {
@@ -55,16 +64,16 @@ class FullscreenControllerTest : public AshTestBase,
     AshTestBase::TearDown();
   }
 
+ protected:
   void CreateFullscreenWindow() {
     window_ = CreateTestWindow();
     window_->SetProperty(aura::client::kShowStateKey,
                          ui::SHOW_STATE_FULLSCREEN);
-    if (is_lacros_window_) {
-      window_->SetProperty(aura::client::kAppType,
-                           static_cast<int>(AppType::LACROS));
-    }
+    SetPropertiesForNewFullscreenWindow(window_.get());
     window_state_ = WindowState::Get(window_.get());
   }
+
+  virtual void SetPropertiesForNewFullscreenWindow(aura::Window* window) {}
 
   void SetKeepFullscreenWithoutNotificationAllowList(
       const std::string& pattern) {
@@ -73,6 +82,21 @@ class FullscreenControllerTest : public AshTestBase,
     Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetList(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
         std::move(list));
+  }
+
+  std::unique_ptr<aura::Window> window_;
+  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
+  raw_ptr<TestShellDelegate> test_shell_delegate_ = nullptr;
+};
+
+class FullscreenControllerTest : public FullscreenControllerTestBase,
+                                 public testing::WithParamInterface<bool> {
+ protected:
+  void SetPropertiesForNewFullscreenWindow(aura::Window* window) override {
+    if (is_lacros_window_) {
+      window->SetProperty(aura::client::kAppType,
+                          static_cast<int>(AppType::LACROS));
+    }
   }
 
   void SetUpShellDelegate(bool should_exit_fullscreen, GURL url = kActiveUrl) {
@@ -87,14 +111,7 @@ class FullscreenControllerTest : public AshTestBase,
     }
   }
 
- protected:
   bool is_lacros_window_ = GetParam();
-
-  std::unique_ptr<aura::Window> window_;
-
-  raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
-
-  raw_ptr<TestShellDelegate> test_shell_delegate_ = nullptr;
 };
 
 // Test that full screen is exited after session unlock if the allow list pref
@@ -211,6 +228,48 @@ TEST_P(FullscreenControllerTest, KeepFullscreenIfUnsetUrlWildcardPref) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, FullscreenControllerTest, testing::Bool());
+
+using FullscreenControllerNotLacrosRelatedTest = FullscreenControllerTestBase;
+
+TEST_F(FullscreenControllerNotLacrosRelatedTest,
+       KeepFullscreenIfNoExitPropertySet) {
+  window_->SetProperty(chromeos::kUseOverviewToExitFullscreen, true);
+  window_->SetProperty(chromeos::kNoExitFullscreenOnLock, true);
+  window_->SetProperty(aura::client::kAppType,
+                       static_cast<int>(AppType::CROSTINI_APP));
+
+  ASSERT_TRUE(window_state_->IsFullscreen());
+
+  base::RunLoop run_loop;
+  Shell::Get()->session_controller()->PrepareForLock(run_loop.QuitClosure());
+  GetSessionControllerClient()->LockScreen();
+  EXPECT_TRUE(window_state_->IsFullscreen());
+  GetSessionControllerClient()->UnlockScreen();
+  run_loop.Run();
+  EXPECT_TRUE(window_state_->IsFullscreen());
+}
+
+TEST_F(FullscreenControllerNotLacrosRelatedTest,
+       NoExitPropertyNotAllowedIfOverviewPropertyIsNotSet) {
+  // CHECK macro discards error message for the official build with
+  // dcheck=false. See the definition in base/check.h for details.
+  std::string expected_error_message =
+      IsOfficialBuildWithoutDcheck() ? "" : "Property combination not allowed";
+
+  EXPECT_DEATH(
+      {
+        window_->SetProperty(chromeos::kUseOverviewToExitFullscreen, false);
+        window_->SetProperty(chromeos::kNoExitFullscreenOnLock, true);
+
+        ASSERT_TRUE(window_state_->IsFullscreen());
+
+        base::RunLoop run_loop;
+        Shell::Get()->session_controller()->PrepareForLock(
+            run_loop.QuitClosure());
+        GetSessionControllerClient()->LockScreen();
+      },
+      expected_error_message);
+}
 
 }  // namespace
 }  // namespace ash
