@@ -94,14 +94,6 @@ source_set("v4l2") {
     "GLESv2",
   ]
 
-  if (use_v4l2_codec_aml) {
-    sources += [
-      "aml_v4l2_device.cc",
-      "aml_v4l2_device.h",
-    ]
-    defines += [ "AML_V4L2" ]
-  }
-
   configs += [ "//third_party/libyuv:libyuv_config" ]
 
   public_deps = [ "//ui/gl" ]
