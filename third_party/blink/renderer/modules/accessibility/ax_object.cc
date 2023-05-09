@@ -681,7 +681,9 @@ void AXObject::Detach() {
 
 #if !defined(NDEBUG)
   // Facilitates debugging of detached objects by providing info on what it was.
-  detached_object_debug_info_ = ToString(true, true);
+  if (!ax_object_cache_->HasBeenDisposed()) {
+    detached_object_debug_info_ = ToString(true, true);
+  }
 #endif
 
   // Clear any children and call DetachFromParent() on them so that
