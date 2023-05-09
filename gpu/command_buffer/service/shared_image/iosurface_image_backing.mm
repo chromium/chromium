@@ -396,7 +396,9 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
   std::vector<sk_sp<SkSurface>> BeginWriteAccess(
       const SkSurfaceProps& surface_props,
       const gfx::Rect& update_rect) override {
-    backing_impl()->HandleBeginAccessSync(/*readonly=*/false);
+    if (!backing_impl()->HandleBeginAccessSync(/*readonly=*/false)) {
+      return {};
+    }
     if (!write_surfaces_.empty()) {
       // Write access is already in progress.
       return {};
@@ -426,7 +428,9 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
   }
 
   std::vector<skgpu::graphite::BackendTexture> BeginWriteAccess() override {
-    backing_impl()->HandleBeginAccessSync(/*readonly=*/false);
+    if (!backing_impl()->HandleBeginAccessSync(/*readonly=*/false)) {
+      return {};
+    }
     return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
   }
 
@@ -439,7 +443,9 @@ class IOSurfaceImageBacking::SkiaGraphiteIOSurfaceRepresentation
   }
 
   std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
-    backing_impl()->HandleBeginAccessSync(/*readonly=*/true);
+    if (!backing_impl()->HandleBeginAccessSync(/*readonly=*/true)) {
+      return {};
+    }
     return CreateGraphiteMetalTextures(mtl_textures_, format(), size());
   }
 
@@ -1079,14 +1085,29 @@ void IOSurfaceImageBacking::Update(std::unique_ptr<gfx::GpuFence> in_fence) {
   }
 }
 
-void IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
-  CHECK(!ongoing_write_access_);
+bool IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
+  if (!readonly && ongoing_write_access_) {
+    DLOG(ERROR) << "Unable to begin write access because another "
+                   "write access is in progress";
+    return false;
+  }
+  // Track reads and writes if not being used for concurrent read/writes.
+  if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    if (readonly && ongoing_write_access_) {
+      DLOG(ERROR) << "Unable to begin read access because another "
+                     "write access is in progress";
+      return false;
+    }
+    if (!readonly && num_ongoing_read_accesses_) {
+      DLOG(ERROR) << "Unable to begin write access because a read access is in "
+                     "progress";
+      return false;
+    }
+  }
+
   if (readonly) {
     num_ongoing_read_accesses_++;
   } else {
-    if (!(usage() & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
-      CHECK_EQ(num_ongoing_read_accesses_, 0u);
-    }
     ongoing_write_access_ = true;
   }
 
@@ -1098,6 +1119,8 @@ void IOSurfaceImageBacking::HandleBeginAccessSync(bool readonly) {
       fence.Wait();
     }
   }
+
+  return true;
 }
 
 void IOSurfaceImageBacking::HandleEndAccessSync(bool readonly) {
@@ -1121,7 +1144,9 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     bool readonly) {
   // It is in error to read or write an IOSurface while it is purgeable.
   CHECK(!purgeable_);
-  HandleBeginAccessSync(readonly);
+  if (!HandleBeginAccessSync(readonly)) {
+    return false;
+  }
 
   // If the GL texture is already bound (the bind is not marked as pending),
   // then early-out.

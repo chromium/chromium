@@ -309,7 +309,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   // Updates the read and write accesses tracker variables on BeginAccess and
   // waits on `release_fence_` if fence is not null.
-  void HandleBeginAccessSync(bool readonly);
+  bool HandleBeginAccessSync(bool readonly);
   // Updates the read and write accesses tracker variables on EndAccess.
   void HandleEndAccessSync(bool readonly);
 
