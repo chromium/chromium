@@ -70,8 +70,6 @@ base::Value InstallPlaceholderCommand::ToDebugValue() const {
   return base::Value(debug_value_.Clone());
 }
 
-void InstallPlaceholderCommand::OnSyncSourceRemoved() {}
-
 void InstallPlaceholderCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }

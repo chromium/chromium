@@ -50,7 +50,6 @@ class InstallPlaceholderCommand : public WebAppCommandTemplate<AppLock> {
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
  private:

@@ -128,13 +128,6 @@ void InstallFromSyncCommand::OnShutdown() {
       webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }
 
-void InstallFromSyncCommand::OnSyncSourceRemoved() {
-  // Since this is a sync install command, if an uninstall is queued, just
-  // cancel this command.
-  ReportResultAndDestroy(params_.app_id,
-                         webapps::InstallResultCode::kHaltedBySyncUninstall);
-}
-
 const LockDescription& InstallFromSyncCommand::lock_description() const {
   return *lock_description_;
 }

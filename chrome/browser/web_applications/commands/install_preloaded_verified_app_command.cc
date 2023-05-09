@@ -124,8 +124,6 @@ void InstallPreloadedVerifiedAppCommand::OnShutdown() {
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }
 
-void InstallPreloadedVerifiedAppCommand::OnSyncSourceRemoved() {}
-
 void InstallPreloadedVerifiedAppCommand::OnManifestParsed(
     blink::mojom::ManifestPtr manifest) {
   // Note that most errors during parsing (e.g. errors to do with parsing a

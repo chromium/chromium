@@ -51,8 +51,6 @@ void OsIntegrationSynchronizeCommand::OnSynchronizeComplete() {
                                   std::move(synchronize_callback_));
 }
 
-void OsIntegrationSynchronizeCommand::OnSyncSourceRemoved() {}
-
 void OsIntegrationSynchronizeCommand::OnShutdown() {
   DCHECK(!synchronize_callback_.is_null());
   SignalCompletionAndSelfDestruct(CommandResult::kShutdown,

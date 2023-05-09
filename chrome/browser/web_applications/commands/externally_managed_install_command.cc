@@ -89,8 +89,6 @@ void ExternallyManagedInstallCommand::StartWithLock(
           weak_factory_.GetWeakPtr()));
 }
 
-void ExternallyManagedInstallCommand::OnSyncSourceRemoved() {}
-
 void ExternallyManagedInstallCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }

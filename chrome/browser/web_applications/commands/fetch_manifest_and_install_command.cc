@@ -195,8 +195,6 @@ void FetchManifestAndInstallCommand::StartWithLock(
   }
 }
 
-void FetchManifestAndInstallCommand::OnSyncSourceRemoved() {}
-
 void FetchManifestAndInstallCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
 }

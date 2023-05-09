@@ -128,8 +128,6 @@ void InstallAppLocallyCommand::OnOsHooksInstalled(
   ReportResultAndShutdown(CommandResult::kSuccess);
 }
 
-void InstallAppLocallyCommand::OnSyncSourceRemoved() {}
-
 void InstallAppLocallyCommand::OnShutdown() {
   ReportResultAndShutdown(CommandResult::kShutdown);
 }

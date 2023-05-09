@@ -76,7 +76,6 @@ class InstallPreloadedVerifiedAppCommand
   // WebAppCommandTemplate<SharedWebContentsLock>:
   const LockDescription& lock_description() const override;
   void StartWithLock(std::unique_ptr<SharedWebContentsLock> lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
 

@@ -60,12 +60,6 @@ class WebAppCommandManager {
   // have been `Start()`ed.
   void Shutdown();
 
-  // Called by the sync integration when a list of apps have had their sync
-  // sources removed and `is_uninstalling()` set to true. Any commands
-  // whose `lock_description().app_ids()` match an id in `app_id` who have also
-  // been `StartWithLock()`ed will also be notified.
-  void NotifySyncSourceRemoved(const std::vector<AppId>& app_ids);
-
   // Outputs a debug value of the state of the commands system, including
   // running and queued commands.
   base::Value ToDebugValue();

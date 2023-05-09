@@ -123,14 +123,6 @@ class WebAppCommand {
                            LockAcquiredCallback on_lock_acquired,
                            const base::Location& location) = 0;
 
-  // This is called when the sync system has triggered an uninstall for an app
-  // id that is relevant to this command and this command is running
-  // (`StartWithLock()` has been called). Relevance is determined by the
-  // `WebAppCommandLock::IsAppLocked()` function for this command's lock). The
-  // web app should still be in the registry, but it will no longer have the
-  // `WebAppManagement::kSync` source and `is_uninstalling()` will return true.
-  virtual void OnSyncSourceRemoved() = 0;
-
   // Signals the system is shutting down. Used to cancel any pending operations,
   // if possible, to prevent re-entry. Only called if the command has been
   // started.

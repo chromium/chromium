@@ -63,7 +63,6 @@ class TestUninstallAndReplaceJobCommand
 
   base::Value ToDebugValue() const override { return base::Value(); }
 
-  void OnSyncSourceRemoved() override {}
   void OnShutdown() override {}
 
  private:

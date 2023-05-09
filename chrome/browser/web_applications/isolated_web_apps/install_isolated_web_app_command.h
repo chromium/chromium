@@ -111,7 +111,6 @@ class InstallIsolatedWebAppCommand : public WebAppCommandTemplate<AppLock> {
   const LockDescription& lock_description() const override;
   base::Value ToDebugValue() const override;
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
-  void OnSyncSourceRemoved() override;
   void OnShutdown() override;
 
   void SetDataRetrieverForTesting(

@@ -65,7 +65,6 @@ class ManifestUpdateCheckCommand : public WebAppCommandTemplate<AppLock> {
 
   // WebAppCommandTemplate<AppLock>:
   const LockDescription& lock_description() const override;
-  void OnSyncSourceRemoved() override {}
   void OnShutdown() override;
   base::Value ToDebugValue() const override;
   void StartWithLock(std::unique_ptr<AppLock> lock) override;

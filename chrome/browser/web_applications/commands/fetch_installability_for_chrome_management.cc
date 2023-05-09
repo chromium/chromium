@@ -72,11 +72,6 @@ void FetchInstallabilityForChromeManagement::StartWithLock(
                                       weak_factory_.GetWeakPtr()));
 }
 
-void FetchInstallabilityForChromeManagement::OnSyncSourceRemoved() {
-  // No action needed. Any changes to installation status will correctly be read
-  // & reflected in the command result.
-}
-
 void FetchInstallabilityForChromeManagement::OnShutdown() {
   Abort(InstallableCheckResult::kNotInstallable);
 }

@@ -198,8 +198,6 @@ void InstallFromInfoCommand::OnUnintallAndReplaceFinished(
                      did_uninstall_and_replace));
 }
 
-void InstallFromInfoCommand::OnSyncSourceRemoved() {}
-
 void InstallFromInfoCommand::OnShutdown() {
   Abort(webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
   return;

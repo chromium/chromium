@@ -145,8 +145,6 @@ void UpdateProtocolHandlerApprovalCommand::OnProtocolHandlersUpdated() {
                                   std::move(callback_));
 }
 
-void UpdateProtocolHandlerApprovalCommand::OnSyncSourceRemoved() {}
-
 void UpdateProtocolHandlerApprovalCommand::OnShutdown() {
   SignalCompletionAndSelfDestruct(CommandResult::kShutdown,
                                   std::move(callback_));

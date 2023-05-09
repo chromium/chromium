@@ -423,11 +423,6 @@ void InstallIsolatedWebAppCommand::OnGetIcons(
   FinalizeInstall(install_info);
 }
 
-void InstallIsolatedWebAppCommand::OnSyncSourceRemoved() {
-  // TODO(kuragin): Test cancellation on sync source removed event.
-  ReportFailure("Sync source removed.");
-}
-
 void InstallIsolatedWebAppCommand::OnShutdown() {
   // TODO(kuragin): Test cancellation of pending installation during system
   // shutdown.

@@ -142,12 +142,6 @@ void WebAppUninstallCommand::StartWithLock(std::unique_ptr<AllAppsLock> lock) {
   MaybeFinishUninstallAndDestruct();
 }
 
-void WebAppUninstallCommand::OnSyncSourceRemoved() {
-  // TODO(crbug.com/1320086): remove after uninstall from sync is async.
-  Abort(webapps::UninstallResultCode::kNoAppToUninstall);
-  return;
-}
-
 void WebAppUninstallCommand::OnShutdown() {
   Abort(webapps::UninstallResultCode::kError);
   return;

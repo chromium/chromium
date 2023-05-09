@@ -44,7 +44,6 @@ class GetIsolatedWebAppBrowsingDataCommand
   base::Value ToDebugValue() const override;
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;
   void OnShutdown() override;
-  void OnSyncSourceRemoved() override {}
 
  private:
   void StoragePartitionSizeFetched(const url::Origin& iwa_origin, int64_t size);
