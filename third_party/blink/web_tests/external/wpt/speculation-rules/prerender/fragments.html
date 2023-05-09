@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<title>Test prerendering with fragments on speculation-rules</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<body>
+<script>
+setup(() => assertSpeculationRulesIsSupported());
+
+promise_test(async t => {
+  const uid = token();
+
+  const bc = new PrerenderChannel('test-channel', uid);
+  t.add_cleanup(_ => bc.close());
+
+  const gotMessage = new Promise(resolve => {
+    let messages = [];
+    bc.addEventListener('message', e => {
+      messages.push(e.data);
+      if (e.data === 'FIN') {
+        resolve(messages);
+      }
+    });
+  });
+
+  // This test attempts to prerender several URLs that differ only in fragments
+  // like as follows:
+  //   - http://(snip)/fragments.html?q#fragment0
+  //   - http://(snip)/fragments.html?q#fragment1
+  //   - http://(snip)/fragments.html?q#fragment2
+  // After finishing prerendering, it tries to activate one URL that contains
+  // `fragmentActivate`
+  const fragments = ['#fragment0', '#fragment1', '#fragment2'];
+  const fragmentActivate = fragments[1];
+
+  const url = `resources/fragments.html?uid=${uid}`;
+  window.open(url, '_blank', 'noopener');
+
+  const result = await gotMessage;
+
+  // URLs that differ only in fragments should be prerendered individually.
+  fragments.forEach(f => {
+    const wasPrerendered = result.includes(`prerendering ${f}`);
+    assert_true(wasPrerendered, `${f} should be prerended`);
+  });
+
+  // The URL of the activated page should have the same fragment as the
+  // original one specified in prerendering has.
+  fragments.forEach(f => {
+    const wasActivavted = result.includes(`activated ${f}`);
+    if (f === fragmentActivate) {
+      assert_true(wasActivavted, `${f} should be activated`);
+    } else {
+      assert_false(wasActivavted, `${f} should not be activated`);
+    }
+  });
+});
+</script>
+</body>
+</head>
+</html>
