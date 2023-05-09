@@ -26426,6 +26426,19 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="6" label="Mouse click"/>
 </enum>
 
+<enum name="DevToolsBreakpointsRestoredFromStorageCount">
+  <int value="0" label="Less than 100"/>
+  <int value="1" label="Less than 300"/>
+  <int value="2" label="Less than 1000"/>
+  <int value="3" label="Less than 3000"/>
+  <int value="4" label="Less than 10000"/>
+  <int value="5" label="Less than 30000"/>
+  <int value="6" label="Less than 100000"/>
+  <int value="7" label="Less than 300000"/>
+  <int value="8" label="Less than 1000000"/>
+  <int value="9" label="Above 1000000"/>
+</enum>
+
 <enum name="DevToolsBreakpointWithConditionAdded">
   <int value="0" label="Logpoint"/>
   <int value="1" label="Conditional Breakpoint"/>

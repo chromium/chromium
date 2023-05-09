@@ -40,6 +40,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.BreakpointsRestoredFromStorageCount"
+    enum="DevToolsBreakpointsRestoredFromStorageCount"
+    expires_after="2024-03-01">
+  <owner>jarin@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records the number of breakpoints restored from the storage. The breakpoint
+    count is restored when the debugger is initialized.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.BreakpointWithConditionAdded"
     enum="DevToolsBreakpointWithConditionAdded" expires_after="2023-12-01">
   <owner>yangguo@chromium.org</owner>
