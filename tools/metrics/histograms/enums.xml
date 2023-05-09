@@ -88785,6 +88785,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="3" label="Very Loose"/>
 </enum>
 
+<enum name="ReadAnythingSettingsChange">
+  <int value="0" label="Font change"/>
+  <int value="1" label="Font size change"/>
+  <int value="2" label="Theme change"/>
+  <int value="3" label="Line height change"/>
+  <int value="4" label="Letter spacing change"/>
+</enum>
+
 <enum name="ReadDynamicRulesJSONStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kFileDoesNotExist"/>

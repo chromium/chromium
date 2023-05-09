@@ -19,6 +19,7 @@ extern const char kLineSpacingHistogramName[];
 extern const char kColorHistogramName[];
 extern const char kFontNameHistogramName[];
 extern const char kFontScaleHistogramName[];
+extern const char kSettingsChangeHistogramName[];
 
 extern const std::set<std::string> GetNonSelectableUrls();
 
@@ -50,6 +51,18 @@ const double kReadAnythingDefaultFontScale = 1;
 const double kReadAnythingMinimumFontScale = 0.5;
 const double kReadAnythingMaximumFontScale = 4.5;
 const double kReadAnythingFontScaleIncrement = 0.25;
+
+// Enum for logging when a text style setting is changed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadAnythingSettingsChange {
+  kFontChange = 0,
+  kFontSizeChange = 1,
+  kThemeChange = 2,
+  kLineHeightChange = 3,
+  kLetterSpacingChange = 4,
+  kMaxValue = kLetterSpacingChange,
+};
 
 }  // namespace
 
