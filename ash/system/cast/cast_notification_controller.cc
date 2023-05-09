@@ -89,6 +89,10 @@ void CastNotificationController::OnDevicesUpdated(
     return;
   }
 
+  // The cast notification controller outlives cast sessions. Ensure
+  // `freeze_button_index_` starts reset when creating a new notification.
+  freeze_button_index_.reset();
+
   for (const auto& device : devices) {
     const CastSink& sink = device.sink;
     const CastRoute& route = device.route;

@@ -242,4 +242,34 @@ TEST_F(CastNotificationControllerTest, NotificationMessage) {
   EXPECT_EQ(GetNotification()->message(), casting_paused_message);
 }
 
+// Regression test for b/280864232
+TEST_F(CastNotificationControllerTest, NewRouteStop) {
+  // Create notification.
+  cast_config_.set_has_sinks_and_routes(true);
+  cast_config_.set_has_active_route(true);
+  SinkAndRoute device = CreateDeviceLocalRoute();
+  // Make the device "freezable" so the freeze (pause) button appears.
+  device.route.freeze_info.can_freeze = true;
+  notification_controller_->OnDevicesUpdated({device});
+
+  // There should be a notfiication with 2 buttons.
+  EXPECT_TRUE(GetNotification()->pinned());
+  EXPECT_EQ(GetNotification()->buttons().size(), 2u);
+
+  // Update the list of devices so that now there is a non-freezable route.
+  device.route.freeze_info.can_freeze = false;
+  notification_controller_->OnDevicesUpdated({device});
+
+  // There should be a notification with 1 button.
+  EXPECT_TRUE(GetNotification()->pinned());
+  EXPECT_EQ(GetNotification()->buttons().size(), 1u);
+
+  // Clicking the button should stop the route, and not call freeze / unfreeze.
+  ClickOnNotificationButton(0);
+  EXPECT_EQ(cast_config_.freeze_route_count(), 0u);
+  EXPECT_EQ(cast_config_.unfreeze_route_count(), 0u);
+  EXPECT_EQ(cast_config_.stop_casting_count(), 1u);
+  EXPECT_EQ(cast_config_.stop_casting_route_id(), device.route.id);
+}
+
 }  // namespace ash
