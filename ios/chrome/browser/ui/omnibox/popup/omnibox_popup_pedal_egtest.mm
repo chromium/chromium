@@ -141,6 +141,41 @@ id<GREYMatcher> popupRowWithString(NSString* string) {
   [ChromeEarlGrey closeCurrentTab];
 }
 
+// Tests that the clear browsing data pedal is present and it opens the clear
+// browsing data page.
+- (void)testClearBrowsingDataPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalclearbrowsing"];
+
+  NSString* clearBrowsingDataPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA);
+
+  // Matcher for the clear browsing data pedal suggestion.
+  id<GREYMatcher> clearBrowsingDataPedal =
+      popupRowWithString(clearBrowsingDataPedalString);
+
+  // Clear browsing data pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:clearBrowsingDataPedal];
+
+  // Tap on clear browsing data pedal.
+  [[EarlGrey selectElementWithMatcher:clearBrowsingDataPedal]
+      performAction:grey_tap()];
+
+  // Clear browsing data page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      chrome_test_util::ClearBrowsingDataView()];
+
+  // Close the Clear browsing data page.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::NavigationBarDoneButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      chrome_test_util::ClearBrowsingDataView()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
 // Tests that the dino pedal does not appear when the search suggestion is below
 // the top 3.
 - (void)testNoPedal {
