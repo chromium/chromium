@@ -1600,23 +1600,6 @@ class StartupAppLauncherUsingLacrosTest : public testing::Test {
   std::unique_ptr<crosapi::CrosapiManager> crosapi_manager_;
 };
 
-TEST_F(StartupAppLauncherUsingLacrosTest, InstallFlowShouldLaunchLacros) {
-  CreateStartupAppLauncher();
-  InitializeLauncherWithNetworkReady();
-
-  ASSERT_TRUE(external_cache());
-  EXPECT_EQ(std::set<std::string>({kTestPrimaryAppId}),
-            external_cache()->pending_downloads());
-
-  ASSERT_TRUE(DownloadPrimaryApp(*PrimaryAppBuilder().Build()));
-
-  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
-            LaunchState::kInstallingApp);
-
-  // Validate that lacros is indeed running
-  EXPECT_TRUE(fake_browser_manager().IsRunning());
-}
-
 TEST_F(StartupAppLauncherUsingLacrosTest,
        ShouldRespectInstallSuccessFromCrosapi) {
   chrome_kiosk_launch_controller().SetInstallResult(
@@ -1665,12 +1648,4 @@ TEST_F(StartupAppLauncherUsingLacrosTest,
             KioskAppLaunchError::Error::kUnableToLaunch);
 }
 
-TEST_F(StartupAppLauncherUsingLacrosTest, SkippingInstallShouldLaunchLacros) {
-  CreateStartupAppLauncher(/*should_skip_install=*/true);
-  launcher().Initialize();
-  EXPECT_EQ(startup_launch_delegate_.WaitForNextLaunchState(),
-            LaunchState::kReadyToLaunch);
-
-  EXPECT_TRUE(fake_browser_manager().IsRunning());
-}
 }  // namespace ash

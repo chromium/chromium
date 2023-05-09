@@ -145,6 +145,8 @@ source_set("ash") {
     "app_mode/kiosk_mode_idle_app_name_notification.h",
     "app_mode/kiosk_profile_loader.cc",
     "app_mode/kiosk_profile_loader.h",
+    "app_mode/lacros_launcher.cc",
+    "app_mode/lacros_launcher.h",
     "app_mode/metrics/low_disk_metrics_service.cc",
     "app_mode/metrics/low_disk_metrics_service.h",
     "app_mode/metrics/network_connectivity_metrics_service.cc",

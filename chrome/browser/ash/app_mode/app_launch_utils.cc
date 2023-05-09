@@ -9,11 +9,11 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/lacros_launcher.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
@@ -74,7 +74,14 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
   AppLaunchManager(const AppLaunchManager&) = delete;
   AppLaunchManager& operator=(const AppLaunchManager&) = delete;
 
-  void Start() { app_launcher_->Initialize(); }
+  void Start() {
+    lacros_launcher_ = std::make_unique<app_mode::LacrosLauncher>();
+    lacros_launcher_->Start(
+        base::BindOnce(&AppLaunchManager::OnLacrosLaunchComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void OnLacrosLaunchComplete() { app_launcher_->Initialize(); }
 
  private:
   ~AppLaunchManager() override = default;
@@ -114,9 +121,11 @@ class AppLaunchManager : public KioskAppLauncher::NetworkDelegate,
   const raw_ptr<Profile> profile_;
   const bool should_start_app_session_ash_;
 
+  std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;
   std::unique_ptr<KioskAppLauncher> app_launcher_;
   base::ScopedObservation<KioskAppLauncher, KioskAppLauncher::Observer>
       observation_{this};
+  base::WeakPtrFactory<AppLaunchManager> weak_ptr_factory_{this};
 };
 
 void LaunchAppOrDie(Profile* profile,

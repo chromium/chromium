@@ -206,20 +206,9 @@ void WebKioskAppLauncher::LaunchApp() {
   DCHECK(!browser_);
   const WebKioskAppData* app = GetCurrentApp();
 
-  // Launch lacros-chrome if the corresponding feature flags are enabled.
-  //
-  // TODO(crbug.com/1101667): Currently, this source has log spamming by
-  // LOG(WARNING) to make it easy to debug and develop. Get rid of the log
-  // spamming when it gets stable enough.
   if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession()) {
-    LOG(WARNING) << "Using lacros-chrome for web kiosk session.";
     observers_.NotifyAppLaunched();
-    if (crosapi::BrowserManager::Get()->IsRunning()) {
-      CreateNewLacrosWindow();
-    } else {
-      LOG(WARNING) << "Waiting for lacros-chrome to be ready.";
-      observation_.Observe(crosapi::BrowserManager::Get());
-    }
+    CreateNewLacrosWindow();
     return;
   }
 
@@ -240,13 +229,6 @@ void WebKioskAppLauncher::LaunchApp() {
 
   observers_.NotifyAppLaunched();
   observers_.NotifyAppWindowCreated(browser_->app_name());
-}
-
-void WebKioskAppLauncher::OnStateChanged() {
-  if (crosapi::BrowserManager::Get()->IsRunning()) {
-    observation_.Reset();
-    CreateNewLacrosWindow();
-  }
 }
 
 void WebKioskAppLauncher::OnExoWindowCreated(aura::Window* window) {

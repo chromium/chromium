@@ -37,7 +37,6 @@ class WebKioskAppData;
 // Object responsible for preparing and launching web kiosk app. Is destroyed
 // upon app launch.
 class WebKioskAppLauncher : public KioskAppLauncher,
-                            public crosapi::BrowserManagerObserver,
                             public exo::WMHelper::ExoWindowObserver,
                             public ProfileObserver {
  public:
@@ -69,9 +68,6 @@ class WebKioskAppLauncher : public KioskAppLauncher,
   void LaunchApp() override;
 
  private:
-  // crosapi::BrowserManagerObserver:
-  void OnStateChanged() override;
-
   // exo::WMHelper::ExoWindowObserver:
   void OnExoWindowCreated(aura::Window* window) override;
 
@@ -119,12 +115,6 @@ class WebKioskAppLauncher : public KioskAppLauncher,
       data_retriever_factory_;
 
   raw_ptr<BrowserWindow, ExperimentalAsh> test_browser_window_ = nullptr;
-
-  // Observe the launch state of `BrowserManager`, and launch the lacros-chrome
-  // when it is ready. This object is only used when Lacros is enabled.
-  base::ScopedObservation<crosapi::BrowserManager,
-                          crosapi::BrowserManagerObserver>
-      observation_{this};
 
   base::WeakPtrFactory<WebKioskAppLauncher> weak_ptr_factory_{this};
 };

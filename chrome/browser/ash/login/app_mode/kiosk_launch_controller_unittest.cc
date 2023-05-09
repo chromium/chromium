@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_mode/fake_kiosk_app_launcher.h"
@@ -809,6 +810,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   void RunUntilAppPrepared() {
     controller().Start(kiosk_app_id(), /*auto_launch=*/false);
     profile_controls().OnProfileLoaded(profile());
+    EXPECT_TRUE(WaitForNextAppLauncherCreation());
     launcher().observers().NotifyAppInstalling();
     launcher().observers().NotifyAppPrepared();
   }
@@ -832,6 +834,16 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
     return crosapi_manager_->crosapi_ash()->force_installed_tracker_ash();
   }
 
+  int num_launchers_created() { return app_launchers_created_; }
+
+  [[nodiscard]] bool WaitForNextAppLauncherCreation() {
+    while (!launcher_waiter_.IsEmpty()) {
+      launcher_waiter_.Take();
+    }
+
+    return launcher_waiter_.Wait();
+  }
+
  private:
   void SetUpKioskAppId() {
     std::string email = policy::GenerateDeviceLocalAccountUserId(
@@ -850,9 +862,10 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
       Profile*,
       const KioskAppId& kiosk_app_id,
       KioskAppLauncher::NetworkDelegate*) {
-    app_launchers_created_++;
     auto app_launcher = std::make_unique<FakeKioskAppLauncher>();
     app_launcher_ = app_launcher.get();
+    app_launchers_created_++;
+    launcher_waiter_.AddValue(true);
     return std::move(app_launcher);
   }
 
@@ -877,6 +890,7 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   std::unique_ptr<FakeAppLaunchSplashScreenHandler> view_;
   FakeKioskAppLauncher* app_launcher_ = nullptr;  // owned by `controller_`.
   int app_launchers_created_ = 0;
+  base::test::RepeatingTestFuture<bool> launcher_waiter_;
   std::unique_ptr<KioskLaunchController> controller_;
   KioskAppId kiosk_app_id_;
 
@@ -889,12 +903,24 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
 };
 
 TEST_F(KioskLaunchControllerUsingLacrosTest,
-       LacrosShouldBeLaunchedAfterAppPrepared) {
-  EXPECT_FALSE(fake_browser_manager().IsRunning());
+       LacrosShouldBeLaunchedAfterProfileLoaded) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
 
-  RunUntilAppPrepared();
+  EXPECT_FALSE(fake_browser_manager().IsRunning());
+  profile_controls().OnProfileLoaded(profile());
 
   EXPECT_TRUE(fake_browser_manager().IsRunning());
+}
+
+TEST_F(KioskLaunchControllerUsingLacrosTest,
+       LauncherShouldGetInitializedAfterLacrosLaunched) {
+  controller().Start(kiosk_app_id(), /*auto_launch=*/false);
+
+  EXPECT_EQ(num_launchers_created(), 0);
+  profile_controls().OnProfileLoaded(profile());
+
+  EXPECT_TRUE(WaitForNextAppLauncherCreation());
+  EXPECT_TRUE(launcher().initialize_called());
 }
 
 TEST_F(KioskLaunchControllerUsingLacrosTest,
