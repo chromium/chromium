@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -51,38 +52,16 @@ base::OnceCallback<void(const ResultType&)> GetWrappedCallback(
 }  // namespace
 
 RequestDispatcher::RequestDispatcher(
-    const std::vector<std::unique_ptr<Config>>& configs,
+    const ConfigHolder* config_holder,
     CachedResultProvider* cached_result_provider)
-    : configs_(configs), cached_result_provider_(cached_result_provider) {
+    : config_holder_(config_holder),
+      cached_result_provider_(cached_result_provider) {
   std::set<proto::SegmentId> found_segments;
 
   // Individual models must be loaded from disk or fetched from network. Fill a
   // list to keep track of which ones are still pending.
-  for (const auto& config : *configs_) {
-    // Ignore segmentation keys using legacy models.
-    if (metadata_utils::ConfigUsesLegacyOutput(config.get())) {
-      legacy_output_segmentation_keys_.insert(config->segmentation_key);
-    } else {
-      // Non legacy segment IDs must have a 1:1 relationship with segmentation
-      // keys. These checks ensure that.
-      CHECK(config->segments.size() <= 1)
-          << "segmentation_key: " << config->segmentation_key
-          << " must not have multiple segments.";
-
-      for (const auto& segment_id : config->segments) {
-        CHECK(!segmentation_key_by_segment_id_.contains(segment_id.first))
-            << "segment_id: " << proto::SegmentId_Name(segment_id.first)
-            << " was found in two segmentation keys: "
-            << segmentation_key_by_segment_id_.at(segment_id.first) << " and "
-            << config->segmentation_key;
-
-        segmentation_key_by_segment_id_.insert(
-            {segment_id.first, config->segmentation_key});
-      }
-
-      uninitialized_segmentation_keys_.insert(config->segmentation_key);
-    }
-  }
+  uninitialized_segmentation_keys_ =
+      config_holder_->non_legacy_segmentation_keys();
 }
 
 RequestDispatcher::~RequestDispatcher() = default;
@@ -96,7 +75,7 @@ void RequestDispatcher::OnPlatformInitialized(
 
   // Only set request handlers if it has not been set for testing already.
   if (request_handlers_.empty()) {
-    for (const auto& config : *configs_) {
+    for (const auto& config : config_holder_->configs()) {
       request_handlers_[config->segmentation_key] = RequestHandler::Create(
           *config, std::move(result_providers[config->segmentation_key]),
           execution_service);
@@ -139,12 +118,11 @@ void RequestDispatcher::ExecutePendingActionsForKey(
 }
 
 void RequestDispatcher::OnModelUpdated(proto::SegmentId segment_id) {
-  auto key_for_updated_segment =
-      segmentation_key_by_segment_id_.find(segment_id);
-  if (key_for_updated_segment == segmentation_key_by_segment_id_.end()) {
+  auto key_for_updated_segment = config_holder_->GetKeyForSegmentId(segment_id);
+  if (!key_for_updated_segment) {
     return;
   }
-  std::string segmentation_key = key_for_updated_segment->second;
+  const std::string& segmentation_key = *key_for_updated_segment;
 
   uninitialized_segmentation_keys_.erase(segmentation_key);
   ExecutePendingActionsForKey(segmentation_key);
@@ -162,7 +140,7 @@ void RequestDispatcher::GetModelResult(
     scoped_refptr<InputContext> input_context,
     Request request,
     base::OnceCallback<void(const ResultType&)> callback) {
-  if (legacy_output_segmentation_keys_.contains(segmentation_key)) {
+  if (config_holder_->IsLegacySegmentationKey(segmentation_key)) {
     return;
   }
 

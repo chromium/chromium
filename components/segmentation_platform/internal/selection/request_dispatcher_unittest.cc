@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/selection/request_dispatcher.h"
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -12,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/post_processor/post_processing_test_utils.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
@@ -55,15 +57,17 @@ class RequestDispatcherTest : public testing::Test {
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
 
-    configs_.emplace_back(test_utils::CreateTestConfig(
+    std::vector<std::unique_ptr<Config>> configs;
+    configs.emplace_back(test_utils::CreateTestConfig(
         kDeviceSwitcherClient,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DEVICE_SWITCHER));
-    configs_.emplace_back(test_utils::CreateTestConfig(
+    configs.emplace_back(test_utils::CreateTestConfig(
         kAdaptiveToolbarClient,
         SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_ADAPTIVE_TOOLBAR));
+    config_holder_ = std::make_unique<ConfigHolder>(std::move(configs));
 
     request_dispatcher_ =
-        std::make_unique<RequestDispatcher>(configs_, nullptr);
+        std::make_unique<RequestDispatcher>(config_holder_.get(), nullptr);
 
     auto handler1 = std::make_unique<MockRequestHandler>();
     request_handler1_ = handler1.get();
@@ -95,7 +99,7 @@ class RequestDispatcherTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::vector<std::unique_ptr<Config>> configs_;
+  std::unique_ptr<ConfigHolder> config_holder_;
   raw_ptr<MockRequestHandler> request_handler1_ = nullptr;
   raw_ptr<MockRequestHandler> request_handler2_ = nullptr;
   std::unique_ptr<RequestDispatcher> request_dispatcher_;

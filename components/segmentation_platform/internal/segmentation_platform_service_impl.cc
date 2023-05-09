@@ -98,7 +98,7 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
       config_holder.configs(), storage_service_->cached_result_provider());
 
   request_dispatcher_ = std::make_unique<RequestDispatcher>(
-      config_holder.configs(), storage_service_->cached_result_provider());
+      &config_holder, storage_service_->cached_result_provider());
 
   for (const auto& config : config_holder.configs()) {
     if (!metadata_utils::ConfigUsesLegacyOutput(config.get())) {

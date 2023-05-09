@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/segmentation_platform/internal/database/cached_result_provider.h"
+#include "components/segmentation_platform/internal/database/config_holder.h"
 #include "components/segmentation_platform/internal/selection/request_handler.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -21,7 +22,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
-struct Config;
 struct PredictionOptions;
 class SegmentResultProvider;
 
@@ -31,9 +31,8 @@ class SegmentResultProvider;
 // 2. Dispatching requests to client specific request handlers.
 class RequestDispatcher {
  public:
-  explicit RequestDispatcher(
-      const std::vector<std::unique_ptr<Config>>& configs,
-      CachedResultProvider* cached_result_provider);
+  explicit RequestDispatcher(const ConfigHolder* config_holder,
+                             CachedResultProvider* cached_result_provider);
   ~RequestDispatcher();
 
   // Disallow copy/assign.
@@ -83,7 +82,7 @@ class RequestDispatcher {
                       base::OnceCallback<void(const ResultType&)> callback);
 
   // Configs for all registered clients.
-  const raw_ref<const std::vector<std::unique_ptr<Config>>> configs_;
+  const raw_ptr<const ConfigHolder> config_holder_;
 
   // Request handlers associated with the clients.
   std::map<std::string, std::unique_ptr<RequestHandler>> request_handlers_;
@@ -95,20 +94,11 @@ class RequestDispatcher {
   // elements get cleared after a timeout to avoid waiting for too long.
   std::set<std::string> uninitialized_segmentation_keys_;
 
-  // List of segmentation keys with segment IDs that use the legacy output
-  // config (e.g. don't support multi-output models). Requests from these
-  // segmentation keys will be ignored.
-  std::set<std::string> legacy_output_segmentation_keys_;
-
   // Delegate to provide cached results for all clients, shared among clients.
   const raw_ptr<CachedResultProvider> cached_result_provider_;
 
   // Storage initialization status.
   absl::optional<bool> storage_init_status_;
-
-  // Map from segment ID to the segmentation key that makes use of it. Used
-  // to run all requests that use a segment ID once its model is available.
-  std::map<proto::SegmentId, std::string> segmentation_key_by_segment_id_;
 
   // For caching any method calls that were received before initialization.
   // Key is a segmentation key, value is a queue of actions that use that model.

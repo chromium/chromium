@@ -13,6 +13,7 @@
 
 namespace segmentation_platform {
 
+// Holds all Configs active in the service.
 class ConfigHolder {
  public:
   explicit ConfigHolder(std::vector<std::unique_ptr<Config>> configs);
@@ -29,9 +30,36 @@ class ConfigHolder {
     return all_segment_ids_;
   }
 
+  const std::set<std::string> non_legacy_segmentation_keys() const {
+    return non_legacy_segmentation_keys_;
+  }
+
+  // Returns segmentation key for the given `segment_id`. Only if the Config
+  // supports output configs in metadata.
+  absl::optional<std::string> GetKeyForSegmentId(
+      proto::SegmentId segment_id) const;
+
+  // Returns true if the Config is legacy, does not support output config and
+  // uses discrete mapping.
+  bool IsLegacySegmentationKey(const std::string& segmentation_key) const;
+
  private:
+  // All the active Config(s) in the service.
   const std::vector<std::unique_ptr<Config>> configs_;
+
+  // All segment IDs needed for all active Config(s).
   const base::flat_set<proto::SegmentId> all_segment_ids_;
+
+  // List of segmentation keys with exactly one segment ID and supports output
+  // config.
+  std::set<std::string> non_legacy_segmentation_keys_;
+
+  // List of segmentation keys for Config(s) that support output configs in
+  // metadata.
+  std::set<std::string> legacy_output_segmentation_keys_;
+
+  // Map from segment ID to the segmentation key that makes use of it.
+  std::map<proto::SegmentId, std::string> segmentation_key_by_segment_id_;
 };
 
 }  // namespace segmentation_platform
