@@ -2854,7 +2854,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe" units="count"
-    expires_after="2023-06-01">
+    expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2867,7 +2867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Mainframe.External"
-    units="count" expires_after="2023-06-01">
+    units="count" expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2879,7 +2879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Subframe" units="count"
-    expires_after="2023-06-01">
+    expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
@@ -2892,7 +2892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Script.ForceDeferredScripts.Subframe.External"
-    units="count" expires_after="2023-06-01">
+    units="count" expires_after="2023-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
