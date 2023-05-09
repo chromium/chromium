@@ -76,10 +76,10 @@ class DrmWindow {
   // Called when the window is resized/moved.
   void SetBounds(const gfx::Rect& bounds);
 
-  // Update the HW cursor bitmap & move to specified location. If
-  // the bitmap is empty, the cursor is hidden.
+  // Update the HW cursor bitmap & move to the location if specified.
+  // If the bitmap is empty, the cursor is hidden.
   void SetCursor(const std::vector<SkBitmap>& bitmaps,
-                 const gfx::Point& location,
+                 const absl::optional<gfx::Point>& location,
                  base::TimeDelta frame_delay);
 
   // Move the HW cursor to the specified location.

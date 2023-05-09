@@ -35,7 +35,7 @@ class HostCursorProxy : public DrmCursorProxy {
   // DrmCursorProxy.
   void CursorSet(gfx::AcceleratedWidget window,
                  const std::vector<SkBitmap>& bitmaps,
-                 const gfx::Point& point,
+                 const absl::optional<gfx::Point>& point,
                  base::TimeDelta frame_delay) override;
   void Move(gfx::AcceleratedWidget window, const gfx::Point& point) override;
   void InitializeOnEvdevIfNecessary() override;
