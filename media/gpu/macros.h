@@ -12,6 +12,8 @@
 // https://chromium.googlesource.com/chromium/src/+/main/media/README.md#dvlog
 
 #define DVLOGF(level) DVLOG(level) << __func__ << "(): "
+#define DVLOGF_IF(level, condition) \
+  DVLOG_IF(level, condition) << __func__ << "(): "
 #define VLOGF(level) VLOG(level) << __func__ << "(): "
 #define VPLOGF(level) VPLOG(level) << __func__ << "(): "
 #define LOGF(severity) LOG(severity) << __func__ << "(): "

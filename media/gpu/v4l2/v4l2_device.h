@@ -677,8 +677,6 @@ class MEDIA_GPU_EXPORT V4L2Device
   // If there is no corresponding single- or multi-planar format, returns 0.
   static uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
                                                 bool slice_based);
-  std::vector<VideoCodecProfile> V4L2PixFmtToVideoCodecProfiles(
-      uint32_t pix_fmt);
   // Calculates the largest plane's allocation size requested by a V4L2 device.
   static gfx::Size AllocatedSizeFromV4L2Format(
       const struct v4l2_format& format);

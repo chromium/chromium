@@ -9,6 +9,9 @@
 
 #include <linux/videodev2.h>
 
+#include "base/functional/callback.h"
+#include "media/base/video_codecs.h"
+
 namespace media {
 
 // Returns a human readable description of |memory|.
@@ -19,6 +22,26 @@ std::string V4L2FormatToString(const struct v4l2_format& format);
 
 // Returns a human readable description of |buffer|
 std::string V4L2BufferToString(const struct v4l2_buffer& buffer);
+
+// Translates |v4l2_codec| (a Control ID, e.g. V4L2_CID_MPEG_VIDEO_VP8_PROFILE)
+// and |v4l2_profile| (e.g. V4L2_MPEG_VIDEO_VP8_PROFILE_0) to a
+// media::VideoCodecProfile, if those are supported by Chrome. It returns
+// VIDEO_CODEC_PROFILE_UNKNOWN otherwise.
+VideoCodecProfile V4L2ProfileToVideoCodecProfile(uint32_t v4l2_codec,
+                                                 uint32_t v4l2_profile);
+
+// Enumerates the supported VideoCodecProfiles for a given device (accessed via
+// |ioctl_cb|) and for |codec_as_pix_fmt| (e.g. V4L2_PIX_FMT_VP9). Returns an
+// empty vector if |codec_as_pix_fmt| is not supported by Chrome, or the
+// associated profiles cannot be enumerated or they are all unsupported
+// themselves. Notably, if the device driver doesn't support enumeration of a
+// supported |codec_as_pix_fmt| (i.e. VIDIOC_QUERYCTRL), a default list of
+// profiles is returned (this happens for example for VP8 on Hana MTK8173, or
+// for HEVC on Trogdor QC SC7180).
+std::vector<VideoCodecProfile> EnumerateSupportedProfilesForV4L2Codec(
+    base::RepeatingCallback<int(int, void*)> ioctl_cb,
+    uint32_t codec_as_pix_fmt);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_
