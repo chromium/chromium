@@ -51,7 +51,6 @@ extern const base::FeatureParam<int> kMglruReclaimSwappiness;
 BASE_DECLARE_FEATURE(kNativeBridgeToggleFeature);
 BASE_DECLARE_FEATURE(kOutOfProcessVideoDecoding);
 BASE_DECLARE_FEATURE(kPictureInPictureFeature);
-BASE_DECLARE_FEATURE(kRightClickLongPress);
 BASE_DECLARE_FEATURE(kRtVcpuDualCore);
 BASE_DECLARE_FEATURE(kRtVcpuQuadCore);
 BASE_DECLARE_FEATURE(kSaveRawFilesOnTracing);
