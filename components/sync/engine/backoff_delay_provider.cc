@@ -80,8 +80,9 @@ base::TimeDelta BackoffDelayProvider::GetInitialDelay(
     return default_initial_backoff_;
   }
 
-  if (state.last_get_key_result.IsActualError())
+  if (state.last_get_key_failed) {
     return default_initial_backoff_;
+  }
 
   // Note: If we received a MIGRATION_DONE on download updates, then commit
   // should not have taken place.  Moreover, if we receive a MIGRATION_DONE

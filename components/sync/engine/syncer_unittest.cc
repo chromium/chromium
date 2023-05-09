@@ -1143,8 +1143,7 @@ TEST_F(SyncerTest, GetKeySuccess) {
 
   SyncShareConfigure();
 
-  EXPECT_EQ(SyncerError::SYNCER_OK,
-            cycle_->status_controller().last_get_key_result().value());
+  EXPECT_FALSE(cycle_->status_controller().last_get_key_failed());
   EXPECT_FALSE(keystore_keys_handler->NeedKeystoreKey());
 }
 
@@ -1156,8 +1155,7 @@ TEST_F(SyncerTest, GetKeyEmpty) {
   mock_server_->SetKeystoreKey(std::string());
   SyncShareConfigure();
 
-  EXPECT_NE(SyncerError::SYNCER_OK,
-            cycle_->status_controller().last_get_key_result().value());
+  EXPECT_TRUE(cycle_->status_controller().last_get_key_failed());
   EXPECT_TRUE(keystore_keys_handler->NeedKeystoreKey());
 }
 

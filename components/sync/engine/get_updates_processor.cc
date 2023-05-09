@@ -49,19 +49,20 @@ std::vector<std::vector<uint8_t>> ExtractKeystoreKeys(
   return keystore_keys;
 }
 
-SyncerError HandleGetEncryptionKeyResponse(
+// Populates keystore encryption keys to KeystoreKeysHandler, returns true on
+// success and false otherwise.
+bool HandleGetEncryptionKeyResponse(
     const sync_pb::ClientToServerResponse& update_response,
     SyncCycleContext* context) {
-  bool success = false;
   if (update_response.get_updates().encryption_keys_size() == 0) {
     LOG(ERROR) << "Failed to receive encryption key from server.";
-    return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
+    return false;
   }
 
   std::vector<std::vector<uint8_t>> keystore_keys =
       ExtractKeystoreKeys(update_response);
 
-  success =
+  bool success =
       context->model_type_registry()->keystore_keys_handler()->SetKeystoreKeys(
           keystore_keys);
 
@@ -69,9 +70,7 @@ SyncerError HandleGetEncryptionKeyResponse(
            << update_response.get_updates().encryption_keys_size()
            << "encryption keys. Nigori keystore key " << (success ? "" : "not ")
            << "updated.";
-  return (success
-              ? SyncerError(SyncerError::SYNCER_OK)
-              : SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED));
+  return success;
 }
 
 // Given a GetUpdates response, iterates over all the returned items and
@@ -282,8 +281,8 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
 
   if (need_encryption_key ||
       update_response.get_updates().encryption_keys_size() > 0) {
-    status->set_last_get_key_result(
-        HandleGetEncryptionKeyResponse(update_response, cycle->context()));
+    status->set_last_get_key_failed(
+        !HandleGetEncryptionKeyResponse(update_response, cycle->context()));
   }
 
   SyncerError process_result =

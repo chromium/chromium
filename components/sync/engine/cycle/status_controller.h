@@ -53,7 +53,7 @@ class StatusController {
     return model_neutral_;
   }
 
-  SyncerError last_get_key_result() const;
+  bool last_get_key_failed() const;
 
   // Download counters.
   void increment_num_updates_downloaded_by(int value);
@@ -67,7 +67,7 @@ class StatusController {
   void increment_num_successful_bookmark_commits();
 
   // Server communication status tracking.
-  void set_last_get_key_result(const SyncerError result);
+  void set_last_get_key_failed(bool failed);
   void set_last_download_updates_result(const SyncerError result);
   void set_commit_result(const SyncerError result);
 

@@ -392,8 +392,8 @@ base::Value::Dict ConstructAboutInformation(
       "Status from Last Completed Session", /*is_sensitive=*/false);
   Stat<std::string>* session_source =
       section_last_session->AddStringStat("Sync Source");
-  Stat<std::string>* get_key_result =
-      section_last_session->AddStringStat("GetKey Step Result");
+  Stat<bool>* get_key_failed =
+      section_last_session->AddBoolStat("GetKey Step Failed");
   Stat<std::string>* download_result =
       section_last_session->AddStringStat("Download Step Result");
   Stat<std::string>* commit_result =
@@ -546,10 +546,10 @@ base::Value::Dict ConstructAboutInformation(
     if (snapshot.get_updates_origin() != sync_pb::SyncEnums::UNKNOWN_ORIGIN) {
       session_source->Set(ProtoEnumToString(snapshot.get_updates_origin()));
     }
-    SyncerError get_key_result_err =
-        snapshot.model_neutral_state().last_get_key_result;
-    get_key_result->Set(get_key_result_err.ToString(),
-                        /*is_good=*/!get_key_result_err.IsActualError());
+    const bool get_key_failed_state =
+        snapshot.model_neutral_state().last_get_key_failed;
+    get_key_failed->Set(get_key_failed_state,
+                        /*is_good=*/!get_key_failed_state);
     SyncerError download_result_err =
         snapshot.model_neutral_state().last_download_updates_result;
     download_result->Set(download_result_err.ToString(),

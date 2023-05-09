@@ -105,8 +105,7 @@ ACTION_P(SimulateGuRetryDelayCommand, delay) {
 void SimulateGetEncryptionKeyFailed(ModelTypeSet requsted_types,
                                     sync_pb::SyncEnums::GetUpdatesOrigin origin,
                                     SyncCycle* cycle) {
-  cycle->mutable_status_controller()->set_last_get_key_result(
-      SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED));
+  cycle->mutable_status_controller()->set_last_get_key_failed(true);
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError(SyncerError::SYNCER_OK));
 }
@@ -114,8 +113,7 @@ void SimulateGetEncryptionKeyFailed(ModelTypeSet requsted_types,
 void SimulateConfigureSuccess(ModelTypeSet requsted_types,
                               sync_pb::SyncEnums::GetUpdatesOrigin origin,
                               SyncCycle* cycle) {
-  cycle->mutable_status_controller()->set_last_get_key_result(
-      SyncerError(SyncerError::SYNCER_OK));
+  cycle->mutable_status_controller()->set_last_get_key_failed(false);
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError(SyncerError::SYNCER_OK));
 }
@@ -123,8 +121,7 @@ void SimulateConfigureSuccess(ModelTypeSet requsted_types,
 void SimulateConfigureFailed(ModelTypeSet requsted_types,
                              sync_pb::SyncEnums::GetUpdatesOrigin origin,
                              SyncCycle* cycle) {
-  cycle->mutable_status_controller()->set_last_get_key_result(
-      SyncerError(SyncerError::SYNCER_OK));
+  cycle->mutable_status_controller()->set_last_get_key_failed(false);
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError(SyncerError::SERVER_RETURN_TRANSIENT_ERROR));
 }
@@ -133,8 +130,7 @@ void SimulateConfigureConnectionFailure(
     ModelTypeSet requsted_types,
     sync_pb::SyncEnums::GetUpdatesOrigin origin,
     SyncCycle* cycle) {
-  cycle->mutable_status_controller()->set_last_get_key_result(
-      SyncerError(SyncerError::SYNCER_OK));
+  cycle->mutable_status_controller()->set_last_get_key_failed(false);
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError::NetworkConnectionUnavailable(net::ERR_FAILED));
 }
@@ -158,8 +154,7 @@ void SimulateDownloadUpdatesFailed(ModelTypeSet requested_types,
 void SimulateCommitFailed(ModelTypeSet requested_types,
                           NudgeTracker* nudge_tracker,
                           SyncCycle* cycle) {
-  cycle->mutable_status_controller()->set_last_get_key_result(
-      SyncerError(SyncerError::SYNCER_OK));
+  cycle->mutable_status_controller()->set_last_get_key_failed(false);
   cycle->mutable_status_controller()->set_last_download_updates_result(
       SyncerError(SyncerError::SYNCER_OK));
   cycle->mutable_status_controller()->set_commit_result(
