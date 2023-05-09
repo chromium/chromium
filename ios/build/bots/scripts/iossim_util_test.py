@@ -97,23 +97,68 @@ SIMULATORS_LIST = {
     ]
 }
 
+RUNTIMES_LIST = {
+    "111111": {
+        "deletable": True,
+        "identifier": "11111",
+        "kind": "Disk Image",
+        "mountPath": "path/to/mount",
+        "path": "path/to/runtime/111111.dmg",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/111111.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-1",
+        "signatureState": "Verified",
+        "sizeBytes": 3595537104,
+        "state": "Ready",
+        "version": "13.1"
+    },
+    "222222": {
+        "deletable": False,
+        "identifier": "222222",
+        "kind": "Bundled with Xcode",
+        "path": "path/to/runtime/222222.simruntime",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/222222.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-2",
+        "signatureState": "Unknown",
+        "sizeBytes": 14115082240,
+        "state": "Ready",
+        "version": "13.2"
+    },
+    "333333": {
+        "deletable": True,
+        "identifier": "333333",
+        "kind": "Legacy Download",
+        "path": "path/to/runtime/333333.simruntime",
+        "platformIdentifier": "com.apple.platform.iphonesimulator",
+        "runtimeBundlePath": "path/to/bundle/runtime/333333.simruntime",
+        "runtimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-11-4",
+        "signatureState": "Unknown",
+        "sizeBytes": 12596879360,
+        "state": "Ready",
+        "version": "11.4"
+    }
+}
+
 
 @mock.patch.object(
     iossim_util, 'get_simulator_list', return_value=SIMULATORS_LIST)
+@mock.patch.object(
+    iossim_util, 'get_simulator_runtime_list', return_value=RUNTIMES_LIST)
 class GetiOSSimUtil(test_runner_test.TestCase):
   """Tests for iossim_util.py."""
 
   def setUp(self):
     super(GetiOSSimUtil, self).setUp()
 
-  def test_get_simulator_runtime_by_version(self, _):
+  def test_get_simulator_runtime_by_version(self, _, _2):
     """Ensures correctness of filter."""
     self.assertEqual(
         'com.apple.CoreSimulator.SimRuntime.iOS-13-2',
         iossim_util.get_simulator_runtime_by_version(
             iossim_util.get_simulator_list(), '13.2.2'))
 
-  def test_get_simulator_runtime_by_version_not_found(self, _):
+  def test_get_simulator_runtime_by_version_not_found(self, _, _2):
     """Ensures that SimulatorNotFoundError raises if no runtime."""
     with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
       iossim_util.get_simulator_runtime_by_version(
@@ -122,14 +167,14 @@ class GetiOSSimUtil(test_runner_test.TestCase):
                         '"13.2" SDK in runtimes')
     self.assertTrue(expected_message in str(context.exception))
 
-  def test_get_simulator_device_type_by_platform(self, _):
+  def test_get_simulator_device_type_by_platform(self, _, _2):
     """Ensures correctness of filter."""
     self.assertEqual(
         'com.apple.CoreSimulator.SimDeviceType.iPhone-11',
         iossim_util.get_simulator_device_type_by_platform(
             iossim_util.get_simulator_list(), 'iPhone 11'))
 
-  def test_get_simulator_device_type_by_platform_not_found(self, _):
+  def test_get_simulator_device_type_by_platform_not_found(self, _, _2):
     """Ensures that SimulatorNotFoundError raises if no platform."""
     with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
       iossim_util.get_simulator_device_type_by_platform(
@@ -138,14 +183,14 @@ class GetiOSSimUtil(test_runner_test.TestCase):
                         '"iPhone XI" in devicetypes')
     self.assertTrue(expected_message in str(context.exception))
 
-  def test_get_simulator_runtime_by_device_udid(self, _):
+  def test_get_simulator_runtime_by_device_udid(self, _, _2):
     """Ensures correctness of filter."""
     self.assertEqual(
         'com.apple.CoreSimulator.SimRuntime.iOS-13-2',
         iossim_util.get_simulator_runtime_by_device_udid(
             'E4E66321-177A-450A-9BA1-488D85B7278E'))
 
-  def test_get_simulator_runtime_by_device_udid_not_found(self, _):
+  def test_get_simulator_runtime_by_device_udid_not_found(self, _, _2):
     """Ensures that SimulatorNotFoundError raises if no device with UDID."""
     with self.assertRaises(test_runner.SimulatorNotFoundError) as context:
       iossim_util.get_simulator_runtime_by_device_udid('non_existing_UDID')
@@ -153,20 +198,20 @@ class GetiOSSimUtil(test_runner_test.TestCase):
                         '"non_existing_UDID" UDID in devices')
     self.assertTrue(expected_message in str(context.exception))
 
-  def test_get_simulator_udids_by_platform_and_version(self, _):
+  def test_get_simulator_udids_by_platform_and_version(self, _, _2):
     """Ensures correctness of filter."""
     self.assertEqual(['A4E66321-177A-450A-9BA1-488D85B7278E'],
                      iossim_util.get_simulator_udids_by_platform_and_version(
                          'iPhone 11', '13.2.2'))
 
-  def test_get_simulator_udids_by_platform_and_version_not_found(self, _):
+  def test_get_simulator_udids_by_platform_and_version_not_found(self, _, _2):
     """Ensures that filter returns empty list if no device with version."""
     self.assertEqual([],
                      iossim_util.get_simulator_udids_by_platform_and_version(
                          'iPhone 11', '13.1'))
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def test_create_device_by_platform_and_version(self, subprocess_mock, _):
+  def test_create_device_by_platform_and_version(self, subprocess_mock, _, _2):
     """Ensures that command is correct."""
     subprocess_mock.return_value = b'NEW_UDID'
     self.assertEqual(
@@ -180,14 +225,14 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     ], subprocess_mock.call_args[0][0])
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def test_delete_simulator_by_udid(self, subprocess_mock, _):
+  def test_delete_simulator_by_udid(self, subprocess_mock, _, _2):
     """Ensures that command is correct."""
     iossim_util.delete_simulator_by_udid('UDID')
     self.assertEqual(['xcrun', 'simctl', 'delete', 'UDID'],
                      subprocess_mock.call_args[0][0])
 
   @mock.patch('subprocess.check_call', autospec=True)
-  def test_wipe_simulator_by_platform_and_version(self, subprocess_mock, _):
+  def test_wipe_simulator_by_platform_and_version(self, subprocess_mock, _, _2):
     """Ensures that command is correct."""
     iossim_util.wipe_simulator_by_udid('A4E66321-177A-450A-9BA1-488D85B7278E')
     self.assertEqual(
@@ -195,7 +240,7 @@ class GetiOSSimUtil(test_runner_test.TestCase):
         subprocess_mock.call_args[0][0])
 
   @mock.patch('subprocess.check_output', autospec=True)
-  def test_get_home_directory(self, subprocess_mock, _):
+  def test_get_home_directory(self, subprocess_mock, _, _2):
     """Ensures that command is correct."""
     subprocess_mock.return_value = b'HOME_DIRECTORY'
     self.assertEqual('HOME_DIRECTORY',
@@ -206,13 +251,13 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     ], subprocess_mock.call_args[0][0])
 
   @mock.patch.object(iossim_util, 'create_device_by_platform_and_version')
-  def test_no_new_sim_created_when_one_exists(self, mock_create, _):
+  def test_no_new_sim_created_when_one_exists(self, mock_create, _, _2):
     """Ensures no simulator is created when one in desired dimension exists."""
     self.assertEqual('A4E66321-177A-450A-9BA1-488D85B7278E',
                      iossim_util.get_simulator('iPhone 11', '13.2.2'))
     self.assertFalse(mock_create.called)
 
-  def test_copy_cert(self, _):
+  def test_copy_cert(self, _, _2):
     """Ensures right commands are issued to copy cert"""
     self.mock(os.path, 'exists', lambda *args: True)
 
@@ -231,6 +276,56 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     check_call_mock.assert_has_calls(calls)
     # ensure subprocess.check_call was only called 3 times
     self.assertEqual(check_call_mock.call_count, 3)
+
+  def test_get_simulator_runtime_info(self, _, _2):
+    runtime = iossim_util.get_simulator_runtime_info('13.1')
+    self.assertIsNotNone(runtime)
+    self.assertEqual(runtime['version'], '13.1')
+
+  def test_add_simulator_runtime(self, _, _2):
+    check_output_mock = mock.Mock()
+    self.mock(subprocess, 'check_output', check_output_mock)
+    dmg_path = 'path/to/dmg'
+    iossim_util.add_simulator_runtime(dmg_path)
+
+    calls = [
+        mock.call(['xcrun', 'simctl', 'runtime', 'add', dmg_path]),
+    ]
+
+    check_output_mock.assert_has_calls(calls)
+    self.assertEqual(check_output_mock.call_count, 1)
+
+  def test_delete_simulator_runtime(self, _, _2):
+    check_output_mock = mock.Mock()
+    self.mock(subprocess, 'check_output', check_output_mock)
+    runtime_id = '111111'
+    iossim_util.delete_simulator_runtime(runtime_id)
+
+    calls = [
+        mock.call(['xcrun', 'simctl', 'runtime', 'delete', runtime_id]),
+    ]
+
+    check_output_mock.assert_has_calls(calls)
+    self.assertEqual(check_output_mock.call_count, 1)
+
+  def test_delete_simulator_runtime_and_wait_success(self, _, _2):
+    with mock.patch('iossim_util.get_simulator_runtime_info') \
+        as mock_get_runtime_info, \
+        mock.patch('iossim_util.delete_simulator_runtime') \
+        as mock_delete_runtime:
+      mock_get_runtime_info.side_effect = [
+          {
+              'identifier': '111111',
+              'state': 'deleting'
+          },
+          None,
+      ]
+      mock_delete_runtime.return_value = None
+
+      iossim_util.delete_simulator_runtime_and_wait('13.1')
+
+      mock_get_runtime_info.assert_called_with('13.1')
+      mock_delete_runtime.assert_called_once_with('111111')
 
 
 if __name__ == '__main__':

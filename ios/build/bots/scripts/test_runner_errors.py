@@ -35,3 +35,11 @@ class XcodeMacToolchainMismatchError(XcodeInstallError):
   def __init__(self, xcode_build_version):
     super(XcodeMacToolchainMismatchError, self).__init__(
         'Legacy mac_toolchain cannot work with Xcode: %s' % xcode_build_version)
+
+
+class SimRuntimeDeleteTimeoutError(Error):
+  """When deleting a simulator runtime exceeds timeout."""
+
+  def __init__(self, ios_version):
+    super(SimRuntimeDeleteTimeoutError, self).__init__(
+        'Unable to delete runtime %s after timeout' % ios_version)

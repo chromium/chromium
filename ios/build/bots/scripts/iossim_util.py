@@ -6,10 +6,14 @@ import json
 import logging
 import os
 import subprocess
+import time
 
 import test_runner
+import test_runner_errors
 
 LOGGER = logging.getLogger(__name__)
+
+MAX_WAIT_TIME_TO_DELETE_RUNTIME = 15  # 15 seconds
 
 
 def _compose_simulator_name(platform, version):
@@ -280,3 +284,69 @@ def copy_trusted_certificate(cert_path, udid):
   except subprocess.CalledProcessError as e:
     message = 'Failed to install cert. Error: %s' % e.output
     LOGGER.error(message)
+
+
+def get_simulator_runtime_list():
+  """Gets list of available simulator runtimes as a dictionary."""
+  return json.loads(
+      subprocess.check_output(['xcrun', 'simctl', 'runtime', 'list',
+                               '-j']).decode('utf-8'))
+
+
+def get_simulator_runtime_info(ios_version):
+  """Gets runtime object based on iOS version.
+
+  Args:
+    version: (str) A version name, e.g. "13.4"
+
+  Returns:
+    a simulator runtime json object that contains all the info of an
+    iOS runtime
+    e.g.
+    {
+      "build" : "19F70",
+      "deletable" : true,
+      "identifier" : "FD9ED7F9-96A7-4621-B328-4C317893EC8A",
+      etc...
+    }
+    if no runtime for the corresponding iOS version is found, then
+    return None.
+  """
+  runtimes = get_simulator_runtime_list()
+  for runtime in runtimes.values():
+    if runtime['version'] == ios_version:
+      return runtime
+  return None
+
+
+def add_simulator_runtime(runtime_dmg_path):
+  cmd = ['xcrun', 'simctl', 'runtime', 'add', runtime_dmg_path]
+  LOGGER.debug('Adding runtime with command %s' % cmd)
+  subprocess.check_output(cmd)
+
+
+def delete_simulator_runtime(runtime_id):
+  cmd = ['xcrun', 'simctl', 'runtime', 'delete', runtime_id]
+  LOGGER.debug('Deleting runtime with command %s' % cmd)
+  subprocess.check_output(cmd)
+
+
+def delete_simulator_runtime_and_wait(ios_version):
+  runtime_to_delete = get_simulator_runtime_info(ios_version)
+  if runtime_to_delete == None:
+    LOGGER.debug('Runtime %s does not exist in Xcode, no need to cleanup...' %
+                 ios_version)
+    return
+
+  delete_simulator_runtime(runtime_to_delete['identifier'])
+  # runtime takes a few seconds to delete
+  time_waited = 0
+  while (runtime_to_delete != None):
+    LOGGER.debug('Waiting for runtime to be deleted. Current state is %s' %
+                 runtime_to_delete['state'])
+    runtime_to_delete = get_simulator_runtime_info(ios_version)
+    time.sleep(1)
+    time_waited += 1
+    if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
+      raise test_runner_errors.SimRuntimeDeleteTimeoutError(ios_version)
+  LOGGER.debug('Runtime successfully deleted!')
