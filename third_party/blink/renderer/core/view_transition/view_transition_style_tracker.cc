@@ -344,7 +344,8 @@ ViewTransitionStyleTracker::ViewTransitionStyleTracker(
   VectorOf<AtomicString> transition_names;
   transition_names.ReserveInitialCapacity(captured_name_count_);
   for (const auto& transition_state_element : transition_state.elements) {
-    AtomicString name(transition_state_element.tag_name.c_str());
+    auto name =
+        AtomicString::FromUTF8(transition_state_element.tag_name.c_str());
     transition_names.push_back(name);
 
     if (transition_state_element.is_root) {
