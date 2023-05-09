@@ -450,7 +450,20 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   void ResetApnMigrator(const base::Value::List& arg_list) {
     NET_LOG(EVENT) << "Executing reset ApnMigrator";
-    g_browser_process->local_state()->ClearPref(prefs::kApnMigratedIccids);
+    PrefService* local_state = g_browser_process->local_state();
+
+    // Clear set of migrated ICCIDs.
+    local_state->ClearPref(prefs::kApnMigratedIccids);
+
+    // Clear all revamp APN lists in all network.
+    const std::string network_metadata_pref = "network_metadata";
+    base::Value::Dict device_dict =
+        local_state->GetDict(network_metadata_pref).Clone();
+    for (auto const [guid, val] : device_dict) {
+      base::Value::Dict* network_dict = device_dict.FindDict(guid.c_str());
+      network_dict->Remove("custom_apn_list_v2");
+    }
+    local_state->SetDict(network_metadata_pref, std::move(device_dict));
   }
 
   void OnEuiccReset(bool success) {
