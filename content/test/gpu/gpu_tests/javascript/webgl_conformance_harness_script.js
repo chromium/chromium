@@ -10,7 +10,6 @@ class WebSocketWrapper {
     this.throttle_timer = null;
     this.last_heartbeat = null;
     this.socket = null;
-    this.eat_messages = false;
 
     this._sendDelayedHeartbeat = this._sendDelayedHeartbeat.bind(this);
   }
@@ -23,14 +22,7 @@ class WebSocketWrapper {
     }
   }
 
-  eatWebsocketMessages() {
-    this.eat_messages = true;
-  }
-
   _sendMessage(message) {
-    if (this.eat_messages) {
-      return;
-    }
     if (this.socket === null) {
       this.queued_messages.push(message);
     } else {
@@ -110,12 +102,6 @@ function connectWebsocket(port) {
   socket.addEventListener('open', () => {
     wrapper.setWebSocket(socket);
   });
-}
-
-// TODO(crbug.com/1432592): Remove this once Android is back to using the
-// heartbeat mechanism.
-function eatWebsocketMessages() {
-  wrapper.eatWebsocketMessages();
 }
 
 function wrapFunctionInHeartbeat(prototype, key) {
