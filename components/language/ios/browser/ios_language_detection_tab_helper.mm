@@ -25,6 +25,10 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #include "net/http/http_response_headers.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace language {
 
 // Note: This should stay in sync with the constant in language_detection.js.

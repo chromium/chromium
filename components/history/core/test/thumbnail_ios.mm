@@ -10,6 +10,10 @@
 #include "components/history/core/test/thumbnail-inl.h"
 #include "ui/gfx/image/image.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace history {
 
 gfx::Image CreateGoogleThumbnailForTest() {
@@ -22,8 +26,7 @@ gfx::Image CreateGoogleThumbnailForTest() {
                                 static_cast<const void*>(kGoogleThumbnail))
                      length:sizeof(kGoogleThumbnail)
                freeWhenDone:NO];
-    UIImage* image = [UIImage imageWithData:data scale:1];
-    return gfx::Image([image retain]);
+    return gfx::Image([UIImage imageWithData:data scale:1]);
   }
 }
 

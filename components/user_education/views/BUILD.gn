@@ -21,6 +21,7 @@ source_set("views") {
       "help_bubble_factory_mac.h",
       "help_bubble_factory_mac.mm",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
 
   public_deps = [ "//components/user_education/common" ]
