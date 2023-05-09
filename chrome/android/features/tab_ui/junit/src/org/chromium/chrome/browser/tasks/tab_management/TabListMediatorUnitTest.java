@@ -97,7 +97,6 @@ import org.chromium.chrome.browser.endpoint_fetcher.EndpointResponse;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
@@ -2211,8 +2210,6 @@ public class TabListMediatorUnitTest {
         Configuration configuration = new Configuration();
         configuration.orientation = Configuration.ORIENTATION_PORTRAIT;
         configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
-        // Mock that we are in single window mode.
-        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
 
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(configuration);
 
@@ -2225,34 +2222,11 @@ public class TabListMediatorUnitTest {
         // Mock that we are switching to landscape mode.
         Configuration configuration = new Configuration();
         configuration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
-        // Mock that we are in single window mode.
-        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+        configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP - 1;
 
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(configuration);
 
         verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
-    }
-
-    @Test
-    public void updateSpanCount_MultiWindow() {
-        initAndAssertAllProperties();
-        Configuration portraitConfiguration = new Configuration();
-        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
-        portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
-        Configuration landscapeConfiguration = new Configuration();
-        landscapeConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        landscapeConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
-        // Mock that we are in multi window mode.
-        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
-
-        mComponentCallbacksCaptor.getValue().onConfigurationChanged(landscapeConfiguration);
-        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
-        mComponentCallbacksCaptor.getValue().onConfigurationChanged(landscapeConfiguration);
-
-        // The span count is fixed to 2 for multi window mode regardless of the orientation change.
-        verify(mGridLayoutManager, times(3))
-                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
     }
 
     @Test
@@ -2264,9 +2238,6 @@ public class TabListMediatorUnitTest {
                 .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
         Configuration portraitConfiguration = new Configuration();
         portraitConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
-
-        // Mock that we are in single window mode.
-        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
 
         // Compact width
         portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
