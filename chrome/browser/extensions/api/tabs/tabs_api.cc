@@ -394,8 +394,6 @@ void SetLockedFullscreenState(Browser* browser, bool pinned) {
 
   const chromeos::WindowPinType previous_type =
       window->GetProperty(lacros::kWindowPinTypeKey);
-  DCHECK_NE(previous_type, chromeos::WindowPinType::kTrustedPinned)
-      << "Extensions only set Trusted Pinned";
 
   bool previous_pinned =
       previous_type == chromeos::WindowPinType::kTrustedPinned;
