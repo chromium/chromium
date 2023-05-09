@@ -8,6 +8,9 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/connectors/device_trust/consent_policy_observer.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_connector_service_factory.h"
 #include "chrome/browser/enterprise/signals/user_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -44,6 +47,8 @@ UserPermissionServiceFactory::UserPermissionServiceFactory()
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(policy::ManagementServiceFactory::GetInstance());
+  DependsOn(
+      enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance());
 }
 
 UserPermissionServiceFactory::~UserPermissionServiceFactory() = default;
@@ -57,10 +62,21 @@ KeyedService* UserPermissionServiceFactory::BuildServiceInstanceFor(
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
 
-  return new device_signals::UserPermissionServiceImpl(
+  auto* user_permission_service = new device_signals::UserPermissionServiceImpl(
       management_service,
       std::make_unique<UserDelegateImpl>(profile, identity_manager),
       profile->GetPrefs());
+
+  auto* device_trust_connector_service =
+      enterprise_connectors::DeviceTrustConnectorServiceFactory::GetForProfile(
+          profile);
+  if (device_trust_connector_service) {
+    device_trust_connector_service->AddObserver(
+        std::make_unique<enterprise_connectors::ConsentPolicyObserver>(
+            user_permission_service->GetWeakPtr()));
+  }
+
+  return user_permission_service;
 }
 
 }  // namespace enterprise_signals

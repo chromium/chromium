@@ -23,7 +23,7 @@ class SigningKeyPolicyObserver
 
  private:
   // Browser-process-level object that will outlive the current instance.
-  raw_ptr<DeviceTrustKeyManager> browser_key_manager_;
+  const raw_ptr<DeviceTrustKeyManager> browser_key_manager_;
 };
 
 }  // namespace enterprise_connectors

@@ -4424,7 +4424,6 @@ static_library("browser") {
       "//components/commerce/core:public",
       "//components/commerce/core/mojom:mojo_bindings",
       "//components/constrained_window",
-      "//components/device_signals/core/browser",
       "//components/endpoint_fetcher:endpoint_fetcher",
       "//components/feedback",
       "//components/feedback/content:factory",
@@ -6063,6 +6062,8 @@ static_library("browser") {
 
   if (is_linux || is_win || is_mac || is_chromeos_ash) {
     sources += [
+      "enterprise/connectors/device_trust/consent_policy_observer.cc",
+      "enterprise/connectors/device_trust/consent_policy_observer.h",
       "enterprise/connectors/device_trust/device_trust_connector_service.cc",
       "enterprise/connectors/device_trust/device_trust_connector_service.h",
       "enterprise/connectors/device_trust/device_trust_connector_service_factory.cc",
@@ -6092,6 +6093,8 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/signals",
       "//chrome/browser/enterprise/connectors/device_trust/signals/decorators/common",
       "//chrome/browser/ui/webui/connectors_internals:mojo_bindings",
+      "//components/device_signals/core/browser",
+      "//components/device_signals/core/common",
       "//components/policy/proto:proto",
       "//services/data_decoder/public/cpp",
     ]
@@ -6170,8 +6173,6 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
       "//chrome/services/system_signals/public/cpp/browser",
-      "//components/device_signals/core/browser",
-      "//components/device_signals/core/common",
     ]
     public_deps +=
         [ "//chrome/browser/enterprise/connectors/analysis:sdk_manager" ]

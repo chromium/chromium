@@ -62,6 +62,10 @@ class UserPermissionService : public KeyedService {
   // based on the current context (e.g. browser-wide management, user logged-in
   // to a Profile). Returns `kGranted` if collection is allowed.
   virtual UserPermission CanCollectSignals() = 0;
+
+  // Will evaluate whether the user's consent should be reset or not based on
+  // the current management context.
+  virtual void ResetUserConsentIfNeeded() = 0;
 };
 
 }  // namespace device_signals

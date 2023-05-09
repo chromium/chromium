@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/device_signals/core/browser/user_context.h"
 #include "components/device_signals/core/browser/user_delegate.h"
@@ -26,9 +27,21 @@ UserPermissionServiceImpl::UserPermissionServiceImpl(
   CHECK(management_service_);
   CHECK(user_delegate_);
   CHECK(user_prefs_);
+
+  pref_observer_.Init(user_prefs_);
+  pref_observer_.Add(
+      prefs::kUnmanagedDeviceSignalsConsentFlowEnabled,
+      base::BindRepeating(&UserPermissionServiceImpl::ResetUserConsentIfNeeded,
+                          weak_factory_.GetWeakPtr()));
 }
 
 UserPermissionServiceImpl::~UserPermissionServiceImpl() = default;
+
+// Returns a WeakPtr for the current service.
+base::WeakPtr<UserPermissionServiceImpl>
+UserPermissionServiceImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
 
 bool UserPermissionServiceImpl::ShouldCollectConsent() {
   if (HasUserConsented()) {
@@ -37,8 +50,7 @@ bool UserPermissionServiceImpl::ShouldCollectConsent() {
   }
 
   bool consent_required_by_specific_policy =
-      !IsDeviceCloudManaged() &&
-      user_prefs_->GetBoolean(prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
+      !IsDeviceCloudManaged() && IsConsentFlowPolicyEnabled();
 
   bool consent_required_by_dependent_policy = false;
   std::set<policy::PolicyScope> scopes =
@@ -116,6 +128,29 @@ UserPermission UserPermissionServiceImpl::CanCollectSignals() {
       scopes.size() == 1U;
   return only_needed_by_device ? UserPermission::kGranted
                                : UserPermission::kMissingConsent;
+}
+
+void UserPermissionServiceImpl::ResetUserConsentIfNeeded() {
+  if (!HasUserConsented()) {
+    // No need to reset consent if no consent was given. Having this condition
+    // simplifies the following logic a lot as it excludes many contexts where
+    // consent was not required in the first place (e.g. affiliated case where a
+    // dependent user policy becomes disabled).
+    return;
+  }
+
+  std::set<policy::PolicyScope> scopes =
+      user_delegate_->GetPolicyScopesNeedingSignals();
+  bool has_dependent_user_policy =
+      scopes.find(policy::POLICY_SCOPE_USER) != scopes.end();
+  if (!IsConsentFlowPolicyEnabled() && !has_dependent_user_policy) {
+    user_prefs_->SetBoolean(prefs::kDeviceSignalsConsentReceived, false);
+  }
+}
+
+bool UserPermissionServiceImpl::IsConsentFlowPolicyEnabled() const {
+  return user_prefs_->GetBoolean(
+      prefs::kUnmanagedDeviceSignalsConsentFlowEnabled);
 }
 
 bool UserPermissionServiceImpl::HasUserConsented() const {
