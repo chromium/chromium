@@ -235,12 +235,6 @@ BASE_FEATURE(kAutofillEnableLabelPrecedenceForTurkishAddresses,
              "AutofillEnableLabelPrecedenceForTurkishAddresses",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the address profile deduplication logic runs after the browser
-// startup, once per chrome version.
-BASE_FEATURE(kAutofillEnableProfileDeduplication,
-             "AutofillEnableProfileDeduplication",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Controls if Autofill supports merging subset names.
 // TODO(crbug.com/1098943): Remove once launched.
 BASE_FEATURE(kAutofillEnableSupportForMergingSubsetNames,
