@@ -5,14 +5,17 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -37,6 +40,7 @@ import java.util.function.BooleanSupplier;
  * user-intervened ones.
  */
 class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
+    private static final String TAG = "CustomTabsOTR";
     private final CustomTabActivityNavigationController mNavigationController;
     private final BooleanSupplier mIsCctFinishing;
     private final BrowserServicesIntentDataProvider mIntent;
@@ -102,6 +106,16 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
             CustomTabsOpenTimeRecorderJni.get().recordCustomTabSession(time,
                     (mCachedPackageName != null ? mCachedPackageName : ""), recordDuration,
                     wasUserClose, isPartial);
+
+            // TODO(crbug.com/1442388): Remove this after the investigation is over.
+            if (isPartial && TextUtils.isEmpty(mCachedPackageName)) {
+                String msg = "Partial CCT cannot have an empty package name."
+                        + " trusted: " + mIntent.isTrustedIntent() + " chrome: "
+                        + mIntent.isOpenedByChrome() + " incognito: " + mIntent.isIncognito()
+                        + " type: " + mIntent.getUiType() + " duration: " + recordDuration;
+                Log.e(TAG, msg);
+                ChromePureJavaExceptionReporter.reportJavaException(new Throwable(msg));
+            }
         }
 
         mOnStartTimestampMs = 0;
