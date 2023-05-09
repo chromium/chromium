@@ -13,17 +13,22 @@
   --cros-sys-base_elevated: var(--grey-900);
   --cros-sys-error_container: rgba(var(--red-300-rgb), 0.3);
   --cros-sys-focus_ring: var(--blue-300);
+  --cros-sys-highlight_shape: rgba(var(--blue-300-rgb), 0.3);
   --cros-sys-hover_on_prominent: rgba(255, 255, 255, 0.08);
   --cros-sys-hover_on_subtle: rgba(255, 255, 255, 0.06);
+  --cros-sys-illo-color3: var(--blue-300);
   --cros-sys-inverse_on_surface: black;
   --cros-sys-inverse_surface: var(--grey-200);
+  --cros-sys-on_background: var(--grey-200);
+  --cros-sys-on_error_container: var(--red-300);
+  --cros-sys-on_primary: var(--grey-900);
+  --cros-sys-on_primary_container: var(--grey-200);
+  --cros-sys-on_surface: var(--grey-200);
   --cros-sys-primary: var(--blue-300);
   --cros-sys-scrim2: rgba(0, 0, 0, 0.6);
   --cros-sys-secondary: var(--grey-400);
   --cros-sys-secondary_container: var(--grey-600);
   --cros-sys-separator: rgba(255, 255, 255, 0.14);
-  --cros-sys-on_error_container: var(--red-300);
-  --cros-sys-on_surface: var(--grey-200);
 }
 
 .mode-item > input:checked + span {
@@ -112,4 +117,51 @@ button.shutter {
 
 :is(#start-takephoto, #video-snapshot):enabled:active svg-wrapper {
   color: var(--blue-500);
+}
+
+#view-document-review .document-pages {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+#view-document-review .preview-area {
+  background: transparent;
+  border: 1px solid rgba(var(--grey-200-rgb), 0.38);
+  border-radius: 0;
+}
+
+.document-fix-mode .dot::after {
+  background: rgba(var(--blue-300-rgb), 0.24);
+}
+
+.document-fix-mode .crop-area {
+  fill: rgba(var(--blue-300-rgb), 0.3);
+}
+
+.text-button.dark.secondary {
+  background: var(--grey-900);
+  border: 1px solid var(--grey-700);
+  color: var(--blue-300);
+}
+
+.text-button.dark.secondary:hover {
+  background: rgba(var(--blue-300-rgb), 0.08);
+}
+
+.text-button.dark.system-secondary {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.text-button.dark.system-secondary:hover,
+.text-button.dark.system-secondary:focus {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.icon-button {
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+}
+
+#view-document-review .delete {
+  border-radius: 50%;
 }

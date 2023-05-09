@@ -1254,7 +1254,6 @@ button.menu-item {
 
 .menu-header button.icon {
   /* Icon image is small enough and won't be covered by -1px */
-  background-image: url(/images/settings_button_back.svg);
   outline-offset: -1px;
 }
 
@@ -1479,7 +1478,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 .low-storage-dialog-popup {
-  background: var(--grey-900);
+  background: var(--cros-sys-base_elevated);
   border-radius: 8px;
   display: flex;
   flex-direction: column;
@@ -1513,7 +1512,6 @@ body:not(.video) #settings-video-resolution {
 }
 
 .low-storage-dialog-buttons .external-link-icon {
-  background: url(/images/external_link_icon.svg);
   height: 20px;
   width: 20px;
 }

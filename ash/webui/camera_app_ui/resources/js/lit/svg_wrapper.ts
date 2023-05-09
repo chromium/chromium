@@ -35,7 +35,7 @@ export class SvgWrapper extends LitElement {
     name: {type: String},
   };
 
-  name = null;
+  name: string|null = null;
 
   override connectedCallback(): void {
     super.connectedCallback();
