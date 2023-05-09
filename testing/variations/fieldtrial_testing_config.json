@@ -10900,6 +10900,30 @@
             ]
         }
     ],
+    "QueueNavigationsWhileWaitingForCommit": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "level": "avoid-redundant"
+                    },
+                    "enable_features": [
+                        "QueueNavigationsWhileWaitingForCommit"
+                    ]
+                }
+            ]
+        }
+    ],
     "QuickAnswersForMoreLocales": [
         {
             "platforms": [
