@@ -3,15 +3,25 @@
 # If you want to disable a test only for version skew testing,
 # you should add the test here, not in the source code.
 
-# Older versions of ash don't support injecting touch events via weston-test.
--TabDragging/*/1
--TabDragging/*/3
-
-# Can be removed when ash >= M110
--SitePerProcessInteractiveBrowserTest.TabAndMouseFocusNavigation
--TabMetricsLoggerTest.CreateWindowFeaturesTestWindowActivation
--WidgetInputMethodInteractiveTest.Activation
--WidgetInputMethodInteractiveTest.OneWindow
--WidgetInputMethodInteractiveTest.TwoWindows
--DesktopWindowTreeHostPlatformImplTest.Deactivate
--ExtensionApiTest.WindowOpenFocus
+# Can be enabled once this version skew variant uses Ash >= 114.0.5735.18.
+-MenuItemViewTestRemoveWithSubmenu0.RemoveItemWithSubmenu0
+-TabDragging/DetachToBrowserTabDragControllerTest.CancelOnNewTabWhenDragging/0
+-TabDragging/DetachToBrowserTabDragControllerTest.CancelOnNewTabWhenDragging/2
+-TabDragging/DetachToBrowserTabDragControllerTest.CaptureLostDuringDrag/0
+-TabDragging/DetachToBrowserTabDragControllerTest.CaptureLostDuringDrag/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DeleteBeforeStartedDragging/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DeleteBeforeStartedDragging/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabsWhileDetached/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabsWhileDetached/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabWhileAttached/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DeleteTabWhileAttached/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/2
+-TabDragging/DetachToBrowserTabDragControllerTest.DragAll/0
+-TabDragging/DetachToBrowserTabDragControllerTest.DragAll/2
+-TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/0
+-TabDragging/DetachToBrowserTabDragControllerTest.KeyPressShouldEndDragTest/2
+-TabDragging/DetachToBrowserTabDragControllerTest.RevertDragWhileDetached/0
+-TabDragging/DetachToBrowserTabDragControllerTest.RevertDragWhileDetached/2
