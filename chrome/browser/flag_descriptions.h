@@ -1001,6 +1001,9 @@ extern const char kHttpsOnlyModeDescription[];
 extern const char kHttpsFirstModeV2Name[];
 extern const char kHttpsFirstModeV2Description[];
 
+extern const char kHttpsFirstModeV2ForEngagedSitesName[];
+extern const char kHttpsFirstModeV2ForEngagedSitesDescription[];
+
 extern const char kHttpsUpgradesName[];
 extern const char kHttpsUpgradesDescription[];
 

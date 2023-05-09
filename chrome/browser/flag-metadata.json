@@ -4421,6 +4421,14 @@
     "expiry_milestone": 118
   },
   {
+    "name": "https-first-mode-v2-for-engaged-sites",
+    "owners": [
+      "meacer",
+      "trusty-transport@chromium.org"
+    ],
+    "expiry_milestone": 118
+  },
+  {
     "name": "https-only-mode",
     "owners": [ "meacer", "trusty-transport@chromium.org" ],
     "expiry_milestone": 110

@@ -1799,6 +1799,13 @@ const char kHttpsFirstModeV2Name[] = "HTTPS-First Mode V2";
 const char kHttpsFirstModeV2Description[] =
     "Enable rearchitected version of HTTPS-First Mode.";
 
+const char kHttpsFirstModeV2ForEngagedSitesName[] =
+    "HTTPS-First Mode V2 For Engaged Sites";
+const char kHttpsFirstModeV2ForEngagedSitesDescription[] =
+    "Enable Site-Engagement based HTTPS-First Mode. Shows HTTPS-First Mode "
+    "interstitial on sites whose HTTPS URLs have high Site Engagement scores. "
+    "Requires #https-upgrades feature to be enabled";
+
 const char kHttpsUpgradesName[] = "HTTPS Upgrades";
 const char kHttpsUpgradesDescription[] =
     "Enable automatically upgrading all top-level navigations to HTTPS with "

@@ -61192,6 +61192,7 @@ from previous Chrome versions.
   <int value="-674265959" label="AppPreloadService:enabled"/>
   <int value="-673804828" label="EnablePlayStoreAppSearch:disabled"/>
   <int value="-673149604" label="RelatedSearches:enabled"/>
+  <int value="-672031550" label="HttpsFirstModeV2ForEngagedSites:enabled"/>
   <int value="-671992446" label="TranslateRankerEnforcement:disabled"/>
   <int value="-670188266" label="enable-zip-archiver-unpacker"/>
   <int value="-669761849" label="SplitSettings:disabled"/>
@@ -61822,6 +61823,7 @@ from previous Chrome versions.
   <int value="-325271559" label="NtpRepeatableQueries:enabled"/>
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
+  <int value="-324429921" label="HttpsFirstModeV2ForEngagedSites:disabled"/>
   <int value="-324239279" label="DiscardedTabTreatment:disabled"/>
   <int value="-324099334" label="HatsUseNewHistograms:disabled"/>
   <int value="-323913169" label="PasswordNotesWithBackup:enabled"/>
