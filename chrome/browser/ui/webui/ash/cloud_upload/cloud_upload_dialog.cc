@@ -172,26 +172,11 @@ void OpenAndroidOneDriveUrls(
   }
 }
 
-bool FileIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
+bool PathIsOnDriveFS(Profile* profile, const base::FilePath& file_path) {
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   base::FilePath relative_path;
   return integration_service->GetRelativeDrivePath(file_path, &relative_path);
-}
-
-bool FileIsOnODFS(Profile* profile, const FileSystemURL& url) {
-  ash::file_system_provider::util::FileSystemURLParser parser(url);
-  if (!parser.Parse()) {
-    return false;
-  }
-
-  file_system_provider::ProviderId provider_id =
-      file_system_provider::ProviderId::CreateFromExtensionId(
-          file_manager::file_tasks::GetODFSExtensionId(profile));
-  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
-    return false;
-  }
-  return true;
 }
 
 bool HasWordFile(const std::vector<storage::FileSystemURL>& file_urls) {
@@ -284,15 +269,15 @@ bool CloudOpenTask::ExecuteInternal() {
 // the files before opening.
 void CloudOpenTask::OpenOrMoveFiles() {
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
-      FileIsOnDriveFS(profile_, file_urls_.front().path())) {
+      PathIsOnDriveFS(profile_, file_urls_.front().path())) {
     // The files are on Drive already.
     OpenAlreadyHostedDriveUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
-             FileIsOnODFS(profile_, file_urls_.front())) {
+             UrlIsOnODFS(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from ODFS.
     OpenODFSUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
-             FileIsOnAndroidOneDrive(profile_, file_urls_.front())) {
+             UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from Android OneDrive.
     OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
   } else {
@@ -411,7 +396,22 @@ bool ShouldFixUpOffice(Profile* profile, const CloudProvider cloud_provider) {
            CloudUploadDialog::IsOfficeWebAppInstalled(profile));
 }
 
-bool FileIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url) {
+bool UrlIsOnODFS(Profile* profile, const FileSystemURL& url) {
+  ash::file_system_provider::util::FileSystemURLParser parser(url);
+  if (!parser.Parse()) {
+    return false;
+  }
+
+  file_system_provider::ProviderId provider_id =
+      file_system_provider::ProviderId::CreateFromExtensionId(
+          file_manager::file_tasks::GetODFSExtensionId(profile));
+  if (parser.file_system()->GetFileSystemInfo().provider_id() != provider_id) {
+    return false;
+  }
+  return true;
+}
+
+bool UrlIsOnAndroidOneDrive(Profile* profile, const FileSystemURL& url) {
   std::string authority;
   std::string root_document_id;
   base::FilePath path;
@@ -476,7 +476,7 @@ void CloudOpenTask::OpenAndroidOneDriveUrlsIfAccountMatchedODFS() {
 absl::optional<ODFSFileSystemAndPath> AndroidOneDriveUrlToODFS(
     Profile* profile,
     const FileSystemURL& android_onedrive_file_url) {
-  if (!FileIsOnAndroidOneDrive(profile, android_onedrive_file_url)) {
+  if (!UrlIsOnAndroidOneDrive(profile, android_onedrive_file_url)) {
     LOG(ERROR) << "File not on Android OneDrive";
     return absl::nullopt;
   }

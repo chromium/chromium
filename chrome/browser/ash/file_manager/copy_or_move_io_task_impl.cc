@@ -33,6 +33,10 @@
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -183,6 +187,23 @@ void CopyOrMoveIOTaskImpl::Execute(IOTask::ProgressCallback progress_callback,
                                    IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
+
+  // TODO(b/280947989) remove this code once Multi-user sign-in is deprecated.
+  // Prevent files being copied or moved to ODFS if there is a managed user
+  // present amongst other logged in users. Ensures managed user's files can't
+  // be leaked to a non-managed user's ODFS b/278644796.
+  if (ash::cloud_upload::UrlIsOnODFS(profile_,
+                                     progress_->GetDestinationFolder())) {
+    // Check none of the logged in users are managed.
+    for (auto* user : user_manager::UserManager::Get()->GetLoggedInUsers()) {
+      Profile* user_profile = Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+      if (user_profile->GetProfilePolicyConnector()->IsManaged()) {
+        Complete(State::kError);
+        return;
+      }
+    }
+  }
 
   if (progress_->sources.size() == 0) {
     Complete(State::kSuccess);
