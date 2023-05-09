@@ -199,11 +199,6 @@ dependencies {
     testCompile "org.robolectric:shadows-multidex:${robolectricVersion}"
     testCompile "org.robolectric:shadows-playservices:${robolectricVersion}"
     testCompile "org.robolectric:utils:${robolectricVersion}"
-
-    // TODO(1404995): Remove after robolectric is update to 4.9.2 as nothing
-    // else depends on this, so we want it removed when robolectric doesn't
-    //need it anymore.
-    testCompile "org.conscrypt:conscrypt-openjdk-uber:2.5.2"
 }
 
 task setUpRepository(type: BuildConfigGenerator) {

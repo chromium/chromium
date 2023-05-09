@@ -1473,14 +1473,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  java_prebuilt("org_conscrypt_conscrypt_openjdk_uber_java") {
-    jar_path = "libs/org_conscrypt_conscrypt_openjdk_uber/conscrypt-openjdk-uber-2.5.2.jar"
-    output_name = "org_conscrypt_conscrypt_openjdk_uber"
-    enable_bytecode_checks = false
-    testonly = true
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("org_jetbrains_kotlin_kotlin_stdlib_jdk7_java") {
     jar_path = "libs/org_jetbrains_kotlin_kotlin_stdlib_jdk7/kotlin-stdlib-jdk7-1.8.20.jar"
     output_name = "org_jetbrains_kotlin_kotlin_stdlib_jdk7"
@@ -2413,6 +2405,21 @@ if (!limit_android_deps) {
   java_prebuilt("org_bouncycastle_bcprov_jdk18on_java") {
     jar_path = "libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on-1.72.jar"
     output_name = "org_bouncycastle_bcprov_jdk18on"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/android_deps/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/androidx:*",
+    ]
+    testonly = true
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  java_prebuilt("org_conscrypt_conscrypt_openjdk_uber_java") {
+    jar_path = "libs/org_conscrypt_conscrypt_openjdk_uber/conscrypt-openjdk-uber-2.5.2.jar"
+    output_name = "org_conscrypt_conscrypt_openjdk_uber"
     enable_bytecode_checks = false
 
     # To remove visibility constraint, add this dependency to
