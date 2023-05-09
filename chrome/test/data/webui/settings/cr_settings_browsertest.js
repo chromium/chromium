@@ -764,12 +764,13 @@ var CrSettingsCookiesPageTest = class extends CrSettingsBrowserTest {
   }
 };
 
-GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
+GEN('#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)');
 GEN('#define MAYBE_CookiesPageTest DISABLED_CookiesPageTest');
 GEN('#else');
 GEN('#define MAYBE_CookiesPageTest CookiesPageTest');
 GEN('#endif');
-// TODO(crbug.com/1409653): fix flakiness on Linux debug builds and re-enable.
+// TODO(crbug.com/1409653): fix flakiness on Linux and ChromeOS debug builds and
+// re-enable.
 TEST_F('CrSettingsCookiesPageTest', 'MAYBE_CookiesPageTest', function() {
   runMochaSuite('CrSettingsCookiesPageTest');
 });
