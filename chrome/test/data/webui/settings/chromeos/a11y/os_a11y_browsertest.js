@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// OSSettingsAccessibilityV3Test fixture.
+// OSSettingsAccessibilityTest fixture.
 GEN_INCLUDE([
   'os_settings_accessibility_test.js',
 ]);
@@ -19,29 +19,27 @@ GEN('#include "content/public/test/browser_test.h"');
 // TODO(crbug.com/1002627): This block prevents generation of a
 // link-in-text-block browser-test. This can be removed once the bug is
 // addressed, and usage should be replaced with
-// OSSettingsAccessibilityV3Test.axeOptions
+// OSSettingsAccessibilityTest.axeOptions
 const axeOptionsExcludeLinkInTextBlock =
-    Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions, {
-      'rules':
-          Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions.rules, {
-            'link-in-text-block': {enabled: false},
-          }),
+    Object.assign({}, OSSettingsAccessibilityTest.axeOptions, {
+      'rules': Object.assign({}, OSSettingsAccessibilityTest.axeOptions.rules, {
+        'link-in-text-block': {enabled: false},
+      }),
     });
 
 // TODO(crbug.com/1180696): This block prevents generation of a
 // document-title browser-test. This can be removed once the bug is
 // addressed, and usage should be replaced with
-// OSSettingsAccessibilityV3Test.axeOptions
+// OSSettingsAccessibilityTest.axeOptions
 const axeOptionsDocumentTitle =
-    Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions, {
-      'rules':
-          Object.assign({}, OSSettingsAccessibilityV3Test.axeOptions.rules, {
-            'document-title': {enabled: false},
-          }),
+    Object.assign({}, OSSettingsAccessibilityTest.axeOptions, {
+      'rules': Object.assign({}, OSSettingsAccessibilityTest.axeOptions.rules, {
+        'document-title': {enabled: false},
+      }),
     });
 
 const multideviceFeatureViolationFilter =
-    Object.assign({}, OSSettingsAccessibilityV3Test.violationsFilter, {
+    Object.assign({}, OSSettingsAccessibilityTest.violationsFilter, {
       // Excuse link without an underline.
       // TODO(https://crbug.com/894602): Remove this exception when settled
       // with UX.
@@ -73,7 +71,7 @@ const crostiniSubpageOptionsRules = Object.assign(
 const crostiniSubpageConfig = {
   featureList: crostiniFeatureList,
   options: Object.assign(
-      {}, OSSettingsAccessibilityV3Test.axeOptions,
+      {}, OSSettingsAccessibilityTest.axeOptions,
       {'rules': crostiniSubpageOptionsRules}),
   testGenPreamble: crostiniTestGenPreamble,
 };
@@ -142,8 +140,8 @@ const crostiniSubpageConfig = {
 ].forEach(test => defineTest(...test));
 
 function defineTest(testName, module, config) {
-  const className = `OSSettingsA11y${testName}V3`;
-  this[className] = class extends OSSettingsAccessibilityV3Test {
+  const className = `OSSettingsA11y${testName}`;
+  this[className] = class extends OSSettingsAccessibilityTest {
     /** @override */
     get browsePreload() {
       return `chrome://os-settings/test_loader.html?module=settings/chromeos/a11y/${
@@ -176,10 +174,10 @@ function defineTest(testName, module, config) {
 
   const filter = config && config.filter ?
       config.filter :
-      OSSettingsAccessibilityV3Test.violationFilter;
+      OSSettingsAccessibilityTest.violationFilter;
   const options = config && config.options ?
       config.options :
-      OSSettingsAccessibilityV3Test.axeOptions;
+      OSSettingsAccessibilityTest.axeOptions;
   AccessibilityTest.define(className, {
     /** @override */
     name: testName,

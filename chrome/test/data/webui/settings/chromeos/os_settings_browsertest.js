@@ -17,7 +17,7 @@ GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/accessibility/accessibility_features.h"');
 
 /** Test fixture for shared Polymer 3 elements. */
-var OSSettingsV3BrowserTest = class extends PolymerTest {
+var OSSettingsBrowserTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings';
@@ -36,7 +36,7 @@ var OSSettingsV3BrowserTest = class extends PolymerTest {
   }
 };
 
-var OSSettingsDevicePageV3Test = class extends OSSettingsV3BrowserTest {
+var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/device_page/device_page_tests.js';
@@ -62,13 +62,13 @@ TEST_F_WITH_PREAMBLE(
 #define MAYBE_All All
 #endif
     `,
-    'OSSettingsDevicePageV3Test', 'MAYBE_All',
+    'OSSettingsDevicePageTest', 'MAYBE_All',
     () => mocha.grep('/^((?!arrow_key_arrangement_disabled).)*$/').run());
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
-var OSSettingsOsBluetoothDevicesSubpageV3Test =
-    class extends OSSettingsV3BrowserTest {
+var OSSettingsOsBluetoothDevicesSubpageTest =
+    class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_page/os_bluetooth_devices_subpage_tests.js';
@@ -86,14 +86,14 @@ var OSSettingsOsBluetoothDevicesSubpageV3Test =
   }
 };
 
-TEST_F('OSSettingsOsBluetoothDevicesSubpageV3Test', 'AllJsTests', () => {
+TEST_F('OSSettingsOsBluetoothDevicesSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
 // TODO (b/238647706) Move this test back into the list of tests below once
 // Fast pair is launched.
-var OSSettingsOsBluetoothSavedDevicesSubpageV3Test =
-    class extends OSSettingsV3BrowserTest {
+var OSSettingsOsBluetoothSavedDevicesSubpageTest =
+    class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_subpage_tests.js';
@@ -113,14 +113,14 @@ var OSSettingsOsBluetoothSavedDevicesSubpageV3Test =
 
 // TODO (b/238647706) Move this test back into the list of tests below once
 // Fast pair is launched.
-TEST_F('OSSettingsOsBluetoothSavedDevicesSubpageV3Test', 'AllJsTests', () => {
+TEST_F('OSSettingsOsBluetoothSavedDevicesSubpageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Fast pair is launched.
-var OSSettingsOsBluetoothSavedDevicesListV3Test =
-    class extends OSSettingsV3BrowserTest {
+var OSSettingsOsBluetoothSavedDevicesListTest =
+    class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_saved_devices_list_tests.js';
@@ -138,12 +138,12 @@ var OSSettingsOsBluetoothSavedDevicesListV3Test =
   }
 };
 
-TEST_F('OSSettingsOsBluetoothSavedDevicesListV3Test', 'AllJsTests', () => {
+TEST_F('OSSettingsOsBluetoothSavedDevicesListTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsAppManagementAppDetailsV3Test =
-    class extends OSSettingsV3BrowserTest {
+var OSSettingsAppManagementAppDetailsTest =
+    class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/app_management/app_details_item_test.js';
@@ -163,11 +163,11 @@ function crostiniTestGenPreamble() {
   GEN('fake_crostini_features.SetAll(true);');
 }
 
-TEST_F('OSSettingsAppManagementAppDetailsV3Test', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementAppDetailsTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsCrostiniPageV3Test = class extends OSSettingsV3BrowserTest {
+var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_page_test.js';
@@ -179,12 +179,12 @@ var OSSettingsCrostiniPageV3Test = class extends OSSettingsV3BrowserTest {
   }
 };
 
-TEST_F('OSSettingsCrostiniPageV3Test', 'AllJsTests', () => {
+TEST_F('OSSettingsCrostiniPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
-var OSSettingsCrostiniExtraContainerPageV3Test =
-    class extends OSSettingsV3BrowserTest {
+var OSSettingsCrostiniExtraContainerPageTest =
+    class extends OSSettingsBrowserTest {
   /** @override */
   get browsePreload() {
     return 'chrome://os-settings/test_loader.html?module=settings/chromeos/crostini_extra_containers_subpage_test.js';
@@ -196,7 +196,7 @@ var OSSettingsCrostiniExtraContainerPageV3Test =
   }
 };
 
-TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
+TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
   mocha.run();
 });
 
@@ -607,8 +607,8 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
 ].forEach(test => registerTest(...test));
 
 function registerTest(testName, module, featureList) {
-  const className = `OSSettings${testName}V3Test`;
-  this[className] = class extends OSSettingsV3BrowserTest {
+  const className = `OSSettings${testName}Test`;
+  this[className] = class extends OSSettingsBrowserTest {
     /** @override */
     get browsePreload() {
       return `chrome://os-settings/test_loader.html?module=settings/chromeos/${
