@@ -282,10 +282,8 @@ class BookmarkManagerMediator
 
     private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver = new Observer() {
         @Override
-        @SuppressWarnings("NotifyDataSetChanged")
         public void onBookmarkRowDisplayPrefChanged(@BookmarkRowDisplayPref int displayPref) {
             mModelList.clear();
-            mDragReorderableRecyclerViewAdapter.notifyDataSetChanged();
             if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
                 search(mSearchText);
             } else {
