@@ -814,7 +814,6 @@ public class FakeUrlRequestTest {
         callback.blockForDone();
     }
 
-    @DisabledTest(message = "crbug.com/994722")
     @Test
     @SmallTest
     public void testShuttingDownCronetEngineWithActiveRequestFails() {
@@ -825,15 +824,15 @@ public class FakeUrlRequestTest {
                 (FakeUrlRequest) mFakeCronetEngine
                         .newUrlRequestBuilder(url, callback, callback.getExecutor())
                         .build();
-
         request.start();
-
         try {
             mFakeCronetEngine.shutdown();
             fail("Shutdown not checked for active requests.");
         } catch (IllegalStateException e) {
             assertEquals("Cannot shutdown with active requests.", e.getMessage());
         }
+        callback.waitForNextStep();
+        assertEquals(ResponseStep.ON_RESPONSE_STARTED, callback.mResponseStep);
         callback.setAutoAdvance(true);
         callback.startNextRead(request);
         callback.blockForDone();
