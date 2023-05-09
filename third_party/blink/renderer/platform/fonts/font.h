@@ -54,7 +54,6 @@ class PaintFlags;
 namespace blink {
 
 class NGShapeCache;
-struct CharacterRange;
 class FontSelector;
 class ShapeCache;
 class TextRun;
@@ -156,10 +155,6 @@ class PLATFORM_EXPORT Font {
                                   float height,
                                   int from = 0,
                                   int to = -1) const;
-  CharacterRange GetCharacterRange(const TextRun&,
-                                   unsigned from,
-                                   unsigned to) const;
-  Vector<CharacterRange> IndividualCharacterRanges(const TextRun&) const;
 
   // Returns a vector of same size as TextRun.length() with advances measured
   // in pixels from the left bounding box of the full TextRun to the left bound

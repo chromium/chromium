@@ -43,8 +43,6 @@ class PLATFORM_EXPORT ShapeResultBuffer {
                                    float total_width,
                                    unsigned from,
                                    unsigned to) const;
-  Vector<CharacterRange> IndividualCharacterRanges(TextDirection,
-                                                   float total_width) const;
   Vector<double> IndividualCharacterAdvances(const StringView&,
                                              TextDirection,
                                              float total_width) const;

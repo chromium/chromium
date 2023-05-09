@@ -119,19 +119,6 @@ CharacterRange CachingWordShaper::GetCharacterRange(const TextRun& run,
                                   total_width, from, to);
 }
 
-Vector<CharacterRange> CachingWordShaper::IndividualCharacterRanges(
-    const TextRun& run) {
-  ShapeResultBuffer buffer;
-  float total_width = ShapeResultsForRun(GetShapeCache(), &font_, run, &buffer);
-  auto ranges = buffer.IndividualCharacterRanges(run.Direction(), total_width);
-  // The shaper can fail to return glyph metrics for all characters (see
-  // crbug.com/613915 and crbug.com/615661) so add empty ranges to ensure all
-  // characters have an associated range.
-  while (ranges.size() < static_cast<unsigned>(run.length()))
-    ranges.push_back(CharacterRange(0, 0, 0, 0));
-  return ranges;
-}
-
 Vector<double> CachingWordShaper::IndividualCharacterAdvances(
     const TextRun& run) {
   ShapeResultBuffer buffer;

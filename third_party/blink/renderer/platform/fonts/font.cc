@@ -587,27 +587,6 @@ int Font::EmphasisMarkHeight(const AtomicString& mark) const {
   return mark_font_data->GetFontMetrics().Height();
 }
 
-CharacterRange Font::GetCharacterRange(const TextRun& run,
-                                       unsigned from,
-                                       unsigned to) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  return shaper.GetCharacterRange(run, from, to);
-}
-
-Vector<CharacterRange> Font::IndividualCharacterRanges(
-    const TextRun& run) const {
-  FontCachePurgePreventer purge_preventer;
-  CachingWordShaper shaper(*this);
-  auto ranges = shaper.IndividualCharacterRanges(run);
-  // The shaper should return ranges.size == run.length but on some platforms
-  // (OSX10.9.5) we are seeing cases in the upper end of the unicode range
-  // where this is not true (see: crbug.com/620952). To catch these cases on
-  // more popular platforms, and to protect users, we are using a CHECK here.
-  CHECK_EQ(ranges.size(), run.length());
-  return ranges;
-}
-
 Vector<double> Font::IndividualCharacterAdvances(const TextRun& run) const {
   FontCachePurgePreventer purge_preventer;
   CachingWordShaper shaper(*this);
