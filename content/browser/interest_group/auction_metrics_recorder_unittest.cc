@@ -25,7 +25,7 @@
 namespace content {
 namespace {
 
-using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency;
+using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
 
 class AuctionMetricsRecorderTest : public testing::Test {
  public:
@@ -41,7 +41,7 @@ class AuctionMetricsRecorderTest : public testing::Test {
   bool HasMetric(std::string metric_name) {
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
         ukm_recorder_.GetEntries(
-            ukm::builders::AdsInterestGroup_AuctionLatency::kEntryName,
+            ukm::builders::AdsInterestGroup_AuctionLatency_V2::kEntryName,
             {metric_name});
     EXPECT_THAT(entries, testing::SizeIs(1));
     if (entries.size() != 1) {
@@ -59,7 +59,7 @@ class AuctionMetricsRecorderTest : public testing::Test {
   absl::optional<int64_t> GetMetricValue(std::string metric_name) {
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> entries =
         ukm_recorder_.GetEntries(
-            ukm::builders::AdsInterestGroup_AuctionLatency::kEntryName,
+            ukm::builders::AdsInterestGroup_AuctionLatency_V2::kEntryName,
             {metric_name});
     EXPECT_THAT(entries, testing::SizeIs(1));
     if (entries.size() != 1) {

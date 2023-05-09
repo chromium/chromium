@@ -7679,12 +7679,12 @@ TEST_F(GenerateBidLatenciesTest, GenerateBidLatenciesAreReturned) {
   ASSERT_TRUE(generate_bid_dependency_latencies_);
   // Any zero latency is replaced with nullopt.
   EXPECT_FALSE(generate_bid_dependency_latencies_->code_ready_latency);
+  EXPECT_EQ(base::Milliseconds(500),
+            *generate_bid_dependency_latencies_->config_promises_latency);
   EXPECT_FALSE(
       generate_bid_dependency_latencies_->direct_from_seller_signals_latency);
-  EXPECT_EQ(base::Milliseconds(250),
-            *generate_bid_dependency_latencies_->config_promises_latency);
   EXPECT_EQ(
-      base::Milliseconds(500),
+      base::Milliseconds(250),
       *generate_bid_dependency_latencies_->trusted_bidding_signals_latency);
 }
 

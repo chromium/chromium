@@ -2015,7 +2015,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   }
 
   ukm::TestUkmRecorder::HumanReadableUkmMetrics GetUkmMetrics() const {
-    using Entry = ukm::builders::AdsInterestGroup_AuctionLatency;
+    using Entry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> ukm_entries =
         ukm_recorder_->GetEntries(
             Entry::kEntryName,
@@ -2265,7 +2265,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
   // If `num_interest_groups` or `num_owners` is null, expect the auction to be
   // aborted before the corresponding histograms or UKMs are recorded.
   void CheckMetrics(MetricsExpectations expectations) {
-    using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency;
+    using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
     ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
     histogram_tester_->ExpectUniqueSample("Ads.InterestGroup.Auction.Result",
                                           expectations.result, 1);
@@ -11664,7 +11664,7 @@ TEST_F(
 
     ukm::TestUkmRecorder::HumanReadableUkmMetrics ukm_metrics = GetUkmMetrics();
 
-    using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency;
+    using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
     EXPECT_THAT(ukm_metrics,
                 HasMetricWithValueOrNotIfNullOpt(
                     UkmEntry::kMeanGenerateBidCodeReadyLatencyInMillisName,

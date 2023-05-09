@@ -1764,10 +1764,12 @@ void BidderWorklet::DeliverBidCallbackOnUserThread(
       std::move(update_priority_signals_overrides), std::move(pa_requests),
       std::move(non_kanon_pa_requests), bidding_latency,
       mojom::GenerateBidDependencyLatencies::New(
-          NullOptIfZero(task->wait_code),
-          NullOptIfZero(task->wait_trusted_signals),
+          /*code_ready_latency=*/NullOptIfZero(task->wait_code),
+          /*config_promises_latency=*/NullOptIfZero(task->wait_promises),
+          /*direct_from_seller_signals_latency=*/
           NullOptIfZero(task->wait_direct_from_seller_signals),
-          NullOptIfZero(task->wait_promises)),
+          /*trusted_bidding_signals_latency=*/
+          NullOptIfZero(task->wait_trusted_signals)),
       error_msgs);
   CleanUpBidTaskOnUserThread(task);
 }

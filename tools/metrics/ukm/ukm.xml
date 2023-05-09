@@ -680,7 +680,7 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
-<event name="AdsInterestGroup.AuctionLatency">
+<event name="AdsInterestGroup.AuctionLatency.V2">
   <owner>orrb@google.com</owner>
   <owner>chrome-ads-core@google.com</owner>
   <summary>

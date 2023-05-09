@@ -114,7 +114,7 @@ class CONTENT_EXPORT AuctionMetricsRecorder {
   void RecordBidQueuedWaitingForSellerWorklet(base::TimeDelta delay);
 
  private:
-  using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency;
+  using UkmEntry = ukm::builders::AdsInterestGroup_AuctionLatency_V2;
   using EntrySetFunction = UkmEntry& (UkmEntry::*)(int64_t value);
 
   // Helper class for aggregating latencies for events that occur many times
