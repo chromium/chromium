@@ -16,14 +16,34 @@
 
 namespace {
 
-const char kCellTokenKey[] = "celltoken";
-const char kLanguageKey[] = "language";
+constexpr char kCellTokenKey[] = "celltoken";
+constexpr char kLanguageKey[] = "language";
 
-base::Value GetCellLanguagePairValue(S2CellId cell, std::string language) {
-  base::Value value(base::Value::Type::DICT);
-  value.SetKey(kCellTokenKey, base::Value(cell.ToToken()));
-  value.SetKey(kLanguageKey, base::Value(language));
-  return value;
+absl::optional<std::string> GetLangFromCache(const base::Value::Dict& cache,
+                                             const S2CellId& cell) {
+  const std::string* lang_cached = cache.FindString(kLanguageKey);
+  if (!lang_cached) {
+    return absl::nullopt;
+  }
+  const std::string* token_cached = cache.FindString(kCellTokenKey);
+  if (!token_cached) {
+    return absl::nullopt;
+  }
+  const S2CellId cell_cached = S2CellId::FromToken(*token_cached);
+  if (!cell_cached.is_valid() || !cell_cached.contains(cell)) {
+    return absl::nullopt;
+  }
+  return *lang_cached;
+}
+
+std::pair<int, std::string> GetLevelAndLangFromTree(
+    const SerializedLanguageTree* serialized_langtree,
+    const S2CellId& cell) {
+  const S2LangQuadTreeNode& root =
+      S2LangQuadTreeNode::Deserialize(serialized_langtree);
+  int level;
+  std::string language = root.Get(cell, &level);
+  return {level, language};
 }
 
 }  // namespace
@@ -35,12 +55,10 @@ const char UlpLanguageCodeLocator::kCachedGeoLanguagesPref[] =
 
 UlpLanguageCodeLocator::UlpLanguageCodeLocator(
     std::vector<std::unique_ptr<SerializedLanguageTree>>&& serialized_langtrees,
-    PrefService* prefs) {
-  serialized_langtrees_ = std::move(serialized_langtrees);
-  prefs_ = prefs;
-}
+    PrefService* prefs)
+    : serialized_langtrees_(std::move(serialized_langtrees)), prefs_(prefs) {}
 
-UlpLanguageCodeLocator::~UlpLanguageCodeLocator() {}
+UlpLanguageCodeLocator::~UlpLanguageCodeLocator() = default;
 
 // static
 void UlpLanguageCodeLocator::RegisterLocalStatePrefs(
@@ -57,43 +75,32 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
   ScopedListPrefUpdate update(prefs_, kCachedGeoLanguagesPref);
   base::Value::List& celllangs_cached = update.Get();
   for (size_t index = 0; index < serialized_langtrees_.size(); index++) {
-    std::string language;
-
-    bool is_cached = false;
-    const base::Value* celllang_cached = nullptr;
     if (index < celllangs_cached.size()) {
-      celllang_cached = &celllangs_cached[index];
-      is_cached = celllang_cached->is_dict();
-    }
-
-    const std::string* token_cached =
-        is_cached ? celllang_cached->FindStringKey(kCellTokenKey) : nullptr;
-    const S2CellId cell_cached = token_cached != nullptr
-                                     ? S2CellId::FromToken(*token_cached)
-                                     : S2CellId::None();
-
-    const std::string* lang_cached =
-        is_cached ? celllang_cached->FindStringKey(kLanguageKey) : nullptr;
-    if (cell_cached.is_valid() && cell_cached.contains(cell) &&
-        lang_cached != nullptr) {
-      language = *lang_cached;
-    } else {
-      const S2LangQuadTreeNode& root =
-          S2LangQuadTreeNode::Deserialize(serialized_langtrees_[index].get());
-      int level;
-      language = root.Get(cell, &level);
-      if (level != -1) {
-        if (is_cached) {
-          celllangs_cached[index] =
-              GetCellLanguagePairValue(cell.parent(level), language);
-        } else {
-          celllangs_cached.Append(
-              GetCellLanguagePairValue(cell.parent(level), language));
+      CHECK(celllangs_cached[index].is_dict());
+      if (absl::optional<std::string> cache_language =
+              GetLangFromCache(celllangs_cached[index].GetDict(), cell)) {
+        if (!cache_language->empty()) {
+          languages.emplace_back(std::move(*cache_language));
         }
+        continue;
       }
     }
-    if (!language.empty())
-      languages.push_back(language);
+
+    auto [level, language] =
+        GetLevelAndLangFromTree(serialized_langtrees_[index].get(), cell);
+    if (level != -1) {
+      auto cache_update = base::Value::Dict()
+                              .Set(kCellTokenKey, cell.parent(level).ToToken())
+                              .Set(kLanguageKey, language);
+      if (index < celllangs_cached.size()) {
+        celllangs_cached[index] = base::Value(std::move(cache_update));
+      } else {
+        celllangs_cached.Append(std::move(cache_update));
+      }
+    }
+    if (!language.empty()) {
+      languages.emplace_back(std::move(language));
+    }
   }
   return languages;
 }
