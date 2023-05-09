@@ -15,7 +15,9 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
@@ -25,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -94,9 +97,14 @@ struct MockBulkLeakCheck : BulkLeakCheck {
 
 using NiceMockBulkLeakCheck = ::testing::NiceMock<MockBulkLeakCheck>;
 
-class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
+class BulkLeakCheckServiceAdapterTest : public testing::TestWithParam<bool> {
  public:
   BulkLeakCheckServiceAdapterTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kPasswordsGrouping);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kPasswordsGrouping);
+    }
     auto factory = std::make_unique<MockLeakDetectionCheckFactory>();
     factory_ = factory.get();
     service_.set_leak_factory(std::move(factory));
@@ -124,11 +132,12 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
   void RunUntilIdle() { task_env_.RunUntilIdle(); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<TestPasswordStore> store_ =
       base::MakeRefCounted<TestPasswordStore>();
-  MockAffiliationService affiliation_service_;
+  FakeAffiliationService affiliation_service_;
   SavedPasswordsPresenter presenter_{&affiliation_service_, store_,
                                      /*account_store=*/nullptr};
   BulkLeakCheckService service_{
@@ -141,7 +150,7 @@ class BulkLeakCheckServiceAdapterTest : public ::testing::Test {
 
 }  // namespace
 
-TEST_F(BulkLeakCheckServiceAdapterTest, OnCreation) {
+TEST_P(BulkLeakCheckServiceAdapterTest, OnCreation) {
   EXPECT_EQ(0u, adapter().GetPendingChecksCount());
   EXPECT_EQ(BulkLeakCheckService::State::kIdle,
             adapter().GetBulkLeakCheckState());
@@ -150,7 +159,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnCreation) {
 // Checks that starting a leak check correctly transforms the list of saved
 // passwords into LeakCheckCredentials and attaches the underlying password
 // forms as user data.
-TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
+TEST_P(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
   std::vector<PasswordForm> passwords = {
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1),
       MakeSavedPassword(kExampleOrg, kUsername2, kPassword2)};
@@ -175,7 +184,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
   EXPECT_THAT(credentials, CredentialsAre(std::cref(expected)));
 }
 
-TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
+TEST_P(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
   constexpr char kKey[] = "key";
   struct UserData : LeakCheckCredential::Data {
     std::unique_ptr<Data> Clone() override { return std::make_unique<Data>(); }
@@ -201,7 +210,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
 
 // Tests that multiple credentials with effectively the same username are
 // correctly deduped before starting the leak check.
-TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
+TEST_P(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
   std::vector<PasswordForm> passwords = {
       MakeSavedPassword(kExampleCom, u"alice", kPassword1),
       MakeSavedPassword(kExampleCom, u"ALICE", kPassword1),
@@ -229,7 +238,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
 
 // Checks that trying to start a leak check when another check is already
 // running does nothing and returns false to the caller.
-TEST_F(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
+TEST_P(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
   store().AddLogin(MakeSavedPassword(kExampleCom, u"alice", kPassword1));
   RunUntilIdle();
 
@@ -246,7 +255,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, MultipleStarts) {
 
 // Checks that stopping the leak check correctly resets the state of the bulk
 // leak check.
-TEST_F(BulkLeakCheckServiceAdapterTest, StopBulkLeakCheck) {
+TEST_P(BulkLeakCheckServiceAdapterTest, StopBulkLeakCheck) {
   store().AddLogin(MakeSavedPassword(kExampleCom, u"alice", kPassword1));
   RunUntilIdle();
 
@@ -266,7 +275,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StopBulkLeakCheck) {
 // Tests that editing a password through the presenter does not result in
 // another call to CheckCredentials with a corresponding change to the checked
 // password if the corresponding prefs are not set.
-TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
+TEST_P(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
   prefs().SetBoolean(prefs::kPasswordLeakDetectionEnabled, false);
   prefs().SetBoolean(::prefs::kSafeBrowsingEnabled, false);
 
@@ -287,7 +296,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
 // Tests that editing a password through the presenter will result in another
 // call to CheckCredentials with a corresponding change to the checked password
 // if the corresponding prefs are set.
-TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
+TEST_P(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
   PasswordForm password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.in_store = PasswordForm::Store::kProfileStore;
@@ -309,5 +318,7 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
   presenter().EditSavedCredentials(original_credential, updated_credential);
   RunUntilIdle();
 }
+
+INSTANTIATE_TEST_SUITE_P(, BulkLeakCheckServiceAdapterTest, testing::Bool());
 
 }  // namespace password_manager
