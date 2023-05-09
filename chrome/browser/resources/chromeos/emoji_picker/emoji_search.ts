@@ -97,6 +97,12 @@ export class EmojiSearch extends PolymerElement {
     }
   }
 
+  // TODO(b/281609806): Remove this compatibility logic once gif support is
+  // turned on by default
+  private getSearchPlaceholderLabel(gifSupport: boolean): string {
+    return gifSupport ? 'Search' : 'Search emojis';
+  }
+
   /**
    * Processes the changes to the data and determines whether indexing is
    * needed or not. It also triggers indexing if mode is not lazy and there
