@@ -55,7 +55,9 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+          microphone_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          system_audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& output_file_path,
       const viz::FrameSinkId& frame_sink_id,
@@ -65,7 +67,9 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+          microphone_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          system_audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& output_file_path,
       const viz::FrameSinkId& frame_sink_id,
@@ -77,7 +81,9 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+          microphone_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          system_audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& output_file_path,
       const viz::FrameSinkId& frame_sink_id,
@@ -122,7 +128,9 @@ class RecordingService : public mojom::RecordingService,
       mojo::PendingRemote<mojom::RecordingServiceClient> client,
       mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
       mojo::PendingRemote<media::mojom::AudioStreamFactory>
-          audio_stream_factory,
+          microphone_stream_factory,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory>
+          system_audio_stream_factory,
       mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
       const base::FilePath& output_file_path,
       std::unique_ptr<VideoCaptureParams> capture_params);

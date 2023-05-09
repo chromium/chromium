@@ -149,9 +149,10 @@ std::string GetVideoExtension(RecordingType recording_type,
   }
 }
 
-// Returns true if the given `recording_type` supports audio recording.
-bool SupportsAudioRecording(RecordingType recording_type) {
-  return recording_type == RecordingType::kWebM;
+// Returns true if the given `video_file_path` is of a type that supports audio
+// recording (e.g. ".webm" files).
+bool SupportsAudioRecording(const base::FilePath& video_file_path) {
+  return video_file_path.MatchesExtension(".webm");
 }
 
 bool IsVideoFileExtensionSupported(const base::FilePath& video_file_path) {
@@ -1114,7 +1115,7 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
     const CaptureParams& capture_params,
     mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
         cursor_overlay,
-    bool should_record_audio) {
+    AudioRecordingMode effective_audio_mode) {
   DCHECK(!recording_service_remote_.is_bound())
       << "Should not launch a new recording service while one is already "
          "running.";
@@ -1143,13 +1144,26 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
   video_capturer_remote->CreateOverlay(kStackingIndex,
                                        std::move(cursor_overlay));
 
-  // We bind the audio stream factory only if audio recording is enabled. This
-  // is ok since the |audio_stream_factory| parameter in the recording service
-  // APIs is optional, and can be not bound.
-  mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory;
-  if (should_record_audio) {
+  // We bind the microphone and/or system audio stream factories only if their
+  // corresponding audio recording modes are enabled. This is ok since the
+  // `microphone_stream_factory` and `system_audio_stream_factory` parameters in
+  // the recording service APIs are optional, and can be not bound.
+  mojo::PendingRemote<media::mojom::AudioStreamFactory>
+      microphone_stream_factory;
+  if (effective_audio_mode == AudioRecordingMode::kMicrophone ||
+      effective_audio_mode == AudioRecordingMode::kSystemAndMicrophone) {
     delegate_->BindAudioStreamFactory(
-        audio_stream_factory.InitWithNewPipeAndPassReceiver());
+        microphone_stream_factory.InitWithNewPipeAndPassReceiver());
+  }
+  mojo::PendingRemote<media::mojom::AudioStreamFactory>
+      system_audio_stream_factory;
+  if (effective_audio_mode == AudioRecordingMode::kSystem ||
+      effective_audio_mode == AudioRecordingMode::kSystemAndMicrophone) {
+    delegate_->BindAudioStreamFactory(
+        system_audio_stream_factory.InitWithNewPipeAndPassReceiver());
+  }
+
+  if (microphone_stream_factory || system_audio_stream_factory) {
     capture_mode_util::MaybeUpdateCaptureModePrivacyIndicators();
   }
 
@@ -1176,9 +1190,10 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
     case CaptureModeSource::kFullscreen:
       recording_service_remote_->RecordFullscreen(
           std::move(client), video_capturer_remote.Unbind(),
-          std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
-          current_video_file_path_, frame_sink_id, frame_sink_size_dip,
-          device_scale_factor);
+          std::move(microphone_stream_factory),
+          std::move(system_audio_stream_factory),
+          std::move(drive_fs_quota_delegate), current_video_file_path_,
+          frame_sink_id, frame_sink_size_dip, device_scale_factor);
       break;
 
     case CaptureModeSource::kWindow:
@@ -1192,18 +1207,20 @@ void CaptureModeController::LaunchRecordingServiceAndStartRecording(
 
       recording_service_remote_->RecordWindow(
           std::move(client), video_capturer_remote.Unbind(),
-          std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
-          current_video_file_path_, frame_sink_id, frame_sink_size_dip,
-          device_scale_factor, capture_params.window->subtree_capture_id(),
-          bounds.size());
+          std::move(microphone_stream_factory),
+          std::move(system_audio_stream_factory),
+          std::move(drive_fs_quota_delegate), current_video_file_path_,
+          frame_sink_id, frame_sink_size_dip, device_scale_factor,
+          capture_params.window->subtree_capture_id(), bounds.size());
       break;
 
     case CaptureModeSource::kRegion:
       recording_service_remote_->RecordRegion(
           std::move(client), video_capturer_remote.Unbind(),
-          std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
-          current_video_file_path_, frame_sink_id, frame_sink_size_dip,
-          device_scale_factor, bounds);
+          std::move(microphone_stream_factory),
+          std::move(system_audio_stream_factory),
+          std::move(drive_fs_quota_delegate), current_video_file_path_,
+          frame_sink_id, frame_sink_size_dip, device_scale_factor, bounds);
       break;
   }
 }
@@ -1641,9 +1658,15 @@ void CaptureModeController::BeginVideoRecording(
   // video.
   Stop();
 
+  // Use the `video_file_path` instead of `recording_type_` to determine if the
+  // recording format supports audio recording. This is because the actual
+  // format can be different, since GIF for example is only supported when the
+  // recording `source_` is `kRegion`.
+  const AudioRecordingMode effective_audio_mode =
+      SupportsAudioRecording(video_file_path) ? GetEffectiveAudioRecordingMode()
+                                              : AudioRecordingMode::kOff;
   const bool should_record_audio =
-      SupportsAudioRecording(recording_type_) &&
-      GetEffectiveAudioRecordingMode() != AudioRecordingMode::kOff;
+      effective_audio_mode != AudioRecordingMode::kOff;
   mojo::PendingRemote<viz::mojom::FrameSinkVideoCaptureOverlay>
       cursor_capture_overlay;
   auto cursor_overlay_receiver =
@@ -1666,7 +1689,7 @@ void CaptureModeController::BeginVideoRecording(
   current_video_file_path_ = video_file_path;
 
   LaunchRecordingServiceAndStartRecording(
-      capture_params, std::move(cursor_overlay_receiver), should_record_audio);
+      capture_params, std::move(cursor_overlay_receiver), effective_audio_mode);
 
   // Intentionally record the metrics before
   // `MaybeRestoreCachedCaptureConfigurations` as `enable_demo_tools_` may be

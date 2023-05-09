@@ -9,7 +9,9 @@
 #include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/style/icon_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
@@ -127,6 +129,43 @@ TEST_F(CaptureAudioMixingTest, KeyboardNavigation) {
   SendKey(ui::VKEY_TAB, event_generator);
   EXPECT_EQ(test_api.GetCurrentFocusedView()->GetView(),
             settings_test_api.GetSystemAndMicrophoneAudioOption());
+}
+
+TEST_F(CaptureAudioMixingTest, ServiceWillRecordAudio) {
+  struct {
+    const char* const scope_name;
+    AudioRecordingMode audio_mode;
+    bool should_service_record_audio;
+  } kTestCases[] = {
+      {"Off", AudioRecordingMode::kOff, /*should_service_record_audio=*/false},
+      {"Microphone", AudioRecordingMode::kMicrophone,
+       /*should_service_record_audio=*/true},
+
+      // TODO(afakhry): Update the following two cases when the service actually
+      // implements recording multiple streams.
+      {"System audio", AudioRecordingMode::kSystem,
+       /*should_service_record_audio=*/false},
+      {"System and microphone audio", AudioRecordingMode::kSystemAndMicrophone,
+       /*should_service_record_audio=*/true},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.scope_name);
+    auto* controller = StartSession();
+    controller->SetAudioRecordingMode(test_case.audio_mode);
+
+    StartVideoRecordingImmediately();
+
+    EXPECT_TRUE(controller->is_recording_in_progress());
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
+    CaptureModeTestApi().FlushRecordingServiceForTesting();
+    EXPECT_EQ(test_case.should_service_record_audio,
+              test_delegate->IsDoingAudioRecording());
+    controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
+
+    WaitForCaptureFileToBeSaved();
+  }
 }
 
 // -----------------------------------------------------------------------------

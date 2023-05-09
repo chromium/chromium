@@ -415,6 +415,11 @@ TEST_F(GifRecordingTest, GifIsNotSupportedForFullscreenOrWindow) {
     auto* controller = StartRegionVideoCapture();
     controller->SetRecordingType(RecordingType::kGif);
 
+    // Audio recording is not supported for GIF, but switching to fullscreen or
+    // window recording should switch to webm recording, which do support audio
+    // recording, so we should expect that.
+    controller->SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
+
     // Switch to another source than region.
     controller->SetSource(test_case.source);
     // The recording type remains the same, and is still set as GIF. However,
@@ -428,7 +433,10 @@ TEST_F(GifRecordingTest, GifIsNotSupportedForFullscreenOrWindow) {
     StartVideoRecordingImmediately();
 
     EXPECT_TRUE(controller->is_recording_in_progress());
+    auto* test_delegate = static_cast<TestCaptureModeDelegate*>(
+        controller->delegate_for_testing());
     CaptureModeTestApi().FlushRecordingServiceForTesting();
+    EXPECT_TRUE(test_delegate->IsDoingAudioRecording());
     controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
 
     // The resulting file should have a ".webm" extension.

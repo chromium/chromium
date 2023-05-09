@@ -369,14 +369,15 @@ class ASH_EXPORT CaptureModeController
   // overlay on the video capturer so that it can be used to record the mouse
   // cursor. It gives the pending receiver end to that overlay on Viz, and the
   // other end should be owned by the `video_recording_watcher_`. If the given
-  // `should_record_audio` is true, it will setup the needed mojo connections to
-  // the Audio Service so that audio recording can be done by the recording
-  // service.
+  // `effective_audio_mode` (which takes into account the audio capture admin
+  // policy and the recording format type) is not `kOff`, it will setup the
+  // needed mojo connections to the Audio Service so that audio recording can be
+  // done by the recording service.
   void LaunchRecordingServiceAndStartRecording(
       const CaptureParams& capture_params,
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCaptureOverlay>
           cursor_overlay,
-      bool should_record_audio);
+      AudioRecordingMode effective_audio_mode);
 
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();

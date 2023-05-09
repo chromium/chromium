@@ -207,7 +207,10 @@ RecordingService::~RecordingService() {
 void RecordingService::RecordFullscreen(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
@@ -217,8 +220,9 @@ void RecordingService::RecordFullscreen(
 
   StartNewRecording(
       std::move(client), std::move(video_capturer),
-      std::move(audio_stream_factory), std::move(drive_fs_quota_delegate),
-      output_file_path,
+      std::move(microphone_stream_factory),
+      std::move(system_audio_stream_factory),
+      std::move(drive_fs_quota_delegate), output_file_path,
       VideoCaptureParams::CreateForFullscreenCapture(
           frame_sink_id, frame_sink_size_dip, device_scale_factor));
 }
@@ -226,7 +230,10 @@ void RecordingService::RecordFullscreen(
 void RecordingService::RecordWindow(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
@@ -237,7 +244,8 @@ void RecordingService::RecordWindow(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
+                    std::move(microphone_stream_factory),
+                    std::move(system_audio_stream_factory),
                     std::move(drive_fs_quota_delegate), output_file_path,
                     VideoCaptureParams::CreateForWindowCapture(
                         frame_sink_id, subtree_capture_id, frame_sink_size_dip,
@@ -247,7 +255,10 @@ void RecordingService::RecordWindow(
 void RecordingService::RecordRegion(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     const viz::FrameSinkId& frame_sink_id,
@@ -257,7 +268,8 @@ void RecordingService::RecordRegion(
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_checker_);
 
   StartNewRecording(std::move(client), std::move(video_capturer),
-                    std::move(audio_stream_factory),
+                    std::move(microphone_stream_factory),
+                    std::move(system_audio_stream_factory),
                     std::move(drive_fs_quota_delegate), output_file_path,
                     VideoCaptureParams::CreateForRegionCapture(
                         frame_sink_id, frame_sink_size_dip, device_scale_factor,
@@ -462,7 +474,10 @@ void RecordingService::OnCaptureMuted(bool is_muted) {}
 void RecordingService::StartNewRecording(
     mojo::PendingRemote<mojom::RecordingServiceClient> client,
     mojo::PendingRemote<viz::mojom::FrameSinkVideoCapturer> video_capturer,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> audio_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        microphone_stream_factory,
+    mojo::PendingRemote<media::mojom::AudioStreamFactory>
+        system_audio_stream_factory,
     mojo::PendingRemote<mojom::DriveFsQuotaDelegate> drive_fs_quota_delegate,
     const base::FilePath& output_file_path,
     std::unique_ptr<VideoCaptureParams> capture_params) {
@@ -479,7 +494,7 @@ void RecordingService::StartNewRecording(
       base::BindOnce(&TerminateServiceImmediately));
 
   current_video_capture_params_ = std::move(capture_params);
-  const bool should_record_audio = audio_stream_factory.is_valid();
+  const bool should_record_audio = microphone_stream_factory.is_valid();
 
   encoder_capabilities_ = CreateEncoderCapabilities(output_file_path);
   encoder_muxer_ = CreateEncoder(
@@ -495,7 +510,7 @@ void RecordingService::StartNewRecording(
     return;
 
   audio_capturer_ = audio::CreateInputDevice(
-      std::move(audio_stream_factory),
+      std::move(microphone_stream_factory),
       std::string(media::AudioDeviceDescription::kDefaultDeviceId),
       audio::DeadStreamDetection::kEnabled);
   DCHECK(audio_capturer_);
