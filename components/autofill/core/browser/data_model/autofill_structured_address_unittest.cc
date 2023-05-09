@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -35,6 +36,7 @@ struct AddressLineParsingTestCase {
   std::string house_number;
   std::string floor;
   std::string apartment;
+  std::string landmark;
 };
 
 std::ostream& operator<<(std::ostream& out,
@@ -45,6 +47,7 @@ std::ostream& operator<<(std::ostream& out,
   out << "House number: " << test_case.house_number << std::endl;
   out << "Floor: " << test_case.floor << std::endl;
   out << "Apartment: " << test_case.apartment << std::endl;
+  out << "Landmark: " << test_case.apartment << std::endl;
   return out;
 }
 
@@ -98,6 +101,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_APT_NUM,
        .value = test_case.apartment,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = test_case.landmark,
        .status = VerificationStatus::kObserved}};
 
   SetTestValues(&address, test_value);
@@ -122,6 +128,9 @@ void TestAddressLineFormatting(const AddressLineParsingTestCase& test_case) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_FLOOR,
        .value = test_case.floor,
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = test_case.landmark,
        .status = VerificationStatus::kObserved}};
   VerifyTestValues(&address, expectation);
 }
@@ -272,19 +281,22 @@ TEST(AutofillStructuredAddress, TestStreetAddressFormatting) {
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "13",
-       .apartment = "14"},
+       .apartment = "14",
+       .landmark = "Red tree"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - 14",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "",
-       .apartment = "14"},
+       .apartment = "14",
+       .landmark = "Old house"},
       {.country_code = "MX",
        .street_address = "StreetName 12 - Piso 13",
        .street_name = "StreetName",
        .house_number = "12",
        .floor = "13",
-       .apartment = ""},
+       .apartment = "",
+       .landmark = "Pine in the corner"},
       // Examples for Spain.
       {.country_code = "ES",
        .street_address = "Street Name 1, 3ª",
@@ -431,6 +443,9 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kNoStatus},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
+       .status = VerificationStatus::kNoStatus},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = "Red tree",
        .status = VerificationStatus::kNoStatus}};
 
   SetTestValues(&address, test_values, /*finalize=*/false);
@@ -448,6 +463,9 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
+       .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = "Red tree",
        .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
        .value = "",
@@ -472,8 +490,11 @@ TEST(AutofillStructuredAddress, TestMigrationAndFinalization) {
       {.type = ADDRESS_HOME_STATE,
        .value = "CA",
        .status = VerificationStatus::kObserved},
+      {.type = ADDRESS_HOME_LANDMARK,
+       .value = "Red tree",
+       .status = VerificationStatus::kObserved},
       {.type = ADDRESS_HOME_ADDRESS,
-       .value = "123 Street name CA US",
+       .value = "123 Street name CA US Red tree",
        .status = VerificationStatus::kFormatted},
       {.type = ADDRESS_HOME_CITY,
        .value = "",
