@@ -180,7 +180,6 @@ class WPTAdapter:
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
         self.port = self.host.port_factory.get()
-        self.port.set_option_default('use_xvfb', True)
         self._shard_index = _parse_environ_int('GTEST_SHARD_INDEX')
         self._total_shards = _parse_environ_int('GTEST_TOTAL_SHARDS')
 
@@ -279,6 +278,7 @@ class WPTAdapter:
         self._check_and_update_output_options(options)
         self._check_and_update_upstream_options(options)
         self._check_and_update_config_options(options)
+        self._check_and_update_debugging_options(options)
         # TODO(crbug/1316055): Enable tombstone with '--stackwalk-binary' and
         # '--symbols-path'.
         options.exclude = options.exclude or []
@@ -287,7 +287,6 @@ class WPTAdapter:
             'webdriver',
             'infrastructure/webdriver',
         ])
-        options.pause_after_test = False
         options.no_capture_stdio = True
         options.manifest_download = False
 
@@ -380,6 +379,13 @@ class WPTAdapter:
                 logger.warning(
                     'Tests explicitly specified; '
                     'not running tests from %s', smoke_file_short_path)
+
+    def _check_and_update_debugging_options(self, options: argparse.Namespace):
+        self.port.set_option_default('use_xvfb', options.headless)
+        if not options.headless and options.processes is None:
+            logger.info('Not headless; default to 1 worker to avoid '
+                        'opening too many windows')
+            options.processes = 1
 
     def _load_smoke_tests(self, options: argparse.Namespace):
         """Read the smoke tests file and append its tests to the test list.
