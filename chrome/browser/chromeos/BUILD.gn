@@ -252,6 +252,7 @@ source_set("chromeos") {
     "//chrome/browser:resources",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/browsing_data:constants",
+    "//chrome/browser/enterprise/data_controls",
     "//chrome/browser/favicon",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/common",
