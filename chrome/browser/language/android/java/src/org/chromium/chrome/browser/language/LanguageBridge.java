@@ -33,7 +33,22 @@ public class LanguageBridge {
 
         Iterator<String> ulpIterator = ulpLanguages.iterator();
         if (!ulpIterator.hasNext()) return AppLanguagePromoDialog.TopULPMatchType.EMPTY;
-        return LocaleUtils.isBaseLanguageEqual(language, ulpIterator.next())
+
+        String topLanguage = ulpIterator.next();
+        // Convert ULP language to Chrome UI languages
+        switch (LocaleUtils.toBaseLanguage(topLanguage)) {
+            case "nn": // We do not support "nn" as a UI language so consider it the same as "no"
+            case "no":
+                topLanguage = "nb";
+                break;
+            case "tl":
+                topLanguage = "fil";
+                break;
+            default:
+                // use topLanguage
+        }
+
+        return LocaleUtils.isBaseLanguageEqual(language, topLanguage)
                 ? AppLanguagePromoDialog.TopULPMatchType.YES
                 : AppLanguagePromoDialog.TopULPMatchType.NO;
     }
