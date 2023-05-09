@@ -2841,7 +2841,10 @@ test("net_unittests") {
   }
 
   if (is_linux) {
-    sources += [ "proxy_resolution/proxy_config_service_linux_unittest.cc" ]
+    sources += [
+      "base/network_change_notifier_linux_unittest.cc",
+      "proxy_resolution/proxy_config_service_linux_unittest.cc",
+    ]
   }
 
   if (is_linux || is_chromeos) {

@@ -6,7 +6,6 @@
 #define NET_BASE_ADDRESS_TRACKER_LINUX_H_
 
 #include <sys/socket.h>  // Needed to include netlink.
-#include "base/task/sequenced_task_runner.h"
 
 // Mask superfluous definition of |struct net|. This is fixed in Linux 2.6.38.
 
@@ -29,6 +28,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "net/base/address_map_linux.h"
 #include "net/base/ip_address.h"
@@ -46,7 +46,9 @@ namespace net::internal {
 //
 // In tracking mode, this class should mostly be used on a single sequence,
 // except GetAddressMap() and GetOnlineLinks() (AddressMapOwnerLinux overrides)
-// which can be called on any thread.
+// which can be called on any thread. The main sequence should be able to block
+// (e.g. use a base::SequencedTaskRunner with base::MayBlock()).
+//
 // In non-tracking mode this should be used on a single thread.
 class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
  public:
@@ -66,11 +68,18 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // NOTE: Only ignore interfaces not used to connect to the internet. Adding
   // interfaces used to connect to the internet can cause critical network
   // changed signals to be lost allowing incorrect stale state to persist.
-  AddressTrackerLinux(
-      const base::RepeatingClosure& address_callback,
-      const base::RepeatingClosure& link_callback,
-      const base::RepeatingClosure& tunnel_callback,
-      const std::unordered_set<std::string>& ignored_interfaces);
+  //
+  // |blocking_thread_runner| is the sequence on which this AddressTrackerLinux
+  // will run. The AddressTrackerLinux can block in tracking mode and so it
+  // should run on a sequence that can block, e.g. a base::SequencedTaskRunner
+  // with base::MayBlock(). If nullptr, SetDiffCallback() cannot be used off of
+  // the AddressTrackerLinux's sequence.
+  AddressTrackerLinux(const base::RepeatingClosure& address_callback,
+                      const base::RepeatingClosure& link_callback,
+                      const base::RepeatingClosure& tunnel_callback,
+                      const std::unordered_set<std::string>& ignored_interfaces,
+                      scoped_refptr<base::SequencedTaskRunner>
+                          blocking_thread_runner = nullptr);
   ~AddressTrackerLinux() override;
 
   // In tracking mode, it starts watching the system configuration for
@@ -111,6 +120,8 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
   // but it will post a task to the AddressTrackerLinux's sequence and therefore
   // will finish asynchronously. The caller MUST ENSURE that the
   // AddressTrackerLinux is not deleted until this task finishes.
+  // This also requires |sequenced_task_runner_| to be set by the
+  // AddressTrackerLinux constructor above.
   //
   // Note that other threads may see updated AddressMaps by calling
   // GetAddressMap() before |diff_callback| is ever called.
@@ -266,7 +277,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux : public AddressMapOwnerLinux {
 
   const bool tracking_;
 
-  // Will be set in tracking mode with whichever sequence Init() is called on.
+  // This can be set by the tracking constructor.
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   // This SequenceChecker is still useful so instance variables above can be
   // marked GUARDED_BY_CONTEXT(sequence_checker_).
