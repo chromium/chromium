@@ -404,6 +404,10 @@ void ActionMove::UnbindInput(const InputElement& input_element) {
   }
 }
 
+ActionType ActionMove::GetType() {
+  return ActionType::MOVE;
+}
+
 bool ActionMove::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                  const gfx::RectF& content_bounds,
                                  const gfx::Transform* rotation_transform,

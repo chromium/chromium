@@ -296,6 +296,10 @@ void ActionTap::UnbindInput(const InputElement& input_element) {
   PostUnbindInputProcess();
 }
 
+ActionType ActionTap::GetType() {
+  return ActionType::TAP;
+}
+
 bool ActionTap::RewriteKeyEvent(const ui::KeyEvent* key_event,
                                 const gfx::RectF& content_bounds,
                                 const gfx::Transform* rotation_transform,

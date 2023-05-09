@@ -14,7 +14,9 @@
 #include "ash/style/typography.h"
 #include "base/notreached.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/background.h"
@@ -29,7 +31,6 @@ namespace arc::input_overlay {
 namespace {
 
 constexpr int kMainContainerWidth = 296;
-constexpr int kMainContainerZeroStateHeight = 320;
 
 }  // namespace
 
@@ -141,8 +142,30 @@ void EditingList::AddZeroStateContent(views::View* container) {
 }
 
 void EditingList::AddControlListContent(views::View* container) {
-  // TODO(b/270969479): Add scrollable container here.
-  NOTIMPLEMENTED();
+  // Add list content as:
+  // --------------------------
+  // | ---------------------- |
+  // | | ActionViewListItem | |
+  // | ---------------------- |
+  // | ---------------------- |
+  // | | ActionViewListItem | |
+  // | ---------------------- |
+  // | ......                 |
+  // --------------------------
+  // TODO(b/270969479): Wrap |scroll_content| in a scroll view.
+  auto* scroll_content =
+      container->AddChildView(std::make_unique<views::View>());
+  scroll_content
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kVertical,
+          /*inside_border_insets=*/gfx::Insets(),
+          /*between_child_spacing=*/8))
+      ->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
+  DCHECK(controller_);
+  for (const auto& action : controller_->touch_injector()->actions()) {
+    scroll_content->AddChildView(
+        std::make_unique<ActionViewListItem>(controller_, action.get()));
+  }
 }
 
 void EditingList::OnAddButtonPressed() {
@@ -157,11 +180,7 @@ void EditingList::OnDoneButtonPressed() {
 }
 
 gfx::Size EditingList::CalculatePreferredSize() const {
-  if (HasControls()) {
-    // TODO(b/270969479): The height will be dynamic depending on the list.
-    return gfx::Size(kMainContainerWidth, 80);
-  }
-  return gfx::Size(kMainContainerWidth, kMainContainerZeroStateHeight);
+  return gfx::Size(kMainContainerWidth, GetHeightForWidth(kMainContainerWidth));
 }
 
 }  // namespace arc::input_overlay

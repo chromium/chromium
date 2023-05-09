@@ -31,6 +31,7 @@ class ActionTap : public Action {
       DisplayOverlayController* display_overlay_controller) override;
   void UnbindInput(const InputElement& input_element) override;
   std::unique_ptr<ActionProto> ConvertToProtoIfCustomized() const override;
+  ActionType GetType() override;
 
  private:
   class ActionTapView;

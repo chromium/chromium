@@ -87,6 +87,7 @@ class Action {
   // |input_element| should overlap the current displayed binding. If it is
   // partially overlapped, then we only unbind the overlapped input.
   virtual void UnbindInput(const InputElement& input_element) = 0;
+  virtual ActionType GetType() = 0;
 
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.
