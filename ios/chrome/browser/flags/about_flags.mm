@@ -486,23 +486,11 @@ const FeatureEntry::FeatureVariation kIOSNewPostRestoreExperienceVariations[] =
     {{"minimal", kIOSNewPostRestoreExperienceMinimal,
       std::size(kIOSNewPostRestoreExperienceMinimal), nullptr}};
 
-const FeatureEntry::FeatureParam
-    kNewTabPageRetentionPopularSitesIncludePopularApps[] = {
-        {ntp_tiles::kNewTabPageRetentionParam, "1"}};
-const FeatureEntry::FeatureParam
-    kNewTabPageRetentionPopularSitesExcludePopularApps[] = {
-        {ntp_tiles::kNewTabPageRetentionParam, "2"}};
 const FeatureEntry::FeatureParam kNewTabPageRetentionTileAblationHideAll[] = {
-    {ntp_tiles::kNewTabPageRetentionParam, "4"}};
+    {ntp_tiles::kNewTabPageRetentionParam, "1"}};
 const FeatureEntry::FeatureParam kNewTabPageRetentionTileAblationHideMVTOnly[] =
-    {{ntp_tiles::kNewTabPageRetentionParam, "5"}};
+    {{ntp_tiles::kNewTabPageRetentionParam, "2"}};
 const FeatureEntry::FeatureVariation kNewTabPageRetentionVariations[] = {
-    {"- Improved popular sites, Include popular apps",
-     kNewTabPageRetentionPopularSitesIncludePopularApps,
-     std::size(kNewTabPageRetentionPopularSitesIncludePopularApps), nullptr},
-    {"- Improved popular sites, Exclude popular apps",
-     kNewTabPageRetentionPopularSitesExcludePopularApps,
-     std::size(kNewTabPageRetentionPopularSitesExcludePopularApps), nullptr},
     {"- Tile ablation, Hide all", kNewTabPageRetentionTileAblationHideAll,
      std::size(kNewTabPageRetentionTileAblationHideAll), nullptr},
     {"- Tile ablation, Hide MVT only",

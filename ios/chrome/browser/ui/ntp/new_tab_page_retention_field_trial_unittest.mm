@@ -54,84 +54,6 @@ TEST_F(NewTabPageRetentionFieldTrialTest, TestDefault) {
             ntp_tiles::NewTabPageRetentionExperimentBehavior::kDefault);
 }
 
-// Tests that the popular sites control group uses default behavior.
-TEST_F(NewTabPageRetentionFieldTrialTest, TestPopularSitesControl) {
-  auto feature_list = std::make_unique<base::FeatureList>();
-
-  std::map<variations::VariationID, int> weight_by_id = {
-      {field_trial_constants::kPopularSitesImprovedSuggestionsControlID, 100}};
-
-  new_tab_page_retention_field_trial::CreateNewTabPageFieldTrialForTesting(
-      std::move(weight_by_id), low_entropy_provider_, feature_list.get());
-
-  // Substitute the existing feature list with the one with field trial
-  // configurations we are testing, and check assertions.
-  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      ntp_tiles::kNewTabPageRetention.name));
-  EXPECT_FALSE(base::FeatureList::IsEnabled(ntp_tiles::kNewTabPageRetention));
-
-  ntp_tiles::NewTabPageRetentionExperimentBehavior experiment_type =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
-
-  EXPECT_EQ(experiment_type,
-            ntp_tiles::NewTabPageRetentionExperimentBehavior::kDefault);
-}
-
-// Tests the popular sites including popular apps group.
-TEST_F(NewTabPageRetentionFieldTrialTest,
-       TestPopularSitesIncludePopularAppsGroup) {
-  auto feature_list = std::make_unique<base::FeatureList>();
-
-  std::map<variations::VariationID, int> weight_by_id = {
-      {field_trial_constants::kPopularSitesImprovedSuggestionsWithAppsEnabledID,
-       100}};
-
-  new_tab_page_retention_field_trial::CreateNewTabPageFieldTrialForTesting(
-      std::move(weight_by_id), low_entropy_provider_, feature_list.get());
-
-  // Substitute the existing feature list with the one with field trial
-  // configurations we are testing, and check assertions.
-  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      ntp_tiles::kNewTabPageRetention.name));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(ntp_tiles::kNewTabPageRetention));
-
-  ntp_tiles::NewTabPageRetentionExperimentBehavior experiment_type =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
-
-  EXPECT_EQ(experiment_type, ntp_tiles::NewTabPageRetentionExperimentBehavior::
-                                 kPopularSitesIncludePopularApps);
-}
-
-// Tests the popular sites excluding popular apps group.
-TEST_F(NewTabPageRetentionFieldTrialTest,
-       TestPopularSitesExcludePopularAppsGroup) {
-  auto feature_list = std::make_unique<base::FeatureList>();
-
-  std::map<variations::VariationID, int> weight_by_id = {
-      {field_trial_constants::
-           kPopularSitesImprovedSuggestionsWithoutAppsEnabledID,
-       100}};
-
-  new_tab_page_retention_field_trial::CreateNewTabPageFieldTrialForTesting(
-      std::move(weight_by_id), low_entropy_provider_, feature_list.get());
-
-  // Substitute the existing feature list with the one with field trial
-  // configurations we are testing, and check assertions.
-  scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
-  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(
-      ntp_tiles::kNewTabPageRetention.name));
-  EXPECT_TRUE(base::FeatureList::IsEnabled(ntp_tiles::kNewTabPageRetention));
-
-  ntp_tiles::NewTabPageRetentionExperimentBehavior experiment_type =
-      ntp_tiles::GetNewTabPageRetentionExperimentType();
-
-  EXPECT_EQ(experiment_type, ntp_tiles::NewTabPageRetentionExperimentBehavior::
-                                 kPopularSitesExcludePopularApps);
-}
-
 // Tests that the tile ablation control group uses default behavior.
 TEST_F(NewTabPageRetentionFieldTrialTest, TestTileAblationControl) {
   auto feature_list = std::make_unique<base::FeatureList>();
@@ -182,7 +104,7 @@ TEST_F(NewTabPageRetentionFieldTrialTest, TestTileAblationHideAllGroup) {
       ntp_tiles::NewTabPageRetentionExperimentBehavior::kTileAblationHideAll);
 }
 
-// Tests the popular sites excluding popular apps group.
+// Tests the tile ablation hiding only MVTs group.
 TEST_F(NewTabPageRetentionFieldTrialTest, TestTileAblationHideOnlyMVTGroup) {
   auto feature_list = std::make_unique<base::FeatureList>();
 
