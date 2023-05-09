@@ -3793,11 +3793,12 @@ UrlInfo NavigationRequest::GetUrlInfo() {
     isolation_flags = UrlInfo::OriginIsolationRequest::kNone;
   } else if (IsOriginAgentClusterOptInRequested()) {
     // An origin-keyed agent cluster is used if explicitly requested by header.
-    isolation_flags = UrlInfo::OriginIsolationRequest::kOriginAgentCluster;
+    isolation_flags =
+        UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader;
     if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
       // An origin-keyed process is used if requested by header.
       isolation_flags |=
-          UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess;
+          UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader;
     }
   }
 

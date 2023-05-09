@@ -3069,10 +3069,10 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_OriginKeyed) {
   // Create a SiteInstance for sub.foo.com in a new BrowsingInstance.
   TestBrowserContext context;
   {
-    auto origin_isolation_request =
-        static_cast<UrlInfo::OriginIsolationRequest>(
-            UrlInfo::OriginIsolationRequest::kOriginAgentCluster |
-            UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess);
+    auto origin_isolation_request = static_cast<
+        UrlInfo::OriginIsolationRequest>(
+        UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader |
+        UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader);
     UrlInfo url_info(UrlInfoInit(foo.GetURL())
                          .WithOriginIsolationRequest(origin_isolation_request));
     scoped_refptr<SiteInstanceImpl> foo_instance =

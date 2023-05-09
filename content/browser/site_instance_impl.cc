@@ -1175,10 +1175,11 @@ bool SiteInstanceImpl::IsSameSite(const IsolationContext& isolation_context,
   url::Origin dest_isolated_origin;
   bool src_origin_is_isolated = policy->GetMatchingProcessIsolatedOrigin(
       isolation_context, src_origin,
-      real_src_url_info.requests_origin_keyed_process(), &src_isolated_origin);
+      real_src_url_info.requests_origin_keyed_process_by_header(),
+      &src_isolated_origin);
   bool dest_origin_is_isolated = policy->GetMatchingProcessIsolatedOrigin(
       isolation_context, dest_origin,
-      real_dest_url_info.requests_origin_keyed_process(),
+      real_dest_url_info.requests_origin_keyed_process_by_header(),
       &dest_isolated_origin);
   if (src_origin_is_isolated || dest_origin_is_isolated) {
     // Compare most specific matching origins to ensure that a subdomain of an

@@ -203,10 +203,12 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   OriginAgentClusterIsolationState requested_isolation_state =
       isolation_context.default_isolation_state();
   if (!url_info.requests_default_origin_agent_cluster_isolation()) {
+    // In this case, url_info is not using OAC by default, so we only need to
+    // check the by_header() functions to determine the isolation state.
     requested_isolation_state =
-        url_info.requests_origin_agent_cluster()
+        url_info.requests_origin_agent_cluster_by_header()
             ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
-                  url_info.requests_origin_keyed_process())
+                  url_info.requests_origin_keyed_process_by_header())
             : OriginAgentClusterIsolationState::CreateNonIsolated();
   }
 
@@ -738,7 +740,7 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     url::Origin isolated_origin;
     if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin,
-            real_url_info.requests_origin_keyed_process(), site_url,
+            real_url_info.requests_origin_keyed_process_by_header(), site_url,
             &isolated_origin)) {
       return isolated_origin.GetURL();
     }

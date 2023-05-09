@@ -1983,8 +1983,8 @@ TEST_F(SiteInstanceTest, RelatedSitesInheritStoragePartitionConfig) {
 
 TEST_F(SiteInstanceTest, GetNonOriginKeyedEquivalentPreservesIsPdf) {
   auto origin_isolation_request = static_cast<UrlInfo::OriginIsolationRequest>(
-      UrlInfo::OriginIsolationRequest::kOriginAgentCluster |
-      UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcess);
+      UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader |
+      UrlInfo::OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader);
   UrlInfo url_info_pdf_with_oac(
       UrlInfoInit(GURL("https://foo.com/test.pdf"))
           .WithOriginIsolationRequest(origin_isolation_request)
@@ -2004,8 +2004,9 @@ TEST_F(SiteInstanceTest, GetNonOriginKeyedEquivalentPreservesIsPdf) {
 }
 
 // This test makes sure that if we create a SiteInfo with a UrlInfo where
-// kOriginAgentCluster is set but kRequiresOriginKeyedProcess is not, that the
-// resulting SiteInfo does not have `requires_origin_keyed_process_` true.
+// kOriginAgentClusterByHeader is set but kRequiresOriginKeyedProcessByHeader is
+// not, that the resulting SiteInfo does not have
+// `requires_origin_keyed_process_` true.
 TEST_F(SiteInstanceTest, SiteInfoDetermineProcessLock_OriginAgentCluster) {
   GURL a_foo_url("https://a.foo.com/");
   GURL foo_url("https://foo.com");
@@ -2022,7 +2023,7 @@ TEST_F(SiteInstanceTest, SiteInfoDetermineProcessLock_OriginAgentCluster) {
           OriginAgentClusterIsolationState::CreateForDefaultIsolation(
               context())),
       UrlInfo(UrlInfoInit(a_foo_url).WithOriginIsolationRequest(
-          UrlInfo::OriginIsolationRequest::kOriginAgentCluster)));
+          UrlInfo::OriginIsolationRequest::kOriginAgentClusterByHeader)));
   EXPECT_TRUE(
       SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled());
   EXPECT_EQ(foo_url, site_info_for_a_foo.process_lock_url());

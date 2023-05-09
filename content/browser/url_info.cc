@@ -27,7 +27,11 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       is_pdf(init.is_pdf_),
       common_coop_origin(init.common_coop_origin_) {
   // An origin-keyed process can only be used for origin-keyed agent clusters.
-  DCHECK(!requests_origin_keyed_process() || requests_origin_agent_cluster());
+  // We can check this for the explicit header case here, and when implicit
+  // origin-keyed-processes are enabled, additional checks will be made in
+  // SiteInfo::CreateInternal().
+  DCHECK(!requests_origin_keyed_process_by_header() ||
+         requests_origin_agent_cluster_by_header());
   DCHECK(init.is_sandboxed_ ||
          init.unique_sandbox_id_ == kInvalidUniqueSandboxId);
 }
