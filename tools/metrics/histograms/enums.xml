@@ -10151,14 +10151,6 @@ others/histograms.xml -->
   <int value="58" label="WindowVisibilityChanged"/>
 </enum>
 
-<enum name="BackForwardCacheActionAfterPagehide">
-  <int value="0" label="Navigation"/>
-  <int value="1" label="Sent postMessage"/>
-  <int value="2" label="Received postMessage"/>
-  <int value="3" label="Modified localStorage"/>
-  <int value="4" label="Modified sessionStorage"/>
-</enum>
-
 <enum name="BackForwardCacheBrowsingInstanceNotSwappedReason">
   <int value="0" label="Swapped"/>
   <int value="1" label="Proactive swap disabled"/>

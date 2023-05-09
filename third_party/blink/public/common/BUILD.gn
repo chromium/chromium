@@ -131,7 +131,6 @@ source_set("headers") {
   ]
 
   sources = [
-    "action_after_pagehide.h",
     "associated_interfaces/associated_interface_provider.h",
     "associated_interfaces/associated_interface_registry.h",
     "blob/blob_utils.h",

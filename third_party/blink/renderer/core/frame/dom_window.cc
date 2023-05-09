@@ -9,7 +9,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
-#include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -689,17 +688,6 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
       source_frame->GetDocument()->UnloadEventInProgress();
   if (!unload_event_in_progress && source_frame && source_frame->GetPage() &&
       source_frame->GetPage()->DispatchedPagehideAndStillHidden()) {
-    // The postMessage call is done after the pagehide event got dispatched
-    // and the page is still hidden, which is not normally possible (this
-    // might happen if we're doing a same-site cross-RenderFrame navigation
-    // where we dispatch pagehide during the new RenderFrame's commit but
-    // won't unload/freeze the page after the new RenderFrame finished
-    // committing). We should track this case to measure how often this is
-    // happening, except for when the unload event is currently in progress,
-    // which means the page is not actually stored in the back-forward cache and
-    // this behavior is ok.
-    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.SameSite.ActionAfterPagehide2",
-                              ActionAfterPagehide::kSentPostMessage);
   }
   if (!IsCurrentlyDisplayedInFrame())
     return;

@@ -445,28 +445,6 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="BackForwardCache.SameSite.ActionAfterPagehide2"
-    enum="BackForwardCacheActionAfterPagehide" expires_after="2022-01-23">
-  <owner>rakina@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Records occurences of certain actions triggered by script running on a page
-    after the pagehide event gets dispatched in the page, which might be
-    possible if we dispatch the pagehide event without unloading/freezing the
-    page (only happens when we're doing a same-site navigation and we did a
-    proactive BrowsingInstance swap but we're reusing the old page's process).
-
-    Note: We will only track actions that might affect the user after we've
-    navigated away from the old page, such as modifications to storage,
-    navigations, or sending/receiving postMessage.
-
-    Note 2: We will not track actions taken when the unload event is currently
-    in progress, which means the page is not actually stored in the back-forward
-    cache and the actions are expected to happen after pagehide.
-  </summary>
-</histogram>
-
 <histogram
     name="BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName"
     enum="MojoInterfaceName" expires_after="2023-12-31">
