@@ -34,6 +34,8 @@ const gfx::VectorIcon& GetIcon(ExtensionsToolbarButton::State state) {
                  : vector_icons::kExtensionIcon;
     case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
       return vector_icons::kExtensionOffIcon;
+    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+      return vector_icons::kExtensionOnIcon;
   }
 }
 

@@ -27,8 +27,8 @@ class ExtensionsToolbarButton : public ToolbarButton,
   enum class State {
     // All extensions have blocked access to the current site.
     kAllExtensionsBlocked,
-    // TODO(crbug.com/1239772): Add new icon when 1+ extensions have access to
-    // the current site.
+    // At least one extension has access to the current site.
+    kAnyExtensionHasAccess,
     kDefault,
   };
 

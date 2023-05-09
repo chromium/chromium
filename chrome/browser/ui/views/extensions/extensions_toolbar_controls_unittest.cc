@@ -77,11 +77,11 @@ void ExtensionsToolbarControlsUnitTest::SetUp() {
   web_contents_tester_ = AddWebContentsAndGetTester();
 }
 
-TEST_F(ExtensionsToolbarControlsUnitTest, ExtensionsButton_UserSiteSetting) {
-  // Install an extension that requests host permissions, and withhold them.
+TEST_F(ExtensionsToolbarControlsUnitTest,
+       ExtensionsButton_SitePermissionsUpdates) {
+  // Install an extension that requests host permissions.
   auto extension =
       InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
-  WithholdHostPermissions(extension.get());
 
   const GURL url("http://www.url.com");
   auto url_origin = url::Origin::Create(url);
@@ -100,13 +100,23 @@ TEST_F(ExtensionsToolbarControlsUnitTest, ExtensionsButton_UserSiteSetting) {
   }
 
   {
-    // Extensions button has "default" icon type when it's not
-    // an user restricted site. Even though the extension has site access
-    // withheld, extension is not explicitly blocked on site since it can still
-    // run on click.
+    // Extensions button has "any extension has access" icon type when it's not
+    // an user restricted site and 1+ extensions have
+    // site access granted. Note that by default extensions have granted access.
     extensions::PermissionsManagerWaiter manager_waiter(manager);
     manager->RemoveUserRestrictedSite(url_origin);
     manager_waiter.WaitForUserPermissionsSettingsChange();
+    WaitForAnimation();
+    EXPECT_EQ(extensions_button()->GetStateForTesting(),
+              ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
+  }
+
+  {
+    // Extension button has "default" icon type when it's not an user restricted
+    // site and no extensions have site access granted.
+    // To achieve this, we withhold host permissions in the only extension
+    // installed.
+    WithholdHostPermissions(extension.get());
     WaitForAnimation();
     EXPECT_EQ(extensions_button()->GetStateForTesting(),
               ExtensionsToolbarButton::State::kDefault);
@@ -115,7 +125,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest, ExtensionsButton_UserSiteSetting) {
 
 TEST_F(ExtensionsToolbarControlsUnitTest,
        ExtensionsButton_ChromeRestrictedSite) {
-  InstallExtension("Extension");
+  InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
 
   const GURL restricted_url("chrome://extensions");
   NavigateAndCommit(restricted_url);
@@ -400,8 +410,12 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             extensions::PermissionsManager::UserSiteAccess::kOnClick);
 
-  ClickButton(request_access_button());
+  // Extension menu button has default state since extensions are not blocked,
+  // and there is no extension with access to the site.
+  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+            ExtensionsToolbarButton::State::kDefault);
 
+  ClickButton(request_access_button());
   WaitForAnimation();
   LayoutContainerIfNecessary();
 
@@ -412,6 +426,11 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
             extensions::PermissionsManager::UserSiteAccess::kOnClick);
+
+  // Verify extensions menu button has "any extension  has access" state, since
+  // the extension executed its action.
+  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+            ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
 }
 
 class ExtensionsToolbarControlsWithPermittedSitesUnitTest

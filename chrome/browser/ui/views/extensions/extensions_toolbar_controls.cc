@@ -36,7 +36,8 @@ void ExtensionsToolbarControls::UpdateControls(
     const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
     extensions::PermissionsManager::UserSiteSetting site_setting,
     content::WebContents* current_web_contents) {
-  UpdateExtensionsButton(is_restricted_url, site_setting);
+  UpdateExtensionsButton(actions, site_setting, current_web_contents,
+                         is_restricted_url);
   UpdateRequestAccessButton(actions, site_setting, current_web_contents);
 
   // Display background only when multiple buttons are visible. Since
@@ -54,16 +55,23 @@ void ExtensionsToolbarControls::UpdateControls(
 }
 
 void ExtensionsToolbarControls::UpdateExtensionsButton(
-    bool is_restricted_url,
-    extensions::PermissionsManager::UserSiteSetting site_setting) {
-  bool extensions_are_blocked =
-      is_restricted_url ||
-      site_setting ==
-          extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions;
+    const std::vector<std::unique_ptr<ToolbarActionViewController>>& actions,
+    extensions::PermissionsManager::UserSiteSetting site_setting,
+    content::WebContents* web_contents,
+    bool is_restricted_url) {
   ExtensionsToolbarButton::State extensions_button_state =
-      extensions_are_blocked
-          ? ExtensionsToolbarButton::State::kAllExtensionsBlocked
-          : ExtensionsToolbarButton::State::kDefault;
+      ExtensionsToolbarButton::State::kDefault;
+
+  if (is_restricted_url || site_setting ==
+                               extensions::PermissionsManager::UserSiteSetting::
+                                   kBlockAllExtensions) {
+    extensions_button_state =
+        ExtensionsToolbarButton::State::kAllExtensionsBlocked;
+  } else if (ExtensionActionViewController::AnyActionHasCurrentSiteAccess(
+                 actions, web_contents)) {
+    extensions_button_state =
+        ExtensionsToolbarButton::State::kAnyExtensionHasAccess;
+  }
 
   extensions_button_->UpdateState(extensions_button_state);
 }
