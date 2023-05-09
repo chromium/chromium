@@ -29,10 +29,6 @@ export class DriveBulkPinningBanner extends EducationalBanner {
         .addEventListener('click', (e) => {
           e.preventDefault();
           const dialog = document.querySelector('xf-bulk-pinning-dialog');
-          // TODO (b/280693225) Get the actual data to display.
-          dialog.requiredBytes = 120000000000;
-          dialog.freeBytes = 300000000000;
-          dialog.state = 'LISTING';
           dialog.show();
         });
   }

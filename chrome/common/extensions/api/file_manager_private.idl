@@ -1967,7 +1967,7 @@ interface Functions {
 
   // Starts calculating the space required to pin all the items in a users My
   // drive.
-  static void calculateBulkPinRequiredSpace();
+  static void calculateBulkPinRequiredSpace(SimpleCallback callback);
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

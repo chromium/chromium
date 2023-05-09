@@ -1750,8 +1750,9 @@ chrome.fileManagerPrivate.getBulkPinProgress = function(callback) {};
 /**
  * Starts calculating the space required to pin all the items in a users My
  * drive.
+ * @param {function(): void} callback
  */
-chrome.fileManagerPrivate.calculateBulkPinRequiredSpace = function() {};
+chrome.fileManagerPrivate.calculateBulkPinRequiredSpace = function(callback) {};
 
 /**
  * @type {!ChromeEvent}

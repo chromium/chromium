@@ -5,13 +5,18 @@
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
+import {calculateBulkPinRequiredSpace} from '../common/js/api.js';
 import {str, strf, util} from '../common/js/util.js';
-import {} from '../foreground/elements/files_spinner.js';
+import {State as AppState} from '../externs/ts/state.js';
+import {getStore} from '../state/store.js';
 
 import {css, customElement, html, query, XfBase} from './xf_base.js';
 
 // Different flavors of the XfBulkPinningDialog.
-const enum State {
+const enum DialogState {
+  // The dialog is not displayed.
+  CLOSED = 'CLOSED',
+
   // Currently offline. Cannot compute space requirement for the time being.
   OFFLINE = 'OFFLINE',
 
@@ -27,6 +32,8 @@ const enum State {
   // Computed space requirements and ready to activate the bulk-pinning feature.
   READY = 'READY',
 }
+
+const BulkPinStage = chrome.fileManagerPrivate.BulkPinStage;
 
 /**
  * Dialog that shows the benefits of enabling bulk pinning along with storage
@@ -44,27 +51,97 @@ export class XfBulkPinningDialog extends XfBase {
   private $notEnoughSpaceFooter_!: HTMLElement;
   @query('#ready-footer') private $readyFooter_!: HTMLElement;
 
-  requiredBytes = 0;
-  freeBytes = 0;
+  private store_ = getStore();
+  private state_ = DialogState.CLOSED;
+  private stage_ = '';
+  private requiredBytes_ = 0;
+  private freeBytes_ = 0;
 
-  set state(s: State) {
-    // Show the footer matching the given state.
-    this.$offlineFooter_.style.display = s === State.OFFLINE ? 'flex' : 'none';
-    this.$listingFooter_.style.display = s === State.LISTING ? 'flex' : 'none';
-    this.$errorFooter_.style.display = s === State.ERROR ? 'flex' : 'none';
-    this.$notEnoughSpaceFooter_.style.display =
-        s === State.NOT_ENOUGH_SPACE ? 'flex' : 'none';
-    this.$readyFooter_.style.display = s === State.READY ? 'flex' : 'none';
-    // Enable or disable the 'Continue' button according to the given state.
-    this.$button_.disabled = s !== State.READY;
+  // Called when the app has changed state.
+  onStateChanged(state: AppState) {
+    // We're only interested in the bulk-pinning part of the app state.
+    const bpp = state.bulkPinning;
+    if (!bpp) {
+      return;
+    }
+
+    if (this.freeBytes_ !== bpp.freeSpaceBytes ||
+        this.requiredBytes_ !== bpp.requiredSpaceBytes) {
+      this.freeBytes_ = bpp.freeSpaceBytes;
+      this.requiredBytes_ = bpp.requiredSpaceBytes;
+      this.$readyFooter_.innerText = strf(
+          'BULK_PINNING_SPACE', util.bytesToString(this.requiredBytes_),
+          util.bytesToString(this.freeBytes_ - this.requiredBytes_));
+    }
+
+    if (bpp.stage === this.stage_) {
+      return;
+    }
+
+    this.stage_ = bpp.stage;
+    switch (bpp.stage) {
+      case BulkPinStage.PAUSED:
+        this.state = DialogState.OFFLINE;
+        break;
+
+      case BulkPinStage.GETTING_FREE_SPACE:
+      case BulkPinStage.LISTING_FILES:
+        this.state = DialogState.LISTING;
+        break;
+
+      case BulkPinStage.SUCCESS:
+        this.state = DialogState.READY;
+        break;
+
+      case BulkPinStage.SYNCING:
+        this.$dialog_.close();
+        break;
+
+      default:
+        this.state = DialogState.ERROR;
+        break;
+    }
   }
 
-  show() {
+  // Sets the dialog state.
+  set state(s: DialogState) {
+    if (s == this.state_) {
+      return;
+    }
+
+    this.state_ = s;
+
+    // Show the footer matching the given state.
+    this.$offlineFooter_.style.display =
+        s === DialogState.OFFLINE ? 'flex' : 'none';
+    this.$listingFooter_.style.display =
+        s === DialogState.LISTING ? 'flex' : 'none';
+    this.$errorFooter_.style.display =
+        s === DialogState.ERROR ? 'flex' : 'none';
+    this.$notEnoughSpaceFooter_.style.display =
+        s === DialogState.NOT_ENOUGH_SPACE ? 'flex' : 'none';
+    this.$readyFooter_.style.display =
+        s === DialogState.READY ? 'flex' : 'none';
+
+    // Enable or disable the 'Continue' button according to the given state.
+    this.$button_.disabled = s !== DialogState.READY;
+  }
+
+  async show() {
     this.$point1_.innerHTML = str('BULK_PINNING_POINT_1');
-    this.$readyFooter_.innerText = strf(
-        'BULK_PINNING_SPACE', util.bytesToString(this.requiredBytes),
-        util.bytesToString(this.freeBytes - this.requiredBytes));
     this.$dialog_.showModal();
+    this.store_.subscribe(this);
+    try {
+      await calculateBulkPinRequiredSpace();
+    } catch (e) {
+      console.error('Cannot calculate bulk-pinning required space', e);
+      this.state = DialogState.ERROR;
+    }
+  }
+
+  private onClose(_: Event) {
+    this.state = DialogState.CLOSED;
+    this.store_.unsubscribe(this);
   }
 
   private onContinue() {
@@ -88,7 +165,7 @@ export class XfBulkPinningDialog extends XfBase {
 
   override render() {
     return html`
-      <cr-dialog>
+      <cr-dialog @close="${this.onClose}">
         <div slot="title">
           <xf-icon type="drive_logo" size="medium"></xf-icon>
           <div class="title">
