@@ -1045,4 +1045,22 @@ FileManagerPrivateOpenManageSyncSettingsFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction
+FileManagerPrivateCalculateBulkPinRequiredSpaceFunction::Run() {
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::DriveIntegrationService* integration_service =
+      drive::util::GetIntegrationServiceByProfile(profile);
+  if (!integration_service) {
+    return RespondNow(Error("Drive not available"));
+  }
+
+  drivefs::pinning::PinManager* const p = integration_service->GetPinManager();
+  if (!p) {
+    return RespondNow(Error("Pin Manager not available"));
+  }
+
+  p->CalculateRequiredSpace();
+  return RespondNow(NoArguments());
+}
+
 }  // namespace extensions

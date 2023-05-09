@@ -346,3 +346,12 @@ export async function getUniqueParents(entries) {
 export async function getBulkPinProgress() {
   return promisify(chrome.fileManagerPrivate.getBulkPinProgress);
 }
+
+/**
+ * Starts calculating the required space to pin all the users items on their My
+ * drive.
+ * @returns {!Promise<void>}
+ */
+export async function calculateRequiredSpace() {
+  return promisify(chrome.fileManagerPrivate.calculateBulkPinRequiredSpace);
+}

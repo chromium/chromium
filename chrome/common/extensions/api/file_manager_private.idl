@@ -1964,6 +1964,10 @@ interface Functions {
 
   // Returns the current progress of the bulk pinning manager.
   static void getBulkPinProgress(GetBulkPinProgressCallback callback);
+
+  // Starts calculating the space required to pin all the items in a users My
+  // drive.
+  static void calculateBulkPinRequiredSpace();
 };
 
 // Events supported by fileManagerPrivate API. These events are broadcasted.

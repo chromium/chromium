@@ -1748,6 +1748,12 @@ chrome.fileManagerPrivate.parseTrashInfoFiles = function(entries, callback) {};
 chrome.fileManagerPrivate.getBulkPinProgress = function(callback) {};
 
 /**
+ * Starts calculating the space required to pin all the items in a users My
+ * drive.
+ */
+chrome.fileManagerPrivate.calculateBulkPinRequiredSpace = function() {};
+
+/**
  * @type {!ChromeEvent}
  */
 chrome.fileManagerPrivate.onMountCompleted;

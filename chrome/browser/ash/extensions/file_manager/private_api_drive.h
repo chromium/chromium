@@ -225,6 +225,20 @@ class FileManagerPrivateGetBulkPinProgressFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Implements the chrome.fileManagerPrivate.calculateBulkPinRequiredSpace
+// method.
+class FileManagerPrivateCalculateBulkPinRequiredSpaceFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("fileManagerPrivate.calculateBulkPinRequiredSpace",
+                             FILEMANAGERPRIVATE_CALCULATEBULKPINREQUIREDSPACE)
+
+ protected:
+  ~FileManagerPrivateCalculateBulkPinRequiredSpaceFunction() override = default;
+
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_ASH_EXTENSIONS_FILE_MANAGER_PRIVATE_API_DRIVE_H_
