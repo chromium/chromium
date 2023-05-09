@@ -110,6 +110,10 @@ struct Cluster {
   // A label for the whole cluster.
   string label;
 
+  // If the whole cluster is opened in a new tab group, this should be used as
+  // the tab group name.
+  string? tab_group_name;
+
   // The positions within `label` that match the search terms. Used for bolding
   // in the WebUI.
   array<MatchPosition> label_match_positions;

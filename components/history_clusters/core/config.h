@@ -356,6 +356,11 @@ struct Config {
   // Whether to the icon or menu item.
   bool hide_visits_icon = true;
 
+  // Whether new tab groups created by "Open all in new tab group" should be
+  // named after the cluster title. If false, the new tab group is anonymous,
+  // which is the pre-M115 behavior.
+  bool named_new_tab_groups = true;
+
   // The `kUseUrlForDisplayCache` feature and child params.
 
   // Whether to use a cache to store the site engagement scores per host. Used

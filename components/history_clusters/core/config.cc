@@ -379,6 +379,9 @@ Config::Config() {
 
     hide_visits_icon = GetFieldTrialParamByFeatureAsBool(
         internal::kHideVisits, "hide_visits_icon", hide_visits_icon);
+
+    named_new_tab_groups =
+        base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
   }
 
   // The `kUseUrlForDisplayCache` feature and child params.

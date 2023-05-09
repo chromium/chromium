@@ -1020,6 +1020,9 @@ struct Cluster {
   // removed.
   absl::optional<std::u16string> raw_label;
 
+  // Where the label came from. Determines in which ways we can use `raw_label`.
+  LabelSource label_source = LabelSource::kUnknown;
+
   // The positions within the label that match the search query, if it exists.
   // This depends on the user's search query, and should not be persisted.
   query_parser::Snippet::MatchPositions label_match_positions;
