@@ -4,6 +4,8 @@
 
 import './sandboxed_load_time_data.js';
 
+import {addColorChangeListener, removeColorChangeListener, startColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+
 import {assertCast, MessagePipe} from './message_pipe.js';
 import {EditInPhotosMessage, FileContext, IsFileArcWritableMessage, IsFileArcWritableResponse, IsFileBrowserWritableMessage, IsFileBrowserWritableResponse, LoadFilesMessage, Message, OpenAllowedFileMessage, OpenAllowedFileResponse, OpenFilesWithPickerMessage, OverwriteFileMessage, OverwriteViaFilePickerResponse, RenameFileResponse, RenameResult, RequestSaveFileMessage, RequestSaveFileResponse, SaveAsMessage, SaveAsResponse} from './message_types.js';
 import {loadPiex} from './piex_module_loader.js';
@@ -436,6 +438,10 @@ function mutationCallback(mutationsList, observer) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // Start listening to color change events. These events get picked up by logic
+  // in ts_helpers.ts on the google3 side.
+  startColorChangeUpdater();
+
   const app = getApp();
   if (app) {
     initializeApp(app);
@@ -462,6 +468,11 @@ window['chooseFileSystemEntries'] = null;
 window['showOpenFilePicker'] = null;
 window['showSaveFilePicker'] = null;
 window['showDirectoryPicker'] = null;
+
+// Expose functions to bind to color change events to window so they can be
+// automatically picked up by installColors(). See ts_helpers.ts in google3.
+window['addColorChangeListener'] = addColorChangeListener;
+window['removeColorChangeListener'] = removeColorChangeListener;
 
 export const TEST_ONLY = {
   RenameResult,
