@@ -71,7 +71,7 @@ export class MetadataUpdateController {
     // changed.
     const isFakeEntry = util.isFakeEntry(directoryEntry);
     const changedEntries =
-        (isFakeEntry ? [] : [directoryEntry]).concat(entries);
+        (isFakeEntry ? [] : [util.unwrapEntry(directoryEntry)]).concat(entries);
     this.metadataModel_.notifyEntriesChanged(changedEntries);
 
     // We don't pass callback here. When new metadata arrives, we have an
