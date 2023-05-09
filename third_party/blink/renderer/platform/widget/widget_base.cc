@@ -633,7 +633,10 @@ void WidgetBase::RequestNewLayerTreeFrameSink(
       viz::mojom::blink::CompositorFrameSinkClientInterfaceBase>(
       compositor_frame_sink_client.InitWithNewPipeAndPassReceiver());
 
-  if (Platform::Current()->IsGpuCompositingDisabled()) {
+  static const bool gpu_channel_always_allowed =
+      base::FeatureList::IsEnabled(::features::kSharedBitmapToSharedImage);
+  if (Platform::Current()->IsGpuCompositingDisabled() &&
+      !gpu_channel_always_allowed) {
     DCHECK(!for_web_tests);
     widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
                                   std::move(compositor_frame_sink_client));
@@ -684,16 +687,32 @@ void WidgetBase::FinishRequestNewLayerTreeFrameSink(
         params,
     LayerTreeFrameSinkCallback callback,
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  if (Platform::Current()->IsGpuCompositingDisabled()) {
-    // GPU compositing was disabled after the check in
-    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
+  if (!gpu_channel_host) {
+    // Wait and try again. We may hear that the compositing mode has switched
+    // to software in the meantime.
     std::move(callback).Run(nullptr, nullptr);
     return;
   }
 
-  if (!gpu_channel_host) {
-    // Wait and try again. We may hear that the compositing mode has switched
-    // to software in the meantime.
+  static const bool gpu_channel_always_allowed =
+      base::FeatureList::IsEnabled(::features::kSharedBitmapToSharedImage);
+  if (Platform::Current()->IsGpuCompositingDisabled() &&
+      gpu_channel_always_allowed) {
+    widget_host_->CreateFrameSink(std::move(compositor_frame_sink_receiver),
+                                  std::move(compositor_frame_sink_client));
+    widget_host_->RegisterRenderFrameMetadataObserver(
+        std::move(render_frame_metadata_observer_client_receiver),
+        std::move(render_frame_metadata_observer_remote));
+    std::move(callback).Run(
+        std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
+            nullptr, nullptr, params.get()),
+        std::move(render_frame_metadata_observer));
+    return;
+  }
+
+  if (Platform::Current()->IsGpuCompositingDisabled()) {
+    // GPU compositing was disabled after the check in
+    // WidgetBase::RequestNewLayerTreeFrameSink(). Fail and let it retry.
     std::move(callback).Run(nullptr, nullptr);
     return;
   }
