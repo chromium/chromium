@@ -62,5 +62,6 @@ s! {
     }
 }
 
+// From https://cs.opensource.google/fuchsia/fuchsia/+/main:zircon/third_party/ulib/musl/include/bits/signal.h;l=20-21;drc=0827b18ab9540c46f8037f407d17ea15a79e9ba7
 pub const MINSIGSTKSZ: ::size_t = 6144;
 pub const SIGSTKSZ: ::size_t = 12288;

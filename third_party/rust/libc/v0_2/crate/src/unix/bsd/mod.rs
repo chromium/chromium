@@ -37,6 +37,7 @@ s! {
 
         #[cfg(not(any(target_os = "macos",
                       target_os = "ios",
+                      target_os = "tvos",
                       target_os = "watchos",
                       target_os = "netbsd",
                       target_os = "openbsd")))]
@@ -113,6 +114,13 @@ s! {
     pub struct regmatch_t {
         pub rm_so: regoff_t,
         pub rm_eo: regoff_t,
+    }
+
+    pub struct option {
+        pub name: *const ::c_char,
+        pub has_arg: ::c_int,
+        pub flag: *mut ::c_int,
+        pub val: ::c_int,
     }
 }
 
@@ -605,7 +613,6 @@ extern "C" {
 
     pub fn strerror_r(errnum: ::c_int, buf: *mut c_char, buflen: ::size_t) -> ::c_int;
     pub fn abs(i: ::c_int) -> ::c_int;
-    pub fn atof(s: *const ::c_char) -> ::c_double;
     pub fn labs(i: ::c_long) -> ::c_long;
     #[cfg_attr(
         all(target_os = "freebsd", any(freebsd12, freebsd11, freebsd10)),
@@ -884,10 +891,17 @@ extern "C" {
     pub fn srand48(seed: ::c_long);
     pub fn seed48(xseed: *mut ::c_ushort) -> *mut ::c_ushort;
     pub fn lcong48(p: *mut ::c_ushort);
+    pub fn getopt_long(
+        argc: ::c_int,
+        argv: *const *mut c_char,
+        optstring: *const c_char,
+        longopts: *const option,
+        longindex: *mut ::c_int,
+    ) -> ::c_int;
 }
 
 cfg_if! {
-    if #[cfg(any(target_os = "macos", target_os = "ios", target_os = "watchos"))] {
+    if #[cfg(any(target_os = "macos", target_os = "ios", target_os = "tvos", target_os = "watchos"))] {
         mod apple;
         pub use self::apple::*;
     } else if #[cfg(any(target_os = "openbsd", target_os = "netbsd"))] {

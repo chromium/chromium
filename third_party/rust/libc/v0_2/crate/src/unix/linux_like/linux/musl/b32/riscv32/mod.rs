@@ -271,6 +271,7 @@ pub const ENOPROTOOPT: ::c_int = 92;
 pub const EPROTONOSUPPORT: ::c_int = 93;
 pub const ESOCKTNOSUPPORT: ::c_int = 94;
 pub const EOPNOTSUPP: ::c_int = 95;
+pub const ENOTSUP: ::c_int = EOPNOTSUPP;
 pub const EPFNOSUPPORT: ::c_int = 96;
 pub const EAFNOSUPPORT: ::c_int = 97;
 pub const EADDRINUSE: ::c_int = 98;
@@ -365,6 +366,7 @@ pub const TIOCM_DSR: ::c_int = 256;
 
 pub const __SIZEOF_PTHREAD_CONDATTR_T: usize = 4;
 pub const __SIZEOF_PTHREAD_MUTEXATTR_T: usize = 4;
+pub const __SIZEOF_PTHREAD_BARRIERATTR_T: usize = 4;
 pub const O_DIRECT: ::c_int = 16384;
 pub const O_DIRECTORY: ::c_int = 65536;
 pub const O_NOFOLLOW: ::c_int = 131072;
@@ -503,6 +505,7 @@ pub const TIOCSWINSZ: ::c_int = 21524;
 pub const FIONREAD: ::c_int = 21531;
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 40;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 56;
+pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 32;
 
 pub const SYS_read: ::c_long = 63;
 pub const SYS_write: ::c_long = 64;

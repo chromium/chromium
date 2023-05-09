@@ -95,13 +95,31 @@ cfg_if! {
     if #[cfg(all(any(target_arch = "x86",
                      target_arch = "x86_64",
                      target_arch = "aarch64"),
-                 not(target_env = "musl")))] {
+                 not(any(target_env = "musl", target_env = "ohos"))))] {
         pub const SO_TIMESTAMP_NEW: ::c_int = 63;
         pub const SO_TIMESTAMPNS_NEW: ::c_int = 64;
         pub const SO_TIMESTAMPING_NEW: ::c_int = 65;
         pub const SO_RCVTIMEO_NEW: ::c_int = 66;
         pub const SO_SNDTIMEO_NEW: ::c_int = 67;
         pub const SO_DETACH_REUSEPORT_BPF: ::c_int = 68;
+    }
+}
+
+cfg_if! {
+    if #[cfg(any(target_arch = "x86",
+                 target_arch = "x86_64",
+                 target_arch = "arm",
+                 target_arch = "aarch64",
+                 target_arch = "riscv64",
+                 target_arch = "s390x"))] {
+        pub const FICLONE: ::c_ulong = 0x40049409;
+        pub const FICLONERANGE: ::c_ulong = 0x4020940D;
+    } else if #[cfg(any(target_arch = "mips",
+                        target_arch = "mips64",
+                        target_arch = "powerpc",
+                        target_arch = "powerpc64"))] {
+        pub const FICLONE: ::c_ulong = 0x80049409;
+        pub const FICLONERANGE: ::c_ulong = 0x8020940D;
     }
 }
 // pub const SO_PREFER_BUSY_POLL: ::c_int = 69;
@@ -243,7 +261,7 @@ cfg_if! {
         pub const RLIMIT_RTTIME: ::__rlimit_resource_t = 15;
         pub const RLIMIT_NLIMITS: ::__rlimit_resource_t = RLIM_NLIMITS;
 
-    } else if #[cfg(target_env = "musl")] {
+    } else if #[cfg(any(target_env = "musl", target_env = "ohos"))] {
 
         pub const RLIMIT_CPU: ::c_int = 0;
         pub const RLIMIT_FSIZE: ::c_int = 1;

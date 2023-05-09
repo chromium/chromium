@@ -55,6 +55,8 @@ pub type ACTION = ::c_int;
 pub type posix_spawnattr_t = *mut ::c_void;
 pub type posix_spawn_file_actions_t = *mut ::c_void;
 
+pub type StringList = _stringlist;
+
 #[cfg_attr(feature = "extra_traits", derive(Debug))]
 pub enum timezone {}
 impl ::Copy for timezone {}
@@ -430,6 +432,26 @@ s! {
         pub key: *mut ::c_char,
         pub data: *mut ::c_void,
     }
+
+    pub struct option {
+        pub name: *const ::c_char,
+        pub has_arg: ::c_int,
+        pub flag: *mut ::c_int,
+        pub val: ::c_int,
+    }
+
+    pub struct _stringlist {
+        pub sl_str: *mut *mut ::c_char,
+        pub sl_max: ::size_t,
+        pub sl_cur: ::size_t,
+    }
+
+    pub struct dl_phdr_info {
+        pub dlpi_addr: ::Elf_Addr,
+        pub dlpi_name: *const ::c_char,
+        pub dlpi_phdr: *const ::Elf_Phdr,
+        pub dlpi_phnum: ::Elf_Half,
+    }
 }
 
 s_no_extra_traits! {
@@ -663,6 +685,9 @@ pub const EOF: ::c_int = -1;
 pub const SEEK_SET: ::c_int = 0;
 pub const SEEK_CUR: ::c_int = 1;
 pub const SEEK_END: ::c_int = 2;
+pub const L_SET: ::c_int = SEEK_SET;
+pub const L_INCR: ::c_int = SEEK_CUR;
+pub const L_XTND: ::c_int = SEEK_END;
 pub const _IOFBF: ::c_int = 0;
 pub const _IONBF: ::c_int = 2;
 pub const _IOLBF: ::c_int = 1;
@@ -1585,7 +1610,6 @@ extern "C" {
     pub fn _errnop() -> *mut ::c_int;
 
     pub fn abs(i: ::c_int) -> ::c_int;
-    pub fn atof(s: *const ::c_char) -> ::c_double;
     pub fn labs(i: ::c_long) -> ::c_long;
     pub fn rand() -> ::c_int;
     pub fn srand(seed: ::c_uint);
@@ -1971,7 +1995,24 @@ extern "C" {
         attr: *mut posix_spawnattr_t,
         sigmask: *const ::sigset_t,
     ) -> ::c_int;
-
+    pub fn getopt_long(
+        argc: ::c_int,
+        argv: *const *mut c_char,
+        optstring: *const c_char,
+        longopts: *const option,
+        longindex: *mut ::c_int,
+    ) -> ::c_int;
+    pub fn strcasecmp_l(
+        string1: *const ::c_char,
+        string2: *const ::c_char,
+        locale: ::locale_t,
+    ) -> ::c_int;
+    pub fn strncasecmp_l(
+        string1: *const ::c_char,
+        string2: *const ::c_char,
+        length: ::size_t,
+        locale: ::locale_t,
+    ) -> ::c_int;
 }
 
 #[link(name = "bsd")]
@@ -1994,6 +2035,34 @@ extern "C" {
     pub fn strsep(string: *mut *mut ::c_char, delimiters: *const ::c_char) -> *mut ::c_char;
     pub fn explicit_bzero(buf: *mut ::c_void, len: ::size_t);
     pub fn login_tty(_fd: ::c_int) -> ::c_int;
+
+    pub fn sl_init() -> *mut StringList;
+    pub fn sl_add(sl: *mut StringList, n: *mut ::c_char) -> ::c_int;
+    pub fn sl_free(sl: *mut StringList, i: ::c_int);
+    pub fn sl_find(sl: *mut StringList, n: *mut ::c_char) -> *mut ::c_char;
+
+    pub fn getprogname() -> *const ::c_char;
+    pub fn setprogname(progname: *const ::c_char);
+    pub fn dl_iterate_phdr(
+        callback: ::Option<
+            unsafe extern "C" fn(
+                info: *mut dl_phdr_info,
+                size: usize,
+                data: *mut ::c_void,
+            ) -> ::c_int,
+        >,
+        data: *mut ::c_void,
+    ) -> ::c_int;
+}
+
+#[link(name = "unix")]
+extern "C" {
+    pub fn memmem(
+        source: *const ::c_void,
+        sourceLength: ::size_t,
+        search: *const ::c_void,
+        searchLength: ::size_t,
+    ) -> *mut ::c_void;
 }
 
 cfg_if! {

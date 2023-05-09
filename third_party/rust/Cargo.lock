@@ -70,7 +70,9 @@ dependencies = [
  "clap",
  "cxx",
  "cxxbridge-cmd",
+ "env_logger",
  "lazy_static",
+ "log",
  "memoffset",
  "once_cell",
  "proc-macro2",
@@ -144,6 +146,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "env_logger"
+version = "0.10.0"
+dependencies = [
+ "log",
+ "regex",
+ "termcolor",
+]
+
+[[package]]
 name = "fastrand"
 version = "1.7.0"
 dependencies = [
@@ -194,11 +205,18 @@ version = "1.4.0"
 
 [[package]]
 name = "libc"
-version = "0.2.132"
+version = "0.2.142"
 
 [[package]]
 name = "link-cplusplus"
 version = "1.0.5"
+
+[[package]]
+name = "log"
+version = "0.4.17"
+dependencies = [
+ "cfg-if",
+]
 
 [[package]]
 name = "memchr"

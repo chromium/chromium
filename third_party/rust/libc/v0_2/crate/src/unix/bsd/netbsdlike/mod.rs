@@ -419,6 +419,11 @@ pub const MADV_WILLNEED: ::c_int = 3;
 pub const MADV_DONTNEED: ::c_int = 4;
 pub const MADV_FREE: ::c_int = 6;
 
+// sys/fstypes.h in NetBSD, or sys/mount.h in OpenBSD
+pub const MNT_NODEV: ::c_int = 0x00000010;
+pub const MNT_LOCAL: ::c_int = 0x00001000;
+pub const MNT_QUOTA: ::c_int = 0x00002000;
+
 pub const AF_UNSPEC: ::c_int = 0;
 pub const AF_LOCAL: ::c_int = 1;
 pub const AF_UNIX: ::c_int = AF_LOCAL;
@@ -738,6 +743,10 @@ extern "C" {
     pub fn gethostid() -> ::c_long;
     pub fn sethostid(hostid: ::c_long) -> ::c_int;
     pub fn ftok(path: *const ::c_char, id: ::c_int) -> ::key_t;
+
+    pub fn dirname(path: *mut ::c_char) -> *mut ::c_char;
+    pub fn basename(path: *mut ::c_char) -> *mut ::c_char;
+    pub fn getentropy(buf: *mut ::c_void, buflen: ::size_t) -> ::c_int;
 }
 
 cfg_if! {

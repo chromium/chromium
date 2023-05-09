@@ -22,6 +22,7 @@ s! {
 
 pub const __SIZEOF_PTHREAD_MUTEX_T: usize = 32;
 pub const __SIZEOF_PTHREAD_RWLOCK_T: usize = 44;
+pub const __SIZEOF_PTHREAD_BARRIER_T: usize = 20;
 
 align_const! {
     pub const PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP: ::pthread_mutex_t =
@@ -357,6 +358,14 @@ pub const SYS_faccessat2: ::c_long = __X32_SYSCALL_BIT + 439;
 pub const SYS_process_madvise: ::c_long = __X32_SYSCALL_BIT + 440;
 pub const SYS_epoll_pwait2: ::c_long = __X32_SYSCALL_BIT + 441;
 pub const SYS_mount_setattr: ::c_long = __X32_SYSCALL_BIT + 442;
+pub const SYS_quotactl_fd: ::c_long = __X32_SYSCALL_BIT + 443;
+pub const SYS_landlock_create_ruleset: ::c_long = __X32_SYSCALL_BIT + 444;
+pub const SYS_landlock_add_rule: ::c_long = __X32_SYSCALL_BIT + 445;
+pub const SYS_landlock_restrict_self: ::c_long = __X32_SYSCALL_BIT + 446;
+pub const SYS_memfd_secret: ::c_long = __X32_SYSCALL_BIT + 447;
+pub const SYS_process_mrelease: ::c_long = __X32_SYSCALL_BIT + 448;
+pub const SYS_futex_waitv: ::c_long = __X32_SYSCALL_BIT + 449;
+pub const SYS_set_mempolicy_home_node: ::c_long = __X32_SYSCALL_BIT + 450;
 pub const SYS_rt_sigaction: ::c_long = __X32_SYSCALL_BIT + 512;
 pub const SYS_rt_sigreturn: ::c_long = __X32_SYSCALL_BIT + 513;
 pub const SYS_ioctl: ::c_long = __X32_SYSCALL_BIT + 514;

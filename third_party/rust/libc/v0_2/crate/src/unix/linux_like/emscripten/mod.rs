@@ -1119,6 +1119,7 @@ pub const PR_SET_MM_MAP: ::c_int = 14;
 pub const PR_SET_MM_MAP_SIZE: ::c_int = 15;
 
 pub const PR_SET_PTRACER: ::c_int = 0x59616d61;
+pub const PR_SET_PTRACER_ANY: ::c_ulong = 0xffffffffffffffff;
 
 pub const PR_SET_CHILD_SUBREAPER: ::c_int = 36;
 pub const PR_GET_CHILD_SUBREAPER: ::c_int = 37;
@@ -1724,7 +1725,7 @@ f! {
     pub fn major(dev: ::dev_t) -> ::c_uint {
         // see
         // https://github.com/emscripten-core/emscripten/blob/
-        // master/system/include/libc/sys/sysmacros.h
+        // main/system/lib/libc/musl/include/sys/sysmacros.h
         let mut major = 0;
         major |= (dev & 0x00000fff) >> 8;
         major |= (dev & 0xfffff000) >> 31 >> 1;
@@ -1734,14 +1735,16 @@ f! {
     pub fn minor(dev: ::dev_t) -> ::c_uint {
         // see
         // https://github.com/emscripten-core/emscripten/blob/
-        // master/system/include/libc/sys/sysmacros.h
+        // main/system/lib/libc/musl/include/sys/sysmacros.h
         let mut minor = 0;
         minor |= (dev & 0x000000ff) >> 0;
         minor |= (dev & 0xffffff00) >> 12;
         minor as ::c_uint
     }
+}
 
-    pub fn makedev(major: ::c_uint, minor: ::c_uint) -> ::dev_t {
+safe_f! {
+    pub {const} fn makedev(major: ::c_uint, minor: ::c_uint) -> ::dev_t {
         let major = major as ::dev_t;
         let minor = minor as ::dev_t;
         let mut dev = 0;
@@ -1761,7 +1764,6 @@ extern "C" {
     pub fn strerror_r(errnum: ::c_int, buf: *mut c_char, buflen: ::size_t) -> ::c_int;
 
     pub fn abs(i: ::c_int) -> ::c_int;
-    pub fn atof(s: *const ::c_char) -> ::c_double;
     pub fn labs(i: ::c_long) -> ::c_long;
     pub fn rand() -> ::c_int;
     pub fn srand(seed: ::c_uint);
@@ -1813,7 +1815,6 @@ extern "C" {
     ) -> ::c_int;
     pub fn getloadavg(loadavg: *mut ::c_double, nelem: ::c_int) -> ::c_int;
 
-    // Not available now on Android
     pub fn mkfifoat(dirfd: ::c_int, pathname: *const ::c_char, mode: ::mode_t) -> ::c_int;
     pub fn if_nameindex() -> *mut if_nameindex;
     pub fn if_freenameindex(ptr: *mut if_nameindex);
@@ -1881,6 +1882,8 @@ extern "C" {
         f: extern "C" fn(*mut ::c_void) -> *mut ::c_void,
         value: *mut ::c_void,
     ) -> ::c_int;
+
+    pub fn getentropy(buf: *mut ::c_void, buflen: ::size_t) -> ::c_int;
 }
 
 cfg_if! {

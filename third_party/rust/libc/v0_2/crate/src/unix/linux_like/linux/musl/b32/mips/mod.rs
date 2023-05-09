@@ -261,6 +261,7 @@ pub const MAP_NORESERVE: ::c_int = 0x0400;
 pub const MAP_POPULATE: ::c_int = 0x10000;
 pub const MAP_NONBLOCK: ::c_int = 0x20000;
 pub const MAP_STACK: ::c_int = 0x40000;
+pub const MAP_HUGETLB: ::c_int = 0x80000;
 
 pub const EDEADLK: ::c_int = 45;
 pub const ENAMETOOLONG: ::c_int = 78;
@@ -381,8 +382,6 @@ pub const SIG_BLOCK: ::c_int = 1;
 pub const SIG_UNBLOCK: ::c_int = 2;
 
 pub const EXTPROC: ::tcflag_t = 0o200000;
-
-pub const MAP_HUGETLB: ::c_int = 0x80000;
 
 pub const F_GETLK: ::c_int = 33;
 pub const F_GETOWN: ::c_int = 23;
@@ -777,6 +776,14 @@ pub const SYS_faccessat2: ::c_long = 4000 + 439;
 pub const SYS_process_madvise: ::c_long = 4000 + 440;
 pub const SYS_epoll_pwait2: ::c_long = 4000 + 441;
 pub const SYS_mount_setattr: ::c_long = 4000 + 442;
+pub const SYS_quotactl_fd: ::c_long = 4000 + 443;
+pub const SYS_landlock_create_ruleset: ::c_long = 4000 + 444;
+pub const SYS_landlock_add_rule: ::c_long = 4000 + 445;
+pub const SYS_landlock_restrict_self: ::c_long = 4000 + 446;
+pub const SYS_memfd_secret: ::c_long = 4000 + 447;
+pub const SYS_process_mrelease: ::c_long = 4000 + 448;
+pub const SYS_futex_waitv: ::c_long = 4000 + 449;
+pub const SYS_set_mempolicy_home_node: ::c_long = 4000 + 450;
 
 cfg_if! {
     if #[cfg(libc_align)] {
