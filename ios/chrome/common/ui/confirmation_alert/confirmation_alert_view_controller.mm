@@ -455,6 +455,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
 
   if (self.titleView) {
     navigationItem.titleView = self.titleView;
+    [navigationBar setBarTintColor:self.titleView.backgroundColor];
   }
 
   if (self.showDismissBarButton) {

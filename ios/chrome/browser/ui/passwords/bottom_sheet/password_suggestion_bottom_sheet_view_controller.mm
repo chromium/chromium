@@ -330,7 +330,9 @@ CGFloat const kLandscapeTableViewWidthMultiplier = 0.65;
 // Configures the title view of this ViewController.
 - (UIView*)setUpTitleView {
   NSString* title = l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE);
-  return password_manager::CreatePasswordManagerTitleView(title);
+  UIView* titleView = password_manager::CreatePasswordManagerTitleView(title);
+  titleView.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  return titleView;
 }
 
 // Returns the string to display at a given row in the table view.
