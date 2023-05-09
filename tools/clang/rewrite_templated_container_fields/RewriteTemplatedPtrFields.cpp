@@ -992,6 +992,14 @@ class VectorRawPtrRewriter {
 
     // rewrite affected expressions
     {
+      // This is needed to handle container-like types that implement a begin()
+      // method. Range-based for loops over such types also need to be
+      // rewritten.
+      auto ctn_like_type =
+          expr(hasType(cxxRecordDecl(has(functionDecl(
+                   hasName("begin"), hasReturnTypeLoc(rhs_type_loc))))),
+               unless(isExpansionInSystemHeader()));
+
       auto reversed_expr =
           callExpr(callee(functionDecl(hasName("base::Reversed"))),
                    hasArgument(0, rhs_expr_variations));
@@ -1004,7 +1012,8 @@ class VectorRawPtrRewriter {
               has(varDecl(hasDescendant(loc(qualType(pointsTo(autoType())))
                                             .bind("autoLoc")))
                       .bind("autoVarDecl")),
-              has(expr(anyOf(rhs_expr_variations, reversed_expr)))));
+              has(expr(
+                  anyOf(rhs_expr_variations, reversed_expr, ctn_like_type)))));
       match_finder_.addMatcher(auto_star_in_range_stmt,
                                &affected_ptr_expr_rewriter_);
 
