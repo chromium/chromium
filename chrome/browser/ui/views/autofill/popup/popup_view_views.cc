@@ -70,7 +70,10 @@ namespace {
 // By spec, dropdowns should always have a width which is a multiple of 12.
 constexpr int kAutofillPopupWidthMultiple = 12;
 
-constexpr int kAutofillPopupMinWidth = 0;
+// The minimum width should exceed the maximum size of a cursor, which is 128
+// (see crbug.com/1434330).
+constexpr int kAutofillPopupMinWidth = kAutofillPopupWidthMultiple * 13;
+static_assert(kAutofillPopupMinWidth > 128);
 // TODO(crbug.com/831603): move handling the max width to the base class.
 constexpr int kAutofillPopupMaxWidth = kAutofillPopupWidthMultiple * 38;
 
