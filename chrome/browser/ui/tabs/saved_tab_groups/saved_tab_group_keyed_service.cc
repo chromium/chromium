@@ -76,6 +76,12 @@ void SavedTabGroupKeyedService::StoreLocalToSavedId(
     return;
   }
 
+  // If there is no saved group with guid `saved_guid`, the group must
+  // have been unsaved since this session closed.
+  if (model()->is_loaded() && !group) {
+    return;
+  }
+
   // The model could already be loaded when restoring groups from a previously
   // crashed session / window. This means we will have to manually trigger the
   // local to saved group linking.
@@ -303,6 +309,10 @@ void SavedTabGroupKeyedService::ConnectLocalTabGroup(
 void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
   for (const auto& [saved_guid, local_group_id] :
        saved_guid_to_local_group_id_mapping_) {
+    if (model()->is_loaded() && !model()->Contains(saved_guid)) {
+      continue;
+    }
+
     model_.OnGroupOpenedInTabStrip(saved_guid, local_group_id);
     ConnectLocalTabGroup(local_group_id, saved_guid);
   }

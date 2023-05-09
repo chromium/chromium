@@ -239,6 +239,37 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest, ResumeTrackingValidatesConsistency) {
 }
 
 TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       RestoredGroupWithoutSavedGuidIsDiscarded) {
+  Browser* browser_1 = AddBrowser();
+  ASSERT_EQ(0, browser_1->tab_strip_model()->count());
+
+  // Add 2 tabs to the browser.
+  AddTabToBrowser(browser_1, 0);
+  ASSERT_EQ(1, browser_1->tab_strip_model()->count());
+
+  const tab_groups::TabGroupId tab_group_id_1 =
+      browser_1->tab_strip_model()->AddToNewGroup({0});
+  const base::Uuid guid_1 = base::Uuid::GenerateRandomV4();
+
+  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+
+  // Notify the KeyedService that the SavedTabGroupModel has loaded all local
+  // data triggered by the completion of SavedTabGroupModel::LoadStoredEntries.
+  service()->model()->LoadStoredEntries({});
+
+  // Expect calling StoreLocalToSavedId before the model is loaded does not link
+  // non-existent saved groups.
+  EXPECT_FALSE(service()->model()->Contains(tab_group_id_1));
+  EXPECT_FALSE(service()->model()->Contains(guid_1));
+
+  // Expect calling StoreLocalSavedId after the model is loaded does not link
+  // non-existent saved groups.
+  service()->StoreLocalToSavedId(guid_1, tab_group_id_1);
+  EXPECT_FALSE(service()->model()->Contains(tab_group_id_1));
+  EXPECT_FALSE(service()->model()->Contains(guid_1));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
        KeyedServiceLinksTabIdsToGuidsWhenModelIsLoaded) {
   Browser* browser_1 = AddBrowser();
   ASSERT_EQ(0, browser_1->tab_strip_model()->count());
