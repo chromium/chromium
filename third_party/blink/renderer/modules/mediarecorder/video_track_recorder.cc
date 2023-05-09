@@ -241,12 +241,14 @@ GetCreateSoftwareVideoEncoderCallback(CodecId codec_id) {
             return std::make_unique<media::OpenH264VideoEncoder>();
           }));
 #endif  // BUILDFLAG(RTC_USE_H264)
+#if BUILDFLAG(ENABLE_LIBVPX)
     case CodecId::kVp8:
     case CodecId::kVp9:
       return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
           []() -> std::unique_ptr<media::VideoEncoder> {
             return std::make_unique<media::VpxVideoEncoder>();
           }));
+#endif
 #if BUILDFLAG(ENABLE_LIBAOM)
     case CodecId::kAv1:
       return ConvertToBaseRepeatingCallback(WTF::CrossThreadBindRepeating(
