@@ -800,6 +800,18 @@ void FederatedAuthRequestImpl::LogoutRps(
   DispatchOneLogout();
 }
 
+void FederatedAuthRequestImpl::ResolveTokenRequest(
+    const std::string& token,
+    ResolveTokenRequestCallback callback) {
+  if (!IsFedCmAuthzEnabled()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  // TODO(crbug.com/1429083): Implement the resolution of the RequestToken
+  // call with the token that is passed here.
+  std::move(callback).Run(true);
+}
+
 void FederatedAuthRequestImpl::SetIdpSigninStatus(
     const url::Origin& idp_origin,
     blink::mojom::IdpSigninStatus status) {

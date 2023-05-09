@@ -202,11 +202,25 @@ ScriptPromise IdentityProvider::unregisterIdentityProvider(
   return promise;
 }
 
+void OnResolveTokenRequest(ScriptPromiseResolver* resolver, bool accepted) {
+  if (!accepted) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotAllowedError, "Not allowed to provide a token."));
+    return;
+  }
+  resolver->Resolve();
+}
+
 ScriptPromise IdentityProvider::resolve(ScriptState* script_state,
                                         const String& token) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  // TODO(crbug.com/1429083): send the request to the browser process.
+
+  auto* request =
+      CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
+  request->ResolveTokenRequest(
+      token, WTF::BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
+
   return promise;
 }
 

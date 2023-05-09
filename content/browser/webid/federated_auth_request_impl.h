@@ -76,6 +76,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void RequestUserInfo(blink::mojom::IdentityProviderConfigPtr provider,
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
+  void ResolveTokenRequest(const std::string& token,
+                           ResolveTokenRequestCallback callback) override;
   void LogoutRps(std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
                  LogoutRpsCallback) override;
   void SetIdpSigninStatus(const url::Origin& origin,

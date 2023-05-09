@@ -167,6 +167,11 @@ interface FederatedAuthRequest {
   // Cancels the pending token request, if any.
   CancelTokenRequest();
 
+  // Resolve the token request from a JS call from a WebView dialog,
+  // when the id_assertion_endpoint returns a continue_on rather than the
+  // actual token.
+  ResolveTokenRequest(string token) => (bool success);
+
   // Contact the list of Relying Party logout endpoints and account IDs to
   // attempt to initiate user logout.
   LogoutRps(array<LogoutRpsRequest> rp_logout_requests) => (LogoutRpsStatus status);
