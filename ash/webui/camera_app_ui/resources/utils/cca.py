@@ -188,6 +188,27 @@ def generate_tsconfig(board):
         json.dump(tsconfig, f)
 
 
+def reload_cca(device):
+    try:
+        run([
+            'ssh',
+            device,
+            '--',
+            'cca',
+            'open',
+            '&&',
+            'cca',
+            'eval',
+            shlex.quote("document.location.reload()"),
+            ">",
+            "/dev/null",
+        ])
+    except subprocess.CalledProcessError as e:
+        print('Failed to reload CCA on DUT, '
+              'please make sure that the DUT is logged in '
+              'and `cca setup` has been run on DUT.')
+
+
 # Use a fixed temporary output folder for deploy, so incremental compilation
 # works and deploy is faster.
 DEPLOY_OUTPUT_TEMP_DIR = '/tmp/cca-deploy-out'
@@ -274,6 +295,9 @@ def deploy(args):
     ])
 
     ensure_local_override_enabled(args.device, args.force)
+
+    if args.reload:
+        reload_cca(args.device)
 
 
 def test(args):
@@ -464,7 +488,7 @@ def parse_args(args):
     deploy_parser = subparsers.add_parser('deploy',
                                           help='deploy to device',
                                           description='''Deploy CCA to device.
-            This script only works if there is no file added/deleted.
+            This script only works if there's no .cc / .grd changes.
             And please build Chrome at least once before running the command.'''
                                           )
     deploy_parser.add_argument('board')
@@ -472,6 +496,11 @@ def parse_args(args):
     deploy_parser.add_argument('--force',
                                help="Don't prompt for restarting Chrome.",
                                action='store_true')
+    deploy_parser.add_argument(
+        '--reload',
+        help='Try reloading CCA window after deploy. '
+        'Please run `cca setup` on DUT once before using this argument.',
+        action='store_true')
     deploy_parser.set_defaults(func=deploy)
 
     test_parser = subparsers.add_parser('test',
