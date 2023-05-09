@@ -238,6 +238,20 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHCompanionSidePanelFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    // Show the promo up to 3 times a year.
+    config->trigger = EventConfig("iph_companion_side_panel_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->used =
+        EventConfig("companion_side_panel_accessed_via_toolbar_button",
+                    Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHDesktopCustomizeChromeFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

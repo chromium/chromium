@@ -82,6 +82,9 @@ chromium-metrics-reviews@google.com.
       summary="Chrome Home shown on cold start"/>
   <variant name="IPH_ChromeHomePullToRefresh"
       summary="Chrome Home shown after a pull-to-refresh"/>
+  <variant name="IPH_CompanionSidePanel"
+      summary="prompting users to view the companion feature in the side
+               panel"/>
   <variant name="IPH_ContextualPageActions_PriceTracking"
       summary="contextual page price tracking action in the top toolbar"/>
   <variant name="IPH_ContextualPageActions_PriceTrackingActionChip"

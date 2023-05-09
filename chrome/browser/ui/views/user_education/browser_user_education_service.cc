@@ -354,6 +354,12 @@ void MaybeRegisterChromeFeaturePromos(
       feature_engagement::kIPHPowerBookmarksSidePanelFeature,
       kSidePanelButtonElementId, IDS_POWER_BOOKMARKS_SIDE_PANEL_PROMO));
 
+  // kIPHCompanionSidePanelFeature:
+  registry.RegisterFeature(FeaturePromoSpecification::CreateForSnoozePromo(
+      feature_engagement::kIPHCompanionSidePanelFeature,
+      kSidePanelCompanionToolbarButtonElementId,
+      IDS_SIDE_PANEL_COMPANION_PROMO));
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // kIPHSwitchProfileFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(

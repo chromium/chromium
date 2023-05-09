@@ -9,9 +9,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 
 namespace companion {
 
@@ -54,6 +58,22 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
   pref_service->SetDefaultPrefValue(
       prefs::kSidePanelCompanionEntryPinnedToToolbar,
       base::Value(companion_should_be_default_pinned));
+}
+
+void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents) {
+  if (search::IsNTPURL(web_contents->GetLastCommittedURL())) {
+    return;
+  }
+
+  Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
+  PrefService* const pref_service = browser->profile()->GetPrefs();
+  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion) &&
+      pref_service &&
+      pref_service->GetBoolean(
+          prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
+    browser->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHCompanionSidePanelFeature);
+  }
 }
 
 }  // namespace companion

@@ -8,6 +8,10 @@
 class Browser;
 class PrefService;
 
+namespace content {
+class WebContents;
+}
+
 namespace companion {
 
 // Returns true if the companion feature is enabled.
@@ -28,6 +32,9 @@ bool IsSearchImageInCompanionSidePanelSupported(const Browser* browser);
 // Updated the default value for the pref used to determine whether companion
 // should be pinned to the toolbar by default.
 void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service);
+
+// Potentially triggers the IPH promo for the companion feature.
+void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents);
 
 }  // namespace companion
 

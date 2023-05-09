@@ -37443,6 +37443,7 @@ should be able to be added at any place in this file.
       label="For ChromeReengagementNotification2 feature."/>
   <suffix name="ChromeReengagementNotification3"
       label="For ChromeReengagementNotification3 feature."/>
+  <suffix name="CompanionSidePanel" label="For companion side panel feature."/>
   <suffix name="ContextualPageActions_PriceTracking"
       label="For Contextual page actions price tracking feature."/>
   <suffix name="ContextualPageActions_PriceTrackingActionChip"
