@@ -51,7 +51,6 @@ build_webui_tests("build") {
     "hotspot_subpage_tests.js",
     "hotspot_summary_item_tests.js",
     "google_assistant_subpage_test.js",
-    "guest_os_shared_paths_test.js",
     "input_page_test.js",
     "internet_config_test.js",
     "internet_detail_menu_test.js",
@@ -160,6 +159,7 @@ build_webui_tests("build") {
     "device_page/per_device_touchpad_test.ts",
     "device_page/test_device_page_browser_proxy.ts",
 
+    "guest_os/guest_os_shared_paths_test.ts",
     "guest_os/guest_os_shared_usb_devices_test.ts",
     "guest_os/test_guest_os_browser_proxy.ts",
 

@@ -41,4 +41,8 @@ export class TestGuestOsBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('removeGuestOsSharedPath', [vmName, path]);
     return Promise.resolve(this.removeSharedPathResult_);
   }
+
+  stubRemoveSharedPathResult(pathRemoved: boolean): void {
+    this.removeSharedPathResult_ = pathRemoved;
+  }
 }

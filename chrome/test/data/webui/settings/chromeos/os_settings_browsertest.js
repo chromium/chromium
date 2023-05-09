@@ -317,7 +317,7 @@ TEST_F('OSSettingsCrostiniExtraContainerPageV3Test', 'AllJsTests', () => {
  ['FakeCrosAudioConfig', 'fake_cros_audio_config_test.js'],
  ['FingerprintListSubpage', 'fingerprint_list_subpage_test.js'],
  ['GoogleAssistantSubpage', 'google_assistant_subpage_test.js'],
- ['GuestOsSharedPaths', 'guest_os_shared_paths_test.js'],
+ ['GuestOsSharedPaths', 'guest_os/guest_os_shared_paths_test.js'],
  ['GuestOsSharedUsbDevices', 'guest_os/guest_os_shared_usb_devices_test.js'],
  [
    'HotspotConfigDialog',
