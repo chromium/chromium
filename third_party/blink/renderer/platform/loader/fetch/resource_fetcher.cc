@@ -716,9 +716,10 @@ bool ResourceFetcher::ShouldDeferResource(ResourceType type,
   if (type == ResourceType::kFont && !params.IsLinkPreload())
     return true;
 
-  // Defer loading images either when:
-  // - images are disabled
-  // - instructed to defer loading images from network
+  // Defer loading images when:
+  // - images are disabled.
+  // - image loading is disabled and the image is not a data url.
+  // - instructed to defer loading images from network.
   if (type == ResourceType::kImage &&
       (ShouldDeferImageLoad(params.Url()) ||
        params.GetImageRequestBehavior() ==
@@ -1255,7 +1256,11 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   bool is_data_url = resource_request.Url().ProtocolIsData();
   bool is_static_data = is_data_url || archive_;
   bool is_stale_revalidation = params.IsStaleRevalidation();
-  if (!is_stale_revalidation && is_static_data) {
+  bool should_defer = ShouldDeferResource(resource_type, params);
+  // MHTML archives do not load from the network and must load immediately. Data
+  // urls can also load immediately, except in cases when they should be
+  // deferred.
+  if (!is_stale_revalidation && (archive_ || (is_data_url && !should_defer))) {
     resource = CreateResourceForStaticData(params, factory);
     if (resource) {
       policy =
@@ -1301,9 +1306,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       }
     }
   }
-
-  // Use factory.GetType() since resource can be nullptr here.
-  bool should_defer = ShouldDeferResource(factory.GetType(), params);
 
   UpdateMemoryCacheStats(
       resource, MapToPolicyForMetrics(policy, resource, should_defer), params,
@@ -1999,7 +2001,8 @@ void ResourceFetcher::SetImagesEnabled(bool enable) {
 }
 
 bool ResourceFetcher::ShouldDeferImageLoad(const KURL& url) const {
-  return !Context().AllowImage(images_enabled_, url) || !auto_load_images_;
+  return !Context().AllowImage(images_enabled_, url) ||
+         (!auto_load_images_ && !url.ProtocolIsData());
 }
 
 void ResourceFetcher::ReloadImagesIfNotDeferred() {

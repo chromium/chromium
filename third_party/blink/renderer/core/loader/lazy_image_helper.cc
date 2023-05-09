@@ -68,10 +68,6 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
     LocalFrame& frame,
     HTMLImageElement* html_image,
     const KURL& url) {
-  if (url.ProtocolIsData()) {
-    return LazyImageHelper::Eligibility::kDisabled;
-  }
-
   // Do not lazyload image elements when JavaScript is disabled, regardless of
   // the `loading` attribute.
   if (!frame.DomWindow()->CanExecuteScripts(kNotAboutToExecuteScript))

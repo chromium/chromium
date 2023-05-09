@@ -110,8 +110,7 @@ FetchParameters CSSImageValue::PrepareFetch(
   }
 
   if (image_request_behavior ==
-          FetchParameters::ImageRequestBehavior::kDeferImageLoad &&
-      !params.Url().ProtocolIsData()) {
+      FetchParameters::ImageRequestBehavior::kDeferImageLoad) {
     params.SetLazyImageDeferred();
   }
 
