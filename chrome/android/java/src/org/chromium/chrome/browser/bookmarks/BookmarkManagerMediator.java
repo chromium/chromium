@@ -129,34 +129,60 @@ class BookmarkManagerMediator
         @Override
         public void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node,
                 boolean isDoingExtensiveChanges) {
-            // If the folder is removed in folder mode, show the parent folder or falls back to all
-            // bookmarks mode.
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER
-                    && node.getId().equals(mStateStack.peek().mFolder)) {
-                if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(node.getId())) {
-                    openFolder(mBookmarkModel.getDefaultFolderViewLocation());
+            clearHighlight();
+
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
+                // If the folder is removed in folder mode, show the parent folder or falls back to
+                // all bookmarks mode.
+                if (Objects.equals(node.getId(), getCurrentFolderId())) {
+                    if (mBookmarkModel.getTopLevelFolderIds(true, true).contains(node.getId())) {
+                        openFolder(mBookmarkModel.getDefaultFolderViewLocation());
+                    } else {
+                        openFolder(parent.getId());
+                    }
                 } else {
-                    openFolder(parent.getId());
+                    if (node.isFolder()) {
+                        refresh();
+                    } else {
+                        int deletedPosition = getPositionForBookmark(node.getId());
+                        if (deletedPosition >= 0) {
+                            mModelList.removeAt(deletedPosition);
+                            syncAdapterAndSelectionDelegate();
+                        }
+                    }
                 }
+            } else if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
+                // We cannot rely on removing the specific list item that corresponds to the
+                // removed node because the node might be a parent with children also shown
+                // in the list.
+                search(mSearchText);
             }
         }
 
         @Override
         public void bookmarkNodeChanged(BookmarkItem node) {
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER && !mStateStack.isEmpty()
-                    && node.getId().equals(mStateStack.peek().mFolder)) {
-                notifyUi(mStateStack.peek());
-                return;
+            clearHighlight();
+
+            if (getCurrentUiMode() == BookmarkUiMode.FOLDER
+                    && Objects.equals(node.getId(), getCurrentFolderId())) {
+                refresh();
+            } else {
+                super.bookmarkNodeChanged(node);
             }
-            super.bookmarkNodeChanged(node);
         }
 
         @Override
         public void bookmarkModelChanged() {
-            // If the folder no longer exists in folder mode, we need to fall back. Relying on the
-            // default behavior by setting the folder mode again.
-            if (getCurrentUiMode() == BookmarkUiMode.FOLDER) {
-                setState(mStateStack.peek());
+            clearHighlight();
+
+            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
+                if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
+                    search(mSearchText);
+                } else {
+                    onEndSearch();
+                }
+            } else {
+                refresh();
             }
         }
     };
@@ -179,59 +205,10 @@ class BookmarkManagerMediator
         }
     };
 
-    // TODO(https://crbug.com/1413463): Combine with mBookmarkModelObserver.
-    private BookmarkModelObserver mBookmarkModelObserver2 = new BookmarkModelObserver() {
-        @Override
-        public void bookmarkNodeChanged(BookmarkItem node) {
-            clearHighlight();
-            int position = getPositionForBookmark(node.getId());
-            if (position >= 0) mDragReorderableRecyclerViewAdapter.notifyItemChanged(position);
-        }
-
-        @Override
-        public void bookmarkNodeRemoved(BookmarkItem parent, int oldIndex, BookmarkItem node,
-                boolean isDoingExtensiveChanges) {
-            clearHighlight();
-
-            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                // We cannot rely on removing the specific list item that corresponds to the
-                // removed node because the node might be a parent with children also shown
-                // in the list.
-                search(mSearchText);
-                return;
-            }
-
-            if (node.isFolder()) {
-                notifyStateChange(mBookmarkUiObserver);
-            } else {
-                int deletedPosition = getPositionForBookmark(node.getId());
-                if (deletedPosition >= 0) {
-                    mModelList.removeAt(deletedPosition);
-                    syncAdapterAndSelectionDelegate();
-                }
-            }
-        }
-
-        @Override
-        public void bookmarkModelChanged() {
-            clearHighlight();
-            notifyStateChange(mBookmarkUiObserver);
-
-            if (getCurrentUiMode() == BookmarkUiMode.SEARCHING) {
-                if (!TextUtils.equals(mSearchText, EMPTY_QUERY)) {
-                    search(mSearchText);
-                } else {
-                    onEndSearch();
-                }
-            }
-        }
-    };
-
     private final BookmarkUiObserver mBookmarkUiObserver = new BookmarkUiObserver() {
         @Override
         public void onDestroy() {
             removeUiObserver(mBookmarkUiObserver);
-            mBookmarkModel.removeObserver(mBookmarkModelObserver2);
             getSelectionDelegate().removeObserver(mSelectionObserver);
             mPromoHeaderManager.destroy();
         }
@@ -427,7 +404,6 @@ class BookmarkManagerMediator
         // from when it was in the original adapter. It doesn't conceptually make sense to be here,
         // and should happen earlier.
         addUiObserver(mBookmarkUiObserver);
-        mBookmarkModel.addObserver(mBookmarkModelObserver2);
         mSelectionDelegate.addObserver(mSelectionObserver);
 
         if (!TextUtils.isEmpty(mInitialUrl)) {
@@ -632,7 +608,7 @@ class BookmarkManagerMediator
         observer.onUiModeChanged(state);
         switch (state) {
             case BookmarkUiMode.FOLDER:
-                observer.onFolderStateSet(mStateStack.peek().mFolder);
+                observer.onFolderStateSet(getCurrentFolderId());
                 break;
             case BookmarkUiMode.LOADING:
                 break;

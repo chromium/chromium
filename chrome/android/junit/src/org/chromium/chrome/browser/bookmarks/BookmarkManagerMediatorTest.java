@@ -422,14 +422,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(2, mModelList.size());
 
         doReturn(Arrays.asList(mFolderId3)).when(mBookmarkModel).getChildIds(mFolderId1);
-        verify(mBookmarkModel, times(2))
-                .addObserver(mBookmarkModelObserverArgumentCaptor.capture());
-        for (BookmarkModelObserver bookmarkModelObserver :
-                mBookmarkModelObserverArgumentCaptor.getAllValues()) {
-            bookmarkModelObserver.bookmarkNodeRemoved(
-                    mFolderItem1, 0, mFolderItem2, /*isDoingExtensiveChanges*/ false);
-        }
-
+        verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
+        mBookmarkModelObserverArgumentCaptor.getValue().bookmarkNodeRemoved(
+                mFolderItem1, 0, mFolderItem2, /*isDoingExtensiveChanges*/ false);
         assertEquals(1, mModelList.size());
     }
 
