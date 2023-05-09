@@ -53,6 +53,8 @@ void ExtensionsToolbarUnitTest::SetUp() {
   extension_service_ =
       extensions::ExtensionSystem::Get(profile())->extension_service();
 
+  permissions_manager_ = PermissionsManager::Get(profile());
+
   // Shorten delay on animations so tests run faster.
   views::test::ReduceAnimationDuration(extensions_container());
 }
@@ -140,8 +142,7 @@ void ExtensionsToolbarUnitTest::DisableExtension(
 
 void ExtensionsToolbarUnitTest::WithholdHostPermissions(
     const extensions::Extension* extension) {
-  extensions::PermissionsManagerWaiter waiter(
-      extensions::PermissionsManager::Get(profile()));
+  extensions::PermissionsManagerWaiter waiter(permissions_manager_);
   extensions::ScriptingPermissionsModifier(profile(), extension)
       .RemoveAllGrantedHostPermissions();
   waiter.WaitForExtensionPermissionsUpdate();
@@ -172,17 +173,15 @@ void ExtensionsToolbarUnitTest::UpdateUserSiteAccess(
 void ExtensionsToolbarUnitTest::UpdateUserSiteSetting(
     extensions::PermissionsManager::UserSiteSetting site_setting,
     const GURL& url) {
-  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
-  extensions::PermissionsManagerWaiter waiter(permissions_manager);
-  permissions_manager->UpdateUserSiteSetting(url::Origin::Create(url),
-                                             site_setting);
+  extensions::PermissionsManagerWaiter waiter(permissions_manager_);
+  permissions_manager_->UpdateUserSiteSetting(url::Origin::Create(url),
+                                              site_setting);
   waiter.WaitForUserPermissionsSettingsChange();
 }
 
 PermissionsManager::UserSiteSetting
 ExtensionsToolbarUnitTest::GetUserSiteSetting(const GURL& url) {
-  return PermissionsManager::Get(browser()->profile())
-      ->GetUserSiteSetting(url::Origin::Create(url));
+  return permissions_manager_->GetUserSiteSetting(url::Origin::Create(url));
 }
 
 std::vector<ToolbarActionView*>

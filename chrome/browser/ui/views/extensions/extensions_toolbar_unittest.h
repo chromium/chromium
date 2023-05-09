@@ -134,6 +134,7 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
  private:
   raw_ptr<extensions::ExtensionService> extension_service_ = nullptr;
+  raw_ptr<extensions::PermissionsManager> permissions_manager_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_TOOLBAR_UNITTEST_H_
