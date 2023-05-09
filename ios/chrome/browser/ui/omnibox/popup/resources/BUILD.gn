@@ -34,11 +34,3 @@ colorset("omnibox_suggestion_icon_dark_color") {
 colorset("omnibox_suggestion_row_highlight_color") {
   sources = [ "omnibox_suggestion_row_highlight_color.colorset/Contents.json" ]
 }
-
-imageset("omnibox_popup_tab_match") {
-  sources = [
-    "omnibox_popup_tab_match.imageset/Contents.json",
-    "omnibox_popup_tab_match.imageset/omnibox_popup_tab_match@2x.png",
-    "omnibox_popup_tab_match.imageset/omnibox_popup_tab_match@3x.png",
-  ]
-}

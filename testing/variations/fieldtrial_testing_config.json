@@ -7077,21 +7077,6 @@
             ]
         }
     ],
-    "IOSSFSymbolsInOmnibox": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseSFSymbolsInOmnibox"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSShareChrome": [
         {
             "platforms": [

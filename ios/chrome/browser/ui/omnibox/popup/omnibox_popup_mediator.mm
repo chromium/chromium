@@ -393,8 +393,7 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
   formatter.starred = _delegate->IsStarredMatch(match);
   formatter.incognito = _incognito;
   formatter.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match
-                                                 incognito:_incognito];
+  formatter.pedalData = [self.pedalAnnotator pedalForMatch:match];
 
   if (formatter.suggestionGroupId) {
     omnibox::GroupId groupId =

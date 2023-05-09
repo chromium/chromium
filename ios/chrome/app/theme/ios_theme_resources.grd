@@ -29,7 +29,6 @@
       <structure type="chrome_scaled_image" name="IDR_IOS_ERROR" file="error.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_SEND_TAB_TO_SELF" file="infobar_send_tab_to_self.png" />
       <structure type="chrome_scaled_image" name="IDR_IOS_INFOBAR_TRANSLATE" file="infobar_translate.png" />
-      <structure type="chrome_scaled_image" name="IDR_IOS_OMNIBOX_KEYBOARD_VIEW_APPEND" file="omnibox/append_ios.png" />
     </structures>
   </release>
 </grit>

@@ -34,7 +34,7 @@ TEST_F(OmniboxPedalAnnotatorTest, CreatesPedal) {
       base::WrapRefCounted(new TestOmniboxPedalClearBrowsingData());
   match.actions.push_back(std::move(pedal));
 
-  EXPECT_TRUE([annotator_ pedalForMatch:match incognito:NO] != nil);
+  EXPECT_TRUE([annotator_ pedalForMatch:match] != nil);
 }
 
 }  // namespace

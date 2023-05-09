@@ -7406,11 +7406,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "use-sf-symbols-omnibox",
-    "owners": [ "ewannpv", "gambard", "bling-flags@google.com" ],
-    "expiry_milestone": 116
-  },
-  {
     "name": "use-sha1-server-handshakes",
     "owners": [ "bbe", "trusty-transport@chromium.org" ],
     "expiry_milestone": 120

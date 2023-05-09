@@ -11,9 +11,6 @@
 /// Import `symbols.h` and not this file directly.
 /// *******
 
-// Returns YES if the kUseSFSymbolsInOmnibox flag is enabled.
-bool UseSymbolsInOmnibox();
-
 // Returns a SF symbol named `symbol_name` configured with the given
 // `configuration`.
 UIImage* DefaultSymbolWithConfiguration(NSString* symbol_name,
