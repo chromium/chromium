@@ -122,6 +122,7 @@
   X("mus")                                                               \
   X("native")                                                            \
   X("navigation")                                                        \
+  X("navigation.debug")                                                  \
   X("net")                                                               \
   X("netlog")                                                            \
   X("offline_pages")                                                     \

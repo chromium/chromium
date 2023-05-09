@@ -3562,7 +3562,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
     const scoped_refptr<BrowsingContextState>& browsing_context_state,
     BatchedProxyIPCSender* batched_proxy_ipc_sender) {
   CHECK(instance);
-  TRACE_EVENT_INSTANT("navigation",
+  TRACE_EVENT_INSTANT("navigation.debug",
                       "RenderFrameHostManager::CreateRenderFrameProxy",
                       ChromeTrackEvent::kSiteInstance, *instance,
                       ChromeTrackEvent::kFrameTreeNodeInfo, *frame_tree_node_);

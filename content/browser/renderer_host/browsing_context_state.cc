@@ -55,13 +55,14 @@ BrowsingContextState::~BrowsingContextState() {
 RenderFrameProxyHost* BrowsingContextState::GetRenderFrameProxyHost(
     SiteInstanceGroup* site_instance_group,
     ProxyAccessMode proxy_access_mode) const {
-  TRACE_EVENT_BEGIN("navigation",
+  TRACE_EVENT_BEGIN("navigation.debug",
                     "BrowsingContextState::GetRenderFrameProxyHost",
                     ChromeTrackEvent::kBrowsingContextState, this,
                     ChromeTrackEvent::kSiteInstanceGroup, site_instance_group);
   auto* proxy =
       GetRenderFrameProxyHostImpl(site_instance_group, proxy_access_mode);
-  TRACE_EVENT_END("navigation", ChromeTrackEvent::kRenderFrameProxyHost, proxy);
+  TRACE_EVENT_END("navigation.debug", ChromeTrackEvent::kRenderFrameProxyHost,
+                  proxy);
   return proxy;
 }
 
