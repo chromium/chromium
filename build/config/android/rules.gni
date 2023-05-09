@@ -795,6 +795,8 @@ if (enable_java_templates && is_android) {
       _cpu_family = "CPU_FAMILY_X86"
     } else if (current_cpu == "mipsel" || current_cpu == "mips64el") {
       _cpu_family = "CPU_FAMILY_MIPS"
+    } else if (current_cpu == "riscv64") {
+      _cpu_family = "CPU_FAMILY_RISCV"
     } else {
       assert(false, "Unsupported CPU family")
     }

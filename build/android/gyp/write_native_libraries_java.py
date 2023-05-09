@@ -28,6 +28,7 @@ public class NativeLibraries {{
     public static final int CPU_FAMILY_ARM = 1;
     public static final int CPU_FAMILY_MIPS = 2;
     public static final int CPU_FAMILY_X86 = 3;
+    public static final int CPU_FAMILY_RISCV = 4;
 
     // Set to true to enable the use of the Chromium Linker.
     public static {MAYBE_FINAL}boolean sUseLinker{USE_LINKER};
@@ -60,15 +61,14 @@ def main():
       help='Enable Chromium linker.')
   parser.add_argument(
       '--native-libraries-list', help='File with list of native libraries.')
-  parser.add_argument(
-      '--cpu-family',
-      choices={
-          'CPU_FAMILY_ARM', 'CPU_FAMILY_X86', 'CPU_FAMILY_MIPS',
-          'CPU_FAMILY_UNKNOWN'
-      },
-      required=True,
-      default='CPU_FAMILY_UNKNOWN',
-      help='CPU family.')
+  parser.add_argument('--cpu-family',
+                      choices={
+                          'CPU_FAMILY_ARM', 'CPU_FAMILY_X86', 'CPU_FAMILY_MIPS',
+                          'CPU_FAMILY_RISCV', 'CPU_FAMILY_UNKNOWN'
+                      },
+                      required=True,
+                      default='CPU_FAMILY_UNKNOWN',
+                      help='CPU family.')
   parser.add_argument(
       '--main-component-library',
       help='If used, the list of native libraries will only contain this '
