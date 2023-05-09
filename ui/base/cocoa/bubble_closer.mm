@@ -13,7 +13,7 @@
 namespace ui {
 
 struct BubbleCloser::ObjCStorage {
-  id event_tap_ = nil;  // Weak. Owned by AppKit.
+  id event_tap = nil;  // Weak. Owned by AppKit.
 };
 
 BubbleCloser::BubbleCloser(NSWindow* window,
@@ -52,14 +52,14 @@ BubbleCloser::BubbleCloser(NSWindow* window,
 
     return event;
   };
-  objc_storage_->event_tap_ =
+  objc_storage_->event_tap =
       [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskLeftMouseDown |
                                                     NSEventMaskRightMouseDown
                                             handler:block];
 }
 
 BubbleCloser::~BubbleCloser() {
-  [NSEvent removeMonitor:objc_storage_->event_tap_];
+  [NSEvent removeMonitor:objc_storage_->event_tap];
 }
 
 void BubbleCloser::OnClickOutside() {

@@ -11,18 +11,18 @@
 namespace gfx {
 
 struct ScopedNSGraphicsContextSaveGState::ObjCStorage {
-  NSGraphicsContext* context_;  // weak
+  NSGraphicsContext* context;  // weak
 };
 
 ScopedNSGraphicsContextSaveGState::ScopedNSGraphicsContextSaveGState()
     : objc_storage_(std::make_unique<ObjCStorage>()) {
-  objc_storage_->context_ = NSGraphicsContext.currentContext;
+  objc_storage_->context = NSGraphicsContext.currentContext;
   [NSGraphicsContext saveGraphicsState];
 }
 
 ScopedNSGraphicsContextSaveGState::~ScopedNSGraphicsContextSaveGState() {
   [NSGraphicsContext restoreGraphicsState];
-  DCHECK_EQ(objc_storage_->context_, NSGraphicsContext.currentContext);
+  DCHECK_EQ(objc_storage_->context, NSGraphicsContext.currentContext);
 }
 
 }  // namespace gfx

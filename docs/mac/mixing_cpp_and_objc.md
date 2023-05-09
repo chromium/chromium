@@ -44,13 +44,13 @@ instance variables:
 
 ```cpp
 struct UtilityObjectMac::ObjCStorage {
-  id appkit_token_;
-  NSWindow* window_;
+  id appkit_token;
+  NSWindow* window;
 };
 
 UtilityObjectMac::UtilityObjectMac()
     : objc_storage_(std::make_unique<ObjCStorage>()) {
-  objc_storage_->appkit_token_ = [NSFramework registerTheThing: //...
+  objc_storage_->appkit_token = [NSFramework registerTheThing: //...
   // ...
 ```
 

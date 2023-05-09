@@ -256,7 +256,7 @@ namespace content {
 
 struct ThemeHelperMac::ObjCStorage {
   // ObjC object that observes notifications from the system.
-  base::scoped_nsobject<SystemThemeObserver> theme_observer_;
+  base::scoped_nsobject<SystemThemeObserver> theme_observer;
 };
 
 // static
@@ -286,7 +286,7 @@ ThemeHelperMac::ThemeHelperMac()
   LoadSystemColors();
 
   // Start observing for changes.
-  objc_storage_->theme_observer_.reset([[SystemThemeObserver alloc]
+  objc_storage_->theme_observer.reset([[SystemThemeObserver alloc]
       initWithColorsChangedCallback:base::BindRepeating(
                                         &ThemeHelperMac::LoadSystemColors,
                                         base::Unretained(this))]);

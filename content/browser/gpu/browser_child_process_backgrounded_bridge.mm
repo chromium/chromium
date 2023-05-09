@@ -24,8 +24,8 @@ bool g_notifications_enabled = true;
 struct BrowserChildProcessBackgroundedBridge::ObjCStorage {
   // Registration IDs for NSApplicationDidBecomeActiveNotification and
   // NSApplicationDidResignActiveNotification.
-  id did_become_active_observer_ = nil;
-  id did_resign_active_observer_ = nil;
+  id did_become_active_observer = nil;
+  id did_resign_active_observer = nil;
 };
 
 BrowserChildProcessBackgroundedBridge::BrowserChildProcessBackgroundedBridge(
@@ -45,13 +45,13 @@ BrowserChildProcessBackgroundedBridge::BrowserChildProcessBackgroundedBridge(
 
 BrowserChildProcessBackgroundedBridge::
     ~BrowserChildProcessBackgroundedBridge() {
-  if (objc_storage_->did_become_active_observer_) {
+  if (objc_storage_->did_become_active_observer) {
     [NSNotificationCenter.defaultCenter
-        removeObserver:objc_storage_->did_become_active_observer_];
+        removeObserver:objc_storage_->did_become_active_observer];
   }
-  if (objc_storage_->did_resign_active_observer_) {
+  if (objc_storage_->did_resign_active_observer) {
     [NSNotificationCenter.defaultCenter
-        removeObserver:objc_storage_->did_resign_active_observer_];
+        removeObserver:objc_storage_->did_resign_active_observer];
   }
 }
 
@@ -87,7 +87,7 @@ void BrowserChildProcessBackgroundedBridge::Initialize() {
   // process becomes foreground and background, respectively. The blocks
   // implicity captures `this`. It is safe to do so since the subscriptions are
   // removed in the destructor
-  objc_storage_->did_become_active_observer_ =
+  objc_storage_->did_become_active_observer =
       [NSNotificationCenter.defaultCenter
           addObserverForName:NSApplicationDidBecomeActiveNotification
                       object:nil
@@ -95,7 +95,7 @@ void BrowserChildProcessBackgroundedBridge::Initialize() {
                   usingBlock:^(NSNotification* notification) {
                     OnBrowserProcessForegrounded();
                   }];
-  objc_storage_->did_resign_active_observer_ =
+  objc_storage_->did_resign_active_observer =
       [NSNotificationCenter.defaultCenter
           addObserverForName:NSApplicationDidResignActiveNotification
                       object:nil

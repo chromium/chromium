@@ -37,7 +37,7 @@ std::unique_ptr<EventMonitor> EventMonitor::CreateWindowMonitor(
 }
 
 struct EventMonitorMac::ObjCStorage {
-  id monitor_ = nil;
+  id monitor = nil;
 };
 
 EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
@@ -65,13 +65,13 @@ EventMonitorMac::EventMonitorMac(ui::EventObserver* event_observer,
     return event;
   };
 
-  objc_storage_->monitor_ =
+  objc_storage_->monitor =
       [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskAny
                                             handler:block];
 }
 
 EventMonitorMac::~EventMonitorMac() {
-  [NSEvent removeMonitor:objc_storage_->monitor_];
+  [NSEvent removeMonitor:objc_storage_->monitor];
 }
 
 gfx::Point EventMonitorMac::GetLastMouseLocation() {

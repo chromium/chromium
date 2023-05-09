@@ -202,7 +202,7 @@ bool Credential::RequiresUvForSignature() const {
 }
 
 struct TouchIdCredentialStore::ObjCStorage {
-  LAContext* __strong authentication_context_;
+  LAContext* __strong authentication_context;
 };
 
 TouchIdCredentialStore::TouchIdCredentialStore(AuthenticatorConfig config)
@@ -212,7 +212,7 @@ TouchIdCredentialStore::~TouchIdCredentialStore() = default;
 
 void TouchIdCredentialStore::SetAuthenticationContext(
     LAContext* authentication_context) {
-  objc_storage_->authentication_context_ = authentication_context;
+  objc_storage_->authentication_context = authentication_context;
 }
 
 absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
@@ -269,10 +269,10 @@ TouchIdCredentialStore::CreateCredential(
           flags, /*error=*/nullptr));
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
                        access_control);
-  if (objc_storage_->authentication_context_) {
+  if (objc_storage_->authentication_context) {
     CFDictionarySetValue(
         private_key_params, kSecUseAuthenticationContext,
-        (__bridge CFTypeRef)objc_storage_->authentication_context_);
+        (__bridge CFTypeRef)objc_storage_->authentication_context);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -353,10 +353,10 @@ TouchIdCredentialStore::CreateCredentialLegacyCredentialForTesting(
           /*error=*/nullptr));
   CFDictionarySetValue(private_key_params, kSecAttrAccessControl,
                        access_control);
-  if (objc_storage_->authentication_context_) {
+  if (objc_storage_->authentication_context) {
     CFDictionarySetValue(
         private_key_params, kSecUseAuthenticationContext,
-        (__bridge CFTypeRef)objc_storage_->authentication_context_);
+        (__bridge CFTypeRef)objc_storage_->authentication_context);
   }
   base::ScopedCFTypeRef<CFErrorRef> cferr;
   base::ScopedCFTypeRef<SecKeyRef> private_key =
@@ -517,10 +517,10 @@ TouchIdCredentialStore::FindCredentialsImpl(
   // `kSecAttrLabel` attribute wouldn't match the encoded RP ID.
   base::ScopedCFTypeRef<CFMutableDictionaryRef> query =
       DefaultKeychainQuery(config_, rp_id);
-  if (objc_storage_->authentication_context_) {
+  if (objc_storage_->authentication_context) {
     CFDictionarySetValue(
         query, kSecUseAuthenticationContext,
-        (__bridge CFTypeRef)objc_storage_->authentication_context_);
+        (__bridge CFTypeRef)objc_storage_->authentication_context);
   }
   CFDictionarySetValue(query, kSecReturnRef, kCFBooleanTrue);
   CFDictionarySetValue(query, kSecReturnAttributes, kCFBooleanTrue);
