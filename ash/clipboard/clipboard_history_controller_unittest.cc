@@ -970,6 +970,15 @@ class ClipboardHistoryRefreshDisplayFormatTest
       return std::vector<std::u16string>{u"B", u"A"};
     }
 
+    if (GetDisplayFormat() ==
+        crosapi::mojom::ClipboardHistoryDisplayFormat::kPng) {
+      WriteImageToClipboardAndConfirm(
+          gfx::test::CreateBitmap(/*width=*/3, /*height=*/3));
+      WriteImageToClipboardAndConfirm(
+          gfx::test::CreateBitmap(/*width=*/2, /*height=*/2));
+      return std::vector<std::u16string>{u"Image", u"Image"};
+    }
+
     NOTREACHED_NORETURN();
   }
 
@@ -987,7 +996,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         /*enable_clipboard_history_refresh=*/testing::Bool(),
         /*display_format_under_test=*/testing::Values(
-            crosapi::mojom::ClipboardHistoryDisplayFormat::kText)));
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kText,
+            crosapi::mojom::ClipboardHistoryDisplayFormat::kPng)));
 
 // Verifies that the clipboard history submenu model of the text services
 // context menu in Ash works as expected.
