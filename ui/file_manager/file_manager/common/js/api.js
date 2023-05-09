@@ -352,6 +352,6 @@ export async function getBulkPinProgress() {
  * drive.
  * @returns {!Promise<void>}
  */
-export async function calculateRequiredSpace() {
+export async function calculateBulkPinRequiredSpace() {
   return promisify(chrome.fileManagerPrivate.calculateBulkPinRequiredSpace);
 }
