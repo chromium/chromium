@@ -1765,6 +1765,10 @@ class ComputedStyle : public ComputedStyleBase,
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone;
   }
 
+  bool DependsOnContainerQueries() const {
+    return DependsOnSizeContainerQueries() || DependsOnStyleContainerQueries();
+  }
+
   static bool IsContentVisibilityVisible(
       EContentVisibility content_visibility,
       const AtomicString& toggle_visibility) {

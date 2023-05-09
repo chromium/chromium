@@ -164,10 +164,10 @@ class CORE_EXPORT MatchResult {
     return depends_on_size_container_queries_;
   }
   void SetDependsOnStyleContainerQueries() {
-    depends_on_size_container_queries_ = true;
+    depends_on_style_container_queries_ = true;
   }
   bool DependsOnStyleContainerQueries() const {
-    return depends_on_size_container_queries_;
+    return depends_on_style_container_queries_;
   }
   void SetFirstLineDependsOnSizeContainerQueries() {
     first_line_depends_on_size_container_queries_ = true;
@@ -254,6 +254,7 @@ class CORE_EXPORT MatchResult {
   HashSet<AtomicString> custom_highlight_names_;
   bool is_cacheable_{true};
   bool depends_on_size_container_queries_{false};
+  bool depends_on_style_container_queries_{false};
   bool first_line_depends_on_size_container_queries_{false};
   bool depends_on_static_viewport_units_{false};
   bool depends_on_dynamic_viewport_units_{false};
