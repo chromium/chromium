@@ -219,6 +219,10 @@ export class RealboxDropdownElement extends PolymerElement {
     }));
   }
 
+  private onHeaderMousedown_(e: Event) {
+    e.preventDefault();  // Prevents default browser action (focus).
+  }
+
   private onResultRepaint_() {
     const metricsReporter = MetricsReporterImpl.getInstance();
     metricsReporter.measure('CharTyped')
@@ -242,10 +246,6 @@ export class RealboxDropdownElement extends PolymerElement {
     // Update the list of selectable match elements.
     this.selectableMatchElements_ =
         [...this.shadowRoot!.querySelectorAll('cr-realbox-match')];
-  }
-
-  private onToggleButtonMouseDown_(e: Event) {
-    e.preventDefault();  // Prevents default browser action (focus).
   }
 
   //============================================================================

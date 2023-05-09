@@ -114,12 +114,11 @@
               the dropdown from losing focus and closing as a result. -->
           <h3 class="header" data-id$="[[groupId]]" tabindex="-1"
               on-focusin="onHeaderFocusin_" on-click="onHeaderClick_"
-              aria-hidden="true">
+              on-mousedown="onHeaderMousedown_" aria-hidden="true">
             <span class="text">[[headerForGroup_(groupId)]]</span>
             <cr-icon-button class$="action-icon [[toggleButtonIconForGroup_(groupId, hiddenGroupIds_.*)]]"
                 title="[[toggleButtonTitleForGroup_(groupId, hiddenGroupIds_.*)]]"
-                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]"
-                on-mousedown="onToggleButtonMouseDown_">
+                aria-label$="[[toggleButtonA11yLabelForGroup_(groupId, hiddenGroupIds_.*)]]">
             </cr-icon-button>
           </h3>
         </template>
