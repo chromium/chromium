@@ -500,15 +500,16 @@ void DownloadToolbarButtonView::CreateBubbleDialogDelegate(
   if (is_primary_partial_view_) {
     bubble_delegate_->SetCloseCallback(
         base::BindOnce(&DownloadToolbarButtonView::OnPartialViewClosed,
-                       base::Unretained(this)));
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
 void DownloadToolbarButtonView::OnPartialViewClosed() {
-  if (browser_->profile() && download::ShouldSuppressDownloadBubbleIph(
-                                 browser_->profile()->GetOriginalProfile())) {
+  if (download::ShouldSuppressDownloadBubbleIph(
+          browser_->profile()->GetOriginalProfile())) {
     return;
   }
+
   browser_->window()->MaybeShowFeaturePromo(
       feature_engagement::kIPHDownloadToolbarButtonFeature);
 }
@@ -517,6 +518,8 @@ void DownloadToolbarButtonView::CreateAutoCloseTimer() {
   auto_close_bubble_timer_ = std::make_unique<base::RetainingOneShotTimer>(
       FROM_HERE, kAutoClosePartialViewDelay,
       base::BindRepeating(&DownloadToolbarButtonView::AutoClosePartialView,
+                          // This is safe because `this` owns
+                          // `auto_close_bubble_timer_`.
                           base::Unretained(this)));
 }
 
