@@ -283,7 +283,6 @@
          'args': [
           '--enable-pixel-output-in-tests',
         ],
-        'experiment_percentage': 100,
         'mixins': [
           'skia_gold_test',
         ],
