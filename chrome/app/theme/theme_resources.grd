@@ -362,6 +362,7 @@
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_CONSENTED" file="common/safer_with_google_shield.png" />
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_CONSENTED_DARK" file="common/safer_with_google_shield_dark.png" />
         <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED" file="common/tailored_security_unconsented.png" />
+        <structure type="chrome_scaled_image" name="IDR_TAILORED_SECURITY_UNCONSENTED_UPDATED" file="common/safer_with_google_shield.png" />
       </if>
     </structures>
   </release>
