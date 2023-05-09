@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 using content::WebContents;
@@ -142,9 +143,16 @@ IN_PROC_BROWSER_TEST_F(ClosedTabCacheBrowserTest,
   // Don't cache WebContents when beforeunload listeners are run.
   NavigateToURL(browser(), "a.com");
   content::WebContents* a = browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_TRUE(ExecJs(a->GetPrimaryMainFrame(),
-                     "window.addEventListener('beforeunload', function (e) "
-                     "{e.preventDefault();});"));
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBeforeunloadEventCancelByPreventDefault)) {
+    EXPECT_TRUE(ExecJs(a->GetPrimaryMainFrame(),
+                       "window.addEventListener('beforeunload', function (e) "
+                       "{e.preventDefault();});"));
+  } else {
+    EXPECT_TRUE(ExecJs(a->GetPrimaryMainFrame(),
+                       "window.addEventListener('beforeunload', function (e) "
+                       "{e.returnValue = 'Not empty string';});"));
+  }
   EXPECT_TRUE(a->NeedToFireBeforeUnloadOrUnloadEvents());
   CloseTabAt(1);
   EXPECT_EQ(closed_tab_cache().EntriesCount(), 0U);
