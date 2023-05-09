@@ -193,6 +193,31 @@ def generate_tsconfig(board):
 DEPLOY_OUTPUT_TEMP_DIR = '/tmp/cca-deploy-out'
 
 
+def rsync_to_device(device, src, target, *, extra_arguments=[]):
+    cmd = [
+        'rsync',
+        '--recursive',
+        '--inplace',
+        '--delete',
+        '--mkpath',
+        '--times',
+        # rsync by default use source file permission masked by target file
+        # system umask while transferring new files, and since workstation
+        # defaults to have file not readable by others, this makes deployed
+        # file not readable by Chrome.
+        # Set --chmod=a+rX to rsync to fix this ('a' so it won't be affected by
+        # local umask, +r for read and +X for executable bit on folder), and
+        # set --perms so existing files that might have the wrong permission
+        # will have their permission fixed.
+        '--perms',
+        '--chmod=a+rX',
+        *extra_arguments,
+        src,
+        f'{device}:{target}',
+    ]
+    run(cmd)
+
+
 def deploy(args):
     root_dir = get_chromium_root()
     cca_root = os.getcwd()
@@ -225,41 +250,14 @@ def deploy(args):
 
     build_preload_images_js(js_out_dir)
 
-    deploy_new_tsc_files = [
-        'rsync',
-        '--recursive',
-        '--inplace',
-        '--delete',
-        '--mkpath',
-        '--exclude=tsconfig.tsbuildinfo',
-        # rsync by default use source file permission masked by target file
-        # system umask while transferring new files, and since workstation
-        # defaults to have file not readable by others, this makes deployed
-        # file not readable by Chrome.
-        # Set --chmod=a+rX to rsync to fix this ('a' so it won't be affected by
-        # local umask, +r for read and +X for executable bit on folder), and
-        # set --perms so existing files that might have the wrong permission
-        # will have their permission fixed.
-        '--perms',
-        '--chmod=a+rX',
-        f'{js_out_dir}/',
-        f'{args.device}:{CCA_OVERRIDE_PATH}/js/',
-    ]
-    run(deploy_new_tsc_files)
+    rsync_to_device(args.device,
+                    f'{js_out_dir}/',
+                    f'{CCA_OVERRIDE_PATH}/js/',
+                    extra_arguments=['--exclude=tsconfig.tsbuildinfo'])
 
     for dir in ['css', 'images', 'views', 'sounds']:
-        deploy_new_assets = [
-            'rsync',
-            '--recursive',
-            '--inplace',
-            '--delete',
-            '--mkpath',
-            '--perms',
-            '--chmod=a+rX',
-            f'{os.path.join(cca_root, dir)}/',
-            f'{args.device}:{CCA_OVERRIDE_PATH}/{dir}/',
-        ]
-        run(deploy_new_assets)
+        rsync_to_device(args.device, f'{os.path.join(cca_root, dir)}/',
+                        f'{CCA_OVERRIDE_PATH}/{dir}/')
 
     current_time = time.strftime('%F %T%z')
     run([
