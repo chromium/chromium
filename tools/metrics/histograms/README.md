@@ -263,7 +263,7 @@ You can alternatively follow these steps:
    enum section, with any unique value (just make one up, although whatever it
    is needs to appear in sorted order; `pretty_print.py` can do this for you).
 2. Build `unit_tests`, then run `unit_tests
-   --gtest_filter='AboutFlagsHistogramTest.*'` to compute the correct value.
+   --gtest_filter=AboutFlagsHistogramTest.*` to compute the correct value.
 3. Update the entry in [enums.xml](./enums.xml) with the correct value, and move
    it so the list is sorted by value (`pretty_print.py` can do this for you).
 4. Re-run the test to ensure the value and ordering are correct.
