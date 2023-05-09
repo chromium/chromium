@@ -60,6 +60,7 @@
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -1491,7 +1492,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
         // Verify that since the shortcuts menu items are not registered,
         // none of the buckets are filled.
         EXPECT_THAT(
-            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+            tester.GetAllSamples("WebApp.ShortcutsMenuRegistered.Result"),
             BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
         run_loop_install.Quit();
       }));
@@ -1504,13 +1505,24 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ShortcutMenu,
   EXPECT_TRUE(shortcuts_menu_items.empty());
 
   base::RunLoop run_loop_uninstall;
+  bool sub_manager_execute_enabled = AreSubManagersExecuteEnabled();
   WebAppProvider::GetForTest(profile())->install_finalizer().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kAppMenu,
       base::BindLambdaForTesting([&](webapps::UninstallResultCode code) {
         EXPECT_EQ(code, webapps::UninstallResultCode::kSuccess);
-        EXPECT_THAT(
-            tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
-            BucketsAre(base::Bucket(true, 1)));
+        if (sub_manager_execute_enabled) {
+          // TODO(crbug.com/1401125): Sub manager code smartly knows that there
+          // aren't any shortcuts menu data, so doesn't do anything. The old OS
+          // integration code does not read current OS states, so it triggers
+          // the histogram. Clean up once sub managers are released.
+          EXPECT_THAT(
+              tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+              BucketsAre(base::Bucket(true, 0), base::Bucket(false, 0)));
+        } else {
+          EXPECT_THAT(
+              tester.GetAllSamples("WebApp.ShortcutsMenuUnregistered.Result"),
+              BucketsAre(base::Bucket(true, 1)));
+        }
         run_loop_uninstall.Quit();
       }));
   run_loop_uninstall.Run();
