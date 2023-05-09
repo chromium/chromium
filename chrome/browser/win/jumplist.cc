@@ -51,6 +51,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/icon_util.h"
@@ -135,9 +136,11 @@ bool CreateIconFile(const gfx::ImageSkia& image_skia,
   // save it as the temporary file.
   gfx::ImageFamily image_family;
   if (!image_skia.isNull()) {
-    std::vector<float> supported_scales = image_skia.GetSupportedScales();
-    for (auto& scale : supported_scales) {
-      gfx::ImageSkiaRep image_skia_rep = image_skia.GetRepresentation(scale);
+    const std::vector<ui::ResourceScaleFactor> supported_scales =
+        ui::GetSupportedResourceScaleFactors();
+    for (const auto scale : supported_scales) {
+      gfx::ImageSkiaRep image_skia_rep = image_skia.GetRepresentation(
+          ui::GetScaleForResourceScaleFactor(scale));
       if (!image_skia_rep.is_null()) {
         image_family.Add(
             gfx::Image::CreateFrom1xBitmap(image_skia_rep.GetBitmap()));

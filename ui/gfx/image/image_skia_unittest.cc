@@ -13,6 +13,7 @@
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
@@ -140,24 +141,14 @@ class TestOnThread : public base::SimpleThread {
 
 class ImageSkiaTest : public testing::Test {
  public:
-  ImageSkiaTest() {
-    // In the test, we assume that we support 1.0f and 2.0f DSFs.
-    old_scales_ = ImageSkia::GetSupportedScales();
-
-    // Sets the list of scale factors supported by resource bundle.
-    std::vector<float> supported_scales;
-    supported_scales.push_back(1.0f);
-    supported_scales.push_back(2.0f);
-    ImageSkia::SetSupportedScales(supported_scales);
-  }
-
+  ImageSkiaTest() = default;
   ImageSkiaTest(const ImageSkiaTest&) = delete;
   ImageSkiaTest& operator=(const ImageSkiaTest&) = delete;
-
-  ~ImageSkiaTest() override { ImageSkia::SetSupportedScales(old_scales_); }
+  ~ImageSkiaTest() override = default;
 
  private:
-  std::vector<float> old_scales_;
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_{{ui::k100Percent, ui::k200Percent}};
 };
 
 TEST_F(ImageSkiaTest, FixedSource) {
@@ -478,8 +469,8 @@ TEST_F(ImageSkiaTest, SourceOnThreadTest) {
   image.MakeThreadSafe();
   EXPECT_TRUE(image.IsThreadSafe());
   // Check if image reps are generated for supported scale factors.
-  EXPECT_EQ(ImageSkia::GetSupportedScales().size(),
-           image.image_reps().size());
+  EXPECT_EQ(ui::GetSupportedResourceScaleFactors().size(),
+            image.image_reps().size());
   test::TestOnThread threadsafe_on_thread(&image);
   threadsafe_on_thread.StartAndJoin();
   EXPECT_TRUE(threadsafe_on_thread.can_read());

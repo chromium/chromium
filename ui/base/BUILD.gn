@@ -39,12 +39,14 @@ build_ime = !is_ios
 # should be kept minimal to not have to build too many targets with multiple
 # toolchains.
 #
-# Any other target should depend on //ui/base instead.
+# Any other target should depend on //ui/base instead, except when needed to
+# avoid circular dependencies.
 component("ui_data_pack") {
   visibility = [
     ":base",
     "//chromeos/crosapi/mojom",  # This target requires minimal dependencies.
     "//ios/chrome/tools/strings:generate_localizable_strings",
+    "//ui/gfx:*",
   ]
 
   sources = [

@@ -299,10 +299,10 @@ TEST_F(CursorWindowControllerTest, DSF) {
     EXPECT_EQ(GetCursorImage().size(), kCursorSize);
 
     // TODO(hferreiro): the cursor hotspot for non-custom cursors cannot be
-    // checked, since the software cursor uses `ImageSkia::MapToResourceScale`,
-    // and `CursorLoader::GetCursorData` uses
-    // `ui::GetSupportedResourceScaleFactor`, and 2x cursor hotspots are not
-    // just twice the 1x hotspots.
+    // checked, since the software cursor uses
+    // `ui::GetSupportedResourceScaleFactorForRescale`, and
+    // `CursorLoader::GetCursorData` uses `ui::GetSupportedResourceScaleFactor`,
+    // and 2x cursor hotspots are not just twice the 1x hotspots.
     if (cursor.type() == CursorType::kCustom) {
       const gfx::Point kHotspot = gfx::ToFlooredPoint(
           gfx::ConvertPointToDips(cursor_data->hotspot, cursor_scale));

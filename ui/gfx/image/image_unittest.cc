@@ -5,11 +5,13 @@
 #include <stddef.h>
 
 #include <utility>
+#include <vector>
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"
@@ -48,14 +50,18 @@ bool IsSystemColorSpaceSRGB() {
 
 class ImageTest : public testing::Test {
  public:
-  ImageTest() {
-    std::vector<float> scales;
-    scales.push_back(1.0f);
+  ImageTest() = default;
+  ImageTest(const ImageTest&) = delete;
+  ImageTest& operator=(const ImageTest&) = delete;
+  ~ImageTest() override = default;
+
+ private:
+  ui::test::ScopedSetSupportedResourceScaleFactors
+      scoped_set_supported_scale_factors_{{ui::k100Percent,
 #if !BUILDFLAG(IS_IOS)
-    scales.push_back(2.0f);
+                                           ui::k200Percent
 #endif
-    gfx::ImageSkia::SetSupportedScales(scales);
-  }
+      }};
 };
 
 namespace gt = gfx::test;
@@ -280,18 +286,20 @@ TEST_F(ImageTest, MultiResolutionPNGToPlatform) {
   gfx::Image from_platform(gt::CopyViaPlatformType(from_png));
 #if BUILDFLAG(IS_IOS)
   // On iOS the platform type (UIImage) only supports one resolution.
-  std::vector<float> scales = gfx::ImageSkia::GetSupportedScales();
+  const std::vector<ui::ResourceScaleFactor>& scales =
+      ui::GetSupportedResourceScaleFactors();
   EXPECT_EQ(scales.size(), 1U);
-  if (scales[0] == 1.0f)
+  if (scales[0] == ui::k100Percent) {
     EXPECT_TRUE(
         gt::ArePNGBytesCloseToBitmap(*bytes1x, from_platform.AsBitmap(),
                                      gt::MaxColorSpaceConversionColorShift()));
-  else if (scales[0] == 2.0f)
+  } else if (scales[0] == ui::k200Percent) {
     EXPECT_TRUE(
         gt::ArePNGBytesCloseToBitmap(*bytes2x, from_platform.AsBitmap(),
                                      gt::MaxColorSpaceConversionColorShift()));
-  else
+  } else {
     ADD_FAILURE() << "Unexpected platform scale factor.";
+  }
 #else
   EXPECT_TRUE(
       gt::ArePNGBytesCloseToBitmap(*bytes1x, from_platform.AsBitmap(),

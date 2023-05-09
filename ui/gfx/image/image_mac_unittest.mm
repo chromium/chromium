@@ -7,6 +7,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"
 #include "ui/gfx/image/image_skia.h"
@@ -75,12 +76,14 @@ void BitmapImageRep(int width, int height,
 
 class ImageMacTest : public testing::Test {
  public:
-  ImageMacTest() {
-    gfx::ImageSkia::SetSupportedScales(gfx::test::Get1xAnd2xScales());
-  }
-
+  ImageMacTest() = default;
   ImageMacTest(const ImageMacTest&) = delete;
   ImageMacTest& operator=(const ImageMacTest&) = delete;
+  ~ImageMacTest() override = default;
+
+ private:
+  ui::test::ScopedSetSupportedResourceScaleFactors supported_scale_factors_{
+      {ui::k100Percent, ui::k200Percent}};
 };
 
 namespace gt = gfx::test;

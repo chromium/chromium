@@ -36,9 +36,9 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 
@@ -59,7 +59,8 @@ int GetCurrentUserImageSize() {
   float scale_factor = display::Display::GetForcedDeviceScaleFactor();
   if (scale_factor > 1.0f)
     return static_cast<int>(scale_factor * kBaseUserImageSize);
-  return kBaseUserImageSize * gfx::ImageSkia::GetMaxSupportedScale();
+  const float max_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
+  return kBaseUserImageSize * max_scale;
 }
 
 namespace login {

@@ -31,8 +31,7 @@ void NotificationsNativeHandler::GetNotificationImageSizes(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   NotificationBitmapSizes bitmap_sizes = GetNotificationBitmapSizes();
 
-  const float scale_factor = ui::GetScaleForResourceScaleFactor(
-      ui::GetMaxSupportedResourceScaleFactor());
+  const float scale_factor = ui::GetScaleForMaxSupportedResourceScaleFactor();
 
   v8::Isolate* isolate = GetIsolate();
   v8::HandleScope handle_scope(isolate);

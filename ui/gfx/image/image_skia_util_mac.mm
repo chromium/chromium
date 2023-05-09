@@ -15,6 +15,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -59,10 +60,11 @@ gfx::ImageSkia ImageSkiaFromResizedNSImage(NSImage* image,
   if (IsNSImageEmpty(image))
     return gfx::ImageSkia();
 
-  std::vector<float> supported_scales = ImageSkia::GetSupportedScales();
-
   gfx::ImageSkia image_skia;
-  for (float scale : supported_scales) {
+  const std::vector<ui::ResourceScaleFactor>& supported_scales =
+      ui::GetSupportedResourceScaleFactors();
+  for (const auto resource_scale : supported_scales) {
+    const float scale = ui::GetScaleForResourceScaleFactor(resource_scale);
     NSSize desired_size_for_scale =
         NSMakeSize(desired_size.width * scale, desired_size.height * scale);
     NSImageRep* ns_image_rep = GetNSImageRepWithPixelSize(image,

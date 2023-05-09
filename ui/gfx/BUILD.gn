@@ -314,6 +314,7 @@ component("gfx") {
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
     "//third_party/zlib",
+    "//ui/base:ui_data_pack",
   ]
 
   if (!is_apple) {
@@ -699,6 +700,7 @@ static_library("test_support") {
     "//base/test:test_support",
     "//skia",
     "//testing/gtest",
+    "//ui/base:ui_data_pack",
     "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",

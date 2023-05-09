@@ -24,6 +24,7 @@
 #if BUILDFLAG(IS_IOS)
 #include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_ios.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "skia/ext/skia_utils_mac.h"
@@ -41,13 +42,6 @@ namespace {
 const int kMaxColorSpaceConversionColorShift = 40;
 
 }  // namespace
-
-std::vector<float> Get1xAnd2xScales() {
-  std::vector<float> scales;
-  scales.push_back(1.0f);
-  scales.push_back(2.0f);
-  return scales;
-}
 
 const SkBitmap CreateBitmap(int width, int height) {
   SkBitmap bitmap;
@@ -189,11 +183,11 @@ bool IsEmpty(const gfx::Image& image) {
 PlatformImage CreatePlatformImage() {
   SkBitmap bitmap(CreateBitmap(25, 25));
 #if BUILDFLAG(IS_IOS)
-  float scale = ImageSkia::GetMaxSupportedScale();
+  const float scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
 
   if (scale > 1.0) {
     // Always create a 25pt x 25pt image.
-    int size = static_cast<int>(25 * scale);
+    const int size = static_cast<int>(25 * scale);
     bitmap = CreateBitmap(size, size);
   }
 

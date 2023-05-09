@@ -9,6 +9,7 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_ios.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
@@ -16,7 +17,7 @@ namespace gfx {
 
 gfx::ImageSkia ImageSkiaFromUIImage(UIImage* image) {
   gfx::ImageSkia image_skia;
-  float max_scale = ImageSkia::GetSupportedScales().back();
+  const float max_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
   gfx::ImageSkiaRep image_skia_rep = ImageSkiaRepOfScaleFromUIImage(
       image, max_scale);
   if (!image_skia_rep.is_null())
@@ -38,8 +39,8 @@ gfx::ImageSkiaRep ImageSkiaRepOfScaleFromUIImage(UIImage* image, float scale) {
 }
 
 UIImage* UIImageFromImageSkia(const gfx::ImageSkia& image_skia) {
-  return UIImageFromImageSkiaRep(
-      image_skia.GetRepresentation(ImageSkia::GetSupportedScales().back()));
+  const float max_scale = ui::GetScaleForMaxSupportedResourceScaleFactor();
+  return UIImageFromImageSkiaRep(image_skia.GetRepresentation(max_scale));
 }
 
 UIImage* UIImageFromImageSkiaRep(const gfx::ImageSkiaRep& image_skia_rep) {

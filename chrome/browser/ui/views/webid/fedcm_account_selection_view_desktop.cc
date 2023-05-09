@@ -33,8 +33,8 @@ int AccountSelectionView::GetBrandIconIdealSize() {
   // As only a single brand icon is selected and the user can have monitors with
   // different screen densities, make the ideal size be the size which works
   // with a high density display (if the OS supports high density displays).
-  float max_supported_scale = ui::GetScaleForResourceScaleFactor(
-      ui::GetMaxSupportedResourceScaleFactor());
+  const float max_supported_scale =
+      ui::GetScaleForMaxSupportedResourceScaleFactor();
   return round(GetBrandIconMinimumSize() * max_supported_scale);
 }
 
