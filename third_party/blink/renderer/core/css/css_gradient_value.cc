@@ -839,7 +839,7 @@ bool CSSGradientValue::KnownToBeOpaque(const Document& document,
                                        const ComputedStyle& style) const {
   for (auto& stop : stops_) {
     if (!stop.IsHint() &&
-        ResolveStopColor(*stop.color_, document, style).HasAlpha()) {
+        !ResolveStopColor(*stop.color_, document, style).IsOpaque()) {
       return false;
     }
   }

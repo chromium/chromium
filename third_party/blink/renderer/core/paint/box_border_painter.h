@@ -160,7 +160,7 @@ class BoxBorderPainter {
   bool is_uniform_width_;
   bool is_uniform_color_;
   bool is_rounded_;
-  bool has_alpha_;
+  bool has_transparency_;
 };
 
 }  // namespace blink

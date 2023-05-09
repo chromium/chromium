@@ -351,8 +351,9 @@ void ViewPainter::PaintRootElementGroup(
   } else {
     // If the root background color is opaque, isolation group can be skipped
     // because the canvas will be cleared by root background color.
-    if (!root_element_background_color.HasAlpha())
+    if (root_element_background_color.IsOpaque()) {
       should_draw_background_in_separate_buffer = false;
+    }
 
     // We are going to clear the canvas with transparent pixels, isolation group
     // can be skipped.

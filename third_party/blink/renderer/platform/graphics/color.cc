@@ -810,7 +810,7 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
 
 String Color::SerializeAsCanvasColor() const {
   // Opaque legacy colors will serialize in a hex format.
-  if (!HasAlpha() && IsLegacyColor()) {
+  if (IsOpaque() && IsLegacyColor()) {
     return String::Format("#%02x%02x%02x", Red(), Green(), Blue());
   }
 
@@ -825,10 +825,11 @@ String Color::SerializeAsCSSColor() const {
     case ColorSpace::kSRGBLegacy:
     case ColorSpace::kHSL:
     case ColorSpace::kHWB:
-      if (HasAlpha())
+      if (HasTransparency()) {
         result.Append("rgba(");
-      else
+      } else {
         result.Append("rgb(");
+      }
 
       result.AppendNumber(Red());
       result.Append(", ");
@@ -836,7 +837,7 @@ String Color::SerializeAsCSSColor() const {
       result.Append(", ");
       result.AppendNumber(Blue());
 
-      if (HasAlpha()) {
+      if (HasTransparency()) {
         result.Append(", ");
         // See <alphavalue> section in
         // https://drafts.csswg.org/cssom/#serializing-css-values
@@ -1013,7 +1014,7 @@ Color Color::Dark() const {
 
 Color Color::Blend(const Color& source) const {
   // TODO(https://crbug.com/1333988): Implement CSS Color level 4 blending.
-  if (!AlphaAsInteger() || !source.HasAlpha()) {
+  if (!AlphaAsInteger() || source.IsOpaque()) {
     return source;
   }
 
@@ -1038,8 +1039,9 @@ Color Color::Blend(const Color& source) const {
 
 Color Color::BlendWithWhite() const {
   // If the color contains alpha already, we leave it alone.
-  if (HasAlpha())
+  if (HasTransparency()) {
     return *this;
+  }
 
   Color new_color;
   for (int alpha = kCStartAlpha; alpha <= kCEndAlpha;

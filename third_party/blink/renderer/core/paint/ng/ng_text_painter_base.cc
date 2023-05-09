@@ -79,8 +79,9 @@ void NGTextPainterBase::PaintUnderOrOverLineDecorationShadows(
     const Color& color = shadow.GetColor().Resolve(text_style.current_color,
                                                    text_style.color_scheme);
     // Detect when there's no effective shadow.
-    if (color.IsTransparent())
+    if (color.IsFullyTransparent()) {
       continue;
+    }
 
     const gfx::Vector2dF& offset = shadow.Location().OffsetFromOrigin();
 

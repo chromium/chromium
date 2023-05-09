@@ -262,11 +262,9 @@ class PLATFORM_EXPORT Color {
   bool SetFromString(const String&);
   bool SetNamedColor(const String&);
 
-  // Returns true if the color is not opaque.
-  bool HasAlpha() const { return AlphaAsInteger() < 255; }
-
-  // Returns true if the color is transparent.
-  bool IsTransparent() const { return AlphaAsInteger() == 0; }
+  bool IsFullyTransparent() const { return Alpha() <= 0.0f; }
+  bool IsOpaque() const { return Alpha() >= 1.0f; }
+  bool HasTransparency() const { return !IsOpaque(); }
 
   float Param0() const { return param0_; }
   float Param1() const { return param1_; }

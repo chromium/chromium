@@ -42,7 +42,8 @@ bool BorderEdge::PresentButInvisible() const {
 }
 
 bool BorderEdge::ObscuresBackgroundEdge() const {
-  if (!is_present_ || color_.HasAlpha() || style_ == EBorderStyle::kHidden) {
+  if (!is_present_ || color_.HasTransparency() ||
+      style_ == EBorderStyle::kHidden) {
     return false;
   }
 
@@ -54,7 +55,8 @@ bool BorderEdge::ObscuresBackgroundEdge() const {
 }
 
 bool BorderEdge::ObscuresBackground() const {
-  if (!is_present_ || color_.HasAlpha() || style_ == EBorderStyle::kHidden) {
+  if (!is_present_ || color_.HasTransparency() ||
+      style_ == EBorderStyle::kHidden) {
     return false;
   }
 

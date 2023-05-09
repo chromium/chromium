@@ -960,7 +960,7 @@ bool BoxBorderPainter::PaintBorderFastPath() const {
   // This is faster than the normal complex border path only if it avoids
   // creating transparency layers (when the border is translucent).
   if (FirstEdge().BorderStyle() == EBorderStyle::kSolid &&
-      !outer_.IsRounded() && has_alpha_) {
+      !outer_.IsRounded() && has_transparency_) {
     DCHECK(visible_edge_set_ != kAllBorderEdges);
     // solid, rectangular border => one drawPath()
     Path path;
@@ -999,7 +999,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       is_uniform_width_(true),
       is_uniform_color_(true),
       is_rounded_(false),
-      has_alpha_(false) {
+      has_transparency_(false) {
   style.GetBorderEdgeInfo(edges_, sides_to_include);
   ComputeBorderProperties();
 
@@ -1044,7 +1044,7 @@ BoxBorderPainter::BoxBorderPainter(GraphicsContext& context,
       is_uniform_width_(true),
       is_uniform_color_(true),
       is_rounded_(false),
-      has_alpha_(false) {
+      has_transparency_(false) {
   DCHECK(style.HasOutline());
 
   BorderEdge edge(width,
@@ -1082,7 +1082,9 @@ void BoxBorderPainter::ComputeBorderProperties() {
     visible_edge_count_++;
     visible_edge_set_ |= EdgeFlagForSide(static_cast<BoxSide>(i));
 
-    has_alpha_ |= edge.GetColor().HasAlpha();
+    if (edge.GetColor().HasTransparency()) {
+      has_transparency_ = true;
+    }
 
     if (visible_edge_count_ == 1) {
       first_visible_edge_ = i;

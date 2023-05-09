@@ -29,8 +29,9 @@ namespace {
 
 bool AllColorsOpaque(const Vector<Color>& animated_colors) {
   for (const auto& color : animated_colors) {
-    if (color.HasAlpha())
+    if (!color.IsOpaque()) {
       return false;
+    }
   }
   return true;
 }

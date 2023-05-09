@@ -350,7 +350,7 @@ bool InspectorContrast::GetColorsFromRect(PhysicalRect rect,
     bool found_non_transparent_color = false;
     if (background_color.AlphaAsInteger() != 0) {
       found_non_transparent_color = true;
-      if (background_color.HasAlpha()) {
+      if (!background_color.IsOpaque()) {
         if (colors.empty()) {
           colors.push_back(background_color);
         } else {

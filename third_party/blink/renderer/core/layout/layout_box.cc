@@ -1559,8 +1559,9 @@ PhysicalRect LayoutBox::PhysicalBackgroundRect(
       }
 
       // The background color is painted into the last layer.
-      if (!cur->Next() && !background_color.HasAlpha())
+      if (!cur->Next() && background_color.IsOpaque()) {
         layer_known_opaque = true;
+      }
 
       // If neither the image nor the color are opaque then skip this layer.
       if (!layer_known_opaque)
@@ -6158,21 +6159,25 @@ bool LayoutBox::BackgroundClipBorderBoxIsEquivalentToPaddingBox() const {
   }
 
   if (StyleRef().BorderTopWidth() &&
-      (ResolveColor(GetCSSPropertyBorderTopColor()).HasAlpha() ||
-       StyleRef().BorderTopStyle() != EBorderStyle::kSolid))
+      (ResolveColor(GetCSSPropertyBorderTopColor()).HasTransparency() ||
+       StyleRef().BorderTopStyle() != EBorderStyle::kSolid)) {
     return false;
+  }
   if (StyleRef().BorderRightWidth() &&
-      (ResolveColor(GetCSSPropertyBorderRightColor()).HasAlpha() ||
-       StyleRef().BorderRightStyle() != EBorderStyle::kSolid))
+      (ResolveColor(GetCSSPropertyBorderRightColor()).HasTransparency() ||
+       StyleRef().BorderRightStyle() != EBorderStyle::kSolid)) {
     return false;
+  }
   if (StyleRef().BorderBottomWidth() &&
-      (ResolveColor(GetCSSPropertyBorderBottomColor()).HasAlpha() ||
-       StyleRef().BorderBottomStyle() != EBorderStyle::kSolid))
+      (ResolveColor(GetCSSPropertyBorderBottomColor()).HasTransparency() ||
+       StyleRef().BorderBottomStyle() != EBorderStyle::kSolid)) {
     return false;
+  }
   if (StyleRef().BorderLeftWidth() &&
-      (ResolveColor(GetCSSPropertyBorderLeftColor()).HasAlpha() ||
-       StyleRef().BorderLeftStyle() != EBorderStyle::kSolid))
+      (ResolveColor(GetCSSPropertyBorderLeftColor()).HasTransparency() ||
+       StyleRef().BorderLeftStyle() != EBorderStyle::kSolid)) {
     return false;
+  }
 
   return true;
 }
@@ -6233,7 +6238,7 @@ BackgroundPaintLocation LayoutBox::ComputeBackgroundPaintLocationIfComposited()
         // iterations of the loop). For the latter case, the first paint of the
         // images doesn't matter because it will be covered by the second paint
         // of the opaque color.
-        if (!background_color.HasAlpha()) {
+        if (background_color.IsOpaque()) {
           paint_location = kBackgroundPaintInBothSpaces;
           continue;
         }

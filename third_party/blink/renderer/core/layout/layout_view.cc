@@ -845,7 +845,7 @@ bool LayoutView::BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const {
   NOT_DESTROYED();
   // The base background color applies to the main frame only.
   return GetFrame()->IsMainFrame() &&
-         !frame_view_->BaseBackgroundColor().HasAlpha();
+         frame_view_->BaseBackgroundColor().IsOpaque();
 }
 
 gfx::SizeF LayoutView::ViewportSizeForViewportUnits() const {

@@ -369,7 +369,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 };
 
 ALWAYS_INLINE bool CanvasRenderingContext2DState::ShouldDrawShadows() const {
-  return (!shadow_color_.IsTransparent()) &&
+  return (!shadow_color_.IsFullyTransparent()) &&
          (shadow_blur_ || !shadow_offset_.IsZero());
 }
 
