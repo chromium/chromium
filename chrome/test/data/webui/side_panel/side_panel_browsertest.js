@@ -6,6 +6,7 @@
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "components/user_notes/user_notes_features.h"');
 GEN('#include "components/power_bookmarks/core/power_bookmark_features.h"');
@@ -111,6 +112,27 @@ var SidePanelBookmarksDragManagerTest = class extends SidePanelBrowserTest {
 };
 
 TEST_F('SidePanelBookmarksDragManagerTest', 'All', function() {
+  mocha.run();
+});
+
+var SidePanelPowerBookmarksDragManagerTest =
+    class extends SidePanelBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://bookmarks-side-panel.top-chrome/test_loader.html?module=side_panel/bookmarks/power_bookmarks_drag_manager_test.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'features::kPowerBookmarksSidePanel',
+      ],
+    };
+  }
+};
+
+TEST_F('SidePanelPowerBookmarksDragManagerTest', 'All', function() {
   mocha.run();
 });
 

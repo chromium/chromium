@@ -242,7 +242,9 @@
               image-urls="[[getBookmarkImageUrls_(
                             item, item.*, imageUrls_.*)]]"
               force-hover="[[getBookmarkForceHover_(
-                            item, contextMenuBookmark_)]]">
+                            item, contextMenuBookmark_)]]"
+              draggable="[[canDrag_(editing_, renamingId_, searchQuery_,
+                           labels_.*)]]">
             <template is="dom-if" restamp
                 if="[[isPriceTracked(item, trackedProductInfos_.*)]]">
               <sp-list-item-badge slot="badges"

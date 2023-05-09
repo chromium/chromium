@@ -3,6 +3,14 @@
     pointer-events: none;
   }
 
+  :host([drop-position='into']) cr-url-list-item {
+    background: var(--cr-hover-background-color);
+  }
+
+  :host-context(.focus-outline-visible):host(:focus) cr-url-list-item {
+    background-color: var(--cr-active-background-color);
+  }
+
   cr-url-list-item[size=compact] {
     padding-inline-end: 14px;
     padding-inline-start: 14px;
