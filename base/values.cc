@@ -1152,10 +1152,6 @@ bool operator>=(const Value::List& lhs, const Value::List& rhs) {
   return !(lhs < rhs);
 }
 
-absl::optional<bool> Value::FindBoolKey(StringPiece key) const {
-  return GetDict().FindBool(key);
-}
-
 absl::optional<int> Value::FindIntKey(StringPiece key) const {
   return GetDict().FindInt(key);
 }

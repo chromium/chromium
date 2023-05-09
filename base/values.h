@@ -762,8 +762,6 @@ class BASE_EXPORT GSL_OWNER Value {
   // `nullptr` if the value is not found or doesn't have the type specified in
   // the function's name.
   //
-  // DEPRECATED: prefer `Value::Dict::FindBool()`.
-  absl::optional<bool> FindBoolKey(StringPiece key) const;
   // DEPRECATED: prefer `Value::Dict::FindInt()`.
   absl::optional<int> FindIntKey(StringPiece key) const;
   // DEPRECATED: prefer `Value::Dict::FindString()`.
