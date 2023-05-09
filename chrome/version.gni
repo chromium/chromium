@@ -69,9 +69,6 @@ if (is_mac) {
         "trichrome_64_version_code = \"@TRICHROME_64_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
       _version_dictionary_template += "trichrome_64_32_high_version_code = \"@TRICHROME_64_32_HIGH_VERSION_CODE@\" "
-
-      # Deprecated.
-      _version_dictionary_template += "trichrome_64_high_version_code = \"@TRICHROME_64_HIGH_VERSION_CODE@\" "
     }
     _version_dictionary_template +=
         "trichrome_32_beta_version_code = \"@TRICHROME_32_BETA_VERSION_CODE@\" "
@@ -81,9 +78,6 @@ if (is_mac) {
         "trichrome_64_beta_version_code = \"@TRICHROME_64_BETA_VERSION_CODE@\" "
     if (target_cpu == "arm64") {
       _version_dictionary_template += "trichrome_64_32_high_beta_version_code = \"@TRICHROME_64_32_HIGH_BETA_VERSION_CODE@\" "
-
-      # Deprecated.
-      _version_dictionary_template += "trichrome_64_high_beta_version_code = \"@TRICHROME_64_HIGH_BETA_VERSION_CODE@\" "
     }
     _version_dictionary_template +=
         "webview_32_stable_version_code = \"@WEBVIEW_32_STABLE_VERSION_CODE@\" "
@@ -158,14 +152,12 @@ if (is_mac) {
                            "trichrome_64_32_high_version_code",
                            "trichrome_auto_64_32_version_code",
                            "trichrome_64_version_code",
-                           "trichrome_64_high_version_code",  # Deprecated.
                            "trichrome_beta_version_code",
                            "trichrome_32_beta_version_code",
                            "trichrome_32_64_beta_version_code",
                            "trichrome_64_32_beta_version_code",
                            "trichrome_64_32_high_beta_version_code",
                            "trichrome_64_beta_version_code",
-                           "trichrome_64_high_beta_version_code",  # Deprecated.
                            "webview_beta_version_code",
                            "webview_dev_version_code",
                            "webview_stable_version_code",
@@ -206,10 +198,8 @@ if (is_android && current_toolchain == default_toolchain) {
       "TrichromeChromeAuto6432: $trichrome_auto_64_32_version_code",
     ]
     if (target_cpu == "arm64") {
-      lines_to_write += [
-        "TrichromeChrome6432High: $trichrome_64_32_high_version_code",
-        "TrichromeChrome64High: $trichrome_64_high_version_code",  # Deprecated.
-      ]
+      lines_to_write +=
+          [ "TrichromeChrome6432High: $trichrome_64_32_high_version_code" ]
     }
     lines_to_write += [
       "TrichromeChrome32OpenBeta: $trichrome_32_beta_version_code",
@@ -218,12 +208,7 @@ if (is_android && current_toolchain == default_toolchain) {
       "TrichromeChrome64OpenBeta: $trichrome_64_beta_version_code",
     ]
     if (target_cpu == "arm64") {
-      lines_to_write += [
-        "TrichromeChrome6432HighOpenBeta: $trichrome_64_32_high_beta_version_code",
-
-        # Deprecated
-        "TrichromeChrome64HighOpenBeta: $trichrome_64_high_beta_version_code",
-      ]
+      lines_to_write += [ "TrichromeChrome6432HighOpenBeta: $trichrome_64_32_high_beta_version_code" ]
     }
     lines_to_write += [
       "AndroidWebview32Stable: $webview_32_stable_version_code",
@@ -260,21 +245,19 @@ if (is_android) {
       if (_use_stable_package_name_for_trichrome) {
         if (is_high_end_android) {
           true_true_true_true = trichrome_64_32_high_beta_version_code
-          true_true_true_false = trichrome_64_high_beta_version_code
         } else {
           true_true_true_true = trichrome_64_32_beta_version_code
-          true_true_true_false = trichrome_64_beta_version_code
         }
+        true_true_true_false = trichrome_64_beta_version_code
         true_false_false_true = trichrome_32_beta_version_code
         true_false_true_true = trichrome_32_64_beta_version_code
       } else {
         if (is_high_end_android) {
           true_true_true_true = trichrome_64_32_high_version_code
-          true_true_true_false = trichrome_64_high_version_code
         } else {
           true_true_true_true = trichrome_64_32_version_code
-          true_true_true_false = trichrome_64_version_code
         }
+        true_true_true_false = trichrome_64_version_code
         true_false_false_true = trichrome_32_version_code
         true_false_true_true = trichrome_32_64_version_code
       }
