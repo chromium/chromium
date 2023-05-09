@@ -352,13 +352,10 @@ void BaseRenderingContext2D::PopAndRestore() {
 void BaseRenderingContext2D::RestoreMatrixClipStack(cc::PaintCanvas* c) const {
   if (!c)
     return;
-  HeapVector<Member<CanvasRenderingContext2DState>>::const_iterator curr_state;
-  DCHECK(state_stack_.begin() < state_stack_.end());
-  for (curr_state = state_stack_.begin(); curr_state < state_stack_.end();
-       curr_state++) {
+  for (Member<CanvasRenderingContext2DState> curr_state : state_stack_) {
     c->setMatrix(SkM44());
-    curr_state->Get()->PlaybackClips(c);
-    c->setMatrix(AffineTransformToSkM44(curr_state->Get()->GetTransform()));
+    curr_state->PlaybackClips(c);
+    c->setMatrix(AffineTransformToSkM44(curr_state->GetTransform()));
     c->save();
   }
   c->restore();
