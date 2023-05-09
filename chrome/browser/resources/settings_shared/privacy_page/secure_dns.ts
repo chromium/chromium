@@ -22,6 +22,10 @@ import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../controls/settings_toggle_button.js';
 import './secure_dns_input.js';
+// <if expr="chromeos_ash">
+import 'chrome://resources/cr_elements/chromeos/cros_color_overrides.css.js';
+
+// </if>
 
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
 import {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';

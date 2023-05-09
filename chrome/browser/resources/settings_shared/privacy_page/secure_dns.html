@@ -1,4 +1,11 @@
-    <style include="cr-shared-style md-select">
+    <style
+    <if expr="not chromeos_ash">
+      include="cr-shared-style md-select"
+    </if>
+    <if expr="chromeos_ash">
+      include="cr-shared-style md-select cros-color-overrides"
+    </if>
+    >
       #automaticRadioButton {
         align-items: flex-start;
         min-height: var(--cr-section-min-height);
