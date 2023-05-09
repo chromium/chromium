@@ -490,11 +490,6 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     base::UmaHistogramEnumeration("Blink.Canvas.ResourceProviderType",
                                   ResourceProvider()->GetType());
     DidDraw();
-
-    if (needs_matrix_clip_restore_) {
-      needs_matrix_clip_restore_ = false;
-      context_->RestoreCanvasMatrixClipStack(ResourceProvider()->Canvas());
-    }
   }
   return ResourceProvider();
 }
