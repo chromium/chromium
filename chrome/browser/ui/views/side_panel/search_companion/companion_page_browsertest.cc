@@ -66,6 +66,11 @@ struct CompanionScriptBuilder {
   absl::optional<std::string> text_directive;
   absl::optional<std::vector<std::string>> cq_text_directives;
 
+  // Useful in case chrome sends a postmessage in response. Companion waits for
+  // the message in response and resolves the promise that was sent back to
+  // EvalJs.
+  bool wait_for_message = false;
+
   // Constructor.
   explicit CompanionScriptBuilder(MethodType type) : method_type(type) {}
 
@@ -117,6 +122,11 @@ struct CompanionScriptBuilder {
     }
 
     ss << "window.parent.postMessage(message, '*');";
+
+    if (wait_for_message) {
+      ss << "waitForMessage();";
+    }
+
     return ss.str();
   }
 };
@@ -414,8 +424,11 @@ IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,
   CompanionScriptBuilder builder(MethodType::kOnCqCandidatesAvailable);
   builder.ui_surface = UiSurface::kCQ;
   builder.cq_text_directives = std::vector<std::string>{"abc", "def"};
-  EXPECT_TRUE(ExecJs(builder.Build()));
-  // TODO(b/280453152): Verify UKM metrics.
+  builder.wait_for_message = true;
+  content::EvalJsResult eval_js_result = EvalJs(builder.Build());
+  const base::Value promise_values = eval_js_result.ExtractList();
+  EXPECT_EQ(2u, promise_values.GetList().size());
+  EXPECT_EQ(content::ListValueOf(false, false), promise_values);
 }
 
 IN_PROC_BROWSER_TEST_F(CompanionPageBrowserTest,

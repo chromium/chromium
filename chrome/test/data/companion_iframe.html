@@ -4,9 +4,21 @@
   // The proto received on last update postmessage. Reset on getLastReceivedCompanionProto().
   lastReceivedCompanionProto = null;
 
+  // Promise to be returned to for browser tests when the test needs to wait
+  // for a postmessage call from the browser to be received by the companion
+  // page.
+  var promiseResolve, promiseReject;
+  var promise = new Promise(function (resolve, reject) {
+    promiseResolve = resolve;
+    promiseReject = reject;
+  });
+
+  // Postmessage from browser.
   function onBrowserMessage(event) {
     if (event.data['type'] == 31) { // `MethodType.kUpdateCompanionPage`
       window.lastReceivedCompanionProto = event.data['companionUpdateParams'];
+    } else if (event.data['type'] == 32) { // `MethodType.kOnCqFindTextResultsAvailable`
+      promiseResolve(event.data['cqTextFindResults']);
     }
   }
 
@@ -14,6 +26,10 @@
     protoCopy = window.lastReceivedCompanionProto;
     window.lastReceivedCompanionProto = null;
     return protoCopy;
+  }
+
+  function waitForMessage() {
+    return promise;
   }
 
   window.addEventListener('message', onBrowserMessage, false);
