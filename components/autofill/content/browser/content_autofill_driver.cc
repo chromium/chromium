@@ -58,9 +58,9 @@ const std::vector<FormData>& WithNewVersion(
 
 ContentAutofillDriver::ContentAutofillDriver(
     content::RenderFrameHost* render_frame_host,
-    ContentAutofillRouter* autofill_router)
+    ContentAutofillDriverFactory* owner)
     : render_frame_host_(render_frame_host),
-      autofill_router_(autofill_router),
+      owner_(*owner),
       suppress_showing_ime_callback_(base::BindRepeating(
           [](const ContentAutofillDriver* driver) {
             return driver->should_suppress_keyboard_;
@@ -71,8 +71,8 @@ ContentAutofillDriver::ContentAutofillDriver(
 }
 
 ContentAutofillDriver::~ContentAutofillDriver() {
-  autofill_router_->UnregisterDriver(this,
-                                     /*driver_is_dying=*/true);
+  owner_->autofill_router().UnregisterDriver(this,
+                                             /*driver_is_dying=*/true);
   render_frame_host_->GetRenderWidgetHost()->RemoveSuppressShowingImeCallback(
       suppress_showing_ime_callback_);
 }
@@ -574,8 +574,8 @@ void ContentAutofillDriver::Reset() {
   // The driver's RenderFrameHost may be used for the page we're navigating to.
   // Therefore, we need to forget all forms of the page we're navigating from.
   submitted_forms_.clear();
-  autofill_router_->UnregisterDriver(this,
-                                     /*driver_is_dying=*/false);
+  owner_->autofill_router().UnregisterDriver(this,
+                                             /*driver_is_dying=*/false);
   autofill_manager_->Reset();
 }
 
@@ -672,7 +672,7 @@ FormData ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
 
 ContentAutofillRouter& ContentAutofillDriver::autofill_router() {
   DCHECK(!IsPrerendering());
-  return *autofill_router_;
+  return owner_->autofill_router();
 }
 
 }  // namespace autofill

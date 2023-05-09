@@ -14,6 +14,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/render_process_host.h"

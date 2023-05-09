@@ -10,18 +10,12 @@
 
 namespace autofill {
 
-class ContentAutofillRouter;
-
 // Exposes some testing operations for ContentAutofillDriver.
 class ContentAutofillDriverTestApi {
  public:
   explicit ContentAutofillDriverTestApi(ContentAutofillDriver* driver)
       : driver_(driver) {
     DCHECK(driver_);
-  }
-
-  ContentAutofillRouter& autofill_router() {
-    return *driver_->autofill_router_;
   }
 
   void SetFrameAndFormMetaData(FormData& form, FormFieldData* field) const {

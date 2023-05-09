@@ -678,9 +678,10 @@ TEST_F(FastCheckoutClientImplTest,
   // called when `autofill_driver` is destroyed below. `Stop(..)` is supposed to
   // reset `FastCheckoutClientImpl::autofill_manager_`.
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents());
-  auto autofill_router = std::make_unique<autofill::ContentAutofillRouter>();
   auto autofill_driver = std::make_unique<autofill::ContentAutofillDriver>(
-      web_contents()->GetPrimaryMainFrame(), autofill_router.get());
+      web_contents()->GetPrimaryMainFrame(),
+      autofill::ContentAutofillClient::FromWebContents(web_contents())
+          ->GetAutofillDriverFactory());
   auto browser_autofill_manager =
       std::make_unique<autofill::BrowserAutofillManager>(
           autofill_driver.get(),

@@ -103,6 +103,8 @@ class ContentAutofillDriverFactory : public content::WebContentsObserver {
 
   AutofillClient* client() { return client_; }
 
+  ContentAutofillRouter& autofill_router() { return router_; }
+
   void AddObserver(Observer* observer) { observers_.AddObserver(observer); }
 
   void RemoveObserver(Observer* observer) {

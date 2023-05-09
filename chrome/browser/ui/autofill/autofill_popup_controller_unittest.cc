@@ -72,24 +72,15 @@ using ::testing::StrictMock;
 namespace autofill {
 namespace {
 
-ContentAutofillDriverTestApi test_api(ContentAutofillDriver* cadf) {
-  return ContentAutofillDriverTestApi(cadf);
-}
-
 ContentAutofillRouterTestApi test_api(ContentAutofillRouter* cadf) {
   return ContentAutofillRouterTestApi(cadf);
-}
-
-ContentAutofillDriverFactoryTestApi test_api(
-    ContentAutofillDriverFactory* cadf) {
-  return ContentAutofillDriverFactoryTestApi(cadf);
 }
 
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   MockAutofillDriver(content::RenderFrameHost* rfh,
-                     ContentAutofillRouter* router)
-      : ContentAutofillDriver(rfh, router) {}
+                     ContentAutofillDriverFactory* factory)
+      : ContentAutofillDriver(rfh, factory) {}
 
   MockAutofillDriver(MockAutofillDriver&) = delete;
   MockAutofillDriver& operator=(MockAutofillDriver&) = delete;
@@ -229,8 +220,7 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
   virtual std::unique_ptr<NiceMock<MockAutofillExternalDelegate>>
   CreateExternalDelegate() {
     // Fake that |driver| has queried a form.
-    test_api(&test_api(autofill_driver()).autofill_router())
-        .set_last_queried_source(autofill_driver());
+    test_api(&autofill_router()).set_last_queried_source(autofill_driver());
     return std::make_unique<NiceMock<MockAutofillExternalDelegate>>(
         autofill_manager(), autofill_driver());
   }
@@ -276,8 +266,8 @@ class AutofillPopupControllerUnitTest : public ChromeRenderViewHostTestHarness {
     return autofill_client_injector_[web_contents()];
   }
 
-  ContentAutofillRouter* autofill_router() {
-    return &test_api(autofill_client()->GetAutofillDriverFactory()).router();
+  ContentAutofillRouter& autofill_router() {
+    return autofill_client()->GetAutofillDriverFactory()->autofill_router();
   }
 
   NiceMock<MockAutofillDriver>* autofill_driver() {

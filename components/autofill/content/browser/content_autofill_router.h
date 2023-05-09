@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -22,8 +23,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
-
-class ContentAutofillDriver;
 
 // ContentAutofillRouter routes events between ContentAutofillDriver objects in
 // order to handle frame-transcending forms.

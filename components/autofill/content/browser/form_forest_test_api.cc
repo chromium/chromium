@@ -6,6 +6,8 @@
 
 #include <iomanip>
 
+#include "components/autofill/content/browser/content_autofill_driver.h"
+
 namespace autofill::internal {
 
 void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
