@@ -64,6 +64,7 @@ public class GeolocationTest {
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1444083")
     @Feature({"Location", "Main"})
     public void testGeolocationPlumbingAllowedDialog() throws Exception {
         runTest("initiate_getCurrentPosition()", 1, true, true);
