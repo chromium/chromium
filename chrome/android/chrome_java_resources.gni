@@ -376,6 +376,7 @@ chrome_java_resources = [
   "java/res/drawable/distilled_page_pref_background.xml",
   "java/res/drawable/distilled_page_prefs_button_bg.xml",
   "java/res/drawable/google_pay_with_divider.xml",
+  "java/res/drawable/history_empty_state_illustration.xml",
   "java/res/drawable/ic_add_box_rounded_corner.xml",
   "java/res/drawable/ic_add_to_home_screen.xml",
   "java/res/drawable/ic_arrow_forward_blue_24dp.xml",

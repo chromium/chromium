@@ -161,7 +161,9 @@ found in the LICENSE file.
 
     <!-- GM3 dynamic colors that point to the baseline palette for below Android S.-->
     <color name="material_primary_50">@color/baseline_primary_50</color>
+    <color name="material_primary_100">@color/baseline_primary_100</color>
     <color name="material_primary_200">@color/baseline_primary_200</color>
     <color name="material_primary_600">@color/baseline_primary_600</color>
     <color name="material_primary_800">@color/baseline_primary_800</color>
+    <color name="material_primary_900">@color/baseline_primary_900</color>
 </resources>

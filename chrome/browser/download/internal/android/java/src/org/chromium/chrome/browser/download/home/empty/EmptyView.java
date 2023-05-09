@@ -29,7 +29,7 @@ class EmptyView {
     public EmptyView(Context context) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
             mView = (ViewGroup) LayoutInflater.from(context).inflate(
-                    R.layout.empty_state_view, null);
+                    R.layout.downloads_empty_state_view, null);
 
             mEmptyContainer = mView.findViewById(R.id.empty_state_container);
             mEmptyView = (TextView) mView.findViewById(R.id.empty_state_text_title);

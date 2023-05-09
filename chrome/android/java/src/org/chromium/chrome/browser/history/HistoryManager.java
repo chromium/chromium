@@ -347,7 +347,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mSelectableListLayout.configureWideDisplayStyle();
 
         // 5. Initialize empty view.
-        mEmptyView = mSelectableListLayout.initializeEmptyView(R.string.history_manager_empty);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.EMPTY_STATES)) {
+            mEmptyView = mSelectableListLayout.initializeEmptyStateView(
+                    R.drawable.history_empty_state_illustration,
+                    R.string.history_manager_empty_state,
+                    R.string.history_manager_empty_state_view_or_clear_page_visited);
+        } else {
+            mEmptyView = mSelectableListLayout.initializeEmptyView(R.string.history_manager_empty);
+        }
 
         // 6. Load items.
         mContentManager.startLoadingItems();
