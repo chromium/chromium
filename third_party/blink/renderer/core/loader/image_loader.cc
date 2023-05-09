@@ -543,14 +543,10 @@ void ImageLoader::DoUpdateFromElement(
     if (update_behavior != kUpdateForcedReload &&
         lazy_image_load_state_ != LazyImageLoadState::kFullImage) {
       if (auto* html_image = DynamicTo<HTMLImageElement>(GetElement())) {
-        switch (LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
-            *frame, html_image, params.Url())) {
-          case LazyImageHelper::Eligibility::kEnabledFullyDeferred:
-            lazy_image_load_state_ = LazyImageLoadState::kDeferred;
-            params.SetLazyImageDeferred();
-            break;
-          case LazyImageHelper::Eligibility::kDisabled:
-            break;
+        if (LazyImageHelper::ShouldDeferImageLoad(*frame, html_image)) {
+          LazyImageHelper::StartMonitoringVisibilityMetrics(html_image);
+          lazy_image_load_state_ = LazyImageLoadState::kDeferred;
+          params.SetLazyImageDeferred();
         }
       }
     }
