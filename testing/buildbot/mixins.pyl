@@ -904,6 +904,18 @@
       },
     },
   },
+  'mac_arm64_apple_m2_retina_gpu_stable': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64',
+        'mac_model': 'Mac14,7',
+        'os': 'Mac-13.3.1',
+        'pool': 'chromium.tests.gpu',
+        'display_attached': '1',
+        'hidpi': '1',
+      },
+    },
+  },
   'mac_beta_arm64': {
     'swarming': {
       'dimensions': {

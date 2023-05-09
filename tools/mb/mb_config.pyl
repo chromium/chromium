@@ -1283,6 +1283,7 @@
       'gpu-fyi-try-mac-amd-retina-rel': 'gpu_fyi_tests_release_trybot_reclient',
       'gpu-fyi-try-mac-arm64-apple-m1-exp': 'gpu_fyi_tests_release_trybot_arm64_reclient',
       'gpu-fyi-try-mac-arm64-apple-m1-rel': 'gpu_fyi_tests_release_trybot_arm64_reclient',
+      'gpu-fyi-try-mac-arm64-apple-m2-retina-rel': 'gpu_fyi_tests_release_trybot_arm64_reclient',
       'gpu-fyi-try-mac-intel-asan': 'gpu_fyi_tests_release_trybot_asan_reclient',
       'gpu-fyi-try-mac-intel-dbg': 'gpu_fyi_tests_debug_trybot_reclient',
       'gpu-fyi-try-mac-intel-exp': 'gpu_fyi_tests_release_trybot_reclient',

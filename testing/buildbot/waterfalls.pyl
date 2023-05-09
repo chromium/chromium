@@ -4762,6 +4762,16 @@
           'gpu_telemetry_tests': 'gpu_fyi_mac_release_telemetry_tests',
         },
       },
+      'Mac FYI Retina Release (Apple M2)': {
+        'os_type': 'mac',
+        'browser_config': 'release',
+        'mixins': [
+          'mac_arm64_apple_m2_retina_gpu_stable',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
+        },
+      },
       'Mac FYI Retina Release (NVIDIA)': {
         'os_type': 'mac',
         'browser_config': 'release',
