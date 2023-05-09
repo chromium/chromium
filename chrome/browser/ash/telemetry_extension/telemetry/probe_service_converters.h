@@ -199,7 +199,10 @@ std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {
   std::vector<OutputT> output;
   for (auto&& element : input) {
     DCHECK(!element.is_null());
-    output.push_back(unchecked::UncheckedConvertPtr(std::move(element)));
+    auto converted = unchecked::UncheckedConvertPtr(std::move(element));
+    if (!converted.is_null()) {
+      output.push_back(std::move(converted));
+    }
   }
   return output;
 }
