@@ -101,20 +101,6 @@ MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context)
                               ? nullptr
                               : DualMediaSinkService::GetInstance()) {}
 
-void MediaRouterDesktop::RegisterMediaRouteProvider(
-    mojom::MediaRouteProviderId provider_id,
-    mojo::PendingRemote<mojom::MediaRouteProvider>
-        media_route_provider_remote) {
-  mojo::Remote<mojom::MediaRouteProvider> bound_remote(
-      std::move(media_route_provider_remote));
-  bound_remote.set_disconnect_handler(
-      base::BindOnce(&MediaRouterDesktop::OnProviderConnectionError,
-                     weak_factory_.GetWeakPtr(), provider_id));
-  media_route_providers_[provider_id] = std::move(bound_remote);
-
-  SyncStateToMediaRouteProvider(provider_id);
-}
-
 void MediaRouterDesktop::OnSinksReceived(
     mojom::MediaRouteProviderId provider_id,
     const std::string& media_source,

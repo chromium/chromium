@@ -147,6 +147,8 @@ void MediaRouterMojoImpl::RegisterMediaRouteProvider(
       base::BindOnce(&MediaRouterMojoImpl::OnProviderConnectionError,
                      AsWeakPtr(), provider_id));
   media_route_providers_[provider_id] = std::move(bound_remote);
+
+  SyncStateToMediaRouteProvider(provider_id);
 }
 
 void MediaRouterMojoImpl::OnIssue(const IssueInfo& issue) {
