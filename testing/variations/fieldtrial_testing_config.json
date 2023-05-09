@@ -11405,29 +11405,6 @@
             ]
         }
     ],
-    "SafeBrowsingEsbPromotionFlowImprovements": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithBoth",
-                    "params": {
-                        "EnableEsbIphBubble": "true",
-                        "EnableEsbSettingCollapse": "true"
-                    },
-                    "enable_features": [
-                        "EsbIphBubbleAndCollapseSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingLookupMechanismExperiment": [
         {
             "platforms": [
