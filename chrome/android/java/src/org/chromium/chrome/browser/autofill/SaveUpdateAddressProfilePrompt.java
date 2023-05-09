@@ -79,7 +79,8 @@ public class SaveUpdateAddressProfilePrompt {
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
 
-        mEditorDialog = new EditorDialog(activity, /*deleteRunnable=*/null, browserProfile);
+        mEditorDialog = new EditorDialog(
+                activity, /*deleteRunnable=*/null, browserProfile, /*requiredIndicator=*/false);
         mEditorDialog.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         mAddressEditor = new AddressEditor(/*saveToDisk=*/false, isUpdate, isMigrationToAccount);
         mAddressEditor.setEditorDialog(mEditorDialog);
