@@ -6799,3 +6799,7 @@ crbug.com/1441166 [ Win ] http/tests/devtools/indexeddb/resources-panel.js [ Fai
 
 # Sheriff 2023-05-04
 crbug.com/1434164 http/tests/streams/chromium/transferable-streams-optimization.html [ Crash Failure Pass ]
+
+# TODO(crbug.com/1443872): Re-enable this test
+crbug.com/1443872 [ Fuchsia ] editing/selection/4402375.html [ Failure ]
+crbug.com/1443872 [ Fuchsia ] paint/invalidation/selection/selection-in-composited-scrolling-container.html [ Failure ]
