@@ -1314,7 +1314,7 @@ html[dir=rtl] .menu-header .icon {
 }
 
 .dialog {
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--cros-sys-scrim);
 }
 
 #view-splash {
@@ -1493,7 +1493,7 @@ body:not(.video) #settings-video-resolution {
 }
 
 .low-storage-dialog-popup .dialog-description {
-  color: var(--grey-400);
+  color: var(--cros-sys-secondary);
   font: 400 14px/20px var(--default-font-family);
 }
 
