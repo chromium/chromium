@@ -58,7 +58,6 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/keyboard",
-    "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/url:constants",

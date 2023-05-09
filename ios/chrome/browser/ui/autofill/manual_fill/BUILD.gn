@@ -125,10 +125,9 @@ source_set("manual_fill_ui") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/list_model:list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:styler",
     "//ios/chrome/browser/shared/ui/table_view:table_view",
-    "//ios/chrome/browser/ui/autofill/manual_fill/resources:mf_keyboard",
-    "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common:button_config",
     "//ios/chrome/common:string_util",
@@ -136,8 +135,6 @@ source_set("manual_fill_ui") {
     "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//net:net",
-    "//third_party/material_design_icons:ic_credit_card",
-    "//third_party/material_design_icons:ic_place",
     "//ui/base:base",
   ]
   frameworks = [ "UIKit.framework" ]

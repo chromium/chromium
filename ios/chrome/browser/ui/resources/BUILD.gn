@@ -21,11 +21,3 @@ imageset("module_shadow") {
     "module_shadow.imageset/module_shadow@3x.png",
   ]
 }
-
-imageset("password_key") {
-  sources = [
-    "password_key.imageset/Contents.json",
-    "password_key.imageset/password_key@2x.png",
-    "password_key.imageset/password_key@3x.png",
-  ]
-}

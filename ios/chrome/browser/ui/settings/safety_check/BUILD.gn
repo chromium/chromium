@@ -80,7 +80,6 @@ source_set("safety_check") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",

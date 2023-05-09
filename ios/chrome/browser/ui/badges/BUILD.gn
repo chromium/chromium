@@ -79,7 +79,6 @@ source_set("badges") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/fullscreen:ui",
-    "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/web",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
