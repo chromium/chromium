@@ -372,4 +372,12 @@ void KioskBaseTest::BlockAppLaunch(bool block) {
   }
 }
 
+void KioskBaseTest::SetTestApp(const std::string& app_id,
+                               const std::string& crx_file,
+                               const std::string& version) {
+  test_app_id_ = app_id;
+  test_crx_file_ = (crx_file == "") ? app_id + ".crx" : crx_file;
+  test_app_version_ = version;
+}
+
 }  // namespace ash

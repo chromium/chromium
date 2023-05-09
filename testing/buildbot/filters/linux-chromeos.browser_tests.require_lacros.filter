@@ -6,6 +6,7 @@ AccessibilityExtension*
 Autoclick*
 AshTtsApiTest*
 BrowserAppShelfControllerBrowserTest*
+ChromeAppKioskLacrosTest*
 ChromeVox*
 DemoAshRequiresLacrosTest*
 DesksTemplatesClientLacrosTest*
