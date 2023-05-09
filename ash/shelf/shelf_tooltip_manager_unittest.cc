@@ -38,6 +38,7 @@ class ShelfTooltipManagerTest : public AshTestBase {
     AshTestBase::SetUp();
     shelf_view_ = GetPrimaryShelf()->GetShelfViewForTesting();
     test_api_ = std::make_unique<ShelfViewTestAPI>(shelf_view_);
+    test_api_->SetAnimationDuration(base::Milliseconds(1));
     test_api_->AddItem(TYPE_PINNED_APP);
     test_api_->RunMessageLoopUntilAnimationsDone();
     tooltip_manager_ = test_api_->tooltip_manager();
