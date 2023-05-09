@@ -2591,6 +2591,7 @@ config("symbols") {
 # This config guarantees to hold symbol for stack trace which are shown to user
 # when crash happens in unittests running on buildbot.
 config("minimal_symbols") {
+  rustflags = []
   if (is_win) {
     # Functions, files, and line tables only.
     cflags = []
@@ -2618,15 +2619,18 @@ config("minimal_symbols") {
       # at least 10.11.
       # TODO(thakis): Remove this once mac_deployment_target is 10.11.
       cflags += [ "-gdwarf-4" ]
+      rustflags += [ "-Zdwarf-version=4" ]
     } else if (!use_dwarf5 && !is_nacl && current_os != "aix") {
       # On aix -gdwarf causes linker failures due to thread_local variables.
       # Recent clang versions default to DWARF5 on Linux, and Android is about
       # to switch. TODO: Adopt that in controlled way.
       cflags += [ "-gdwarf-4" ]
+      rustflags += [ "-Zdwarf-version=4" ]
     }
 
     if (use_dwarf5 && !is_nacl) {
       cflags += [ "-gdwarf-5" ]
+      rustflags += [ "-Zdwarf-version=5" ]
     }
 
     # The gcc-based nacl compilers don't support -fdebug-compilation-dir (see
@@ -2658,7 +2662,7 @@ config("minimal_symbols") {
 
     asmflags = cflags
   }
-  rustflags = [ "-Cdebuginfo=1" ]
+  rustflags += [ "-Cdebuginfo=1" ]
 }
 
 # This configuration contains function names only. That is, the compiler is
