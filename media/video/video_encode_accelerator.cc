@@ -125,6 +125,16 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
       break;
   }
 
+  str += ", content_type: ";
+  switch (content_type) {
+    case ContentType::kCamera:
+      str += "camera";
+      break;
+    case ContentType::kDisplay:
+      str += "display";
+      break;
+  }
+
   if (spatial_layers.empty())
     return str;
 
