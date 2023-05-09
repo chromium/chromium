@@ -298,6 +298,12 @@ class EolIncentiveNotificationTest : public EolNotificationTest {
   void SetUp() override {
     EolNotificationTest::SetUp();
 
+    // Set the profile creation date to be at least 6 months before the current
+    // time set in these unittests, to correctly show the incentive.
+    base::Time creation_time;
+    ASSERT_TRUE(base::Time::FromUTCString("1 February 2023", &creation_time));
+    profile()->SetCreationTimeForTesting(creation_time);
+
     scoped_feature_list_.InitAndEnableFeature(ash::features::kEolIncentive);
   }
 
@@ -313,8 +319,7 @@ TEST_F(EolIncentiveNotificationTest, TestIncentiveFarBeforeEolDate) {
   ASSERT_FALSE(notification);
 }
 
-// b/280975476
-TEST_F(EolIncentiveNotificationTest, DISABLED_TestIncentiveBeforeEolDate) {
+TEST_F(EolIncentiveNotificationTest, TestIncentiveBeforeEolDate) {
   SetCurrentTimeToUtc("1 November 2023");
   SetEolDateUtc("1 December 2023");
 
