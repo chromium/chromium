@@ -596,6 +596,9 @@ struct Person {
   uint32 vehicle_bitfield;
 };
 ```
+In both cases, consider typemapping these mojo types to your preferred C++ construct
+(e.g. `base::StrongAlias<...>`, `base::EnumSet<...>`, etc.) to improve downstream
+readability and type safety.
 
 ### Avoid object lifetime issues with self-owned receivers
 
