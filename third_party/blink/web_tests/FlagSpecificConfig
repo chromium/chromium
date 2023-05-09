@@ -50,7 +50,7 @@
     "name": "webgpu",
     "args": [
           "--enable-unsafe-webgpu",
-          "--disable-dawn-features=disallow_unsafe_apis",
+          "--enable-dawn-features=allow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas",
@@ -59,7 +59,7 @@
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
           "isn't launched in stable on that configuration yet",
-          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "--enable-dawn-features=allow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--enable-webgpu-developer-features exposes extra WebGPU API",
           "features useful for testing but not generally available.",
@@ -77,7 +77,7 @@
     "args": [
           "--enable-unsafe-webgpu",
           "--use-webgpu-adapter=swiftshader",
-          "--disable-dawn-features=disallow_unsafe_apis",
+          "--enable-dawn-features=allow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas"
@@ -85,7 +85,7 @@
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
           "isn't launched in stable on that configuration yet",
-          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "--enable-dawn-features=allow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--enable-webgpu-developer-features exposes extra WebGPU API",
           "features useful for testing but not generally available.",
@@ -103,7 +103,7 @@
           "--enable-unsafe-webgpu",
           "--use-webgpu-adapter=swiftshader",
           "--enable-dawn-backend-validation",
-          "--disable-dawn-features=disallow_unsafe_apis",
+          "--enable-dawn-features=allow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas"
@@ -111,7 +111,7 @@
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
           "isn't launched in stable on that configuration yet",
-          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "--enable-dawn-features=allow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--enable-webgpu-developer-features exposes extra WebGPU API",
           "features useful for testing but not generally available.",
@@ -128,7 +128,7 @@
     "args": [
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation",
-          "--disable-dawn-features=disallow_unsafe_apis",
+          "--enable-dawn-features=allow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas",
@@ -137,7 +137,7 @@
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
           "isn't launched in stable on that configuration yet",
-          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "--enable-dawn-features=allow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--enable-webgpu-developer-features exposes extra WebGPU API",
           "features useful for testing but not generally available.",
@@ -155,7 +155,7 @@
     "args": [
           "--enable-unsafe-webgpu",
           "--enable-dawn-backend-validation=partial",
-          "--disable-dawn-features=disallow_unsafe_apis",
+          "--enable-dawn-features=allow_unsafe_apis",
           "--enable-webgpu-developer-features",
           "--use-gpu-in-tests",
           "--enable-accelerated-2d-canvas",
@@ -164,7 +164,7 @@
     "comments": [
           "--enable-unsafe-webgpu makes sure WebGPU is enabled even if it",
           "isn't launched in stable on that configuration yet",
-          "--disable-dawn-features=disallow_unsafe_apis is added so 'unsafe'",
+          "--enable-dawn-features=allow_unsafe_apis is added so 'unsafe'",
           "APIs can be tested with WebGPU CTS",
           "--enable-webgpu-developer-features exposes extra WebGPU API",
           "features useful for testing but not generally available.",

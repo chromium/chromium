@@ -208,7 +208,7 @@ class WebGpuCtsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.websocket_server = websocket_server.WebsocketServer()
     cls.websocket_server.StartServer()
     browser_args = [
-        '--disable-dawn-features=disallow_unsafe_apis',
+        '--enable-dawn-features=allow_unsafe_apis',
         # When running tests in parallel, windows can be treated as occluded if
         # a newly opened window fully covers a previous one, which can cause
         # issues in a few tests. This is practically only an issue on Windows

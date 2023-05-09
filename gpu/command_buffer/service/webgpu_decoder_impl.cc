@@ -1104,10 +1104,10 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
 
-  // Only allow unsafe APIs if the disallow_unsafe_apis toggle is explicitly
-  // disabled.
+  // Only allow unsafe APIs if the allow_unsafe_apis toggle is explicitly
+  // enabled.
   allow_unsafe_apis_ =
-      base::Contains(require_disabled_toggles_, "disallow_unsafe_apis");
+      base::Contains(require_enabled_toggles_, "allow_unsafe_apis");
 
   // Force adapters to report their limits in predetermined tiers unless the
   // adapter_limit_tiers toggle is explicitly disabled.
