@@ -60,10 +60,17 @@ class PowerBookmarkService;
 
 namespace commerce {
 
-extern const char kOgTitle[];
+// Open graph keys.
 extern const char kOgImage[];
-extern const char kOgPriceCurrency[];
 extern const char kOgPriceAmount[];
+extern const char kOgPriceCurrency[];
+extern const char kOgProductLink[];
+extern const char kOgTitle[];
+extern const char kOgType[];
+
+// Specific open graph values we're interested in.
+extern const char kOgTypeOgProduct[];
+extern const char kOgTypeProductItem[];
 
 // The conversion multiplier to go from standard currency units to
 // micro-currency units.
@@ -399,6 +406,11 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   void OnProductInfoJsonSanitizationCompleted(
       const GURL url,
       data_decoder::DataDecoder::ValueOrError result);
+
+  // Tries to determine whether a page is a PDP only from information in meta
+  // tags extracted from the page. If enough information is present to call the
+  // page a PDP, this function returns true.
+  static bool CheckIsPDPFromMetaOnly(const base::Value::Dict& on_page_meta_map);
 
   // Merge shopping data from existing |info| and the result of on-page
   // heuristics -- a JSON object holding key -> value pairs (a map) stored in

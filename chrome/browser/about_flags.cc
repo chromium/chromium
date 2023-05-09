@@ -6210,6 +6210,12 @@ const FeatureEntry kFeatureEntries[] = {
      commerce::flag_descriptions::kShoppingListDescription,
      kOsAndroid | kOsDesktop, FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 
+    {"local-pdp-detection",
+     commerce::flag_descriptions::kCommerceLocalPDPDetectionName,
+     commerce::flag_descriptions::kCommerceLocalPDPDetectionDescription,
+     kOsAndroid | kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kCommerceLocalPDPDetection)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-price-tracking-chip-experiment",
      commerce::flag_descriptions::kPriceTrackingChipExperimentName,

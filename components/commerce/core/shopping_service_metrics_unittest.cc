@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/shopping_service_test_base.h"
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
@@ -211,6 +212,96 @@ TEST_F(ShoppingServiceMetricsTest, TestImageAvailabilityNoRecordIfJSNotRun) {
   ASSERT_EQ(kImageUrl, cached_info->image_url.spec());
 
   histogram_tester_->ExpectTotalCount(kImageAvailabilityHistogramName, 0);
+}
+
+TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoLocal) {
+  test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
+                                  {});
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+  //  Set the type as a non-product.
+  base::Value js_result("{\"" + std::string(kOgType) + "\": \"article\"}");
+  web.SetMockJavaScriptResult(&js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue,
+                          og_response_with_image_);
+
+  DidNavigatePrimaryMainFrame(&web);
+  DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
+
+  histogram_tester_->ExpectBucketCount(
+      metrics::kPDPStateWithLocalMetaName,
+      metrics::ShoppingPDPDetectionMethod::kPDPServerOnly, 1);
+  histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
+}
+
+TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_BothServerAndLocal) {
+  test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
+                                  {});
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+  base::Value js_result("{\"" + std::string(kOgType) + "\": \"" +
+                        kOgTypeOgProduct + "\"}");
+  web.SetMockJavaScriptResult(&js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue,
+                          og_response_with_image_);
+
+  DidNavigatePrimaryMainFrame(&web);
+  DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
+
+  histogram_tester_->ExpectBucketCount(
+      metrics::kPDPStateWithLocalMetaName,
+      metrics::ShoppingPDPDetectionMethod::kPDPServerAndLocalMeta, 1);
+  histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
+}
+
+TEST_F(ShoppingServiceMetricsTest, TestLocalPDPDetection_NoServer) {
+  test_features_.InitWithFeatures({kShoppingList, kCommerceLocalPDPDetection},
+                                  {});
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+  base::Value js_result("{\"" + std::string(kOgType) + "\": \"" +
+                        kOgTypeOgProduct + "\"}");
+  web.SetMockJavaScriptResult(&js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kFalse,
+                          OptimizationMetadata());
+
+  DidNavigatePrimaryMainFrame(&web);
+  DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
+
+  histogram_tester_->ExpectBucketCount(
+      metrics::kPDPStateWithLocalMetaName,
+      metrics::ShoppingPDPDetectionMethod::kPDPLocalMetaOnly, 1);
+  histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 1);
+}
+
+TEST_F(ShoppingServiceMetricsTest,
+       TestLocalPDPDetection_NoServer_NoExperimentFlag) {
+  test_features_.InitWithFeatures({kShoppingList},
+                                  {kCommerceLocalPDPDetection});
+
+  MockWebWrapper web(GURL(kProductUrl), false);
+  base::Value js_result("{\"" + std::string(kOgType) + "\": \"" +
+                        kOgTypeOgProduct + "\"}");
+  web.SetMockJavaScriptResult(&js_result);
+
+  opt_guide_->SetResponse(GURL(kProductUrl), OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kFalse,
+                          OptimizationMetadata());
+
+  DidNavigatePrimaryMainFrame(&web);
+  DidFinishLoad(&web);
+  SimulateProductInfoJsTaskFinished();
+
+  histogram_tester_->ExpectTotalCount(metrics::kPDPStateWithLocalMetaName, 0);
 }
 
 }  // namespace commerce

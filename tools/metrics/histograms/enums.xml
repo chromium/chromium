@@ -62066,6 +62066,7 @@ from previous Chrome versions.
   <int value="-192919826" label="ViewsSimplifiedFullscreenUI:enabled"/>
   <int value="-192389983" label="NoStatePrefetch:enabled"/>
   <int value="-190723154" label="AppLaunchAutomation:enabled"/>
+  <int value="-190449995" label="CommerceLocalPDPDetection:enabled"/>
   <int value="-189478545" label="ArcCustomTabsExperiment:enabled"/>
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
   <int value="-186707397" label="HideArcMediaNotifications:enabled"/>
@@ -65642,6 +65643,7 @@ from previous Chrome versions.
       label="AutofillSuggestVirtualCardsOnIncompleteForm:disabled"/>
   <int value="1742398600"
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:enabled"/>
+  <int value="1743151811" label="CommerceLocalPDPDetection:disabled"/>
   <int value="1743603853" label="CameraAppDocScanDlc:disabled"/>
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
@@ -95163,6 +95165,17 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Lead Image"/>
   <int value="2" label="Fallback Image"/>
   <int value="3" label="Price"/>
+</enum>
+
+<enum name="ShoppingPDPDetectionMethod">
+  <summary>
+    The different ways a product details page can be detected which includes
+    options for local detection.
+  </summary>
+  <int value="0" label="Not PDP"/>
+  <int value="1" label="PDP detected by server only"/>
+  <int value="2" label="PDP detected with local meta only"/>
+  <int value="3" label="PDP detected by server and local meta"/>
 </enum>
 
 <enum name="ShoppingPDPState">

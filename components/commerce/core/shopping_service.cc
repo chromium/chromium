@@ -51,10 +51,18 @@
 
 namespace commerce {
 
-const char kOgTitle[] = "title";
+// Open graph keys.
 const char kOgImage[] = "image";
-const char kOgPriceCurrency[] = "price:currency";
 const char kOgPriceAmount[] = "price:amount";
+const char kOgPriceCurrency[] = "price:currency";
+const char kOgProductLink[] = "product_link";
+const char kOgTitle[] = "title";
+const char kOgType[] = "type";
+
+// Specific open graph values we're interested in.
+const char kOgTypeOgProduct[] = "og:product";
+const char kOgTypeProductItem[] = "product.item";
+
 const long kToMicroCurrency = 1e6;
 
 const char kImageAvailabilityHistogramName[] =
@@ -297,11 +305,57 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
     return;
 
   auto it = product_info_cache_.find(url.spec());
-  // If there was no entry or the data doesn't need javascript run, do
-  // nothing.
-  if (it != product_info_cache_.end())
-    MergeProductInfoData(it->second->product_info.get(),
-                         result.value().GetDict());
+
+  // If there was no entry, do nothing. Most likely this means the page
+  // navigated before the script finished running.
+  if (it == product_info_cache_.end()) {
+    return;
+  }
+
+  ProductInfo* cached_info = it->second->product_info.get();
+
+  bool pdp_detected_by_client = false;
+  bool pdp_detected_by_server = false;
+
+  // If there wasn't cached info but the javascript still ran, it means that
+  // the server didn't detect the page as a PDP, so we should try to determine
+  // whether it is using the meta extracted from the page. This will only
+  // happen if the |kCommerceLocalPDPDetection| flag is enabled.
+  pdp_detected_by_client = CheckIsPDPFromMetaOnly(result.value().GetDict());
+  if (cached_info) {
+    pdp_detected_by_server = true;
+
+    MergeProductInfoData(cached_info, result.value().GetDict());
+  }
+
+  metrics::RecordPDPStateWithLocalMeta(pdp_detected_by_server,
+                                       pdp_detected_by_client);
+}
+
+bool ShoppingService::CheckIsPDPFromMetaOnly(
+    const base::Value::Dict& on_page_meta_map) {
+  const std::string* type = on_page_meta_map.FindString(kOgType);
+
+  // If the og:type meta is present and the value is either og:product or
+  // product.item, we'll consider it a product regardless of the other data.
+  if (type && (*type == kOgTypeProductItem || *type == kOgTypeOgProduct)) {
+    return true;
+  }
+
+  // Similarly, if there's a product link the page is probably a product.
+  if (on_page_meta_map.FindString(kOgProductLink)) {
+    return true;
+  }
+
+  const std::string* currency = on_page_meta_map.FindString(kOgPriceCurrency);
+  const std::string* amount = on_page_meta_map.FindString(kOgPriceCurrency);
+  const std::string* image = on_page_meta_map.FindString(kOgImage);
+
+  if (currency && amount && image) {
+    return true;
+  }
+
+  return false;
 }
 
 void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {
@@ -503,6 +557,15 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   // empty data object.
   if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     std::move(callback).Run(url, absl::nullopt);
+
+    // If doing local PDP detection, we might still want to run this.
+    if (base::FeatureList::IsEnabled(kCommerceLocalPDPDetection)) {
+      UpdateProductInfoCache(url, true, nullptr);
+      if (web) {
+        ScheduleProductInfoJavascript(web);
+      }
+    }
+
     return;
   }
 

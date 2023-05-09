@@ -232,6 +232,20 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
+<histogram name="Commerce.PDPStateWithLocalMeta"
+    enum="ShoppingPDPDetectionMethod" expires_after="2024-04-15">
+  <owner>ayman@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records if and how a page has been determined to be a product details page
+    after the page has finished loading. This histogram includes pages that are
+    most likely product pages based on metadata extracted from the head section
+    of the page (via javascript). If the page navigates prior to the javascript
+    being executed, this metric is not recorded.
+  </summary>
+</histogram>
+
 <histogram
     name="Commerce.PowerBookmarks.ShoppingDataProvider.FallbackDataContent"
     enum="ShoppingDataProviderFallback" expires_after="2022-11-20">

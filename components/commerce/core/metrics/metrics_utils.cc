@@ -12,6 +12,7 @@
 namespace commerce::metrics {
 
 const char kPDPStateHistogramName[] = "Commerce.PDPStateOnNavigation";
+const char kPDPStateWithLocalMetaName[] = "Commerce.PDPStateWithLocalMeta";
 
 void RecordPDPStateToUma(ShoppingPDPState state) {
   base::UmaHistogramEnumeration(kPDPStateHistogramName, state);
@@ -56,6 +57,21 @@ void RecordPDPStateForNavigation(
   }
 
   RecordPDPStateToUma(ComputeStateForOptGuideResult(decision, metadata));
+}
+
+void RecordPDPStateWithLocalMeta(bool detected_by_server,
+                                 bool detected_by_client) {
+  ShoppingPDPDetectionMethod detection_method =
+      ShoppingPDPDetectionMethod::kNotPDP;
+  if (detected_by_server && detected_by_client) {
+    detection_method = ShoppingPDPDetectionMethod::kPDPServerAndLocalMeta;
+  } else if (detected_by_server) {
+    detection_method = ShoppingPDPDetectionMethod::kPDPServerOnly;
+  } else if (detected_by_client) {
+    detection_method = ShoppingPDPDetectionMethod::kPDPLocalMetaOnly;
+  }
+
+  base::UmaHistogramEnumeration(kPDPStateWithLocalMetaName, detection_method);
 }
 
 }  // namespace commerce::metrics

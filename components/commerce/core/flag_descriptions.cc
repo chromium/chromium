@@ -6,6 +6,11 @@
 
 namespace commerce::flag_descriptions {
 
+const char kCommerceLocalPDPDetectionName[] = "Local Product Page Detection";
+const char kCommerceLocalPDPDetectionDescription[] =
+    "Allow Chrome to attempt to detect product pages on the client, without "
+    "server support.";
+
 const char kCommercePriceTrackingName[] = "Price Tracking";
 const char kCommercePriceTrackingDescription[] =
     "Allows users to track product prices through Chrome.";

@@ -44,6 +44,12 @@ void CommerceTabHelper::DidFinishNavigation(
   }
 
   shopping_service_->DidNavigatePrimaryMainFrame(web_wrapper_.get());
+
+  // Some single-page webapps don't trigger load events for every navigation.
+  // Make sure we have the opportunity to observer that event.
+  if (web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    shopping_service_->DidFinishLoad(web_wrapper_.get());
+  }
 }
 
 void CommerceTabHelper::DidStopLoading() {

@@ -7,6 +7,9 @@
 
 namespace commerce::flag_descriptions {
 
+extern const char kCommerceLocalPDPDetectionName[];
+extern const char kCommerceLocalPDPDetectionDescription[];
+
 // Enables the user to track prices of the Shopping URLs they are visiting.
 // The first variation is to display price drops in the Tab Switching UI when
 // they are identified.
