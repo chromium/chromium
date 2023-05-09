@@ -184,14 +184,25 @@
   }
 }
 
-// Does cleanup (metrics and remove coordinator) once the add account is
-// finished.
+// Does cleanup (metrics and remove coordinator) once the add-account flow is
+// finished. If `hasAccounts == NO` and `signinResult` is successful , the
+// function immediately signs in to Chrome with the identity acquired from the
+// add-account flow after the cleanup.
 - (void)
     addAccountCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                           completionInfo:(SigninCompletionInfo*)completionInfo
-                             startSignin:(BOOL)startSignin {
-  RecordConsistencyPromoUserAction(
-      signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED);
+                             hasAccounts:(BOOL)hasAccounts {
+  if (hasAccounts) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED,
+        _accessPoint);
+  } else {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            ADD_ACCOUNT_COMPLETED_WITH_NO_DEVICE_ACCOUNT,
+        _accessPoint);
+  }
+
   [self.addAccountCoordinator stop];
   self.addAccountCoordinator = nil;
 
@@ -203,18 +214,26 @@
       systemIdentityAdded:completionInfo.identity];
   self.defaultAccountCoordinator.selectedIdentity = completionInfo.identity;
 
-  if (!startSignin) {
+  if (hasAccounts) {
     return;
   }
   [self startSignIn];
 }
 
-// Opens an AddAccountSigninCoordinator to add an account to the device. If
-// startSignin == YES, the added account will be used to sign in to Chrome
+// Opens an AddAccountSigninCoordinator to add an account to the device.
+// If `hasAccounts == NO`, the added account will be used to sign in to Chrome
 // directly after the AddAccountSigninCoordinator finishes.
-- (void)openAddAccountCoordinatorWithStartSignin:(BOOL)startSignin {
-  RecordConsistencyPromoUserAction(
-      signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED);
+- (void)openAddAccountCoordinatorWithHasAccounts:(BOOL)hasAccounts {
+  if (hasAccounts) {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_STARTED,
+        _accessPoint);
+  } else {
+    RecordConsistencyPromoUserAction(
+        signin_metrics::AccountConsistencyPromoAction::
+            ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
+        _accessPoint);
+  }
   DCHECK(!self.addAccountCoordinator);
   self.addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.navigationController
@@ -226,7 +245,7 @@
         SigninCompletionInfo* signinCompletionInfo) {
         [weakSelf addAccountCompletionWithSigninResult:signinResult
                                         completionInfo:signinCompletionInfo
-                                           startSignin:startSignin];
+                                           hasAccounts:hasAccounts];
       };
   [self.addAccountCoordinator start];
 }
@@ -286,7 +305,7 @@
 
 - (void)consistencyAccountChooserCoordinatorOpenAddAccount:
     (ConsistencyAccountChooserCoordinator*)coordinator {
-  [self openAddAccountCoordinatorWithStartSignin:NO];
+  [self openAddAccountCoordinatorWithHasAccounts:YES];
 }
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
@@ -344,7 +363,7 @@
 
 - (void)consistencyDefaultAccountCoordinatorOpenAddAccount:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  [self openAddAccountCoordinatorWithStartSignin:YES];
+  [self openAddAccountCoordinatorWithHasAccounts:NO];
 }
 
 #pragma mark - ConsistencyLayoutDelegate

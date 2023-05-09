@@ -295,7 +295,19 @@ enum class AccountConsistencyPromoAction : int {
   SUPPRESSED_ALREADY_SIGNED_IN = 18,
   // AuthenticationFlow failed to sign-in.
   SIGN_IN_FAILED = 19,
-  kMaxValue = SIGN_IN_FAILED,
+  // The promo was shown to the user, with no existing on-device account. (i.e.
+  // the no-account menu was shown)
+  SHOWN_WITH_NO_DEVICE_ACCOUNT = 20,
+  // User tapped on "Sign In…" in the no-account menu of the bottom sheet,
+  // starting an add-account flow.
+  ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT = 21,
+  // User successfully added an account after tapping "Sign In…" from the
+  // no-account menu.
+  ADD_ACCOUNT_COMPLETED_WITH_NO_DEVICE_ACCOUNT = 22,
+  // User started with the bottom sheet without a device-account, and signed in
+  // to chrome by finishing the add-account and sign-in flows.
+  SIGNED_IN_WITH_NO_DEVICE_ACCOUNT = 23,
+  kMaxValue = SIGNED_IN_WITH_NO_DEVICE_ACCOUNT,
 };
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
@@ -583,8 +595,9 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point);
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
 
 #if BUILDFLAG(IS_IOS)
-// Records |Signin.AccountConsistencyPromoAction| histogram.
-void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action);
+// Records |Signin.AccountConsistencyPromoAction.{PromoEvent}| histogram.
+void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
+                                      AccessPoint access_point);
 #endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics

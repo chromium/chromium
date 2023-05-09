@@ -161,7 +161,8 @@ using signin_metrics::PromoAction;
   if (!IsConsistencyNewAccountInterfaceEnabled() &&
       !accountManagerService->HasIdentities()) {
     RecordConsistencyPromoUserAction(
-        signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS);
+        signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
+        accessPoint);
     return nil;
   }
   AuthenticationService* authenticationService =
@@ -176,7 +177,8 @@ using signin_metrics::PromoAction;
     // Related to crbug.com/1308448.
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
-            SUPPRESSED_ALREADY_SIGNED_IN);
+            SUPPRESSED_ALREADY_SIGNED_IN,
+        accessPoint);
     return nil;
   }
   switch (authenticationService->GetServiceStatus()) {
@@ -186,7 +188,8 @@ using signin_metrics::PromoAction;
     case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
       RecordConsistencyPromoUserAction(
           signin_metrics::AccountConsistencyPromoAction::
-              SUPPRESSED_SIGNIN_NOT_ALLOWED);
+              SUPPRESSED_SIGNIN_NOT_ALLOWED,
+          accessPoint);
       return nil;
     case AuthenticationService::ServiceStatus::SigninAllowed:
       break;
@@ -198,7 +201,8 @@ using signin_metrics::PromoAction;
       currentDismissalCount >= kDefaultWebSignInDismissalCount) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
-            SUPPRESSED_CONSECUTIVE_DISMISSALS);
+            SUPPRESSED_CONSECUTIVE_DISMISSALS,
+        accessPoint);
     return nil;
   }
   return [[ConsistencyPromoSigninCoordinator alloc]

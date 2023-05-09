@@ -1225,6 +1225,19 @@ Unknown properties are collapsed to zero. -->
     The web sign-in is not shown because the user is already signed in.
   </int>
   <int value="19" label="SigninFailed">Sign-in failed.</int>
+  <int value="20" label="ShownWithNoDeviceAccount">
+    The promo was shown to a user without an existing on-device account.
+  </int>
+  <int value="21" label="AddAccountStartedWithNoDeviceAccount">
+    User has tapped |Sign In…| from the no-default-account promo, starting an
+    add-account flow.
+  </int>
+  <int value="22" label="AddAccountCompletedWithNoDeviceAccount">
+    User has added an account from a state without any on-device account.
+  </int>
+  <int value="23" label="SignedInWithNoDeviceAccount">
+    User has signed in to Chrome, from a state without any on-device account.
+  </int>
 </enum>
 
 <enum name="AccountConsistencyPromoAfterDismissal">
