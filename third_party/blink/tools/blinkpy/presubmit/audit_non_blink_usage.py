@@ -313,6 +313,9 @@ _CONFIG = [
             'base::TestMockTimeTaskRunner',
             'base::TickClock',
 
+            # State transition checking
+            'base::StateTransitions',
+
             # cc painting and raster types.
             'cc::CategorizedWorkerPool',
             'cc::InspectablePaintRecorder',

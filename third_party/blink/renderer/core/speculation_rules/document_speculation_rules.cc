@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/ranges/algorithm.h"
+#include "base/state_transitions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -31,6 +32,7 @@
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -138,6 +140,12 @@ absl::optional<Referrer> GetReferrer(SpeculationRule* rule,
 
 }  // namespace
 
+std::ostream& operator<<(
+    std::ostream& o,
+    const DocumentSpeculationRules::PendingUpdateState& s) {
+  return o << static_cast<unsigned>(s);
+}
+
 // static
 const char DocumentSpeculationRules::kSupplementName[] =
     "DocumentSpeculationRules";
@@ -207,7 +215,17 @@ void DocumentSpeculationRules::RemoveRuleSet(SpeculationRuleSet* rule_set) {
           document, EventHandlerRegistry::kPointerEvent);
     }
   }
-  QueueUpdateSpeculationCandidates();
+
+  // When a rule set is removed, we want to assure that an update including the
+  // removal is promptly processed, so that the browser can cancel any activity
+  // that is no longer needed. This makes it more predictable when the author
+  // can re-add those rules to start a new speculation (to freshen it), rather
+  // than continuing an existing one.
+  //
+  // Since style doesn't necessarily become clean promptly enough for that (a
+  // scheduled microtask is what we have in mind), we want style to be forced
+  // clean by the deadline, if necessary.
+  QueueUpdateSpeculationCandidates(/*force_style_update=*/true);
 
   probe::DidRemoveSpeculationRuleSet(*GetSupplementable(), *rule_set);
 }
@@ -319,8 +337,7 @@ void DocumentSpeculationRules::LinkGainedOrLostComputedStyle(
 }
 
 void DocumentSpeculationRules::DocumentStyleUpdated() {
-  if (pending_update_state_ ==
-      PendingUpdateState::kUpdateWithCleanStylePending) {
+  if (pending_update_state_ == PendingUpdateState::kOnNextStyleUpdate) {
     UpdateSpeculationCandidates();
   }
 }
@@ -438,43 +455,57 @@ mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
   return host_.get();
 }
 
-void DocumentSpeculationRules::QueueUpdateSpeculationCandidates() {
-  if (pending_update_state_ != PendingUpdateState::kNoUpdatePending) {
-    return;
-  }
+void DocumentSpeculationRules::QueueUpdateSpeculationCandidates(
+    bool force_style_update) {
+  const bool microtask_already_queued = IsMicrotaskQueued();
 
-  // If "selector_matches" is enabled and style isn't clean, we don't need to
-  // enqueue a microtask to run UpdateSpeculationCandidates, and instead wait
-  // for DocumentStyleUpdated to be called.
-  if (SelectorMatchesEnabled() &&
-      GetSupplementable()->NeedsLayoutTreeUpdate()) {
-    SetPendingUpdateState(PendingUpdateState::kUpdateWithCleanStylePending);
-    return;
+  bool needs_microtask = true;
+  if (force_style_update) {
+    SetPendingUpdateState(
+        PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate);
+  } else if (pending_update_state_ == PendingUpdateState::kNoUpdate) {
+    SetPendingUpdateState(PendingUpdateState::kMicrotaskQueued);
+  } else {
+    // An update of some kind is already scheduled, whether on a microtask or
+    // the next style update. That's sufficient.
+    needs_microtask = false;
   }
 
   auto* execution_context = GetSupplementable()->GetExecutionContext();
-  if (!execution_context)
-    return;
+  if (needs_microtask && !microtask_already_queued && execution_context) {
+    execution_context->GetAgent()->event_loop()->EnqueueMicrotask(WTF::BindOnce(
+        &DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask,
+        WrapWeakPersistent(this)));
+  }
+}
 
-  SetPendingUpdateState(PendingUpdateState::kUpdatePending);
-  execution_context->GetAgent()->event_loop()->EnqueueMicrotask(
-      WTF::BindOnce(&DocumentSpeculationRules::UpdateSpeculationCandidates,
-                    WrapWeakPersistent(this)));
+void DocumentSpeculationRules::UpdateSpeculationCandidatesMicrotask() {
+  DCHECK(IsMicrotaskQueued());
+
+  // Wait for style to be clean before proceeding. Or force it, if this update
+  // needs to happen promptly.
+  Document& document = *GetSupplementable();
+  if (SelectorMatchesEnabled() && document.NeedsLayoutTreeUpdate()) {
+    if (pending_update_state_ ==
+        PendingUpdateState::kMicrotaskQueuedWithForcedStyleUpdate) {
+      document.UpdateStyleAndLayoutTree();
+    } else {
+      SetPendingUpdateState(PendingUpdateState::kOnNextStyleUpdate);
+      return;
+    }
+  }
+
+  UpdateSpeculationCandidates();
 }
 
 void DocumentSpeculationRules::UpdateSpeculationCandidates() {
-  DCHECK_NE(pending_update_state_, PendingUpdateState::kNoUpdatePending);
-
-  // Style may be invalidated after we enqueue a microtask, in which case we
-  // wait for style to be clean before proceeding.
-  if (SelectorMatchesEnabled() &&
-      GetSupplementable()->NeedsLayoutTreeUpdate()) {
-    SetPendingUpdateState(PendingUpdateState::kUpdateWithCleanStylePending);
-    return;
+  DCHECK_NE(pending_update_state_, PendingUpdateState::kNoUpdate);
+  if (SelectorMatchesEnabled()) {
+    DCHECK(!GetSupplementable()->NeedsLayoutTreeUpdate());
   }
 
   // We are actually performing the update below, so mark as no update pending.
-  SetPendingUpdateState(PendingUpdateState::kNoUpdatePending);
+  SetPendingUpdateState(PendingUpdateState::kNoUpdate);
 
   mojom::blink::SpeculationHost* host = GetHost();
   auto* execution_context = GetSupplementable()->GetExecutionContext();
@@ -803,10 +834,33 @@ void DocumentSpeculationRules::UpdateSelectors() {
 
 void DocumentSpeculationRules::SetPendingUpdateState(
     PendingUpdateState new_state) {
-  PendingUpdateState old_state = pending_update_state_;
-  // This is the only invalid state transition.
-  DCHECK(!(old_state == PendingUpdateState::kUpdateWithCleanStylePending &&
-           new_state == PendingUpdateState::kUpdatePending));
+#if DCHECK_IS_ON()
+  // TODO(jbroman): This could use "using enum" once that's allowed.
+  using S = PendingUpdateState;
+  DEFINE_STATIC_LOCAL(
+      base::StateTransitions<S>, transitions,
+      ({
+          // When there is no update, we can only queue an update.
+          {S::kNoUpdate,
+           {S::kMicrotaskQueued, S::kMicrotaskQueuedWithForcedStyleUpdate}},
+          // When an update is queued, it can complete, get upgraded to forcing
+          // style, or need to wait for style (lazily).
+          {S::kMicrotaskQueued,
+           {S::kNoUpdate, S::kMicrotaskQueuedWithForcedStyleUpdate,
+            S::kOnNextStyleUpdate}},
+          // When waiting for style, this can complete, or we can realize we
+          // need to queue another microtask to force an update, including
+          // forcing style, by a predictable moment.
+          {S::kOnNextStyleUpdate,
+           {S::kNoUpdate, S::kMicrotaskQueuedWithForcedStyleUpdate}},
+          // When a microtask with forced style has been queued, all it can do
+          // is complete.
+          {S::kMicrotaskQueuedWithForcedStyleUpdate, {S::kNoUpdate}},
+      }));
+  if (pending_update_state_ != new_state) {
+    DCHECK_STATE_TRANSITION(&transitions, pending_update_state_, new_state);
+  }
+#endif
   pending_update_state_ = new_state;
 }
 

@@ -42,6 +42,7 @@ include_rules = [
     "+base/rand_util.h",
     "+base/ranges",
     "+base/sequence_checker.h",
+    "+base/state_transitions.h",
     "+base/stl_util.h",
     "+base/strings/strcat.h",
     "+base/synchronization",
