@@ -397,13 +397,21 @@ class FinchTestCase(common.BaseIsolatedScriptArgsAdapter):
       ]
 
   def process_and_upload_results(self, test_name_prefix):
+    artifacts_dir=os.path.join(os.path.dirname(self.wpt_output),
+                               self.layout_test_results_subdir)
+    if self.fs.exists(artifacts_dir):
+        self.fs.rmtree(artifacts_dir)
+    self.fs.maybe_make_directory(artifacts_dir)
+    logger.info('Recreated artifacts directory (%s)', artifacts_dir)
+
     processor = WPTResultsProcessor(
         self.host.filesystem,
         self.port,
-        artifacts_dir=os.path.join(os.path.dirname(self.wpt_output),
-                                   self.layout_test_results_subdir),
+        artifacts_dir=artifacts_dir,
         test_name_prefix=test_name_prefix)
-    processor.recreate_artifacts_dir()
+
+    processor.copy_results_viewer()
+
     with self.fs.open_text_file_for_reading(self._raw_log_path) as raw_logs:
         for event in map(json.loads, raw_logs):
             if event.get('action') != 'shutdown':
