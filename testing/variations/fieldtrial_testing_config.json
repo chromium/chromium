@@ -13572,21 +13572,6 @@
             ]
         }
     ],
-    "UseEcoQoSForBackgroundProcess": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseEcoQoSForBackgroundProcess"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseGpuSchedulerDfs": [
         {
             "platforms": [

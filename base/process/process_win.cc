@@ -34,7 +34,7 @@ namespace base {
 // efficiency of a process/thread. EcoQoS is introduced since Windows 11.
 BASE_FEATURE(kUseEcoQoSForBackgroundProcess,
              "UseEcoQoSForBackgroundProcess",
-             FEATURE_DISABLED_BY_DEFAULT);
+             FEATURE_ENABLED_BY_DEFAULT);
 
 Process::Process(ProcessHandle handle)
     : process_(handle), is_current_process_(false) {
