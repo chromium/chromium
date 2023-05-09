@@ -681,6 +681,7 @@ static_library("test_support") {
   ]
   if (is_apple) {
     sources += [ "image/image_unittest_util_apple.mm" ]
+    configs += [ "//build/config/compiler:enable_arc" ]
   }
   if (use_fuzzing_engine) {
     sources += [
