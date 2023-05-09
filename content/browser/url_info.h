@@ -42,6 +42,7 @@ namespace content {
 // SiteInfo::requires_origin_keyed_process().
 //
 // Note: it is not expected that this struct will be exposed in content/public.
+class IsolationContext;
 class UrlInfoInit;
 
 struct CONTENT_EXPORT UrlInfo {
@@ -61,8 +62,8 @@ struct CONTENT_EXPORT UrlInfo {
     // If kOriginAgentClusterByHeader is set, the following bit triggers an
     // origin-keyed process for `url`'s origin. If
     // kRequiresOriginKeyedProcessByHeader is not set and
-    // kOriginAgentClusterByHeader is,  then OAC will be logical
-    // only, i.e. implemented in the renderer via a separate AgentCluster.
+    // kOriginAgentClusterByHeader is, then OAC will be logical only, i.e.
+    // implemented in the renderer via a separate AgentCluster.
     kRequiresOriginKeyedProcessByHeader = (1 << 2),
   };
 
@@ -100,11 +101,17 @@ struct CONTENT_EXPORT UrlInfo {
   }
 
   // Returns whether this UrlInfo is requesting an origin-keyed process for
-  // for `url`'s origin due to the OriginAgentCluster header.
+  // `url`'s origin due to the OriginAgentCluster header.
   bool requests_origin_keyed_process_by_header() const {
     return (origin_isolation_request &
             OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader);
   }
+
+  // Returns whether this UrlInfo is requesting an origin-keyed process for
+  // `url`'s origin due to the OriginAgentCluster header, or whether it should
+  // try to use an origin-keyed process by default within the given `context`,
+  // in cases without an explicit header.
+  bool RequestsOriginKeyedProcess(const IsolationContext& context) const;
 
   // Returns whether this UrlInfo is requesting site isolation for its site in
   // response to the Cross-Origin-Opener-Policy header. See

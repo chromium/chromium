@@ -195,22 +195,27 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
             WebExposedIsolationInfo::CreateNonIsolated()));
   }
   // We should only set |requires_origin_keyed_process| if we are actually
-  // creating separate SiteInstances for OAC isolation. When we do same-process
-  // OAC, we don't do that at present.
+  // creating separate SiteInstances for OAC isolation. When we use site-keyed
+  // processes for OAC, we don't do that at present.
   // TODO(wjmaclean): Once SiteInstanceGroups are fully implemented, we should
-  // be able to give spOAC origins their own SiteInstance.
+  // be able to give all OAC origins their own SiteInstance.
   // https://crbug.com/1195535
   OriginAgentClusterIsolationState requested_isolation_state =
       isolation_context.default_isolation_state();
   if (!url_info.requests_default_origin_agent_cluster_isolation()) {
     // In this case, url_info is not using OAC by default, so we only need to
     // check the by_header() functions to determine the isolation state.
+    // (RequestsOriginKeyedProcess(isolation_context) only behaves differently
+    // in the non-header / by-default case.)
     requested_isolation_state =
         url_info.requests_origin_agent_cluster_by_header()
             ? OriginAgentClusterIsolationState::CreateForOriginAgentCluster(
                   url_info.requests_origin_keyed_process_by_header())
             : OriginAgentClusterIsolationState::CreateNonIsolated();
   }
+  // An origin-keyed process can only be used for origin-keyed agent clusters.
+  CHECK(!requested_isolation_state.requires_origin_keyed_process() ||
+        requested_isolation_state.is_origin_agent_cluster());
 
   bool requires_origin_keyed_process = false;
   if (SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled()) {
@@ -740,8 +745,8 @@ GURL SiteInfo::GetSiteForURLInternal(const IsolationContext& isolation_context,
     url::Origin isolated_origin;
     if (policy->GetMatchingProcessIsolatedOrigin(
             isolation_context, origin,
-            real_url_info.requests_origin_keyed_process_by_header(), site_url,
-            &isolated_origin)) {
+            real_url_info.RequestsOriginKeyedProcess(isolation_context),
+            site_url, &isolated_origin)) {
       return isolated_origin.GetURL();
     }
   } else {

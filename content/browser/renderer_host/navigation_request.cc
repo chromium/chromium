@@ -3409,9 +3409,8 @@ void NavigationRequest::CheckForIsolationOptIn(const GURL& url) {
   }
 }
 
-void NavigationRequest::AddSameProcessOriginAgentClusterStateIfNecessary(
-    const IsolationContext& isolation_context,
-    const GURL& url) {
+void NavigationRequest::AddOriginAgentClusterStateIfNecessary(
+    const IsolationContext& isolation_context) {
   // In this function we only handle opt-in requests for the cases where OAC
   // process isolation is not enabled. Otherwise it will be handled when the
   // origin's SiteInstance is created.
@@ -3437,10 +3436,14 @@ void NavigationRequest::AddSameProcessOriginAgentClusterStateIfNecessary(
   // opt-out, which would trigger a normal global walk and record that the
   // origin has already been implicitly isolated in some BrowsingInstances.
 
-  // Since either site isolation is disabled, or we are requesting an opt-out,
-  // we can't rely on a newly created SiteInstance to add the origin as
-  // OAC/not-OAC, so we do it manually here.
-  url::Origin origin = url::Origin::Create(url);
+  // TODO(crbug.com/1442972): investigate using one of NavigationRequest's
+  // Get*Origin*() functions to compute this, instead of assuming we can just
+  // convert directly from GetURL().
+  url::Origin origin = url::Origin::Create(GetURL());
+  // Since this origin is using a site-keyed process (either because
+  // origin-keyed processes are disabled, not used for this origin, or the
+  // origin has opted out), we can't rely on a newly created SiteInstance to add
+  // the origin as OAC/not-OAC, so we do it manually here.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   // If there is already a state registered for `origin` in `isolation_context`,
   // then the following call does nothing.
@@ -3510,8 +3513,11 @@ void NavigationRequest::DetermineOriginAgentClusterEndResult() {
 
   bool is_requested = IsOriginAgentClusterOptInRequested();
   bool expects_origin_agent_cluster = is_requested || IsIsolationImplied();
+  bool is_origin_keyed_process_implied =
+      IsIsolationImplied() &&
+      base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault);
   bool requires_origin_keyed_process =
-      is_requested &&
+      (is_requested || is_origin_keyed_process_implied) &&
       SiteIsolationPolicy::IsProcessIsolationForOriginAgentClusterEnabled();
 
   OriginAgentClusterIsolationState requested_isolation_state =
@@ -4422,8 +4428,7 @@ void NavigationRequest::SelectFrameHostForOnResponseStarted(
     // will be handled by the existing pathway in
     // SiteInstanceImpl::SetSiteInfoInternal().
     const IsolationContext& isolation_context = instance->GetIsolationContext();
-    AddSameProcessOriginAgentClusterStateIfNecessary(isolation_context,
-                                                     GetURL());
+    AddOriginAgentClusterStateIfNecessary(isolation_context);
 
     // TODO(wjmaclean): Once this is all working, consider combining the
     // following code into the function above.

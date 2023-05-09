@@ -983,6 +983,39 @@ class CONTENT_EXPORT NavigationRequest
     return prerender_navigation_state_->prerender_main_frame_replication_state;
   }
 
+  // Origin-keyed Agent Cluster (OAC) state needs to be tracked for origins that
+  // opt-in or opt-out, so that a given origin is treated consistently within a
+  // given BrowsingInstance. This ensures that foo.example.com will have the
+  // same OAC state in a BrowsingInstance even if multiple documents in the
+  // origin have different headers.
+  //
+  // This function ensures that this OAC state is tracked in cases where it is
+  // not handled elsewhere. For example, OAC origins that end up in origin-keyed
+  // processes already track their OAC state during SiteInstance creation.
+  // However, SiteInstance does not track origin state in the following cases,
+  // which this function handles:
+  //
+  // 1) If process isolation for OAC is disabled (e.g., on low-memory Android
+  // devices), the origin will use a site-keyed SiteInstance that does not
+  // record OAC state for the origin.
+  //
+  // 2) If the origin has no header but ends up with OAC-by-default (and
+  // kOriginKeyedProcessesByDefault is not enabled), the origin will use a
+  // site-keyed SiteInstance.
+  //
+  // 3) If the origin opts-out of OAC using a header, it will use a site-keyed
+  // SiteInstance.
+  //
+  // In all of these cases, this function updates the BrowsingInstance to keep
+  // track of the OAC state for this NavigationRequest's origin.
+  //
+  // TODO(wjmaclean): Cases 1 and 2 will not be necessary once we use
+  // origin-keyed SiteInstances within a site-keyed process, via
+  // SiteInstanceGroup. Case 3 will still be needed at that point, but might
+  // become simpler.
+  void AddOriginAgentClusterStateIfNecessary(
+      const IsolationContext& isolation_context);
+
   // Store a console message, which will be sent to the final RenderFrameHost
   // immediately after requesting the navigation to commit.
   //
@@ -1275,16 +1308,6 @@ class CONTENT_EXPORT NavigationRequest
   // Origin-Agent-Cluster header, and if so opts in the origin to be isolated.
   void CheckForIsolationOptIn(const GURL& url);
 
-  // Use to manually set Origin-keyed Agent Cluster (OAC) isolation state in
-  // the event that process-isolation isn't being used for OAC, or
-  // OAC-by-default means that we're tracking explicit opt-out requests (which
-  // by definition are same-process).
-  // TODO(wjmaclean): When we switch to using separate SiteInstances even for
-  // same-process OAC, then this function can be removed.
-  void AddSameProcessOriginAgentClusterStateIfNecessary(
-      const IsolationContext& isolation_context,
-      const GURL& url);
-
   // Returns whether this navigation request is requesting opt-in
   // origin-isolation.
   bool IsOriginAgentClusterOptInRequested();
@@ -1294,8 +1317,13 @@ class CONTENT_EXPORT NavigationRequest
   // AreOriginAgentClustersEnabledByDefault() is false.
   bool IsOriginAgentClusterOptOutRequested();
 
-  // Returns whether this navigation request should use an origin-keyed
-  // agent cluster (but not an origin-keyed process).
+  // Returns whether this NavigationRequest should use an origin-keyed agent
+  // cluster, specifically in cases where no Origin-Agent-Cluster header has
+  // been observed, either because no response has yet been received or because
+  // it had no such header. (Returns false if the header is observed.)
+  //
+  // Note that an origin-keyed process may be used if this returns true, if
+  // kOriginKeyedProcessesByDefault is enabled.
   bool IsIsolationImplied();
 
   // The Origin-Agent-Cluster end result is determined early in the lifecycle of

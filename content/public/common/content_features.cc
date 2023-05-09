@@ -919,6 +919,14 @@ BASE_FEATURE(kProactivelySwapBrowsingInstance,
              "ProactivelySwapBrowsingInstance",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables origin-keyed processes by default, unless origins opt out using
+// Origin-Agent-Cluster: ?0. This feature only takes effect if the Blink feature
+// OriginAgentClusterDefaultEnable is enabled, since origin-keyed processes
+// require origin-agent-clusters.
+BASE_FEATURE(kOriginKeyedProcessesByDefault,
+             "OriginKeyedProcessesByDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Fires the `pushsubscriptionchange` event defined here:
 // https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
 // for subscription refreshes, revoked permissions or subscription losses

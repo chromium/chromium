@@ -1567,6 +1567,26 @@ RenderFrameHostManager::GetFrameHostForNavigation(
     navigation_rfh->web_ui()->WebUIRenderFrameCreated(navigation_rfh);
   }
 
+  // The following call is here to make sure that explicit opt-out requests,
+  // made while kOriginKeyedProcessByDefault is enabled, record the opt-out
+  // status before CanAccessDataForOrigin is called below. It allows
+  // CanAccessDataForOrigin to start by assuming default isolation (as stored in
+  // the associated IsolationContext), knowing that it will be changed (during
+  // the construction of the expected ProcessLock) to being explicit opt-out due
+  // to the origin being tracked. The change occurs when we create a SiteInfo
+  // for the ProcessLock and DetermineOriginAgentClusterIsolation is called.
+  //
+  // A similar call to the one below is made in
+  // NavigationRequest::SelectFrameHostForOnResponseStarted() to handle
+  // recording opt-outs when kOriginAgentClusterDefault is enabled, although in
+  // that case process isolation isn't involved, and so the following call to
+  // CanAccessDataForOrigin isn't a problem.
+  // TODO(https://crbug.com/931895): Remove the following block (and the
+  // comments above) when the ProcessLock check below is removed.
+  const IsolationContext& isolation_context =
+      navigation_rfh->GetSiteInstance()->GetIsolationContext();
+  request->AddOriginAgentClusterStateIfNecessary(isolation_context);
+
   // If this function picked an incompatible process for the URL, except for
   // allowed cases such as navigating to an error page reusing the current
   // process, capture a crash dump to diagnose why it is occurring.

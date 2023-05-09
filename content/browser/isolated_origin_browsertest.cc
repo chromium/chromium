@@ -354,6 +354,27 @@ class OriginIsolationDefaultOACTest : public OriginIsolationOptInHeaderTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+// A set of tests that enable process-isolated OriginAgentCluster-by-default.
+class OriginKeyedProcessByDefaultTest : public OriginIsolationOptInHeaderTest {
+ public:
+  OriginKeyedProcessByDefaultTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kOriginAgentClusterDefaultEnabled,
+         features::kOriginKeyedProcessesByDefault},
+        {});
+  }
+
+  ~OriginKeyedProcessByDefaultTest() override = default;
+
+  OriginKeyedProcessByDefaultTest(const OriginKeyedProcessByDefaultTest&) =
+      delete;
+  OriginKeyedProcessByDefaultTest& operator=(OriginKeyedProcessByDefaultTest&) =
+      delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 class OriginIsolationPrerenderOptInHeaderTest
     : public OriginIsolationOptInHeaderTest {
  public:
@@ -677,6 +698,115 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, Basic) {
           static_cast<int>(NavigationRequest::OriginAgentClusterEndResult::
                                kRequestedAndOriginKeyed),
           1)));
+}
+
+// A simple test that, when OAC-by-default is enabled with process-isolation, an
+// origin that receives default OAC is put in an origin-keyed process.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
+                       DefaultIsOriginKeyedProcess) {
+  GURL test_url(https_server()->GetURL("foo.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  scoped_refptr<SiteInstanceImpl> site_instance =
+      root->current_frame_host()->GetSiteInstance();
+  OriginAgentClusterIsolationState isolation_state =
+      DetermineOriginAgentClusterIsolation(site_instance.get(), test_url);
+  // Even though this request has no OriginAgentCluster header, it should get
+  // an origin-keyed process by default.
+  EXPECT_TRUE(isolation_state.is_origin_agent_cluster());
+  EXPECT_TRUE(isolation_state.requires_origin_keyed_process());
+  EXPECT_TRUE(site_instance->GetSiteInfo().requires_origin_keyed_process());
+  // TODO(wjmaclean): Enable the following in the next CL when we plumb through
+  // the flag to avoid tracking default-isolated SiteInstance origins.
+  //  EXPECT_TRUE(site_instance->GetSiteInfo()
+  //                  .requires_origin_keyed_process_by_default());
+}
+
+// The same as for DefaultOptInIsIsolated, but testing on a subframe.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
+                       SubframeDefaultIsOriginKeyedProcess) {
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+
+  // Even though this request has no OriginAgentCluster header, it should get
+  // an origin-keyed process by default.
+  SetHeaderValue("");
+  GURL default_isolated_url(
+      https_server()->GetURL("isolated.foo.com", "/title1.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, default_isolated_url));
+
+  scoped_refptr<SiteInstanceImpl> root_site_instance =
+      root->current_frame_host()->GetSiteInstance();
+  scoped_refptr<SiteInstanceImpl> child_site_instance =
+      child_frame_node->current_frame_host()->GetSiteInstance();
+  OriginAgentClusterIsolationState child_isolation_state =
+      DetermineOriginAgentClusterIsolation(child_site_instance.get(),
+                                           default_isolated_url);
+  EXPECT_NE(child_site_instance, root_site_instance);
+  EXPECT_NE(child_site_instance->GetProcess(),
+            root_site_instance->GetProcess());
+  EXPECT_TRUE(child_isolation_state.is_origin_agent_cluster());
+  EXPECT_TRUE(child_isolation_state.requires_origin_keyed_process());
+  EXPECT_TRUE(
+      child_site_instance->GetSiteInfo().requires_origin_keyed_process());
+  // TODO(wjmaclean): Enable the following in the next CL when we plumb through
+  // the flag to avoid tracking default-isolated SiteInstance origins.
+  //  EXPECT_TRUE(child_site_instance->GetSiteInfo()
+  //                  .requires_origin_keyed_process_by_default());
+}
+
+// Process-isolated OAC-by-default should not process isolate a navigation that
+// explicitly opts-out. This test is important, in part, for making sure all the
+// CanAccessDataForOrigin checks encountered during the navigation pass.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultTest,
+                       ExplicitOptOutRespected) {
+  GURL test_url(https_server()->GetURL("foo.com",
+                                       "/cross_site_iframe_factory.html?"
+                                       "foo.com(foo.com)"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  FrameTreeNode* child_frame_node = root->child_at(0);
+
+  // This request explicitly opts-out of OAC, and should not get process
+  // isolation. Note the use of the "isolate_origin" relative path below to
+  // force processing of the (non-empty) OAC header.
+  SetHeaderValue("?0");
+  GURL default_not_isolated_url(
+      https_server()->GetURL("not-isolated.foo.com", "/isolate_origin"));
+  EXPECT_TRUE(
+      NavigateToURLFromRenderer(child_frame_node, default_not_isolated_url));
+
+  // TODO(wjmaclean): At this point in the test we would like to be able to test
+  // expectations saying that the child frame's isolation state is (i)
+  // is_origin_agent_cluster() = false, (ii) requires_origin_keyed_process() =
+  // false, and (iii) requires_origin_keyed_process() = false.
+  // However, due to the fact that we haven't yet excluded
+  // OriginKeyedProcessByDefault origins from having their isolation state
+  // tracked, the default-isolation of the speculative RFH means that we didn't
+  // get the opt-out we asked for, because it opted-in the origin before we
+  // ever saw the header.
+  //
+  // In the next CL, when we stop tracking OriginKeyedProcessByDefault origins,
+  // change the EXPECT_TRUE calls to EXPECT_FALSE.
+  auto* site_instance =
+      child_frame_node->current_frame_host()->GetSiteInstance();
+  OriginAgentClusterIsolationState isolation_state =
+      DetermineOriginAgentClusterIsolation(site_instance,
+                                           default_not_isolated_url);
+  EXPECT_TRUE(isolation_state.is_origin_agent_cluster());
+  EXPECT_TRUE(isolation_state.requires_origin_keyed_process());
+  EXPECT_TRUE(site_instance->GetSiteInfo().requires_origin_keyed_process());
+  // TODO(wjmaclean): Enable the following in the next CL when we stop tracking
+  // OriginKeyedProcessByDefault origins.
+  // EXPECT_FALSE(
+  //   site_instance->GetSiteInfo().requires_origin_keyed_process_by_default());
 }
 
 IN_PROC_BROWSER_TEST_F(OriginIsolationDefaultOACTest, Basic) {
