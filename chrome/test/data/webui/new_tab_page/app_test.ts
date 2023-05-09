@@ -696,12 +696,12 @@ suite('NewTabPageAppTest', () => {
         {
           descriptor:
               new ModuleDescriptor('foo', () => Promise.resolve(fooElement)),
-          element: fooElement,
+          elements: [fooElement],
         },
         {
           descriptor:
               new ModuleDescriptor('bar', () => Promise.resolve(barElement)),
-          element: barElement,
+          elements: [barElement],
         },
       ]);
       await counterfactualLoad();

@@ -102,7 +102,13 @@ export class ModuleRegistry {
 
     const elements =
         await Promise.all(descriptors.map(d => d.initialize(timeout)));
-    return elements.map((e, i) => ({element: e, descriptor: descriptors[i]}))
-               .filter(m => !!m.element) as Module[];
+    return elements.map((e, i) => ({elements: e, descriptor: descriptors[i]}))
+        .filter(m => !!m.elements)
+        .map(m => ({
+                    elements: Array.isArray(m.elements) ? m.elements :
+                                                          [m.elements],
+                    descriptor: m.descriptor,
+                  }) as Module)
+        .filter(m => m.elements.length !== 0);
   }
 }

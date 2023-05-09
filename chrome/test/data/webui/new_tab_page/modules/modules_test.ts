@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {Module, ModuleDescriptor, ModuleDescriptorV2, ModuleRegistry, ModulesElement} from 'chrome://new-tab-page/lazy_load.js';
+import {Module, ModuleDescriptor, ModuleRegistry, ModulesElement} from 'chrome://new-tab-page/lazy_load.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote, PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -61,11 +61,11 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: createElement(),
+          elements: [createElement()],
         },
         {
           descriptor: barDescriptor,
-          element: createElement(),
+          elements: [createElement()],
         },
       ]);
       callbackRouterRemote.setDisabledModules(
@@ -100,6 +100,40 @@ suite('NewTabPageModulesModulesTest', () => {
     });
   });
 
+  test('single module multiple element instances', async () => {
+    const fooDescriptor = new ModuleDescriptor('foo', initNullModule);
+    const barDescriptor = new ModuleDescriptor('bar', initNullModule);
+    handler.setResultFor('getModulesIdNames', {
+      data: [
+        {id: fooDescriptor.id, name: fooDescriptor.id},
+        {id: barDescriptor.id, name: barDescriptor.id},
+      ],
+    });
+
+    const modulesElement = await createModulesElement([
+      {
+        descriptor: fooDescriptor,
+        elements: Array(3).fill(0).map(_ => createElement()),
+      },
+      {
+        descriptor: barDescriptor,
+        elements: [createElement()],
+      },
+    ]);
+    callbackRouterRemote.setDisabledModules(false, []);
+    await callbackRouterRemote.$.flushForTesting();
+
+    const moduleContainers =
+        modulesElement.shadowRoot!.querySelectorAll('.module-container');
+    assertEquals(4, moduleContainers.length);
+    const histogram = 'NewTabPage.Modules.EnabledOnNTPLoad';
+    assertEquals(1, metrics.count(`${histogram}.foo`, true));
+    assertEquals(1, metrics.count(`${histogram}.bar`, true));
+    assertEquals(1, metrics.count('NewTabPage.Modules.VisibleOnNTPLoad', true));
+    assertEquals(1, handler.getCallCount('updateDisabledModules'));
+    assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
+  });
+
   suite('modules first run experience', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
@@ -125,11 +159,11 @@ suite('NewTabPageModulesModulesTest', () => {
         const modulesElement = await createModulesElement([
           {
             descriptor: fooDescriptor,
-            element: createElement(),
+            elements: [createElement()],
           },
           {
             descriptor: barDescriptor,
-            element: createElement(),
+            elements: [createElement()],
           },
         ]);
         callbackRouterRemote.setDisabledModules(
@@ -175,7 +209,7 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: createElement(),
+          elements: [createElement()],
         },
       ]);
       callbackRouterRemote.setModulesFreVisibility(true);
@@ -204,11 +238,11 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: createElement(),
+          elements: [createElement()],
         },
         {
           descriptor: barDescriptor,
-          element: createElement(),
+          elements: [createElement()],
         },
       ]);
       callbackRouterRemote.setModulesFreVisibility(true);
@@ -260,7 +294,7 @@ suite('NewTabPageModulesModulesTest', () => {
     const modulesElement = await createModulesElement([
       {
         descriptor: fooDescriptor,
-        element: createElement(),
+        elements: [createElement()],
       },
     ]);
     callbackRouterRemote.setDisabledModules(false, []);
@@ -313,7 +347,7 @@ suite('NewTabPageModulesModulesTest', () => {
     const modulesElement = await createModulesElement([
       {
         descriptor: fooDescriptor,
-        element: createElement(),
+        elements: [createElement()],
       },
     ]);
     callbackRouterRemote.setDisabledModules(false, []);
@@ -380,7 +414,7 @@ suite('NewTabPageModulesModulesTest', () => {
     // Act.
     const modulesElement = await createModulesElement([{
       descriptor: fooDescriptor,
-      element: createElement(),
+      elements: [createElement()],
     }]);
     callbackRouterRemote.setDisabledModules(false, []);
     await callbackRouterRemote.$.flushForTesting();
@@ -470,11 +504,11 @@ suite('NewTabPageModulesModulesTest', () => {
     await createModulesElement([
       {
         descriptor: fooDescriptor,
-        element: createElement(),
+        elements: [createElement()],
       },
       {
         descriptor: barDescriptor,
-        element: createElement(),
+        elements: [createElement()],
       },
     ]);
 
@@ -497,11 +531,11 @@ suite('NewTabPageModulesModulesTest', () => {
     await createModulesElement([
       {
         descriptor: fooDescriptor,
-        element: createElement(),
+        elements: [createElement()],
       },
       {
         descriptor: barDescriptor,
-        element: createElement(),
+        elements: [createElement()],
       },
     ]);
 
@@ -528,11 +562,11 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor =
-          new ModuleDescriptorV2('foo', async () => createElement());
+          new ModuleDescriptor('foo', async () => createElement());
       const barDescriptor =
-          new ModuleDescriptorV2('bar', async () => createElement());
+          new ModuleDescriptor('bar', async () => createElement());
       const fooBarDescriptor =
-          new ModuleDescriptorV2('foo bar', async () => createElement());
+          new ModuleDescriptor('foo bar', async () => createElement());
 
       handler.setResultFor('getModulesIdNames', {
         data: [
@@ -544,15 +578,15 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: moduleArray[0]!,
+          elements: [moduleArray[0]!],
         },
         {
           descriptor: barDescriptor,
-          element: moduleArray[1]!,
+          elements: [moduleArray[1]!],
         },
         {
           descriptor: fooBarDescriptor,
-          element: moduleArray[2]!,
+          elements: [moduleArray[2]!],
         },
       ]);
       callbackRouterRemote.setDisabledModules(false, []);
@@ -702,11 +736,11 @@ suite('NewTabPageModulesModulesTest', () => {
         moduleArray.push(module);
       }
       const fooDescriptor =
-          new ModuleDescriptorV2('foo', async () => createElement());
+          new ModuleDescriptor('foo', async () => createElement());
       const barDescriptor =
-          new ModuleDescriptorV2('bar', async () => createElement());
+          new ModuleDescriptor('bar', async () => createElement());
       const fooBarDescriptor =
-          new ModuleDescriptorV2('foo bar', async () => createElement());
+          new ModuleDescriptor('foo bar', async () => createElement());
 
       handler.setResultFor('getModulesIdNames', {
         data: [
@@ -718,15 +752,15 @@ suite('NewTabPageModulesModulesTest', () => {
       const modulesElement = await createModulesElement([
         {
           descriptor: fooDescriptor,
-          element: moduleArray[0]!,
+          elements: [moduleArray[0]!],
         },
         {
           descriptor: barDescriptor,
-          element: moduleArray[1]!,
+          elements: [moduleArray[1]!],
         },
         {
           descriptor: fooBarDescriptor,
-          element: moduleArray[2]!,
+          elements: [moduleArray[2]!],
         },
       ]);
       callbackRouterRemote.setDisabledModules(false, []);

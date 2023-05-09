@@ -10,7 +10,7 @@ import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 import {I18nMixin} from '../../i18n_setup.js';
 import {Recipe} from '../../recipes.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
-import {ModuleDescriptorV2} from '../module_descriptor.js';
+import {ModuleDescriptor} from '../module_descriptor.js';
 import {RecipesHandlerProxy} from '../recipes/recipes_handler_proxy.js';
 
 import {getTemplate} from './module.html.js';
@@ -54,5 +54,5 @@ async function createModule(): Promise<HTMLElement> {
   return element;
 }
 
-export const recipeTasksDescriptor: ModuleDescriptorV2 = new ModuleDescriptorV2(
+export const recipeTasksDescriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id=*/ 'recipe_tasks', createModule);

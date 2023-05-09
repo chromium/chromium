@@ -138,7 +138,6 @@ export class ModulesElement extends PolymerElement {
   private modulesShownToUser: boolean;
   private modulesVisibilityDetermined_: boolean;
   private removedModuleData_: {message: string, undo?: () => void}|null;
-
   private setDisabledModulesListenerId_: number|null = null;
   private setModulesFreVisibilityListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
@@ -182,12 +181,11 @@ export class ModulesElement extends PolymerElement {
   private appendModuleContainers_(moduleContainers: HTMLElement[]) {
     this.$.modules.innerHTML = window.trustedTypes!.emptyHTML;
     this.modulesShownToUser = false;
-    moduleContainers.forEach((moduleContainer: HTMLElement, _: number) => {
-      const moduleContainerParent = this.$.modules;
+    moduleContainers.forEach((moduleContainer: HTMLElement) => {
       if (!moduleContainer.hidden) {
         this.modulesShownToUser = !moduleContainer.hidden;
       }
-      moduleContainerParent.appendChild(moduleContainer);
+      this.$.modules.appendChild(moduleContainer);
     });
   }
 
@@ -202,34 +200,50 @@ export class ModulesElement extends PolymerElement {
     if (modules) {
       NewTabPageProxy.getInstance().handler.onModulesLoadedWithData(
           modules.map(module => module.descriptor.id));
-      const moduleContainers = modules.map(module => {
-        const moduleWrapper = new ModuleWrapperElement();
-        moduleWrapper.module = module;
-        if (this.dragEnabled_) {
-          moduleWrapper.addEventListener(
-              'mousedown', e => this.onDragStart_(e));
-        }
-        moduleWrapper.addEventListener(
-            'dismiss-module', e => this.onDismissModule_(e));
-        moduleWrapper.addEventListener(
-            'disable-module', e => this.onDisableModule_(e));
-        moduleWrapper.addEventListener('detect-impression', () => {
-          if (!this.moduleImpressionDetected_) {
-            // Executed the first time a module impression is detected.
-            NewTabPageProxy.getInstance().handler.incrementModulesShownCount();
-            if (this.modulesFreShown) {
-              chrome.metricsPrivate.recordBoolean(
-                  `NewTabPage.Modules.FreImpression`, this.modulesFreShown);
-            }
-          }
-          this.moduleImpressionDetected_ = true;
-        });
-        const moduleContainer = this.ownerDocument.createElement('div');
-        moduleContainer.classList.add('module-container');
-        moduleContainer.hidden = this.moduleDisabled_(module.descriptor.id);
-        moduleContainer.appendChild(moduleWrapper);
-        return moduleContainer;
-      });
+      const moduleContainers =
+          modules
+              .map(module => {
+                return module.elements.map(element => {
+                  const moduleWrapper = new ModuleWrapperElement();
+                  moduleWrapper.module = {
+                    element,
+                    descriptor: module.descriptor,
+                  };
+                  if (this.dragEnabled_) {
+                    moduleWrapper.addEventListener(
+                        'mousedown', e => this.onDragStart_(e));
+                  }
+                  if (!loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+                    moduleWrapper.addEventListener(
+                        'dismiss-module', e => this.onDismissModule_(e));
+                  }
+                  moduleWrapper.addEventListener(
+                      'disable-module', e => this.onDisableModule_(e));
+                  moduleWrapper.addEventListener('detect-impression', () => {
+                    if (!this.moduleImpressionDetected_) {
+                      // Executed the first time a module impression is
+                      // detected.
+                      NewTabPageProxy.getInstance()
+                          .handler.incrementModulesShownCount();
+                      if (this.modulesFreShown) {
+                        chrome.metricsPrivate.recordBoolean(
+                            `NewTabPage.Modules.FreImpression`,
+                            this.modulesFreShown);
+                      }
+                    }
+                    this.moduleImpressionDetected_ = true;
+                  });
+
+                  const moduleContainer =
+                      this.ownerDocument.createElement('div');
+                  moduleContainer.classList.add('module-container');
+                  moduleContainer.hidden =
+                      this.moduleDisabled_(module.descriptor.id);
+                  moduleContainer.appendChild(moduleWrapper);
+                  return moduleContainer;
+                });
+              })
+              .flat();
 
       chrome.metricsPrivate.recordSmallCount(
           'NewTabPage.Modules.LoadedModulesCount', modules.length);
