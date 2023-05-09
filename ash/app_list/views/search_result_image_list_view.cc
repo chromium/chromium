@@ -61,7 +61,7 @@ SearchResultImageListView::SearchResultImageListView(
   for (size_t i = 0;
        i < SharedAppListConfig::instance().image_search_max_results(); ++i) {
     image_views_.emplace_back(new SearchResultImageView(
-        "dummy id" + base::NumberToString(++dummy_search_result_id)));
+        this, "dummy id" + base::NumberToString(++dummy_search_result_id)));
     image_views_.back()->SetPaintToLayer();
     image_views_.back()->layer()->SetFillsBoundsOpaquely(false);
     image_views_.back()->SetVisible(true);
@@ -70,6 +70,21 @@ SearchResultImageListView::SearchResultImageListView(
 }
 
 SearchResultImageListView::~SearchResultImageListView() = default;
+
+void SearchResultImageListView::SearchResultActivated(
+    SearchResultImageView* view,
+    int event_flags,
+    bool by_button_press) {
+  if (!view_delegate() || !view || !view->result()) {
+    return;
+  }
+
+  view_delegate()->OpenSearchResult(
+      view->result()->id(), event_flags,
+      AppListLaunchedFrom::kLaunchedFromSearchBox,
+      AppListLaunchType::kSearchResult, -1 /* suggestion_index */,
+      !by_button_press && view->is_default_result() /* launch_as_default */);
+}
 
 SearchResultImageView* SearchResultImageListView::GetResultViewAt(
     size_t index) {

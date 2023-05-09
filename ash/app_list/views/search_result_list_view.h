@@ -152,8 +152,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   bool FilterSearchResultsByCategory(const SearchResult::Category& category,
                                      const SearchResult& result) const;
 
-  raw_ptr<AppListViewDelegate, ExperimentalAsh> view_delegate_;  // Not owned.
-
   // Whether the result updates will be animated. If set,
   // `ScheduleResultAnimations()` is expected to be called whenever list of
   // results shown in the list changes.

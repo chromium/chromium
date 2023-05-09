@@ -18,17 +18,19 @@ class ImageButton;
 }  // namespace views
 
 namespace ash {
-class SearchResult;
+class SearchResultImageListView;
 
 // Displays a search result in the form of an unlabeled image.
 class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
  public:
   METADATA_HEADER(SearchResultImageView);
-  // TODO(crbug.com/1352636) stop mocking results
-  explicit SearchResultImageView(std::string dummy_result_id);
+  explicit SearchResultImageView(SearchResultImageListView* list_view,
+                                 std::string dummy_result_id);
   SearchResultImageView(const SearchResultImageView&) = delete;
   SearchResultImageView& operator=(const SearchResultImageView&) = delete;
   ~SearchResultImageView() override;
+
+  void OnImageViewPressed(const ui::Event& event);
 
   // Overridden from views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
@@ -38,15 +40,17 @@ class ASH_EXPORT SearchResultImageView : public SearchResultBaseView {
   // SearchResultBaseView overrides:
   void OnResultChanged() override;
 
+  SearchResultImageListView* list_view() { return list_view_; }
+
  private:
   // SearchResultObserver overrides:
   void OnMetadataChanged() override;
 
-  raw_ptr<views::ImageButton> result_image_ =
-      nullptr;  // Owned by views hierarchy.
+  // Owned by views hierarchy.
+  raw_ptr<views::ImageButton> result_image_ = nullptr;
 
-  // TODO(crbug.com/1352636) remove once backend service is available.
-  std::unique_ptr<SearchResult> dummy_result_ptr;
+  // Parent list view. Owned by views hierarchy.
+  raw_ptr<SearchResultImageListView, ExperimentalAsh> const list_view_;
 };
 
 }  // namespace ash

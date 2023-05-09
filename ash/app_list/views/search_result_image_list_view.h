@@ -31,6 +31,11 @@ class ASH_EXPORT SearchResultImageListView : public SearchResultContainerView {
       delete;
   ~SearchResultImageListView() override;
 
+  // Called when the search result is activated.
+  void SearchResultActivated(SearchResultImageView* view,
+                             int event_flags,
+                             bool by_button_press);
+
   // Overridden from SearchResultContainerView:
   SearchResultImageView* GetResultViewAt(size_t index) override;
   bool HasAnimatingChildView() override;

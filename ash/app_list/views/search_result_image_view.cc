@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/app_list/model/search/search_result.h"
+#include "ash/app_list/views/search_result_image_list_view.h"
 #include "ash/app_list/views/search_result_image_view_delegate.h"
 #include "ash/style/ash_color_id.h"
 #include "components/vector_icons/vector_icons.h"
@@ -53,15 +54,26 @@ class ImagePreviewView : public views::ImageButton {
 
 }  // namespace
 
-SearchResultImageView::SearchResultImageView(std::string dummy_result_id) {
+SearchResultImageView::SearchResultImageView(
+    SearchResultImageListView* list_view,
+    std::string dummy_result_id)
+    : list_view_(list_view) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   result_image_ = AddChildView(std::make_unique<ImagePreviewView>());
   result_image_->SetCanProcessEventsWithinSubtree(false);
   result_image_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kTopBottomMargin, kLeftRightMargin, kTopBottomMargin, kLeftRightMargin)));
 
+  SetCallback(base::BindRepeating(&SearchResultImageView::OnImageViewPressed,
+                                  base::Unretained(this)));
+
   set_context_menu_controller(SearchResultImageViewDelegate::Get());
   set_drag_controller(SearchResultImageViewDelegate::Get());
+}
+
+void SearchResultImageView::OnImageViewPressed(const ui::Event& event) {
+  list_view_->SearchResultActivated(this, event.flags(),
+                                    true /* by_button_press */);
 }
 
 void SearchResultImageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {

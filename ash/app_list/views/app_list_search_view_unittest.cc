@@ -348,6 +348,52 @@ TEST_P(SearchResultImageViewTest, ShowContextMenu) {
   EXPECT_TRUE(SearchResultImageViewDelegate::Get()->HasActiveContextMenu());
 }
 
+TEST_P(SearchResultImageViewTest, ActivateImageResult) {
+  auto* test_helper = GetAppListTestHelper();
+  test_helper->ShowAppList();
+  const int init_id = 1;
+  const int activate_image_idx = 2;
+
+  // Press a key to start a search.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  SearchModel::SearchResults* results = test_helper->GetSearchResults();
+  SetUpImageSearchResults(
+      results, init_id,
+      SharedAppListConfig::instance().image_search_max_results());
+
+  // Check result container visibility.
+  std::vector<SearchResultContainerView*> result_containers =
+      GetSearchView()->result_container_views_for_test();
+  ASSERT_EQ(static_cast<int>(result_containers.size()), kResultContainersCount);
+  for (auto* container : result_containers) {
+    EXPECT_TRUE(container->RunScheduledUpdateForTest());
+  }
+
+  // SearchResultImageListView container should be visible.
+  ASSERT_TRUE(
+      views::IsViewClass<SearchResultImageListView>(result_containers[2]));
+  EXPECT_TRUE(result_containers[2]->GetVisible());
+  auto* search_result_image_view =
+      result_containers[2]->GetResultViewAt(activate_image_idx);
+  ASSERT_TRUE(search_result_image_view->GetVisible());
+  ASSERT_TRUE(
+      views::IsViewClass<SearchResultImageView>(search_result_image_view));
+
+  // Click/Tap on `search_result_image_view`.
+  search_result_image_view->GetWidget()->LayoutRootViewIfNecessary();
+  if (tablet_mode()) {
+    GestureTapOn(search_result_image_view);
+  } else {
+    LeftClickOn(search_result_image_view);
+  }
+
+  // The image search result should be opened.
+  EXPECT_EQ(
+      base::NumberToString(init_id + activate_image_idx),
+      GetAppListTestHelper()->app_list_client()->last_opened_search_result());
+}
+
 TEST_P(SearchViewClamshellAndTabletTest, AnimateSearchResultView) {
   // Enable animations.
   ui::ScopedAnimationDurationScaleMode duration(

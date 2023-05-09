@@ -96,7 +96,6 @@ SearchResultListView::SearchResultListView(
     bool animates_result_updates,
     absl::optional<size_t> productivity_launcher_index)
     : SearchResultContainerView(view_delegate),
-      view_delegate_(view_delegate),
       animates_result_updates_(animates_result_updates),
       results_container_(new views::View),
       productivity_launcher_index_(productivity_launcher_index),
@@ -133,7 +132,7 @@ SearchResultListView::SearchResultListView(
 
   for (size_t i = 0; i < result_count; ++i) {
     search_result_views_.emplace_back(new SearchResultView(
-        this, view_delegate_, dialog_controller, search_result_view_type_));
+        this, view_delegate, dialog_controller, search_result_view_type_));
     search_result_views_.back()->set_index_in_container(i);
     search_result_views_.back()->SetPaintToLayer();
     search_result_views_.back()->layer()->SetFillsBoundsOpaquely(false);
@@ -431,7 +430,7 @@ int SearchResultListView::DoUpdate() {
   std::vector<SearchResult*> displayed_results = UpdateResultViews();
   NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
 
-  auto* notifier = view_delegate_->GetNotifier();
+  auto* notifier = view_delegate()->GetNotifier();
 
   // TODO(crbug/1216097): replace metrics with something more meaningful.
   if (notifier) {
@@ -470,8 +469,9 @@ int SearchResultListView::GetHeightForWidth(int w) const {
 void SearchResultListView::SearchResultActivated(SearchResultView* view,
                                                  int event_flags,
                                                  bool by_button_press) {
-  if (!view_delegate_ || !view || !view->result())
+  if (!view_delegate() || !view || !view->result()) {
     return;
+  }
 
   auto* result = view->result();
 
@@ -479,7 +479,7 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
       IsAppListSearchResultAnApp(result->result_type())
           ? AppListLaunchType::kAppSearchResult
           : AppListLaunchType::kSearchResult;
-  view_delegate_->OpenSearchResult(
+  view_delegate()->OpenSearchResult(
       result->id(), event_flags, AppListLaunchedFrom::kLaunchedFromSearchBox,
       launch_type, -1 /* suggestion_index */,
       !by_button_press && view->is_default_result() /* launch_as_default */);
@@ -488,12 +488,12 @@ void SearchResultListView::SearchResultActivated(SearchResultView* view,
 void SearchResultListView::SearchResultActionActivated(
     SearchResultView* view,
     SearchResultActionType action) {
-  if (view_delegate_ && view->result()) {
+  if (view_delegate() && view->result()) {
     switch (action) {
       case SearchResultActionType::kRemove: {
         const std::string result_id = view->result()->id();
         removed_results_.insert(result_id);
-        view_delegate_->InvokeSearchResultAction(result_id, action);
+        view_delegate()->InvokeSearchResultAction(result_id, action);
         Update();
         break;
       }
