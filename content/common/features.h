@@ -14,12 +14,6 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
-#if BUILDFLAG(IS_ANDROID)
-// Enables ADPF (Android Dynamic Performance Framework) for the browser IO
-// thread.
-BASE_DECLARE_FEATURE(kADPFForBrowserIOThread);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // When enabled, RenderFrameHostManager::CommitPending will also update the
 // visibility of all child views, not just that of the main frame.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kNavigationUpdatesChildViewsVisibility);

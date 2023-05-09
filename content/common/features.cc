@@ -11,12 +11,6 @@ namespace content {
 
 // Please keep features in alphabetical order.
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kADPFForBrowserIOThread,
-             "kADPFForBrowserIOThread",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kNavigationUpdatesChildViewsVisibility,
              "NavigationUpdatesChildViewsVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
