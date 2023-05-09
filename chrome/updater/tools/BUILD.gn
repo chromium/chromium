@@ -46,8 +46,8 @@ copy("certificate_tag") {
 }
 
 if (is_mac) {
-  executable("keystone_ticketstore_reader") {
-    sources = [ "keystone_ticketstore_reader.mm" ]
+  executable("keystone_ticketstore_tool") {
+    sources = [ "keystone_ticketstore_tool.mm" ]
     deps = [
       "//base",
       "//chrome/updater:ks_ticket",

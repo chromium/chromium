@@ -16,9 +16,30 @@ class FilePath;
 
 @interface KSPathExistenceChecker : NSObject <NSSecureCoding>
 @property(nonnull, readonly) NSString* path;
+
+- (nullable instancetype)initWithFilePath:(const base::FilePath&)filePath;
 @end
 
-@interface KSTicket : NSObject <NSSecureCoding>
+@interface KSTicket : NSObject <NSSecureCoding> {
+  NSString* productID_;
+  NSString* version_;
+  NSString* brandCode_;
+  KSPathExistenceChecker* existenceChecker_;
+  NSURL* serverURL_;
+  NSString* serverType_;
+  NSDate* creationDate_;
+  NSString* tag_;
+  NSString* tagPath_;
+  NSString* tagKey_;
+  NSString* brandPath_;
+  NSString* brandKey_;
+  NSString* versionPath_;
+  NSString* versionKey_;
+  NSString* cohort_;
+  NSString* cohortHint_;
+  NSString* cohortName_;
+  int32_t ticketVersion_;
+}
 
 @property(nonnull, nonatomic, readonly) NSString* productID;
 @property(nullable, nonatomic, readonly)
