@@ -88,7 +88,8 @@ constexpr int kMouseDragUIDelayInMs = 200;
 // 650ms.
 constexpr int kTouchLongpressDelayInMs = 300;
 
-// For touch initiated dragging, shift the curcor anchor point by the following:
+// For touch initiated dragging, shift the cursor anchor point of the scaled
+// icon by the following:
 static const int kTouchDragImageVerticalOffset = 25;
 
 // The drag and drop app icon should get scaled by this factor.
@@ -1351,8 +1352,10 @@ bool AppListItemView::MaybeStartTouchDrag(const gfx::Point& location) {
 
   SetUIState(UI_STATE_TOUCH_DRAGGING);
   auto data = std::make_unique<ui::OSExchangeData>();
-  WriteDragData(location - gfx::Vector2d(0, kTouchDragImageVerticalOffset),
-                data.get());
+  WriteDragData(
+      location - gfx::Vector2d(0, std::ceil(kTouchDragImageVerticalOffset /
+                                            kDragDropAppIconScale)),
+      data.get());
 
   gfx::Point widget_location(location);
   views::View::ConvertPointToWidget(this, &widget_location);
