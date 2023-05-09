@@ -121,8 +121,11 @@
       CGRectGetMaxY(_navigationBar.frame) - CGRectGetMinY(self.view.bounds);
   CGFloat bottomInset =
       CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(_bottomBar.frame);
+  CGFloat leftInset = self.view.safeAreaInsets.left;
+  CGFloat rightInset = self.view.safeAreaInsets.right;
+
   _gridViewController.gridView.contentInset =
-      UIEdgeInsetsMake(topInset, 0, bottomInset, 0);
+      UIEdgeInsetsMake(topInset, leftInset, bottomInset, rightInset);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
