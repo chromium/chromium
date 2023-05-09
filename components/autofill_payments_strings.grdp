@@ -866,5 +866,13 @@
   <message name="IDS_AUTOFILL_SETTINGS_PAGE_ENABLE_PAYMENT_METHOD_MANDATORY_REAUTH_SUBLABEL" translateable="false" desc="Sublabel for a setttings page toggle that allows users to control whether or not to add mandatory reauth for payment methods filling." formatter_data="android_java">
     If turned off, you may still be asked to sometimes verify it’s you for security purposes
   </message>
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_SNACKBAR_MESSAGE_TEXT" desc="Text to be displayed in the snackbar shown after opting in mandatory reauth.">
+      Payment verification settings saved
+    </message>
+    <message name="IDS_AUTOFILL_MANDATORY_REAUTH_SNACKBAR_ACTION_TEXT" desc="Text to be displayed as the snackbar action shown after opting in mandatory reauth.">
+      Settings
+    </message>
+  </if>
 
 </grit-part>

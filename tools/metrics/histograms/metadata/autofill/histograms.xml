@@ -150,6 +150,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="Autofill.Snackbar.Type">
+  <variant name="MandatoryReauth"
+      summary="Snackbar shown after opting into mandatory reauth."/>
   <variant name="VirtualCard"
       summary="Snackbar shown after virtual card is autofilled."/>
 </variants>

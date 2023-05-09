@@ -965,7 +965,8 @@ void ChromeAutofillClient::OnVirtualCardDataAvailable(
       autofill_snackbar_controller_impl_ =
           std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
     }
-    autofill_snackbar_controller_impl_->Show();
+    autofill_snackbar_controller_impl_->Show(
+        AutofillSnackbarType::kVirtualCard);
   }
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(

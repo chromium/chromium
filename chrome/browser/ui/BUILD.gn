@@ -855,6 +855,7 @@ static_library("ui") {
       "autofill/payments/autofill_snackbar_controller.h",
       "autofill/payments/autofill_snackbar_controller_impl.cc",
       "autofill/payments/autofill_snackbar_controller_impl.h",
+      "autofill/payments/autofill_snackbar_type.h",
       "autofill/payments/autofill_snackbar_view.h",
       "autofill/payments/offer_notification_controller_android.cc",
       "autofill/payments/offer_notification_controller_android.h",
