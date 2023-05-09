@@ -56,7 +56,7 @@ class BoundSessionCookieControllerImpl : public BoundSessionCookieController {
 
   void MaybeRefreshCookie();
   void SetCookieExpirationTimeAndNotify(base::Time expiration_time);
-  void OnCookieRefreshFetched(absl::optional<base::Time> expiration_time);
+  void OnCookieRefreshFetched(BoundSessionRefreshCookieFetcher::Result result);
   void ResumeBlockedRequests();
 
   void set_refresh_cookie_fetcher_factory_for_testing(

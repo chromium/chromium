@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_test_cookie_manager.h"
 
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_change_dispatcher.h"
 
 // static
 net::CanonicalCookie BoundSessionTestCookieManager::CreateCookie(
@@ -29,6 +30,8 @@ void BoundSessionTestCookieManager::SetCanonicalCookie(
     const net::CookieOptions& cookie_options,
     SetCanonicalCookieCallback callback) {
   cookie_ = cookie;
+  DispatchCookieChange(net::CookieChangeInfo(cookie_, net::CookieAccessResult(),
+                                             net::CookieChangeCause::INSERTED));
   if (callback) {
     std::move(callback).Run(net::CookieAccessResult());
   }
