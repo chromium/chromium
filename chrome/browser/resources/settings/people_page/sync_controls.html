@@ -49,6 +49,11 @@
       <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">
 <if expr="not chromeos_lacros">
       <div id="appCheckboxLabel">$i18n{appCheckboxLabel}</div>
+      <cr-toggle checked="{{syncPrefs.appsSynced}}"
+          on-change="onSingleSyncDataTypeChanged_"
+          disabled="[[syncPrefs.syncAllDataTypes]]"
+          aria-labelledby="appCheckboxLabel">
+      </cr-toggle>
 </if>
 <if expr="chromeos_lacros">
       <div id="appCheckboxLabel" hidden="[[showSyncSettingsRevamp_]]">
@@ -63,12 +68,14 @@
           external>
       </cr-link-row>
       <div class="separator" hidden="[[!showSyncSettingsRevamp_]]"></div>
+      <cr-toggle id="appsSyncToggle"
+          checked="{{syncPrefs.appsSynced}}"
+          on-change="onSingleSyncDataTypeChanged_"
+          disabled="[[shouldAppsToggleBeDisabled_(
+            syncPrefs.syncAllDataTypes, showSyncSettingsRevamp_)]]"
+          aria-labelledby="appCheckboxLabel">
+      </cr-toggle>
 </if>
-        <cr-toggle checked="{{syncPrefs.appsSynced}}"
-            on-change="onSingleSyncDataTypeChanged_"
-            disabled="[[syncPrefs.syncAllDataTypes]]"
-            aria-labelledby="appCheckboxLabel">
-        </cr-toggle>
       </div>
 
       <div class="list-item" hidden="[[!syncPrefs.bookmarksRegistered]]">

@@ -62,8 +62,19 @@ suite('SyncControlsTest', async function() {
 
     webUIListenerCallback('sync-prefs-changed', expected);
 
-    // Assert that all the individual datatype controls are enabled.
+    // Assert that all the individual datatype controls are checked and enabled.
     for (const control of datatypeControls) {
+      // if lacros we check that Apps sync toggle is disabled when
+      // kSyncChromeOSAppsToggleSharing feature is enabled.
+      // <if expr="chromeos_lacros">
+      if (control.id === 'appsSyncToggle') {
+        const showSyncSettingsRevamp =
+            loadTimeData.getBoolean('showSyncSettingsRevamp');
+        assertEquals(control.disabled, showSyncSettingsRevamp);
+        assertTrue(control.checked);
+        continue;
+      }
+      // </if>
       assertFalse(control.disabled);
       assertTrue(control.checked);
     }

@@ -167,6 +167,13 @@ export class SettingsSyncControlsElement extends
     this.handleSyncAllDataTypesChanged_(syncAllDataTypes);
   }
 
+  // <if expr="chromeos_lacros">
+  private shouldAppsToggleBeDisabled_(
+      syncAllDataTypes: boolean, showSyncSettingsRevamp: boolean): boolean {
+    return syncAllDataTypes || showSyncSettingsRevamp;
+  }
+  // </if>
+
   private handleSyncAllDataTypesChanged_(syncAllDataTypes: boolean) {
     if (syncAllDataTypes) {
       this.set('syncPrefs.syncAllDataTypes', true);
