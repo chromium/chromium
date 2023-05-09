@@ -523,6 +523,10 @@ void AuthenticationService::OnPrimaryAccountChanged(
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       break;
   }
+
+  for (auto& observer : observer_list_) {
+    observer.OnPrimaryIdentityChanged();
+  }
 }
 
 void AuthenticationService::OnIdentityListChanged(bool need_user_approval) {

@@ -19,6 +19,12 @@ class AuthenticationServiceObserver : public base::CheckedObserver {
   // Called when the AuthenticationService::GetServiceStatus() value changes.
   // This method might be called with no changes.
   virtual void OnServiceStatusChanged() {}
+
+  // Called when the AuthenticationService::GetPrimaryIdentity() value changes.
+  // This method might be called with no changes.
+  // TODO(crbug.com/1376908): DEPRECATED: This method should be removed once
+  // FakeAuthenticationService is remove. Use IdentityManager notifications.
+  virtual void OnPrimaryIdentityChanged() {}
 };
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_AUTHENTICATION_SERVICE_OBSERVER_H_
