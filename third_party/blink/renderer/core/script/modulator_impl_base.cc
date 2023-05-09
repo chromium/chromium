@@ -132,7 +132,7 @@ KURL ModulatorImplBase::ResolveModuleSpecifier(const String& specifier,
     // Output the resolution log. This is too verbose to be always shown, but
     // will be helpful for Web developers (and also Chromium developers) for
     // debugging import maps.
-    LOG(INFO) << import_map_debug_message;
+    VLOG(1) << import_map_debug_message;
 
     if (mapped_url) {
       KURL url = *mapped_url;
