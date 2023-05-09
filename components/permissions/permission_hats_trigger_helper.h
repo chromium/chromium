@@ -56,7 +56,7 @@ class PermissionHatsTriggerHelper {
         const std::string& survey_display_time,
         absl::optional<base::TimeDelta> prompt_display_duration,
         OneTimePermissionPromptsDecidedBucket one_time_prompts_decided_bucket,
-        const GURL& gurl);
+        absl::optional<GURL> gurl);
     PromptParametersForHaTS(const PromptParametersForHaTS& other);
     ~PromptParametersForHaTS();
 
