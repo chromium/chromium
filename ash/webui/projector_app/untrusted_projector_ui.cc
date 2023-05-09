@@ -18,6 +18,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
+#include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -26,9 +27,9 @@ namespace {
 
 void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
                                      UntrustedProjectorUIDelegate* delegate) {
+  auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(),
-      kChromeUIUntrustedProjectorUrl);
+      browser_context, kChromeUIUntrustedProjectorUrl);
 
   source->AddResourcePaths(
       base::make_span(kAshProjectorAppUntrustedResources,
@@ -82,6 +83,16 @@ void CreateAndAddProjectorHTMLSource(content::WebUI* web_ui,
 
   delegate->PopulateLoadTimeData(source);
   source->UseStringsJs();
+
+  auto* webui_allowlist = WebUIAllowlist::GetOrCreate(browser_context);
+  const url::Origin untrusted_origin =
+      url::Origin::Create(GURL(kChromeUIUntrustedProjectorUrl));
+  webui_allowlist->RegisterAutoGrantedPermission(untrusted_origin,
+                                                 ContentSettingsType::COOKIES);
+  webui_allowlist->RegisterAutoGrantedPermission(
+      untrusted_origin, ContentSettingsType::JAVASCRIPT);
+  webui_allowlist->RegisterAutoGrantedPermission(untrusted_origin,
+                                                 ContentSettingsType::IMAGES);
 }
 
 }  // namespace
