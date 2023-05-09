@@ -502,7 +502,7 @@ bool CreateDesktopShortcut(base::Environment* env,
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
 
-  if (test_override) {
+  if (test_override && !shortcut_info.protocol_handlers.empty()) {
     CHECK_IS_TEST();
     std::vector<std::string> protocol_handler(
         shortcut_info.protocol_handlers.begin(),
@@ -624,6 +624,12 @@ bool DeleteDesktopShortcuts(base::Environment* env,
   bool deleted_from_autostart = true;
   if (!test_override) {
     deleted_from_autostart = DeleteShortcutInAutoStart(env, shortcut_filename);
+  }
+
+  if (test_override) {
+    CHECK_IS_TEST();
+    test_override->RegisterProtocolSchemes(extension_id,
+                                           std::vector<std::string>());
   }
 
   bool deleted_from_application_menu = true;

@@ -102,11 +102,11 @@ void UnregisterProtocolHandlersWithOsInBackground(
     const base::FilePath& profile_path) {
   base::AssertLongCPUWorkAllowed();
 
-  if (OsIntegrationTestOverride::Get()) {
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
     CHECK_IS_TEST();
-    // The unregistration is not tested due to complication in the
-    // implementation of other OS's. Instead, we check if the updated
-    // registrations are empty / don't have the offending protocol.
+    os_override->RegisterProtocolSchemes(app_id, std::vector<std::string>());
     return;
   }
 
@@ -138,13 +138,9 @@ void RegisterProtocolHandlersWithOs(
     const base::FilePath profile_path,
     std::vector<apps::ProtocolHandlerInfo> protocol_handlers,
     ResultCallback callback) {
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
   if (protocol_handlers.empty()) {
-    scoped_refptr<OsIntegrationTestOverride> os_override =
-        OsIntegrationTestOverride::Get();
-    if (os_override) {
-      CHECK_IS_TEST();
-      os_override->RegisterProtocolSchemes(app_id, std::vector<std::string>());
-    }
     std::move(callback).Run(Result::kOk);
     return;
   }
@@ -165,6 +161,8 @@ void RegisterProtocolHandlersWithOs(
 void UnregisterProtocolHandlersWithOs(const AppId& app_id,
                                       const base::FilePath profile_path,
                                       ResultCallback callback) {
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
