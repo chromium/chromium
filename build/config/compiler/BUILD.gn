@@ -267,6 +267,7 @@ config("compiler") {
   cflags_cc = []
   cflags_objc = []
   cflags_objcc = []
+  rustflags = []
   ldflags = []
   defines = []
   configs = []
@@ -473,6 +474,7 @@ config("compiler") {
     asmflags += [ "-fPIC" ]
     cflags += [ "-fPIC" ]
     ldflags += [ "-fPIC" ]
+    rustflags += [ "-Crelocation-model=pic" ]
 
     if (!is_clang) {
       # Use pipes for communicating between sub-processes. Faster.
@@ -902,7 +904,7 @@ config("compiler") {
 
   # Rust compiler flags setup.
   # ---------------------------
-  rustflags = [
+  rustflags += [
     # Overflow checks are optional in Rust, but even if switched
     # off they do not cause undefined behavior (the overflowing
     # behavior is defined). Because containers are bounds-checked
