@@ -19,6 +19,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -201,7 +202,7 @@ bool CreateEmptyFileInDirectory(const base::FilePath& dir,
 
   base::FilePath file_path = dir.AppendASCII(file_name);
   int64_t file_size;
-  if (GetFileSize(file_path, &file_size) && file_size == 0) {
+  if (base::GetFileSize(file_path, &file_size) && file_size == 0) {
     VLOG(1) << "Skipping creation of " << file_path << ": file already empty.";
     return true;
   }
@@ -229,16 +230,18 @@ bool CreateKeystoneLaunchCtlPlistFiles(UpdaterScope scope) {
   if (IsSystemInstall(scope) &&
       !CreateEmptyFileInDirectory(
           GetLibraryFolderPath(scope)->Append("LaunchDaemons"),
-          "com.google.keystone.daemon.plist")) {
+          base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".daemon.plist"))) {
     return false;
   }
 
   base::FilePath launch_agent_dir =
       GetLibraryFolderPath(scope)->Append("LaunchAgents");
-  return CreateEmptyFileInDirectory(launch_agent_dir,
-                                    "com.google.keystone.agent.plist") &&
-         CreateEmptyFileInDirectory(launch_agent_dir,
-                                    "com.google.keystone.xpcservice.plist");
+  return CreateEmptyFileInDirectory(
+             launch_agent_dir,
+             base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist")) &&
+         CreateEmptyFileInDirectory(
+             launch_agent_dir, base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
+                                                  ".xpcservice.plist"));
 }
 
 }  // namespace

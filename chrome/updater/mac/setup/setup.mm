@@ -22,6 +22,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -197,10 +198,8 @@ int PromoteCandidate(UpdaterScope scope) {
 
 #pragma mark Uninstall
 int UninstallCandidate(UpdaterScope scope) {
-  return !DeleteCandidateInstallFolder(scope) ||
-                 !DeleteFolder(GetVersionedInstallDirectory(scope))
-             ? kErrorFailedToDeleteFolder
-             : kErrorOk;
+  return !DeleteCandidateInstallFolder(scope) ? kErrorFailedToDeleteFolder
+                                              : kErrorOk;
 }
 
 int Uninstall(UpdaterScope scope) {
@@ -216,6 +215,20 @@ int Uninstall(UpdaterScope scope) {
                              {base::MayBlock(), base::WithBaseSyncPrimitives()},
                              base::BindOnce(&UninstallKeystone, scope));
 
+  // Delete Keystone shim plists.
+  if (IsSystemInstall(scope)) {
+    base::DeleteFile(GetLibraryFolderPath(scope)
+                         ->Append("LaunchDaemons")
+                         .Append(base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID
+                                                    ".daemon.plist")));
+  } else {
+    base::FilePath launch_agent_dir =
+        GetLibraryFolderPath(scope)->Append("LaunchAgents");
+    base::DeleteFile(launch_agent_dir.Append(
+        base::ToLowerASCII(LEGACY_GOOGLE_UPDATE_APPID ".agent.plist"))) &&
+        base::DeleteFile(launch_agent_dir.Append(base::ToLowerASCII(
+            LEGACY_GOOGLE_UPDATE_APPID ".xpcservice.plist")));
+  }
   // Deleting the install folder is best-effort. Current running processes such
   // as the crash handler process may still write to the updater log file, thus
   // it is not always possible to delete the data folder.
