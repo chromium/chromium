@@ -77,6 +77,10 @@ BASE_FEATURE(kAllowScrollSettings,
              "AllowScrollSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAltClickAndSixPackCustomization,
+             "AltClickAndSixPackCustomization",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether to enable AutoEnrollment for Kiosk in OOBE
 BASE_FEATURE(kAutoEnrollmentKioskInOobe,
              "AutoEnrollmentKioskInOobe",
@@ -2461,6 +2465,10 @@ bool IsAllowAmbientEQEnabled() {
 bool IsEapDefaultCasWithoutSubjectVerificationAllowed() {
   return base::FeatureList::IsEnabled(
       kAllowEapDefaultCasWithoutSubjectVerification);
+}
+
+bool IsAltClickAndSixPackCustomizationEnabled() {
+  return base::FeatureList::IsEnabled(kAltClickAndSixPackCustomization);
 }
 
 bool IsAmbientModeDevUseProdEnabled() {

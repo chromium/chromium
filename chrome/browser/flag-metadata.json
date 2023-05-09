@@ -140,6 +140,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "alt-click-and-six-pack-customization",
+    "owners": [ "michaelcheco", "cros-peripherals@google.com" ],
+    "expiry_milestone": 122
+  },
+  {
     "name": "always-enable-hdcp",
     "owners": [ "chromeos-gfx-video@google.com" ],
     // This flag is used for HDCP compliance testing on ChromeOS so should not

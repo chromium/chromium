@@ -25,6 +25,8 @@ BASE_DECLARE_FEATURE(kAllowEapDefaultCasWithoutSubjectVerification);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAllowRepeatedUpdates);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kAllowScrollSettings);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kAltClickAndSixPackCustomization);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAlwaysReinstallSystemWebApps);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kAmbientModeDevUseProdFeature);
@@ -684,6 +686,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsEapDefaultCasWithoutSubjectVerificationAllowed();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAltClickAndSixPackCustomizationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeDevUseProdEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeManagedScreensaverEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();

@@ -60895,6 +60895,7 @@ from previous Chrome versions.
   <int value="-832154680"
       label="AutofillEnforceDelaysInStrikeDatabase:enabled"/>
   <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
+  <int value="-829665817" label="AltClickAndSixPackCustomization:enabled"/>
   <int value="-829498062" label="HttpsFirstModeV2:disabled"/>
   <int value="-826010284" label="EnterpriseReportingUI:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
@@ -61999,6 +62000,7 @@ from previous Chrome versions.
   <int value="-231642350" label="EnableWindowsGamingInputDataFetcher:disabled"/>
   <int value="-231426350" label="AutofillEnableToolbarStatusChip:enabled"/>
   <int value="-230824955" label="NTPMostLikelyFaviconsFromServer:enabled"/>
+  <int value="-229995076" label="AltClickAndSixPackCustomization:disabled"/>
   <int value="-226826278" label="ForceEnableFastCheckoutCapabilities:disabled"/>
   <int value="-226715863" label="SHA1ServerSignature:enabled"/>
   <int value="-225505731" label="CCTModule:enabled"/>

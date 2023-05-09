@@ -4943,6 +4943,13 @@ const char kAllowScrollSettingsDescription[] =
     "Shows settings to enable/disable scroll acceleration and to adjust the "
     "sensitivity for scrolling.";
 
+const char kAltClickAndSixPackCustomizationName[] =
+    "Allow users to customize Alt-Click and 6-pack key remapping.";
+
+const char kAltClickAndSixPackCustomizationDescription[] =
+    "Shows settings to customize Alt-Click and 6-pack key remapping in the "
+    "keyboard settings page.";
+
 const char kAlwaysEnableHdcpName[] = "Always enable HDCP for external displays";
 const char kAlwaysEnableHdcpDescription[] =
     "Enables the specified type for HDCP whenever an external display is "
