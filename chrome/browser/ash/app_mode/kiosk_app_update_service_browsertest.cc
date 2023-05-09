@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -42,6 +43,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using base::test::TestFuture;
 
 namespace ash {
 
@@ -125,8 +128,8 @@ class KioskAppUpdateServiceTest
   // system::AutomaticRebootManagerObserver:
   void OnRebootRequested(
       system::AutomaticRebootManagerObserver::Reason) override {
-    if (run_loop_) {
-      run_loop_->Quit();
+    if (test_waiter_) {
+      test_waiter_->SetValue();
     }
   }
 
@@ -145,16 +148,16 @@ class KioskAppUpdateServiceTest
   void FireUpdatedNeedReboot() {
     update_engine::StatusResult status;
     status.set_current_operation(update_engine::Operation::UPDATED_NEED_REBOOT);
-    run_loop_ = std::make_unique<base::RunLoop>();
+    test_waiter_ = std::make_unique<TestFuture<void>>();
     automatic_reboot_manager_->UpdateStatusChanged(status);
-    run_loop_->Run();
+    EXPECT_TRUE(test_waiter_->Wait());
   }
 
   void RequestPeriodicReboot() {
-    run_loop_ = std::make_unique<base::RunLoop>();
+    test_waiter_ = std::make_unique<TestFuture<void>>();
     g_browser_process->local_state()->SetInteger(prefs::kUptimeLimit,
                                                  base::Hours(2).InSeconds());
-    run_loop_->Run();
+    EXPECT_TRUE(test_waiter_->Wait());
   }
 
  private:
@@ -166,7 +169,7 @@ class KioskAppUpdateServiceTest
       nullptr;  // Not owned.
   raw_ptr<system::AutomaticRebootManager, ExperimentalAsh>
       automatic_reboot_manager_ = nullptr;  // Not owned.
-  std::unique_ptr<base::RunLoop> run_loop_;
+  std::unique_ptr<TestFuture<void>> test_waiter_;
 };
 
 // Verifies that the app is notified a reboot is required when an app update

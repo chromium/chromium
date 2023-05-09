@@ -10,7 +10,8 @@
 #include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
+#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -34,40 +35,27 @@ class NotificationWaiter : public KioskAppManagerObserver {
   // In constructor we provide instance of ArcKioskAppManager and subscribe for
   // notifications from it, and minimum amount of times we expect to get the
   // notification.
-  NotificationWaiter(ArcKioskAppManager* manager, int expected_notifications)
-      : manager_(manager), expected_notifications_(expected_notifications) {
+  explicit NotificationWaiter(ArcKioskAppManager* manager) : manager_(manager) {
     manager_->AddObserver(this);
   }
   NotificationWaiter(const NotificationWaiter&) = delete;
   NotificationWaiter& operator=(const NotificationWaiter&) = delete;
   ~NotificationWaiter() override { manager_->RemoveObserver(this); }
 
-  void Wait() {
-    if (notification_received_)
-      return;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+  void Wait(int times) {
+    for (int count = 0; count < times; count++) {
+      EXPECT_TRUE(notifications_received_.Take());
+    }
   }
-
-  // Returns if the waiter was notified at least expected_notifications_ times.
-  bool was_notified() const { return notification_received_; }
 
  private:
   // KioskAppManagerObserver:
   void OnKioskAppsSettingsChanged() override {
-    --expected_notifications_;
-    if (expected_notifications_ > 0)
-      return;
-
-    notification_received_ = true;
-    if (run_loop_)
-      run_loop_->Quit();
+    notifications_received_.AddValue(true);
   }
 
-  std::unique_ptr<base::RunLoop> run_loop_;
+  base::test::RepeatingTestFuture<bool> notifications_received_;
   raw_ptr<ArcKioskAppManager, ExperimentalAsh> manager_;
-  bool notification_received_ = false;
-  int expected_notifications_;
 };
 
 std::string GenerateAccountId(std::string package_name) {
@@ -155,10 +143,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
   // Set initial list of apps.
   {
     // Observer must be notified once: app list was updated.
-    NotificationWaiter waiter(manager(), 1);
+    NotificationWaiter waiter(manager());
     SetApps(init_apps, std::string());
-    waiter.Wait();
-    EXPECT_TRUE(waiter.was_notified());
+    waiter.Wait(1);
 
     std::vector<const ArcKioskAppData*> apps;
     GetApps(&apps);
@@ -176,10 +163,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
   {
     // Observer must be notified twice: for policy list update and for
     // auto-launch app update.
-    NotificationWaiter waiter(manager(), 2);
+    NotificationWaiter waiter(manager());
     SetApps(init_apps, GenerateAccountId(app2.package_name()));
-    waiter.Wait();
-    EXPECT_TRUE(waiter.was_notified());
+    waiter.Wait(2);
 
     EXPECT_TRUE(manager()->GetAutoLaunchAccountId().is_valid());
 
@@ -201,10 +187,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
   std::vector<policy::ArcKioskAppBasicInfo> new_apps{app1, app3};
   {
     // Observer must be notified once: app list was updated.
-    NotificationWaiter waiter(manager(), 1);
+    NotificationWaiter waiter(manager());
     SetApps(new_apps, std::string());
-    waiter.Wait();
-    EXPECT_TRUE(waiter.was_notified());
+    waiter.Wait(1);
 
     std::vector<const ArcKioskAppData*> apps;
     GetApps(&apps);
@@ -221,10 +206,9 @@ IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {
   // Clean the apps.
   {
     // Observer must be notified once: app list was updated.
-    NotificationWaiter waiter(manager(), 1);
+    NotificationWaiter waiter(manager());
     CleanApps();
-    waiter.Wait();
-    EXPECT_TRUE(waiter.was_notified());
+    waiter.Wait(1);
 
     std::vector<const ArcKioskAppData*> apps;
     GetApps(&apps);

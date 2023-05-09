@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/repeating_test_future.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 
 #include "base/path_service.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_delegate.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -73,12 +75,9 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
                             public KioskAppDataDelegate {
  public:
   void WaitForAppDataChange(int count) {
-    if (change_count_ >= count) {
-      return;
+    for (int i = 0; i < count; i++) {
+      waiter_.Take();
     }
-    waited_count_ = count;
-    waiter_ = std::make_unique<base::RunLoop>();
-    waiter_->Run();
   }
 
   void SetCached(bool installed, bool icon_valid = true) {
@@ -108,20 +107,14 @@ class WebKioskAppDataTest : public InProcessBrowserTest,
   }
 
   void OnKioskAppDataChanged(const std::string& app_id) override {
-    change_count_++;
-    if (change_count_ >= waited_count_ && waiter_) {
-      waiter_->Quit();
-    }
+    waiter_.AddValue(true);
   }
 
   void OnKioskAppDataLoadFailure(const std::string& app_id) override {}
 
   void OnExternalCacheDamaged(const std::string& app_id) override {}
 
-  // std::unique_ptr<ScopedTestingLocalState> local_state_;
-  std::unique_ptr<base::RunLoop> waiter_;
-  int change_count_ = 0;
-  int waited_count_ = 0;
+  base::test::RepeatingTestFuture<bool> waiter_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, NoIconCached) {
@@ -292,12 +285,12 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, InvalidIcon) {
   SetCached(/*installed = */ false, /*icon_valid=*/false);
   WebKioskAppData app_data(this, kAppId, EmptyAccountId(), GURL(kAppUrl),
                            std::string(), /*icon_url*/ GURL());
-  base::RunLoop loop;
-  app_data.SetOnLoadedCallbackForTesting(loop.QuitClosure());
+  base::test::TestFuture<void> waiter;
+  app_data.SetOnLoadedCallbackForTesting(waiter.GetCallback());
 
   app_data.LoadFromCache();
   app_data.LoadIcon();
-  loop.Run();
+  EXPECT_TRUE(waiter.Wait());
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   const std::string* icon_url_string = GetLastIconUrlForAppId();
   ASSERT_FALSE(icon_url_string);
