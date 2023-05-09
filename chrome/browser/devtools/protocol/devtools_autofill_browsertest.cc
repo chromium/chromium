@@ -5,15 +5,56 @@
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-using DevToolsAutofillTest = DevToolsProtocolTestBase;
-
 namespace {
 
-IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, DISABLED_TriggerCreditCard) {
+// Adds waiting capabilities to BrowserAutofillManager.
+class TestAutofillManager : public autofill::BrowserAutofillManager {
+ public:
+  TestAutofillManager(autofill::ContentAutofillDriver* driver,
+                      autofill::AutofillClient* client)
+      : BrowserAutofillManager(driver, client, "en-US") {}
+
+  static TestAutofillManager* GetForRenderFrameHost(
+      content::RenderFrameHost* rfh) {
+    return static_cast<TestAutofillManager*>(
+        autofill::ContentAutofillDriver::GetForRenderFrameHost(rfh)
+            ->autofill_manager());
+  }
+
+  [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
+      size_t num_awaited_calls) {
+    return forms_seen_.Wait(num_awaited_calls);
+  }
+
+ private:
+  autofill::TestAutofillManagerWaiter forms_seen_{
+      *this,
+      {autofill::AutofillManagerEvent::kFormsSeen}};
+};
+
+class DevToolsAutofillTest : public DevToolsProtocolTestBase {
+ public:
+  content::RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+  TestAutofillManager* main_autofill_manager() {
+    return TestAutofillManager::GetForRenderFrameHost(main_frame());
+  }
+
+ private:
+  autofill::TestAutofillManagerInjector<TestAutofillManager>
+      autofill_manager_injector_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, TriggerCreditCard) {
   embedded_test_server()->ServeFilesFromSourceDirectory(
       "chrome/test/data/autofill");
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -26,6 +67,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, DISABLED_TriggerCreditCard) {
   content::SimulateMouseClickOrTapElementWithId(
       browser()->tab_strip_model()->GetActiveWebContents(),
       "CREDIT_CARD_NUMBER");
+
+  EXPECT_TRUE(main_autofill_manager()->WaitForFormsSeen(1));
 
   content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
@@ -58,7 +101,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, DISABLED_TriggerCreditCard) {
   card.Set("cvc", "123");
   params.Set("card", std::move(card));
 
-  SendCommand("Autofill.trigger", std::move(params));
+  const base::Value::Dict* result =
+      SendCommandSync("Autofill.trigger", std::move(params));
+
+  EXPECT_EQ(*result, base::Value::Dict());
 
   std::string ccNameResult =
       EvalJs(rfh, "document.getElementById('CREDIT_CARD_NAME_FULL').value")
