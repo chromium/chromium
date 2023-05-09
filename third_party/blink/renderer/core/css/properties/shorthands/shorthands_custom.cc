@@ -3191,8 +3191,8 @@ const CSSValue* ScrollPaddingInline::CSSValueFromComputedStyleInternal(
 
 namespace {
 
-// Consume a single name and a single axis, and append the result to
-// `name_list` and `axis_list` respectively.
+// Consume a single name, axis, and attachment, then append the result to
+// `name_list`, `axis_list`, and `attachment_list` respectively.
 bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
                              const CSSParserContext& context,
                              CSSValueList* name_list,
@@ -3211,12 +3211,23 @@ bool ConsumeTimelineItemInto(CSSParserTokenRange& range,
     return false;
   }
 
-  CSSValue* axis = ConsumeSingleTimelineAxis(range);
+  // Axis and attachment may appear in any order.
+  CSSValue* axis = nullptr;
+  CSSValue* attachment = nullptr;
+
+  while (true) {
+    if (!axis && (axis = ConsumeSingleTimelineAxis(range))) {
+      continue;
+    }
+    if (!attachment && (attachment = ConsumeSingleTimelineAttachment(range))) {
+      continue;
+    }
+    break;
+  }
+
   if (!axis) {
     axis = CSSIdentifierValue::Create(CSSValueID::kBlock);
   }
-
-  CSSValue* attachment = ConsumeSingleTimelineAttachment(range);
   if (!attachment) {
     attachment = CSSIdentifierValue::Create(CSSValueID::kLocal);
   }
