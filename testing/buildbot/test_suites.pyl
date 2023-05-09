@@ -7010,7 +7010,7 @@
         ]
       },
       'ios_eg2_tests': {
-        'mixins': ['xcode_parallelization'],
+        'mixins': ['xcode_parallelization', 'record_failed_tests'],
         'variants': [
           'SIM_IPHONE_X_16_4',
           'SIM_IPAD_AIR_3RD_GEN_16_4',
@@ -7018,7 +7018,7 @@
         ]
       },
       'ios_eg2_cq_tests': {
-        'mixins': ['xcode_parallelization'],
+        'mixins': ['xcode_parallelization', 'record_failed_tests'],
         'variants': [
           'SIM_IPHONE_X_16_4',
           'SIM_IPAD_AIR_3RD_GEN_16_4',
