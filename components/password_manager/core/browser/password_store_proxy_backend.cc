@@ -675,32 +675,31 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
     base::Time delete_end,
     base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
+  // The `sync_completion` callback is only relevant for account passwords
+  // which don't exist on Android, so it is not passed in and can be ignored
+  // later.
+  CHECK(!sync_completion);
   auto handler = base::MakeRefCounted<
       ShadowTrafficMetricsRecorder<PasswordChangesOrErrorImpl>>(
       MethodName("RemoveLoginsByURLAndTimeAsync"));
 
-  // Sync completion callback is only used by the LocalDatabase backend and is
-  // ignored by the Android backend.
-  base::OnceCallback<void(bool)> sync_completion_callback;
   PasswordChangesOrErrorReply result_callback;
   if (UsesAndroidBackendAsMainBackend() && ShouldFallbackOnRemoveOperations()) {
-    sync_completion_callback = base::DoNothing();
     auto execute_on_built_in_backend =
         base::BindOnce(&PasswordStoreBackend::RemoveLoginsByURLAndTimeAsync,
                        base::Unretained(built_in_backend_), url_filter,
-                       delete_begin, delete_end, std::move(sync_completion));
+                       delete_begin, delete_end, base::NullCallback());
     result_callback = base::BindOnce(
         &PasswordStoreProxyBackend::MaybeFallbackOnOperation<
             PasswordChangesOrError>,
         weak_ptr_factory_.GetWeakPtr(), std::move(execute_on_built_in_backend),
         MethodName("RemoveLoginsByURLAndTimeAsync"), std::move(callback));
   } else {
-    sync_completion_callback = std::move(sync_completion);
     result_callback = std::move(callback);
   }
 
   main_backend()->RemoveLoginsByURLAndTimeAsync(
-      url_filter, delete_begin, delete_end, std::move(sync_completion_callback),
+      url_filter, delete_begin, delete_end, base::NullCallback(),
       base::BindOnce(&ShadowTrafficMetricsRecorder<
                          PasswordChangesOrErrorImpl>::RecordMainResult,
                      handler)
@@ -709,7 +708,7 @@ void PasswordStoreProxyBackend::RemoveLoginsByURLAndTimeAsync(
           prefs_, IsPasswordSyncEnabled(sync_service_))) {
     shadow_backend()->RemoveLoginsByURLAndTimeAsync(
         url_filter, std::move(delete_begin), std::move(delete_end),
-        base::OnceCallback<void(bool)>(),
+        base::NullCallback(),
         base::BindOnce(&ShadowTrafficMetricsRecorder<
                            PasswordChangesOrErrorImpl>::RecordShadowResult,
                        handler));

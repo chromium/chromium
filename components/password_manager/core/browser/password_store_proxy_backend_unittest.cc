@@ -387,7 +387,7 @@ TEST_F(PasswordStoreProxyBackendTest,
             std::move(reply).Run(change_list);
           })));
   proxy_backend().RemoveLoginsByURLAndTimeAsync(
-      base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::DoNothing(),
+      base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::NullCallback(),
       mock_reply.Get());
 }
 
@@ -1099,7 +1099,7 @@ TEST_P(PasswordStoreProxyBackendTestWithFallbackParam,
     EXPECT_CALL(mock_reply, Run(PasswordChangesOrError(p.error)));
   }
   proxy_backend().RemoveLoginsByURLAndTimeAsync(
-      base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::DoNothing(),
+      base::BindRepeating(&FilterNoUrl), kStart, kEnd, base::NullCallback(),
       mock_reply.Get());
 
   if (ShouldFallbackOnParam(p)) {
