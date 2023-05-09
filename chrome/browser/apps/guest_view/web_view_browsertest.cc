@@ -48,6 +48,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/tracing.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/find_in_page/find_tab_helper.h"
@@ -5540,6 +5541,63 @@ IN_PROC_BROWSER_TEST_F(WebViewTest, LoadDisallowedExtensionURLInSubframe) {
   EXPECT_EQ(blink::IdentifiableToken(
                 extensions::ExtensionResourceAccessResult::kFailure),
             entry->metrics.begin()->second);
+}
+
+class PopupWaiter : public content::WebContentsObserver {
+ public:
+  PopupWaiter(content::WebContents* opener, base::OnceClosure on_popup)
+      : content::WebContentsObserver(opener), on_popup_(std::move(on_popup)) {}
+
+  // WebContentsObserver:
+  // Note that `DidOpenRequestedURL` is used as it fires precisely after a new
+  // WebContents is created but before it is shown. This timing is necessary for
+  // the `ShutdownWithUnshownPopup` test.
+  void DidOpenRequestedURL(content::WebContents* new_contents,
+                           content::RenderFrameHost* source_render_frame_host,
+                           const GURL& url,
+                           const content::Referrer& referrer,
+                           WindowOpenDisposition disposition,
+                           ui::PageTransition transition,
+                           bool started_from_context_menu,
+                           bool renderer_initiated) override {
+    if (on_popup_) {
+      std::move(on_popup_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_popup_;
+};
+
+// Test destroying an opener webview while the created window has not been
+// shown by the renderer. Between the time of the renderer creating and showing
+// the new window, the created guest WebContents is owned by content/ and not by
+// WebViewGuest. See `WebContentsImpl::pending_contents_` for details. When we
+// destroy the new WebViewGuest, content/ must ensure that the guest WebContents
+// is destroyed safely.
+//
+// This test is conceptually similar to
+// testNewWindowOpenerDestroyedWhileUnattached, but for this test, we have
+// precise timing requirements that need to be controlled by the browser such
+// that we shutdown while the new window is pending.
+//
+// Regression test for https://crbug.com/1442516
+IN_PROC_BROWSER_TEST_F(WebViewTest, ShutdownWithUnshownPopup) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Core classes in content often record trace events during destruction.
+  // Enable tracing to test that writing traces with partially destructed
+  // objects is done safely.
+  ASSERT_TRUE(tracing::BeginTracing("content,navigation"));
+
+  LoadAppWithGuest("web_view/simple");
+
+  base::RunLoop run_loop;
+  PopupWaiter popup_waiter(GetGuestWebContents(), run_loop.QuitClosure());
+  content::ExecuteScriptAsync(GetGuestRenderFrameHost(),
+                              "window.open(location.href);");
+  run_loop.Run();
+  CloseAppWindow(GetFirstAppWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(WebViewTest, InsertIntoDetachedIframe) {

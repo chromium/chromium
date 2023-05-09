@@ -124,6 +124,9 @@ class GuestViewBase::OpenerLifetimeObserver : public WebContentsObserver {
   void WebContentsDestroyed() override {
     // If the opener is destroyed and the guest has not been attached, then
     // destroy the guest.
+    // Note that the guest contents may be owned by content/ at this point. In
+    // this case, we expect content/ to safely destroy the contents without
+    // accessing delegate methods of the destroyed guest.
     // Destroys `this`.
     DestroyGuestIfUnattached(guest_);
   }
@@ -913,6 +916,11 @@ bool GuestViewBase::RequiresSslInterstitials() const {
 content::RenderFrameHost* GuestViewBase::GetGuestMainFrame() const {
   // TODO(crbug/1261928): Migrate the implementation for MPArch.
   return web_contents()->GetPrimaryMainFrame();
+}
+
+base::WeakPtr<content::BrowserPluginGuestDelegate>
+GuestViewBase::GetGuestDelegateWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace guest_view
