@@ -156,4 +156,4 @@ GURL HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL() const {
                        : history_clusters::GetFullJourneysUrlForQuery(query);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryClustersSidePanelCoordinator);
+BROWSER_USER_DATA_KEY_IMPL(HistoryClustersSidePanelCoordinator);
