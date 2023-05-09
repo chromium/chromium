@@ -322,8 +322,8 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
   simple_url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&KidsChromeManagementClient::OnSimpleLoaderComplete,
-                     base::Unretained(this), it, std::move(simple_url_loader),
-                     token_info),
+                     base::UnsafeDanglingUntriaged(this), it,
+                     std::move(simple_url_loader), token_info),
       /*max_body_size*/ 128);
 }
 
