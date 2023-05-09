@@ -69,8 +69,10 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
@@ -2427,13 +2429,26 @@ scoped_refptr<StylePath> StyleBuilderConverter::ConvertPathOrNone(
   return nullptr;
 }
 
-scoped_refptr<BasicShape> StyleBuilderConverter::ConvertOffsetPath(
+scoped_refptr<OffsetPathOperation> StyleBuilderConverter::ConvertOffsetPath(
     StyleResolverState& state,
     const CSSValue& value) {
   if (value.IsRayValue() || value.IsBasicShapeValue()) {
-    return BasicShapeForValue(state, value);
+    return ShapeOffsetPathOperation::Create(BasicShapeForValue(state, value));
   }
-  return ConvertPathOrNone(state, value);
+  if (auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value)) {
+    return ShapeOffsetPathOperation::Create(path_value->GetStylePath());
+  }
+  if (const auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
+    SVGResource* resource =
+        state.GetElementStyleResources().GetSVGResourceFromValue(
+            CSSPropertyID::kOffsetPath, *url_value);
+    return ReferenceOffsetPathOperation::Create(
+        url_value->ValueForSerialization(), resource);
+  }
+  auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
+  DCHECK(identifier_value &&
+         identifier_value->GetValueID() == CSSValueID::kNone);
+  return nullptr;
 }
 
 scoped_refptr<BasicShape> StyleBuilderConverter::ConvertObjectViewBox(

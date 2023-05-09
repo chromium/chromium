@@ -68,6 +68,7 @@ class ClipPathOperation;
 class CSSToLengthConversionData;
 class Font;
 class FontBuilder;
+class OffsetPathOperation;
 class RotateTransformOperation;
 class ScaleTransformOperation;
 class ScopedCSSName;
@@ -291,8 +292,9 @@ class StyleBuilderConverter {
                                                     const CSSValue&);
   static scoped_refptr<BasicShape> ConvertObjectViewBox(StyleResolverState&,
                                                         const CSSValue&);
-  static scoped_refptr<BasicShape> ConvertOffsetPath(StyleResolverState&,
-                                                     const CSSValue&);
+  static scoped_refptr<OffsetPathOperation> ConvertOffsetPath(
+      StyleResolverState&,
+      const CSSValue&);
   static StyleOffsetRotation ConvertOffsetRotate(const CSSValue&);
   template <CSSValueID cssValueFor0, CSSValueID cssValueFor100>
   static Length ConvertPositionLength(StyleResolverState&, const CSSValue&);

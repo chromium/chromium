@@ -395,6 +395,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
                              const ComputedStyle& new_style);
   void UpdateClipPath(const ComputedStyle* old_style,
                       const ComputedStyle& new_style);
+  void UpdateOffsetPath(const ComputedStyle* old_style,
+                        const ComputedStyle& new_style);
 
   Node* EnclosingNode() const;
 

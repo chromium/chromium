@@ -259,6 +259,7 @@ class CORE_EXPORT SVGElement : public Element {
   }
   void UpdateRelativeLengthsInformation(bool has_relative_lengths, SVGElement*);
   static void MarkForLayoutAndParentResourceInvalidation(LayoutObject&);
+  void NotifyResourceClients() const;
 
   virtual bool SelfHasRelativeLengths() const { return false; }
 

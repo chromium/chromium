@@ -108,6 +108,7 @@ class StyleDifference;
 class StyleImage;
 class StyleInheritedVariables;
 class StyleInitialData;
+class StyleRay;
 class StyleResolver;
 class StyleResolverState;
 class StyleSelfAlignmentData;
@@ -2646,12 +2647,14 @@ class ComputedStyle : public ComputedStyleBase,
                                 const gfx::RectF& bounding_box,
                                 gfx::Transform&) const;
   PointAndTangent CalculatePointAndTangentOnBasicShape(
+      const BasicShape& shape,
       const LayoutBox* box,
       const gfx::RectF& bounding_box) const;
   PointAndTangent CalculatePointAndTangentOnRay(
+      const StyleRay& ray,
       const LayoutBox* box,
       const gfx::RectF& bounding_box) const;
-  PointAndTangent CalculatePointAndTangentOnPath() const;
+  PointAndTangent CalculatePointAndTangentOnPath(const Path& path) const;
 
   bool ScrollAnchorDisablingPropertyChanged(const ComputedStyle& other,
                                             const StyleDifference&) const;

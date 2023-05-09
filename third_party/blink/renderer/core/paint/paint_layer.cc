@@ -91,6 +91,7 @@
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -230,6 +231,10 @@ void PaintLayer::Destroy() {
     if (auto* reference_clip =
             DynamicTo<ReferenceClipPathOperation>(style.ClipPath()))
       reference_clip->RemoveClient(*resource_info_);
+    if (auto* reference_offset =
+            DynamicTo<ReferenceOffsetPathOperation>(style.OffsetPath())) {
+      reference_offset->RemoveClient(*resource_info_);
+    }
     resource_info_->ClearLayer();
   }
 
@@ -2216,6 +2221,27 @@ void PaintLayer::UpdateClipPath(const ComputedStyle* old_style,
   }
 }
 
+void PaintLayer::UpdateOffsetPath(const ComputedStyle* old_style,
+                                  const ComputedStyle& new_style) {
+  OffsetPathOperation* new_offset = new_style.OffsetPath();
+  OffsetPathOperation* old_offset =
+      old_style ? old_style->OffsetPath() : nullptr;
+  if (!new_offset && !old_offset) {
+    return;
+  }
+  const bool had_resource_info = ResourceInfo();
+  if (auto* reference_offset =
+          DynamicTo<ReferenceOffsetPathOperation>(new_offset)) {
+    reference_offset->AddClient(EnsureResourceInfo());
+  }
+  if (had_resource_info) {
+    if (auto* old_reference_offset =
+            DynamicTo<ReferenceOffsetPathOperation>(old_offset)) {
+      old_reference_offset->RemoveClient(*ResourceInfo());
+    }
+  }
+}
+
 void PaintLayer::StyleDidChange(StyleDifference diff,
                                 const ComputedStyle* old_style) {
   UpdateScrollableArea();
@@ -2297,6 +2323,7 @@ void PaintLayer::StyleDidChange(StyleDifference diff,
   UpdateFilters(old_style, new_style);
   UpdateBackdropFilters(old_style, new_style);
   UpdateClipPath(old_style, new_style);
+  UpdateOffsetPath(old_style, new_style);
 
   if (diff.ZIndexChanged()) {
     // We don't need to invalidate paint of objects when paint order

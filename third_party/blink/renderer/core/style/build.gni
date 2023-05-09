@@ -53,6 +53,7 @@ blink_core_sources_style = [
   "quad_length_value.h",
   "reference_clip_path_operation.cc",
   "reference_clip_path_operation.h",
+  "reference_offset_path_operation.h",
   "scoped_css_name.cc",
   "scoped_css_name.h",
   "shadow_data.cc",
@@ -60,6 +61,7 @@ blink_core_sources_style = [
   "shadow_list.cc",
   "shadow_list.h",
   "shape_clip_path_operation.h",
+  "shape_offset_path_operation.h",
   "shape_value.h",
   "style_aspect_ratio.cc",
   "style_aspect_ratio.h",
@@ -123,6 +125,7 @@ blink_core_sources_style = [
   "toggle_root_list.h",
   "toggle_trigger.h",
   "toggle_trigger_list.h",
+  "offset_path_operation.h",
   "unzoomed_length.h",
 ]
 

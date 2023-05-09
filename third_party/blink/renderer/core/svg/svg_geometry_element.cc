@@ -247,6 +247,7 @@ void SVGGeometryElement::GeometryAttributeChanged() {
     layout_object->SetNeedsShapeUpdate();
     MarkForLayoutAndParentResourceInvalidation(*layout_object);
   }
+  NotifyResourceClients();
 }
 
 LayoutObject* SVGGeometryElement::CreateLayoutObject(const ComputedStyle&) {

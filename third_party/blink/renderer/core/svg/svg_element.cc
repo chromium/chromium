@@ -59,8 +59,10 @@
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
 #include "third_party/blink/renderer/core/svg/svg_element_rare_data.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
+#include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_title_element.h"
+#include "third_party/blink/renderer/core/svg/svg_tree_scope_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
@@ -1122,6 +1124,16 @@ void SVGElement::MarkForLayoutAndParentResourceInvalidation(
     LayoutObject& layout_object) {
   LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
       layout_object, true);
+}
+
+void SVGElement::NotifyResourceClients() const {
+  LocalSVGResource* resource =
+      GetTreeScope().EnsureSVGTreeScopedResources().ExistingResourceForId(
+          GetIdAttribute());
+  if (!resource || resource->Target() != this) {
+    return;
+  }
+  resource->NotifyContentChanged();
 }
 
 void SVGElement::InvalidateInstances() {

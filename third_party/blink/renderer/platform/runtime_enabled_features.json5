@@ -1002,6 +1002,11 @@
       base_feature: "none",
     },
     {
+      name: "CSSOffsetPathUrl",
+      status: "experimental",
+      base_feature: "none",
+    },
+    {
       name: "CSSOffsetPositionAnchor",
       status: "experimental",
       base_feature: "none",

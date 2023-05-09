@@ -2723,7 +2723,6 @@ crbug.com/798257 external/wpt/css/css-pseudo/first-line-line-height-002.html [ F
 
 # motion-1 issues
 crbug.com/654669 external/wpt/css/motion/offset-path-shape.html [ Failure ]
-crbug.com/654666 external/wpt/css/motion/offset-path-url.html [ Failure ]
 
 # Various css-values WPT failures
 crbug.com/759914 external/wpt/css/css-values/ch-unit-011.html [ Failure ]

@@ -64,7 +64,9 @@
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
+#include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
+#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/core/style/style_non_inherited_variables.h"
 #include "third_party/blink/renderer/core/style/style_ray.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -1473,11 +1476,11 @@ gfx::PointF GetStartingPointOfThePath(const LayoutBox* box,
 }  // namespace
 
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
+    const BasicShape& shape,
     const LayoutBox* box,
     const gfx::RectF& bounding_box) const {
-  const BasicShape& shape = *OffsetPath();
-  const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, bounding_box);
   Path path;
+  const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, bounding_box);
   if (const auto* circle_or_ellipse =
           DynamicTo<BasicShapeWithCenterAndRadii>(shape);
       circle_or_ellipse && !circle_or_ellipse->HasExplicitCenter()) {
@@ -1504,9 +1507,9 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnBasicShape(
 }
 
 PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
+    const StyleRay& ray,
     const LayoutBox* box,
     const gfx::RectF& bounding_box) const {
-  const auto& ray = To<StyleRay>(*OffsetPath());
   const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, bounding_box);
   const gfx::PointF starting_point =
       GetStartingPointOfThePath(box, OffsetPosition(), reference_box_size);
@@ -1528,9 +1531,9 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnRay(
   return ray.PointAndNormalAtLength(path_length);
 }
 
-PointAndTangent ComputedStyle::CalculatePointAndTangentOnPath() const {
+PointAndTangent ComputedStyle::CalculatePointAndTangentOnPath(
+    const Path& path) const {
   float zoom = EffectiveZoom();
-  const StylePath& path = To<StylePath>(*OffsetPath());
   float path_length = path.length();
   float float_distance =
       FloatValueForLength(OffsetDistance(), path_length * zoom) / zoom;
@@ -1544,7 +1547,7 @@ PointAndTangent ComputedStyle::CalculatePointAndTangentOnPath() const {
     computed_distance = ClampTo<float>(float_distance, 0, path_length);
   }
   PointAndTangent path_position =
-      path.GetPath().PointAndNormalAtLength(computed_distance);
+      path.PointAndNormalAtLength(computed_distance);
   path_position.point.Scale(zoom, zoom);
   return path_position;
 }
@@ -1555,8 +1558,8 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
                                              const gfx::RectF& bounding_box,
                                              gfx::Transform& transform) const {
   // TODO(ericwilligers): crbug.com/638055 Apply offset-position.
-  const BasicShape* path = OffsetPath();
-  if (!path) {
+  const OffsetPathOperation* offset_path = OffsetPath();
+  if (!offset_path) {
     return;
   }
 
@@ -1578,24 +1581,46 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
   }
 
   PointAndTangent path_position;
-  switch (path->GetType()) {
-    case BasicShape::kStylePathType:
-      path_position = CalculatePointAndTangentOnPath();
-      break;
-    case BasicShape::kStyleRayType:
-      path_position = CalculatePointAndTangentOnRay(box, bounding_box);
-      break;
-    case BasicShape::kBasicShapeCircleType:
-    case BasicShape::kBasicShapeEllipseType:
-    case BasicShape::kBasicShapeInsetType:
-    case BasicShape::kBasicShapeXYWHType:
-    case BasicShape::kBasicShapeRectType:
-    case BasicShape::kBasicShapePolygonType:
-      path_position = CalculatePointAndTangentOnBasicShape(box, bounding_box);
-      break;
-    default:
-      NOTREACHED();
-      break;
+  if (const auto* shape = DynamicTo<ShapeOffsetPathOperation>(offset_path)) {
+    const BasicShape& basic_shape =
+        To<ShapeOffsetPathOperation>(offset_path)->GetBasicShape();
+    switch (basic_shape.GetType()) {
+      case BasicShape::kStylePathType: {
+        const StylePath& path = To<StylePath>(basic_shape);
+        path_position = CalculatePointAndTangentOnPath(path.GetPath());
+        break;
+      }
+      case BasicShape::kStyleRayType: {
+        const StyleRay& ray = To<StyleRay>(basic_shape);
+        path_position = CalculatePointAndTangentOnRay(ray, box, bounding_box);
+        break;
+      }
+      case BasicShape::kBasicShapeCircleType:
+      case BasicShape::kBasicShapeEllipseType:
+      case BasicShape::kBasicShapeInsetType:
+      case BasicShape::kBasicShapeXYWHType:
+      case BasicShape::kBasicShapeRectType:
+      case BasicShape::kBasicShapePolygonType: {
+        path_position = CalculatePointAndTangentOnBasicShape(basic_shape, box,
+                                                             bounding_box);
+        break;
+      }
+    }
+  } else {
+    const auto* url = DynamicTo<ReferenceOffsetPathOperation>(offset_path);
+    if (!url->Resource()) {
+      return;
+    }
+    const auto* target =
+        DynamicTo<SVGGeometryElement>(url->Resource()->Target());
+    Path path;
+    if (!target || !target->GetComputedStyle()) {
+      // Failure to find a shape should be equivalent to a "m0,0" path.
+      path.MoveTo({0, 0});
+    } else {
+      path = target->AsPath();
+    }
+    path_position = CalculatePointAndTangentOnPath(path);
   }
 
   if (rotate.type == OffsetRotationType::kFixed) {

@@ -59,7 +59,9 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
@@ -5664,8 +5666,16 @@ const CSSValue* OffsetPath::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool allow_visited_style) const {
-  if (const BasicShape* style_motion_path = style.OffsetPath()) {
-    return ValueForBasicShape(style, style_motion_path);
+  const OffsetPathOperation* operation = style.OffsetPath();
+  if (operation) {
+    if (const auto* shape_operation =
+            DynamicTo<ShapeOffsetPathOperation>(operation)) {
+      return ValueForBasicShape(style, &shape_operation->GetBasicShape());
+    }
+    const auto& reference_operation =
+        To<ReferenceOffsetPathOperation>(*operation);
+    AtomicString url = reference_operation.Url();
+    return MakeGarbageCollected<cssvalue::CSSURIValue>(url);
   }
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }

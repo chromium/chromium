@@ -6556,11 +6556,16 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenRange& range,
   if (RuntimeEnabledFeatures::CSSOffsetPathRayEnabled() &&
       function_id == CSSValueID::kRay) {
     value = ConsumeRay(range, context);
-  } else if (IsBasicShapeSupportedByOffsetPath(function_id)) {
+  }
+  if (!value && IsBasicShapeSupportedByOffsetPath(function_id)) {
     value = ConsumeBasicShape(range, context, AllowPathValue::kAllow,
                               AllowBasicShapeRectValue::kAllow,
                               AllowBasicShapeXYWHValue::kAllow);
-  } else {
+  }
+  if (!value && RuntimeEnabledFeatures::CSSOffsetPathUrlEnabled()) {
+    value = ConsumeUrl(range, context);
+  }
+  if (!value) {
     value = ConsumePathOrNone(range);
   }
 
