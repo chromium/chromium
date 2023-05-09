@@ -130,10 +130,12 @@ void ScreenAIInstallState::SetComponentFolder(
 void ScreenAIInstallState::SetState(State state) {
   if (state == state_) {
     // Failed and ready state can be repeated as they come from different
-    // profiles. The other state changes are controlled by singluar objects.
+    // profiles. Downloading can be repeated in ChromeOS tests that call
+    // LoginManagerTest::AddUser() and reset UserSessionInitializer.
     // TODO(crbug.com/1278249): While the case is highly unexpected, add more
     // control logic if state is changed from failed to ready or vice versa.
-    DCHECK(state == State::kReady || state == State::kFailed);
+    DCHECK(state == State::kReady || state == State::kFailed ||
+           state == State::kDownloading);
     return;
   }
 
