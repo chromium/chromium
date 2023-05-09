@@ -11,9 +11,11 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/affiliation/fake_affiliation_service.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/test_password_store.h"
@@ -24,6 +26,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -126,6 +129,8 @@ UIColor* RedColor() {
 class SafetyCheckMediatorTest : public PlatformTest {
  public:
   SafetyCheckMediatorTest() {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordsGrouping);
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -138,6 +143,12 @@ class SafetyCheckMediatorTest : public PlatformTest {
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    test_cbs_builder.AddTestingFactory(
+        IOSChromeAffiliationServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<password_manager::FakeAffiliationService>());
+        })));
     browser_state_ = test_cbs_builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
@@ -229,6 +240,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
