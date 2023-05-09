@@ -1755,7 +1755,7 @@ const base::FeatureParam<int> kMaxFCPDelayMsForRenderBlockingFonts(
 
 BASE_FEATURE(kWebRtcStatsReportIdl,
              "WebRtcStatsReportIdl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kQuoteEmptySecChUaStringHeadersConsistently,
              "QuoteEmptySecChUaStringHeadersConsistently",
