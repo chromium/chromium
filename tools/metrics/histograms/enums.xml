@@ -42361,6 +42361,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4560"
       label="EventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved"/>
   <int value="4561" label="LinkRelPreloadAsFont"/>
+  <int value="4562" label="CrossWindowAccessToBrowserGeneratedDocument"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

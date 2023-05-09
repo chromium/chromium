@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/containers/enum_set.h"
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -271,18 +272,27 @@ enum NodeListInvalidationType : int {
 };
 const int kNumNodeListInvalidationTypes = kInvalidateOnAnyAttrChange + 1;
 
-enum DocumentClass {
-  kDefaultDocumentClass = 0,
-  kHTMLDocumentClass = 1,
-  kXHTMLDocumentClass = 1 << 1,
-  kImageDocumentClass = 1 << 2,
-  kPluginDocumentClass = 1 << 3,
-  kMediaDocumentClass = 1 << 4,
-  kSVGDocumentClass = 1 << 5,
-  kXMLDocumentClass = 1 << 6,
+// Specifies a class of document. Values are not mutually exclusive, and can be
+// combined using `DocumentClassFlags`.
+//
+// Remember to keep `kMinValue` and `kMaxValue` up to date.
+enum class DocumentClass {
+  kHTML,
+  kXHTML,
+  kImage,
+  kPlugin,
+  kMedia,
+  kSVG,
+  kXML,
+  kText,
+
+  // For `DocumentClassFlags`.
+  kMinValue = kHTML,
+  kMaxValue = kText,
 };
 
-using DocumentClassFlags = unsigned char;
+using DocumentClassFlags = base::
+    EnumSet<DocumentClass, DocumentClass::kMinValue, DocumentClass::kMaxValue>;
 
 // A map of IDL attribute name to Element list value, for one particular
 // element. For example,
@@ -352,7 +362,7 @@ class CORE_EXPORT Document : public ContainerNode,
   static Document* Create(Document&);
 
   explicit Document(const DocumentInit& init,
-                    DocumentClassFlags flags = kDefaultDocumentClass);
+                    DocumentClassFlags flags = DocumentClassFlags());
   ~Document() override;
 
   // Constructs a Document instance without a subclass for testing.
@@ -557,20 +567,29 @@ class CORE_EXPORT Document : public ContainerNode,
   // "defaultView" attribute defined in HTML spec.
   DOMWindow* defaultView() const;
 
-  bool IsHTMLDocument() const { return document_classes_ & kHTMLDocumentClass; }
+  bool IsHTMLDocument() const {
+    return document_classes_.Has(DocumentClass::kHTML);
+  }
   bool IsXHTMLDocument() const {
-    return document_classes_ & kXHTMLDocumentClass;
+    return document_classes_.Has(DocumentClass::kXHTML);
   }
-  bool IsXMLDocument() const { return document_classes_ & kXMLDocumentClass; }
+  bool IsXMLDocument() const {
+    return document_classes_.Has(DocumentClass::kXML);
+  }
   bool IsImageDocument() const {
-    return document_classes_ & kImageDocumentClass;
+    return document_classes_.Has(DocumentClass::kImage);
   }
-  bool IsSVGDocument() const { return document_classes_ & kSVGDocumentClass; }
+  bool IsSVGDocument() const {
+    return document_classes_.Has(DocumentClass::kSVG);
+  }
   bool IsPluginDocument() const {
-    return document_classes_ & kPluginDocumentClass;
+    return document_classes_.Has(DocumentClass::kPlugin);
   }
   bool IsMediaDocument() const {
-    return document_classes_ & kMediaDocumentClass;
+    return document_classes_.Has(DocumentClass::kMedia);
+  }
+  bool IsTextDocument() const {
+    return document_classes_.Has(DocumentClass::kText);
   }
 
   bool HasSVGRootNode() const;

@@ -2417,6 +2417,152 @@ IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
   CheckCounter(WebFeature::kDocumentOpenAliasedOriginDocumentDomain, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToHTMLDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/hello.html"));
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+
+  // Plain HTML should not count as a browser-generated document.
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToXHTMLDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/security/minimal.xhtml"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+
+  // XHTML should not count as a browser-generated document, even though it is
+  // technically XML.
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToSVGDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/circle.svg"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+
+  // SVG should not count as a browser-generated document, even though it is
+  // technically XML.
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToImageDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/image.jpg"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToMediaDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/media/bear.mp4"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToTextDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/site_isolation/valid.json"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToXMLDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/site_isolation/valid.xml"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeWebPlatformSecurityMetricsBrowserTest,
+                       CrossWindowAccessToPluginDocument) {
+  EXPECT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server().GetURL("/empty.html")));
+
+  LoadIFrame(https_server().GetURL("/site_isolation/fake.pdf"));
+
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  // This should throw a `SecurityError` according to the spec, but does not due
+  // to https://crbug.com/1257611.
+  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+    window.frames[0].contentDocument;
+  )"));
+
+  // We would like to count such accesses for the purposes of estimating the
+  // impact of fixing https://crbug.com/1257611, but it does not seem to be as
+  // easy as for other document classes. The enclosing document does not seem to
+  // count as a "plugin document".
+  CheckCounter(WebFeature::kCrossWindowAccessToBrowserGeneratedDocument, 0);
+
+  // Accessing the inner frame throws a `SecurityError`, however.
+  EXPECT_EQ("SecurityError", content::EvalJs(web_contents(), R"(
+    (() => {
+      try {
+        window.frames[0].frames[0].contentDocument;
+      } catch (e) {
+        return e.name;
+      }
+      return "success";
+    })()
+  )"));
+}
+
 // TODO(arthursonzogni): Add basic test(s) for the WebFeatures:
 // [ ] CrossOriginOpenerPolicySameOrigin
 // [ ] CrossOriginOpenerPolicySameOriginAllowPopups

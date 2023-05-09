@@ -43,7 +43,11 @@
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/image_document.h"
+#include "third_party/blink/renderer/core/html/media/media_document.h"
+#include "third_party/blink/renderer/core/html/text_document.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
@@ -178,6 +182,18 @@ bool CanAccessWindowInternal(
           DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
     }
     return false;
+  }
+
+  if (accessing_window != local_target_window) {
+    Document* doc = local_target_window->document();
+    if (doc->IsImageDocument() || doc->IsMediaDocument() ||
+        doc->IsTextDocument() ||
+        (doc->IsXMLDocument() && !doc->IsXHTMLDocument() &&
+         !doc->IsSVGDocument())) {
+      UseCounter::Count(
+          accessing_window->document(),
+          WebFeature::kCrossWindowAccessToBrowserGeneratedDocument);
+    }
   }
 
   // Notify the loader's client if the initial document has been accessed.

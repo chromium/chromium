@@ -3899,6 +3899,7 @@ enum WebFeature {
   kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial = 4559,
   kEventTimingPaintedPresentationPromiseResolvedWithEarlierPromiseUnresolved = 4560,
   kLinkRelPreloadAsFont = 4561,
+  kCrossWindowAccessToBrowserGeneratedDocument = 4562,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
