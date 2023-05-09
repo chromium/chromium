@@ -530,22 +530,20 @@ body:not(.multi-camera) #switch-device {
 }
 
 #camera-mode {
-  background-image: url(/images/camera_mode_photo.svg);
   height: 40px;
   visibility: hidden;
   width: 40px;
+
+  :is(svg-wrapper) {
+    display: none;
+  }
 }
 
-body.scan #camera-mode {
-  background-image: url(/images/camera_mode_scan.svg);
-}
-
-body.video #camera-mode {
-  background-image: url(/images/camera_mode_video.svg);
-}
-
-body.portrait #camera-mode {
-  background-image: url(/images/camera_mode_portrait.svg);
+body:not(.scan):not(.video):not(.portrait) #camera-mode svg-wrapper.photo,
+body.scan #camera-mode svg-wrapper.scan,
+body.video #camera-mode svg-wrapper.video,
+body.portrait #camera-mode svg-wrapper.portrait {
+  display: unset;
 }
 
 body.mode-switching:not(.streaming) #camera-mode {
@@ -1317,8 +1315,30 @@ html[dir=rtl] .menu-header .icon {
   background: var(--cros-sys-scrim);
 }
 
+/*
+ * The icon on the splash screen is not using either data-svg or
+ * svg-wrapper, and is done with pure CSS, to avoid waiting on JS,
+ * and minimize the time before app load and the icon is displayed.
+ *
+ * We also provide fallback value for the background colors to
+ * minimize the flicker when JS is load, since the definition CSS
+ * of dynamic color tokens is also loaded by JS.
+ *
+ * TODO(pihsun): Remove background color fallback when dynamic color is default
+ * on, and the colors.css is moved into HTML.
+ */
 #view-splash {
-  background: no-repeat center url(/images/camera_mode_photo.svg), var(--grey-900);
+  align-items: center;
+  background: var(--cros-sys-app_base, var(--grey-900));
+  display: flex;
+  justify-content: center;
+}
+
+#view-splash .icon {
+  -webkit-mask: url(/images/camera_mode_photo.svg);
+  background: var(--cros-sys-on_surface, var(--grey-200));
+  height: 40px;
+  width: 40px;
 }
 
 .hidden {

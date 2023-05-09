@@ -92,7 +92,16 @@
           </div>
           <div class="barcode-scan-box centered-overlay"></div>
           <div class="snackbar" aria-live="polite"></div>
-          <div id="camera-mode" class="centered-overlay"></div>
+          <div id="camera-mode" class="centered-overlay">
+            <svg-wrapper name="camera_mode_photo.svg" class="photo">
+            </svg-wrapper>
+            <svg-wrapper name="camera_mode_scan.svg" class="scan">
+            </svg-wrapper>
+            <svg-wrapper name="camera_mode_video.svg" class="video">
+            </svg-wrapper>
+            <svg-wrapper name="camera_mode_portrait.svg" class="portrait">
+            </svg-wrapper>
+          </div>
         </div>
         <div id="barcode-chip-url-container"
              class="invisible barcode-chip-container">
@@ -531,7 +540,9 @@
     <div id="view-warning">
       <div id="error-msg" aria-live="polite"></div>
     </div>
-    <div id="view-splash"></div>
+    <div id="view-splash">
+      <div class="icon"></div>
+    </div>
     <div id="toast" class="centered-overlay" tabindex="-1"
          aria-live="polite"></div>
     <div id="tooltip" aria-hidden="true"></div>
