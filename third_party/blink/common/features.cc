@@ -1715,14 +1715,17 @@ BASE_FEATURE(kSpeculationRulesPrefetchFuture,
              "SpeculationRulesPrefetchFuture",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(https://crbug.com/1331187): Delete the flag.
 BASE_FEATURE(kAllowPageWithIDBConnectionInBFCache,
              "AllowPageWithIDBConnectionInBFCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(https://crbug.com/1331187): Delete the flag.
 BASE_FEATURE(kAllowPageWithIDBTransactionInBFCache,
              "AllowPageWithIDBTransactionInBFCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(https://crbug.com/1331187): Delete the function.
 bool IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled() {
   return base::FeatureList::IsEnabled(kAllowPageWithIDBConnectionInBFCache) &&
          base::FeatureList::IsEnabled(kAllowPageWithIDBTransactionInBFCache);
