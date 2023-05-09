@@ -4,10 +4,12 @@
 
 #include "ash/login/ui/login_big_user_view.h"
 
+#include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/login_constants.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
+#include "base/logging.h"
 #include "components/account_id/account_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -75,6 +77,11 @@ void LoginBigUserView::UpdateForUser(const LoginUserInfo& user) {
   // 1. Public Account -> Auth User
   // 2. Auth User      -> Public Account
   if (IsPublicAccountUser(user) != IsPublicAccountUser(GetCurrentUser())) {
+    if (Shell::Get()->login_screen_controller()->IsAuthenticating()) {
+      // TODO(b/276246832): We should avoid re-layouting during Authentication.
+      LOG(WARNING)
+          << "LoginBigUserView::UpdateForUser called during Authentication.";
+    }
     CreateChildView(user);
   }
 
