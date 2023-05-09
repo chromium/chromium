@@ -70,6 +70,10 @@ class WebDialogDelegate;
 struct SelectedFileInfo;
 }  // namespace ui
 
+namespace views {
+class Widget;
+}  // namespace views
+
 namespace webapps {
 struct Screenshot;
 }  // namespace webapps
@@ -94,8 +98,8 @@ gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
                                 bool show = true);
 
 // Show `dialog_model` as a modal dialog to `browser`.
-void ShowBrowserModal(Browser* browser,
-                      std::unique_ptr<ui::DialogModel> dialog_model);
+views::Widget* ShowBrowserModal(Browser* browser,
+                                std::unique_ptr<ui::DialogModel> dialog_model);
 
 // Show `dialog_model` as a bubble anchored to `anchor_element` in `browser`.
 // `anchor_element` must refer to an element currently present in `browser`.

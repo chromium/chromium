@@ -4294,7 +4294,10 @@ static_library("ui") {
     sources += [
       "startup/web_app_info_recorder_utils.cc",
       "startup/web_app_info_recorder_utils.h",
+      "views/device_signals_consent/device_signals_consent_dialog_coordinator.cc",
+      "views/device_signals_consent/device_signals_consent_dialog_coordinator.h",
     ]
+    deps += [ "//components/device_signals/core/browser" ]
   }
 
   if (enable_webui_certificate_viewer) {

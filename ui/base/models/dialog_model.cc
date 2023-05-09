@@ -86,7 +86,6 @@ DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
   // Confirm the button exists.
   switch (button) {
     case DIALOG_BUTTON_NONE:
-      NOTREACHED();
       break;
     case DIALOG_BUTTON_OK:
       DCHECK(model_->ok_button_);

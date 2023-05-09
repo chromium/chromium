@@ -119,6 +119,14 @@ TEST_F(BubbleDialogModelHostTest, ElementIDsReportedCorrectly) {
   bubble_widget->CloseNow();
 }
 
+TEST_F(BubbleDialogModelHostTest, DefaultButtonWithoutOverride) {
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder().AddCancelButton(base::OnceClosure()).Build(),
+      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT);
+  EXPECT_EQ(host->GetDefaultDialogButton(),
+            ui::DialogButton::DIALOG_BUTTON_CANCEL);
+}
+
 TEST_F(BubbleDialogModelHostTest, OverrideDefaultButton) {
   auto host = std::make_unique<BubbleDialogModelHost>(
       ui::DialogModel::Builder()
@@ -128,6 +136,17 @@ TEST_F(BubbleDialogModelHostTest, OverrideDefaultButton) {
       /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT);
   EXPECT_EQ(host->GetDefaultDialogButton(),
             ui::DialogButton::DIALOG_BUTTON_CANCEL);
+}
+
+TEST_F(BubbleDialogModelHostTest, OverrideNoneDefaultButton) {
+  auto host = std::make_unique<BubbleDialogModelHost>(
+      ui::DialogModel::Builder()
+          .AddCancelButton(base::OnceClosure())
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+          .Build(),
+      /*anchor_view=*/nullptr, BubbleBorder::Arrow::TOP_RIGHT);
+  EXPECT_EQ(host->GetDefaultDialogButton(),
+            ui::DialogButton::DIALOG_BUTTON_NONE);
 }
 
 TEST_F(BubbleDialogModelHostTest, OverrideDefaultButtonDeathTest) {
