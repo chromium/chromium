@@ -1489,6 +1489,14 @@ Style notes:
         Scanning
       </message>
 
+      <!--  Video Conference Speaking On Mute Nudge  -->
+      <message name="IDS_VIDEO_CONFERENCE_SPEAKING_ON_MUTE_OPT_IN_TITLE" desc="The title of the nudge shown to a user asking them to opt-in to the speaking on mute feature.">
+        Turn on mute nudge?
+      </message>
+      <message name="IDS_VIDEO_CONFERENCE_SPEAKING_ON_MUTE_OPT_IN_BODY" desc="The body of the nudge shown to a user asking them to opt-in to the speaking on mute feature.">
+        You’ll get notified if you talk while muted. Audio never leaves your device.
+      </message>
+
        <!-- Video Conference tray  -->
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP" desc="The tooltip for the toggle bubble button in the video conference tray.">
         Camera and audio controls
@@ -1528,7 +1536,7 @@ Style notes:
         Hide apps
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_NAME" desc="Text for name of the background blur effect in the VC bubble.">
-        Background Blur
+        Background blur
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_OFF" desc="Text for background blur 'off' setting, in the VC bubble.">
         Off
@@ -1536,7 +1544,7 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LOWEST" desc="Text for background blur 'lowest' setting, in the VC bubble.">
         Lowest
       </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT" desc="Text for background blur 'light' setting, in the VC bubble.">
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_LIGHT" meaning="This describes the strength of background blur for a video conferencing background. In this case, `light` refers to the level of intensity, so this is a slight blur." desc="Text for background blur 'light' setting, in the VC bubble.">
         Light
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MEDIUM" desc="Text for background blur 'medium' setting, in the VC bubble.">
@@ -1548,14 +1556,14 @@ Style notes:
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_MAXIMUM" desc="Text for background blur 'maximum' setting, in the VC bubble.">
         Maximum
       </message>
-      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL" desc="Text 'full' is a synonym of the background blur 'maximum' setting, in the VC bubble.">
+      <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_BACKGROUND_BLUR_FULL" meaning="This describes the strength of background blur for a video conferencing background. In this case, `full` refers to the level of intensity, so this is a full-strength, strongly blurred background." desc="Text 'full' is a synonym of the background blur 'maximum' setting, in the VC bubble.">
         Full
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_BUBBLE_PORTRAIT_RELIGHT_NAME" desc="Text for name of the portrait relight effect in the VC bubble, which is a toggle and effectively adjusts the users lighting.">
-        Adjust Lighting
+        Improve lighting
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED" desc="A toast message that we show when user tries to speak while muted on system-level.">
-        Are you speaking? You are on mute. Learn more
+        Are you talking? Your mic is off. Select the mic to turn it on.
       </message>
       <message name="IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED" desc="A toast message that we show when an app tries to access camera or microphone while it is disabled by software.">
         <ph name="APP_NAME">$1<ex>Meet</ex></ph> wants to use your <ph name="DEVICE_NAME">$2<ex>camera</ex></ph>
