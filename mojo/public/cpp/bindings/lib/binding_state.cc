@@ -20,10 +20,7 @@ namespace internal {
 
 BindingStateBase::BindingStateBase() = default;
 
-BindingStateBase::~BindingStateBase() {
-  recordreplay::Assert("[RUN-1124-1902] ~BindingStateBase %d",
-                       router_->HasOneRef());
-}
+BindingStateBase::~BindingStateBase() = default;
 
 void BindingStateBase::SetFilter(std::unique_ptr<MessageFilter> filter) {
   DCHECK(endpoint_client_);
