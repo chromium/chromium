@@ -195,14 +195,14 @@ class AddressComponent {
 
   // Wrapper function around
   // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/false);
-  bool SetValueForType(const ServerFieldType& type,
+  bool SetValueForType(ServerFieldType field_type,
                        const std::u16string& value,
                        const VerificationStatus& status);
 
   // Wrapper function around
   // SetValueForTypeIfPossible(/*invalidate_child_nodes=*/true);
   // TODO(1440504): Remove and merge with SetValueForType.
-  bool SetValueForTypeAndResetSubstructure(const ServerFieldType& type,
+  bool SetValueForTypeAndResetSubstructure(ServerFieldType field_type,
                                            const std::u16string& value,
                                            const VerificationStatus& status);
 
@@ -374,6 +374,9 @@ class AddressComponent {
   // Each observed node contributes to the validation score by 1.
   virtual int GetStructureVerificationScore() const;
 
+  // Returns whether `field_type` is a supported type for the current node.
+  bool IsSupportedType(ServerFieldType field_type) const;
+
   // Returns a vector containing the |storage_types_| of all direct
   // subcomponents.
   std::vector<ServerFieldType> GetSubcomponentTypes() const;
@@ -400,18 +403,15 @@ class AddressComponent {
 
   // This method is used to set the value given by a type different than the
   // storage type. It must implement the conversion logic specific to each type.
-  // It returns true if conversion logic exists and the type can be set.
-  virtual bool SetValueForOtherSupportedType(ServerFieldType field_type,
+  virtual void SetValueForOtherSupportedType(ServerFieldType field_type,
                                              const std::u16string& value,
                                              const VerificationStatus& status);
 
   // This method is used to retrieve the value for a supported field type
   // different from the storage type. It must implement the conversion logic
-  // specific to each type. It returns true if the type is supported and the
-  // value can be written back to value.
-  // The method must handle |nullptr|s for both the value and status.
-  virtual bool GetValueForOtherSupportedType(ServerFieldType field_type,
-                                             std::u16string* value) const;
+  // specific to each type.
+  virtual std::u16string GetValueForOtherSupportedType(
+      ServerFieldType field_type) const;
 
   // Clears all parsed and formatted values.
   void ClearAllParsedAndFormattedValues();
@@ -475,39 +475,13 @@ class AddressComponent {
   int MaximumNumberOfAssignedAddressComponentsOnNodeToLeafPaths() const;
 
  private:
-  // The method sets the value of the current node if its |storage_type_| is
-  // |type| or if |GetValueForOtherSupportedType()| supports
-  // retrieving |type|. Otherwise, the call is delegated recursively to the
-  // node's children.
-  // Returns true if the |value_| and |verification_status_| were successfully
-  // set for this or an ancestor node with the storage type |type|. If
-  // |invalidate_child_nodes|, all child nodes of the assigned node are
-  // unassigned. If |invalidate_parent_nodes|, all ancestor nodes of the
-  // assigned node as unassigned.
-  bool SetValueForTypeIfPossible(ServerFieldType field_type,
-                                 const std::u16string& value,
-                                 const VerificationStatus& verification_status,
-                                 bool invalidate_child_nodes);
+  // Returns the node in the tree that supports `field_type`. This node, if it
+  // exists, is unique by definition. Returns nullptr if no such node exists.
+  AddressComponent* GetNodeForType(ServerFieldType field_type);
 
-  // Get the value and status of a |type|,
-  // Returns false if the |type| is not supported by the structure.
-  // The method returns |value_| and |validation_status_| of the current node
-  // if its |storage_type_| is |type| or if
-  // |SetValueForOtherSupportedType()| supports setting
-  // |type|. Otherwise, the call is delegated recursively to the node's
-  // children. Returns false if the neither the node or one of its ancestors
-  // supports |type|.
-  bool GetValueAndStatusForTypeIfPossible(ServerFieldType field_type,
-                                          std::u16string* value,
-                                          VerificationStatus* status) const;
+  // const version of GetNodeForType.
+  const AddressComponent* GetNodeForType(ServerFieldType field_type) const;
 
-  // Recursively determines the validity status of a component value associated
-  // with |field_type_name|.  If |wipe_if_not|, the value is unset if invalid.
-  // Returns true if it is possible to determine the validity status of the
-  // value in this subcomponent.
-  bool GetIsValueForTypeValidIfPossible(ServerFieldType field_type,
-                                        bool* validity_status,
-                                        bool wipe_if_not = false);
   // Function to be called by child nodes on construction to register
   // themselves as child nodes.
   void RegisterChildNode(AddressComponent* child);

@@ -42,11 +42,11 @@ class NameMiddle : public AddressComponent {
  protected:
   // Implements support for getting the value for the |MIDDLE_NAME_INITIAL|
   // type.
-  bool GetValueForOtherSupportedType(ServerFieldType field_type,
-                                     std::u16string* value) const override;
+  std::u16string GetValueForOtherSupportedType(
+      ServerFieldType field_type) const override;
 
   // Implements support for setting the |MIDDLE_NAME_INITIAL| type.
-  bool SetValueForOtherSupportedType(ServerFieldType field_type,
+  void SetValueForOtherSupportedType(ServerFieldType field_type,
                                      const std::u16string& value,
                                      const VerificationStatus& status) override;
 };

@@ -42,31 +42,22 @@ class TestAtomicMiddleNameAddressComponent : public AddressComponent {
 
   void GetAdditionalSupportedFieldTypes(
       ServerFieldTypeSet* supported_types) const override {
-    DCHECK(supported_types->find(NAME_MIDDLE_INITIAL) ==
-           supported_types->end());
+    CHECK(supported_types->find(NAME_MIDDLE_INITIAL) == supported_types->end());
     supported_types->insert(NAME_MIDDLE_INITIAL);
   }
 
-  bool SetValueForOtherSupportedType(
+  void SetValueForOtherSupportedType(
       ServerFieldType field_type,
       const std::u16string& value,
       const VerificationStatus& status) override {
-    if (field_type == NAME_MIDDLE_INITIAL) {
-      SetValue(value, status);
-      return true;
-    }
-    return false;
+    CHECK(IsSupportedType(field_type));
+    SetValue(value, status);
   }
 
-  bool GetValueForOtherSupportedType(ServerFieldType field_type,
-                                     std::u16string* value) const override {
-    if (field_type == NAME_MIDDLE_INITIAL) {
-      if (value) {
-        *value = GetValue().substr(0, 1);
-      }
-      return true;
-    }
-    return false;
+  std::u16string GetValueForOtherSupportedType(
+      ServerFieldType field_type) const override {
+    CHECK(IsSupportedType(field_type));
+    return GetValue().substr(0, 1);
   }
 };
 

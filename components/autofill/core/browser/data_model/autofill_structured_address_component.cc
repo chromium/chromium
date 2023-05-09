@@ -165,36 +165,19 @@ std::u16string AddressComponent::GetCommonCountryForMerge(
 
 bool AddressComponent::IsValueForTypeValid(ServerFieldType field_type,
                                            bool wipe_if_not) {
-  bool validity_status;
-  if (GetIsValueForTypeValidIfPossible(field_type, &validity_status,
-                                       wipe_if_not)) {
-    return validity_status;
+  AddressComponent* node_for_type = GetNodeForType(field_type);
+  if (!node_for_type) {
+    return false;
   }
-  return false;
+  const bool validity_status = node_for_type->IsValueValid();
+  if (!validity_status && wipe_if_not) {
+    node_for_type->UnsetValue();
+  }
+  return validity_status;
 }
 
 void AddressComponent::RegisterChildNode(AddressComponent* child) {
   subcomponents_.push_back(child);
-}
-
-bool AddressComponent::GetIsValueForTypeValidIfPossible(
-    ServerFieldType field_type,
-    bool* validity_status,
-    bool wipe_if_not) {
-  if (field_type == storage_type_) {
-    *validity_status = IsValueValid();
-    if (!(*validity_status) && wipe_if_not)
-      UnsetValue();
-    return true;
-  }
-
-  for (auto* subcomponent : subcomponents_) {
-    if (subcomponent->GetIsValueForTypeValidIfPossible(
-            field_type, validity_status, wipe_if_not)) {
-      return true;
-    }
-  }
-  return false;
 }
 
 VerificationStatus AddressComponent::GetVerificationStatus() const {
@@ -227,6 +210,12 @@ void AddressComponent::UnsetValue() {
   sorted_normalized_tokens_.reset();
 }
 
+bool AddressComponent::IsSupportedType(ServerFieldType field_type) const {
+  ServerFieldTypeSet supported_types{storage_type_};
+  GetAdditionalSupportedFieldTypes(&supported_types);
+  return supported_types.contains(field_type);
+}
+
 void AddressComponent::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {
   // A proper AddressComponent tree contains every type only once.
@@ -241,17 +230,14 @@ void AddressComponent::GetSupportedTypes(
   }
 }
 
-bool AddressComponent::SetValueForOtherSupportedType(
+void AddressComponent::SetValueForOtherSupportedType(
     ServerFieldType field_type,
     const std::u16string& value,
-    const VerificationStatus& status) {
-  return false;
-}
+    const VerificationStatus& status) {}
 
-bool AddressComponent::GetValueForOtherSupportedType(
-    ServerFieldType field_type,
-    std::u16string* value) const {
-  return false;
+std::u16string AddressComponent::GetValueForOtherSupportedType(
+    ServerFieldType field_type) const {
+  return {};
 }
 
 std::u16string AddressComponent::GetBestFormatString() const {
@@ -280,50 +266,34 @@ std::vector<ServerFieldType> AddressComponent::GetSubcomponentTypes() const {
 }
 
 bool AddressComponent::SetValueForType(
-    const ServerFieldType& type,
+    ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& verification_status) {
-  return SetValueForTypeIfPossible(type, value, verification_status, false);
+  AddressComponent* node_for_type = GetNodeForType(field_type);
+  if (!node_for_type) {
+    return false;
+  }
+  node_for_type->GetStorageType() == field_type
+      ? node_for_type->SetValue(value, verification_status)
+      : node_for_type->SetValueForOtherSupportedType(field_type, value,
+                                                     verification_status);
+  return true;
 }
 
 bool AddressComponent::SetValueForTypeAndResetSubstructure(
-    const ServerFieldType& type,
-    const std::u16string& value,
-    const VerificationStatus& verification_status) {
-  return SetValueForTypeIfPossible(type, value, verification_status,
-                                   /*invalidate_child_nodes=*/true);
-}
-
-bool AddressComponent::SetValueForTypeIfPossible(
     ServerFieldType field_type,
     const std::u16string& value,
-    const VerificationStatus& verification_status,
-    bool invalidate_child_nodes) {
-  bool value_set = false;
-  // If the type is the storage type of the component, it can directly be
-  // returned.
-  if (field_type == storage_type_) {
-    SetValue(value, verification_status);
-    value_set = true;
-  } else if (SetValueForOtherSupportedType(field_type, value,
-                                           verification_status)) {
-    // The conversion using a field type was successful.
-    value_set = true;
+    const VerificationStatus& verification_status) {
+  AddressComponent* node_for_type = GetNodeForType(field_type);
+  if (!node_for_type) {
+    return false;
   }
-  if (value_set) {
-    if (invalidate_child_nodes) {
-      UnsetSubcomponents();
-    }
-    return true;
-  }
-  // Finally, probe if the type is supported by one of the subcomponents.
-  for (auto* subcomponent : subcomponents_) {
-    if (subcomponent->SetValueForTypeIfPossible(
-            field_type, value, verification_status, invalidate_child_nodes)) {
-      return true;
-    }
-  }
-  return false;
+  node_for_type->GetStorageType() == field_type
+      ? node_for_type->SetValue(value, verification_status)
+      : node_for_type->SetValueForOtherSupportedType(field_type, value,
+                                                     verification_status);
+  node_for_type->UnsetSubcomponents();
+  return true;
 }
 
 void AddressComponent::UnsetAddressComponentAndItsSubcomponents() {
@@ -354,64 +324,54 @@ void AddressComponent::FillTreeGaps() {
   }
 }
 
-bool AddressComponent::GetValueAndStatusForTypeIfPossible(
-    ServerFieldType field_type,
-    std::u16string* value,
-    VerificationStatus* status) const {
-  // If the type is the storage type of the component, it can be assigned.
-  if (field_type == storage_type_) {
-    if (value) {
-      *value = GetValue();
-    }
-    if (status) {
-      *status = GetVerificationStatus();
-    }
-    return true;
+const AddressComponent* AddressComponent::GetNodeForType(
+    ServerFieldType field_type) const {
+  // Check if the current node supports `field_type`. If so return the node.
+  if (IsSupportedType(field_type)) {
+    return this;
   }
-  // Otherwise if the type is supported, the node's value for that type can be
-  // assigned.
-  if (GetValueForOtherSupportedType(field_type, value)) {
-    if (status) {
-      *status = GetVerificationStatus();
-    }
-    return true;
-  }
-  // Finally, try to retrieve the value from one of the subcomponents.
+  // Check if any of the descendants of the node support `field_type`
   for (const auto* subcomponent : subcomponents_) {
-    if (subcomponent->GetValueAndStatusForTypeIfPossible(field_type, value,
-                                                         status)) {
-      return true;
+    if (const AddressComponent* matched_subcomponent =
+            subcomponent->GetNodeForType(field_type);
+        matched_subcomponent) {
+      return matched_subcomponent;
     }
   }
-  return false;
+  return nullptr;
+}
+
+AddressComponent* AddressComponent::GetNodeForType(ServerFieldType field_type) {
+  return const_cast<AddressComponent*>(
+      const_cast<const AddressComponent*>(this)->GetNodeForType(field_type));
 }
 
 std::u16string AddressComponent::GetValueForType(
     ServerFieldType field_type) const {
-  std::u16string value;
-  GetValueAndStatusForTypeIfPossible(field_type, &value, nullptr);
-  return value;
+  const AddressComponent* node_for_type = GetNodeForType(field_type);
+  if (!node_for_type) {
+    return {};
+  }
+  return node_for_type->GetStorageType() == field_type
+             ? node_for_type->GetValue()
+             : node_for_type->GetValueForOtherSupportedType(field_type);
 }
 
 VerificationStatus AddressComponent::GetVerificationStatusForType(
     ServerFieldType field_type) const {
-  VerificationStatus status = VerificationStatus::kNoStatus;
-  GetValueAndStatusForTypeIfPossible(field_type, nullptr, &status);
-  return status;
+  const AddressComponent* node_for_type = GetNodeForType(field_type);
+  return node_for_type ? node_for_type->GetVerificationStatus()
+                       : VerificationStatus::kNoStatus;
 }
 
-bool AddressComponent::UnsetValueForTypeIfSupported(ServerFieldType type) {
-  if (type == storage_type_) {
-    UnsetAddressComponentAndItsSubcomponents();
-    return true;
+bool AddressComponent::UnsetValueForTypeIfSupported(
+    ServerFieldType field_type) {
+  AddressComponent* node_for_type = GetNodeForType(field_type);
+  if (!node_for_type || field_type != node_for_type->GetStorageType()) {
+    return false;
   }
-
-  for (auto* subcomponent : subcomponents_) {
-    if (subcomponent->UnsetValueForTypeIfSupported(type))
-      return true;
-  }
-
-  return false;
+  node_for_type->UnsetAddressComponentAndItsSubcomponents();
+  return true;
 }
 
 bool AddressComponent::ParseValueAndAssignSubcomponentsByMethod() {
@@ -629,21 +589,22 @@ std::u16string AddressComponent::ReplacePlaceholderTypesWithValues(
                                   ? placeholder_tokens.at(2)
                                   : std::u16string();
 
-      std::u16string value;
-      if (GetValueAndStatusForTypeIfPossible(
-              TypeNameToFieldType(base::UTF16ToASCII(type_name)), &value,
-              nullptr)) {
+      const AddressComponent* node_for_type =
+          GetNodeForType(TypeNameToFieldType(base::UTF16ToASCII(type_name)));
+      if (node_for_type) {
         // The type is valid and should be substituted.
+        std::u16string value = node_for_type->GetValue();
         if (!value.empty()) {
           // Add the prefix if present.
-          if (!prefix.empty())
+          if (!prefix.empty()) {
             inserted_values.emplace_back(std::move(prefix));
-
+          }
           // Add the substituted value.
           inserted_values.emplace_back(std::move(value));
           // Add the suffix if present.
-          if (!suffix.empty())
+          if (!suffix.empty()) {
             inserted_values.emplace_back(std::move(suffix));
+          }
         }
       } else {
         // Append the control sequence as it is, because the type is not

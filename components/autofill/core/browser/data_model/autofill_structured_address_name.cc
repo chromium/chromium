@@ -57,34 +57,20 @@ void NameMiddle::GetAdditionalSupportedFieldTypes(
   supported_types->insert(NAME_MIDDLE_INITIAL);
 }
 
-bool NameMiddle::GetValueForOtherSupportedType(ServerFieldType field_type,
-                                               std::u16string* value) const {
-  if (field_type == NAME_MIDDLE_INITIAL) {
-    if (value) {
-      // If the stored value has the characteristics of containing only
-      // initials, use the value as it is. Otherwise, convert it to a
-      // sequence of upper case letters, one for each space- or hyphen-separated
-      // token.
-      if (HasMiddleNameInitialsCharacteristics(base::UTF16ToUTF8(GetValue()))) {
-        *value = GetValue();
-      } else {
-        *value = ReduceToInitials(GetValue());
-      }
-    }
-    return true;
-  }
-  return false;
+std::u16string NameMiddle::GetValueForOtherSupportedType(
+    ServerFieldType field_type) const {
+  CHECK(IsSupportedType(field_type));
+  return HasMiddleNameInitialsCharacteristics(base::UTF16ToUTF8(GetValue()))
+             ? GetValue()
+             : ReduceToInitials(GetValue());
 }
 
-bool NameMiddle::SetValueForOtherSupportedType(
+void NameMiddle::SetValueForOtherSupportedType(
     ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
-  if (field_type == NAME_MIDDLE_INITIAL) {
-    SetValue(value, status);
-    return true;
-  }
-  return false;
+  CHECK(IsSupportedType(field_type));
+  SetValue(value, status);
 }
 
 NameLastFirst::NameLastFirst(AddressComponent* parent)

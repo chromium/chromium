@@ -224,21 +224,11 @@ bool StreetAddressNode::IsValueValid() const {
   return !base::Contains(address_lines_, std::u16string());
 }
 
-bool StreetAddressNode::GetValueForOtherSupportedType(
-    ServerFieldType field_type,
-    std::u16string* value) const {
-  ServerFieldTypeSet supported_types;
-  if (GetAdditionalSupportedFieldTypes(&supported_types);
-      !supported_types.contains(field_type)) {
-    return false;
-  }
-  // It is assumed below this point that field_type is an address line type.
-  CHECK(field_type == ADDRESS_HOME_LINE1 || field_type == ADDRESS_HOME_LINE2 ||
-        field_type == ADDRESS_HOME_LINE3);
-  if (value) {
-    *value = GetAddressLine(field_type);
-  }
-  return true;
+std::u16string StreetAddressNode::GetValueForOtherSupportedType(
+    ServerFieldType field_type) const {
+  // It is assumed below that field_type is an address line type.
+  CHECK(IsSupportedType(field_type));
+  return GetAddressLine(field_type);
 }
 
 std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
@@ -248,22 +238,15 @@ std::u16string StreetAddressNode::GetAddressLine(ServerFieldType type) const {
 }
 
 // Implements support for setting the value of the individual address lines.
-bool StreetAddressNode::SetValueForOtherSupportedType(
+void StreetAddressNode::SetValueForOtherSupportedType(
     ServerFieldType field_type,
     const std::u16string& value,
     const VerificationStatus& status) {
-  ServerFieldTypeSet supported_types;
-  GetAdditionalSupportedFieldTypes(&supported_types);
-  if (!supported_types.contains(field_type)) {
-    return false;
-  }
-  // It is assumed below this point that field_type is an address line type.
-  CHECK(field_type == ADDRESS_HOME_LINE1 || field_type == ADDRESS_HOME_LINE2 ||
-        field_type == ADDRESS_HOME_LINE3);
+  CHECK(IsSupportedType(field_type));
   const size_t line_index = AddressLineIndex(field_type);
-  // Make sure that there are three address lines stored.
+  // Make sure that there are enough address lines stored.
   if (line_index >= address_lines_.size()) {
-    address_lines_.resize(line_index + 1, std::u16string());
+    address_lines_.resize(line_index + 1);
   }
   const bool change = address_lines_[line_index] != value;
   if (change) {
@@ -278,7 +261,6 @@ bool StreetAddressNode::SetValueForOtherSupportedType(
   if (change) {
     AddressComponent::SetValue(base::JoinString(address_lines_, u"\n"), status);
   }
-  return true;
 }
 
 void StreetAddressNode::PostAssignSanitization() {
