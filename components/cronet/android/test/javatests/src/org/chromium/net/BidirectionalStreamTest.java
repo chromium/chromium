@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
@@ -995,7 +994,6 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     @OnlyRunNativeCronet
-    @DisabledTest(message = "Disabled due to timeout. See crbug.com/591112")
     public void testReadAndWrite() throws Exception {
         String url = Http2TestServer.getEchoStreamUrl();
         TestBidirectionalStreamCallback callback = new TestBidirectionalStreamCallback() {
@@ -1018,8 +1016,8 @@ public class BidirectionalStreamTest {
         stream.start();
         callback.waitForNextWriteStep();
         callback.waitForNextReadStep();
-        callback.startNextRead(stream);
         callback.setAutoAdvance(true);
+        callback.startNextRead(stream);
         callback.blockForDone();
         assertTrue(stream.isDone());
         assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
