@@ -476,6 +476,7 @@ component("color_space") {
       "CoreFoundation.framework",
       "CoreGraphics.framework",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
     if (is_mac) {
       sources += [
         "mac/display_icc_profiles.cc",
