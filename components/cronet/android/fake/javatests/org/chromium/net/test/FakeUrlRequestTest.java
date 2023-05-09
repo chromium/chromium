@@ -475,7 +475,7 @@ public class FakeUrlRequestTest {
 
         request.start();
         callback.waitForNextStep();
-        assertEquals(callback.mResponseStep, ResponseStep.ON_RECEIVED_REDIRECT);
+        assertEquals(ResponseStep.ON_RECEIVED_REDIRECT, callback.mResponseStep);
         checkStatus(request, Status.IDLE);
         callback.setAutoAdvance(true);
         request.followRedirect();
@@ -506,7 +506,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertEquals(callback.mResponseStep, ResponseStep.ON_SUCCEEDED);
+        assertEquals(ResponseStep.ON_SUCCEEDED, callback.mResponseStep);
         assertTrue(request.isDone());
     }
 
@@ -686,7 +686,7 @@ public class FakeUrlRequestTest {
         request.start();
         callback.blockForDone();
 
-        assertEquals(callback.mResponseStep, ResponseStep.ON_FAILED);
+        assertEquals(ResponseStep.ON_FAILED, callback.mResponseStep);
         // Checks that the exception from {@link DirectPreventingExecutor} was successfully returned
         // to the callabck in the onFailed method.
         assertTrue(callback.mError.getCause() instanceof InlineExecutionProhibitedException);
@@ -807,7 +807,7 @@ public class FakeUrlRequestTest {
             assertEquals("Invalid state transition - expected 4 but was 3", e.getMessage());
         }
         callback.waitForNextStep();
-        assertEquals(callback.mResponseStep, ResponseStep.ON_RECEIVED_REDIRECT);
+        assertEquals(ResponseStep.ON_RECEIVED_REDIRECT, callback.mResponseStep);
         callback.setAutoAdvance(true);
         request.followRedirect();
         callback.blockForDone();
