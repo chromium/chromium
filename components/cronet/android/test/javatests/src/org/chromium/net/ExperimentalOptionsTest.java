@@ -139,7 +139,6 @@ public class ExperimentalOptionsTest {
         cronetEngine.shutdown();
     }
 
-    @DisabledTest(message = "crbug.com/1021941")
     @Test
     @MediumTest
     @OnlyRunNativeCronet
@@ -161,7 +160,7 @@ public class ExperimentalOptionsTest {
         assertEquals(200, callback.mResponseInfo.getHttpStatusCode());
         assertEquals("GET", callback.mResponseAsString);
 
-        assertFileContainsString(file, "CLIENT_RANDOM");
+        assertFileContainsString(file, "CLIENT_HANDSHAKE_TRAFFIC_SECRET");
         assertTrue(file.delete());
         assertFalse(file.exists());
         cronetEngine.shutdown();
