@@ -524,6 +524,11 @@ void AutofillControllerTest::SetUpForSuggestions(
 // suggestions being sent to the AutofillAgent, once data has been loaded into a
 // test data manager.
 TEST_F(AutofillControllerTest, ProfileSuggestions) {
+  if (@available(iOS 16.3, *)) {
+    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    return;
+  }
+
   SetUpForSuggestions(kProfileFormHtml, 1);
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();
@@ -539,6 +544,11 @@ TEST_F(AutofillControllerTest, ProfileSuggestions) {
 // Tests that the system is able to offer suggestions for an anonymous form when
 // there is another anonymous form on the page.
 TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
+  if (@available(iOS 16.3, *)) {
+    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    return;
+  }
+
   SetUpForSuggestions(
       [NSString stringWithFormat:@"%@%@", kProfileFormHtml, kProfileFormHtml],
       2);
@@ -557,6 +567,11 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
 // in suggestions being sent to the AutofillAgent, once data has been loaded
 // into a test data manager.
 TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
+  if (@available(iOS 16.3, *)) {
+    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    return;
+  }
+
   SetUpForSuggestions(kProfileFormHtml, 1);
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();
@@ -571,6 +586,11 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
 
 // Checks that multiple profiles will offer a matching number of suggestions.
 TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
+  if (@available(iOS 16.3, *)) {
+    // TODO(crbug.com/1442607): Re-enable when fixed on iOS16.3+.
+    return;
+  }
+
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(
           ChromeBrowserState::FromBrowserState(browser_state_.get()));
