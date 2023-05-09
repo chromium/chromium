@@ -1960,6 +1960,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             @Override
             public void onTabStateInitialized() {
                 if (!mCreatedTabOnStartup) return;
+                if (mMultiInstanceManager != null) {
+                    mMultiInstanceManager.onTabStateInitialized();
+                }
 
                 TabModel model = mTabModelSelector.getModel(false);
                 TasksUma.recordTasksUma(model);

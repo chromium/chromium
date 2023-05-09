@@ -259,7 +259,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     public void initialize(int instanceId, int taskId) {
         mInstanceId = instanceId;
         updateTaskMap(instanceId, taskId);
-        installTabModelObserver();
         recordInstanceCountHistogram();
         recordActivityCountHistogram();
         ActivityManager activityManager =
@@ -273,6 +272,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             state.addObserver(this::onMultiInstanceStateChanged);
         }
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
+    }
+
+    @Override
+    public void onTabStateInitialized() {
+        installTabModelObserver();
+        TabModelSelector selector = mTabModelOrchestratorSupplier.get().getTabModelSelector();
+        writeTabCount(mInstanceId, selector);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)

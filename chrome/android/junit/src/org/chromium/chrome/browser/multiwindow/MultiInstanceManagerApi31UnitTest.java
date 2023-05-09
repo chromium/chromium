@@ -473,6 +473,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        multiInstanceManager.onTabStateInitialized();
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         triggerSelectTab(tabModelObserver, mTab1);
@@ -532,6 +533,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        multiInstanceManager.onTabStateInitialized();
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         when(mTab1.isIncognito()).thenReturn(false);
@@ -599,6 +601,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
+        multiInstanceManager.onTabStateInitialized();
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
         triggerAddTab(tabModelObserver, mTab1);
