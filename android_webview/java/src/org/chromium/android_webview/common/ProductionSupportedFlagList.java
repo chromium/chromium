@@ -425,6 +425,9 @@ public final class ProductionSupportedFlagList {
                             + "the WebView use OS-level attribution."),
             Flag.baseFeature(BaseFeatures.THREAD_POOL_CAP,
                     "Reduces the thread pool cap to use less threads"),
+            Flag.baseFeature(BlinkFeatures.BEFOREUNLOAD_EVENT_CANCEL_BY_PREVENT_DEFAULT,
+                    "Enables showing the cancel dialog by calling preventDefault() "
+                            + "on beforeunload event."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
