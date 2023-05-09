@@ -68000,6 +68000,10 @@ Called by update_use_counter_css.py.-->
   <int value="749" label="white-space-collapse"/>
   <int value="750" label="scroll-timeline-attachment"/>
   <int value="751" label="view-timeline-attachment"/>
+  <int value="752" label="scroll-start-block"/>
+  <int value="753" label="scroll-start-inline"/>
+  <int value="754" label="scroll-start-x"/>
+  <int value="755" label="scroll-start-y"/>
 </enum>
 
 <enum name="MappedEditingCommands">

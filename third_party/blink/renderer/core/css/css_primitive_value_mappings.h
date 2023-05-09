@@ -1792,6 +1792,66 @@ inline TimelineOffset::NamedRange CSSIdentifierValue::ConvertTo() const {
   return TimelineOffset::NamedRange::kCover;
 }
 
+template <>
+inline CSSIdentifierValue::CSSIdentifierValue(ScrollStartValueType value_type)
+    : CSSValue(kIdentifierClass) {
+  switch (value_type) {
+    case ScrollStartValueType::kAuto:
+      value_id_ = CSSValueID::kAuto;
+      break;
+    case ScrollStartValueType::kStart:
+      value_id_ = CSSValueID::kStart;
+      break;
+    case ScrollStartValueType::kCenter:
+      value_id_ = CSSValueID::kCenter;
+      break;
+    case ScrollStartValueType::kEnd:
+      value_id_ = CSSValueID::kEnd;
+      break;
+    case ScrollStartValueType::kTop:
+      value_id_ = CSSValueID::kTop;
+      break;
+    case ScrollStartValueType::kBottom:
+      value_id_ = CSSValueID::kBottom;
+      break;
+    case ScrollStartValueType::kLeft:
+      value_id_ = CSSValueID::kLeft;
+      break;
+    case ScrollStartValueType::kRight:
+      value_id_ = CSSValueID::kRight;
+      break;
+    case ScrollStartValueType::kLengthOrPercentage:
+      value_id_ = CSSValueID::kInvalid;
+      NOTREACHED();
+      break;
+  }
+}
+
+template <>
+inline ScrollStartValueType CSSIdentifierValue::ConvertTo() const {
+  switch (GetValueID()) {
+    case CSSValueID::kAuto:
+      return ScrollStartValueType::kAuto;
+    case CSSValueID::kStart:
+      return ScrollStartValueType::kStart;
+    case CSSValueID::kCenter:
+      return ScrollStartValueType::kCenter;
+    case CSSValueID::kEnd:
+      return ScrollStartValueType::kEnd;
+    case CSSValueID::kTop:
+      return ScrollStartValueType::kTop;
+    case CSSValueID::kBottom:
+      return ScrollStartValueType::kBottom;
+    case CSSValueID::kLeft:
+      return ScrollStartValueType::kLeft;
+    case CSSValueID::kRight:
+      return ScrollStartValueType::kRight;
+    default:
+      NOTREACHED();
+      return ScrollStartValueType::kAuto;
+  }
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_MAPPINGS_H_

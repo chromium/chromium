@@ -389,6 +389,10 @@ scrollPaddingTop
 scrollSnapAlign
 scrollSnapStop
 scrollSnapType
+scrollStartBlock
+scrollStartInline
+scrollStartX
+scrollStartY
 scrollTimeline
 scrollTimelineAttachment
 scrollTimelineAxis

@@ -1074,6 +1074,11 @@
       base_feature: "none",
     },
     {
+      // https://drafts.csswg.org/css-scroll-snap-2
+      name: "CSSScrollSnap2",
+      status: "test",
+    },
+    {
       name: "CSSSelectorFragmentAnchor",
       status: "experimental",
       base_feature: "CssSelectorFragmentAnchor",

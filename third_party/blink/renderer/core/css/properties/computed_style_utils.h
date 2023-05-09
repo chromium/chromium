@@ -310,6 +310,8 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForIntrinsicLength(
       const ComputedStyle&,
       const absl::optional<StyleIntrinsicLength>&);
+  static CSSValue* ValueForScrollStart(const ComputedStyle&,
+                                       const ScrollStartData&);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
 

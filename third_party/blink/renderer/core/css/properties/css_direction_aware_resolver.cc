@@ -239,6 +239,18 @@ PhysicalMapping<4> CSSDirectionAwareResolver::PhysicalScrollPaddingMapping() {
   return PhysicalMapping<4>(scrollPaddingShorthand());
 }
 
+LogicalMapping<2> CSSDirectionAwareResolver::LogicalScrollStartMapping() {
+  static const CSSProperty* kProperties[] = {
+      &GetCSSPropertyScrollStartBlock(), &GetCSSPropertyScrollStartInline()};
+  return LogicalMapping<2>(kProperties);
+}
+
+PhysicalMapping<2> CSSDirectionAwareResolver::PhysicalScrollStartMapping() {
+  static const CSSProperty* kProperties[] = {&GetCSSPropertyScrollStartX(),
+                                             &GetCSSPropertyScrollStartY()};
+  return PhysicalMapping<2>(kProperties);
+}
+
 LogicalMapping<2> CSSDirectionAwareResolver::LogicalSizeMapping() {
   static const CSSProperty* kProperties[] = {&GetCSSPropertyBlockSize(),
                                              &GetCSSPropertyInlineSize()};

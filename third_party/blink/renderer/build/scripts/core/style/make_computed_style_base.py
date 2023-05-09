@@ -43,6 +43,7 @@ ALIGNMENT_ORDER = [
     'Vector<TimelineAxis>',
     'Vector<TimelineInset>',
     'GridPosition',
+    'ScrollStartData',
     'AtomicString',
     'scoped_refptr',
     'Persistent',

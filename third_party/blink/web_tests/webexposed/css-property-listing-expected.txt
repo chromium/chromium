@@ -343,6 +343,10 @@ All changes to this list should go through Blink's feature review process: http:
     scroll-snap-align
     scroll-snap-stop
     scroll-snap-type
+    scroll-start-block
+    scroll-start-inline
+    scroll-start-x
+    scroll-start-y
     scroll-timeline-attachment
     scroll-timeline-axis
     scroll-timeline-name
