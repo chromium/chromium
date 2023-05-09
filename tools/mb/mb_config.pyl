@@ -923,7 +923,7 @@
 
     # Internal codesearch builders.
     'luci.infra-internal.codesearch': {
-      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chromium_bot',
+      'codesearch-gen-chrome-internal-linux': 'codesearch_gen_chromium_bot_reclient',
     },
 
     'official.chrome': {
@@ -2462,10 +2462,6 @@
     'codesearch_gen_chromium_android_bot_reclient': [
       # Set is_component_build=false to enable cronet targets.
       'codesearch_reclient', 'android_without_codecs', 'static',
-    ],
-
-    'codesearch_gen_chromium_bot': [
-      'codesearch',
     ],
 
     'codesearch_gen_chromium_bot_reclient': [
@@ -4015,13 +4011,6 @@
     'clang_tot': {
       'gn_args': 'llvm_force_head_revision=true',
       'mixins': ['clang'],
-    },
-
-    # Settings used by the codesearch builders to generate cross-references.
-    'codesearch': {
-      'gn_args': 'clang_use_chrome_plugins=false enable_kythe_annotations=true',
-      'mixins': ['goma', 'clang', 'shared', 'debug', 'minimal_symbols',
-                 'blink_enable_generated_code_formatting'],
     },
 
     # Same as regular codesearch except ios does not allow component builds
