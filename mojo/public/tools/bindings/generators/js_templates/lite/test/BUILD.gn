@@ -20,4 +20,31 @@ if (is_chromeos_ash) {
   js_library("test") {
     deps = [ ":mojo_bindings_js_library_for_compile" ]
   }
+
+  js_type_check("closure_compile_modules") {
+    deps = [ ":module_test" ]
+
+    closure_flags =
+        default_closure_args + [
+          # Remap "bindings.js" reference to "bindings_uncompiled.js" which has
+          # the necessary type annotations for compilation.
+          "browser_resolver_prefix_replacements=" +
+              "\"../../../../../../js/bindings.js\"=" +
+              "\"../../../../../../js/bindings_uncompiled.js\"",
+          "js_module_root=" + rebase_path(root_gen_dir, root_build_dir),
+        ]
+  }
+
+  js_library("module_test") {
+    sources = [ "test.m.js" ]
+    deps = [ ":mojo_bindings_m_js" ]
+  }
+
+  js_library("mojo_bindings_m_js") {
+    sources = [ "$target_gen_dir/test.test-mojom.m.js" ]
+    externs_list = [ "${externs_path}/mojo_core.js" ]
+
+    deps = [ "//mojo/public/js:bindings_uncompiled" ]
+    extra_deps = [ ":mojo_bindings_js__generator" ]
+  }
 }

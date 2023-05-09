@@ -53,6 +53,14 @@ mojo.internal.isNullOrUndefined = function(x) {
 };
 
 /**
+ * @param {*} x
+ * @return {boolean}
+ */
+mojo.internal.isNullableValueKindField = function(x) {
+  return typeof x.nullableValueKindProperties !== 'undefined';
+}
+
+/**
  * @param {number} size
  * @param {number} alignment
  * @return {number}
@@ -575,6 +583,23 @@ mojo.internal.Encoder = class {
                             field.packedBitOffset, field.nullable);
       };
 
+      // Encode a single optional numeric field into a flag field
+      // or a value field.
+      if (value && mojo.internal.isNullableValueKindField(field)) {
+        const props = field.nullableValueKindProperties;
+        const hasValue =
+          !mojo.internal.isNullOrUndefined(value[props.originalFieldName]);
+        if (props.isPrimary) {
+          encodeStructField(hasValue);
+        } else if (hasValue) {
+          encodeStructField(value[props.originalFieldName]);
+        } else {
+          // Use `defaultValue` to cover the enum case.
+          encodeStructField(field.defaultValue);
+        }
+        continue;
+      }
+
       if (value && !mojo.internal.isNullOrUndefined(value[field.name])) {
         encodeStructField(value[field.name]);
         continue;
@@ -882,22 +907,53 @@ mojo.internal.Decoder = class {
           `version (${version})`);
     }
 
+    const decodeStructField = (structField) => {
+      const byteOffset =
+        mojo.internal.kStructHeaderSize + structField.packedOffset;
+      const value = structField.type.$.decode(
+        this, byteOffset, structField.packedBitOffset, !!structField.nullable);
+
+      if (value === null && !structField.nullable) {
+        throw new Error(
+          `Received ${structSpec.name} with invalid null field ` +
+          `"${structField.name}"`)
+      }
+      return value;
+    };
+
     const result = {};
     for (const field of structSpec.fields) {
-      const byteOffset = mojo.internal.kStructHeaderSize + field.packedOffset;
       if (field.minVersion > version) {
         result[field.name] = field.defaultValue;
         continue;
       }
-      const value = field.type.$.decode(
-          this, byteOffset, field.packedBitOffset, !!field.nullable);
-      if (value === null && !field.nullable) {
-        throw new Error(
-            'Received ' + structSpec.name + ' with invalid null field ' +
-            '"' + field.name + '"')
+
+      if (mojo.internal.isNullableValueKindField(field)) {
+        // Decode an optional numeric pair into a single
+        // field.
+        const props = field.nullableValueKindProperties;
+        if (props.isPrimary) {
+          const hasValue = decodeStructField(field);
+          // If the field is null, set it here. If it isn't,
+          // the value will be decoded as part of decoding
+          // the non-primary field below.
+          if (!hasValue) {
+            result[props.originalFieldName] = null;
+          }
+        } else {
+          // If the field hasn't been set yet, then it's not
+          // null and we need to decode the value.
+          if (!(props.originalFieldName in result)) {
+            result[props.originalFieldName] =
+              decodeStructField(field);
+          }
+        }
+        continue;
       }
-      result[field.name] = value;
+
+      result[field.name] = decodeStructField(field);
     }
+
     return result;
   }
 
@@ -1070,6 +1126,20 @@ mojo.internal.ArraySpec;
  */
 mojo.internal.MapSpec;
 
+// Use a @record, otherwise Closure Compiler will mangle the property names and
+// cause runtime errors.
+/** @record */
+mojo.internal.NullableValueKindProperties = class {
+  constructor() {
+    /** @export { boolean } */
+    this.isPrimary;
+    /** @export { (string|undefined) } */
+    this.linkedValueFieldName;
+    /** @export { string } */
+    this.originalFieldName;
+  }
+};
+
 /**
  * @typedef {{
  *   name: string,
@@ -1079,6 +1149,8 @@ mojo.internal.MapSpec;
  *   defaultValue: *,
  *   nullable: boolean,
  *   minVersion: number,
+ *   nullableValueKindProperties:
+ *      (mojo.internal.NullableValueKindProperties|undefined),
  * }}
  */
 mojo.internal.StructFieldSpec;
@@ -1461,12 +1533,14 @@ mojo.internal.Enum = function() {
  * @param {*} defaultValue
  * @param {boolean} nullable
  * @param {number=} minVersion
+ * @param {mojo.internal.NullableValueKindProperties=}
+     nullableValueKindProperties
  * @return {!mojo.internal.StructFieldSpec}
  * @export
  */
 mojo.internal.StructField = function(
-    name, packedOffset, packedBitOffset, type, defaultValue, nullable,
-    minVersion = 0) {
+  name, packedOffset, packedBitOffset, type, defaultValue, nullable,
+  minVersion = 0, nullableValueKindProperties = undefined) {
   return {
     name: name,
     packedOffset: packedOffset,
@@ -1475,6 +1549,7 @@ mojo.internal.StructField = function(
     defaultValue: defaultValue,
     nullable: nullable,
     minVersion: minVersion,
+    nullableValueKindProperties: nullableValueKindProperties,
   };
 };
 

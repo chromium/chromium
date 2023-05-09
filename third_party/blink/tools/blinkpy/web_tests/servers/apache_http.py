@@ -105,6 +105,7 @@ class ApacheHTTP(server_base.ServerBase):
             # TODO(509038): To be removed after bluetooth tests are ported to WPT.
             '-c', 'Alias /resources/chromium "%s/external/wpt/resources/chromium"' % test_dir,
             '-c', 'Alias /resources/testharness.js "%s/resources/testharness.js"' % test_dir,
+            '-c', 'Alias /resources/testharness-helpers.js "%s/resources/testharness-helpers.js"' % test_dir,
             '-c', 'Alias /resources/testharnessreport.js "%s/resources/testharnessreport.js"' % test_dir,
             '-c', 'Alias /resources/testdriver.js "%s/resources/testdriver.js"' % test_dir,
             '-c', 'Alias /resources/testdriver-vendor.js "%s/resources/testdriver-vendor.js"' % test_dir,

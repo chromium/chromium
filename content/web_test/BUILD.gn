@@ -23,6 +23,7 @@ mojom("web_test_common_mojom") {
   sources = [
     "common/fake_bluetooth_chooser.mojom",
     "common/mojo_echo.mojom",
+    "common/mojo_optional_numerics_unittest.mojom",
     "common/web_test.mojom",
     "common/web_test_bluetooth_fake_adapter_setter.mojom",
   ]
@@ -93,6 +94,8 @@ static_library("web_test_browser") {
     "browser/leak_detector.h",
     "browser/mojo_echo.cc",
     "browser/mojo_echo.h",
+    "browser/mojo_optional_numerics_unittest.cc",
+    "browser/mojo_optional_numerics_unittest.h",
     "browser/mojo_web_test_helper.cc",
     "browser/mojo_web_test_helper.h",
     "browser/test_info_extractor.cc",

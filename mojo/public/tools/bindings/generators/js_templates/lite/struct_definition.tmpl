@@ -25,11 +25,25 @@ mojo.internal.Struct(
         {{packed_field.field.kind|lite_js_type}},
         {{packed_field.field|lite_default_value}},
 {%-   if packed_field.field.kind.is_nullable %}
-        true /* nullable */),
+        true, /* nullable */
 {%-   else %}
-        false /* nullable */),
+        false, /* nullable */
 {%-   endif %}
-{%- endfor %}
+        0 /* minVersion */,
+{%-   if packed_field|is_nullable_value_kind_packed_field %}
+{%-     set name = packed_field.original_field.name %}
+{%-     set isPrimary = packed_field|is_primary_nullable_value_kind_packed_field %}
+        {
+{%-     if isPrimary %}
+          isPrimary: true,
+          linkedValueFieldName: "{{packed_field.linked_value_packed_field.field.name}}",
+{%-     else %}
+          isPrimary: false,
+{%-     endif %}
+          originalFieldName: "{{name}}",
+        }
+{%-   endif %}
+      ),{%- endfor %}
     ],
     [
 {%-   for info in struct.versions -%}
@@ -49,10 +63,19 @@ goog.provide('{{module.namespace}}.{{struct.name}}');
 /** @record */
 {{module.namespace}}.{{struct.name}} = class {
   constructor() {
-{%- for packed_field in struct.packed.packed_fields %}
+{%- for packed_field in struct.packed.packed_fields_in_ordinal_order %}
+{%-   if packed_field|is_nullable_value_kind_packed_field %}
+{%-     if packed_field|is_primary_nullable_value_kind_packed_field %}
+{%-       set original_field = packed_field.original_field %}
+{%-       set name = original_field.name %}
+{%-       set kind = original_field.kind %}
+    /** @export { {{original_field.kind|lite_closure_field_type}} } */
+    this.{{name}};
+{%-     endif %}
+{%-   else %}
     /** @export { {{packed_field.field.kind|lite_closure_field_type}} } */
     this.{{packed_field.field.name}};
-{%-  endfor %}
+{%-   endif %}
+{%- endfor %}
   }
 };
-

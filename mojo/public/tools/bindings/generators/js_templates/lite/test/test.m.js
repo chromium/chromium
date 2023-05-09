@@ -1,10 +1,18 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestPageHandler,
+        TestPageHandlerRemote,
+        TestPageInterface,
+        TestStruct,
+        TestStructOptionalNumerics,
+        TestEnum,
+        Message} from "/mojo/public/tools/bindings/generators/js_templates/lite/test/test.test-mojom.m.js"
+
 async function testFunction() {
-  /** @type {test.mojom.TestPageHandlerRemote} */
-  let remote = test.mojom.TestPageHandler.getRemote()
+  /** @type {TestPageHandlerRemote} */
+  let remote = TestPageHandler.getRemote()
 
   // Type infers {?{values: !Array<!string>}} from Promise return type.
   let result = await remote.method1(' ', 5);
@@ -12,12 +20,12 @@ async function testFunction() {
   /** @type {Array<string>} */
   let values = result.values;
 
-  /** @type {test.mojom.TestStruct} */
+  /** @type {TestStruct} */
   let testStruct = result.ts
 }
 
 async function testFunctionNumerics() {
-  let remote = test.mojom.TestPageHandler.getRemote();
+  let remote = TestPageHandler.getRemote();
 
   // Tests that compiling passing values as optional numeric params works.
   let result = await remote.methodWithOptionalNumerics(
@@ -32,7 +40,7 @@ async function testFunctionNumerics() {
     /*optionalInt64=*/ BigInt('-1'),
     /*optionalFloat=*/ 1.0,
     /*optionalDouble=*/ 1.0,
-    /*optionalEnum=*/ test.mojom.TestEnum.FIRST);
+    /*optionalEnum=*/ TestEnum.FIRST);
 
   // The following assignments test that the returned values
   // have the right type. For example the returned optionalBool should be
@@ -94,9 +102,9 @@ async function testFunctionNumerics() {
   result.optionalDouble = 1.0;
   result.optionalDouble = null;
 
-  /** @type {?test.mojom.TestEnum} */
+  /** @type {?TestEnum} */
   let optionalEnum = result.optionalEnum;
-  result.optionalEnum = test.mojom.TestEnum.SECOND;
+  result.optionalEnum = TestEnum.SECOND;
   result.optionalEnum = null;
 
   // Tests compiling passing null as optional numeric params works.
@@ -116,7 +124,7 @@ async function testFunctionNumerics() {
 }
 
 async function testFunctionNumericsStruct() {
-  /** @type {!test.mojom.TestStructOptionalNumerics} */
+  /** @type {!TestStructOptionalNumerics} */
   let input = {};
 
   // The following assignments test that the struct annotations have the
@@ -157,15 +165,15 @@ async function testFunctionNumericsStruct() {
   input.optionalDouble = 1.0;
   input.optionalDouble = undefined;
 
-  input.optionalEnum = test.mojom.TestEnum.FIRST;
+  input.optionalEnum = TestEnum.FIRST;
   input.optionalEnum = undefined;
 
-  let remote = test.mojom.TestPageHandler.getRemote();
+  let remote = TestPageHandler.getRemote();
 
   // Test that the response struct is a TestStructOptionalNumerics. If
   // it wasn't, trying to assign `out` to `response` would fail.
   const {out} = await remote.methodWithStructWithOptionalNumerics(input);
-  /** @type {!test.mojom.TestStructOptionalNumerics} */
+  /** @type {!TestStructOptionalNumerics} */
   let response = out;
 
   // The following assignments test that the struct annotations have the
@@ -205,27 +213,27 @@ async function testFunctionNumericsStruct() {
   out.optionalDouble = 1.0;
   out.optionalDouble = undefined;
 
-  out.optionalEnum = test.mojom.TestEnum.FIRST;
+  out.optionalEnum = TestEnum.FIRST;
   out.optionalEnum = undefined;
 }
 
-/** @implements {test.mojom.TestPageInterface} */
+/** @implements {TestPageInterface} */
 class TestPageImpl {
   /** @override */
   onEvent1(s) {
-    /** @type {test.mojom.TestStruct} */ let t = s;
+    /** @type {TestStruct} */ let t = s;
     /** @type {string} */ let id = t.id;
     /** @type {string|undefined} */ let title = t.title;
-    /** @type {test.mojom.TestEnum} */ let enumValue = t.enums[0];
+    /** @type {TestEnum} */ let enumValue = t.enums[0];
 
     /** @type {string} */ let numberToStringMapValue = t.numberToStringMap[5];
 
-    /** @type {test.mojom.Message} */ let messageToMessageArrayValue =
+    /** @type {Message} */ let messageToMessageArrayValue =
         t.messageToArrayMap.get({message: 'asdf'})[0];
 
-    /** @type {test.mojom.TestEnum} */ let enumToMapMapValue =
-        t.enumToMapMap[test.mojom.TestEnum.FIRST][test.mojom.TestEnum.SECOND];
-    /** @type {test.mojom.TestPageInterface} */ let handler =
+    /** @type {TestEnum} */ let enumToMapMapValue =
+        t.enumToMapMap[TestEnum.FIRST][TestEnum.SECOND];
+    /** @type {TestPageInterface} */ let handler =
         t.numberToInterfaceProxyMap[3];
     handler.onEvent1(t);
   }
@@ -234,7 +242,7 @@ class TestPageImpl {
   onEventWithStructWithOptionalNumerics(s) {
     // Test that the argument is a TestStructOptionalNumerics. If
     // it wasn't, trying to assign `s` to `arg` would fail.
-    /** @type {!test.mojom.TestStructOptionalNumerics} */
+    /** @type {!TestStructOptionalNumerics} */
     let arg = s;
 
     // The following assignments test that the struct annotations have the
@@ -274,7 +282,7 @@ class TestPageImpl {
     s.optionalDouble = 1.0;
     s.optionalDouble = undefined;
 
-    s.optionalEnum = test.mojom.TestEnum.FIRST;
+    s.optionalEnum = TestEnum.FIRST;
     s.optionalEnum = undefined;
   }
 }

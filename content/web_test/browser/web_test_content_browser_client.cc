@@ -45,6 +45,7 @@
 #include "content/web_test/browser/fake_bluetooth_chooser_factory.h"
 #include "content/web_test/browser/fake_bluetooth_delegate.h"
 #include "content/web_test/browser/mojo_echo.h"
+#include "content/web_test/browser/mojo_optional_numerics_unittest.h"
 #include "content/web_test/browser/mojo_web_test_helper.h"
 #include "content/web_test/browser/web_test_bluetooth_fake_adapter_setter_impl.h"
 #include "content/web_test/browser/web_test_browser_context.h"
@@ -326,6 +327,12 @@ void WebTestContentBrowserClient::ExposeInterfacesToRenderer(
   registry->AddInterface(base::BindRepeating(&MojoWebTestCounterImpl::Bind),
                          ui_task_runner);
   registry->AddInterface(base::BindRepeating(&MojoEcho::Bind), ui_task_runner);
+  registry->AddInterface(
+      base::BindRepeating(&optional_numerics_unittest::Params::Bind),
+      ui_task_runner);
+  registry->AddInterface(
+      base::BindRepeating(&optional_numerics_unittest::ResponseParams::Bind),
+      ui_task_runner);
   registry->AddInterface(
       base::BindRepeating(&WebTestBluetoothFakeAdapterSetterImpl::Create),
       ui_task_runner);

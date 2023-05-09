@@ -164,6 +164,12 @@ export namespace mojo {
         valueNullable: boolean): MojomType;
     function Enum(): MojomType;
 
+    interface NullableValueKindProperties {
+      isPrimaryNullableValueKindField: boolean;
+      linkedValueFieldName?: string;
+      originalFieldName: string;
+    }
+
     interface StructFieldSpec {
       name: string;
       packedOffset: number;
@@ -172,12 +178,15 @@ export namespace mojo {
       defaultValue: any;
       nullable: boolean;
       minVersion: number;
+      nullableValueKindProperties?: NullableValueKindProperties;
     }
 
     function StructField(
         name: string, packedOffset: number, packedBitOffset: number,
         type: MojomType, defaultValue: any, nullable: boolean,
-        minVersion?: number): StructFieldSpec;
+        minVersion?: number,
+        nullableValueKindProperites?: NullableValueKindProperties):
+        StructFieldSpec;
 
     function Struct(
         objectToBlessAsType: object, name: string, fields: StructFieldSpec[],

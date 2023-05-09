@@ -23,10 +23,55 @@ struct TestStruct {
   map<uint32, pending_remote<TestPage>> numberToInterfaceProxyMap;
 };
 
+struct TestStructOptionalNumerics {
+  bool? optional_bool;
+  uint8? optional_uint8;
+  int8? optional_int8;
+  uint16? optional_uint16;
+  int16? optional_int16;
+  uint32? optional_uint32;
+  int32? optional_int32;
+  uint64? optional_uint64;
+  int64? optional_int64;
+  float? optional_float;
+  double? optional_double;
+  TestEnum? optional_enum;
+};
+
 interface TestPageHandler {
   Method1(string p1, int32 p2) => (array<string> values, TestStruct ts);
+  MethodWithOptionalNumerics(
+    bool? optional_bool,
+    uint8? optional_uint8,
+    int8? optional_int8,
+    uint16? optional_uint16,
+    int16? optional_int16,
+    uint32? optional_uint32,
+    int32? optional_int32,
+    uint64? optional_uint64,
+    int64? optional_int64,
+    float? optional_float,
+    double? optional_double,
+    TestEnum? optional_enum
+  ) => (
+    bool? optional_bool,
+    uint8? optional_uint8,
+    int8? optional_int8,
+    uint16? optional_uint16,
+    int16? optional_int16,
+    uint32? optional_uint32,
+    int32? optional_int32,
+    uint64? optional_uint64,
+    int64? optional_int64,
+    float? optional_float,
+    double? optional_double,
+    TestEnum? optional_enum
+  );
+  MethodWithStructWithOptionalNumerics(TestStructOptionalNumerics input)
+    => (TestStructOptionalNumerics out);
 };
 
 interface TestPage {
   OnEvent1(TestStruct s);
+  OnEventWithStructWithOptionalNumerics(TestStructOptionalNumerics s);
 };
