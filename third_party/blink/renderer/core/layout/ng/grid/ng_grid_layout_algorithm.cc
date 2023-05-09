@@ -686,19 +686,15 @@ LayoutUnit NGGridLayoutAlgorithm::Baseline(
   //  in first/last baseline alignment within its start-most/end-most shared
   //  alignment context along that axis"
   // https://www.w3.org/TR/css-align-3/#baseline-sharing-group
-  if (track_direction == kForColumns) {
-    return (grid_item.column_baseline_group == BaselineGroup::kMajor)
-               ? layout_data.Columns().MajorBaseline(
-                     grid_item.column_set_indices.begin)
-               : layout_data.Columns().MinorBaseline(
-                     grid_item.column_set_indices.end - 1);
-  } else {
-    return (grid_item.row_baseline_group == BaselineGroup::kMajor)
-               ? layout_data.Rows().MajorBaseline(
-                     grid_item.row_set_indices.begin)
-               : layout_data.Rows().MinorBaseline(
-                     grid_item.row_set_indices.end - 1);
-  }
+  const auto& track_collection = (track_direction == kForColumns)
+                                     ? layout_data.Columns()
+                                     : layout_data.Rows();
+  const auto& [begin_set_index, end_set_index] =
+      grid_item.SetIndices(track_direction);
+
+  return (grid_item.BaselineGroup(track_direction) == BaselineGroup::kMajor)
+             ? track_collection.MajorBaseline(begin_set_index)
+             : track_collection.MinorBaseline(end_set_index - 1);
 }
 
 namespace {
@@ -938,11 +934,8 @@ void NGGridLayoutAlgorithm::ComputeGridGeometry(
                                  SizingConstraint::kLayout);
   }
 
-  // Calculate final alignment baselines for grid item layout.
-  CalculateAlignmentBaselines(NGGridSizingSubtree(grid_sizing_tree),
-                              kForColumns, SizingConstraint::kLayout);
-  CalculateAlignmentBaselines(NGGridSizingSubtree(grid_sizing_tree), kForRows,
-                              SizingConstraint::kLayout);
+  // Calculate final alignment baselines of the entire grid sizing tree.
+  CompleteFinalBaselineAlignment(grid_sizing_tree);
 }
 
 LayoutUnit NGGridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
@@ -1495,7 +1488,7 @@ wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitionsForSubgrid(
       std::floor(tracks_left_over_for_auto_repeat / tracks_per_repeat));
 }
 
-void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
+void NGGridLayoutAlgorithm::ComputeGridItemBaselines(
     const NGGridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint) const {
@@ -1763,8 +1756,7 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
                                   GutterSize(track_direction));
 
   // Cache baselines, as these contributions can influence track sizing
-  CalculateAlignmentBaselines(sizing_subtree, track_direction,
-                              sizing_constraint);
+  ComputeGridItemBaselines(sizing_subtree, track_direction, sizing_constraint);
 
   // 2. Resolve intrinsic track sizing functions to absolute lengths.
   if (track_collection.HasIntrinsicTrack()) {
@@ -1872,6 +1864,54 @@ void NGGridLayoutAlgorithm::CompleteTrackSizingAlgorithm(
                                /* opt_subgrid_data */ kNoSubgriddedItemData,
                                track_direction, sizing_constraint,
                                opt_needs_additional_pass);
+}
+
+void NGGridLayoutAlgorithm::ComputeBaselineAlignment(
+    const NGGridSizingSubtree& sizing_subtree,
+    const NGSubgriddedItemData& opt_subgrid_data,
+    const absl::optional<GridTrackSizingDirection>& opt_track_direction,
+    SizingConstraint sizing_constraint) const {
+  DCHECK(sizing_subtree);
+
+  auto& [grid_items, layout_data, subtree_size] =
+      sizing_subtree.SubtreeRootData();
+
+  auto ComputeOrRecreateBaselines =
+      [&](GridTrackSizingDirection track_direction) {
+        if (layout_data.HasSubgriddedAxis(track_direction)) {
+          // TODO(ikilpatrick): Recreate the subgrid track collection.
+          DCHECK(opt_subgrid_data.IsSubgrid());
+        } else {
+          ComputeGridItemBaselines(sizing_subtree, track_direction,
+                                   sizing_constraint);
+        }
+      };
+
+  if (opt_track_direction) {
+    ComputeOrRecreateBaselines(*opt_track_direction);
+  } else {
+    ComputeOrRecreateBaselines(kForColumns);
+    ComputeOrRecreateBaselines(kForRows);
+  }
+
+  ForEachSubgrid(sizing_subtree,
+                 [&](const NGGridLayoutAlgorithm& subgrid_algorithm,
+                     const NGGridSizingSubtree& subgrid_subtree,
+                     const NGSubgriddedItemData& subgrid_data) {
+                   subgrid_algorithm.ComputeBaselineAlignment(
+                       subgrid_subtree, subgrid_data,
+                       RelativeDirectionFilterInSubgrid(opt_track_direction,
+                                                        *subgrid_data),
+                       sizing_constraint);
+                 });
+}
+
+void NGGridLayoutAlgorithm::CompleteFinalBaselineAlignment(
+    const NGGridSizingTree& sizing_tree) const {
+  ComputeBaselineAlignment(NGGridSizingSubtree(sizing_tree),
+                           /* opt_subgrid_data */ kNoSubgriddedItemData,
+                           /* opt_track_direction */ absl::nullopt,
+                           SizingConstraint::kLayout);
 }
 
 template <typename CallbackFunc>
