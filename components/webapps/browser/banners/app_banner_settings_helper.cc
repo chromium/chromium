@@ -44,12 +44,6 @@ const unsigned int kMinimumDaysBetweenBannerShows = 14;
 // Default site engagement required to trigger the banner.
 const unsigned int kDefaultTotalEngagementToTrigger = 2;
 
-// The number of days in the past that a site should be launched from homescreen
-// to be considered recent.
-// TODO(dominickn): work out how to unify this with
-// WebappDataStorage.wasLaunchedRecently.
-const unsigned int kRecentLastLaunchInDays = 10;
-
 // Dictionary keys to use for the events. Must be kept in sync with
 // AppBannerEvent.
 constexpr const char* kBannerEventKeys[] = {
@@ -381,40 +375,6 @@ bool AppBannerSettingsHelper::HasSufficientEngagement(double total_engagement) {
   return (base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kBypassAppBannerEngagementChecks)) ||
          (total_engagement >= gTotalEngagementToTrigger);
-}
-
-bool AppBannerSettingsHelper::WasLaunchedRecently(
-    content::BrowserContext* browser_context,
-    const GURL& origin_url,
-    base::Time now) {
-  HostContentSettingsMap* settings =
-      permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
-  base::Value::Dict origin_dict = GetOriginAppBannerData(settings, origin_url);
-
-  // Iterate over everything in the content setting, which should be a set of
-  // dictionaries per app path. If we find one that has been added to
-  // homescreen recently, return true.
-  base::TimeDelta recent_last_launch_in_days =
-      base::Days(kRecentLastLaunchInDays);
-  for (auto [key, value] : origin_dict) {
-    if (value.is_dict()) {
-      // TODO(https://crbug.com/1338016): Delete stored Instant App data.
-      if (key == kInstantAppsKey)
-        continue;
-
-      absl::optional<double> internal_time = value.GetDict().FindDouble(
-          kBannerEventKeys[APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN]);
-      if (!internal_time)
-        continue;
-
-      if ((now - base::Time::FromInternalValue(*internal_time)) <=
-          recent_last_launch_in_days) {
-        return true;
-      }
-    }
-  }
-
-  return false;
 }
 
 void AppBannerSettingsHelper::SetDaysAfterDismissAndIgnoreToTrigger(

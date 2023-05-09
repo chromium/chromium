@@ -21,7 +21,6 @@ const char kTestURL[] = "https://www.google.com";
 const char kSameOriginTestURL[] = "https://www.google.com/foo.html";
 const char kSameOriginTestURL1[] = "https://www.google.com/foo1.html";
 const char kSameOriginTestURL2[] = "https://www.google.com/foo2.html";
-const char kDifferentOriginTestURL[] = "https://www.example.com";
 const char kTestPackageName[] = "test.package";
 
 base::Time GetReferenceTime() {
@@ -291,75 +290,6 @@ TEST_F(AppBannerSettingsHelperTest, ShouldShowWithHigherTotal) {
   service->ResetBaseScoreForURL(url, 10);
   EXPECT_TRUE(
       AppBannerSettingsHelper::HasSufficientEngagement(service->GetScore(url)));
-}
-
-TEST_F(AppBannerSettingsHelperTest, WasLaunchedRecently) {
-  GURL url(kTestURL);
-  GURL url_same_origin(kSameOriginTestURL);
-  GURL url2(kDifferentOriginTestURL);
-  NavigateAndCommit(url);
-
-  base::Time reference_time = GetReferenceTime();
-  base::Time first_day = reference_time + base::Days(1);
-  base::Time ninth_day = reference_time + base::Days(9);
-  base::Time tenth_day = reference_time + base::Days(10);
-  base::Time eleventh_day = reference_time + base::Days(11);
-
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url, reference_time));
-
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents(), url, kTestPackageName,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-      reference_time);
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url, reference_time));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, first_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, ninth_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, tenth_day));
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                            url, eleventh_day));
-
-  // Make sure a different path under the same origin also returns true.
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url_same_origin, reference_time));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url_same_origin, first_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url_same_origin, ninth_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url_same_origin, tenth_day));
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url_same_origin, eleventh_day));
-
-  // Check a different event type.
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents(), url2, kTestPackageName,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW, reference_time);
-
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
-      browser_context(), url2, reference_time));
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                            url2, first_day));
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                            url2, ninth_day));
-
-  // Make sure that the most recent time the event is recorded is used.
-  AppBannerSettingsHelper::RecordBannerEvent(
-      web_contents(), url, kTestPackageName,
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
-      first_day);
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, first_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, ninth_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, tenth_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
-                                                           url, eleventh_day));
 }
 
 TEST_F(AppBannerSettingsHelperTest, NulloptSingleBannerEvent) {

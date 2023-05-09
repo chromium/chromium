@@ -67,8 +67,7 @@ class AppBannerSettingsHelper {
     APP_BANNER_EVENT_DID_BLOCK,
     // Records the latest time the user added a site to the homescreen from a
     // banner, or launched that site from homescreen. Used to ensure banners are
-    // not shown for sites which were added, and to determine if sites were
-    // launched recently.
+    // not shown for sites which were added.
     APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
     // Records when a site met the conditions to show an ambient badge.
     // Used to suppress the ambient badge from being shown too often.
@@ -150,14 +149,6 @@ class AppBannerSettingsHelper {
       const GURL& origin_url,
       const std::string& package_name_or_start_url,
       base::Time time);
-
-  // Returns true if any site under |origin| was launched from homescreen in the
-  // last ten days. This allows services outside app banners to utilise the
-  // content setting that ensures app banners are not shown for sites which ave
-  // already been added to homescreen.
-  static bool WasLaunchedRecently(content::BrowserContext* browser_context,
-                                  const GURL& origin_url,
-                                  base::Time now);
 
   // Set the number of days which dismissing/ignoring the banner should prevent
   // a banner from showing.
