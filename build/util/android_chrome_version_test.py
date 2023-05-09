@@ -170,7 +170,7 @@ class _VersionTest(unittest.TestCase):
     arch_trichrome_32_64_version_code = output['TRICHROME_32_64_VERSION_CODE']
     arch_trichrome_64_32_version_code = output['TRICHROME_64_32_VERSION_CODE']
     arch_trichrome_64_32_high_version_code = output[
-        'TRICHROME_64_HIGH_VERSION_CODE']
+        'TRICHROME_64_32_HIGH_VERSION_CODE']
     arch_trichrome_64_version_code = output['TRICHROME_64_VERSION_CODE']
     arch_trichrome_auto_64_32_version_code = output[
         'TRICHROME_AUTO_64_32_VERSION_CODE']
